@@ -27,16 +27,22 @@ public typealias PaymentMethodTokenData = PaymentMethodToken
 @objc
 public protocol PrimerDelegate {
     
+    // MARK: Required
+    
+    /// This function will be called when the checkout has been successful.
+    /// - Parameters:
+    ///   - payment: The Payment object containing the completed payment.
+    @objc func primerDidCompleteCheckoutWithData(_ data: CheckoutData)
+    
+    // MARK: Optional
+    
     @objc optional func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
     
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
-    @objc optional func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodTokenData, resumeHandler:  ResumeHandlerProtocol)
+    @objc optional func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PaymentMethodTokenData, decisionHandler: @escaping (ResumeDecision) -> Void)
+    @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
+    @objc optional func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (ResumeDecision) -> Void)
     
-    @available(*, deprecated, message: "The resuming is now handled by the SDK internally so that the payment can either succeed or fail.\nSee primerDidCompleteCheckoutWithData(:) and primerDidFailWithError(:)")
-    @objc optional func onResumeSuccess(_ clientToken: String, resumeHandler: ResumeHandlerProtocol)
-    
-    @available(*, deprecated, message: "Use SIMPLIFY DX!.")
-    @objc optional func onResumeError(_ error: Error)
     
     @objc optional func primerDidDismiss()
     
@@ -54,17 +60,12 @@ public protocol PrimerDelegate {
     ///   - decisionHandler: The handler managing a custom error to optionally pass to the SDK
     @objc optional func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PaymentCreationDecision?) -> Void)
     
-    /// This function will be called when the checkout has been successful.
-    /// - Parameters:
-    ///   - payment: The Payment object containing the completed payment.
-    @objc optional func primerDidCompleteCheckoutWithData(_ data: CheckoutData)
-    
     /// This function will be called when the checkout encountered an error.
     /// - Parameters:
     ///   - error: The Error object containing the error description.
     ///   - data: The additional payment data if present
     ///   - decisionHandler: The handler containing a custom error message to optionally pass to the SDK
-    @objc optional func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: ((ErrorDecision?) -> Void)?)
+    @objc optional func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((ErrorDecision) -> Void))
 }
 
 internal class PrimerDelegateProxy {
@@ -90,21 +91,20 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodTokenData, resumeHandler:  ResumeHandlerProtocol) {
+    static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PaymentMethodTokenData, decisionHandler: @escaping (ResumeDecision) -> Void) {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: resumeHandler)
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: resumeHandler)
+            if Primer.shared.delegate?.primerDidTokenizePaymentMethod != nil {
+                Primer.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
+            }
+//            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: resumeHandler)
         }
     }
     
-    static var isOnResumeSuccessImplemented: Bool {
-        return Primer.shared.delegate?.onResumeSuccess != nil
-    }
-    
-    static func onResumeSuccess(_ resumeToken: String, resumeHandler: ResumeHandlerProtocol) {
+    static func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (ResumeDecision) -> Void) {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: resumeHandler)
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutResume(withResumeToken: resumeToken, resumeHandler: resumeHandler)
+            if Primer.shared.delegate?.primerDidResumeWith != nil {
+                Primer.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
+            }
         }
     }
     
@@ -118,17 +118,6 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static var isOnResumeErrorImplemented: Bool {
-        return Primer.shared.delegate?.onResumeError != nil
-    }
-    
-    static func onResumeError(_ error: Error) {
-        DispatchQueue.main.async {
-            Primer.shared.delegate?.onResumeError?(error)
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
-        }
-    }
-    
     static var isOnCheckoutDismissedImplemented: Bool {
         return Primer.shared.delegate?.primerDidDismiss != nil
     }
@@ -139,20 +128,26 @@ internal class PrimerDelegateProxy {
     
     static func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.primerDidCompleteCheckoutWithData?(data)
+            Primer.shared.delegate?.primerDidCompleteCheckoutWithData(data)
         }
     }
     
-    static func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: ((ErrorDecision?) -> Void)?) {
+    static func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((ErrorDecision) -> Void)) {
         DispatchQueue.main.async {
-            
             if Primer.shared.delegate?.primerDidFailWithError != nil {
-                Primer.shared.delegate?.primerDidFailWithError?(error, data: data, decisionHandler: decisionHandler)
-            } else if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail != nil {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
+                Primer.shared.delegate?.primerDidFailWithError?(error, data: data, decisionHandler: { errorDecision in
+                    switch errorDecision.type {
+                    case .fail(let message):
+                        DispatchQueue.main.async {
+                            decisionHandler(.fail(withMessage: message))
+                        }
+                    }
+                })
             } else {
-                decisionHandler?(nil)
+                print("WARNING: Delegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
+                decisionHandler(.fail(withMessage: nil))
             }
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
         }
     }
     
@@ -177,10 +172,6 @@ internal class PrimerDelegateProxy {
     }
     
     static func primerHeadlessUniversalCheckoutPaymentMethodPresented() {
-        
-    }
-    
-    static func tokenizationSucceeded(paymentMethodToken: PaymentMethodTokenData, resumeHandler: ResumeHandlerProtocol?) {
         
     }
     

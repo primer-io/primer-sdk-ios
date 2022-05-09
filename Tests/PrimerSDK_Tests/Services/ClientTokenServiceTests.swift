@@ -136,6 +136,10 @@ extension ClientTokenServiceTests {
 }
 
 extension ClientTokenServiceTests: PrimerDelegate {
+    func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
+
+    }
+    
     
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in

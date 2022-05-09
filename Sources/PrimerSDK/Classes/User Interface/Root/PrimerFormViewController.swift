@@ -126,34 +126,6 @@ class PrimerFormViewController: PrimerViewController {
         }
     }
     
-    static func handleCallbacks(for paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol) {
-        paymentMethodTokenizationViewModel.didStartTokenization = {
-            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: paymentMethodTokenizationViewModel.makeSquareLogoImageView(withDimension: 24.0), message: nil)
-        }
-        
-        if var asyncPaymentMethodViewModel = paymentMethodTokenizationViewModel as? ExternalPaymentMethodTokenizationViewModelProtocol {
-            asyncPaymentMethodViewModel.willPresentExternalView = {
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: paymentMethodTokenizationViewModel.makeSquareLogoImageView(withDimension: 24.0), message: nil)
-            }
-            
-            asyncPaymentMethodViewModel.didPresentExternalView = {
-                
-            }
-            
-            asyncPaymentMethodViewModel.willDismissExternalView = {
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: paymentMethodTokenizationViewModel.makeSquareLogoImageView(withDimension: 24.0), message: nil)
-            }
-        }
-        
-        paymentMethodTokenizationViewModel.tokenizationCompletion = { (tok, err) in
-            if let err = err {
-                Primer.shared.primerRootVC?.handle(error: err)
-            } else {
-                Primer.shared.primerRootVC?.handleSuccess()
-            }
-        }
-    }
-    
 }
 
 #endif

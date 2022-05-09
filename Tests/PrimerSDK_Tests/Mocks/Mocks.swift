@@ -35,7 +35,7 @@ var mockSettings = PrimerSettings(
 )
 
 class MockPrimerDelegate: PrimerDelegate {
-
+    
     var token: String?
     var authorizePaymentFails: Bool
     var clientTokenCallbackCalled = false
@@ -55,6 +55,11 @@ class MockPrimerDelegate: PrimerDelegate {
         }
         completion(token, nil)
     }
+    
+    func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
+
+    }
+
     
     func tokenAddedToVault(_ token: PaymentMethodToken) {
         

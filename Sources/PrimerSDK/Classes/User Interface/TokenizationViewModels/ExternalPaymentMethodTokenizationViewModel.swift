@@ -11,21 +11,14 @@ import Foundation
 import SafariServices
 import UIKit
 
-class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
+class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
-    
-    var willPresentExternalView: (() -> Void)?
-    var didPresentExternalView: (() -> Void)?
-    var willDismissExternalView: (() -> Void)?
-    var didDismissExternalView: (() -> Void)?
     var webViewController: SFSafariViewController?
     /**
      This completion handler will return an authorization token, which must be returned to the merchant to resume the payment. **webViewCompletion**
      must be set before presenting the webview and nullified once polling returns a result. At the same time the webview should be dismissed.
      */
     var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-    var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
-    var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -39,13 +32,21 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    @objc
-    override func startTokenizationFlow() {
+    override func start() {
+        self.didFinishPayment = { err in
+            self.willDismissPaymentMethodUI?()
+            self.webViewController?.dismiss(animated: true, completion: {
+                self.didDismissPaymentMethodUI?()
+            })
+        }
+        
+        super.start()
+    }
+    
+    override func startTokenizationFlow() -> Promise<PaymentMethodTokenData> {
         DispatchQueue.main.async {
             UIApplication.shared.beginIgnoringInteractionEvents()
         }
-        
-        super.startTokenizationFlow()
         
         let event = Analytics.Event(
             eventType: .ui,
@@ -64,117 +65,21 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        self.continueTokenizationFlow()
-    }
-    
-    fileprivate func continueTokenizationFlow() {
-        
-        firstly {
-            self.validateReturningPromise()
-        }
-        .then { () -> Promise<Void> in
-            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
-        }
-        .then { () -> Promise<Void> in
-            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
-        }
-        .then {
-            self.tokenize()
-        }
-        .then { tmpPaymentMethodTokenData -> Promise<PaymentMethodToken> in
-            self.paymentMethodTokenData = tmpPaymentMethodTokenData
-            return self.continueTokenizationFlow(for: tmpPaymentMethodTokenData)
-        }
-        .done { paymentMethodTokenData in
-            self.paymentMethodTokenData = paymentMethodTokenData
-            
-            DispatchQueue.main.async {
-                self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
-            }
-        }
-        .ensure { [unowned self] in
-            DispatchQueue.main.async {
-                UIApplication.shared.endIgnoringInteractionEvents()
-            }
-            DispatchQueue.main.async {
-                self.willDismissExternalView?()
-                self.webViewController?.dismiss(animated: true, completion: {
-                    self.didDismissExternalView?()
-                })
-            }
-            
-            self.willPresentExternalView = nil
-            self.didPresentExternalView = nil
-            self.willDismissExternalView = nil
-            self.didDismissExternalView = nil
-            self.webViewController = nil
-            self.webViewCompletion = nil
-            self.onResumeTokenCompletion = nil
-            self.onClientToken = nil
-        }
-        .catch { err in
-            DispatchQueue.main.async {
-                PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: nil)
-                self.handleFailureFlow(error: err)
-            }
-        }
-    }
-    
-    internal func continueTokenizationFlow(for tmpPaymentMethod: PaymentMethodToken) -> Promise<PaymentMethodToken> {
         return Promise { seal in
-            var pollingURLs: PollingURLs!
-            
-            // Fallback when no **requiredAction** is returned.
-            self.onResumeTokenCompletion = { (paymentMethod, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let paymentMethod = paymentMethod {
-                    seal.fulfill(paymentMethod)
-                } else {
-                    assert(true, "Should have received one parameter")
-                }
-            }
-            
             firstly {
-                return self.fetchPollingURLs(for: tmpPaymentMethod)
+                self.validateReturningPromise()
             }
-            .then { pollingURLsResponse -> Promise<Void> in
-                pollingURLs = pollingURLsResponse
-                
-                guard let redirectUrl = pollingURLs.redirectUrl else {
-                    let err = PrimerError.invalidValue(key: "redirectUrl", value: pollingURLs.redirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: err)
-                    throw err
-                }
-                
-                DispatchQueue.main.async {
-                    UIApplication.shared.endIgnoringInteractionEvents()
-                }
-                
-                return self.presentAsyncPaymentMethod(with: redirectUrl)
+            .then { () -> Promise<Void> in
+                ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
             }
-            .then { () -> Promise<String> in
-                guard let statusUrl = pollingURLs.statusUrl else {
-                    let err = PrimerError.invalidValue(key: "statusUrl", value: pollingURLs.redirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: err)
-                    throw err
-                }
-                
-                return self.startPolling(on: statusUrl)
+            .then { () -> Promise<Void> in
+                return self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
             }
-            .then { resumeToken -> Promise<PaymentMethodToken> in
-                DispatchQueue.main.async {
-                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
-                    
-                    self.willDismissExternalView?()
-                    self.webViewController?.dismiss(animated: true, completion: {
-                        self.didDismissExternalView?()
-                    })
-                }
-                return self.passResumeToken(resumeToken)
+            .then { () -> Promise<PaymentMethodTokenData> in
+                return self.tokenize()
             }
-            .done { paymentMethod in
-                seal.fulfill(paymentMethod)
+            .done { paymentMethodTokenData in
+                seal.fulfill(paymentMethodTokenData)
             }
             .catch { err in
                 seal.reject(err)
@@ -216,56 +121,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    internal func fetchPollingURLs(for paymentMethodTokenData: PaymentMethodTokenData) -> Promise<PollingURLs> {
-        return Promise { seal in
-            self.onClientToken = { (clientToken, error) in
-                
-                guard error == nil else {
-                    seal.reject(error!)
-                    return
-                }
-                
-                if let clientToken = clientToken {
-                    ClientTokenService.storeClientToken(clientToken) { error in
-                        guard error == nil else {
-                            seal.reject(error!)
-                            return
-                        }
-                        
-                        if let decodedClientToken = ClientTokenService.decodedClientToken,
-                           let redirectUrl = decodedClientToken.redirectUrl,
-                           let statusUrl = decodedClientToken.statusUrl,
-                           decodedClientToken.intent != nil {
-                            seal.fulfill(PollingURLs(status: statusUrl, redirect: redirectUrl, complete: nil))
-                            return
-                        }
-                    }
-                } else {
-                    let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    seal.reject(error)
-                    return
-                }
-            }
-            
-            DispatchQueue.main.async {
-                // FIXME: This will not work, needs fixing
-                self.paymentMethodTokenData = paymentMethodTokenData
-                
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: paymentMethodTokenData, error: nil)
-                    self.executeCompletionAndNullifyAfter()
-                } else {
-                    self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
-                }
-            }
-        }
-    }
-    
     internal func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async { [unowned self] in
-                self.willPresentExternalView?()
-                
                 self.webViewCompletion = { (id, err) in
                     if let err = err {
                         seal.reject(err)
@@ -275,11 +133,11 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.webViewController = SFSafariViewController(url: url)
                 self.webViewController?.delegate = self
                 
-                self.willPresentExternalView?()
+                self.willDismissPaymentMethodUI?()
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
                         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodPresented()
-                        self.didPresentExternalView?()
+                        self.didDismissPaymentMethodUI?()
                         seal.fulfill(())
                     }
                 })
@@ -333,21 +191,40 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    internal func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethodToken> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
         return Promise { seal in
-            
-            self.onResumeTokenCompletion = { (paymentMethod, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let paymentMethod = paymentMethod {
-                    seal.fulfill(paymentMethod)
+            if decodedClientToken.intent?.contains("_REDIRECTION") == true {
+                if let decodedClientToken = ClientTokenService.decodedClientToken,
+                   let redirectUrlStr = decodedClientToken.redirectUrl,
+                   let redirectUrl = URL(string: redirectUrlStr),
+                   let statusUrlStr = decodedClientToken.statusUrl,
+                   let statusUrl = URL(string: statusUrlStr),
+                   decodedClientToken.intent != nil {
+                    let pollingURLs = PollingURLs(status: statusUrlStr, redirect: redirectUrlStr, complete: nil)
+                    
+                    DispatchQueue.main.async {
+                        UIApplication.shared.endIgnoringInteractionEvents()
+                    }
+                    
+                    firstly {
+                        self.presentAsyncPaymentMethod(with: redirectUrl)
+                    }
+                    .then { () -> Promise<String> in
+                        return self.startPolling(on: statusUrl)
+                    }
+                    .done { resumeToken in
+                        seal.fulfill(resumeToken)
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
                 } else {
-                    assert(true, "Should have received one parameter")
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
                 }
-            }
-            
-            DispatchQueue.main.async {
-                self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+            } else {
+                seal.fulfill(nil)
             }
         }
     }
@@ -368,67 +245,8 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
     
     func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {
         if didLoadSuccessfully {
-            self.didPresentExternalView?()
+            self.didPresentPaymentMethodUI?()
         }
-    }
-}
-
-extension ExternalPaymentMethodTokenizationViewModel {
-    
-    override func handle(error: Error) {
-        
-        firstly {
-            ClientSession.Action.unselectPaymentMethodIfNeeded()
-        }
-        .ensure {
-            self.executeCompletionAndNullifyAfter(error: error)
-            // onResumeTokenCompletion will be created when we're awaiting the payment response
-            self.onResumeTokenCompletion?(nil, error)
-            self.onResumeTokenCompletion = nil
-        }
-        .catch { _ in }
-    }
-    
-    override func handle(newClientToken clientToken: String) {
-        
-        firstly {
-            ClientTokenService.storeClientToken(clientToken)
-        }
-        .then{ () -> Promise<Void> in
-            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            return configService.fetchConfig()
-        }
-        .done { [weak self] in
-            
-            let decodedClientToken = ClientTokenService.decodedClientToken!
-            
-            if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-                self?.onClientToken?(clientToken, nil)
-                self?.onClientToken = nil
-                
-            } else {
-                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                
-                firstly {
-                    configService.fetchConfig()
-                }
-                .done {
-                    self?.continueTokenizationFlow()
-                }
-                .catch { error in
-                    self?.raisePrimerDidFailWithError(error)
-                }
-            }
-        }
-        .catch { error in
-            self.raisePrimerDidFailWithError(error)
-        }
-    }
-    
-    override func handleSuccess() {
-        // completion will be created when we're awaiting the payment response
-        onResumeTokenCompletion?(self.paymentMethodTokenData, nil)
-        onResumeTokenCompletion = nil
     }
 }
 

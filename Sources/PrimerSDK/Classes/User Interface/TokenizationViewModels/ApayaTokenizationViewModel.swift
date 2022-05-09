@@ -11,13 +11,8 @@ import Foundation
 import UIKit
 import WebKit
 
-class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
-    
-    var willPresentExternalView: (() -> Void)?
-    var didPresentExternalView: (() -> Void)?
-    var willDismissExternalView: (() -> Void)?
-    var didDismissExternalView: (() -> Void)?
-    
+class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
+
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ res: Apaya.WebViewResponse?, _ error: Error?) -> Void)?
     
@@ -61,10 +56,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         }
     }
     
-    @objc
-    override func startTokenizationFlow() {
-        super.startTokenizationFlow()
-        
+    override func startTokenizationFlow() -> Promise<PaymentMethodTokenData> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -82,42 +74,31 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        self.continueTokenizationFlow()
-    }
-    
-
-    private func continueTokenizationFlow() {
-        
-        firstly {
-            self.validateReturningPromise()
-        }
-        .then { () -> Promise<Void> in
-            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
-        }
-        .then { () -> Promise<Void> in
-            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
-        }
-        .then {
-            self.generateWebViewUrl()
-        }
-        .then { url -> Promise<Apaya.WebViewResponse> in
-            self.presentApayaController(with: url)
-        }
-        .then { apayaWebViewResponse -> Promise<PaymentMethodToken> in
-            self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
-        }
-        .done { paymentMethodTokenData in
-            self.paymentMethodTokenData = paymentMethodTokenData
-            
-            if Primer.shared.flow.internalSessionFlow.vaulted {
-                self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: paymentMethodTokenData, error: nil)
-                self.executeCompletionAndNullifyAfter()
-            } else {
-                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+        return Promise { seal in
+            firstly {
+                self.validateReturningPromise()
             }
-        }
-        .catch { error in
-            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
+            .then { () -> Promise<Void> in
+                ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
+            }
+            .then { () -> Promise<Void> in
+                self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
+            }
+            .then {
+                self.generateWebViewUrl()
+            }
+            .then { url -> Promise<Apaya.WebViewResponse> in
+                self.presentApayaController(with: url)
+            }
+            .then { apayaWebViewResponse -> Promise<PaymentMethodToken> in
+                self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
+            }
+            .done { paymentMethodTokenData in
+                seal.fulfill(paymentMethodTokenData)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
         }
     }
     
@@ -198,10 +179,10 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
                 completion(res, err)
             }
             
-            self.willPresentExternalView?()
+            self.willPresentPaymentMethodUI?()
             Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
                 DispatchQueue.main.async {
-                    self.didPresentExternalView?()
+                    self.didPresentPaymentMethodUI?()
                 }
             })
         }
@@ -210,9 +191,9 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
     private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse) -> Promise<PaymentMethodToken> {
         return Promise { seal in
             self.tokenize(apayaWebViewResponse: apayaWebViewResponse) { paymentMethod, err in
-                self.willDismissExternalView?()
+                self.willDismissPaymentMethodUI?()
                 self.webViewController?.dismiss(animated: true, completion: {
-                    self.didDismissExternalView?()
+                    self.didDismissPaymentMethodUI?()
                 })
                 
                 if let err = err {
@@ -268,6 +249,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPa
                     completion(nil, err)
                 }
             }
+        
     }
     
 }
@@ -322,44 +304,44 @@ extension ApayaTokenizationViewModel {
     }
 }
 
-extension ApayaTokenizationViewModel {
-    
-    override func handle(error: Error) {
-        firstly {
-            ClientSession.Action.unselectPaymentMethodIfNeeded()
-        }
-        .ensure {
-            self.executeCompletionAndNullifyAfter(error: error)
-            self.handleFailureFlow(error: error)
-        }
-        .catch { _ in }
-    }
-        
-    override func handle(newClientToken clientToken: String) {
-        
-        // For Apaya there's no redirection URL, once the webview is presented it will get its response from a URL redirection.
-        // We'll end up in here only for surcharge.
-
-        firstly {
-            ClientTokenService.storeClientToken(clientToken)
-        }
-        .then{ () -> Promise<Void> in
-            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            return configService.fetchConfig()
-        }
-        .done {
-            self.continueTokenizationFlow()
-        }
-        .catch { error in
-            self.raisePrimerDidFailWithError(error)
-        }
-    }
-    
-    override func handleSuccess() {
-        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
-        self.tokenizationCompletion = nil
-    }
-    
-}
+//extension ApayaTokenizationViewModel {
+//    
+//    override func handle(error: Error) {
+//        firstly {
+//            ClientSession.Action.unselectPaymentMethodIfNeeded()
+//        }
+//        .ensure {
+//            self.executeCompletionAndNullifyAfter(error: error)
+//            self.handleFailureFlow(error: error)
+//        }
+//        .catch { _ in }
+//    }
+//        
+//    override func handle(newClientToken clientToken: String) {
+//        
+//        // For Apaya there's no redirection URL, once the webview is presented it will get its response from a URL redirection.
+//        // We'll end up in here only for surcharge.
+//
+//        firstly {
+//            ClientTokenService.storeClientToken(clientToken)
+//        }
+//        .then{ () -> Promise<Void> in
+//            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+//            return configService.fetchConfig()
+//        }
+//        .done {
+//            self.continueTokenizationFlow()
+//        }
+//        .catch { error in
+//            self.raisePrimerDidFailWithError(error)
+//        }
+//    }
+//    
+//    override func handleSuccess() {
+//        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
+//        self.tokenizationCompletion = nil
+//    }
+//    
+//}
 
 #endif
