@@ -46,9 +46,9 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
             DispatchQueue.main.async { [unowned self] in
                 self.webViewController = SFSafariViewController(url: url)
                 self.webViewController?.delegate = self
-                self.willPresentExternalView?()
+                self.willPresentPaymentMethodUI?()
                 Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
-                    self.didPresentExternalView?()
+                    self.didPresentPaymentMethodUI?()
                     seal.fulfill(())
                 }
             }

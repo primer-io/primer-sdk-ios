@@ -4,7 +4,7 @@ import UIKit
 import AuthenticationServices
 import SafariServices
 
-class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
+class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     var willPresentExternalView: (() -> Void)?
     var didPresentExternalView: (() -> Void)?
@@ -45,10 +45,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    @objc
-    override func startTokenizationFlow() {
-        super.startTokenizationFlow()
-        
+    override func startTokenizationFlow() -> Promise<PaymentMethodTokenData> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -66,40 +63,25 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         
         Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
         
-        self.continueTokenizationFlow()
-    }
-    
-    fileprivate func continueTokenizationFlow() {
-        
-        firstly {
-            self.validateReturningPromise()
-        }
-        .then { () -> Promise<Void> in
-            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
-
-        }
-        .then { () -> Promise<Void> in
-            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            return configService.fetchConfig()
-        }
-        .then {
-            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
-        }
-        .then {
-            self.tokenize()
-        }
-        .done { paymentMethodTokenData in
-            self.paymentMethodTokenData = paymentMethodTokenData
-            
-            if Primer.shared.flow.internalSessionFlow.vaulted {
-                self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: paymentMethodTokenData, error: nil)
-                self.executeCompletionAndNullifyAfter()
-            } else {
-                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+        return Promise { seal in
+            firstly {
+                self.validateReturningPromise()
             }
-        }
-        .catch { error in
-            self.raisePrimerDidFailWithError(error)
+            .then { () -> Promise<Void> in
+                ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
+            }
+            .then { () -> Promise<Void> in
+                return self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
+            }
+            .then {
+                self.tokenize()
+            }
+            .done { paymentMethodTokenData in
+                seal.fulfill(paymentMethodTokenData)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
         }
     }
     
@@ -336,51 +318,37 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     }
 }
 
-extension PayPalTokenizationViewModel {
-        
-    private func selectPaymentMethodWithParametersIfNeeded(_ parameters: [String: Any]) {
-        
-        firstly {
-            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(parameters)
-        }
-        .done {}
-        .catch { error in
-            self.raisePrimerDidFailWithError(error)
-        }
-    }
-}
-
-extension PayPalTokenizationViewModel {
-    
-    override func handle(error: Error) {
-        firstly {
-            ClientSession.Action.unselectPaymentMethodIfNeeded()
-        }
-        .ensure {
-            self.executeCompletionAndNullifyAfter(error: error)
-        }
-        .catch { _ in }
-    }
-
-    override func handle(newClientToken clientToken: String) {
-        
-        firstly {
-            ClientTokenService.storeClientToken(clientToken)
-        }
-        .done {
-            self.continueTokenizationFlow()
-        }
-        .catch { error in
-            self.raisePrimerDidFailWithError(error)
-        }
-    }
-    
-    override func handleSuccess() {
-        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
-        self.tokenizationCompletion = nil
-    }
-    
-}
+//extension PayPalTokenizationViewModel {
+//    
+//    override func handle(error: Error) {
+//        firstly {
+//            ClientSession.Action.unselectPaymentMethodIfNeeded()
+//        }
+//        .ensure {
+//            self.executeCompletionAndNullifyAfter(error: error)
+//        }
+//        .catch { _ in }
+//    }
+//
+//    override func handle(newClientToken clientToken: String) {
+//        
+//        firstly {
+//            ClientTokenService.storeClientToken(clientToken)
+//        }
+//        .done {
+//            self.continueTokenizationFlow()
+//        }
+//        .catch { error in
+//            self.raisePrimerDidFailWithError(error)
+//        }
+//    }
+//    
+//    override func handleSuccess() {
+//        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
+//        self.tokenizationCompletion = nil
+//    }
+//    
+//}
 
 @available(iOS 11.0, *)
 extension PayPalTokenizationViewModel: ASWebAuthenticationPresentationContextProviding {

@@ -43,7 +43,6 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         } else {
             return state.paymentMethods.filter {
                 switch $0.paymentInstrumentType {
-                case .goCardlessMandate: return true
                 case .paymentCard: return true
                 default: return false
                 }
@@ -76,22 +75,9 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
                 }
             })
         } else {
-            let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.fetchClientToken({ err in
-                if let err = err {
-                    completion(err)
-                } else {
-                    let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                    paymentMethodConfigService.fetchConfig({ err in
-                        if let err = err {
-                            completion(err)
-                        } else {
-                            let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-                            vaultService.loadVaultedPaymentMethods(completion)
-                        }
-                    })
-                }
-            })
+            let err = PrimerError.invalidClientToken(userInfo: nil)
+            ErrorHandler.handle(error: err)
+            completion(err)
         }
     }
 

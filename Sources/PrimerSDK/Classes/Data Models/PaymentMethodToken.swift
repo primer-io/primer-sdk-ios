@@ -52,13 +52,12 @@ internal extension PaymentMethodToken {
         switch self.paymentInstrumentType {
         case .paymentCard:
             guard let ntwrk = self.paymentInstrumentData?.network else { return nil }
-            guard let cardholder = self.paymentInstrumentData?.cardholderName else { return nil }
             guard let last4 = self.paymentInstrumentData?.last4Digits else { return nil }
             guard let expMonth = self.paymentInstrumentData?.expirationMonth else { return nil }
             guard let expYear = self.paymentInstrumentData?.expirationYear else { return nil }
             return CardButtonViewModel(
                 network: ntwrk,
-                cardholder: cardholder,
+                cardholder: self.paymentInstrumentData?.cardholderName ?? "",
                 last4: "•••• \(last4)",
                 expiry: NSLocalizedString("primer-saved-card",
                                           tableName: nil,

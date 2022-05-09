@@ -290,7 +290,7 @@ public class PrimerHeadlessUniversalCheckout {
             
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationStarted()
             
-            Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout, on: UIViewController())
+//            Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout)
         }
     }
 }
