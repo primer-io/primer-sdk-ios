@@ -114,9 +114,7 @@ class Networking {
         if let apiVersion = apiVersion {
             request.addValue(apiVersion.rawValue, forHTTPHeaderField: "x-api-version")
         }
-        
-        request.addValue("454fc88a-d25d-432e-b8a8-6ad5815df15a", forHTTPHeaderField: "x-api-key")
-                
+                        
         msg += "Headers:\n\(request.allHTTPHeaderFields ?? [:])\n"
         
         if let body = body {
