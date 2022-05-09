@@ -4,6 +4,7 @@
 <dict>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
+		<string>merchant.checkout.team</string>
 		<string>merchant.dx.team</string>
 	</array>
 </dict>

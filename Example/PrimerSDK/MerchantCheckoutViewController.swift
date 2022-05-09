@@ -159,23 +159,6 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     @IBAction func openVaultButtonTapped(_ sender: Any) {
-        let configuration = PrimerConfiguration(settings: generalSettings)
-        Primer.shared.configure(configuration: configuration, delegate: self)
-        Primer.shared.showVaultManager(on: self)
-    }
-    
-    @IBAction func openUniversalCheckoutTapped(_ sender: Any) {
-        let configuration = PrimerConfiguration(settings: generalSettings)
-        Primer.shared.configure(configuration: configuration, delegate: self)
-        Primer.shared.showUniversalCheckout(on: self)
-    }
-}
-
-// MARK: - PRIMER DELEGATE
-
-extension MerchantCheckoutViewController: PrimerDelegate {
-    
-    func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
         
         let clientSessionRequestBody = ClientSessionRequestBody(
@@ -279,30 +262,174 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             if let err = err {
                 print(err)
                 let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
-                completion(nil, merchantErr)
+                
             } else if let clientToken = clientToken {
                 self.clientToken = clientToken
-                completion(clientToken, nil)
+                self.generalSettings = PrimerSettings(
+                    merchantIdentifier: "merchant.checkout.team",
+                    klarnaSessionType: .recurringPayment,
+                    klarnaPaymentDescription: nil,
+                    urlScheme: "merchant://",
+                    urlSchemeIdentifier: "merchant",
+                    isFullScreenOnly: false,
+                    hasDisabledSuccessScreen: false,
+                    directDebitHasNoAmount: false,
+                    isInitialLoadingHidden: false,
+                    is3DSOnVaultingEnabled: true,
+                    debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+                )
+                
+                let configuration = PrimerConfiguration(settings: self.generalSettings)
+                Primer.shared.configure(configuration: configuration, delegate: self)
+                Primer.shared.showVaultManager(on: self, clientToken: clientToken, completion: nil)
             }
         }
     }
+    
+    @IBAction func openUniversalCheckoutTapped(_ sender: Any) {
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
+        
+        let clientSessionRequestBody = ClientSessionRequestBody(
+            customerId: customerId,
+            orderId: "ios_order_id_\(String.randomString(length: 8))",
+            currencyCode: currency,
+            amount: nil,
+            metadata: nil, //["key": "val"],
+            customer: ClientSessionRequestBody.Customer(
+                firstName: "John",
+                lastName: "Smith",
+                emailAddress: "john@primer.io",
+                mobileNumber: "+4478888888888",
+                billingAddress: Address(
+                    firstName: "John",
+                    lastName: "Smith",
+                    addressLine1: "65 York Road",
+                    addressLine2: nil,
+                    city: "London",
+                    state: nil,
+                    countryCode: "GB",
+                    postalCode: "NW06 4OM"),
+                shippingAddress: Address(
+                    firstName: "John",
+                    lastName: "Smith",
+                    addressLine1: "9446 Richmond Road",
+                    addressLine2: nil,
+                    city: "London",
+                    state: nil,
+                    countryCode: "GB",
+                    postalCode: "EC53 8BT")
+            ),
+            order: ClientSessionRequestBody.Order(
+                countryCode: countryCode,
+                lineItems: [
+                    ClientSessionRequestBody.Order.LineItem(
+                        itemId: "_item_id_0",
+                        description: "Item",
+                        amount: amount,
+                        quantity: 1)
+                ]),
+            paymentMethod: ClientSessionRequestBody.PaymentMethod(
+                vaultOnSuccess: false,
+                options:
+                [
+                    "APPLE_PAY": [
+                        "surcharge": [
+                            "amount": 19
+                        ]
+                    ],
+                    "PAY_NL_IDEAL": [
+                        "surcharge": [
+                            "amount": 39
+                        ]
+                    ],
+                    "PAYPAL": [
+                        "surcharge": [
+                            "amount": 49
+                        ]
+                    ],
+                    "ADYEN_TWINT": [
+                        "surcharge": [
+                            "amount": 59
+                        ]
+                    ],
+                    "ADYEN_IDEAL": [
+                        "surcharge": [
+                            "amount": 69
+                        ]
+                    ],
+                    "ADYEN_GIROPAY": [
+                        "surcharge": [
+                            "amount": 79
+                        ]
+                    ],
+                    "BUCKAROO_BANCONTACT": [
+                        "surcharge": [
+                            "amount": 89
+                        ]
+                    ],
+                    "PAYMENT_CARD": [
+                        "networks": [
+                            "MASTERCARD": [
+                                "surcharge": [
+                                    "amount": 129
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            )
+        )
+        
+        let networking = Networking()
+        networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
+            if let err = err {
+                print(err)
+                let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
+                
+            } else if let clientToken = clientToken {
+                self.clientToken = clientToken
+                self.generalSettings = PrimerSettings(
+                    merchantIdentifier: "merchant.checkout.team",
+                    klarnaSessionType: .recurringPayment,
+                    klarnaPaymentDescription: nil,
+                    urlScheme: "merchant://",
+                    urlSchemeIdentifier: "merchant",
+                    isFullScreenOnly: false,
+                    hasDisabledSuccessScreen: false,
+                    directDebitHasNoAmount: false,
+                    isInitialLoadingHidden: false,
+                    is3DSOnVaultingEnabled: true,
+                    debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+                )
+                
+                let configuration = PrimerConfiguration(settings: self.generalSettings)
+                Primer.shared.configure(configuration: configuration, delegate: self)
+                Primer.shared.showUniversalCheckout(on: self, clientToken: clientToken, completion: nil)
+            }
+        }
+    }
+}
+
+// MARK: - PRIMER DELEGATE
+
+extension MerchantCheckoutViewController: PrimerDelegate {
     
     func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PaymentCreationDecision?) -> Void) {
         decisionHandler(.continuePaymentCreation())
     }
     
-    func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: ((ErrorDecision?) -> Void)?) {
+    func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((ErrorDecision) -> Void)) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Failed\n")
-        decisionHandler?(nil)
+        let message = "Merchant App | ERROR"
+        decisionHandler(.showErrorMessage(message))
     }
         
-    func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
+    func primerDidCompleteCheckoutWithData(_ data: CheckoutData, decisionHandler: @escaping ((SuccessDecision) -> Void)) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(data)\n")
         self.checkoutData = data
-    }
-            
-    func tokenAddedToVault(_ token: PaymentMethodToken) {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nToken added to vault\nToken: \(token)\n")
+        
+        let message = "Merchant App | SUCCESS"
+        decisionHandler(.showSuccessMessage(message))
     }
     
     func primerDidDismiss() {
