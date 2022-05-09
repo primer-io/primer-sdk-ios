@@ -17,54 +17,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
     
-    private lazy var _title: String = { return "Klarna" }()
-    override var title: String  {
-        get { return _title }
-        set { _title = newValue }
-    }
-    
-    private lazy var _buttonImage: UIImage? = {
-        switch config.type {
-        case .klarna:
-            return UIImage(named: "klarna-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    override var buttonImage: UIImage? {
-        get { return _buttonImage }
-        set { _buttonImage = newValue }
-    }
-    
-    private lazy var _buttonColor: UIColor? = {
-        switch config.type {
-        case .klarna:
-            return UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1.0)
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    override var buttonColor: UIColor? {
-        get { return _buttonColor }
-        set { _buttonColor = newValue }
-    }
-    
-    
-    private lazy var _buttonTintColor: UIColor? = {
-        switch config.type {
-        case .klarna:
-            return .black
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    override var buttonTintColor: UIColor? {
-        get { return _buttonTintColor }
-        set { _buttonTintColor = newValue }
-    }
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")

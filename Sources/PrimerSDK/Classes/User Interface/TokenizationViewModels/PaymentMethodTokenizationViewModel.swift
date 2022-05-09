@@ -94,12 +94,73 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     lazy var title: String = {
         switch config.type {
-        case .googlePay:
-            return "Google Pay"
+        case .adyenAlipay:
+            return "Adyen Ali Pay"
+        case .adyenDotPay:
+            return "Dot Pay"
+        case .adyenGiropay:
+            return "Giropay"
+        case .adyenIDeal:
+            return "iDeal"
+        case .apaya:
+            return "Apaya"
+        case .applePay:
+            return "Apple Pay"
+        case .atome:
+            return "Atome"
+        case .buckarooBancontact:
+            return "Buckaroo Bancontact"
+        case .buckarooEps:
+            return "Buckaroo EPS"
+        case .buckarooGiropay:
+            return "Buckaroo Giropay"
+        case .buckarooIdeal:
+            return "Buckaroo iDeal"
+        case .buckarooSofort:
+            return "Buckaroo Sofort"
         case .goCardlessMandate:
             return "Go Cardless"
+        case .googlePay:
+            return "Google Pay"
+        case .hoolah:
+            return "Hoolah"
+        case .adyenInterac:
+            return "Interac"
+        case .klarna:
+            return "Klarna"
+        case .mollieBankcontact:
+            return "Mollie Bancontact"
+        case .mollieIdeal:
+            return "Mollie iDeal"
+        case .paymentCard:
+            return "Payment Card"
+        case .payNLBancontact:
+            return "Pay NL Bancontact"
+        case .payNLGiropay:
+            return "Pay NL Giropay"
+        case .payNLIdeal:
+            return "Pay NL Ideal"
+        case .payNLPayconiq:
+            return "Pay NL Payconiq"
+        case .adyenSofort:
+            return "Sofort"
+        case .adyenTwint:
+            return "Twint"
+        case .adyenTrustly:
+            return "Trustly"
+        case .adyenMobilePay:
+            return "Mobile Pay"
+        case .adyenVipps:
+            return "Vipps"
+        case .adyenPayTrail:
+            return "Pay Trail"
+        case .payPal:
+            return "PayPal"
+        case .xfers:
+            return "XFers"
         case .other:
             return "Other"
+            
         default:
             assert(true, "Shouldn't end up in here")
             return ""
@@ -130,8 +191,61 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var position: Int = 0
     
     lazy var buttonTitle: String? = {
-        assert(true, "Should be overriden")
-        return nil
+        switch config.type {
+        case .adyenAlipay,
+                .adyenBlik,
+                .adyenGiropay,
+                .applePay,
+                .atome,
+                .buckarooBancontact,
+                .buckarooEps,
+                .buckarooGiropay,
+                .buckarooIdeal,
+                .buckarooSofort,
+                .hoolah,
+                .klarna,
+                .mollieBankcontact,
+                .mollieIdeal,
+                .payNLBancontact,
+                .payNLGiropay,
+                .payNLIdeal,
+                .payNLPayconiq,
+                .adyenSofort,
+                .adyenTwint,
+                .adyenTrustly,
+                .adyenMobilePay,
+                .adyenVipps,
+                .adyenInterac,
+                .adyenPayTrail,
+                .payPal,
+                .xfers:
+            return nil
+            
+        case .apaya:
+            return NSLocalizedString("payment-method-type-pay-by-mobile",
+                                     tableName: nil,
+                                     bundle: Bundle.primerResources,
+                                     value: "Pay by mobile",
+                                     comment: "Pay by mobile - Payment By Mobile (Apaya)")
+            
+        case .paymentCard:
+            return Primer.shared.flow.internalSessionFlow.vaulted
+            ? NSLocalizedString("payment-method-type-card-vaulted",
+                                tableName: nil,
+                                bundle: Bundle.primerResources,
+                                value: "Add new card",
+                                comment: "Add new card - Payment Method Type (Card Vaulted)")
+            
+            : NSLocalizedString("payment-method-type-card-not-vaulted",
+                                tableName: nil,
+                                bundle: Bundle.primerResources,
+                                value: "Pay with card",
+                                comment: "Pay with card - Payment Method Type (Card Not vaulted)")
+            
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
     }()
     
     lazy var originalImage: UIImage? = {
@@ -140,33 +254,283 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }()
     
     lazy var buttonImage: UIImage? = {
-        assert(true, "Should be overriden")
-        return nil
+        switch config.type {
+        case .adyenAlipay:
+            return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .adyenBlik:
+            return UIImage(named: "blik-logo-white", in: Bundle.primerResources, compatibleWith: nil)
+        case .adyenDotPay:
+            return UIImage(named: "dot-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .adyenIDeal:
+            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .apaya:
+            return UIImage(named: "mobile", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .applePay:
+            return UIImage(named: "apple-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .atome:
+            return UIImage(named: "atome-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .buckarooBancontact,
+                .mollieBankcontact,
+                .payNLBancontact:
+            return UIImage(named: "bancontact-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .buckarooEps:
+            return UIImage(named: "eps-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .adyenGiropay,
+                .buckarooGiropay,
+                .payNLGiropay:
+            return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .adyenInterac:
+            return UIImage(named: "interac-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .hoolah:
+            return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .klarna:
+            return UIImage(named: "klarna-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .payNLIdeal,
+                .buckarooIdeal,
+                .mollieIdeal:
+            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .adyenMobilePay:
+            return UIImage(named: "mobile-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .adyenPayTrail:
+            return UIImage(named: "paytrail-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .payNLPayconiq:
+            return UIImage(named: "payconiq-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .buckarooSofort,
+                .adyenSofort:
+            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .adyenTrustly:
+            return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .adyenTwint:
+            return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .adyenVipps:
+            return UIImage(named: "vipps-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .paymentCard:
+            return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .payPal:
+            return UIImage(named: "paypal-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .xfers:
+            return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
     }()
     
     lazy var buttonColor: UIColor? = {
-        assert(true, "Should be overriden")
-        return nil
+        switch config.type {
+        case .adyenAlipay:
+            return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
+        case .adyenBlik:
+            return .black
+        case .adyenDotPay:
+            return .white
+        case .adyenGiropay,
+                .buckarooGiropay:
+            return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
+        case .adyenIDeal:
+            return UIColor(red: 204.0/255, green: 0.0/255, blue: 102.0/255, alpha: 1.0)
+        case .adyenInterac:
+            return UIColor(red: 254.0/255, green: 185.0/255, blue: 43.0/255, alpha: 1.0)
+        case .adyenSofort,
+                .buckarooSofort:
+            return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
+        case .adyenMobilePay:
+            return UIColor(red: 90.0/255, green: 120.0/255, blue: 255.0/255, alpha: 1.0)
+        case .adyenPayTrail:
+            return UIColor(red: 229.0/255, green: 11.0/255, blue: 150.0/255, alpha: 1.0)
+        case .adyenTrustly:
+            return UIColor(red: 14.0/255, green: 224.0/255, blue: 110.0/255, alpha: 1.0)
+        case .adyenTwint:
+            return .black
+        case .adyenVipps:
+            return UIColor(red: 255.0/255, green: 91.0/255, blue: 36.0/255, alpha: 1.0)
+        case .apaya:
+            return theme.paymentMethodButton.color(for: .enabled)
+        case .applePay:
+            return .black
+        case .atome:
+            return UIColor(red: 240.0/255, green: 255.0/255, blue: 95.0/255, alpha: 1.0)
+        case .buckarooEps:
+            return .white
+        case .hoolah:
+            return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
+        case .klarna:
+            return UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1.0)
+        case .buckarooBancontact,
+                .mollieBankcontact,
+                .payNLBancontact:
+            return .white
+        case .payNLIdeal,
+                .buckarooIdeal,
+                .mollieIdeal:
+            return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
+        case .payNLGiropay:
+            return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
+        case .payNLPayconiq:
+            return UIColor(red: 255.0/255, green: 71.0/255, blue: 133.0/255, alpha: 1.0)
+        case .paymentCard:
+            return theme.paymentMethodButton.color(for: .enabled)
+        case .payPal:
+            return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
+        case .xfers:
+            return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
     }()
     
     lazy var buttonTitleColor: UIColor? = {
-        assert(true, "Should be overriden")
-        return nil
+        switch config.type {
+        case .adyenAlipay,
+                .adyenBlik,
+                .adyenGiropay,
+                .adyenInterac,
+                .adyenMobilePay,
+                .adyenPayTrail,
+                .adyenTrustly,
+                .adyenTwint,
+                .adyenVipps,
+                .atome,
+                .buckarooBancontact,
+                .buckarooEps,
+                .buckarooIdeal,
+                .buckarooGiropay,
+                .buckarooSofort,
+                .hoolah,
+                .klarna,
+                .mollieBankcontact,
+                .mollieIdeal,
+                .payNLBancontact,
+                .payNLGiropay,
+                .payNLIdeal,
+                .payNLPayconiq,
+                .payPal:
+            return nil
+        case .apaya,
+                .paymentCard:
+            return theme.paymentMethodButton.text.color
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
     }()
     
     lazy var buttonBorderWidth: CGFloat = {
-        assert(true, "Should be overriden")
-        return 0.0
+        switch config.type {
+        case .adyenAlipay,
+                .adyenBlik,
+                .adyenGiropay,
+                .adyenIDeal,
+                .adyenInterac,
+                .adyenMobilePay,
+                .adyenPayTrail,
+                .adyenTrustly,
+                .adyenTwint,
+                .adyenVipps,
+                .atome,
+                .buckarooIdeal,
+                .buckarooGiropay,
+                .buckarooSofort,
+                .hoolah,
+                .mollieIdeal,
+                .payNLGiropay,
+                .payNLIdeal,
+                .payNLPayconiq,
+                .payPal:
+            return 0.0
+        case .adyenDotPay,
+                .apaya,
+                .buckarooBancontact,
+                .buckarooEps,
+                .mollieBankcontact,
+                .payNLBancontact,
+                .paymentCard:
+            return 1.0
+        default:
+            assert(true, "Shouldn't end up in here")
+            return 0.0
+        }
     }()
     
     lazy var buttonBorderColor: UIColor? = {
-        assert(true, "Should be overriden")
-        return nil
+        switch config.type {
+        case .adyenAlipay,
+                .adyenBlik,
+                .adyenDotPay,
+                .adyenGiropay,
+                .adyenMobilePay,
+                .adyenIDeal,
+                .adyenInterac,
+                .adyenPayTrail,
+                .adyenTrustly,
+                .adyenTwint,
+                .adyenVipps,
+                .atome,
+                .buckarooIdeal,
+                .buckarooGiropay,
+                .buckarooSofort,
+                .hoolah,
+                .mollieIdeal,
+                .payNLGiropay,
+                .payNLIdeal,
+                .payNLPayconiq,
+                .payPal:
+            return nil
+        case .apaya,
+                .paymentCard:
+            return theme.paymentMethodButton.text.color
+        case .buckarooBancontact,
+                .buckarooEps,
+                .mollieBankcontact,
+                .payNLBancontact:
+            return .black
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
     }()
     
     var buttonTintColor: UIColor? {
-        assert(true, "Should be overriden")
-        return nil
+        switch config.type {
+        case .adyenAlipay,
+                .adyenBlik,
+                .adyenDotPay,
+                .atome,
+                .buckarooBancontact,
+                .buckarooEps,
+                .buckarooIdeal,
+                .buckarooGiropay,
+                .buckarooSofort,
+                .hoolah,
+                .mollieIdeal,
+                .payNLGiropay,
+                .payNLIdeal,
+                .payNLPayconiq,
+                .adyenSofort,
+                .adyenMobilePay,
+                .adyenVipps,
+                .adyenInterac,
+                .adyenPayTrail:
+            return .white
+        case .adyenIDeal,
+                .adyenTrustly,
+                .klarna:
+            return .black
+        case .adyenGiropay,
+                .adyenTwint,
+                .payPal:
+            return nil
+        case .apaya,
+                .paymentCard:
+            return theme.paymentMethodButton.text.color
+        case .applePay,
+                .xfers:
+            return .white
+        default:
+            assert(true, "Shouldn't end up in here")
+            return nil
+        }
     }
     
     lazy var buttonFont: UIFont? = {
