@@ -286,9 +286,7 @@ internal extension Encodable {
 extension ClientSession.Action {
     
     private static func requestPrimerConfigurationWithActions(_ actions: [ClientSession.Action]) -> Promise<Void> {
-        
         return Promise { seal in
-            
             firstly {
                 ClientSession.Action.raiseClientSessionUpdateWillStartEventForActions()
             }
@@ -306,10 +304,8 @@ extension ClientSession.Action {
             .done {
                 seal.fulfill()
             }
-            .catch { error in
-                ErrorHandler.handle(error: error)
-                PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: nil)
-                seal.reject(error)
+            .catch { err in
+                seal.reject(err)
             }
         }
     }

@@ -359,7 +359,9 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                     
                     guard error == nil else {
                         ErrorHandler.handle(error: error!)
-                        PrimerDelegateProxy.onResumeError(error!)
+                        PrimerDelegateProxy.primerDidFailWithError(error!, data: nil) { errorDecision in
+                            // FIXME: Handle decision for HUC
+                        }
                         return
                     }
                     
@@ -402,7 +404,9 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                             return
                         }
                         
-                        PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
+                        PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
+                            // FIXME:
+                        }
                     }
                     
                 case .failure(let err):
@@ -410,7 +414,9 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: containerErr)
                     DispatchQueue.main.async {
-                        PrimerDelegateProxy.onResumeError(containerErr)
+                        PrimerDelegateProxy.primerDidFailWithError(containerErr, data: nil) { errorDecision in
+                            // FIXME:
+                        }
                     }
                 }
             }
@@ -418,8 +424,8 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
             DispatchQueue.main.async {
                 let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
-                DispatchQueue.main.async {
-                    PrimerDelegateProxy.onResumeError(err)
+                PrimerDelegateProxy.primerDidFailWithError(err, data: nil) { errorDecision in
+                    // FIXME: handle the err
                 }
             }
 #endif

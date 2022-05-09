@@ -129,6 +129,10 @@ internal class PrimerRootViewController: PrimerViewController {
         viewModel.loadConfig({ [weak self] error in
             DispatchQueue.main.async {
                 
+                let state: AppStateProtocol = DependencyContainer.resolve()
+                let pms = state.paymentMethods
+                print(pms)
+                
                 guard error == nil else {
                     Primer.shared.primerRootVC?.handle(error: error!)
                     return
@@ -486,7 +490,19 @@ extension PrimerRootViewController {
         guard let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
             let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: nil)
+            PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: { errorDecision in
+                switch errorDecision.type {
+                case .fail(let message):
+                    var merchantErr: Error!
+                    if let message = message {
+                        merchantErr = PrimerError.merchantError(message: message, userInfo: nil)
+                    } else {
+                        merchantErr = NSError.emptyDescriptionError
+                    }
+                    
+                    Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: merchantErr.localizedDescription)
+                }
+            })
             return
         }
         
@@ -504,27 +520,25 @@ extension PrimerRootViewController {
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         
-        if var asyncPaymentMethodViewModel = paymentMethodTokenizationViewModel as? ExternalPaymentMethodTokenizationViewModelProtocol {
-            asyncPaymentMethodViewModel.willPresentExternalView = {
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-            }
-            
-            asyncPaymentMethodViewModel.didPresentExternalView = {
-                
-            }
-            
-            asyncPaymentMethodViewModel.willDismissExternalView = {
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-            }
+        paymentMethodTokenizationViewModel.willPresentPaymentMethodUI = {
+            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         
-        paymentMethodTokenizationViewModel.tokenizationCompletion = { (tok, err) in
-            if let err = err {
-                Primer.shared.primerRootVC?.handle(error: err)
-            } else {
-                Primer.shared.primerRootVC?.handleSuccess()
-            }
+        paymentMethodTokenizationViewModel.didPresentPaymentMethodUI = {
+            
         }
+        
+        paymentMethodTokenizationViewModel.willDismissPaymentMethodUI = {
+            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
+        }
+        
+//        paymentMethodTokenizationViewModel.tokenizationCompletion = { (tok, err) in
+//            if let err = err {
+//                Primer.shared.primerRootVC?.handle(error: err)
+//            } else {
+//                Primer.shared.primerRootVC?.handleSuccess()
+//            }
+//        }
         
         paymentMethodTokenizationViewModel.startTokenizationFlow()
     }
@@ -541,24 +555,11 @@ extension PrimerRootViewController: UIGestureRecognizerDelegate {
 extension PrimerRootViewController {
     
     private func handleErrorBasedOnSDKSettings(_ error: Error) {
-        
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        if settings.isManualPaymentHandlingEnabled {
-            PrimerDelegateProxy.onResumeError(error)
-        } else {
-            PrimerDelegateProxy.primerDidFailWithError(error, data: nil, decisionHandler: { errorDecision in
-                switch errorDecision?.type {
-                case .showErrorMessage(let message):
-                    if let message = message {
-                        let merchantError = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                        self.handle(error: merchantError)
-                    } else {
-                        self.handle(error: NSError.emptyDescriptionError)
-                    }
-                default:
-                    self.handle(error: NSError.emptyDescriptionError)
-                }
-            })
+        PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
+            switch errorDecision.type {
+            case .fail(let message):
+                Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: message)
+            }
         }
     }
 }
@@ -577,13 +578,13 @@ extension PrimerRootViewController: ResumeHandlerProtocol {
 
     func handle(error: Error) {
         DispatchQueue.main.async {
-            self.dismissOrShowResultScreen(error)
+            self.dismissOrShowResultScreen(type: .failure, withMessage: error.localizedDescription)
         }
     }
         
     func handleSuccess() {
         DispatchQueue.main.async {
-            self.dismissOrShowResultScreen()
+            self.dismissOrShowResultScreen(type: .success)
         }
     }
 }
@@ -592,22 +593,15 @@ extension PrimerRootViewController: ResumeHandlerProtocol {
 
 extension PrimerRootViewController {
     
-    func dismissOrShowResultScreen(_ error: Error? = nil) {
+    func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, withMessage message: String? = nil) {
+        
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         if settings.hasDisabledSuccessScreen {
             Primer.shared.dismiss()
         } else {
-            let status: PrimerResultViewController.ScreenType = error == nil ? .success : .failure
-            
-            var msg: String?
-            if error as? PrimerError != nil {
-                msg = Strings.Generic.somethingWentWrong
-            } else {
-                msg = error?.localizedDescription
-            }
-            
-            let resultViewController = PrimerResultViewController(screenType: status, message: msg)
+            let status: PrimerResultViewController.ScreenType = (type != .failure) ? .success : .failure
+            let resultViewController = PrimerResultViewController(screenType: status, message: message)
             resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
             resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
             Primer.shared.primerRootVC?.show(viewController: resultViewController)

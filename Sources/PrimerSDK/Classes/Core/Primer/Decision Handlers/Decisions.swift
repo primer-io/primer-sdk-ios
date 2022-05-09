@@ -9,34 +9,12 @@
 
 import Foundation
 
-// MARK: - SUCCESS DECISION
-
-@objc public class SuccessDecision: NSObject {
-    
-    public enum DecisionType {
-        case showSuccessMessage(_ message: String?)
-    }
-  
-    var type: DecisionType
-    
-    private init(type: DecisionType) {
-        self.type = type
-    }
-}
-
-public extension SuccessDecision {
-    
-    static func showSuccessMessage(_ message: String?) -> SuccessDecision {
-        SuccessDecision(type: .showSuccessMessage(message))
-    }
-}
-
 // MARK: - ERROR DECISION
 
 @objc public class ErrorDecision: NSObject {
     
     public enum DecisionType {
-        case showErrorMessage(_ message: String?)
+        case fail(message: String?)
     }
   
     var type: DecisionType
@@ -48,8 +26,8 @@ public extension SuccessDecision {
 
 public extension ErrorDecision {
     
-    static func showErrorMessage(_ message: String?) -> ErrorDecision {
-        ErrorDecision(type: .showErrorMessage(message))
+    static func fail(withMessage message: String?) -> ErrorDecision {
+        ErrorDecision(type: .fail(message: message))
     }
 }
 
@@ -58,7 +36,7 @@ public extension ErrorDecision {
 @objc public class ResumeDecision: NSObject {
     
     public enum DecisionType {
-        case showSuccessMessage(_ message: String?)
+        case succeed
         case showErrorMessage(_ message: String?)
         case handleNewClientToken(_ newClientToken: String)
     }
@@ -72,8 +50,8 @@ public extension ErrorDecision {
 
 public extension ResumeDecision {
     
-    static func showSuccessMessage(_ message: String?) -> ResumeDecision {
-        ResumeDecision(type: .showSuccessMessage(message))
+    static func succeed() -> ResumeDecision {
+        ResumeDecision(type: .succeed)
     }
     
     static func showErrorMessage(_ message: String?) -> ResumeDecision {

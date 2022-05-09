@@ -13,9 +13,10 @@ import UIKit
 typealias TokenizationCompletion = ((PaymentMethodTokenData?, Error?) -> Void)
 typealias PaymentCompletion = ((CheckoutData?, Error?) -> Void)
 
-internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHandlerProtocol {
+internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     init(config: PaymentMethodConfig)
     
+    // UI
     var config: PaymentMethodConfig { get set }
     var title: String { get }
     var surcharge: String? { get }
@@ -24,73 +25,54 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject, ResumeHa
     var logo: UIImage? { get }
     var squareLogo: UIImage? { get }
     var paymentMethodButton: PrimerButton { get }
-    var didStartTokenization: (() -> Void)? { get set }
     
-    var tokenizationCompletion: TokenizationCompletion? { get set }
-    var paymentCompletion: PaymentCompletion? { get set }
+    // Events
+    var didStartTokenization: (() -> Void)? { get set }
+    var didFinishTokenization: ((Error?) -> Void)? { get set }
+    var didStartPayment: (() -> Void)? { get set }
+    var didFinishPayment: ((Error?) -> Void)? { get set }
+    var willPresentPaymentMethodUI: (() -> Void)? { get set }
+    var didPresentPaymentMethodUI: (() -> Void)? { get set }
+    var willDismissPaymentMethodUI: (() -> Void)? { get set }
+    var didDismissPaymentMethodUI: (() -> Void)? { get set }
+    
     var paymentMethodTokenData: PaymentMethodTokenData? { get set }
     var paymentCheckoutData: CheckoutData? { get set }
-    var completion: ((Error?) -> Void)? { get set }
+    var successMessage: String? { get set }
     
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
     func makeSquareLogoImageView(withDimension dimension: CGFloat) -> UIImageView?
     
     func validate() throws
-    func startTokenizationFlow()
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData)
-    func handleResumeDecision(_ resumeDecision: ResumeDecision)
+    func start()
+    func startTokenizationFlow() -> Promise<PaymentMethodTokenData>
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) -> Promise<CheckoutData?>
+    func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?>
+    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<CheckoutData?>
     func handleSuccessfulFlow()
-    func handleFailureFlow(error: Error)
-}
-
-internal protocol ExternalPaymentMethodTokenizationViewModelProtocol {
-    var willPresentExternalView: (() -> Void)? { get set }
-    var didPresentExternalView: (() -> Void)? { get set }
-    var willDismissExternalView: (() -> Void)? { get set }
-    var didDismissExternalView: (() -> Void)? { get set }
+    func handleFailureFlow(errorMessage: String?)
 }
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
-    
+
     var config: PaymentMethodConfig
-    var tokenizationCompletion: TokenizationCompletion?
-    var paymentCompletion: PaymentCompletion?
+    
+    // Events
+    var didStartTokenization: (() -> Void)?
+    var didFinishTokenization: ((Error?) -> Void)?
+    var didStartPayment: (() -> Void)?
+    var didFinishPayment: ((Error?) -> Void)?
+    var willPresentPaymentMethodUI: (() -> Void)?
+    var didPresentPaymentMethodUI: (() -> Void)?
+    var willDismissPaymentMethodUI: (() -> Void)?
+    var didDismissPaymentMethodUI: (() -> Void)?
+    
     var paymentMethodTokenData: PaymentMethodTokenData?
     var paymentCheckoutData: CheckoutData?
-    var completion: ((Error?) -> Void)?
+    var successMessage: String?
     
-    var didStartTokenization: (() -> Void)?
     var resumePaymentId: String?
-    internal let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
-    required init(config: PaymentMethodConfig) {
-        self.config = config
-        super.init()
-    }
-    
-    func validate() throws {
-        assert(true, "\(#function) needs to be overriden")
-    }
-        
-    @objc func startTokenizationFlow() {
-        didStartTokenization?()
-        
-        // The flow will end up in the completion once we're done and we need
-        // to present the result, or dismiss the SDK.
-        //     - On vaulting this is on tokenization result.
-        //     - On checkout this is on payment result.
-        self.completion = { [weak self] err in
-            if let err = err {
-                self?.handleFailureFlow(error: err)
-            } else {
-                self?.handleSuccessfulFlow()
-            }
-        }
-    }
+    let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     lazy var title: String = {
         switch config.type {
@@ -620,7 +602,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }()
     
     lazy var squareLogo: UIImage? = {
-        guard let imageName = imageName else { return nil }        
+        guard let imageName = imageName else { return nil }
         // In case we don't have a square icon, we show the icon image
         let imageLogoSquare = UIImage(named: "\(imageName)-logo-square", in: Bundle.primerResources, compatibleWith: nil)
         let imageIcon = UIImage(named: "\(imageName)-icon", in: Bundle.primerResources, compatibleWith: nil)
@@ -683,296 +665,33 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         paymentMethodButton.tintColor = buttonTintColor
         paymentMethodButton.layer.borderWidth = buttonBorderWidth
         paymentMethodButton.layer.borderColor = buttonBorderColor?.cgColor
-        paymentMethodButton.addTarget(self, action: #selector(startTokenizationFlow), for: .touchUpInside)
+        paymentMethodButton.addTarget(self, action: #selector(start), for: .touchUpInside)
+        if config.type == .paymentCard {
+            paymentMethodButton.isUserInteractionEnabled = true
+        }
         return paymentMethodButton
     }()
     
-    func handleSuccessfulFlow() {
-        Primer.shared.primerRootVC?.handleSuccess()
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    func handleFailureFlow(error: Error) {
-        Primer.shared.primerRootVC?.handle(error: error)
-    }
-}
-
-extension PaymentMethodTokenizationViewModel {
-    
-    func handleResumeDecision(_ resumeDecision: ResumeDecision) {
-        fatalError("handleResumeDecision must be overriden")
-        switch resumeDecision.type {
-        case .showErrorMessage(let message):
-            break
-        case .showSuccessMessage(let message):
-            break
-        case .handleNewClientToken(let newClientToken):
-            break
-        }
+    required init(config: PaymentMethodConfig) {
+        self.config = config
+        super.init()
     }
     
-    // This function will raise the error to the merchants, and the merchants will
-    // return the error message they want to present.
-    internal func raisePrimerDidFailWithError(_ primerError: Error) {
-        PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { errorDecision in
-            var merchantErr: Error!
-            switch errorDecision?.type {
-            case .showErrorMessage(let message):
-                if let message = message {
-                    let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    merchantErr = err
-                } else {
-                    merchantErr = NSError.emptyDescriptionError
-                }
-            default:
-                merchantErr = NSError.emptyDescriptionError
-            }
-            
-            // The merchants' error will be propagated via the completion handlers, which
-            // will handle the UI flow.
-            self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: self.paymentMethodTokenData, error: merchantErr)
-            self.executePaymentCompletionAndNullifyAfter(checkoutData: self.paymentCheckoutData, error: merchantErr)
-            self.executeCompletionAndNullifyAfter(error: merchantErr)
-        }
-    }
-}
-
-extension PaymentMethodTokenizationViewModel {
-    
-    // This is a helper function that will be called from any view model, and
-    // it will call the tokenization completion handler, and nullify it in the end.
-    @objc func executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: PaymentMethodTokenData?, error: Error?) {
-        if let error = error {
-            self.tokenizationCompletion?(nil, error)
-        } else if let paymentMethodTokenData = paymentMethodTokenData {
-            self.tokenizationCompletion?(paymentMethodTokenData, nil)
-        } else {
-            fatalError("Must receive paymentMethodTokenData or error")
-        }
-        self.tokenizationCompletion = nil
+    @objc
+    func validate() throws {
+        fatalError("\(#function) must be overriden")
     }
     
-    // This is a helper function that will be called from any view model, and
-    // it will call the payment completion handler, and nullify it in the end.
-    @objc func executePaymentCompletionAndNullifyAfter(checkoutData: CheckoutData?, error: Error?) {
-        if let error = error {
-            self.paymentCompletion?(nil, error)
-        } else if let checkoutData = checkoutData {
-            self.paymentCompletion?(checkoutData, nil)
-        } else {
-            fatalError("Must receive checkoutData or error")
-        }
-        self.paymentCompletion = nil
+    func startTokenizationFlow() -> Promise<PaymentMethodTokenData> {
+        fatalError("\(#function) must be overriden")
     }
     
-    // This is a helper function that will be called from any view model, and
-    // it will call the completion handler, and nullify it in the end.
-    @objc func executeCompletionAndNullifyAfter(error: Error? = nil) {
-        self.completion?(error)
-        self.completion = nil
-    }
-    
-    func validateReturningPromise() -> Promise<Void> {
-        return Promise { seal in
-            do {
-                try self.validate()
-                seal.fulfill()
-            } catch {
-                seal.reject(error)
-            }
-        }
-    }
-}
-
-extension PaymentMethodTokenizationViewModel {
-    
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if settings.isManualPaymentHandlingEnabled {
-            PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { [unowned self] resumeDecision in
-                self.handleResumeDecision(resumeDecision)
-            }
-
-        } else {
-                        
-            guard let paymentMethodTokenString = paymentMethodTokenData.token else {
-                let paymentMethodTokenError = PrimerError.invalidValue(key: "resumePaymentId", value: "Payment method token not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: paymentMethodTokenError)
-                self.raisePrimerDidFailWithError(paymentMethodTokenError)
-                return
-            }
-            
-            firstly {
-                self.handleCreatePaymentEvent(paymentMethodTokenString)
-            }
-            .done { paymentResponse -> Void in
-                
-                guard let paymentResponse = paymentResponse else {
-                    return
-                }
-
-                self.resumePaymentId = paymentResponse.id
-                
-                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                    self.handle(newClientToken: requiredAction.clientToken)
-                } else {
-                    let checkoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
-                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
-                    self.handleSuccess()
-                }
-            }
-            .catch { error in
-                self.raisePrimerDidFailWithError(error)
-            }
-        }
-    }
-        
-    // Raise Primer will create Payment event
-    
-    internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PaymentMethodData) -> Promise<Void> {
-        return Promise { seal in
-            let checkoutPaymentMethodType = CheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)
-            let checkoutPaymentMethodData = CheckoutPaymentMethodData(type: checkoutPaymentMethodType)
-            PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
-                
-                guard paymentCreationDecision?.type != .abort else {
-                    let message = paymentCreationDecision?.additionalInfo?[.message] as? String ?? ""
-                    let error = PrimerError.generic(message: message, userInfo: nil)
-                    seal.reject(error)
-                    return
-                }
-                
-                if let modifiedClientToken = paymentCreationDecision?.additionalInfo?[.clientToken] as? RawJWTToken {
-                    ClientTokenService.storeClientToken(modifiedClientToken) { error in
-                        guard error == nil else {
-                            seal.reject(error!)
-                            return
-                        }
-                        seal.fulfill(())
-                    }
-                } else {
-                    seal.fulfill(())
-                }
-            })
-        }
-    }
-
-    // Create payment with Payment method token
-
-    private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Payment.Response?> {
-        
-        return Promise { seal in
-        
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-            createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodData)) { paymentResponse, error in
-                
-                guard error == nil else {
-                    seal.reject(error!)
-                    return
-                }
-                
-                guard let status = paymentResponse?.status, status != .failed else {
-                    seal.reject(PrimerError.paymentFailed(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
-                    return
-                }
-                
-                if let paymentFailureReason = paymentResponse?.paymentFailureReason,
-                let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
-                   let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
-                    seal.reject(error)
-                    return
-                }
-                                
-                seal.fulfill(paymentResponse)
-            }
-        }
-    }
-    
-    // Resume payment with Resume payment ID
-    
-    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Payment.Response?> {
-        
-        return Promise { seal in
-            
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
-                
-                guard error == nil else {
-                    seal.reject(error!)
-                    return
-                }
-                
-                guard let status = paymentResponse?.status, status != .failed else {
-                    seal.reject(PrimerError.paymentFailed(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
-                    return
-                }
-                
-                if let paymentFailureReason = paymentResponse?.paymentFailureReason,
-                let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
-                   let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
-                    seal.reject(error)
-                    return
-                }
-                                
-                seal.fulfill(paymentResponse)
-            }
-        }
-    }
-}
-
-extension PaymentMethodTokenizationViewModel {
-    
-    internal func handleResumeStepsBasedOnSDKSettings(resumeToken: String) {
-        
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if settings.isManualPaymentHandlingEnabled {
-            
-            PrimerDelegateProxy.onResumeSuccess(resumeToken, resumeHandler: self)
-            
-        } else {
-            
-            guard let resumePaymentId = self.resumePaymentId else {
-                let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: resumePaymentIdError)
-                self.raisePrimerDidFailWithError(resumePaymentIdError)
-                return
-            }
-            
-            firstly {
-                self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
-            }
-            .done { paymentResponse -> Void in
-                guard let paymentResponse = paymentResponse else {
-                    return
-                }
-
-                if paymentResponse.status == .pending, let requiredAction = paymentResponse.requiredAction {
-                    self.handle(newClientToken: requiredAction.clientToken)
-                } else {
-                    let checkoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
-                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
-                    self.handleSuccess()
-                }
-            }
-            .catch { error in
-                self.raisePrimerDidFailWithError(error)
-            }
-        }
-    }
-}
-
-extension PaymentMethodTokenizationViewModel {
-    func handle(error: Error) {
-        assert(true, "\(self.self).\(#function) should be overriden")
-    }
-    
-    func handle(newClientToken clientToken: String) {
-        assert(true, "\(self.self).\(#function) should be overriden")
-    }
-    
-    func handleSuccess() {
-        assert(true, "\(self.self).\(#function) should be overriden")
+    func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
+        fatalError("\(#function) must be overriden")
     }
 }
 

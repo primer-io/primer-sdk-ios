@@ -30,10 +30,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         }
     }
     
-    @objc
-    override func startTokenizationFlow() {
-        super.startTokenizationFlow()
-        
+    override func startTokenizationFlow() -> Promise<PaymentMethodTokenData> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -48,54 +45,28 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                 objectClass: "\(Self.self)",
                 place: .bankSelectionList))
         Analytics.Service.record(event: event)
+        
+        return Promise { seal in
+            firstly {
+                self.validateReturningPromise()
+            }
+            .then { () -> Promise<Void> in
+                self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
+            }
+            .then {
+                self.tokenize()
+            }
+            .done { tmpPaymentMethodTokenData in
+                seal.fulfill(tmpPaymentMethodTokenData)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
     }
     
     func cancel() {
         didCancel?()
-    }
-    
-    fileprivate func continueTokenizationFlow() {
-        
-        firstly {
-            self.validateReturningPromise()
-        }
-        .then { () -> Promise<Void> in
-            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
-        }
-        .then {
-            self.tokenize()
-        }
-        .then { tmpPaymentMethodTokenData -> Promise<PaymentMethodToken> in
-            self.paymentMethodTokenData = tmpPaymentMethodTokenData
-            return self.continueTokenizationFlow(for: tmpPaymentMethodTokenData)
-        }
-        .done { paymentMethodTokenData in
-            self.paymentMethodTokenData = paymentMethodTokenData
-            
-            DispatchQueue.main.async {
-                self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
-            }
-        }
-        .ensure { [unowned self] in
-            DispatchQueue.main.async {
-                self.willDismissExternalView?()
-                self.webViewController?.dismiss(animated: true, completion: {
-                    self.didDismissExternalView?()
-                })
-            }
-            
-            self.willPresentExternalView = nil
-            self.didPresentExternalView = nil
-            self.willDismissExternalView = nil
-            self.didDismissExternalView = nil
-            self.webViewController = nil
-            self.webViewCompletion = nil
-            self.onResumeTokenCompletion = nil
-            self.onClientToken = nil
-        }
-        .catch { error in
-            self.raisePrimerDidFailWithError(error)
-        }
     }
     
     fileprivate func tokenize() -> Promise<PaymentMethodToken> {
@@ -132,92 +103,27 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         }
     }
     
-    internal override func continueTokenizationFlow(for tmpPaymentMethod: PaymentMethodToken) -> Promise<PaymentMethodToken> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
         return Promise { seal in
-            var qrCodePollingURLs: QRCodePollingURLs!
-            
-            // Fallback when no **requiredAction** is returned.
-            self.onResumeTokenCompletion = { (paymentMethod, err) in
-                if let err = err {
+            if let statusUrlStr = decodedClientToken.statusUrl,
+               let statusUrl = URL(string: statusUrlStr),
+               decodedClientToken.intent != nil {
+                
+                firstly {
+                    self.presentQRCodePaymentMethod()
+                }
+                .then { () -> Promise<String> in
+                    return self.startPolling(on: statusUrl)
+                }
+                .done { resumeToken in
+                    seal.fulfill(resumeToken)
+                }
+                .catch { err in
                     seal.reject(err)
-                } else if let paymentMethod = paymentMethod {
-                    seal.fulfill(paymentMethod)
-                } else {
-                    assert(true, "Should have received one parameter")
                 }
-            }
-            
-            firstly {
-                return self.fetchQRCodePollingURLs(for: tmpPaymentMethod)
-            }
-            .then { tmpQrCodePollingURLs -> Promise<Void> in
-                qrCodePollingURLs = tmpQrCodePollingURLs
-                return self.presentQRCodePaymentMethod()
-            }
-            .then { () -> Promise<String> in
-                guard let statusUrl = qrCodePollingURLs.statusUrl else {
-                    let err = PrimerError.invalidValue(key: "statusUrl", value: qrCodePollingURLs.statusUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: err)
-                    throw err
-                }
-                
-                return self.startPolling(on: statusUrl)
-            }
-            .then { resumeToken -> Promise<PaymentMethodToken> in
-                DispatchQueue.main.async {
-                    Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
-                    self.willDismissExternalView?()
-                }
-                return self.passResumeToken(resumeToken)
-            }
-            .done { paymentMethod in
-                seal.fulfill(paymentMethod)
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-    
-    fileprivate func fetchQRCodePollingURLs(for paymentMethodTokenData: PaymentMethodToken) -> Promise<QRCodePollingURLs> {
-        return Promise { seal in
-            self.onClientToken = { (clientToken, error) in
-                
-                guard error == nil else {
-                    seal.reject(error!)
-                    return
-                }
-                
-                if let clientToken = clientToken {
-                    ClientTokenService.storeClientToken(clientToken) { error in
-                        guard error == nil else {
-                            seal.reject(error!)
-                            return
-                        }
-                        
-                        if let decodedClientToken = ClientTokenService.decodedClientToken,
-                           let statusUrl = decodedClientToken.statusUrl,
-                           decodedClientToken.intent != nil {
-                            seal.fulfill(QRCodePollingURLs(status: statusUrl, complete: nil))
-                            return
-                        }
-                    }
-                } else {
-                    let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    seal.reject(error)
-                    return
-                }
-            }
-            
-            DispatchQueue.main.async {
-                self.paymentMethodTokenData = paymentMethodTokenData
-                
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    self.executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: paymentMethodTokenData, error: nil)
-                    self.executeCompletionAndNullifyAfter()
-                } else {
-                    self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
-                }
+            } else {
+                let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                seal.reject(error)
             }
         }
     }
@@ -225,7 +131,9 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     fileprivate func presentQRCodePaymentMethod() -> Promise<Void> {
         return Promise { seal in
             let qrcvc = QRCodeViewController(viewModel: self)
+            self.willPresentPaymentMethodUI?()
             Primer.shared.primerRootVC?.show(viewController: qrcvc)
+            self.didPresentPaymentMethodUI?()
             seal.fulfill(())
         }
     }
@@ -289,33 +197,9 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             }
         }
     }
-    
-    override internal func passResumeToken(_ resumeToken: String) -> Promise<PaymentMethodToken> {
-        return Promise { seal in
-            self.onResumeTokenCompletion = { (paymentMethod, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let paymentMethod = paymentMethod {
-                    seal.fulfill(paymentMethod)
-                } else {
-                    assert(true, "Should have received one parameter")
-                }
-            }
-            
-            DispatchQueue.main.async {
-                self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
-            }
-        }
-    }
 }
 
 extension QRCodeTokenizationViewModel {
-    
-    override func executeCompletionAndNullifyAfter(error: Error? = nil) {
-        super.executeCompletionAndNullifyAfter(error: error)
-        onResumeTokenCompletion?(nil, error)
-        onResumeTokenCompletion = nil
-    }
     
     private func unselectPaymentMethodWithError(_ error: Error) {
         firstly {
@@ -326,70 +210,6 @@ extension QRCodeTokenizationViewModel {
             self.raisePrimerDidFailWithError(error)
         }
     }
-}
-
-
-extension QRCodeTokenizationViewModel {
-    
-    override func handle(error: Error) {
-        firstly {
-            ClientSession.Action.unselectPaymentMethodIfNeeded()
-        }
-        .ensure {
-            self.executeCompletionAndNullifyAfter(error: error)
-            self.handleFailureFlow(error: error)
-        }
-        .catch { _ in }
-    }
-    
-    override func handle(newClientToken clientToken: String) {
-        guard let decodedClientToken = clientToken.jwtTokenPayload else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            self.raisePrimerDidFailWithError(err)
-            return
-        }
-        
-        if decodedClientToken.intent == "XFERS_PAYNOW_REDIRECTION" {
-            if let qrCode = decodedClientToken.qrCode {
-                self.qrCode = qrCode
-                onClientToken?(clientToken, nil)
-            } else {
-                onClientToken?(clientToken, nil)
-            }
-            
-        } else if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-            super.handle(newClientToken: clientToken)
-        } else if decodedClientToken.intent == "CHECKOUT" {
-            
-            firstly {
-                ClientTokenService.storeClientToken(clientToken)
-            }
-            .then{ () -> Promise<Void> in
-                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                return configService.fetchConfig()
-            }
-            .done {
-                self.continueTokenizationFlow()
-            }
-            .catch { err in
-                self.raisePrimerDidFailWithError(err)
-            }
-        } else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            self.raisePrimerDidFailWithError(err)
-            return
-        }
-    }
-    
-    override func handleSuccess() {
-        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
-        self.tokenizationCompletion = nil
-        self.onResumeTokenCompletion?(self.paymentMethodTokenData, nil)
-        self.onResumeTokenCompletion = nil
-    }
-    
 }
 
 #endif

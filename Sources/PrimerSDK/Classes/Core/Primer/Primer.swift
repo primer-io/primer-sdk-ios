@@ -82,6 +82,7 @@ public class Primer {
 
     public func configure(configuration: PrimerConfiguration? = nil, delegate: PrimerDelegate? = nil) {
         self.delegate = delegate
+        
         let state: AppStateProtocol = DependencyContainer.resolve()
         state.configuration = configuration ?? PrimerConfiguration()
         if let settings = configuration?.settings as? PrimerSettingsProtocol {
@@ -90,6 +91,9 @@ public class Primer {
         if let configuration = state.configuration {
             DependencyContainer.register(configuration)
         }
+        
+        DependencyContainer.register(state.configuration!.settings! as PrimerSettingsProtocol)
+        DependencyContainer.register(state.configuration!.theme! as PrimerThemeProtocol)
     }
     
     // MARK: - SHOW
@@ -98,7 +102,7 @@ public class Primer {
      Show Primer Checkout
      */
 
-    public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
+    public func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
         checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
@@ -122,11 +126,10 @@ public class Primer {
                 id: self.timingEventId!))
         
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-                
-        self.show(on: viewController, flow: .default, with: clientToken, completion: completion)
+        self.show(flow: .default, with: clientToken, completion: completion)
     }
     
-    public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
+    public func showVaultManager(clientToken: String, completion: ((Error?) -> Void)? = nil) {
         checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
@@ -150,12 +153,11 @@ public class Primer {
                 id: self.timingEventId!))
         
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-
-        self.show(on: viewController, flow: .defaultWithVault, with: clientToken)
+        self.show(flow: .defaultWithVault, with: clientToken)
     }
     
     // swiftlint:disable cyclomatic_complexity
-    public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
+    internal func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         checkoutSessionId = UUID().uuidString
         
         ///
@@ -206,7 +208,12 @@ public class Primer {
         } else {
             let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: nil)
+            PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: { errorDecision in
+                switch errorDecision.type {
+                case .fail(let message):
+                    Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: message)
+                }
+            })
             return
         }
         
@@ -231,7 +238,7 @@ public class Primer {
                 id: self.timingEventId!))
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
-        self.show(on: viewController, flow: flow, with: clientToken, completion: completion)
+        self.show(flow: flow, with: clientToken, completion: completion)
     }
     
     // swiftlint:enable cyclomatic_complexity
@@ -273,17 +280,8 @@ public class Primer {
         }
     }
     
-    private func show(on viewController: UIViewController, flow: PrimerSessionFlow, with clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
-        
-        guard let clientToken = clientToken else {
-            presentingViewController = viewController
-            show(flow: flow)
-            completion?(nil)
-            return
-        }
-        
+    private func show(flow: PrimerSessionFlow, with clientToken: String, completion: ((Error?) -> Void)? = nil) {
         ClientTokenService.storeClientToken(clientToken) { [weak self] error in
-            self?.presentingViewController = viewController
             self?.show(flow: flow)
             completion?(error)
         }
@@ -305,6 +303,7 @@ public class Primer {
             if self.primerRootVC == nil {
                 self.primerRootVC = PrimerRootViewController(flow: flow)
             }
+            self.presentingViewController = self.primerRootVC
             
             if self.primerWindow == nil {
                 if #available(iOS 13.0, *) {
