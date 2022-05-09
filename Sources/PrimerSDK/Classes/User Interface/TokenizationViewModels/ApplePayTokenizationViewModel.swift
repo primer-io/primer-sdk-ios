@@ -36,54 +36,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
     private var applePayControllerCompletion: ((NSObject) -> Void)?
     private var isCancelled: Bool = false
     
-    private lazy var _title: String = { return "Apple Pay" }()
-    override var title: String  {
-        get { return _title }
-        set { _title = newValue }
-    }
-    
-    private lazy var _buttonImage: UIImage? = {
-        switch config.type {
-        case .applePay:
-            return UIImage(named: "apple-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    override var buttonImage: UIImage? {
-        get { return _buttonImage }
-        set { _buttonImage = newValue }
-    }
-    
-    private lazy var _buttonColor: UIColor? = {
-        switch config.type {
-        case .applePay:
-            return .black
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    override var buttonColor: UIColor? {
-        get { return _buttonColor }
-        set { _buttonColor = newValue }
-    }
-    
-    private lazy var _buttonTintColor: UIColor? = {
-        switch config.type {
-        case .applePay:
-            return .white
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    override var buttonTintColor: UIColor? {
-        get { return _buttonTintColor }
-        set { _buttonTintColor = newValue }
-    }
-    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
