@@ -81,7 +81,7 @@ class Networking {
         }
                         
         msg += "Headers:\n\(request.allHTTPHeaderFields ?? [:])\n"
-        
+                
         if let body = body {
             request.httpBody = body
             
