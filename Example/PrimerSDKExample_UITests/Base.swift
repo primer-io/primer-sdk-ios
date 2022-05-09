@@ -12,15 +12,41 @@ enum Environment: String {
     case local, dev, sandbox, staging, production
 }
 
+struct Card {
+    let alias: String
+    let number: String
+    let expirationDateString: String?
+    let cvv: String?
+    let cardholderName: String?
+    let postalCode: String?
+}
+
 struct Payment {
-    let id: String
+    var alias: String?
+    var id: String
     let environment: Environment
     let currency: String
     let countryCode: String
     let amount: String?
-    let expecations: Expecations?
+    let expectations: Expectations?
     
-    struct Expecations {
+    init(alias: String? = nil,
+         id: String,
+         environment: Environment,
+         currency: String,
+         countryCode: String,
+         amount: String? = nil,
+         expectations: Expectations? = nil) {
+        self.id = id
+        self.alias = alias ?? id
+        self.environment = environment
+        self.currency = currency
+        self.countryCode = countryCode
+        self.amount = amount
+        self.expectations = expectations
+    }
+    
+    struct Expectations {
         let amount: String?
         let surcharge: String?
         let webviewImage: String?
@@ -38,14 +64,80 @@ class Expectation {
 
 class Base: XCTestCase {
     
+    static var cards: [Card] = [
+        Card(alias: "VISA_PAYMENT_CARD",
+             number: "4242424242424242",
+             expirationDateString: "0225",
+             cvv: "123",
+             cardholderName: "John Smith",
+             postalCode: nil),
+        Card(alias: "3DS_PAYMENT_CARD",
+             number: "9120000000000006",
+             expirationDateString: "0225",
+             cvv: "123",
+             cardholderName: "John Smith",
+             postalCode: nil),
+        Card(alias: "FAILING_CARD_PROCESSOR_3DS",
+             number: "4000008400001629",
+             expirationDateString: "0225",
+             cvv: "123",
+             cardholderName: "John Smith",
+             postalCode: nil),
+        Card(alias: "SUCCESS_CARD_PROCESSOR_3DS",
+             number: "4000000000003220",
+             expirationDateString: "0225",
+             cvv: "123",
+             cardholderName: "John Smith",
+             postalCode: nil),
+
+    ]
+    
     static var paymentMethods: [Payment] = [
+        Payment(
+            alias: "PAYMENT_CARD_WITH_PROCESSOR_3DS_SUCCESS",
+            id: "PAYMENT_CARD",
+            environment: .staging,
+            currency: "GBP",
+            countryCode: "GB",
+            amount: "10011",
+            expectations: Payment.Expectations(
+                amount: "£100.11",
+                surcharge: "Additional fee may apply",
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay £100.11"],
+                resultScreenTexts: [
+                    "status": "SETTLED",
+                    "amount": "GBP 100.11"
+                ]
+            )
+        ),
+        Payment(
+            alias: "PAYMENT_CARD_WITH_PROCESSOR_3DS_FAIL",
+            id: "PAYMENT_CARD",
+            environment: .staging,
+            currency: "GBP",
+            countryCode: "GB",
+            amount: "10011",
+            expectations: Payment.Expectations(
+                amount: "£100.11",
+                surcharge: "Additional fee may apply",
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay £100.11"],
+                resultScreenTexts: [
+                    "status": "DECLINED",
+                    "amount": "GBP 100.11"
+                ]
+            )
+        ),
         Payment(
             id: "ADYEN_GIROPAY",
             environment: .sandbox,
             currency: "EUR",
             countryCode: "DE",
             amount: "100",
-            expecations: Payment.Expecations(
+            expectations: Payment.Expectations(
                 amount: "€1.00",
                 surcharge: "+€0.79",
                 webviewImage: "giropay",
@@ -64,7 +156,7 @@ class Base: XCTestCase {
             currency: "DKK",
             countryCode: "DK",
             amount: "100",
-            expecations: Payment.Expecations(
+            expectations: Payment.Expectations(
                 amount: "DKK 1.00",
                 surcharge: nil,
                 webviewImage: "mobilepay-logo",
@@ -83,7 +175,7 @@ class Base: XCTestCase {
             currency: "EUR",
             countryCode: "NL",
             amount: "100",
-            expecations: Payment.Expecations(
+            expectations: Payment.Expectations(
                 amount: "€1.00",
                 surcharge: nil,
                 webviewImage: nil,
@@ -102,7 +194,7 @@ class Base: XCTestCase {
             currency: "CNY",
             countryCode: "CN",
             amount: "100",
-            expecations: Payment.Expecations(
+            expectations: Payment.Expectations(
                 amount: "CNY 1.00",
                 surcharge: nil,
                 webviewImage: nil,
@@ -121,7 +213,7 @@ class Base: XCTestCase {
             currency: "EUR",
             countryCode: "FR",
             amount: "100",
-            expecations: Payment.Expecations(
+            expectations: Payment.Expectations(
                 amount: "€1.00",
                 surcharge: "+€0.19",
                 webviewImage: nil,
@@ -139,7 +231,7 @@ class Base: XCTestCase {
             currency: "GBP",
             countryCode: "GB",
             amount: "1000",
-            expecations: Payment.Expecations(
+            expectations: Payment.Expectations(
                 amount: "£10.00",
                 surcharge: "+£0.49",
                 webviewImage: nil,
@@ -157,7 +249,7 @@ class Base: XCTestCase {
             currency: "GBP",
             countryCode: "GB",
             amount: "100",
-            expecations: Payment.Expecations(
+            expectations: Payment.Expectations(
                 amount: "+£1.00",
                 surcharge: "Additional fee may apply",
                 webviewImage: nil,
@@ -170,17 +262,18 @@ class Base: XCTestCase {
             )
         ),
         Payment(
-            id: "3DS_PAYMENT_CARD",
+            alias: "3DS_PAYMENT_CARD",
+            id: "PAYMENT_CARD",
             environment: .sandbox,
             currency: "EUR",
             countryCode: "FR",
             amount: "10500",
-            expecations: Payment.Expecations(
-                amount: "EUR 1.00",
+            expectations: Payment.Expectations(
+                amount: "EUR 105.00",
                 surcharge: "Additional fee may apply",
                 webviewImage: nil,
                 webviewTexts: nil,
-                buttonTexts: ["Pay € 1.00"],
+                buttonTexts: ["Pay € 105.00"],
                 resultScreenTexts: nil
             )
         )
@@ -314,13 +407,13 @@ class Base: XCTestCase {
     }
     
     func successMessageExists() throws {
-        let successLabel = app.staticTexts["success_screen_message_label"]
+        let successLabel = app.staticTexts["Success!"]
         let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
         wait(for: [successLabelExists], timeout: 30)
     }
     
     func resultScreenExpectations(for payment: Payment) throws {
-        if let resultScreenTextExpectations = payment.expecations?.resultScreenTexts {
+        if let resultScreenTextExpectations = payment.expectations?.resultScreenTexts {
             var expectations: [XCTestExpectation] = []
             
             if let status = resultScreenTextExpectations["status"] {
@@ -369,13 +462,13 @@ class Base: XCTestCase {
         expectation(for: Expectation.doesNotExist, evaluatedWith: vaultTitle, handler: nil)
         waitForExpectations(timeout: 30, handler: nil)
 
-        if let amountExpectation = payment.expecations?.amount {
+        if let amountExpectation = payment.expectations?.amount {
             let amountText = app.staticTexts[amountExpectation]
             XCTAssert(amountText.exists, "Amount '\(amountExpectation)' should exist")
         }
         
         let scrollView = app.scrollViews["primer_container_scroll_view"]
-        if let surchargeExpectation = payment.expecations?.surcharge {
+        if let surchargeExpectation = payment.expectations?.surcharge {
             Base.validateSurcharge(surchargeExpectation, forPaymentMethod: payment.id)
         }
         
@@ -393,13 +486,13 @@ class Base: XCTestCase {
         adyenGiropayButton.tap()
         
         let webViews = app.webViews
-        if let webViewImageExpectation = payment.expecations?.webviewImage {
+        if let webViewImageExpectation = payment.expectations?.webviewImage {
             let webViewGiroPayImage = webViews.images[webViewImageExpectation]
             let webViewGiroPayImageExists = expectation(for: Expectation.exists, evaluatedWith: webViewGiroPayImage, handler: nil)
             wait(for: [webViewGiroPayImageExists], timeout: 30)
         }
         
-        if let webviewTexts = payment.expecations?.webviewTexts {
+        if let webviewTexts = payment.expectations?.webviewTexts {
             var webviewTextsExpectations: [XCTestExpectation] = []
             for text in webviewTexts {
                 let webViewText = webViews.staticTexts[text]
@@ -420,7 +513,7 @@ class Base: XCTestCase {
             
             scrollView.swipeDown()
             
-            if let resultScreenTextExpectations = payment.expecations?.resultScreenTexts {
+            if let resultScreenTextExpectations = payment.expectations?.resultScreenTexts {
                 var expectations: [XCTestExpectation] = []
                 
                 if let status = resultScreenTextExpectations["status"] {
