@@ -358,8 +358,15 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                 DispatchQueue.main.async {
                     
                     guard error == nil else {
+                        var primerErr: PrimerError!
+                        if let error = error as? PrimerError {
+                            primerErr = error
+                        } else {
+                            primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: nil)
+                        }
+                        
                         ErrorHandler.handle(error: error!)
-                        PrimerDelegateProxy.primerDidFailWithError(error!, data: nil) { errorDecision in
+                        PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
                             // FIXME: Handle decision for HUC
                         }
                         return
