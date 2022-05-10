@@ -134,7 +134,14 @@ internal class PrimerRootViewController: PrimerViewController {
                 print(pms)
                 
                 guard error == nil else {
-                    Primer.shared.primerRootVC?.handle(error: error!)
+                    var primerErr: PrimerError!
+                    if let error = error as? PrimerError {
+                        primerErr = error
+                    } else {
+                        primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: nil)
+                    }
+                    
+                    self?.handleErrorBasedOnSDKSettings(primerErr)
                     return
                 }
                 
@@ -554,7 +561,7 @@ extension PrimerRootViewController: UIGestureRecognizerDelegate {
 
 extension PrimerRootViewController {
     
-    private func handleErrorBasedOnSDKSettings(_ error: Error) {
+    private func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
         PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
             switch errorDecision.type {
             case .fail(let message):
@@ -563,33 +570,6 @@ extension PrimerRootViewController {
         }
     }
 }
-
-extension PrimerRootViewController: ResumeHandlerProtocol {
-    func handle(newClientToken clientToken: String) {
-        ClientTokenService.storeClientToken(clientToken) { [weak self] error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    ErrorHandler.handle(error: error)
-                    self?.handleErrorBasedOnSDKSettings(error)
-                }
-            }
-        }
-    }
-
-    func handle(error: Error) {
-        DispatchQueue.main.async {
-            self.dismissOrShowResultScreen(type: .failure, withMessage: error.localizedDescription)
-        }
-    }
-        
-    func handleSuccess() {
-        DispatchQueue.main.async {
-            self.dismissOrShowResultScreen(type: .success)
-        }
-    }
-}
-
-
 
 extension PrimerRootViewController {
     

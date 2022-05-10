@@ -85,10 +85,10 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
+    static func primerDidFailWithError(_ error: PrimerError, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
         DispatchQueue.main.async {
             if Primer.shared.delegate?.primerDidFailWithError != nil {
-                Primer.shared.delegate?.primerDidFailWithError?(error, data: data, decisionHandler: { errorDecision in
+                Primer.shared.delegate?.primerDidFailWithError?(error.exposedError, data: data, decisionHandler: { errorDecision in
                     switch errorDecision.type {
                     case .fail(let message):
                         DispatchQueue.main.async {
@@ -106,7 +106,7 @@ internal class PrimerDelegateProxy {
     
     // This function will raise the error to the merchants, and the merchants will
     // return the error message they want to present.
-    static func raisePrimerDidFailWithError(_ primerError: Error, data: PrimerCheckoutData?) -> Promise<String?> {
+    static func raisePrimerDidFailWithError(_ primerError: PrimerError, data: PrimerCheckoutData?) -> Promise<String?> {
         return Promise { seal in
             PrimerDelegateProxy.primerDidFailWithError(primerError, data: data) { errorDecision in
                 switch errorDecision.type {

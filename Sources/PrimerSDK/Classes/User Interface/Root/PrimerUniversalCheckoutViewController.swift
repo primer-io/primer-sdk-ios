@@ -55,7 +55,14 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
         vaultService.loadVaultedPaymentMethods { [weak self] error in
             guard error == nil else {
-                PrimerDelegateProxy.primerDidFailWithError(error!, data: nil) { errorDecision in
+                var primerErr: PrimerError!
+                if let error = error as? PrimerError {
+                    primerErr = error
+                } else {
+                    primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: nil)
+                }
+                
+                PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
                     switch errorDecision.type {
                     case .fail(let message):
                         DispatchQueue.main.async {
@@ -65,6 +72,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 }
                 return
             }
+            
             self?.renderSelectedPaymentInstrument(insertAt: 1)
         }
     }
