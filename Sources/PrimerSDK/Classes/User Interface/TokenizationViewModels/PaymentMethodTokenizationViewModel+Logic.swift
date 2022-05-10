@@ -163,7 +163,7 @@ extension PaymentMethodTokenizationViewModel {
                             seal.reject(err)
                         }
                         
-                    case .showErrorMessage(let message):
+                    case .fail(let message):
                         var merchantErr: Error!
                         if let message = message {
                             let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -187,7 +187,7 @@ extension PaymentMethodTokenizationViewModel {
                 }
                 .done { paymentResponse -> Void in
                     guard paymentResponse != nil else {
-                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: nil)
+                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         throw err
                     }
 
@@ -229,7 +229,7 @@ extension PaymentMethodTokenizationViewModel {
             if settings.isManualPaymentHandlingEnabled {
                 PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
                     switch resumeDecision.type {
-                    case .showErrorMessage(let message):
+                    case .fail(let message):
                         var merchantErr: Error!
                         if let message = message {
                             let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -294,7 +294,7 @@ extension PaymentMethodTokenizationViewModel {
                 PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
                     guard paymentCreationDecision?.type != .abort else {
                         let message = paymentCreationDecision?.additionalInfo?[.message] as? String ?? ""
-                        let error = PrimerError.generic(message: message, userInfo: nil)
+                        let error = PrimerError.generic(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         seal.reject(error)
                         return
                     }

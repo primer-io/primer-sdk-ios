@@ -495,7 +495,7 @@ extension PrimerRootViewController {
                 case .fail(let message):
                     var merchantErr: Error!
                     if let message = message {
-                        merchantErr = PrimerError.merchantError(message: message, userInfo: nil)
+                        merchantErr = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     } else {
                         merchantErr = NSError.emptyDescriptionError
                     }

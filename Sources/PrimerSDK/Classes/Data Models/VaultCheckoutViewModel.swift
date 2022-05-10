@@ -75,7 +75,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
                 }
             })
         } else {
-            let err = PrimerError.invalidClientToken(userInfo: nil)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(err)
         }
