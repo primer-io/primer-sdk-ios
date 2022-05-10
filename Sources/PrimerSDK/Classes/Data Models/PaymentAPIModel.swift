@@ -393,7 +393,7 @@ public struct Payment {
         public let orderId: String?
         public let requiredAction: Payment.Response.RequiredAction?
         public let status: Status
-        public let paymentFailureReason: PaymentErrorCode.RawValue?
+        public let paymentFailureReason: PrimerPaymentErrorCode.RawValue?
         
         public enum CodingKeys: String, CodingKey {
             case id, paymentId, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status, paymentFailureReason
@@ -440,7 +440,7 @@ internal struct PaymentMethodData {
     }
 }
 
-@objc public enum PaymentErrorCode: Int, RawRepresentable, Codable {
+@objc public enum PrimerPaymentErrorCode: Int, RawRepresentable, Codable {
     case failed
     case cancelledByCustomer
     
@@ -488,9 +488,9 @@ internal struct PaymentMethodData {
 @objc public class PrimerCheckoutDataPayment: NSObject, Codable {
     public let id: String?
     public let orderId: String?
-    public let paymentFailureReason: PaymentErrorCode?
+    public let paymentFailureReason: PrimerPaymentErrorCode?
     
-    public init(id: String?, orderId: String?, paymentFailureReason: PaymentErrorCode?) {
+    public init(id: String?, orderId: String?, paymentFailureReason: PrimerPaymentErrorCode?) {
         self.id = id
         self.orderId = orderId
         self.paymentFailureReason = paymentFailureReason
