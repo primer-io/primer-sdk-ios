@@ -12,40 +12,6 @@ import XCTest
 
 class ClientTokenServiceTests: XCTestCase {
     
-    func test_loadCheckoutConfig_calls_clientTokenRequestCallback() throws {
-        
-        let expectation = XCTestExpectation(description: "Load checkout config")
-
-        let accessToken = "95184a5f-1c15-48d4-9836-bc8eadff331b"
-
-        Primer.shared.delegate = self
-
-        MockLocator.registerDependencies()
-        let state = MockAppState()
-        DependencyContainer.register(state as AppStateProtocol)
-        
-        let service: ClientTokenServiceProtocol = DependencyContainer.resolve()
-        service.fetchClientToken { (err) in
-            if let err = err {
-                if case PrimerError.invalidClientToken = err {
-                    XCTAssert(true, err.localizedDescription)
-                } else {
-                    XCTAssert(false, err.localizedDescription)
-                }
-            } else {
-                XCTAssertEqual(state.clientToken?.jwtTokenPayload?.accessToken, accessToken)
-            }
-            
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 30.0)
-    }
-
-}
-
-extension ClientTokenServiceTests {
-    
     // MARK: Internal Validation
     
     private static func validateInternally(_ tokenToValidate: String) throws -> String {

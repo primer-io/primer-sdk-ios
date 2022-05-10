@@ -33,22 +33,9 @@ internal class ExternalViewModel: ExternalViewModelProtocol {
                 }
             })
         } else {
-            let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.fetchClientToken({ err in
-                if let err = err {
-                    completion(.failure(err))
-                } else {
-                    let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-                    vaultService.loadVaultedPaymentMethods({ err in
-                        if let err = err {
-                            completion(.failure(err))
-                        } else {
-                            let paymentMethods = state.paymentMethods
-                            completion(.success(paymentMethods))
-                        }
-                    })
-                }
-            })
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            completion(.failure(err))
         }
     }
 }
