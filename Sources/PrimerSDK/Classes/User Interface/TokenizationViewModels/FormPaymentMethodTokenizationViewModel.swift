@@ -280,7 +280,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     seal.fulfill()
                     
                 default:
-                    let err = PrimerError.invalidValue(key: "PrimerInputViewController for \(self.config.type)", value: nil, userInfo: nil)
+                    let err = PrimerError.invalidValue(key: "PrimerInputViewController for \(self.config.type)", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }
@@ -336,7 +336,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         case .adyenBlik:
             return Promise { seal in
                 guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: nil)
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -350,7 +350,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 }
                 
                 guard let blikCode = inputs.first?.text else {
-                    let err = PrimerError.invalidValue(key: "blikCode", value: nil, userInfo: nil)
+                    let err = PrimerError.invalidValue(key: "blikCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return

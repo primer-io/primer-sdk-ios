@@ -49,7 +49,7 @@ public struct Apaya {
                 url.queryParameterValue(for: "success") != nil,
                 let status = url.queryParameterValue(for: "status")
             else {
-                let err = PrimerError.generic(message: "Failed to find query parameters: [status, success]", userInfo: nil)
+                let err = PrimerError.generic(message: "Failed to find query parameters: [status, success]", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             }
