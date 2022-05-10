@@ -431,7 +431,7 @@ internal struct PaymentMethodData {
 
 //MARK: - Public / User Facing
 
-@objc public class CheckoutData: NSObject, Codable {
+@objc public class PrimerCheckoutData: NSObject, Codable {
     
     public let payment: CheckoutDataPayment?
     

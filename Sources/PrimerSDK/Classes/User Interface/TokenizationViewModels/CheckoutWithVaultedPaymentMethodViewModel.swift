@@ -14,7 +14,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     var config: PaymentMethodConfig
     var selectedPaymentMethodTokenData: PaymentMethodTokenData
     var singleUsePaymentMethodTokenData: PaymentMethodTokenData?
-    var paymentCheckoutData: CheckoutData?
+    var paymentCheckoutData: PrimerCheckoutData?
     var successMessage: String?
     
     var resumePaymentId: String?
@@ -39,7 +39,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
             firstly {
                 self.startTokenizationFlow()
             }
-            .then { paymentMethodTokenData -> Promise<CheckoutData?> in
+            .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
                 self.singleUsePaymentMethodTokenData = paymentMethodTokenData
                 return self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
             }
@@ -158,7 +158,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) -> Promise<CheckoutData?> {
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
             firstly {
                 self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
@@ -196,7 +196,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<CheckoutData?> {
+    private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
@@ -239,7 +239,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         throw err
                     }
                     
-                    self.paymentCheckoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
+                    self.paymentCheckoutData = PrimerCheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
                 .catch { err in
@@ -339,7 +339,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         throw err
                     }
 
-                    self.paymentCheckoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse!))
+                    self.paymentCheckoutData = PrimerCheckoutData(payment: CheckoutDataPayment(from: paymentResponse!))
                     self.resumePaymentId = paymentResponse!.id
                     
                     if let requiredAction = paymentResponse!.requiredAction {

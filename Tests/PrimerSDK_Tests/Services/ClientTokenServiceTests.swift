@@ -102,7 +102,7 @@ extension ClientTokenServiceTests {
 }
 
 extension ClientTokenServiceTests: PrimerDelegate {
-    func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
+    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
 
     }
     

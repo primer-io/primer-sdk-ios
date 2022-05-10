@@ -90,7 +90,7 @@ extension PaymentMethodTokenizationViewModel {
         }
     }
     
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) -> Promise<CheckoutData?> {
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
             firstly {
                 self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
@@ -202,7 +202,7 @@ extension PaymentMethodTokenizationViewModel {
                         throw err
                     }
 
-                    self.paymentCheckoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse!))
+                    self.paymentCheckoutData = PrimerCheckoutData(payment: CheckoutDataPayment(from: paymentResponse!))
                     self.resumePaymentId = paymentResponse!.id
                     
                     if let requiredAction = paymentResponse!.requiredAction {
@@ -233,7 +233,7 @@ extension PaymentMethodTokenizationViewModel {
         }
     }
     
-    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<CheckoutData?> {
+    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
@@ -276,7 +276,7 @@ extension PaymentMethodTokenizationViewModel {
                         throw err
                     }
                     
-                    self.paymentCheckoutData = CheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
+                    self.paymentCheckoutData = PrimerCheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
                 .catch { err in

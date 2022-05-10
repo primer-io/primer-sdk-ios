@@ -12,7 +12,7 @@ public protocol PrimerDelegate {
     /// This function will be called when the checkout has been successful.
     /// - Parameters:
     ///   - payment: The Payment object containing the completed payment.
-    @objc func primerDidCompleteCheckoutWithData(_ data: CheckoutData)
+    @objc func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData)
     
     // MARK: Optional
     
@@ -33,7 +33,7 @@ public protocol PrimerDelegate {
     ///   - error: The Error object containing the error description.
     ///   - data: The additional payment data if present
     ///   - decisionHandler: The handler containing a custom error message to optionally pass to the SDK
-    @objc optional func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void))
+    @objc optional func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void))
     @objc optional func primerDidDismiss()
         
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
@@ -79,13 +79,13 @@ internal class PrimerDelegateProxy {
         Primer.shared.delegate?.primerDidDismiss?()
     }
     
-    static func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
+    static func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         DispatchQueue.main.async {
             Primer.shared.delegate?.primerDidCompleteCheckoutWithData(data)
         }
     }
     
-    static func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
+    static func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
         DispatchQueue.main.async {
             if Primer.shared.delegate?.primerDidFailWithError != nil {
                 Primer.shared.delegate?.primerDidFailWithError?(error, data: data, decisionHandler: { errorDecision in
@@ -106,7 +106,7 @@ internal class PrimerDelegateProxy {
     
     // This function will raise the error to the merchants, and the merchants will
     // return the error message they want to present.
-    static func raisePrimerDidFailWithError(_ primerError: Error, data: CheckoutData?) -> Promise<String?> {
+    static func raisePrimerDidFailWithError(_ primerError: Error, data: PrimerCheckoutData?) -> Promise<String?> {
         return Promise { seal in
             PrimerDelegateProxy.primerDidFailWithError(primerError, data: data) { errorDecision in
                 switch errorDecision.type {
