@@ -433,9 +433,9 @@ internal struct PaymentMethodData {
 
 @objc public class PrimerCheckoutData: NSObject, Codable {
     
-    public let payment: CheckoutDataPayment?
+    public let payment: PrimerCheckoutDataPayment?
     
-    public init(payment: CheckoutDataPayment?) {
+    public init(payment: PrimerCheckoutDataPayment?) {
         self.payment = payment
     }
 }
@@ -485,7 +485,7 @@ internal struct PaymentMethodData {
     }
 }
 
-@objc public class CheckoutDataPayment: NSObject, Codable {
+@objc public class PrimerCheckoutDataPayment: NSObject, Codable {
     public let id: String?
     public let orderId: String?
     public let paymentFailureReason: PaymentErrorCode?
@@ -497,7 +497,7 @@ internal struct PaymentMethodData {
     }
 }
 
-extension CheckoutDataPayment {
+extension PrimerCheckoutDataPayment {
     
     convenience init(from paymentReponse: Payment.Response) {
         self.init(id: paymentReponse.id, orderId: paymentReponse.orderId, paymentFailureReason: nil)
