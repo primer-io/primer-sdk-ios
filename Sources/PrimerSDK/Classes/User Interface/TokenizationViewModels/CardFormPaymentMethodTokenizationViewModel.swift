@@ -22,7 +22,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     // want to update the button's UI.
     private var isTokenizing = false
     private var userInputCompletion: (() -> Void)?
-    private var cardComponentsManagerTokenizationCompletion: ((PaymentMethodTokenData?, Error?) -> Void)?
+    private var cardComponentsManagerTokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
     private var webViewController: SFSafariViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     
@@ -274,7 +274,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         super.start()
     }
     
-    override func startTokenizationFlow() -> Promise<PaymentMethodTokenData> {
+    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -308,7 +308,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.updateButtonUI()
                 return self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PaymentMethodTokenData> in
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .done { paymentMethodTokenData in
@@ -343,7 +343,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    private func tokenize() -> Promise<PaymentMethodTokenData> {
+    private func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.cardComponentsManagerTokenizationCompletion = { (paymentMethodTokenData, err) in
                 if let err = err {

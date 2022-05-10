@@ -90,7 +90,7 @@ extension PaymentMethodTokenizationViewModel {
         }
     }
     
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
             firstly {
                 self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
@@ -143,7 +143,7 @@ extension PaymentMethodTokenizationViewModel {
     //     - A decoded client token
     //     - nil for success
     //     - Reject with an error
-    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) -> Promise<DecodedClientToken?> {
+    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedClientToken?> {
         return Promise { seal in
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
@@ -299,8 +299,8 @@ extension PaymentMethodTokenizationViewModel {
             if Primer.shared.flow.internalSessionFlow.vaulted {
                 seal.fulfill()
             } else {
-                let checkoutPaymentMethodType = CheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)
-                let checkoutPaymentMethodData = CheckoutPaymentMethodData(type: checkoutPaymentMethodType)
+                let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)
+                let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
                 
                 PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
                     switch paymentCreationDecision.type {

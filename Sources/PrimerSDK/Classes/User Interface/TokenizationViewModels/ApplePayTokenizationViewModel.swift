@@ -93,7 +93,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         super.start()
     }
     
-    override func startTokenizationFlow() -> Promise<PaymentMethodTokenData> {
+    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -133,7 +133,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    func tokenize() -> Promise<PaymentMethodTokenData> {
+    func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             if Primer.shared.flow.internalSessionFlow.vaulted {
                 let err = PrimerError.unsupportedIntent(intent: .vault, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
