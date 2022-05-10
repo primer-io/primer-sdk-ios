@@ -50,7 +50,14 @@ extension PaymentMethodTokenizationViewModel {
                         ClientSession.Action.unselectPaymentMethodIfNeeded()
                     }
                     .then { () -> Promise<String?> in
-                        PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: self.paymentCheckoutData)
+                        var primerErr: PrimerError!
+                        if let error = err as? PrimerError {
+                            primerErr = error
+                        } else {
+                            primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil)
+                        }
+                        
+                        return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                     }
                     .done { merchantErrorMessage in
                         self.handleFailureFlow(errorMessage: merchantErrorMessage)
@@ -79,7 +86,14 @@ extension PaymentMethodTokenizationViewModel {
                     ClientSession.Action.unselectPaymentMethodIfNeeded()
                 }
                 .then { () -> Promise<String?> in
-                    PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: self.paymentCheckoutData)
+                    var primerErr: PrimerError!
+                    if let error = err as? PrimerError {
+                        primerErr = error
+                    } else {
+                        primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil)
+                    }
+                    
+                    return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                 }
                 .done { merchantErrorMessage in
                     self.handleFailureFlow(errorMessage: merchantErrorMessage)
