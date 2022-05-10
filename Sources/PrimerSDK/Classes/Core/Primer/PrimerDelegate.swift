@@ -30,8 +30,7 @@ public protocol PrimerDelegate {
     /// This function will be called when the SDK finishes to update a client session.
     /// - Parameters:
     ///   - clientSession: The client session containing all the current info about the checkout.
-    @objc optional func primerClientSessionDidUpdate(_ clientSession: CheckoutClientSessionData?)
-    
+    @objc optional func primerClientSessionDidUpdate(_ clientSession: CheckoutClientSessionData)
     /// This function will be called when the SDK is about to initiate a payment.
     /// - Parameters:
     ///   - data: The payment method data containing the token's information.
@@ -127,7 +126,7 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func primerClientSessionDidUpdate(_ clientSession: CheckoutClientSessionData?) {
+    static func primerClientSessionDidUpdate(_ clientSession: CheckoutClientSessionData) {
         DispatchQueue.main.async {
             Primer.shared.delegate?.primerClientSessionDidUpdate?(clientSession)
         }
