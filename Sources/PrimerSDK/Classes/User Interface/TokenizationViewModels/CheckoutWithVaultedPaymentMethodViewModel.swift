@@ -54,7 +54,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
             .catch { err in
                 self.didFinishPayment?(err)
                 firstly {
-                    self.raisePrimerDidFailWithError(err)
+                    PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: self.paymentCheckoutData)
                 }
                 .done { merchantErrorMessage in
                     self.handleFailureFlow(errorMessage: merchantErrorMessage)
@@ -79,9 +79,6 @@ class CheckoutWithVaultedPaymentMethodViewModel {
             .done { singleUsePaymentMethodTokenData in
                 seal.fulfill(singleUsePaymentMethodTokenData)
             }
-//            .ensure {
-//                Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-//            }
             .catch { err in
                 seal.reject(err)
             }
@@ -455,19 +452,6 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 }
                                 
                 seal.fulfill(paymentResponse)
-            }
-        }
-    }
-    
-    // This function will raise the error to the merchants, and the merchants will
-    // return the error message they want to present.
-    internal func raisePrimerDidFailWithError(_ primerError: Error) -> Promise<String?> {
-        return Promise { seal in
-            PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { errorDecision in
-                switch errorDecision.type {
-                case .fail(let message):
-                    seal.fulfill(message)
-                }
             }
         }
     }

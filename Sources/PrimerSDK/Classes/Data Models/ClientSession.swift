@@ -350,7 +350,8 @@ extension ClientSession.Action {
                 seal.fulfill()
             }
             .catch { error in
-                seal.reject(error)
+                // Do not raise error, we want to finalize the flow.
+                seal.fulfill()
             }
         }
     }

@@ -421,25 +421,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    fileprivate func enableSubmitButtonIfNeeded() {
-//        var validations = [
-//            cardNumberField.isTextValid,
-//            expiryDateField.isTextValid,
-//            cvvField.isTextValid
-//        ]
-//
-//        if requirePostalCode { validations.append(postalCodeField.isTextValid) }
-//        if let cardholderNameField = cardholderNameField, requireCardHolderName { validations.append(cardholderNameField.isTextValid) }
-//
-//        if validations.allSatisfy({ $0 == true }) {
-//            submitButton.isEnabled = true
-//            submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
-//        } else {
-//            submitButton.isEnabled = false
-//            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
-//        }
-    }
-    
 }
 
 extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {

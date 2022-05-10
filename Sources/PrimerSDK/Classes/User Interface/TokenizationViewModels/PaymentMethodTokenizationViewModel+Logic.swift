@@ -47,11 +47,15 @@ extension PaymentMethodTokenizationViewModel {
                     self.nullifyEventCallbacks()
                     
                     firstly {
-                        self.raisePrimerDidFailWithError(err)
+                        ClientSession.Action.unselectPaymentMethodIfNeeded()
+                    }
+                    .then { () -> Promise<String?> in
+                        PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: self.paymentCheckoutData)
                     }
                     .done { merchantErrorMessage in
                         self.handleFailureFlow(errorMessage: merchantErrorMessage)
                     }
+                    // The above promises will never end up on error.
                     .catch { _ in }
                 }
             }
@@ -62,11 +66,15 @@ extension PaymentMethodTokenizationViewModel {
             self.didFinishTokenization = nil
             
             firstly {
-                self.raisePrimerDidFailWithError(err)
+                ClientSession.Action.unselectPaymentMethodIfNeeded()
+            }
+            .then { () -> Promise<String?> in
+                PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: self.paymentCheckoutData)
             }
             .done { merchantErrorMessage in
                 self.handleFailureFlow(errorMessage: merchantErrorMessage)
             }
+            // The above promises will never end up on error.
             .catch { _ in }
         }
     }
@@ -365,53 +373,6 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
-    // This function will raise the error to the merchants, and the merchants will
-    // return the error message they want to present.
-    internal func raisePrimerDidFailWithError(_ primerError: Error) -> Promise<String?> {
-        return Promise { seal in
-            PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { errorDecision in
-                var merchantErr: Error!
-                switch errorDecision.type {
-                case .fail(let message):
-                    seal.fulfill(message)
-                }
-            }
-        }
-    }
-//
-//    // This is a helper function that will be called from any view model, and
-//    // it will call the tokenization completion handler, and nullify it in the end.
-//    @objc func executeTokenizationCompletionAndNullifyAfter(paymentMethodTokenData: PaymentMethodTokenData?, error: Error?) {
-//        if let error = error {
-//            self.tokenizationCompletion?(nil, error)
-//        } else if let paymentMethodTokenData = paymentMethodTokenData {
-//            self.tokenizationCompletion?(paymentMethodTokenData, nil)
-//        } else {
-//            fatalError("Must receive paymentMethodTokenData or error")
-//        }
-//        self.tokenizationCompletion = nil
-//    }
-//
-//    // This is a helper function that will be called from any view model, and
-//    // it will call the payment completion handler, and nullify it in the end.
-//    @objc func executePaymentCompletionAndNullifyAfter(checkoutData: CheckoutData?, error: Error?) {
-//        if let error = error {
-//            self.paymentCompletion?(nil, error)
-//        } else if let checkoutData = checkoutData {
-//            self.paymentCompletion?(checkoutData, nil)
-//        } else {
-//            fatalError("Must receive checkoutData or error")
-//        }
-//        self.paymentCompletion = nil
-//    }
-//
-//    // This is a helper function that will be called from any view model, and
-//    // it will call the completion handler, and nullify it in the end.
-//    @objc func executeCompletionAndNullifyAfter(error: Error? = nil) {
-//        self.completion?(error)
-//        self.completion = nil
-//    }
     
     func validateReturningPromise() -> Promise<Void> {
         return Promise { seal in

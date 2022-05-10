@@ -683,29 +683,4 @@ extension CardFormPaymentMethodTokenizationViewModel {
     }
 }
 
-//extension CardFormPaymentMethodTokenizationViewModel {
-//    
-//    override func handle(error: Error) {
-//        DispatchQueue.main.async {
-//            self.handleFailureFlow(error: error)
-//            self.submitButton.stopAnimating()
-//            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-//        }
-//        
-//        tokenizationCompletion?(nil, error)
-//    }
-//    
-//    override func handle(newClientToken clientToken: String) {
-//        self.handle(clientToken)
-//    }
-//    
-//    override func handleSuccess() {
-//        DispatchQueue.main.async {
-//            self.submitButton.stopAnimating()
-//            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-//        }
-//        tokenizationCompletion?(self.paymentMethodTokenData, nil)
-//    }
-//}
-
 #endif
