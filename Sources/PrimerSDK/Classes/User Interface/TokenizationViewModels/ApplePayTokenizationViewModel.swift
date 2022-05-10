@@ -29,6 +29,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
     private var applePayControllerCompletion: ((PKPaymentAuthorizationResult) -> Void)?
     private var isCancelled: Bool = false
+    private var didTimeout: Bool = false
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -252,6 +253,12 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
             ErrorHandler.handle(error: err)
             applePayReceiveDataCompletion?(.failure(err))
             applePayReceiveDataCompletion = nil
+        } else if self.didTimeout {
+            controller.dismiss(animated: true, completion: nil)
+            let err = PrimerError.applePayTimedOut(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            applePayReceiveDataCompletion?(.failure(err))
+            applePayReceiveDataCompletion = nil
         }
     }
     
@@ -262,11 +269,12 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
         self.isCancelled = false
-//        applePayControllerCompletion = { obj in
-//            completion(obj as! PKPaymentAuthorizationResult)
-//        }
+        self.didTimeout = true
         
-        applePayControllerCompletion = completion
+        applePayControllerCompletion = { obj in
+            self.didTimeout = false
+            completion(obj)
+        }
         
         do {
             let tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self, from: payment.token.paymentData)

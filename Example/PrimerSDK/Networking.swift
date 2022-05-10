@@ -72,7 +72,7 @@ class Networking {
         if let apiVersion = apiVersion {
             request.addValue(apiVersion.rawValue, forHTTPHeaderField: "x-api-version")
         }
-                
+                        
         msg += "Headers:\n\(request.allHTTPHeaderFields ?? [:])\n"
                 
         if let body = body {

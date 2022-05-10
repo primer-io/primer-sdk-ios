@@ -273,6 +273,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case merchantError(message: String, userInfo: [String: String]?)
     case cancelledByCustomer(message: String?, userInfo: [String: String]?)
     case paymentFailed(userInfo: [String: String]?)
+    case applePayTimedOut(userInfo: [String: String]?)
     
     var errorId: String {
         switch self {
@@ -328,6 +329,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "generic-underlying-errors"
         case .missingCustomUI:
             return "missing-custom-ui"
+        case .applePayTimedOut:
+            return "apple-pay-timed-out"
         case .merchantError:
             return "merchant-error"
         case .paymentFailed:
@@ -400,6 +403,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return message
         case .paymentFailed(_):
             return "[\(errorId)] The payment failed, retry."
+        case .applePayTimedOut:
+            return "[\(errorId)] Apple Pay timed out"
         }
     }
     
@@ -434,7 +439,8 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .missingCustomUI(_, let userInfo),
                 .merchantError(_, let userInfo),
                 .cancelledByCustomer(_, let userInfo),
-                .paymentFailed(let userInfo):
+                .paymentFailed(let userInfo),
+                .applePayTimedOut(let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -511,6 +517,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return nil
         case .paymentFailed:
             return nil
+        case .applePayTimedOut:
+            return "Make sure you have an active internet connection and your Apple Pay configuration is correct."
         }
     }
     

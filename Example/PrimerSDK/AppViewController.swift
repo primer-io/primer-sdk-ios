@@ -9,7 +9,7 @@
 import PrimerSDK
 import UIKit
 
-var environment: Environment = .sandbox
+var environment: Environment = .staging
 
 class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 

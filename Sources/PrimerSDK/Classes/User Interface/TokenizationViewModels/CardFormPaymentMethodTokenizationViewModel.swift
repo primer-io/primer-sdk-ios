@@ -8,6 +8,7 @@
 #if canImport(UIKit)
 
 import Foundation
+import SafariServices
 import UIKit
 
 class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
@@ -20,8 +21,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     // while we've already started the payment. In this case we don't
     // want to update the button's UI.
     private var isTokenizing = false
-    var userInputCompletion: (() -> Void)?
-    var cardComponentsManagerTokenizationCompletion: ((PaymentMethodTokenData?, Error?) -> Void)?
+    private var userInputCompletion: (() -> Void)?
+    private var cardComponentsManagerTokenizationCompletion: ((PaymentMethodTokenData?, Error?) -> Void)?
+    private var webViewController: SFSafariViewController?
+    private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     
     private var isCardholderNameFieldEnabled: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
@@ -357,6 +360,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
         return Promise { seal in
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+                /// Native 3DS auth
     #if canImport(Primer3DS)
                 guard let paymentMethodTokenData = paymentMethodTokenData else {
                     let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -395,10 +399,99 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 seal.reject(err)
     #endif
                 
+            } else if decodedClientToken.intent == RequiredActionName.processor3DS.rawValue {
+                if let redirectUrlStr = decodedClientToken.redirectUrl,
+                   let redirectUrl = URL(string: redirectUrlStr),
+                   let statusUrlStr = decodedClientToken.statusUrl,
+                   let statusUrl = URL(string: statusUrlStr),
+                   decodedClientToken.intent != nil {
+                    
+                    DispatchQueue.main.async {
+                        UIApplication.shared.endIgnoringInteractionEvents()
+                    }
+                    
+                    firstly {
+                        self.presentWeb3DS(with: redirectUrl)
+                    }
+                    .then { () -> Promise<String> in
+                        return self.startPolling(on: statusUrl)
+                    }
+                    .done { resumeToken in
+                        seal.fulfill(resumeToken)
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                } else {
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                }
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
+            }
+        }
+    }
+    
+    private func presentWeb3DS(with redirectUrl: URL) -> Promise<Void> {
+        return Promise { seal in
+            self.webViewController = SFSafariViewController(url: redirectUrl)
+            self.webViewController!.delegate = self
+            
+            DispatchQueue.main.async {
+                Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                    DispatchQueue.main.async {
+                        seal.fulfill()
+                    }
+                })
+            }
+        }
+    }
+    
+    private func startPolling(on url: URL) -> Promise<String> {
+        return Promise { seal in
+            self.startPolling(on: url) { resumeToken, err in
+                if let err = err {
+                    seal.reject(err)
+                } else if let resumeToken = resumeToken {
+                    seal.fulfill(resumeToken)
+                } else {
+                    assert(true, "Completion handler should always return a value or an error")
+                }
+            }
+        }
+    }
+    
+    private func startPolling(on url: URL, completion: @escaping (String?, Error?) -> Void) {
+        let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
+            if self.webViewCompletion == nil {
+                let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                completion(nil, err)
+                return
+            }
+            
+            switch result {
+            case .success(let res):
+                if res.status == .pending {
+                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                        self.startPolling(on: url, completion: completion)
+                    }
+                } else if res.status == .complete {
+                    completion(res.id, nil)
+                } else {
+                    let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                }
+            case .failure(let err):
+                ErrorHandler.handle(error: err)
+                // Retry
+                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
+                    self.startPolling(on: url, completion: completion)
+                }
             }
         }
     }
@@ -680,6 +773,20 @@ extension CardFormPaymentMethodTokenizationViewModel {
     
     private func raiseOnConfigurationFetchedCallback() {
         self.onConfigurationFetched?()
+    }
+}
+
+extension CardFormPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        if let webViewCompletion = webViewCompletion {
+            // Cancelled
+            let err = PrimerError.cancelled(paymentMethodType: config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            webViewCompletion(nil, err)
+        }
+        
+        webViewCompletion = nil
     }
 }
 

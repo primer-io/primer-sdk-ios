@@ -70,7 +70,7 @@ class MerchantCheckoutViewController: UIViewController {
         title = "Primer [\(environment.rawValue)]"
         
         generalSettings = PrimerSettings(
-            merchantIdentifier: "merchant.dx.team",
+            merchantIdentifier: "merchant.checkout.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "merchant://",
@@ -345,19 +345,18 @@ class MerchantCheckoutViewController: UIViewController {
 
 extension MerchantCheckoutViewController: PrimerDelegate {
     
-    func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PaymentCreationDecision?) -> Void) {
-        decisionHandler(.continuePaymentCreation())
-    }
+    // Required
     
-    func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((ErrorDecision) -> Void)) {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Failed\n")
-        let message = "Merchant App | ERROR"
-        decisionHandler(.fail(withMessage: message))
-    }
-        
     func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(data)\n")
         self.checkoutData = data
+    }
+    
+    // Optional
+    
+    func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nData: \(data)")
+        decisionHandler(.continuePaymentCreation())
     }
     
     func primerDidDismiss() {
@@ -376,6 +375,12 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 self?.checkoutData = nil
             }
         }
+    }
+    
+    func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError: \(error)")
+        let message = "Merchant App | ERROR"
+        decisionHandler(.fail(withErrorMessage: message))
     }
 }
 
