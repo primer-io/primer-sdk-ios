@@ -269,7 +269,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 }
                 
                 if let paymentFailureReason = paymentResponse?.paymentFailureReason,
-                let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
+                let paymentErrorCode = PrimerPaymentErrorCode(rawValue: paymentFailureReason),
                    let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
                     seal.reject(error)
                     return
@@ -434,7 +434,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 }
                 
                 if let paymentFailureReason = paymentResponse?.paymentFailureReason,
-                let paymentErrorCode = PaymentErrorCode(rawValue: paymentFailureReason),
+                let paymentErrorCode = PrimerPaymentErrorCode(rawValue: paymentFailureReason),
                    let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
                     seal.reject(error)
                     return
