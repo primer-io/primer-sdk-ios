@@ -39,9 +39,9 @@ public protocol PrimerDelegate {
     @objc optional func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
     
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
-    @objc optional func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PaymentMethodTokenData, decisionHandler: @escaping (ResumeDecision) -> Void)
+    @objc optional func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
-    @objc optional func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (ResumeDecision) -> Void)
+    @objc optional func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
     
     
     @objc optional func primerDidDismiss()
@@ -58,14 +58,14 @@ public protocol PrimerDelegate {
     /// - Parameters:
     ///   - data: The payment method data containing the token's information.
     ///   - decisionHandler: The handler managing a custom error to optionally pass to the SDK
-    @objc optional func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PaymentCreationDecision?) -> Void)
+    @objc optional func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision?) -> Void)
     
     /// This function will be called when the checkout encountered an error.
     /// - Parameters:
     ///   - error: The Error object containing the error description.
     ///   - data: The additional payment data if present
     ///   - decisionHandler: The handler containing a custom error message to optionally pass to the SDK
-    @objc optional func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((ErrorDecision) -> Void))
+    @objc optional func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void))
 }
 
 internal class PrimerDelegateProxy {
@@ -91,7 +91,7 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PaymentMethodTokenData, decisionHandler: @escaping (ResumeDecision) -> Void) {
+    static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         DispatchQueue.main.async {
             if Primer.shared.delegate?.primerDidTokenizePaymentMethod != nil {
                 Primer.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
@@ -100,7 +100,7 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (ResumeDecision) -> Void) {
+    static func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         DispatchQueue.main.async {
             if Primer.shared.delegate?.primerDidResumeWith != nil {
                 Primer.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
@@ -108,7 +108,7 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PaymentCreationDecision?) -> Void) {
+    static func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision?) -> Void) {
         DispatchQueue.main.async {
             if Primer.shared.delegate?.primerWillCreatePaymentWithData != nil {
                 Primer.shared.delegate?.primerWillCreatePaymentWithData?(data, decisionHandler: decisionHandler)
@@ -132,7 +132,7 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((ErrorDecision) -> Void)) {
+    static func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
         DispatchQueue.main.async {
             if Primer.shared.delegate?.primerDidFailWithError != nil {
                 Primer.shared.delegate?.primerDidFailWithError?(error, data: data, decisionHandler: { errorDecision in
