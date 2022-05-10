@@ -11,7 +11,7 @@ import Foundation
 
 // MARK: - ERROR DECISION
 
-@objc public class ErrorDecision: NSObject {
+@objc public class PrimerErrorDecision: NSObject {
     
     public enum DecisionType {
         case fail(message: String?)
@@ -24,16 +24,16 @@ import Foundation
     }
 }
 
-public extension ErrorDecision {
+public extension PrimerErrorDecision {
     
-    static func fail(withMessage message: String?) -> ErrorDecision {
-        ErrorDecision(type: .fail(message: message))
+    static func fail(withMessage message: String?) -> PrimerErrorDecision {
+        PrimerErrorDecision(type: .fail(message: message))
     }
 }
 
 // MARK: - RESUME DECISION
 
-@objc public class ResumeDecision: NSObject {
+@objc public class PrimerResumeDecision: NSObject {
     
     public enum DecisionType {
         case succeed
@@ -48,24 +48,24 @@ public extension ErrorDecision {
     }
 }
 
-public extension ResumeDecision {
+public extension PrimerResumeDecision {
     
-    static func succeed() -> ResumeDecision {
-        ResumeDecision(type: .succeed)
+    static func succeed() -> PrimerResumeDecision {
+        PrimerResumeDecision(type: .succeed)
     }
     
-    static func showErrorMessage(_ message: String?) -> ResumeDecision {
-        ResumeDecision(type: .showErrorMessage(message))
+    static func showErrorMessage(_ message: String?) -> PrimerResumeDecision {
+        PrimerResumeDecision(type: .showErrorMessage(message))
     }
     
-    static func handleNewClientToken(_ newClientToken: String) -> ResumeDecision {
-        ResumeDecision(type: .handleNewClientToken(newClientToken))
+    static func handleNewClientToken(_ newClientToken: String) -> PrimerResumeDecision {
+        PrimerResumeDecision(type: .handleNewClientToken(newClientToken))
     }
 }
 
 // MARK: - PAYMENT DECISION
 
-@objc public class PaymentCreationDecision: NSObject {
+@objc public class PrimerPaymentCreationDecision: NSObject {
     
     public enum DecisionType {
         case abort
@@ -86,14 +86,14 @@ public extension ResumeDecision {
     }
 }
 
-public extension PaymentCreationDecision {
+public extension PrimerPaymentCreationDecision {
     
-    static func abortPaymentCreation(errorMessage: String? = nil) -> PaymentCreationDecision {
-        PaymentCreationDecision(type: .abort, additionalInfo: [.message: errorMessage])
+    static func abortPaymentCreation(errorMessage: String? = nil) -> PrimerPaymentCreationDecision {
+        PrimerPaymentCreationDecision(type: .abort, additionalInfo: [.message: errorMessage])
     }
     
-    static func continuePaymentCreation() -> PaymentCreationDecision {
-        PaymentCreationDecision(type: .continue, additionalInfo: nil)
+    static func continuePaymentCreation() -> PrimerPaymentCreationDecision {
+        PrimerPaymentCreationDecision(type: .continue, additionalInfo: nil)
     }
 }
 
