@@ -65,17 +65,28 @@ extension PaymentMethodTokenizationViewModel {
             self.didStartTokenization = nil
             self.didFinishTokenization = nil
             
-            firstly {
-                ClientSession.Action.unselectPaymentMethodIfNeeded()
+            if self.config.type == .applePay, let primerErr = err as? PrimerError, case .cancelled = primerErr {
+                firstly {
+                    ClientSession.Action.unselectPaymentMethodIfNeeded()
+                }
+                .done { merchantErrorMessage in
+                    Primer.shared.primerRootVC?.popToMainScreen(completion: nil)
+                }
+                // The above promises will never end up on error.
+                .catch { _ in }
+            } else {
+                firstly {
+                    ClientSession.Action.unselectPaymentMethodIfNeeded()
+                }
+                .then { () -> Promise<String?> in
+                    PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: self.paymentCheckoutData)
+                }
+                .done { merchantErrorMessage in
+                    self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                }
+                // The above promises will never end up on error.
+                .catch { _ in }
             }
-            .then { () -> Promise<String?> in
-                PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: self.paymentCheckoutData)
-            }
-            .done { merchantErrorMessage in
-                self.handleFailureFlow(errorMessage: merchantErrorMessage)
-            }
-            // The above promises will never end up on error.
-            .catch { _ in }
         }
     }
     
