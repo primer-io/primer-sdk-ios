@@ -12,8 +12,8 @@ import Foundation
 class CheckoutWithVaultedPaymentMethodViewModel {
     
     var config: PaymentMethodConfig
-    var selectedPaymentMethodTokenData: PaymentMethodTokenData
-    var singleUsePaymentMethodTokenData: PaymentMethodTokenData?
+    var selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
+    var singleUsePaymentMethodTokenData: PrimerPaymentMethodTokenData?
     var paymentCheckoutData: PrimerCheckoutData?
     var successMessage: String?
     
@@ -29,7 +29,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
     
-    init(configuration: PaymentMethodConfig, selectedPaymentMethodTokenData: PaymentMethodTokenData) {
+    init(configuration: PaymentMethodConfig, selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData) {
         self.config = configuration
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
     }
@@ -65,7 +65,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    func startTokenizationFlow() -> Promise<PaymentMethodTokenData> {
+    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             firstly {
                 self.dispatchActions(config: self.config, selectedPaymentMethod: self.selectedPaymentMethodTokenData)
@@ -120,8 +120,8 @@ class CheckoutWithVaultedPaymentMethodViewModel {
             if Primer.shared.flow.internalSessionFlow.vaulted {
                 seal.fulfill()
             } else {
-                let checkoutPaymentMethodType = CheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)
-                let checkoutPaymentMethodData = CheckoutPaymentMethodData(type: checkoutPaymentMethodType)
+                let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)
+                let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
                 
                 PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
                     switch paymentCreationDecision.type {
@@ -158,7 +158,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
             firstly {
                 self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
@@ -280,7 +280,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) -> Promise<DecodedClientToken?> {
+    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedClientToken?> {
         return Promise { seal in
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             

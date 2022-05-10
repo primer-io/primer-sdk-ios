@@ -469,15 +469,15 @@ internal struct PaymentMethodData {
 
 // TODO: Update / Temporary name to avoid conflicts
 
-@objc public class CheckoutPaymentMethodData: NSObject, Codable {
-    public let paymentMethodType: CheckoutPaymentMethodType
+@objc public class PrimerCheckoutPaymentMethodData: NSObject, Codable {
+    public let paymentMethodType: PrimerCheckoutPaymentMethodType
     
-    public init(type: CheckoutPaymentMethodType) {
+    public init(type: PrimerCheckoutPaymentMethodType) {
         self.paymentMethodType = type
     }
 }
 
-@objc public class CheckoutPaymentMethodType: NSObject, Codable {
+@objc public class PrimerCheckoutPaymentMethodType: NSObject, Codable {
     public let type: String
     
     public init(type: String) {
@@ -509,17 +509,17 @@ extension PrimerCheckoutDataPayment {
     public let orderId: String?
     public let currencyCode: String?
     public let totalAmount: Int?
-    public let lineItems: [CheckoutDataLineItem]?
-    public let orderDetails: CheckoutDataOrder?
-    public let customer: CheckoutDataCustomer?
+    public let lineItems: [PrimerCheckoutDataLineItem]?
+    public let orderDetails: PrimerCheckoutDataOrder?
+    public let customer: PrimerCheckoutDataCustomer?
     
     public init(customerId: String?,
                 orderId: String?,
                 currencyCode: String?,
                 totalAmount: Int?,
-                lineItems: [CheckoutDataLineItem]?,
-                orderDetails: CheckoutDataOrder?,
-                customer: CheckoutDataCustomer?) {
+                lineItems: [PrimerCheckoutDataLineItem]?,
+                orderDetails: PrimerCheckoutDataOrder?,
+                customer: PrimerCheckoutDataCustomer?) {
         self.customerId = customerId
         self.orderId = orderId
         self.currencyCode = currencyCode
@@ -530,7 +530,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class CheckoutDataOrder: NSObject {
+@objc public class PrimerCheckoutDataOrder: NSObject {
     public let countryCode: String?
     
     public init(countryCode: String?) {
@@ -538,7 +538,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class CheckoutDataCustomer: NSObject {
+@objc public class PrimerCheckoutDataCustomer: NSObject {
     public let emailAddress: String?
     public let mobileNumber: String?
     public let billingAddress: CheckoutDataPaymentAPIModelAddress?
@@ -553,7 +553,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class CheckoutDataLineItem: NSObject {
+@objc public class PrimerCheckoutDataLineItem: NSObject {
     
     public let itemId: String?
     public let itemDescription: String?
@@ -617,7 +617,7 @@ extension PrimerCheckoutDataPayment {
 extension PrimerCheckoutClientSessionData {
     
     internal convenience init(from apiConfiguration: PrimerAPIConfiguration) {
-        let lineItems = apiConfiguration.clientSession?.order?.lineItems?.compactMap { CheckoutDataLineItem(itemId: $0.itemId,
+        let lineItems = apiConfiguration.clientSession?.order?.lineItems?.compactMap { PrimerCheckoutDataLineItem(itemId: $0.itemId,
                                                                                                                itemDescription: $0.description,
                                                                                                                amount: $0.amount,
                                                                                                                discountAmount: $0.discountAmount,
@@ -625,7 +625,7 @@ extension PrimerCheckoutClientSessionData {
                                                                                                                taxCode: apiConfiguration.clientSession?.customer?.taxId,
                                                                                                                taxAmount: apiConfiguration.clientSession?.order?.totalTaxAmount) }
         
-        let orderDetails = CheckoutDataOrder(countryCode: apiConfiguration.clientSession?.order?.countryCode?.rawValue)
+        let orderDetails = PrimerCheckoutDataOrder(countryCode: apiConfiguration.clientSession?.order?.countryCode?.rawValue)
         
         let billingAddress = CheckoutDataPaymentAPIModelAddress(firstName: apiConfiguration.clientSession?.customer?.billingAddress?.firstName,
                                                                 lastName: apiConfiguration.clientSession?.customer?.billingAddress?.lastName,
@@ -645,7 +645,7 @@ extension PrimerCheckoutClientSessionData {
                                                                  countryCode: apiConfiguration.clientSession?.customer?.shippingAddress?.countryCode?.rawValue,
                                                                  postalCode: apiConfiguration.clientSession?.customer?.shippingAddress?.postalCode)
         
-        let customer = CheckoutDataCustomer(emailAddress: apiConfiguration.clientSession?.customer?.emailAddress,
+        let customer = PrimerCheckoutDataCustomer(emailAddress: apiConfiguration.clientSession?.customer?.emailAddress,
                                             mobileNumber: apiConfiguration.clientSession?.customer?.mobileNumber,
                                             billingAddress: billingAddress,
                                             shippingAddress: shippingAddress)

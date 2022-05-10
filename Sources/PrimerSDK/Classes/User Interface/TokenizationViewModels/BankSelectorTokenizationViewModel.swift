@@ -97,7 +97,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         tmpTokenizationCallback = nil
     }
         
-    override func startTokenizationFlow() -> Promise<PaymentMethodTokenData> {
+    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         DispatchQueue.main.async {
             UIApplication.shared.endIgnoringInteractionEvents()
         }
@@ -136,7 +136,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
                 self.selectedBank = bank
                 return self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PaymentMethodTokenData> in
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize(bank: self.selectedBank!)
             }
             .done { paymentMethodTokenData in
@@ -227,7 +227,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
     
-    private func tokenize(bank: Bank) -> Promise<PaymentMethodTokenData> {
+    private func tokenize(bank: Bank) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.tokenize(bank: bank) { paymentMethodTokenData, err in
                 if let err = err {
@@ -241,7 +241,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
 
-    private func tokenize(bank: Bank, completion: @escaping (_ paymentMethodTokenData: PaymentMethodTokenData?, _ err: Error?) -> Void) {
+    private func tokenize(bank: Bank, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
         let req = BankSelectorTokenizationRequest(
             paymentInstrument: PaymentInstrument(
                 paymentMethodConfigId: self.config.id!,

@@ -355,6 +355,13 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         self.checkoutData = data
     }
     
+    // Optional
+    
+    func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nData: \(data)")
+        decisionHandler(.continuePaymentCreation())
+    }
+    
     func primerDidDismiss() {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nPrimer view dismissed\n")
         
