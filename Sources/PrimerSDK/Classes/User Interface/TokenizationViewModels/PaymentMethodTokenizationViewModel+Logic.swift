@@ -202,7 +202,7 @@ extension PaymentMethodTokenizationViewModel {
                         throw err
                     }
 
-                    self.paymentCheckoutData = PrimerCheckoutData(payment: CheckoutDataPayment(from: paymentResponse!))
+                    self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse!))
                     self.resumePaymentId = paymentResponse!.id
                     
                     if let requiredAction = paymentResponse!.requiredAction {
@@ -276,7 +276,7 @@ extension PaymentMethodTokenizationViewModel {
                         throw err
                     }
                     
-                    self.paymentCheckoutData = PrimerCheckoutData(payment: CheckoutDataPayment(from: paymentResponse))
+                    self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
                 .catch { err in
