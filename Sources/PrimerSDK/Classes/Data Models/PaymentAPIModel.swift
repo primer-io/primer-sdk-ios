@@ -504,7 +504,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class CheckoutClientSessionData: NSObject {
+@objc public class PrimerCheckoutClientSessionData: NSObject {
     public let customerId: String?
     public let orderId: String?
     public let currencyCode: String?
@@ -614,7 +614,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-extension CheckoutClientSessionData {
+extension PrimerCheckoutClientSessionData {
     
     internal convenience init(from apiConfiguration: PrimerAPIConfiguration) {
         let lineItems = apiConfiguration.clientSession?.order?.lineItems?.compactMap { CheckoutDataLineItem(itemId: $0.itemId,
