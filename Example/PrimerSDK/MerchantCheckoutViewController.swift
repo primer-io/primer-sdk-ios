@@ -63,7 +63,7 @@ class MerchantCheckoutViewController: UIViewController {
     
     var customer: PrimerSDK.Customer?
     var address: PrimerSDK.Address?
-    var checkoutData: CheckoutData?
+    var checkoutData: PrimerCheckoutData?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -349,13 +349,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         decisionHandler(.continuePaymentCreation())
     }
     
-    func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((ErrorDecision) -> Void)) {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Failed\n")
-        let message = "Merchant App | ERROR"
-        decisionHandler(.fail(withMessage: message))
-    }
-        
-    func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
+    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(data)\n")
         self.checkoutData = data
     }
@@ -376,6 +370,12 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 self?.checkoutData = nil
             }
         }
+    }
+    
+    func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError: \(error)")
+        let message = "Merchant App | ERROR"
+        decisionHandler(.fail(withErrorMessage: message))
     }
 }
 
