@@ -616,12 +616,7 @@ extension CheckoutDataPayment {
 
 extension CheckoutClientSessionData {
     
-    internal convenience init?(from apiConfiguration: PrimerAPIConfiguration?) {
-        
-        guard let apiConfiguration = apiConfiguration else {
-            return nil
-        }
-        
+    internal convenience init(from apiConfiguration: PrimerAPIConfiguration) {
         let lineItems = apiConfiguration.clientSession?.order?.lineItems?.compactMap { CheckoutDataLineItem(itemId: $0.itemId,
                                                                                                                itemDescription: $0.description,
                                                                                                                amount: $0.amount,
