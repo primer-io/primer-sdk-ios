@@ -2,26 +2,6 @@
 
 import UIKit
 
-/**
- Primer's required protocol. You need to conform to this protocol in order to take advantage of Primer's functionalities.
- 
- It exposes three required methods, **clientTokenCallback**, **authorizePayment**, **primerDidDismiss**.
- 
- *Values*
- 
- `clientTokenCallback(_:)`: This function will be called once Primer can provide you a client token. Provide the token to
- your backend in order retrieve a session token.
-  
- `authorizePayment(_:)`: This function will be called only on checkout flows. Use it to provide the payment method token to your backend and call the completion when your API is called is finished. Pass an error if needed.
- 
- `primerDidDismiss(_:)`: This function notifies you when the drop-in UI is dismissed.
- 
- - Author:
- Primer
- - Version:
- 1.4.3
- */
-
 public typealias PaymentMethodTokenData = PaymentMethodToken
 
 @objc
