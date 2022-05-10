@@ -58,7 +58,7 @@ public protocol PrimerDelegate {
     /// - Parameters:
     ///   - data: The payment method data containing the token's information.
     ///   - decisionHandler: The handler managing a custom error to optionally pass to the SDK
-    @objc optional func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision?) -> Void)
+    @objc optional func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void)
     
     /// This function will be called when the checkout encountered an error.
     /// - Parameters:
@@ -108,12 +108,12 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision?) -> Void) {
+    static func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         DispatchQueue.main.async {
             if Primer.shared.delegate?.primerWillCreatePaymentWithData != nil {
                 Primer.shared.delegate?.primerWillCreatePaymentWithData?(data, decisionHandler: decisionHandler)
             } else {
-                decisionHandler(nil)
+                decisionHandler(.continuePaymentCreation())
             }
         }
     }
@@ -139,13 +139,13 @@ internal class PrimerDelegateProxy {
                     switch errorDecision.type {
                     case .fail(let message):
                         DispatchQueue.main.async {
-                            decisionHandler(.fail(withMessage: message))
+                            decisionHandler(.fail(withErrorMessage: message))
                         }
                     }
                 })
             } else {
                 print("WARNING: Delegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
-                decisionHandler(.fail(withMessage: nil))
+                decisionHandler(.fail(withErrorMessage: nil))
             }
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
         }

@@ -292,22 +292,11 @@ extension PaymentMethodTokenizationViewModel {
                 let checkoutPaymentMethodData = CheckoutPaymentMethodData(type: checkoutPaymentMethodType)
                 
                 PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
-                    guard paymentCreationDecision?.type != .abort else {
-                        let message = paymentCreationDecision?.additionalInfo?[.message] as? String ?? ""
-                        let error = PrimerError.generic(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    switch paymentCreationDecision.type {
+                    case .abort(let errorMessage):
+                        let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         seal.reject(error)
-                        return
-                    }
-                    
-                    if let modifiedClientToken = paymentCreationDecision?.additionalInfo?[.clientToken] as? RawJWTToken {
-                        ClientTokenService.storeClientToken(modifiedClientToken) { error in
-                            guard error == nil else {
-                                seal.reject(error!)
-                                return
-                            }
-                            seal.fulfill()
-                        }
-                    } else {
+                    case .continue:
                         seal.fulfill()
                     }
                 })
