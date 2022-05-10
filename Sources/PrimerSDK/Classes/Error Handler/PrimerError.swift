@@ -294,7 +294,7 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .cancelled:
             return "payment-cancelled"
         case .cancelledByCustomer:
-            return PaymentErrorCode.cancelledByCustomer.rawValue
+            return PrimerPaymentErrorCode.cancelledByCustomer.rawValue
         case .failedToCreateSession:
             return "failed-to-create-session"
         case .failedOnWebViewFlow:
@@ -332,7 +332,7 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .merchantError:
             return "merchant-error"
         case .paymentFailed:
-            return PaymentErrorCode.failed.rawValue
+            return PrimerPaymentErrorCode.failed.rawValue
         case .applePayTimedOut:
             return "apple-pay-timed-out"
         }
@@ -531,7 +531,7 @@ internal enum PrimerError: PrimerErrorProtocol {
 // TODO: Reiew custom initializer for simplified payment error
 extension PrimerError {
     
-    internal static func simplifiedErrorFromErrorID(_ errorCode: PaymentErrorCode, message: String? = nil, userInfo: [String: String]?) -> PrimerError? {
+    internal static func simplifiedErrorFromErrorID(_ errorCode: PrimerPaymentErrorCode, message: String? = nil, userInfo: [String: String]?) -> PrimerError? {
         
         switch errorCode {
         case .failed:
