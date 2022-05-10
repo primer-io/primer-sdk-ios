@@ -8,7 +8,7 @@
 
 import UIKit
 
-extension MerchantCheckoutViewController {
+extension UIViewController {
     
     // MARK: - GENERAL HELPERS
     

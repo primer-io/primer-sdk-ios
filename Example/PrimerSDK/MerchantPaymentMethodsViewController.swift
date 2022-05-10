@@ -19,7 +19,6 @@ class MerchantPaymentMethodsViewController: UIViewController {
         return mpmvc
     }
 
-    lazy var endpoint: String = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     var environment: Environment!
     var amount: Int!
     var currency: Currency!
@@ -66,67 +65,13 @@ class MerchantPaymentMethodsViewController: UIViewController {
     }
     
     private func requestClientToken(completion: @escaping (String?, Error?) -> Void) {
-        let clientSessionRequestBody = ClientSessionRequestBody(
-            customerId: "customerId",
-            orderId: "ios_order_id_\(String.randomString(length: 8))",
-            currencyCode: .EUR,
-            amount: nil,
-            metadata: ["key": "val"],
-            customer: ClientSessionRequestBody.Customer(
-                firstName: "John",
-                lastName: "Smith",
-                emailAddress: "john@primer.io",
-                mobileNumber: "+4478888888888",
-                billingAddress: Address(
-                    firstName: "John",
-                    lastName: "Smith",
-                    addressLine1: "65 York Road",
-                    addressLine2: nil,
-                    city: "London",
-                    state: nil,
-                    countryCode: "GB",
-                    postalCode: "NW06 4OM"),
-                shippingAddress: Address(
-                    firstName: "John",
-                    lastName: "Smith",
-                    addressLine1: "9446 Richmond Road",
-                    addressLine2: nil,
-                    city: "London",
-                    state: nil,
-                    countryCode: "GB",
-                    postalCode: "EC53 8BT")
-            ),
-            order: ClientSessionRequestBody.Order(
-                countryCode: .fr,
-                lineItems: [
-                    ClientSessionRequestBody.Order.LineItem(
-                        itemId: "_item_id_0",
-                        description: "Item",
-                        amount: 1000,
-                        quantity: 1)
-                ]),
-            paymentMethod: ClientSessionRequestBody.PaymentMethod(
-                vaultOnSuccess: true,
-                options: [
-                    "PAYMENT_CARD": [
-                        "networks": [
-                            "VISA": [
-                                "surcharge": [
-                                    "amount": 109
-                                ]
-                            ],
-                            "MASTERCARD": [
-                                "surcharge": [
-                                    "amount": 129
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            )
-        )
         
-        
+        let clientSessionRequestBody = Networking().clientSessionRequestBodyWithCurrency("customerId",
+                                                                                         phoneNumber: nil,
+                                                                                         countryCode: .fr,
+                                                                                         currency: .EUR,
+                                                                                         amount: 1000)
+
         requestClientSession(requestBody: clientSessionRequestBody, completion: { (token, err) in
             completion(token, err)
         })

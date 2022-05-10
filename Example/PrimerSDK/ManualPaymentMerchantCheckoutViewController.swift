@@ -9,7 +9,7 @@
 import PrimerSDK
 import UIKit
 
-class MerchantCheckoutViewController: UIViewController {
+class ManualPaymentMerchantCheckoutViewController: UIViewController {
     
     class func instantiate(customerId: String, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
         let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
@@ -72,14 +72,14 @@ class MerchantCheckoutViewController: UIViewController {
         title = "Primer [\(environment.rawValue)]"
         
         generalSettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
+            merchantIdentifier: "merchant.dx.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "merchant://",
             urlSchemeIdentifier: "merchant",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
-            businessDetails: BusinessDetails(name: "Primer Swag Shop", address: nil),
+            paymentHandling: .manual,
             directDebitHasNoAmount: false,
             isInitialLoadingHidden: false,
             is3DSOnVaultingEnabled: true,
@@ -94,104 +94,10 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func openVaultButtonTapped(_ sender: Any) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
-        
-        let clientSessionRequestBody = ClientSessionRequestBody(
-            customerId: customerId,
-            orderId: "ios_order_id_\(String.randomString(length: 8))",
-            currencyCode: currency,
-            amount: nil,
-            metadata: ["key": "val"],
-            customer: ClientSessionRequestBody.Customer(
-                firstName: "John",
-                lastName: "Smith",
-                emailAddress: "john@primer.io",
-                mobileNumber: "+4478888888888",
-                billingAddress: Address(
-                    firstName: "John",
-                    lastName: "Smith",
-                    addressLine1: "65 York Road",
-                    addressLine2: nil,
-                    city: "London",
-                    state: nil,
-                    countryCode: "GB",
-                    postalCode: "NW06 4OM"),
-                shippingAddress: Address(
-                    firstName: "John",
-                    lastName: "Smith",
-                    addressLine1: "9446 Richmond Road",
-                    addressLine2: nil,
-                    city: "London",
-                    state: nil,
-                    countryCode: "GB",
-                    postalCode: "EC53 8BT")
-            ),
-            order: ClientSessionRequestBody.Order(
-                countryCode: countryCode,
-                lineItems: [
-                    ClientSessionRequestBody.Order.LineItem(
-                        itemId: "shoes-28190",
-                        description: "Fancy shoes",
-                        amount: amount,
-                        quantity: 1),
-                ]),
-            paymentMethod: ClientSessionRequestBody.PaymentMethod(
-                vaultOnSuccess: true,
-                options:
-                [
-                    "APPLE_PAY": [
-                        "surcharge": [
-                            "amount": 19
-                        ]
-                    ],
-                    "PAY_NL_IDEAL": [
-                        "surcharge": [
-                            "amount": 39
-                        ]
-                    ],
-                    "PAYPAL": [
-                        "surcharge": [
-                            "amount": 49
-                        ]
-                    ],
-                    "ADYEN_TWINT": [
-                        "surcharge": [
-                            "amount": 59
-                        ]
-                    ],
-                    "ADYEN_IDEAL": [
-                        "surcharge": [
-                            "amount": 69
-                        ]
-                    ],
-                    "ADYEN_GIROPAY": [
-                        "surcharge": [
-                            "amount": 79
-                        ]
-                    ],
-                    "BUCKAROO_BANCONTACT": [
-                        "surcharge": [
-                            "amount": 89
-                        ]
-                    ],
-                    "PAYMENT_CARD": [
-                        "networks": [
-                            "VISA": [
-                                "surcharge": [
-                                    "amount": 109
-                                ]
-                            ],
-                            "MASTERCARD": [
-                                "surcharge": [
-                                    "amount": 129
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            )
-        )
-        
-        Networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
+                
+        let networking = Networking()
+        let clientSessionRequestBody = networking.clientSessionRequestBodyWithCurrency(customerId, phoneNumber: phoneNumber, countryCode: countryCode, currency: currency, amount: amount)
+        networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
             if let err = err {
                 print(err)
                 let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
@@ -224,7 +130,6 @@ class MerchantCheckoutViewController: UIViewController {
         
         let networking = Networking()
         let clientSessionRequestBody = networking.clientSessionRequestBodyWithCurrency(customerId, phoneNumber: phoneNumber, countryCode: countryCode, currency: currency, amount: amount)
-
         networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
             if let err = err {
                 print(err)
@@ -256,11 +161,9 @@ class MerchantCheckoutViewController: UIViewController {
 
 // MARK: - PRIMER DELEGATE
 
-extension MerchantCheckoutViewController: PrimerDelegate {
+extension ManualPaymentMerchantCheckoutViewController: PrimerDelegate {
     
-    func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PaymentCreationDecision?) -> Void) {
-        decisionHandler(.continuePaymentCreation())
-    }
+    // Required
     
     func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(data)\n")
@@ -301,7 +204,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 
 // MARK: - TABLE VIEW DATA SOURCE & DELEGATE
 
-extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDelegate {
+extension ManualPaymentMerchantCheckoutViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return paymentMethodsDataSource.count
