@@ -15,9 +15,7 @@ public protocol PrimerDelegate {
     @objc func primerDidCompleteCheckoutWithData(_ data: CheckoutData)
     
     // MARK: Optional
-    
-    @objc optional func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void)
-    
+        
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
     @objc optional func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
@@ -49,27 +47,6 @@ public protocol PrimerDelegate {
 }
 
 internal class PrimerDelegateProxy {
-    
-    static var isClientTokenCallbackImplemented: Bool {
-        return Primer.shared.delegate?.clientTokenCallback != nil
-    }
-    
-    static func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void) {
-        DispatchQueue.main.async {
-            if isClientTokenCallbackImplemented {
-                Primer.shared.delegate?.clientTokenCallback?(completion)
-            } else {
-                let state: AppStateProtocol = DependencyContainer.resolve()
-                if let clientToken = state.clientToken {
-                    completion(clientToken, nil)
-                } else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    ErrorHandler.handle(error: err)
-                    completion(nil, err)
-                }
-            }
-        }
-    }
     
     static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         DispatchQueue.main.async {
