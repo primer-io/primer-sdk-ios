@@ -227,7 +227,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                     case .succeed:
                         seal.fulfill(nil)
 
-                    case .handleNewClientToken:
+                    case .continueWithNewClientToken:
                         seal.fulfill(nil)
                     }
                 }
@@ -301,7 +301,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                     case .succeed:
                         seal.fulfill(nil)
                         
-                    case .handleNewClientToken(let newClientToken):
+                    case .continueWithNewClientToken(let newClientToken):
                         firstly {
                             ClientTokenService.storeClientToken(newClientToken)
                         }

@@ -38,7 +38,7 @@ public extension PrimerErrorDecision {
     public enum DecisionType {
         case succeed
         case fail(message: String?)
-        case handleNewClientToken(_ newClientToken: String)
+        case continueWithNewClientToken(_ newClientToken: String)
     }
         
     var type: DecisionType
@@ -59,7 +59,7 @@ public extension PrimerResumeDecision {
     }
     
     static func continueWithNewClientToken(_ newClientToken: String) -> PrimerResumeDecision {
-        PrimerResumeDecision(type: .handleNewClientToken(newClientToken))
+        PrimerResumeDecision(type: .continueWithNewClientToken(newClientToken))
     }
 }
 
