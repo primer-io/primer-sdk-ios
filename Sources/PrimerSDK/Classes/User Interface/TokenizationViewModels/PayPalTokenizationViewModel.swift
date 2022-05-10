@@ -45,7 +45,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    override func startTokenizationFlow() -> Promise<PaymentMethodTokenData> {
+    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(

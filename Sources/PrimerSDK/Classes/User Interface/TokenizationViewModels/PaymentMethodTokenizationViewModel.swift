@@ -10,7 +10,7 @@
 import Foundation
 import UIKit
 
-typealias TokenizationCompletion = ((PaymentMethodTokenData?, Error?) -> Void)
+typealias TokenizationCompletion = ((PrimerPaymentMethodTokenData?, Error?) -> Void)
 typealias PaymentCompletion = ((PrimerCheckoutData?, Error?) -> Void)
 
 internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
@@ -36,7 +36,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     var willDismissPaymentMethodUI: (() -> Void)? { get set }
     var didDismissPaymentMethodUI: (() -> Void)? { get set }
     
-    var paymentMethodTokenData: PaymentMethodTokenData? { get set }
+    var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
     var paymentCheckoutData: PrimerCheckoutData? { get set }
     var successMessage: String? { get set }
     
@@ -45,8 +45,8 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     
     func validate() throws
     func start()
-    func startTokenizationFlow() -> Promise<PaymentMethodTokenData>
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) -> Promise<PrimerCheckoutData?>
+    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData>
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?>
     func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?>
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
     func handleSuccessfulFlow()
@@ -67,7 +67,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
     
-    var paymentMethodTokenData: PaymentMethodTokenData?
+    var paymentMethodTokenData: PrimerPaymentMethodTokenData?
     var paymentCheckoutData: PrimerCheckoutData?
     var successMessage: String?
     
@@ -686,7 +686,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         fatalError("\(#function) must be overriden")
     }
     
-    func startTokenizationFlow() -> Promise<PaymentMethodTokenData> {
+    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         fatalError("\(#function) must be overriden")
     }
     

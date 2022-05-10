@@ -192,7 +192,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    override func startTokenizationFlow() -> Promise<PaymentMethodTokenData> {
+    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -226,7 +226,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PaymentMethodTokenData> in
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .done { paymentMethodTokenData in

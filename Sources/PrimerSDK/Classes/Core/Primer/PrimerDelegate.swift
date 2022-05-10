@@ -2,7 +2,7 @@
 
 import UIKit
 
-public typealias PaymentMethodTokenData = PaymentMethodToken
+public typealias PrimerPaymentMethodTokenData = PaymentMethodToken
 
 @objc
 public protocol PrimerDelegate {
@@ -26,7 +26,7 @@ public protocol PrimerDelegate {
     /// - Parameters:
     ///   - data: The payment method data containing the token's information.
     ///   - decisionHandler: The handler managing a custom error to optionally pass to the SDK
-    @objc optional func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void)
+    @objc optional func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void)
     
     /// This function will be called when the checkout encountered an error.
     /// - Parameters:
@@ -37,14 +37,14 @@ public protocol PrimerDelegate {
     @objc optional func primerDidDismiss()
         
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
-    @objc optional func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
+    @objc optional func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
     @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
     @objc optional func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
 }
 
 internal class PrimerDelegateProxy {
     
-    static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         DispatchQueue.main.async {
             if Primer.shared.delegate?.primerDidTokenizePaymentMethod != nil {
                 Primer.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
@@ -61,7 +61,7 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+    static func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         DispatchQueue.main.async {
             if Primer.shared.delegate?.primerWillCreatePaymentWithData != nil {
                 Primer.shared.delegate?.primerWillCreatePaymentWithData?(data, decisionHandler: decisionHandler)
