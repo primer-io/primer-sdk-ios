@@ -90,75 +90,6 @@ class MerchantCheckoutViewController: UIViewController {
     
     // MARK: - ACTIONS
     
-    @IBAction func addApayaButtonTapped(_ sender: Any) {
-        vaultApayaSettings = PrimerSettings(
-            isFullScreenOnly: true,
-            hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true
-        )
-        
-        let configuration = PrimerConfiguration(settings: vaultApayaSettings)
-        Primer.shared.configure(configuration: configuration, delegate: self)
-    }
-    
-    @IBAction func addCardButtonTapped(_ sender: Any) {
-        let cardSettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
-            klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: nil,
-            urlScheme: "merchant://",
-            urlSchemeIdentifier: "merchant",
-            isFullScreenOnly: false,
-            hasDisabledSuccessScreen: false,
-            businessDetails: nil,
-            directDebitHasNoAmount: false,
-            isInitialLoadingHidden: true,
-            is3DSOnVaultingEnabled: true,
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
-        )
-        
-        let configuration = PrimerConfiguration(settings: cardSettings)
-        Primer.shared.configure(configuration: configuration, delegate: self)
-        Primer.shared.showPaymentMethod(.paymentCard, withIntent: .checkout, on: self)
-    }
-    
-    @IBAction func addPayPalButtonTapped(_ sender: Any) {
-        vaultPayPalSettings = PrimerSettings(
-            urlScheme: "merchant://",
-            urlSchemeIdentifier: "merchant",
-            hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true
-        )
-        
-        let configuration = PrimerConfiguration(settings: vaultPayPalSettings)
-        Primer.shared.configure(configuration: configuration, delegate: self)
-        Primer.shared.showPaymentMethod(.payPal, withIntent: .checkout, on: self)
-    }
-    
-    @IBAction func addKlarnaButtonTapped(_ sender: Any) {
-        vaultKlarnaSettings = PrimerSettings(
-            klarnaSessionType: .recurringPayment,
-            hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true
-        )
-        
-        let configuration = PrimerConfiguration(settings: vaultKlarnaSettings)
-        Primer.shared.configure(configuration: configuration, delegate: self)
-        Primer.shared.showPaymentMethod(.klarna, withIntent: .vault, on: self)
-    }
-    
-    @IBAction func addApplePayButtonTapped(_ sender: Any) {
-        applePaySettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
-            hasDisabledSuccessScreen: true,
-            isInitialLoadingHidden: true
-        )
-        
-        let configuration = PrimerConfiguration(settings: applePaySettings)
-        Primer.shared.configure(configuration: configuration, delegate: self)
-        Primer.shared.showPaymentMethod(.applePay, withIntent: .checkout, on: self)
-    }
-    
     @IBAction func openVaultButtonTapped(_ sender: Any) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
         
@@ -281,7 +212,7 @@ class MerchantCheckoutViewController: UIViewController {
                 
                 let configuration = PrimerConfiguration(settings: self.generalSettings)
                 Primer.shared.configure(configuration: configuration, delegate: self)
-                Primer.shared.showVaultManager(on: self, clientToken: clientToken, completion: nil)
+                Primer.shared.showVaultManager(clientToken: clientToken, completion: nil)
             }
         }
     }
@@ -404,7 +335,7 @@ class MerchantCheckoutViewController: UIViewController {
                 
                 let configuration = PrimerConfiguration(settings: self.generalSettings)
                 Primer.shared.configure(configuration: configuration, delegate: self)
-                Primer.shared.showUniversalCheckout(on: self, clientToken: clientToken, completion: nil)
+                Primer.shared.showUniversalCheckout(clientToken: clientToken)
             }
         }
     }
@@ -421,15 +352,12 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((ErrorDecision) -> Void)) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Failed\n")
         let message = "Merchant App | ERROR"
-        decisionHandler(.showErrorMessage(message))
+        decisionHandler(.fail(withMessage: message))
     }
         
-    func primerDidCompleteCheckoutWithData(_ data: CheckoutData, decisionHandler: @escaping ((SuccessDecision) -> Void)) {
+    func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(data)\n")
         self.checkoutData = data
-        
-        let message = "Merchant App | SUCCESS"
-        decisionHandler(.showSuccessMessage(message))
     }
     
     func primerDidDismiss() {
