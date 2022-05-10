@@ -56,7 +56,7 @@ class MockPrimerDelegate: PrimerDelegate {
         completion(token, nil)
     }
     
-    func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
+    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
 
     }
 

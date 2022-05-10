@@ -11,13 +11,13 @@ import PrimerSDK
 
 class ResultViewController: UIViewController {
     
-    static func instantiate(data: CheckoutData) -> ResultViewController {
+    static func instantiate(data: PrimerCheckoutData) -> ResultViewController {
         let rvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ResultViewController") as! ResultViewController
         rvc.data = data
         return rvc
     }
     
-    var data: CheckoutData!
+    var data: PrimerCheckoutData!
     
     // To utilize with HUC
     @IBOutlet weak var amountStackView: UIStackView!

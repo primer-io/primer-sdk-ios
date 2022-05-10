@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 
 typealias TokenizationCompletion = ((PaymentMethodTokenData?, Error?) -> Void)
-typealias PaymentCompletion = ((CheckoutData?, Error?) -> Void)
+typealias PaymentCompletion = ((PrimerCheckoutData?, Error?) -> Void)
 
 internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     init(config: PaymentMethodConfig)
@@ -37,7 +37,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     var didDismissPaymentMethodUI: (() -> Void)? { get set }
     
     var paymentMethodTokenData: PaymentMethodTokenData? { get set }
-    var paymentCheckoutData: CheckoutData? { get set }
+    var paymentCheckoutData: PrimerCheckoutData? { get set }
     var successMessage: String? { get set }
     
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
@@ -46,9 +46,9 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     func validate() throws
     func start()
     func startTokenizationFlow() -> Promise<PaymentMethodTokenData>
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) -> Promise<CheckoutData?>
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PaymentMethodTokenData) -> Promise<PrimerCheckoutData?>
     func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?>
-    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<CheckoutData?>
+    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
     func handleSuccessfulFlow()
     func handleFailureFlow(errorMessage: String?)
 }
@@ -68,7 +68,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var didDismissPaymentMethodUI: (() -> Void)?
     
     var paymentMethodTokenData: PaymentMethodTokenData?
-    var paymentCheckoutData: CheckoutData?
+    var paymentCheckoutData: PrimerCheckoutData?
     var successMessage: String?
     
     var resumePaymentId: String?
