@@ -199,18 +199,5 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     }
 }
 
-extension QRCodeTokenizationViewModel {
-    
-    private func unselectPaymentMethodWithError(_ error: Error) {
-        firstly {
-            ClientSession.Action.unselectPaymentMethodIfNeeded()
-        }
-        .done {}
-        .catch { error in
-            self.raisePrimerDidFailWithError(error)
-        }
-    }
-}
-
 #endif
 

@@ -318,38 +318,6 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 }
 
-//extension PayPalTokenizationViewModel {
-//    
-//    override func handle(error: Error) {
-//        firstly {
-//            ClientSession.Action.unselectPaymentMethodIfNeeded()
-//        }
-//        .ensure {
-//            self.executeCompletionAndNullifyAfter(error: error)
-//        }
-//        .catch { _ in }
-//    }
-//
-//    override func handle(newClientToken clientToken: String) {
-//        
-//        firstly {
-//            ClientTokenService.storeClientToken(clientToken)
-//        }
-//        .done {
-//            self.continueTokenizationFlow()
-//        }
-//        .catch { error in
-//            self.raisePrimerDidFailWithError(error)
-//        }
-//    }
-//    
-//    override func handleSuccess() {
-//        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
-//        self.tokenizationCompletion = nil
-//    }
-//    
-//}
-
 @available(iOS 11.0, *)
 extension PayPalTokenizationViewModel: ASWebAuthenticationPresentationContextProviding {
     @available(iOS 12.0, *)
