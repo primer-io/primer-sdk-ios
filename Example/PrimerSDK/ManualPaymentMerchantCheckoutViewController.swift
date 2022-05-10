@@ -9,7 +9,7 @@
 import PrimerSDK
 import UIKit
 
-class MerchantCheckoutViewController: UIViewController {
+class ManualPaymentMerchantCheckoutViewController: UIViewController {
     
     class func instantiate(customerId: String, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
         let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
@@ -72,13 +72,14 @@ class MerchantCheckoutViewController: UIViewController {
         title = "Primer [\(environment.rawValue)]"
         
         generalSettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
+            merchantIdentifier: "merchant.dx.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "merchant://",
             urlSchemeIdentifier: "merchant",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
+            paymentHandling: .manual,
             directDebitHasNoAmount: false,
             isInitialLoadingHidden: false,
             is3DSOnVaultingEnabled: true,
@@ -96,7 +97,6 @@ class MerchantCheckoutViewController: UIViewController {
                 
         let networking = Networking()
         let clientSessionRequestBody = networking.clientSessionRequestBodyWithCurrency(customerId, phoneNumber: phoneNumber, countryCode: countryCode, currency: currency, amount: amount)
-
         networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
             if let err = err {
                 print(err)
@@ -130,7 +130,6 @@ class MerchantCheckoutViewController: UIViewController {
         
         let networking = Networking()
         let clientSessionRequestBody = networking.clientSessionRequestBodyWithCurrency(customerId, phoneNumber: phoneNumber, countryCode: countryCode, currency: currency, amount: amount)
-
         networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
             if let err = err {
                 print(err)
@@ -162,7 +161,7 @@ class MerchantCheckoutViewController: UIViewController {
 
 // MARK: - PRIMER DELEGATE
 
-extension MerchantCheckoutViewController: PrimerDelegate {
+extension ManualPaymentMerchantCheckoutViewController: PrimerDelegate {
     
     // Required
     
@@ -205,7 +204,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
 
 // MARK: - TABLE VIEW DATA SOURCE & DELEGATE
 
-extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDelegate {
+extension ManualPaymentMerchantCheckoutViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return paymentMethodsDataSource.count

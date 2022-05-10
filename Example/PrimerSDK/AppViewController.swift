@@ -10,10 +10,12 @@ import PrimerSDK
 import UIKit
 
 var environment: Environment = .sandbox
+var paymentHandling: PaymentHandling = .auto
 
 class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
     @IBOutlet weak var environmentControl: UISegmentedControl!
+    @IBOutlet weak var checkoutHandlingControl: UISegmentedControl!
     @IBOutlet weak var customerIdTextField: UITextField!
     @IBOutlet weak var phoneNumberTextField: UITextField!
     @IBOutlet weak var countryCodeTextField: UITextField!
@@ -25,6 +27,8 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         super.viewDidLoad()
         environmentControl.selectedSegmentIndex = environment.intValue
         environmentControl.accessibilityIdentifier = "env_control"
+        checkoutHandlingControl.selectedSegmentIndex = paymentHandling.rawValue
+        checkoutHandlingControl.accessibilityIdentifier = "payment_control"
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
@@ -62,19 +66,36 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         environment = Environment(intValue: sender.selectedSegmentIndex)
     }
     
+    @IBAction func paymentHandlingValueChanged(_ sender: UISegmentedControl) {
+        if let selectedPaymentHandling = PaymentHandling(rawValue: sender.selectedSegmentIndex) {
+            paymentHandling = selectedPaymentHandling
+        }
+    }
+    
     @IBAction func initializePrimerButtonTapped(_ sender: Any) {
+        
         var amount: Int?
         if let amountStr = amountTextField.text {
             amount = Int(amountStr)
         }
         
-        let mcvc = MerchantCheckoutViewController.instantiate(
+        var mcvc = MerchantCheckoutViewController.instantiate(
             customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
             phoneNumber: phoneNumberTextField.text,
             countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
             currency: Currency(rawValue: currencyTextField.text ?? ""),
             amount: amount,
             performPayment: performPaymentSwitch.isOn)
+        
+        if paymentHandling == .manual {
+            mcvc = ManualPaymentMerchantCheckoutViewController.instantiate(
+                customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
+                phoneNumber: phoneNumberTextField.text,
+                countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
+                currency: Currency(rawValue: currencyTextField.text ?? ""),
+                amount: amount,
+                performPayment: performPaymentSwitch.isOn)
+        }
         
         navigationController?.pushViewController(mcvc, animated: true)
     }
