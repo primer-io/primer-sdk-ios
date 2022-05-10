@@ -142,7 +142,7 @@ extension PaymentMethodTokenizationViewModel {
                     case .succeed:
                         seal.fulfill(nil)
                         
-                    case .handleNewClientToken(let newClientToken):
+                    case .continueWithNewClientToken(let newClientToken):
                         firstly {
                             ClientTokenService.storeClientToken(newClientToken)
                         }
@@ -242,7 +242,7 @@ extension PaymentMethodTokenizationViewModel {
                     case .succeed:
                         seal.fulfill(nil)
 
-                    case .handleNewClientToken(let newClientToken):
+                    case .continueWithNewClientToken(let newClientToken):
                         seal.fulfill(nil)
                     }
                 }
