@@ -15,18 +15,9 @@ public protocol PrimerDelegate {
     @objc func primerDidCompleteCheckoutWithData(_ data: CheckoutData)
     
     // MARK: Optional
-        
-    @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
-    @objc optional func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
-    @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
-    @objc optional func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
-    
-    
-    @objc optional func primerDidDismiss()
     
     /// This function will be called when the SDK is about to initiate a client session update.
     @objc optional func primerClientSessionWillUpdate()
-    
     /// This function will be called when the SDK finishes to update a client session.
     /// - Parameters:
     ///   - clientSession: The client session containing all the current info about the checkout.
@@ -43,6 +34,12 @@ public protocol PrimerDelegate {
     ///   - data: The additional payment data if present
     ///   - decisionHandler: The handler containing a custom error message to optionally pass to the SDK
     @objc optional func primerDidFailWithError(_ error: Error, data: CheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void))
+    @objc optional func primerDidDismiss()
+        
+    @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
+    @objc optional func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
+    @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
+    @objc optional func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
 }
 
 internal class PrimerDelegateProxy {
