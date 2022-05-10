@@ -522,41 +522,4 @@ extension KlarnaTokenizationViewModel: WKNavigationDelegate {
     
 }
 
-//extension KlarnaTokenizationViewModel {
-//    
-//    override func handle(error: Error) {
-//        firstly {
-//            ClientSession.Action.unselectPaymentMethodIfNeeded()
-//        }
-//        .ensure {
-//            self.executeCompletionAndNullifyAfter(error: error)
-//            self.handleFailureFlow(error: error)
-//        }
-//        .catch { _ in }
-//    }
-//
-//    override func handle(newClientToken clientToken: String) {
-//        
-//        firstly {
-//            ClientTokenService.storeClientToken(clientToken)
-//        }
-//        .then{ () -> Promise<Void> in
-//            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-//            return configService.fetchConfig()
-//        }
-//        .done {
-//            self.continueTokenizationFlow()
-//        }
-//        .catch { error in
-//            self.raisePrimerDidFailWithError(error)
-//        }
-//    }
-//    
-//    override func handleSuccess() {
-//        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
-//        self.tokenizationCompletion = nil
-//    }
-//    
-//}
-
 #endif

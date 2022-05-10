@@ -177,58 +177,6 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
     
-    private func continueTokenizationFlow() {
-        
-//        firstly {
-//            self.validateReturningPromise()
-//        }
-//        .then { () -> Promise<Void> in
-//            self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
-//        }
-//        .then {
-//            self.fetchBanks()
-//        }
-//        .then { banks -> Promise<PaymentMethodToken> in
-//            self.banks = banks
-//            self.dataSource = banks
-//            let bsvc = BankSelectorViewController(viewModel: self)
-//            DispatchQueue.main.async {
-//                Primer.shared.primerRootVC?.show(viewController: bsvc)
-//            }
-//
-//            return self.fetchPaymentMethodToken()
-//        }
-//        .then { tmpPaymentMethodTokenData -> Promise<PaymentMethodToken> in
-//            self.paymentMethodTokenData = tmpPaymentMethodTokenData
-//            return self.continueTokenizationFlow(for: tmpPaymentMethodTokenData)
-//        }
-//        .done { paymentMethodTokenData in
-//            self.paymentMethodTokenData = paymentMethodTokenData
-//
-//            DispatchQueue.main.async {
-//                self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
-//            }
-//        }
-//        .ensure { [unowned self] in
-//            DispatchQueue.main.async {
-//                self.willDismissExternalView?()
-//                self.webViewController?.dismiss(animated: true, completion: {
-//                    self.didDismissExternalView?()
-//                })
-//            }
-//
-//            self.willPresentExternalView = nil
-//            self.didPresentExternalView = nil
-//            self.willDismissExternalView = nil
-//            self.didDismissExternalView = nil
-//            self.webViewController = nil
-//            self.webViewCompletion = nil
-//        }
-//        .catch { err in
-//            self.raisePrimerDidFailWithError(err)
-//        }
-    }
-    
     private func fetchBanks() -> Promise<[Bank]> {
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -381,54 +329,5 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
         return true
     }
 }
-
-//extension BankSelectorTokenizationViewModel {
-//    
-//    override func handle(error: Error) {
-//        firstly {
-//            ClientSession.Action.unselectPaymentMethodIfNeeded()
-//        }
-//        .ensure {
-//            self.executeCompletionAndNullifyAfter(error: error)
-//            self.handleFailureFlow(error: error)
-//        }
-//        .catch { _ in }
-//    }
-//    
-//    override func handle(newClientToken clientToken: String) {
-//        
-//        guard let decodedClientToken = clientToken.jwtTokenPayload else {
-//            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-//            ErrorHandler.handle(error: err)
-//            self.handle(error: err)
-//            return
-//        }
-//        
-//        if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-//            super.handle(newClientToken: clientToken)
-//        } else if decodedClientToken.intent == "CHECKOUT" {
-//            
-//            firstly {
-//                ClientTokenService.storeClientToken(clientToken)
-//            }
-//            .then{ () -> Promise<Void> in
-//                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-//                return configService.fetchConfig()
-//            }
-//            .done {
-//                self.continueTokenizationFlow()
-//            }
-//            .catch { err in
-//                self.raisePrimerDidFailWithError(err)
-//            }
-//        }
-//    }
-//    
-//    override func handleSuccess() {
-//        self.tokenizationCompletion?(self.paymentMethodTokenData, nil)
-//        self.tokenizationCompletion = nil
-//    }
-//    
-//}
 
 #endif

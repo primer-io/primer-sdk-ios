@@ -151,6 +151,19 @@ internal class PrimerDelegateProxy {
         }
     }
     
+    // This function will raise the error to the merchants, and the merchants will
+    // return the error message they want to present.
+    static func raisePrimerDidFailWithError(_ primerError: Error, data: CheckoutData?) -> Promise<String?> {
+        return Promise { seal in
+            PrimerDelegateProxy.primerDidFailWithError(primerError, data: data) { errorDecision in
+                switch errorDecision.type {
+                case .fail(let message):
+                    seal.fulfill(message)
+                }
+            }
+        }
+    }
+    
     static func primerClientSessionWillUpdate() {
         DispatchQueue.main.async {
             Primer.shared.delegate?.primerClientSessionWillUpdate?()
