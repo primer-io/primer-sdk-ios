@@ -133,7 +133,7 @@
 		82638456137CB1797D87E01000A17D32 /* Dimensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5EAE67275086BC68BC151458DD7BA9A /* Dimensions.swift */; };
 		8324F7C3234AB565D5641C861C06E08E /* ImageName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBA4CB521C25A8232A5B75305F0BBAF /* ImageName.swift */; };
 		83B11D75D30844B623CD78A845E1414A /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EC934BC88C54F0FC4A8E422F7B3F615 /* Queue.swift */; };
-		84FDC8FF2829222600CC10FF /* VaultedPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FDC8FE2829222600CC10FF /* VaultedPaymentMethodTokenizationViewModel.swift */; };
+		84FDC8FF2829222600CC10FF /* CheckoutWithVaultedPaymentMethodViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FDC8FE2829222600CC10FF /* CheckoutWithVaultedPaymentMethodViewModel.swift */; };
 		8548D98B63B0CE7C33DA6C183E9A9BF0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D245E0514AAC1A2B9A6D5EA2F383E90F /* UIKit.framework */; };
 		85AD4390C5F6F11A0C98187B0325C2A4 /* Connectivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E68E14C44D7B49DA70126EC199FD3FB /* Connectivity.swift */; };
 		874BAA839BE294FE9EC7EFFDDA50862D /* PaymentMethodsGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F68D47769523C77FABB2157B84748B /* PaymentMethodsGroupView.swift */; };
@@ -418,7 +418,7 @@
 		844BB5C344432879381C42D4654322A4 /* nb.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = nb.lproj; sourceTree = "<group>"; };
 		8453FAED373CE0FF521C6A9EB2433A97 /* PrimerSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerSettings.swift; sourceTree = "<group>"; };
 		8455D26656C353FE989E305289B7152D /* Strings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Strings.swift; path = Sources/PrimerSDK/Classes/Strings.swift; sourceTree = "<group>"; };
-		84FDC8FE2829222600CC10FF /* VaultedPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultedPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
+		84FDC8FE2829222600CC10FF /* CheckoutWithVaultedPaymentMethodViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutWithVaultedPaymentMethodViewModel.swift; sourceTree = "<group>"; };
 		856A8DCC8C7A1914DB4E76151D5E4D16 /* Device.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		85C3170F58EB9073E27A874AE8A972B8 /* FormType.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormType.swift; sourceTree = "<group>"; };
 		86E7C7826FB224247F40F7059C725F4C /* PrimerSource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerSource.swift; sourceTree = "<group>"; };
@@ -1344,7 +1344,7 @@
 				5747FF6B0529BAC196580655A7F7B707 /* PaymentMethodTokenizationViewModel+Logic.swift */,
 				663BEEC1CA515E94658B9DA8231FD2C9 /* PayPalTokenizationViewModel.swift */,
 				D3E2181EC299DDEA7D6BBB8E896FDC63 /* QRCodeTokenizationViewModel.swift */,
-				84FDC8FE2829222600CC10FF /* VaultedPaymentMethodTokenizationViewModel.swift */,
+				84FDC8FE2829222600CC10FF /* CheckoutWithVaultedPaymentMethodViewModel.swift */,
 			);
 			path = TokenizationViewModels;
 			sourceTree = "<group>";
@@ -1709,7 +1709,7 @@
 				9326ED64ECD3B2C293C71F2441F761E4 /* CardFormPaymentMethodTokenizationViewModel.swift in Sources */,
 				0BE666D6F7A044F92A7861BF1531833E /* CardNetwork.swift in Sources */,
 				A412B13364A74B80F7C47CFA37E651F8 /* CardScannerViewController.swift in Sources */,
-				84FDC8FF2829222600CC10FF /* VaultedPaymentMethodTokenizationViewModel.swift in Sources */,
+				84FDC8FF2829222600CC10FF /* CheckoutWithVaultedPaymentMethodViewModel.swift in Sources */,
 				D27DFEDC7194BECDFEB727C2E550F18B /* CardScannerViewController+SimpleScanDelegate.swift in Sources */,
 				F14712EA8CA9213D96A180559196583F /* Catchable.swift in Sources */,
 				4ABFF3094B0E0390496344EC2E7D842C /* CatchWrappers.swift in Sources */,
