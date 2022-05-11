@@ -199,7 +199,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                    let statusUrlStr = decodedClientToken.statusUrl,
                    let statusUrl = URL(string: statusUrlStr),
                    decodedClientToken.intent != nil {
-                    let pollingURLs = PollingURLs(status: statusUrlStr, redirect: redirectUrlStr, complete: nil)
                     
                     DispatchQueue.main.async {
                         UIApplication.shared.endIgnoringInteractionEvents()
