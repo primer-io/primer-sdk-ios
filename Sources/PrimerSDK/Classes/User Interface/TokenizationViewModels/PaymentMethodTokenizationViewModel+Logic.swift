@@ -267,7 +267,7 @@ extension PaymentMethodTokenizationViewModel {
                     case .succeed:
                         seal.fulfill(nil)
 
-                    case .continueWithNewClientToken(let newClientToken):
+                    case .continueWithNewClientToken:
                         seal.fulfill(nil)
                     }
                 }
