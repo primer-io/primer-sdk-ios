@@ -12,7 +12,6 @@ import UIKit
 class MerchantCardFormViewController: UIViewController {
     
     var stackView: UIStackView!
-    lazy var endpoint: String = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     
     var cardNumberTextField: PrimerInputTextField?
     var expiryTextField: PrimerInputTextField?
