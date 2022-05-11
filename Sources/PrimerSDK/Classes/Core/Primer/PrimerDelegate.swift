@@ -67,7 +67,9 @@ internal class PrimerDelegateProxy {
     }
     
     static func clientTokenCallback(_ completion: @escaping (_ token: String?, _ error: Error?) -> Void) {
-        Primer.shared.delegate?.clientTokenCallback(completion)
+        DispatchQueue.main.async {
+            Primer.shared.delegate?.clientTokenCallback(completion)
+        }
     }
     
     static var isTokenAddedToVaultImplemented: Bool {
@@ -75,24 +77,30 @@ internal class PrimerDelegateProxy {
     }
     
     static func tokenAddedToVault(_ token: PaymentMethodToken) {
-        Primer.shared.delegate?.tokenAddedToVault?(token)
+        DispatchQueue.main.async {
+            Primer.shared.delegate?.tokenAddedToVault?(token)
+        }
     }
     
     static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, _ completion:  @escaping (Error?) -> Void) {
-        if Primer.shared.flow.internalSessionFlow.vaulted {
-            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+        DispatchQueue.main.async {
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+            }
+            Primer.shared.delegate?.authorizePayment?(paymentMethodToken, completion)
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, completion)
         }
-        Primer.shared.delegate?.authorizePayment?(paymentMethodToken, completion)
-        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, completion)
     }
     
     static func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler:  ResumeHandlerProtocol) {
-        if Primer.shared.flow.internalSessionFlow.vaulted {
-            Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+        DispatchQueue.main.async {
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                Primer.shared.delegate?.tokenAddedToVault?(paymentMethodToken)
+            }
+            
+            Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: resumeHandler)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: resumeHandler)
         }
-        
-        Primer.shared.delegate?.onTokenizeSuccess?(paymentMethodToken, resumeHandler: resumeHandler)
-        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: paymentMethodToken, resumeHandler: resumeHandler)
     }
     
     static var isOnResumeSuccessImplemented: Bool {
@@ -100,8 +108,10 @@ internal class PrimerDelegateProxy {
     }
     
     static func onResumeSuccess(_ resumeToken: String, resumeHandler: ResumeHandlerProtocol) {
-        Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: resumeHandler)
-        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutResume(withResumeToken: resumeToken, resumeHandler: resumeHandler)
+        DispatchQueue.main.async {
+            Primer.shared.delegate?.onResumeSuccess?(resumeToken, resumeHandler: resumeHandler)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutResume(withResumeToken: resumeToken, resumeHandler: resumeHandler)
+        }
     }
     
     static var isOnResumeErrorImplemented: Bool {
@@ -109,8 +119,10 @@ internal class PrimerDelegateProxy {
     }
     
     static func onResumeError(_ error: Error) {
-        Primer.shared.delegate?.onResumeError?(error)
-        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
+        DispatchQueue.main.async {
+            Primer.shared.delegate?.onResumeError?(error)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
+        }
     }
     
     static var isOnCheckoutDismissedImplemented: Bool {
@@ -118,7 +130,9 @@ internal class PrimerDelegateProxy {
     }
     
     static func onCheckoutDismissed() {
-        Primer.shared.delegate?.onCheckoutDismissed?()
+        DispatchQueue.main.async {
+            Primer.shared.delegate?.onCheckoutDismissed?()
+        }
     }
     
     static var isCheckoutFailedImplemented: Bool {
@@ -126,8 +140,10 @@ internal class PrimerDelegateProxy {
     }
     
     static func checkoutFailed(with error: Error) {
-        Primer.shared.delegate?.checkoutFailed?(with: error)
-        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
+        DispatchQueue.main.async {
+            Primer.shared.delegate?.checkoutFailed?(with: error)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
+        }
     }
     
     static var isClientSessionActionsImplemented: Bool {
@@ -139,8 +155,10 @@ internal class PrimerDelegateProxy {
     }
     
     static func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
-        if PrimerDelegateProxy.isClientSessionActionsImplemented {
-            Primer.shared.delegate!.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+        DispatchQueue.main.async {
+            if PrimerDelegateProxy.isClientSessionActionsImplemented {
+                Primer.shared.delegate!.onClientSessionActions?(actions, resumeHandler: resumeHandler)
+            }
         }
     }
     
