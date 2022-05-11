@@ -509,17 +509,17 @@ extension PrimerCheckoutDataPayment {
     public let orderId: String?
     public let currencyCode: String?
     public let totalAmount: Int?
-    public let lineItems: [PrimerCheckoutDataLineItem]?
+    public let lineItems: [PrimerLineItem]?
     public let orderDetails: PrimerOrder?
-    public let customer: PrimerCheckoutDataCustomer?
+    public let customer: PrimerCustomer?
     
     public init(customerId: String?,
                 orderId: String?,
                 currencyCode: String?,
                 totalAmount: Int?,
-                lineItems: [PrimerCheckoutDataLineItem]?,
+                lineItems: [PrimerLineItem]?,
                 orderDetails: PrimerOrder?,
-                customer: PrimerCheckoutDataCustomer?) {
+                customer: PrimerCustomer?) {
         self.customerId = customerId
         self.orderId = orderId
         self.currencyCode = currencyCode
@@ -538,7 +538,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class PrimerCheckoutDataCustomer: NSObject {
+@objc public class PrimerCustomer: NSObject {
     public let emailAddress: String?
     public let mobileNumber: String?
     public let firstName: String?
@@ -563,7 +563,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class PrimerCheckoutDataLineItem: NSObject {
+@objc public class PrimerLineItem: NSObject {
     
     public let itemId: String?
     public let itemDescription: String?
@@ -627,7 +627,7 @@ extension PrimerCheckoutDataPayment {
 extension PrimerClientSession {
     
     internal convenience init(from apiConfiguration: PrimerAPIConfiguration) {
-        let lineItems = apiConfiguration.clientSession?.order?.lineItems?.compactMap { PrimerCheckoutDataLineItem(itemId: $0.itemId,
+        let lineItems = apiConfiguration.clientSession?.order?.lineItems?.compactMap { PrimerLineItem(itemId: $0.itemId,
                                                                                                                itemDescription: $0.description,
                                                                                                                amount: $0.amount,
                                                                                                                discountAmount: $0.discountAmount,
@@ -655,7 +655,7 @@ extension PrimerClientSession {
                                                                  countryCode: apiConfiguration.clientSession?.customer?.shippingAddress?.countryCode?.rawValue,
                                                                  postalCode: apiConfiguration.clientSession?.customer?.shippingAddress?.postalCode)
         
-        let customer = PrimerCheckoutDataCustomer(emailAddress: apiConfiguration.clientSession?.customer?.emailAddress,
+        let customer = PrimerCustomer(emailAddress: apiConfiguration.clientSession?.customer?.emailAddress,
                                                   mobileNumber: apiConfiguration.clientSession?.customer?.mobileNumber,
                                                   firstName: apiConfiguration.clientSession?.customer?.firstName,
                                                   lastName: apiConfiguration.clientSession?.customer?.lastName,
