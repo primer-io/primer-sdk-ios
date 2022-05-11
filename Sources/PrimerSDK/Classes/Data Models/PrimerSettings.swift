@@ -309,11 +309,23 @@ public class PrimerSettings: PrimerSettingsProtocol {
 }
 
 public struct PrimerBusiness: Codable {
-    public var name: String
-    public var address: Address
+    public let name: String?
+    public let registrationNumber: String?
+    public let email: String?
+    public let phone: String?
+    public let address: Address?
 
-    public init(name: String, address: Address) {
+    public init(
+        name: String?,
+        registrationNumber: String?,
+        email: String?,
+        phone: String?,
+        address: Address?
+    ) {
         self.name = name
+        self.registrationNumber = registrationNumber
+        self.email = email
+        self.phone = phone
         self.address = address
     }
 }
