@@ -493,7 +493,7 @@ internal class PrimerRootViewController: PrimerViewController {
 
 extension PrimerRootViewController {
     
-    func presentPaymentMethod(type: PaymentMethodConfigType) {
+    func presentPaymentMethod(type: PrimerPaymentMethodType) {
         guard let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
             let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)

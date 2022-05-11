@@ -71,7 +71,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
             }
             .then { () -> Promise<Void> in
-                return self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
+                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then {
                 self.tokenize()

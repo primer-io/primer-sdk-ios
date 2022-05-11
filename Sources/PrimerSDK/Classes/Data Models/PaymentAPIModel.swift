@@ -425,8 +425,8 @@ public struct Payment {
     }
 }
 
-internal struct PaymentMethodData {
-    let type: PaymentMethodConfigType
+internal struct PrimerPaymentMethodData {
+    let type: PrimerPaymentMethodType
 }
 
 //MARK: - Public / User Facing

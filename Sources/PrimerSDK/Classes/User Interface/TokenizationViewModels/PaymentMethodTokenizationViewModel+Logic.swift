@@ -308,7 +308,7 @@ extension PaymentMethodTokenizationViewModel {
         Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
     }
         
-    internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PaymentMethodData) -> Promise<Void> {
+    internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
             if Primer.shared.flow.internalSessionFlow.vaulted {
                 seal.fulfill()
