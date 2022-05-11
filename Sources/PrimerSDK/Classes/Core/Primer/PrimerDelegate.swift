@@ -36,9 +36,7 @@ public protocol PrimerDelegate {
     @objc optional func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void))
     @objc optional func primerDidDismiss()
         
-    @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
     @objc optional func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
-    @available(*, deprecated, message: "Use primerDidCompleteCheckoutWithData(:) function")
     @objc optional func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
 }
 
