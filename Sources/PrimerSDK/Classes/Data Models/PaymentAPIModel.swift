@@ -541,13 +541,23 @@ extension PrimerCheckoutDataPayment {
 @objc public class PrimerCheckoutDataCustomer: NSObject {
     public let emailAddress: String?
     public let mobileNumber: String?
+    public let firstName: String?
+    public let lastName: String?
     public let billingAddress: CheckoutDataPaymentAPIModelAddress?
     public let shippingAddress: CheckoutDataPaymentAPIModelAddress?
     
-    public init(emailAddress: String?, mobileNumber: String?, billingAddress: CheckoutDataPaymentAPIModelAddress?, shippingAddress: CheckoutDataPaymentAPIModelAddress?) {
-        
+    public init(
+        emailAddress: String?,
+        mobileNumber: String?,
+        firstName: String?,
+        lastName: String?,
+        billingAddress: CheckoutDataPaymentAPIModelAddress?,
+        shippingAddress: CheckoutDataPaymentAPIModelAddress?)
+    {
         self.emailAddress = emailAddress
         self.mobileNumber = mobileNumber
+        self.firstName = firstName
+        self.lastName = lastName
         self.billingAddress = billingAddress
         self.shippingAddress = shippingAddress
     }
@@ -646,9 +656,11 @@ extension PrimerClientSession {
                                                                  postalCode: apiConfiguration.clientSession?.customer?.shippingAddress?.postalCode)
         
         let customer = PrimerCheckoutDataCustomer(emailAddress: apiConfiguration.clientSession?.customer?.emailAddress,
-                                            mobileNumber: apiConfiguration.clientSession?.customer?.mobileNumber,
-                                            billingAddress: billingAddress,
-                                            shippingAddress: shippingAddress)
+                                                  mobileNumber: apiConfiguration.clientSession?.customer?.mobileNumber,
+                                                  firstName: apiConfiguration.clientSession?.customer?.firstName,
+                                                  lastName: apiConfiguration.clientSession?.customer?.lastName,
+                                                  billingAddress: billingAddress,
+                                                  shippingAddress: shippingAddress)
         
         
         self.init(customerId: apiConfiguration.clientSession?.customer?.id,
