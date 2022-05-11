@@ -16,7 +16,7 @@ internal protocol PrimerSettingsProtocol {
     var urlSchemeIdentifier: String? { get }
     var isFullScreenOnly: Bool { get }
     var hasDisabledSuccessScreen: Bool { get set }
-    var paymentHandling: PaymentHandling { get set }
+    var paymentHandling: PrimerPaymentHandling { get set }
     var isManualPaymentHandlingEnabled: Bool { get }
     var businessDetails: BusinessDetails? { get }
     var directDebitHasNoAmount: Bool { get }
@@ -35,7 +35,7 @@ internal protocol PrimerSettingsProtocol {
     func modify(withClientSession clientSession: ClientSession)
 }
 
-public enum PaymentHandling {
+public enum PrimerPaymentHandling {
     case auto
     case manual
 }
@@ -130,7 +130,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var urlSchemeIdentifier: String?
     internal(set) public var isFullScreenOnly: Bool
     internal(set) public var hasDisabledSuccessScreen: Bool
-    internal(set) public var paymentHandling: PaymentHandling
+    internal(set) public var paymentHandling: PrimerPaymentHandling
     internal(set) public var businessDetails: BusinessDetails?
     internal(set) public var directDebitHasNoAmount: Bool
     internal(set) public var orderItems: [OrderItem]?
@@ -165,7 +165,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         urlSchemeIdentifier: String? = nil,
         isFullScreenOnly: Bool = false,
         hasDisabledSuccessScreen: Bool = false,
-        paymentHandling: PaymentHandling = .auto,
+        paymentHandling: PrimerPaymentHandling = .auto,
         businessDetails: BusinessDetails? = nil,
         directDebitHasNoAmount: Bool = false,
         orderItems: [OrderItem] = [],
@@ -215,7 +215,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         urlSchemeIdentifier: String? = nil,
         isFullScreenOnly: Bool = false,
         hasDisabledSuccessScreen: Bool = false,
-        paymentHandling: PaymentHandling = .auto,
+        paymentHandling: PrimerPaymentHandling = .auto,
         businessDetails: BusinessDetails? = nil,
         directDebitHasNoAmount: Bool = false,
         isInitialLoadingHidden: Bool = false,

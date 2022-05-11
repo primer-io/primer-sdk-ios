@@ -92,7 +92,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         return false
     }
     
-    var paymentHandling: PaymentHandling = .auto
+    var paymentHandling: PrimerPaymentHandling = .auto
     
     var hasDisabledSuccessScreen: Bool = false
     
