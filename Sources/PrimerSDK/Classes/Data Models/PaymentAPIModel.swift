@@ -504,13 +504,13 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class PrimerCheckoutClientSessionData: NSObject {
+@objc public class PrimerClientSession: NSObject {
     public let customerId: String?
     public let orderId: String?
     public let currencyCode: String?
     public let totalAmount: Int?
     public let lineItems: [PrimerCheckoutDataLineItem]?
-    public let orderDetails: PrimerCheckoutDataOrder?
+    public let orderDetails: PrimerOrder?
     public let customer: PrimerCheckoutDataCustomer?
     
     public init(customerId: String?,
@@ -518,7 +518,7 @@ extension PrimerCheckoutDataPayment {
                 currencyCode: String?,
                 totalAmount: Int?,
                 lineItems: [PrimerCheckoutDataLineItem]?,
-                orderDetails: PrimerCheckoutDataOrder?,
+                orderDetails: PrimerOrder?,
                 customer: PrimerCheckoutDataCustomer?) {
         self.customerId = customerId
         self.orderId = orderId
@@ -530,7 +530,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class PrimerCheckoutDataOrder: NSObject {
+@objc public class PrimerOrder: NSObject {
     public let countryCode: String?
     
     public init(countryCode: String?) {
@@ -614,7 +614,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-extension PrimerCheckoutClientSessionData {
+extension PrimerClientSession {
     
     internal convenience init(from apiConfiguration: PrimerAPIConfiguration) {
         let lineItems = apiConfiguration.clientSession?.order?.lineItems?.compactMap { PrimerCheckoutDataLineItem(itemId: $0.itemId,
@@ -625,7 +625,7 @@ extension PrimerCheckoutClientSessionData {
                                                                                                                taxCode: apiConfiguration.clientSession?.customer?.taxId,
                                                                                                                taxAmount: apiConfiguration.clientSession?.order?.totalTaxAmount) }
         
-        let orderDetails = PrimerCheckoutDataOrder(countryCode: apiConfiguration.clientSession?.order?.countryCode?.rawValue)
+        let orderDetails = PrimerOrder(countryCode: apiConfiguration.clientSession?.order?.countryCode?.rawValue)
         
         let billingAddress = CheckoutDataPaymentAPIModelAddress(firstName: apiConfiguration.clientSession?.customer?.billingAddress?.firstName,
                                                                 lastName: apiConfiguration.clientSession?.customer?.billingAddress?.lastName,
