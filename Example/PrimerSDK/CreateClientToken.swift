@@ -317,11 +317,6 @@ struct ClientSessionRequestBody {
 
 }
 
-public struct ClientSessionActionsRequest: Encodable {
-    let clientToken: String
-    let actions: [ClientSession.Action]
-}
-
 extension Encodable {
     func asDictionary() throws -> [String: Any] {
         let data = try JSONEncoder().encode(self)

@@ -215,7 +215,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                return ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
+                return ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
             }
             .then { () -> Promise<Void> in
                 return self.presentInputViewController()

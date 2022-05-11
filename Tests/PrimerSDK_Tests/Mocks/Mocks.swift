@@ -151,7 +151,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         self.debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
     }
     
-    func modify(withClientSession clientSession: ClientSession) {
+    func modify(withClientSession clientSession: ClientSessionAPIResponse) {
         
     }
 }

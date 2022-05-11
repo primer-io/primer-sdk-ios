@@ -48,7 +48,7 @@ extension PaymentMethodTokenizationViewModel {
                     self.nullifyEventCallbacks()
                     
                     firstly {
-                        ClientSession.Action.unselectPaymentMethodIfNeeded()
+                        ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
                     }
                     .then { () -> Promise<String?> in
                         var primerErr: PrimerError!
@@ -75,7 +75,7 @@ extension PaymentMethodTokenizationViewModel {
             
             if self.config.type == .applePay, let primerErr = err as? PrimerError, case .cancelled = primerErr {
                 firstly {
-                    ClientSession.Action.unselectPaymentMethodIfNeeded()
+                    ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
                 }
                 .done { merchantErrorMessage in
                     Primer.shared.primerRootVC?.popToMainScreen(completion: nil)
@@ -84,7 +84,7 @@ extension PaymentMethodTokenizationViewModel {
                 .catch { _ in }
             } else {
                 firstly {
-                    ClientSession.Action.unselectPaymentMethodIfNeeded()
+                    ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
                 }
                 .then { () -> Promise<String?> in
                     var primerErr: PrimerError!
