@@ -207,6 +207,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "bancontact"
         case .buckarooEps:
             return "eps"
+        case .coinbase:
+            return "coinbase"
         case .goCardlessMandate:
             return "go-cardless"
         case .googlePay:

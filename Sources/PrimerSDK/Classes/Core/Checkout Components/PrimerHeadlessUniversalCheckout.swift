@@ -187,6 +187,8 @@ public class PrimerHeadlessUniversalCheckout {
             return []
         case .buckarooSofort:
             return []
+        case .coinbase:
+            return []
         case .goCardlessMandate:
             return []
         case .googlePay:
