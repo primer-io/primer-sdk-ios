@@ -113,7 +113,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
             }
             
             firstly {
-                ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(params)
+                ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(params)
             }.done {
                 seal.fulfill()
             }
