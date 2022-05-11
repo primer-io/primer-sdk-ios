@@ -11,6 +11,7 @@ import UIKit
 
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
+var paymentHandling: PaymentHandling = .manual
 
 class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
@@ -73,23 +74,30 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     }
     
     @IBAction func initializePrimerButtonTapped(_ sender: Any) {
-        
         var amount: Int?
         if let amountStr = amountTextField.text {
             amount = Int(amountStr)
         }
         
-        var mcvc = MerchantCheckoutViewController.instantiate(
-            customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
-            phoneNumber: phoneNumberTextField.text,
-            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
-            currency: Currency(rawValue: currencyTextField.text ?? ""),
-            amount: amount,
-            performPayment: performPaymentSwitch.isOn)
-        
-        self.evaluateCustomDefinedApiKey()
-        
-        self.navigationController?.pushViewController(mcvc, animated: true)
+        if paymentHandling == .manual {
+            let mpmcvc = ManualPaymentMerchantCheckoutViewController.instantiate(
+                customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
+                phoneNumber: phoneNumberTextField.text,
+                countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
+                currency: Currency(rawValue: currencyTextField.text ?? ""),
+                amount: amount,
+                performPayment: performPaymentSwitch.isOn)
+            navigationController?.pushViewController(mpmcvc, animated: true)
+        } else {
+            let mcvc = MerchantCheckoutViewController.instantiate(
+                customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
+                phoneNumber: phoneNumberTextField.text,
+                countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
+                currency: Currency(rawValue: currencyTextField.text ?? ""),
+                amount: amount,
+                performPayment: performPaymentSwitch.isOn)
+            navigationController?.pushViewController(mcvc, animated: true)
+        }
     }
     
     @IBAction func checkoutComponentsButtonTapped(_ sender: Any) {

@@ -11,8 +11,8 @@ import UIKit
 
 class ManualPaymentMerchantCheckoutViewController: UIViewController {
     
-    class func instantiate(customerId: String, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> MerchantCheckoutViewController {
-        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
+    class func instantiate(customerId: String, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?, performPayment: Bool) -> ManualPaymentMerchantCheckoutViewController {
+        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ManualPaymentMerchantCheckoutViewController") as! ManualPaymentMerchantCheckoutViewController
         mcvc.customerId = customerId
         mcvc.phoneNumber = phoneNumber
         mcvc.performPayment = performPayment
@@ -47,6 +47,9 @@ class ManualPaymentMerchantCheckoutViewController: UIViewController {
             }
         }
     }
+    var transactionResponse: TransactionResponse?
+    var performPayment: Bool = false
+    var paymentResponsesData: [Data] = []
     
     var clientToken: String?
     
@@ -61,7 +64,6 @@ class ManualPaymentMerchantCheckoutViewController: UIViewController {
     var phoneNumber: String?
     var countryCode: CountryCode = .gb
     var threeDSAlert: UIAlertController?
-    var performPayment: Bool = false
     
     var customer: PrimerSDK.Customer?
     var address: PrimerSDK.Address?
@@ -104,22 +106,6 @@ class ManualPaymentMerchantCheckoutViewController: UIViewController {
                 print(merchantErr)
             } else if let clientToken = clientToken {
                 self.clientToken = clientToken
-                self.generalSettings = PrimerSettings(
-                    merchantIdentifier: "merchant.checkout.team",
-                    klarnaSessionType: .recurringPayment,
-                    klarnaPaymentDescription: nil,
-                    urlScheme: "merchant://",
-                    urlSchemeIdentifier: "merchant",
-                    isFullScreenOnly: false,
-                    hasDisabledSuccessScreen: false,
-                    directDebitHasNoAmount: false,
-                    isInitialLoadingHidden: false,
-                    is3DSOnVaultingEnabled: true,
-                    debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
-                )
-                
-                let configuration = PrimerConfiguration(settings: self.generalSettings)
-                Primer.shared.configure(configuration: configuration, delegate: self)
                 Primer.shared.showVaultManager(clientToken: clientToken, completion: nil)
             }
         }
@@ -137,22 +123,6 @@ class ManualPaymentMerchantCheckoutViewController: UIViewController {
                 print(merchantErr)
             } else if let clientToken = clientToken {
                 self.clientToken = clientToken
-                self.generalSettings = PrimerSettings(
-                    merchantIdentifier: "merchant.checkout.team",
-                    klarnaSessionType: .recurringPayment,
-                    klarnaPaymentDescription: nil,
-                    urlScheme: "merchant://",
-                    urlSchemeIdentifier: "merchant",
-                    isFullScreenOnly: false,
-                    hasDisabledSuccessScreen: false,
-                    directDebitHasNoAmount: false,
-                    isInitialLoadingHidden: false,
-                    is3DSOnVaultingEnabled: true,
-                    debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
-                )
-                
-                let configuration = PrimerConfiguration(settings: self.generalSettings)
-                Primer.shared.configure(configuration: configuration, delegate: self)
                 Primer.shared.showUniversalCheckout(clientToken: clientToken)
             }
         }
@@ -172,13 +142,128 @@ extension ManualPaymentMerchantCheckoutViewController: PrimerDelegate {
     
     // Optional
     
-    func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nData: \(data)")
-        decisionHandler(.continuePaymentCreation())
+    func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Method: \(paymentMethodTokenData)\n")
+
+        if paymentMethodTokenData.paymentInstrumentType == .paymentCard,
+           let threeDSecureAuthentication = paymentMethodTokenData.threeDSecureAuthentication,
+           (threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess) {
+            var message: String = ""
+
+            if let reasonCode = threeDSecureAuthentication.reasonCode {
+                message += "[\(reasonCode)] "
+            }
+
+            if let reasonText = threeDSecureAuthentication.reasonText {
+                message += reasonText
+            }
+
+            threeDSAlert = UIAlertController(title: "3DS Error", message: message, preferredStyle: .alert)
+            threeDSAlert?.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
+                self?.threeDSAlert = nil
+            }))
+        }
+
+        if !performPayment {
+            decisionHandler(.succeed())
+            return
+        }
+        
+        let networking = Networking()
+        networking.createPayment(with: paymentMethodTokenData) { res, err in
+            if let err = err {
+                print(err)
+                decisionHandler(.fail(withErrorMessage: "Oh no, something went wrong creating the payment..."))
+            } else if let res = res {
+                if let data = try? JSONEncoder().encode(res) {
+                    self.paymentResponsesData.append(data)
+                }
+                
+                if res.status == .declined {
+                    decisionHandler(.fail(withErrorMessage: "Oh no, payment was declined :("))
+                    return
+                }
+                
+                guard let requiredAction = res.requiredAction else {
+                    decisionHandler(.succeed())
+                    return
+                }
+                
+                guard let dateStr = res.dateStr else {
+                    decisionHandler(.succeed())
+                    return
+                }
+                
+                self.transactionResponse = TransactionResponse(id: res.id!, date: dateStr, status: res.status.rawValue, requiredAction: requiredAction)
+                
+                if requiredAction.name.rawValue == "3DS_AUTHENTICATION", res.status == .pending {
+                    decisionHandler(.continueWithNewClientToken(requiredAction.clientToken))
+                } else if requiredAction.name.rawValue == "USE_PRIMER_SDK", res.status == .pending {
+                    decisionHandler(.continueWithNewClientToken(requiredAction.clientToken))
+                } else {
+                    decisionHandler(.succeed())
+                }
+                
+            } else {
+                assert(true)
+            }
+        }
+    }
+
+    func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(resumeToken as String)")
+        
+        guard let transactionResponse = transactionResponse,
+              let url = URL(string: "\(endpoint)/api/payments/\(transactionResponse.id)/resume")
+        else {
+            decisionHandler(.fail(withErrorMessage: "Oh no, something went wrong parsing the response..."))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let bodyDic: [String: Any] = [
+            "resumeToken": resumeToken
+        ]
+        
+        var bodyData: Data!
+        
+        do {
+            bodyData = try JSONSerialization.data(withJSONObject: bodyDic, options: .fragmentsAllowed)
+        } catch {
+            decisionHandler(.fail(withErrorMessage: "Oh no, something went wrong creating the request..."))
+            return
+        }
+        
+        let networking = Networking()
+        networking.request(
+            apiVersion: .v2,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    let paymentResponse = try? JSONDecoder().decode(Payment.Response.self, from: data)
+                    if paymentResponse != nil {
+                        self.paymentResponsesData.append(data)
+                    }
+                    
+                    decisionHandler(.succeed())
+
+                case .failure(let err):
+                    print(err)
+                    decisionHandler(.fail(withErrorMessage: "Oh no, something went wrong resuming the payment..."))
+                }
+            }
     }
     
     func primerDidDismiss() {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\nPrimer view dismissed\n")
+        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPrimer view dismissed\n")
         
         DispatchQueue.main.async { [weak self] in
             self?.fetchPaymentMethodsForCustomerId(self?.customerId)
@@ -242,4 +327,11 @@ extension ManualPaymentMerchantCheckoutViewController: UITableViewDataSource, UI
         presentPrimerOptions(indexPath.row)
     }
     
+}
+
+struct TransactionResponse {
+    var id: String
+    var date: String
+    var status: String
+    var requiredAction: Payment.Response.RequiredAction?
 }

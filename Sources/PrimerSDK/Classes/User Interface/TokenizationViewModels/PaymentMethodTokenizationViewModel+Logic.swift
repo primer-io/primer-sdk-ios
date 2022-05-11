@@ -20,7 +20,7 @@ extension PaymentMethodTokenizationViewModel {
             self.paymentMethodTokenData = paymentMethodTokenData
             self.didFinishTokenization?(nil)
             self.didFinishTokenization = nil
-            
+
             if Primer.shared.flow.internalSessionFlow.vaulted {
                 self.handleSuccessfulFlow()
             } else {
