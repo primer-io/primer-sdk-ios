@@ -31,6 +31,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Buckaroo iDeal"
         case .buckarooSofort:
             return "Buckaroo Sofort"
+        case .coinbase:
+            return "Coinbase"
         case .hoolah:
             return "Hoolah"
         case .adyenInterac:
@@ -79,6 +81,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .buckarooGiropay,
                 .buckarooIdeal,
                 .buckarooSofort,
+                .coinbase,
                 .hoolah,
                 .mollieBankcontact,
                 .mollieIdeal,
@@ -137,6 +140,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .buckarooSofort,
                 .adyenSofort:
             return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .coinbase:
+            return UIImage(named: "coinbase-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenTrustly:
             return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenTwint:

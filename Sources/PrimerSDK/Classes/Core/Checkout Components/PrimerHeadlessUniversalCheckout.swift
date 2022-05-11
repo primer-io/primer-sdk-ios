@@ -341,6 +341,8 @@ public struct PrimerAsset {
             brand = .bankcontact
         case .buckarooEps:
             brand = .eps
+        case .coinbase:
+            brand = .coinBase
         case .goCardlessMandate:
             brand = .goCardless
         case .googlePay:
