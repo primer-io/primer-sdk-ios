@@ -9,29 +9,29 @@
 
 import Foundation
 
-public class ClientSession: Codable {
+internal class ClientSessionAPIResponse: Codable {
     
     let clientSessionId: String?
-    let paymentMethod: ClientSession.PaymentMethod?
-    let order: ClientSession.Order?
-    let customer: ClientSession.Customer?
+    let paymentMethod: ClientSessionAPIResponse.PaymentMethod?
+    let order: ClientSessionAPIResponse.Order?
+    let customer: ClientSessionAPIResponse.Customer?
     
     enum CodingKeys: String, CodingKey {
         case clientSessionId, paymentMethod, order, customer // metadata
     }
     
-    required public init(from decoder: Decoder) throws {
+    required internal init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.clientSessionId = (try? container.decode(String?.self, forKey: .clientSessionId)) ?? nil
-        self.paymentMethod = (try? container.decode(ClientSession.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
-        self.order = (try? container.decode(ClientSession.Order?.self, forKey: .order)) ?? nil
-        self.customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
+        self.paymentMethod = (try? container.decode(ClientSessionAPIResponse.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
+        self.order = (try? container.decode(ClientSessionAPIResponse.Order?.self, forKey: .order)) ?? nil
+        self.customer = (try? container.decode(ClientSessionAPIResponse.Customer?.self, forKey: .customer)) ?? nil
         
         // Replace settings
         PrimerSettings.modify(withClientSession: self)
     }
     
-    public func encode(to encoder: Encoder) throws {
+    internal func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(paymentMethod, forKey: .paymentMethod)
         try container.encode(order, forKey: .order)
@@ -40,29 +40,29 @@ public class ClientSession: Codable {
     
     // MARK: - ClientSession.Action
     
-    public class Action: NSObject, Encodable {
+    internal class Action: NSObject, Encodable {
         
-        public enum ActionType: String {
+        internal enum ActionType: String {
             case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
             case unselectPaymentMethod = "UNSELECT_PAYMENT_METHOD"
             case setBillingAddress = "SET_BILLING_ADDRESS"
             case setSurchargeFee = "SET_SURCHARGE_FEE"
         }
                 
-        public var type: ActionType
-        public var params: [String: Any]?
+        internal var type: ActionType
+        internal var params: [String: Any]?
         
         private enum CodingKeys : String, CodingKey {
             case type, params
         }
         
-        public init(type: ActionType, params: [String: Any]? = nil) {
+        internal init(type: ActionType, params: [String: Any]? = nil) {
             self.type = type
             self.params = params
             super.init()
         }
         
-        public func encode(to encoder: Encoder) throws {
+        internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(type.rawValue, forKey: .type)
             
@@ -73,7 +73,7 @@ public class ClientSession: Codable {
             }
         }
         
-        public func toDictionary() -> [String: Any]? {
+        internal func toDictionary() -> [String: Any]? {
             do {
                 return try self.asDictionary()
             } catch {
@@ -84,7 +84,7 @@ public class ClientSession: Codable {
     
     // MARK: ClientSession.Address
     
-    public struct Address: Codable {
+    internal struct Address: Codable {
         let firstName: String?
         let lastName: String?
         let addressLine1: String?
@@ -94,7 +94,7 @@ public class ClientSession: Codable {
         let state: String?
         let countryCode: CountryCode?
         
-        public func toString() -> String {
+        internal func toString() -> String {
             return "\(addressLine1 ?? "")\(addressLine2?.withComma ?? "")\(city?.withComma ?? "")\(postalCode?.withComma ?? "")\(countryCode?.rawValue.withComma ?? "")"
         }
         
@@ -102,7 +102,7 @@ public class ClientSession: Codable {
     
     // MARK: - ClientSession.PaymentMethod
     
-    public class PaymentMethod: Codable {
+    internal class PaymentMethod: Codable {
         let vaultOnSuccess: Bool
         let options: [[String: Any]]?
         
@@ -110,7 +110,7 @@ public class ClientSession: Codable {
             case vaultOnSuccess, options
         }
         
-        required public init(from decoder: Decoder) throws {
+        required internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.vaultOnSuccess = (try? container.decode(Bool.self, forKey: .vaultOnSuccess)) ?? false
             
@@ -124,7 +124,7 @@ public class ClientSession: Codable {
             }
         }
         
-        public func encode(to encoder: Encoder) throws {
+        internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(vaultOnSuccess, forKey: .vaultOnSuccess)
             
@@ -138,7 +138,7 @@ public class ClientSession: Codable {
     
     // MARK: - ClientSession.Order
     
-    public struct Order: Codable {
+    internal struct Order: Codable {
         let id: String?
         let merchantAmount: Int?
         let totalOrderAmount: Int?
@@ -153,7 +153,7 @@ public class ClientSession: Codable {
             case id = "orderId", merchantAmount, totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, lineItems, shippingAmount
         }
         
-        public init(from decoder: Decoder) throws {
+        internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             id = (try? container.decode(String?.self, forKey: .id)) ?? nil
             merchantAmount = (try? container.decode(Int?.self, forKey: .merchantAmount)) ?? nil
@@ -161,12 +161,12 @@ public class ClientSession: Codable {
             totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
             countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
             currencyCode = (try? container.decode(Currency?.self, forKey: .currencyCode)) ?? nil
-            fees = (try? container.decode([ClientSession.Order.Fee]?.self, forKey: .fees)) ?? nil
+            fees = (try? container.decode([ClientSessionAPIResponse.Order.Fee]?.self, forKey: .fees)) ?? nil
             lineItems = (try? container.decode([LineItem]?.self, forKey: .lineItems)) ?? nil
             shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
         }
         
-        public func encode(to encoder: Encoder) throws {
+        internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try? container.encode(merchantAmount, forKey: .merchantAmount)
             try? container.encode(totalOrderAmount, forKey: .totalOrderAmount)
@@ -180,7 +180,7 @@ public class ClientSession: Codable {
         
         // MARK: ClientSession.Order.LineItem
         
-        public struct LineItem: Codable {
+        internal struct LineItem: Codable {
             let itemId: String?
             let quantity: Int
             let amount: Int?
@@ -200,7 +200,7 @@ public class ClientSession: Codable {
         
         // MARK: ClientSession.Order.Fee
         
-        public struct Fee: Codable {
+        internal struct Fee: Codable {
             let id: String
             let amount: Int
             
@@ -208,13 +208,13 @@ public class ClientSession: Codable {
                 case id, amount
             }
             
-            public init(from decoder: Decoder) throws {
+            internal init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
                 id = try container.decode(String.self, forKey: .id)
                 amount = try container.decode(Int.self, forKey: .amount)
             }
             
-            public func encode(to encoder: Encoder) throws {
+            internal func encode(to encoder: Encoder) throws {
                 var container = encoder.container(keyedBy: CodingKeys.self)
                 try container.encode(id, forKey: .id)
                 try container.encode(amount, forKey: .amount)
@@ -224,33 +224,33 @@ public class ClientSession: Codable {
     
     // MARK: ClientSession.Customer
     
-    public struct Customer: Codable {
+    internal struct Customer: Codable {
         let id: String?
         let firstName: String?
         let lastName: String?
         let emailAddress: String?
         let mobileNumber: String?
-        let billingAddress: ClientSession.Address?
-        let shippingAddress: ClientSession.Address?
+        let billingAddress: ClientSessionAPIResponse.Address?
+        let shippingAddress: ClientSessionAPIResponse.Address?
         let taxId: String?
         
         enum CodingKeys: String, CodingKey {
             case id = "customerId", firstName, lastName, emailAddress, mobileNumber, billingAddress, shippingAddress, taxId
         }
         
-        public init(from decoder: Decoder) throws {
+        internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.id = (try? container.decode(String?.self, forKey: .id)) ?? nil
             self.firstName = (try? container.decode(String?.self, forKey: .firstName)) ?? nil
             self.lastName = (try? container.decode(String?.self, forKey: .lastName)) ?? nil
             self.emailAddress = (try? container.decode(String?.self, forKey: .emailAddress)) ?? nil
             self.mobileNumber = (try? container.decode(String?.self, forKey: .mobileNumber)) ?? nil
-            self.billingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .billingAddress)) ?? nil
-            self.shippingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .shippingAddress)) ?? nil
+            self.billingAddress = (try? container.decode(ClientSessionAPIResponse.Address?.self, forKey: .billingAddress)) ?? nil
+            self.shippingAddress = (try? container.decode(ClientSessionAPIResponse.Address?.self, forKey: .shippingAddress)) ?? nil
             self.taxId = (try? container.decode(String?.self, forKey: .taxId)) ?? nil
         }
         
-        public init(
+        internal init(
             id: String? = nil,
             firstName: String? = nil,
             lastName: String? = nil,
@@ -283,12 +283,12 @@ internal extension Encodable {
     }
 }
 
-extension ClientSession.Action {
+extension ClientSessionAPIResponse.Action {
     
-    private static func requestPrimerConfigurationWithActions(_ actions: [ClientSession.Action]) -> Promise<Void> {
+    private static func requestPrimerConfigurationWithActions(_ actions: [ClientSessionAPIResponse.Action]) -> Promise<Void> {
         return Promise { seal in
             firstly {
-                ClientSession.Action.raiseClientSessionUpdateWillStartEventForActions()
+                ClientSessionAPIResponse.Action.raiseClientSessionUpdateWillStartEventForActions()
             }
             .then { () -> Promise<PrimerAPIConfiguration> in
                 let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
@@ -296,10 +296,10 @@ extension ClientSession.Action {
                 return clientSessionService.requestPrimerConfigurationWithActions(actionsRequest: clientSessionActionsRequest)
             }
             .then { apiConfiguration -> Promise<PrimerAPIConfiguration> in
-                ClientSession.Action.setPrimerConfiguration(apiConfiguration)
+                ClientSessionAPIResponse.Action.setPrimerConfiguration(apiConfiguration)
             }
             .then { apiConfiguration -> Promise<Void> in
-                ClientSession.Action.raiseClientSessionUpdateDidFinishEvent(apiConfiguration: apiConfiguration)
+                ClientSessionAPIResponse.Action.raiseClientSessionUpdateDidFinishEvent(apiConfiguration: apiConfiguration)
             }
             .done {
                 seal.fulfill()
@@ -333,7 +333,7 @@ extension ClientSession.Action {
     }
 }
 
-extension ClientSession.Action {
+extension ClientSessionAPIResponse.Action {
     
     static func unselectPaymentMethodIfNeeded() -> Promise<Void> {
         return Promise { seal in
@@ -344,7 +344,7 @@ extension ClientSession.Action {
             }
             
             firstly {
-                requestPrimerConfigurationWithActions([ClientSession.Action.unselectPaymentMethodAction()])
+                requestPrimerConfigurationWithActions([ClientSessionAPIResponse.Action.unselectPaymentMethodAction()])
             }
             .done {
                 seal.fulfill()
@@ -365,7 +365,7 @@ extension ClientSession.Action {
             }
             
             firstly {
-                requestPrimerConfigurationWithActions([ClientSession.Action.selectPaymentMethodActionWithParameters(parameters)])
+                requestPrimerConfigurationWithActions([ClientSessionAPIResponse.Action.selectPaymentMethodActionWithParameters(parameters)])
             }
             .done {
                 seal.fulfill()
@@ -377,34 +377,34 @@ extension ClientSession.Action {
     }
     
     static func setPostalCodeWithParameters(_ parameters: [String: Any]) -> Promise<Void> {
-        let actions: [ClientSession.Action] = [ClientSession.Action(type: .setBillingAddress, params: parameters)]
+        let actions: [ClientSessionAPIResponse.Action] = [ClientSessionAPIResponse.Action(type: .setBillingAddress, params: parameters)]
         return requestPrimerConfigurationWithActions(actions)
     }
     
-    static func dispatchMultipleActions(_ actions: [ClientSession.Action]) -> Promise<Void> {
+    static func dispatchMultipleActions(_ actions: [ClientSessionAPIResponse.Action]) -> Promise<Void> {
         return requestPrimerConfigurationWithActions(actions)
     }
 }
 
-extension ClientSession.Action {
+extension ClientSessionAPIResponse.Action {
     
     static func makeBillingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
         return ["billingAddress": parameters]
     }
 }
 
-extension ClientSession.Action {
+extension ClientSessionAPIResponse.Action {
         
-    static func selectPaymentMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
-        ClientSession.Action(type: .selectPaymentMethod, params: parameters)
+    static func selectPaymentMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSessionAPIResponse.Action {
+        ClientSessionAPIResponse.Action(type: .selectPaymentMethod, params: parameters)
     }
 
-    static func unselectPaymentMethodAction() -> ClientSession.Action {
-        ClientSession.Action(type: .unselectPaymentMethod, params: nil)
+    static func unselectPaymentMethodAction() -> ClientSessionAPIResponse.Action {
+        ClientSessionAPIResponse.Action(type: .unselectPaymentMethod, params: nil)
     }
     
-    static func setBillingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
-        ClientSession.Action(type: .setBillingAddress, params: makeBillingAddressDictionaryRequestFromParameters(parameters))
+    static func setBillingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSessionAPIResponse.Action {
+        ClientSessionAPIResponse.Action(type: .setBillingAddress, params: makeBillingAddressDictionaryRequestFromParameters(parameters))
     }
 }
 

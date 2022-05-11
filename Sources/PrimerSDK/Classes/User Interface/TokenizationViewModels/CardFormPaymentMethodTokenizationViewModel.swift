@@ -473,14 +473,14 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 ]
             ]
             
-            var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
+            var actions = [ClientSessionAPIResponse.Action.selectPaymentMethodActionWithParameters(params)]
             
             if (requirePostalCode) {
                 let state: AppStateProtocol = DependencyContainer.resolve()
                 
                 let currentBillingAddress = state.apiConfiguration?.clientSession?.customer?.billingAddress
                 
-                let billingAddressWithUpdatedPostalCode = ClientSession.Address(firstName: currentBillingAddress?.firstName,
+                let billingAddressWithUpdatedPostalCode = ClientSessionAPIResponse.Address(firstName: currentBillingAddress?.firstName,
                                                                                 lastName: currentBillingAddress?.lastName,
                                                                                 addressLine1: currentBillingAddress?.addressLine1,
                                                                                 addressLine2: currentBillingAddress?.addressLine2,
@@ -490,13 +490,13 @@ extension CardFormPaymentMethodTokenizationViewModel {
                                                                                 countryCode: currentBillingAddress?.countryCode)
                 
                 if let billingAddressWithUpdatedPostalCode = try? billingAddressWithUpdatedPostalCode.asDictionary() {
-                    let billingAddressAction = ClientSession.Action.setBillingAddressActionWithParameters(billingAddressWithUpdatedPostalCode)
+                    let billingAddressAction = ClientSessionAPIResponse.Action.setBillingAddressActionWithParameters(billingAddressWithUpdatedPostalCode)
                     actions.append(billingAddressAction)
                 }
             }
             
             firstly {
-                ClientSession.Action.dispatchMultipleActions(actions)
+                ClientSessionAPIResponse.Action.dispatchMultipleActions(actions)
             }.done {
                 seal.fulfill()
             }
@@ -606,7 +606,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
     private func updateBillingAddressWithParameters(_ parameters: [String: Any]) {
         
         firstly {
-            ClientSession.Action.setPostalCodeWithParameters(parameters)
+            ClientSessionAPIResponse.Action.setPostalCodeWithParameters(parameters)
         }
         .done{}
         .catch { error in
@@ -627,7 +627,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         if let fieldView = (primerTextFieldView as? PrimerPostalCodeFieldView), isValid  == true {
             let state: AppStateProtocol = DependencyContainer.resolve()
             let currentBillingAddress = state.apiConfiguration?.clientSession?.customer?.billingAddress
-            let billingAddressWithUpdatedPostalCode = ClientSession.Address(firstName: currentBillingAddress?.firstName,
+            let billingAddressWithUpdatedPostalCode = ClientSessionAPIResponse.Address(firstName: currentBillingAddress?.firstName,
                                                                             lastName: currentBillingAddress?.lastName,
                                                                             addressLine1: currentBillingAddress?.addressLine1,
                                                                             addressLine2: currentBillingAddress?.addressLine2,
@@ -637,7 +637,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                                                                             countryCode: currentBillingAddress?.countryCode)
             
             if let billingAddressWithUpdatedPostalCode = try? billingAddressWithUpdatedPostalCode.asDictionary() {
-                self.updateBillingAddressWithParameters(ClientSession.Action.makeBillingAddressDictionaryRequestFromParameters(billingAddressWithUpdatedPostalCode))
+                self.updateBillingAddressWithParameters(ClientSessionAPIResponse.Action.makeBillingAddressDictionaryRequestFromParameters(billingAddressWithUpdatedPostalCode))
             }
         }
         
@@ -662,11 +662,11 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 ]
             ]
             
-            ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(params)
+            ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(params)
             cardNumberContainerView.rightImage2 = cardNetwork.icon
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
             cardNumberContainerView.rightImage2 = nil
-            ClientSession.Action.unselectPaymentMethodIfNeeded()
+            ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
         }
     }
 }

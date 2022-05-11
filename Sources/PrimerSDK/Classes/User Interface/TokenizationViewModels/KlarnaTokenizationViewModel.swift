@@ -105,7 +105,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                ClientSession.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
+                ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
             }
             .then { () -> Promise<Void> in
                 self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))

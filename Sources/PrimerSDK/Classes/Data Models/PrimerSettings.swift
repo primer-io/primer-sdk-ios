@@ -32,7 +32,7 @@ internal protocol PrimerSettingsProtocol {
     @available(*, deprecated, message: "Set the customer in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var customer: Customer? { get set }
     
-    func modify(withClientSession clientSession: ClientSession)
+    func modify(withClientSession clientSession: ClientSessionAPIResponse)
 }
 
 public enum PrimerPaymentHandling {
@@ -243,7 +243,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.urlScheme = urlScheme
     }
     
-    static func modify(withClientSession clientSession: ClientSession) {
+    static func modify(withClientSession clientSession: ClientSessionAPIResponse) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         settings.modify(withClientSession: clientSession)
     }
@@ -253,7 +253,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         print("Information relating to the \(val) has been provided in both client-session creation and checkout initialization. Provided client-session information will be favored.")
     }
     
-    func modify(withClientSession clientSession: ClientSession) {
+    func modify(withClientSession clientSession: ClientSessionAPIResponse) {
         if let order = clientSession.order {
             if self.orderId != nil ||
                 self.amount != nil ||

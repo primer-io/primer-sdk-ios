@@ -268,7 +268,7 @@ public struct ClientSessionRequestBody {
 }
 
 public struct ClientSessionAction: Encodable {
-    let actions: [ClientSession.Action]
+    let actions: [ClientSessionAPIResponse.Action]
 }
 
 public struct ClientSessionUpdateRequest: Encodable {
