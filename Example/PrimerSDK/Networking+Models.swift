@@ -53,7 +53,7 @@ extension Networking {
                         quantity: 1)
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
-                vaultOnSuccess: true,
+                vaultOnSuccess: false,
                 options:
                 [
                     "APPLE_PAY": [
