@@ -543,16 +543,16 @@ extension PrimerCheckoutDataPayment {
     public let mobileNumber: String?
     public let firstName: String?
     public let lastName: String?
-    public let billingAddress: CheckoutDataPaymentAPIModelAddress?
-    public let shippingAddress: CheckoutDataPaymentAPIModelAddress?
+    public let billingAddress: PrimerAddress?
+    public let shippingAddress: PrimerAddress?
     
     public init(
         emailAddress: String?,
         mobileNumber: String?,
         firstName: String?,
         lastName: String?,
-        billingAddress: CheckoutDataPaymentAPIModelAddress?,
-        shippingAddress: CheckoutDataPaymentAPIModelAddress?)
+        billingAddress: PrimerAddress?,
+        shippingAddress: PrimerAddress?)
     {
         self.emailAddress = emailAddress
         self.mobileNumber = mobileNumber
@@ -592,7 +592,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class CheckoutDataPaymentAPIModelAddress: NSObject {
+@objc public class PrimerAddress: NSObject {
     
     public let firstName: String?
     public let lastName: String?
@@ -637,7 +637,7 @@ extension PrimerClientSession {
         
         let orderDetails = PrimerOrder(countryCode: apiConfiguration.clientSession?.order?.countryCode?.rawValue)
         
-        let billingAddress = CheckoutDataPaymentAPIModelAddress(firstName: apiConfiguration.clientSession?.customer?.billingAddress?.firstName,
+        let billingAddress = PrimerAddress(firstName: apiConfiguration.clientSession?.customer?.billingAddress?.firstName,
                                                                 lastName: apiConfiguration.clientSession?.customer?.billingAddress?.lastName,
                                                                 addressLine1: apiConfiguration.clientSession?.customer?.billingAddress?.addressLine1,
                                                                 addressLine2: apiConfiguration.clientSession?.customer?.billingAddress?.addressLine2,
@@ -645,7 +645,7 @@ extension PrimerClientSession {
                                                                 state: apiConfiguration.clientSession?.customer?.billingAddress?.state,
                                                                 countryCode: apiConfiguration.clientSession?.customer?.billingAddress?.countryCode?.rawValue)
         
-        let shippingAddress = CheckoutDataPaymentAPIModelAddress(firstName: apiConfiguration.clientSession?.customer?.shippingAddress?.firstName,
+        let shippingAddress = PrimerAddress(firstName: apiConfiguration.clientSession?.customer?.shippingAddress?.firstName,
                                                                  lastName: apiConfiguration.clientSession?.customer?.shippingAddress?.lastName,
                                                                  addressLine1: apiConfiguration.clientSession?.customer?.shippingAddress?.addressLine1,
                                                                  addressLine2: apiConfiguration.clientSession?.customer?.shippingAddress?.addressLine2,
