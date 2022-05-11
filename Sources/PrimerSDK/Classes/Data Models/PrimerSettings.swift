@@ -130,7 +130,11 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var urlSchemeIdentifier: String?
     internal(set) public var isFullScreenOnly: Bool
     internal(set) public var hasDisabledSuccessScreen: Bool
-    internal(set) public var paymentHandling: PrimerPaymentHandling
+    internal(set) public var paymentHandling: PrimerPaymentHandling {
+        didSet {
+            
+        }
+    }
     internal(set) public var businessDetails: PrimerBusiness?
     internal(set) public var directDebitHasNoAmount: Bool
     internal(set) public var orderItems: [OrderItem]?
