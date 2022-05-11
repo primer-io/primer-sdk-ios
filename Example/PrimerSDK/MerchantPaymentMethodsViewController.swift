@@ -139,7 +139,7 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let paymentMethodType = self.availablePaymentMethods[indexPath.row]
-        if paymentMethodType == PaymentMethodConfigType.paymentCard {
+        if paymentMethodType == PrimerPaymentMethodType.paymentCard {
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {

@@ -9,8 +9,6 @@
 
 import UIKit
 
-public typealias PrimerPaymentMethodType = PaymentMethodConfigType
-
 public class PrimerHeadlessUniversalCheckout {
     
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate?
@@ -145,7 +143,7 @@ public class PrimerHeadlessUniversalCheckout {
         return PrimerAPIConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
     }
     
-    public func listRequiredInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType]? {
+    public func listRequiredInputElementTypes(for paymentMethodType: PrimerPaymentMethodType) -> [PrimerInputElementType]? {
         switch paymentMethodType {
         case .adyenAlipay:
             return []
@@ -239,7 +237,7 @@ public class PrimerHeadlessUniversalCheckout {
         return brand.getImage(assetType: assetType)
     }
     
-    public static func getAsset(for paymentMethodType: PaymentMethodConfigType, assetType: PrimerAsset.ImageType) -> UIImage? {
+    public static func getAsset(for paymentMethodType: PrimerPaymentMethodType, assetType: PrimerAsset.ImageType) -> UIImage? {
         return PrimerAsset.getAsset(for: paymentMethodType, assetType: assetType)
     }
     
@@ -247,7 +245,7 @@ public class PrimerHeadlessUniversalCheckout {
         return PrimerAsset.getAsset(for: cardNetwork, assetType: assetType)
     }
     
-    public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType) {
+    public func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType) {
         DispatchQueue.main.async {
             
             var settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -293,7 +291,7 @@ public struct PrimerAsset {
         return brand.getImage(assetType: assetType)
     }
     
-    public static func getAsset(for paymentMethodType: PaymentMethodConfigType, assetType: PrimerAsset.ImageType) -> UIImage? {
+    public static func getAsset(for paymentMethodType: PrimerPaymentMethodType, assetType: PrimerAsset.ImageType) -> UIImage? {
         var brand: PrimerAsset.Brand?
         
         switch paymentMethodType {

@@ -79,7 +79,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 self.dispatchActions(config: self.config, selectedPaymentMethod: self.selectedPaymentMethodTokenData)
             }
             .then { () -> Promise<Void> in
-                self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
+                self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then { () -> Promise<PaymentMethodToken> in
                 self.exchangePaymentMethodToken(self.selectedPaymentMethodTokenData)
@@ -123,7 +123,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PaymentMethodData) -> Promise<Void> {
+    internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
             if Primer.shared.flow.internalSessionFlow.vaulted {
                 seal.fulfill()

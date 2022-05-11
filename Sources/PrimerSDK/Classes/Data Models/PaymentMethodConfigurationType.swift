@@ -2,7 +2,7 @@
 
 import Foundation
 
-public enum PaymentMethodConfigType: Codable, Equatable {
+public enum PrimerPaymentMethodType: Codable, Equatable {
     
     case adyenAlipay
     case adyenBlik
@@ -277,7 +277,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     
     public init(from decoder: Decoder) throws {
         let rawValue: String = try decoder.singleValueContainer().decode(String.self)
-        self = PaymentMethodConfigType(rawValue: rawValue)
+        self = PrimerPaymentMethodType(rawValue: rawValue)
     }
     
     public func encode(to encoder: Encoder) throws {

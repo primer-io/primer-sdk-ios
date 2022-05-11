@@ -51,7 +51,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                self.handlePrimerWillCreatePaymentEvent(PaymentMethodData(type: self.config.type))
+                self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then {
                 self.tokenize()
