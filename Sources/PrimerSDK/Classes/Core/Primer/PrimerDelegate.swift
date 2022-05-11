@@ -85,20 +85,24 @@ internal class PrimerDelegateProxy {
     
     static func primerDidFailWithError(_ error: PrimerError, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
         DispatchQueue.main.async {
-            if Primer.shared.delegate?.primerDidFailWithError != nil {
-                Primer.shared.delegate?.primerDidFailWithError?(error.exposedError, data: data, decisionHandler: { errorDecision in
-                    switch errorDecision.type {
-                    case .fail(let message):
-                        DispatchQueue.main.async {
-                            decisionHandler(.fail(withErrorMessage: message))
-                        }
-                    }
-                })
+            if case .merchantError = error {
+                decisionHandler(.fail(withErrorMessage: error.errorDescription))
             } else {
-                print("WARNING: Delegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
-                decisionHandler(.fail(withErrorMessage: nil))
+                if Primer.shared.delegate?.primerDidFailWithError != nil {
+                    Primer.shared.delegate?.primerDidFailWithError?(error.exposedError, data: data, decisionHandler: { errorDecision in
+                        switch errorDecision.type {
+                        case .fail(let message):
+                            DispatchQueue.main.async {
+                                decisionHandler(.fail(withErrorMessage: message))
+                            }
+                        }
+                    })
+                } else {
+                    print("WARNING: Delegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
+                    decisionHandler(.fail(withErrorMessage: nil))
+                }
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
             }
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error)
         }
     }
     
