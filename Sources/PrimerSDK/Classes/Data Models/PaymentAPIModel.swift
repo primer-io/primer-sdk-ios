@@ -608,10 +608,10 @@ extension PrimerCheckoutDataPayment {
         lastName: String?,
         addressLine1: String?,
         addressLine2: String?,
+        postalCode: String?,
         city: String?,
         state: String?,
-        countryCode: String?,
-        postalCode: String?
+        countryCode: String?
     ) {
         self.addressLine1 = addressLine1
         self.addressLine2 = addressLine2
@@ -641,19 +641,17 @@ extension PrimerClientSession {
                                                                 lastName: apiConfiguration.clientSession?.customer?.billingAddress?.lastName,
                                                                 addressLine1: apiConfiguration.clientSession?.customer?.billingAddress?.addressLine1,
                                                                 addressLine2: apiConfiguration.clientSession?.customer?.billingAddress?.addressLine2,
-                                                                city: apiConfiguration.clientSession?.customer?.billingAddress?.city,
+                                                                postalCode: apiConfiguration.clientSession?.customer?.billingAddress?.postalCode, city: apiConfiguration.clientSession?.customer?.billingAddress?.city,
                                                                 state: apiConfiguration.clientSession?.customer?.billingAddress?.state,
-                                                                countryCode: apiConfiguration.clientSession?.customer?.billingAddress?.countryCode?.rawValue,
-                                                                postalCode: apiConfiguration.clientSession?.customer?.billingAddress?.postalCode)
+                                                                countryCode: apiConfiguration.clientSession?.customer?.billingAddress?.countryCode?.rawValue)
         
         let shippingAddress = CheckoutDataPaymentAPIModelAddress(firstName: apiConfiguration.clientSession?.customer?.shippingAddress?.firstName,
                                                                  lastName: apiConfiguration.clientSession?.customer?.shippingAddress?.lastName,
                                                                  addressLine1: apiConfiguration.clientSession?.customer?.shippingAddress?.addressLine1,
                                                                  addressLine2: apiConfiguration.clientSession?.customer?.shippingAddress?.addressLine2,
-                                                                 city: apiConfiguration.clientSession?.customer?.shippingAddress?.city,
+                                                                 postalCode: apiConfiguration.clientSession?.customer?.shippingAddress?.postalCode, city: apiConfiguration.clientSession?.customer?.shippingAddress?.city,
                                                                  state: apiConfiguration.clientSession?.customer?.shippingAddress?.state,
-                                                                 countryCode: apiConfiguration.clientSession?.customer?.shippingAddress?.countryCode?.rawValue,
-                                                                 postalCode: apiConfiguration.clientSession?.customer?.shippingAddress?.postalCode)
+                                                                 countryCode: apiConfiguration.clientSession?.customer?.shippingAddress?.countryCode?.rawValue)
         
         let customer = PrimerCustomer(emailAddress: apiConfiguration.clientSession?.customer?.emailAddress,
                                                   mobileNumber: apiConfiguration.clientSession?.customer?.mobileNumber,
