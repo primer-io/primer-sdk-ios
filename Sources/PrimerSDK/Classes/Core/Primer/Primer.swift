@@ -157,7 +157,7 @@ public class Primer {
     }
     
     // swiftlint:disable cyclomatic_complexity
-    internal func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
+    internal func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         checkoutSessionId = UUID().uuidString
         
         var flow: PrimerSessionFlow!

@@ -34,7 +34,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
                 action: .focus,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
                     url: nil),
                 extra: nil,
                 objectType: .input,
@@ -51,7 +51,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
                 action: .blur,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
                     url: nil),
                 extra: nil,
                 objectType: .input,

@@ -122,7 +122,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         return false
     }
 
-    var businessDetails: BusinessDetails?
+    var businessDetails: PrimerBusiness?
 
     var directDebitHasNoAmount: Bool {
         return true
@@ -214,7 +214,7 @@ class MockLocator {
         DependencyContainer.register(MockClientTokenService() as ClientTokenServiceProtocol)
         DependencyContainer.register(MockPaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
         DependencyContainer.register(MockPayPalService() as PayPalServiceProtocol)
-        DependencyContainer.register(MockTokenizationService(paymentInstrumentType: PaymentMethodConfigType.paymentCard.rawValue, tokenType: TokenType.singleUse.rawValue) as TokenizationServiceProtocol)
+        DependencyContainer.register(MockTokenizationService(paymentInstrumentType: PrimerPaymentMethodType.paymentCard.rawValue, tokenType: TokenType.singleUse.rawValue) as TokenizationServiceProtocol)
         DependencyContainer.register(MockDirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(MockVaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(MockVaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)

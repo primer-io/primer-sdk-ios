@@ -18,7 +18,7 @@ internal protocol PrimerSettingsProtocol {
     var hasDisabledSuccessScreen: Bool { get set }
     var paymentHandling: PrimerPaymentHandling { get set }
     var isManualPaymentHandlingEnabled: Bool { get }
-    var businessDetails: BusinessDetails? { get }
+    var businessDetails: PrimerBusiness? { get }
     var directDebitHasNoAmount: Bool { get }
     @available(*, deprecated, message: "Set the orderItems in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var orderItems: [OrderItem]? { get }
@@ -131,7 +131,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     internal(set) public var isFullScreenOnly: Bool
     internal(set) public var hasDisabledSuccessScreen: Bool
     internal(set) public var paymentHandling: PrimerPaymentHandling
-    internal(set) public var businessDetails: BusinessDetails?
+    internal(set) public var businessDetails: PrimerBusiness?
     internal(set) public var directDebitHasNoAmount: Bool
     internal(set) public var orderItems: [OrderItem]?
     internal(set) public var isInitialLoadingHidden: Bool
@@ -166,7 +166,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         isFullScreenOnly: Bool = false,
         hasDisabledSuccessScreen: Bool = false,
         paymentHandling: PrimerPaymentHandling = .auto,
-        businessDetails: BusinessDetails? = nil,
+        businessDetails: PrimerBusiness? = nil,
         directDebitHasNoAmount: Bool = false,
         orderItems: [OrderItem] = [],
         isInitialLoadingHidden: Bool = false,
@@ -216,7 +216,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
         isFullScreenOnly: Bool = false,
         hasDisabledSuccessScreen: Bool = false,
         paymentHandling: PrimerPaymentHandling = .auto,
-        businessDetails: BusinessDetails? = nil,
+        businessDetails: PrimerBusiness? = nil,
         directDebitHasNoAmount: Bool = false,
         isInitialLoadingHidden: Bool = false,
         localeData: LocaleData? = nil,
@@ -308,7 +308,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     }
 }
 
-public struct BusinessDetails: Codable {
+public struct PrimerBusiness: Codable {
     public var name: String
     public var address: Address?
 

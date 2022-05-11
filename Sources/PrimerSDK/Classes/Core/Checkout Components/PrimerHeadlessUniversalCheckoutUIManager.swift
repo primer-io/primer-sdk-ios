@@ -21,7 +21,7 @@ extension PrimerHeadlessUniversalCheckout {
 }
 
 public protocol PrimerHeadlessUniversalCheckoutUIManager {
-    init(paymentMethodType: PaymentMethodConfigType) throws
+    init(paymentMethodType: PrimerPaymentMethodType) throws
     func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData?)
 }
 
@@ -33,10 +33,10 @@ extension PrimerHeadlessUniversalCheckout {
     
     public class UIManager: PrimerHeadlessUniversalCheckoutUIManager {
         
-        private(set) public var paymentMethodType: PaymentMethodConfigType
+        private(set) public var paymentMethodType: PrimerPaymentMethodType
         private let appState: AppStateProtocol = DependencyContainer.resolve()
         
-        required public init(paymentMethodType: PaymentMethodConfigType) throws {
+        required public init(paymentMethodType: PrimerPaymentMethodType) throws {
             
             guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() else {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -105,7 +105,7 @@ extension PrimerHeadlessUniversalCheckout {
             self.requiredInputElementTypes = PrimerHeadlessUniversalCheckout.current.listRequiredInputElementTypes(for: paymentMethodType) ?? []
         }
         
-        required public init(paymentMethodType: PaymentMethodConfigType) throws {
+        required public init(paymentMethodType: PrimerPaymentMethodType) throws {
             fatalError("init(paymentMethodType:) has not been implemented")
         }
         
