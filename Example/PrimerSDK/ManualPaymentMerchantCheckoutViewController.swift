@@ -88,8 +88,15 @@ class ManualPaymentMerchantCheckoutViewController: UIViewController {
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
         
-        let configuration = PrimerConfiguration(settings: generalSettings)
-        Primer.shared.configure(configuration: configuration, delegate: self)
+        let settings = PrimerSettings2(
+            paymentHandling: .manual,
+            paymentMethodOptions: PrimerPaymentMethodOptions(
+                urlScheme: "merchant://",
+                applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
+            )
+        )
+        
+        Primer.shared.configure(settings: settings, delegate: self)
     }
     
     // MARK: - ACTIONS

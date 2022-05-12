@@ -80,20 +80,9 @@ public class Primer {
      Configure SDK's settings and/or theme
      */
 
-    public func configure(configuration: PrimerConfiguration? = nil, delegate: PrimerDelegate? = nil) {
+    public func configure(settings: PrimerSettings2? = nil, delegate: PrimerDelegate? = nil) {
+        DependencyContainer.register((settings ?? PrimerSettings2()) as PrimerSettingsProtocol2)
         self.delegate = delegate
-        
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        state.configuration = configuration ?? PrimerConfiguration()
-        if let settings = configuration?.settings as? PrimerSettingsProtocol {
-            DependencyContainer.register(settings)
-        }
-        if let configuration = state.configuration {
-            DependencyContainer.register(configuration)
-        }
-        
-        DependencyContainer.register(state.configuration!.settings! as PrimerSettingsProtocol)
-        DependencyContainer.register(state.configuration!.theme! as PrimerThemeProtocol)
     }
     
     // MARK: - SHOW

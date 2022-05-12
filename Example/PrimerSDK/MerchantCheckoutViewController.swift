@@ -85,8 +85,14 @@ class MerchantCheckoutViewController: UIViewController {
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
         
-        let configuration = PrimerConfiguration(settings: generalSettings)
-        Primer.shared.configure(configuration: configuration, delegate: self)
+        let settings = PrimerSettings2(
+            paymentMethodOptions: PrimerPaymentMethodOptions(
+                urlScheme: "merchant://",
+                applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
+            )
+        )
+        
+        Primer.shared.configure(settings: settings, delegate: self)
     }
     
     // MARK: - ACTIONS
@@ -118,9 +124,14 @@ class MerchantCheckoutViewController: UIViewController {
                     debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
                 )
                 
-                let configuration = PrimerConfiguration(settings: self.generalSettings)
-                Primer.shared.configure(configuration: configuration, delegate: self)
-                Primer.shared.showVaultManager(clientToken: clientToken, completion: nil)
+                let settings = PrimerSettings2(
+                    paymentMethodOptions: PrimerPaymentMethodOptions(
+                        urlScheme: "merchant://",
+                        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
+                    )
+                )
+                
+                Primer.shared.configure(settings: settings, delegate: self)
             }
         }
     }
@@ -152,9 +163,15 @@ class MerchantCheckoutViewController: UIViewController {
                     debugOptions: PrimerDebugOptions()
                 )
                 
-                let configuration = PrimerConfiguration(settings: self.generalSettings)
-                Primer.shared.configure(configuration: configuration, delegate: self)
-                Primer.shared.showUniversalCheckout(clientToken: clientToken)
+                let settings = PrimerSettings2(
+                    paymentHandling: .manual,
+                    paymentMethodOptions: PrimerPaymentMethodOptions(
+                        urlScheme: "merchant://",
+                        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
+                    )
+                )
+                
+                Primer.shared.configure(settings: settings, delegate: self)
             }
         }
     }
