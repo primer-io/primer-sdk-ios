@@ -215,6 +215,36 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         cardComponentsManager.delegate = self
     }
     
+    override func start() {
+        self.didStartTokenization = {
+            self.isTokenizing = true
+            self.submitButton.startAnimating()
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
+        }
+        
+        self.didFinishTokenization = { err in
+            self.submitButton.stopAnimating()
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+        }
+        
+        self.didStartPayment = {
+            self.submitButton.startAnimating()
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
+        }
+        
+        self.didFinishPayment = { err in
+            self.submitButton.stopAnimating()
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+            
+            self.willDismissPaymentMethodUI?()
+            self.webViewController?.dismiss(animated: true, completion: {
+                self.didDismissPaymentMethodUI?()
+            })
+        }
+        
+        super.start()
+    }
+    
     override func validate() throws {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -241,31 +271,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 throw err
             }
         }
-    }
-    
-    override func start() {
-        self.didStartTokenization = {
-            self.isTokenizing = true
-            self.submitButton.startAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
-        }
-        
-        self.didFinishTokenization = { err in
-            self.submitButton.stopAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-        }
-        
-        self.didStartPayment = {
-            self.submitButton.startAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
-        }
-        
-        self.didFinishPayment = { err in
-            self.submitButton.stopAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-        }
-        
-        super.start()
     }
     
     override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
@@ -433,6 +438,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return Promise { seal in
             self.webViewController = SFSafariViewController(url: redirectUrl)
             self.webViewController!.delegate = self
+            
+            self.webViewCompletion = { (id, err) in
+                if let err = err {
+                    seal.reject(err)
+                }
+            }
             
             DispatchQueue.main.async {
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
