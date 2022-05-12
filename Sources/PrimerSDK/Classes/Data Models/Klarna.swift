@@ -19,7 +19,7 @@ public struct LocaleData: Codable {
     var localeCode: String?
     let regionCode: String?
     
-    public init(languageCode: String?, regionCode: String?) {
+    public init(languageCode: String? = nil, regionCode: String? = nil) {
         self.languageCode = languageCode ?? Locale.current.languageCode
         self.regionCode = regionCode ?? Locale.current.regionCode
         

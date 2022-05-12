@@ -1,5 +1,142 @@
 #if canImport(UIKit)
 
+// MARK: - PRIMER SETTINGS
+
+internal protocol PrimerSettingsProtocol2 {
+    var paymentHandling: PrimerPaymentHandling { get }
+    var localeData: LocaleData { get }
+    var paymentMethodOptions: PrimerPaymentMethodOptions { get }
+    var uiOptions: PrimerUIOptions { get }
+    var debugOptions: PrimerDebugOptions { get }
+}
+
+public class PrimerSettings2: PrimerSettingsProtocol2 {
+    let paymentHandling: PrimerPaymentHandling
+    let localeData: LocaleData
+    let paymentMethodOptions: PrimerPaymentMethodOptions
+    let uiOptions: PrimerUIOptions
+    let debugOptions: PrimerDebugOptions
+    
+    public init(
+        paymentHandling: PrimerPaymentHandling = .auto,
+        localeData: LocaleData? = nil,
+        paymentMethodOptions: PrimerPaymentMethodOptions? = nil,
+        uiOptions: PrimerUIOptions? = nil,
+        debugOptions: PrimerDebugOptions? = nil
+    ) {
+        self.paymentHandling = paymentHandling
+        self.localeData = localeData ?? LocaleData()
+        self.paymentMethodOptions = paymentMethodOptions ?? PrimerPaymentMethodOptions()
+        self.uiOptions = uiOptions ?? PrimerUIOptions()
+        self.debugOptions = debugOptions ?? PrimerDebugOptions()
+    }
+}
+
+// MARK: - PAYMENT HANDLING
+
+public enum PrimerPaymentHandling {
+    case auto
+    case manual
+}
+
+// MARK: - PAYMENT METHOD OPTIONS
+
+internal protocol PrimerPaymentMethodOptionsProtocol {
+    var urlScheme: String? { get }
+    var applePayOptions: PrimerApplePayOptions? { get } // Default: null
+    var cardPaymentOptions: PrimerCardPaymentOptions? { get } // Default: null
+}
+
+public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol {
+    let urlScheme: String?
+    let applePayOptions: PrimerApplePayOptions?
+    let cardPaymentOptions: PrimerCardPaymentOptions?
+    
+    public init(
+        urlScheme: String? = nil,
+        applePayOptions: PrimerApplePayOptions? = nil,
+        cardPaymentOptions: PrimerCardPaymentOptions? = nil
+    ) {
+        self.urlScheme = urlScheme
+        self.applePayOptions = applePayOptions
+        self.cardPaymentOptions = cardPaymentOptions
+    }
+}
+
+// MARK: Apple Pay
+
+internal protocol PrimerApplePayOptionsProtocol {
+    var merchantIdentifier: String { get }
+}
+
+public class PrimerApplePayOptions: PrimerApplePayOptionsProtocol {
+    
+    let merchantIdentifier: String
+    
+    public init(merchantIdentifier: String) {
+        self.merchantIdentifier = merchantIdentifier
+    }
+}
+
+// MARK: Card Payment
+
+internal protocol PrimerCardPaymentOptionsProtocol {
+    var is3DSOnVaultingEnabled: Bool { get }
+}
+
+public class PrimerCardPaymentOptions: PrimerCardPaymentOptionsProtocol {
+    
+    let is3DSOnVaultingEnabled: Bool
+    
+    public init(is3DSOnVaultingEnabled: Bool? = nil) {
+        self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled != nil ? is3DSOnVaultingEnabled! : true
+    }
+}
+
+// MARK: - UI OPTIONS
+
+internal protocol PrimerUIOptionsProtocol {
+    var isInitScreenEnabled: Bool { get } // Default: true
+    var isSuccessScreenEnabled: Bool { get } // Default: true
+    var isErrorScreenEnabled: Bool { get } // Default: true
+    var theme: PrimerTheme { get }
+}
+
+public class PrimerUIOptions: PrimerUIOptionsProtocol {
+    
+    let isInitScreenEnabled: Bool
+    let isSuccessScreenEnabled: Bool
+    let isErrorScreenEnabled: Bool
+    let theme: PrimerTheme
+    
+    public init(
+        isInitScreenEnabled: Bool? = nil,
+        isSuccessScreenEnabled: Bool? = nil,
+        isErrorScreenEnabled: Bool? = nil,
+        theme: PrimerTheme? = nil
+    ) {
+        self.isInitScreenEnabled = isInitScreenEnabled != nil ? isInitScreenEnabled! : true
+        self.isSuccessScreenEnabled = isSuccessScreenEnabled != nil ? isSuccessScreenEnabled! : true
+        self.isErrorScreenEnabled = isErrorScreenEnabled != nil ? isErrorScreenEnabled! : true
+        self.theme = theme ?? PrimerTheme()
+    }
+}
+
+// MARK: - DEBUG OPTIONS
+
+internal protocol PrimerDebugOptionsProtocol {
+    var is3DSSanityCheckEnabled: Bool { get }
+}
+
+public class PrimerDebugOptions: PrimerDebugOptionsProtocol {
+    
+    let is3DSSanityCheckEnabled: Bool
+    
+    public init(is3DSSanityCheckEnabled: Bool? = nil) {
+        self.is3DSSanityCheckEnabled = is3DSSanityCheckEnabled != nil ? is3DSSanityCheckEnabled! : true
+    }
+}
+
 internal protocol PrimerSettingsProtocol {
     @available(*, deprecated, message: "Set the amount in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var amount: Int? { get }
@@ -33,19 +170,6 @@ internal protocol PrimerSettingsProtocol {
     var customer: Customer? { get set }
     
     func modify(withClientSession clientSession: ClientSessionAPIResponse)
-}
-
-public enum PrimerPaymentHandling {
-    case auto
-    case manual
-}
-
-public struct PrimerDebugOptions {
-    public var is3DSSanityCheckEnabled: Bool = true
-    
-    public init(is3DSSanityCheckEnabled: Bool = true) {
-        self.is3DSSanityCheckEnabled = is3DSSanityCheckEnabled
-    }
 }
 
 public class PrimerConfiguration {
