@@ -14,18 +14,11 @@ protocol CheckoutModuleOptions: Codable {}
 struct PrimerAPIConfiguration: Codable {
     
     static var current: PrimerAPIConfiguration? {
-        let appState: AppStateProtocol = DependencyContainer.resolve()
-        return appState.apiConfiguration
+        return AppState.current.apiConfiguration
     }
     
     static var paymentMethodConfigs: [PaymentMethodConfig]? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        let pms = state
-            .apiConfiguration?
-            .paymentMethods
-        
-        return pms
+        return AppState.current.apiConfiguration?.paymentMethods
     }
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {

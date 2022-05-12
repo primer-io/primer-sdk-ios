@@ -26,8 +26,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     
     private var isCardholderNameFieldEnabled: Bool {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        if (state.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName == false {
+        if (AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName == false {
             return false
         } else {
             return true
@@ -45,8 +44,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
     
     var requirePostalCode: Bool {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let billingAddressModule = state.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
+        guard let billingAddressModule = AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
         return (billingAddressModule.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
     }
     
@@ -83,8 +81,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
     
     private var localSamplePostalCode: String {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        let countryCode = state.apiConfiguration?.clientSession?.order?.countryCode
+        let countryCode = AppState.current.apiConfiguration?.clientSession?.order?.countryCode
         return PostalCode.sample(for: countryCode)
     }
     
@@ -151,8 +148,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
     
     private var localPostalCodeTitle: String {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        let countryCode = state.apiConfiguration?.clientSession?.order?.countryCode
+        let countryCode = AppState.current.apiConfiguration?.clientSession?.order?.countryCode
         return PostalCode.name(for: countryCode)
     }
     
@@ -219,8 +215,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     override func validate() throws {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -234,14 +228,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
         
         if !Primer.shared.flow.internalSessionFlow.vaulted {
-            if settings.amount == nil {
-                let err = PrimerError.invalidSetting(name: "amount", value: settings.amount != nil ? "\(settings.amount!)" : nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            if AppState.current.amount == nil {
+                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 throw err
             }
             
-            if settings.currency == nil {
-                let err = PrimerError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            if AppState.current.currency == nil {
+                let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -406,8 +400,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     func configurePayButton(cardNetwork: CardNetwork?) {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        var amount: Int = settings.amount ?? 0
+        var amount: Int = AppState.current.amount ?? 0
         
         if let surcharge = cardNetwork?.surcharge {
             amount += surcharge
@@ -418,16 +411,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     func configurePayButton(amount: Int) {
         DispatchQueue.main.async {
-            if !Primer.shared.flow.internalSessionFlow.vaulted {
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                
+            if !Primer.shared.flow.internalSessionFlow.vaulted {                
                 var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
                                               tableName: nil,
                                               bundle: Bundle.primerResources,
                                               value: "Pay",
                                               comment: "Pay - Card Form View (Sumbit button text)") //+ " " + (amount.toCurrencyString(currency: settings.currency) ?? "")
                 
-                if let currency = settings.currency {
+                if let currency = AppState.current.currency {
                     title += " \(amount.toCurrencyString(currency: currency))"
                 }
                 
@@ -476,9 +467,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             var actions = [ClientSessionAPIResponse.Action.selectPaymentMethodActionWithParameters(params)]
             
             if (requirePostalCode) {
-                let state: AppStateProtocol = DependencyContainer.resolve()
-                
-                let currentBillingAddress = state.apiConfiguration?.clientSession?.customer?.billingAddress
+                let currentBillingAddress = AppState.current.apiConfiguration?.clientSession?.customer?.billingAddress
                 
                 let billingAddressWithUpdatedPostalCode = ClientSessionAPIResponse.Address(firstName: currentBillingAddress?.firstName,
                                                                                 lastName: currentBillingAddress?.lastName,
@@ -515,9 +504,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        if let clientToken = state.clientToken {
+        if let clientToken = AppState.current.clientToken {
             completion(clientToken, nil)
         } else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -625,8 +612,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
         // Dispatch postal code action if valid postal code.
         if let fieldView = (primerTextFieldView as? PrimerPostalCodeFieldView), isValid  == true {
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            let currentBillingAddress = state.apiConfiguration?.clientSession?.customer?.billingAddress
+            let currentBillingAddress = AppState.current.apiConfiguration?.clientSession?.customer?.billingAddress
             let billingAddressWithUpdatedPostalCode = ClientSessionAPIResponse.Address(firstName: currentBillingAddress?.firstName,
                                                                             lastName: currentBillingAddress?.lastName,
                                                                             addressLine1: currentBillingAddress?.addressLine1,
@@ -674,8 +660,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 extension CardFormPaymentMethodTokenizationViewModel {
     
     private func updateButtonUI() {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        if let amount = settings.amount, !self.isTokenizing {
+        if let amount = AppState.current.amount, !self.isTokenizing {
             self.configurePayButton(amount: amount)
         }
     }

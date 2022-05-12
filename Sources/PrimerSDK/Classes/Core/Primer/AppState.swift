@@ -20,6 +20,19 @@ internal protocol AppStateProtocol: AnyObject {
 
 internal class AppState: AppStateProtocol {
     
+    static var current: AppState {
+        let appState: AppStateProtocol = DependencyContainer.resolve()
+        return appState as! AppState
+    }
+    
+    var amount: Int? {
+        return AppState.current.apiConfiguration?.clientSession?.order?.merchantAmount ?? AppState.current.apiConfiguration?.clientSession?.order?.totalOrderAmount
+    }
+    
+    var currency: Currency? {
+        return AppState.current.apiConfiguration?.clientSession?.order?.currencyCode
+    }
+    
     var clientToken: String?
     var apiConfiguration: PrimerAPIConfiguration?
     var paymentMethods: [PaymentMethodToken] = []

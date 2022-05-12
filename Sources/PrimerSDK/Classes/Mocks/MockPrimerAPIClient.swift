@@ -71,17 +71,17 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (Result<DirectDebitCreateMandateResponse, Error>) -> Void) {
-        isCalled = true
-        guard let response = response else { return }
-
-        do {
-            let value = try JSONDecoder().decode(DirectDebitCreateMandateResponse.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
+//    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (Result<DirectDebitCreateMandateResponse, Error>) -> Void) {
+//        isCalled = true
+//        guard let response = response else { return }
+//
+//        do {
+//            let value = try JSONDecoder().decode(DirectDebitCreateMandateResponse.self, from: response)
+//            completion(.success(value))
+//        } catch {
+//            completion(.failure(error))
+//        }
+//    }
 
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
         isCalled = true

@@ -61,7 +61,7 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     struct SessionInfo: Codable {
         var locale: String
         var platform: String = "IOS"
-        var redirectionUrl: String? = PrimerSettings.current.urlScheme
+        var redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
     }
     
 }
@@ -99,7 +99,7 @@ struct BlikPaymentMethodOptions: PaymentMethodOptions {
         let blikCode: String
         let locale: String
         let platform: String = "IOS"
-        let redirectionUrl: String? = PrimerSettings.current.urlScheme
+        let redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
     }
     
 }

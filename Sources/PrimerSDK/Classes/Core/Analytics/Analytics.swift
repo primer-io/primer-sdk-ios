@@ -34,23 +34,10 @@ class Analytics {
         init(eventType: Analytics.Event.EventType, properties: AnalyticsEventProperties?) {
             self.eventType = eventType
             self.properties = properties
-            
-            analyticsUrl = ClientTokenService.decodedClientToken?.analyticsUrl
-            
-            if let checkoutSessionId = Primer.shared.checkoutSessionId {
-                self.checkoutSessionId = checkoutSessionId
-            }
-            
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            if let config = state.apiConfiguration, let clientSessionId = config.clientSession?.clientSessionId {
-                self.clientSessionId = clientSessionId
-            }
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            if let customerId = settings.customerId {
-                self.customerId = customerId
-            }
-            
+            self.analyticsUrl = ClientTokenService.decodedClientToken?.analyticsUrl
+            self.checkoutSessionId = Primer.shared.checkoutSessionId
+            self.clientSessionId = AppState.current.apiConfiguration?.clientSession?.clientSessionId
+            self.customerId = AppState.current.apiConfiguration?.clientSession?.customer?.id
             self.localId = String.randomString(length: 32)
             self.sdkSessionId = Primer.shared.sdkSessionId
         }

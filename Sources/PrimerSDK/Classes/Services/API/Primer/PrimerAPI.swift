@@ -17,7 +17,6 @@ enum PrimerAPI: Endpoint, Equatable {
             (.fetchConfiguration, .fetchConfiguration),
             (.fetchVaultedPaymentMethods, .fetchVaultedPaymentMethods),
             (.deleteVaultedPaymentMethod, .deleteVaultedPaymentMethod),
-            (.createDirectDebitMandate, .createDirectDebitMandate),
             (.createPayPalOrderSession, .createPayPalOrderSession),
             (.createPayPalSBillingAgreementSession, .createPayPalSBillingAgreementSession),
             (.confirmPayPalBillingAgreement, .confirmPayPalBillingAgreement),
@@ -45,7 +44,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
     case deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String)
     
-    case createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
+//    case createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
     case createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest)
     case createPayPalSBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest)
     case confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest)
@@ -92,8 +91,8 @@ internal extension PrimerAPI {
         var tmpHeaders = PrimerAPI.headers
         
         switch self {
-        case .createDirectDebitMandate(let clientToken, _),
-                .deleteVaultedPaymentMethod(let clientToken, _),
+        case .deleteVaultedPaymentMethod(let clientToken, _),
+//                .createDirectDebitMandate(let clientToken, _),
                 .exchangePaymentMethodToken(let clientToken, _),
                 .fetchVaultedPaymentMethods(let clientToken),
                 .createPayPalOrderSession(let clientToken, _),
@@ -151,8 +150,8 @@ internal extension PrimerAPI {
     // MARK: Base URL
     var baseURL: String? {
         switch self {
-        case .createDirectDebitMandate(let clientToken, _),
-                .createPayPalOrderSession(let clientToken, _),
+        case .createPayPalOrderSession(let clientToken, _),
+//                .createDirectDebitMandate(let clientToken, _),
                 .createPayPalSBillingAgreementSession(let clientToken, _),
                 .confirmPayPalBillingAgreement(let clientToken, _),
                 .createKlarnaPaymentSession(let clientToken, _),
@@ -209,8 +208,8 @@ internal extension PrimerAPI {
             return "/klarna/customer-tokens"
         case .finalizeKlarnaPaymentSession:
             return "/klarna/payment-sessions/finalize"
-        case .createDirectDebitMandate:
-            return "/gocardless/mandates"
+//        case .createDirectDebitMandate:
+//            return "/gocardless/mandates"
         case .tokenizePaymentMethod:
             return "/payment-instruments"
         case .begin3DSRemoteAuth(_, let paymentMethodToken, _):
@@ -254,8 +253,8 @@ internal extension PrimerAPI {
         case .fetchConfiguration,
                 .fetchVaultedPaymentMethods:
             return .get
-        case .createDirectDebitMandate,
-                .createPayPalOrderSession,
+        case .createPayPalOrderSession,
+//                .createDirectDebitMandate,
                 .createPayPalSBillingAgreementSession,
                 .confirmPayPalBillingAgreement,
                 .createKlarnaPaymentSession,
@@ -292,8 +291,8 @@ internal extension PrimerAPI {
     
     var body: Data? {
         switch self {
-        case .createDirectDebitMandate(_, let mandateRequest):
-            return try? JSONEncoder().encode(mandateRequest)
+//        case .createDirectDebitMandate(_, let mandateRequest):
+//            return try? JSONEncoder().encode(mandateRequest)
         case .createPayPalOrderSession(_, let payPalCreateOrderRequest):
             return try? JSONEncoder().encode(payPalCreateOrderRequest)
         case .createPayPalSBillingAgreementSession(_, let payPalCreateBillingAgreementRequest):

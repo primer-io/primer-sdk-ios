@@ -167,15 +167,23 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 paymentMethodStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
             }
             
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            var amount: Int = settings.amount ?? 0
+            guard var amount = AppState.current.amount,
+                  let currency = AppState.current.currency
+            else {
+                let err = PrimerError.invalidValue(key: "amount or currency", value: nil, userInfo: nil)
+                firstly {
+                    PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
+                }
+                .done { errMessage in
+                    Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: errMessage)
+                }
+                return
+            }
             
-            if let surCharge = cardButtonViewModel.surCharge {
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-                
+            
+            if let surCharge = cardButtonViewModel.surCharge {                
                 let surChargeLabel = UILabel()
-                surChargeLabel.text = "+" + Int(surCharge).toCurrencyString(currency: settings.currency!)
+                surChargeLabel.text = "+" + Int(surCharge).toCurrencyString(currency: currency)
                 surChargeLabel.textColor = theme.text.body.color
                 surChargeLabel.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                 paymentMethodStackView.addArrangedSubview(surChargeLabel)
@@ -202,7 +210,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                                           value: "Pay",
                                           comment: "Pay - Card Form View (Sumbit button text)") //+ " " + (amount.toCurrencyString(currency: settings.currency) ?? "")
             
-            if amount != 0, let currency = settings.currency {
+            if amount != 0, let currency = AppState.current.currency {
                 title += " \(amount.toCurrencyString(currency: currency))"
             }
             

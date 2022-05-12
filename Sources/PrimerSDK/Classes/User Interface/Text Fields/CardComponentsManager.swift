@@ -266,18 +266,15 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     klarnaCustomerToken: nil,
                     sessionData: nil)
                 
-                let paymentFlow: PaymentFlow? = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
                 let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout, customerId: self.customerId)
                 
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                 apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest) { result in
                     switch result {
                     case .success(let paymentMethodToken):
-                        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                        let state: AppStateProtocol = DependencyContainer.resolve()
                                                 
                         var isThreeDSEnabled: Bool = false
-                        if state.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                        if AppState.current.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                             isThreeDSEnabled = true
                         }
 
@@ -288,7 +285,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
                         if paymentMethodToken.paymentInstrumentType == .paymentCard,
                            Primer.shared.flow.internalSessionFlow.vaulted,
-                           settings.is3DSOnVaultingEnabled,
+                           PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.is3DSOnVaultingEnabled,
                            paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
                            isThreeDSEnabled {
                             #if canImport(Primer3DS)
