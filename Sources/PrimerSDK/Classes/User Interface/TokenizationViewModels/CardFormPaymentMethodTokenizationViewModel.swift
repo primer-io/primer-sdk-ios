@@ -214,6 +214,36 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         cardComponentsManager.delegate = self
     }
     
+    override func start() {
+        self.didStartTokenization = {
+            self.isTokenizing = true
+            self.submitButton.startAnimating()
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
+        }
+        
+        self.didFinishTokenization = { err in
+            self.submitButton.stopAnimating()
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+        }
+        
+        self.didStartPayment = {
+            self.submitButton.startAnimating()
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
+        }
+        
+        self.didFinishPayment = { err in
+            self.submitButton.stopAnimating()
+            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+            
+            self.willDismissPaymentMethodUI?()
+            self.webViewController?.dismiss(animated: true, completion: {
+                self.didDismissPaymentMethodUI?()
+            })
+        }
+        
+        super.start()
+    }
+    
     override func validate() throws {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -240,31 +270,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 throw err
             }
         }
-    }
-    
-    override func start() {
-        self.didStartTokenization = {
-            self.isTokenizing = true
-            self.submitButton.startAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
-        }
-        
-        self.didFinishTokenization = { err in
-            self.submitButton.stopAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-        }
-        
-        self.didStartPayment = {
-            self.submitButton.startAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
-        }
-        
-        self.didFinishPayment = { err in
-            self.submitButton.stopAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-        }
-        
-        super.start()
     }
     
     override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
@@ -395,6 +400,73 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
+            }
+        }
+    }
+    
+    private func presentWeb3DS(with redirectUrl: URL) -> Promise<Void> {
+        return Promise { seal in
+            self.webViewController = SFSafariViewController(url: redirectUrl)
+            self.webViewController!.delegate = self
+            
+            self.webViewCompletion = { (id, err) in
+                if let err = err {
+                    seal.reject(err)
+                }
+            }
+            
+            DispatchQueue.main.async {
+                Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                    DispatchQueue.main.async {
+                        seal.fulfill()
+                    }
+                })
+            }
+        }
+    }
+    
+    private func startPolling(on url: URL) -> Promise<String> {
+        return Promise { seal in
+            self.startPolling(on: url) { resumeToken, err in
+                if let err = err {
+                    seal.reject(err)
+                } else if let resumeToken = resumeToken {
+                    seal.fulfill(resumeToken)
+                } else {
+                    assert(true, "Completion handler should always return a value or an error")
+                }
+            }
+        }
+    }
+    
+    private func startPolling(on url: URL, completion: @escaping (String?, Error?) -> Void) {
+        let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
+            if self.webViewCompletion == nil {
+                let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                completion(nil, err)
+                return
+            }
+            
+            switch result {
+            case .success(let res):
+                if res.status == .pending {
+                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                        self.startPolling(on: url, completion: completion)
+                    }
+                } else if res.status == .complete {
+                    completion(res.id, nil)
+                } else {
+                    let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                }
+            case .failure(let err):
+                ErrorHandler.handle(error: err)
+                // Retry
+                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
+                    self.startPolling(on: url, completion: completion)
+                }
             }
         }
     }
