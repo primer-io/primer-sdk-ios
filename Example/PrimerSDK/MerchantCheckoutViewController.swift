@@ -49,12 +49,6 @@ class MerchantCheckoutViewController: UIViewController {
     }
     
     var clientToken: String?
-    
-    var vaultApayaSettings: PrimerSettings!
-    var vaultPayPalSettings: PrimerSettings!
-    var vaultKlarnaSettings: PrimerSettings!
-    var applePaySettings: PrimerSettings!
-    var generalSettings: PrimerSettings!
     var amount = 200
     var currency: Currency = .EUR
     var customerId: String!
@@ -71,27 +65,12 @@ class MerchantCheckoutViewController: UIViewController {
         super.viewDidLoad()
         title = "Primer [\(environment.rawValue)]"
         
-        generalSettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
-            klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: nil,
-            urlScheme: "merchant://",
-            urlSchemeIdentifier: "merchant",
-            isFullScreenOnly: false,
-            hasDisabledSuccessScreen: false,
-            directDebitHasNoAmount: false,
-            isInitialLoadingHidden: false,
-            is3DSOnVaultingEnabled: true,
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
-        )
-        
-        let settings = PrimerSettings2(
+        let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
                 urlScheme: "merchant://",
                 applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
             )
         )
-        
         Primer.shared.configure(settings: settings, delegate: self)
     }
     
@@ -110,28 +89,7 @@ class MerchantCheckoutViewController: UIViewController {
                 print(merchantErr)
             } else if let clientToken = clientToken {
                 self.clientToken = clientToken
-                self.generalSettings = PrimerSettings(
-                    merchantIdentifier: "merchant.checkout.team",
-                    klarnaSessionType: .recurringPayment,
-                    klarnaPaymentDescription: nil,
-                    urlScheme: "merchant://",
-                    urlSchemeIdentifier: "merchant",
-                    isFullScreenOnly: false,
-                    hasDisabledSuccessScreen: false,
-                    directDebitHasNoAmount: false,
-                    isInitialLoadingHidden: false,
-                    is3DSOnVaultingEnabled: true,
-                    debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
-                )
-                
-                let settings = PrimerSettings2(
-                    paymentMethodOptions: PrimerPaymentMethodOptions(
-                        urlScheme: "merchant://",
-                        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
-                    )
-                )
-                
-                Primer.shared.configure(settings: settings, delegate: self)
+                Primer.shared.showVaultManager(clientToken: clientToken)
             }
         }
     }
@@ -149,29 +107,7 @@ class MerchantCheckoutViewController: UIViewController {
                 print(merchantErr)
             } else if let clientToken = clientToken {
                 self.clientToken = clientToken
-                self.generalSettings = PrimerSettings(
-                    merchantIdentifier: "merchant.checkout.team",
-                    klarnaSessionType: .recurringPayment,
-                    klarnaPaymentDescription: nil,
-                    urlScheme: "merchant://",
-                    urlSchemeIdentifier: "merchant",
-                    isFullScreenOnly: false,
-                    hasDisabledSuccessScreen: false,
-                    directDebitHasNoAmount: false,
-                    isInitialLoadingHidden: false,
-                    is3DSOnVaultingEnabled: true,
-                    debugOptions: PrimerDebugOptions()
-                )
-                
-                let settings = PrimerSettings2(
-                    paymentHandling: .manual,
-                    paymentMethodOptions: PrimerPaymentMethodOptions(
-                        urlScheme: "merchant://",
-                        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
-                    )
-                )
-                
-                Primer.shared.configure(settings: settings, delegate: self)
+                Primer.shared.showUniversalCheckout(clientToken: clientToken)
             }
         }
     }
