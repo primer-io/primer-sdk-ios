@@ -243,7 +243,7 @@ class MerchantCheckoutViewController: UIViewController {
                     directDebitHasNoAmount: false,
                     isInitialLoadingHidden: false,
                     is3DSOnVaultingEnabled: true,
-                    debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+                    debugOptions: PrimerDebugOptions()
                 )
                 
                 let configuration = PrimerConfiguration(settings: self.generalSettings)
