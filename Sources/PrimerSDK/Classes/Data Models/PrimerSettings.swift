@@ -155,7 +155,6 @@ internal protocol PrimerSettingsProtocol {
     var hasDisabledSuccessScreen: Bool { get set }
     var paymentHandling: PrimerPaymentHandling { get set }
     var isManualPaymentHandlingEnabled: Bool { get }
-    var businessDetails: PrimerBusiness? { get }
     var directDebitHasNoAmount: Bool { get }
     @available(*, deprecated, message: "Set the orderItems in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var orderItems: [OrderItem]? { get }
@@ -240,7 +239,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
             
         }
     }
-    internal(set) public var businessDetails: PrimerBusiness?
     internal(set) public var directDebitHasNoAmount: Bool
     internal(set) public var orderItems: [OrderItem]?
     internal(set) public var isInitialLoadingHidden: Bool
@@ -275,7 +273,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         isFullScreenOnly: Bool = false,
         hasDisabledSuccessScreen: Bool = false,
         paymentHandling: PrimerPaymentHandling = .auto,
-        businessDetails: PrimerBusiness? = nil,
         directDebitHasNoAmount: Bool = false,
         orderItems: [OrderItem] = [],
         isInitialLoadingHidden: Bool = false,
@@ -297,7 +294,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.isFullScreenOnly = isFullScreenOnly
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
         self.paymentHandling = paymentHandling
-        self.businessDetails = businessDetails
         self.directDebitHasNoAmount = directDebitHasNoAmount
         self.orderItems = orderItems
         self.isInitialLoadingHidden = isInitialLoadingHidden
@@ -325,7 +321,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         isFullScreenOnly: Bool = false,
         hasDisabledSuccessScreen: Bool = false,
         paymentHandling: PrimerPaymentHandling = .auto,
-        businessDetails: PrimerBusiness? = nil,
         directDebitHasNoAmount: Bool = false,
         isInitialLoadingHidden: Bool = false,
         localeData: LocaleData? = nil,
@@ -339,7 +334,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         self.isFullScreenOnly = isFullScreenOnly
         self.hasDisabledSuccessScreen = hasDisabledSuccessScreen
         self.paymentHandling = paymentHandling
-        self.businessDetails = businessDetails
         self.directDebitHasNoAmount = directDebitHasNoAmount
         self.isInitialLoadingHidden = isInitialLoadingHidden
         self.localeData = localeData ?? LocaleData(languageCode: nil, regionCode: nil)
@@ -414,28 +408,6 @@ public class PrimerSettings: PrimerSettingsProtocol {
         }
         
         isModifiedByClientSession = true
-    }
-}
-
-public struct PrimerBusiness: Codable {
-    public let name: String?
-    public let registrationNumber: String?
-    public let email: String?
-    public let phone: String?
-    public let address: Address?
-
-    public init(
-        name: String?,
-        registrationNumber: String?,
-        email: String?,
-        phone: String?,
-        address: Address?
-    ) {
-        self.name = name
-        self.registrationNumber = registrationNumber
-        self.email = email
-        self.phone = phone
-        self.address = address
     }
 }
 
