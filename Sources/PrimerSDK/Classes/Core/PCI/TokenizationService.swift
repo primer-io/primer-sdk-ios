@@ -58,13 +58,10 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 DispatchQueue.main.async { onTokenizeSuccess(.failure(err)) }
                 
             case .success(let paymentMethodToken):
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                let state: AppStateProtocol = DependencyContainer.resolve()
-                
                 self.tokenizedPaymentMethodToken = paymentMethodToken
                 
                 var isThreeDSEnabled: Bool = false
-                if state.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                if AppState.current.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                     isThreeDSEnabled = true
                 }
 
@@ -75,7 +72,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
                 if paymentMethodToken.paymentInstrumentType == .paymentCard,
                    Primer.shared.flow.internalSessionFlow.vaulted,
-                   settings.is3DSOnVaultingEnabled,
+                   PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.is3DSOnVaultingEnabled,
                    paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
                    isThreeDSEnabled {
                     #if canImport(Primer3DS)

@@ -14,8 +14,6 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
     }
 
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
         guard let clientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -30,7 +28,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
             case .failure(let error):
                 completion(error)
             case .success(let config):
-                state.apiConfiguration = config
+                AppState.current.apiConfiguration = config
                 completion(nil)
             }
         }

@@ -66,12 +66,8 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     private func continueValidateSession() -> Promise<Void> {
-        
         return Promise { seal in
-            
-            let appState: AppStateProtocol = DependencyContainer.resolve()
-
-            guard let clientToken = appState.clientToken else {
+            guard let clientToken = AppState.current.clientToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token is nil"])
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -90,7 +86,7 @@ public class PrimerHeadlessUniversalCheckout {
                 seal.reject(error)
             }
             
-            guard let apiConfiguration = appState.apiConfiguration else {
+            guard let apiConfiguration = AppState.current.apiConfiguration else {
                 let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 seal.reject(err)
                 return
@@ -107,13 +103,8 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     internal func validateSession() -> Promise<Void> {
-        
         return Promise { seal in
-            
-            let appState: AppStateProtocol = DependencyContainer.resolve()
-            
-            if appState.clientToken == nil, let clientToken = PrimerHeadlessUniversalCheckout.current.clientToken {
-                
+            if AppState.current.clientToken == nil, let clientToken = PrimerHeadlessUniversalCheckout.current.clientToken {
                 firstly {
                     ClientTokenService.storeClientToken(clientToken)
                 }
@@ -123,9 +114,7 @@ public class PrimerHeadlessUniversalCheckout {
                 .catch { error in
                     seal.reject(error)
                 }
-                
             } else {
-                
                 firstly {
                     continueValidateSession()
                 }
@@ -206,17 +195,13 @@ public class PrimerHeadlessUniversalCheckout {
         case .payNLPayconiq:
             return []
         case .paymentCard:
-            let appState: AppStateProtocol = DependencyContainer.resolve()
-
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
-            
-            if let checkoutModule = appState.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
+            if let checkoutModule = AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
                let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
                 if options.cardHolderName == true {
                     requiredFields.append(.cardholderName)
                 }
             }
-            
             return requiredFields
         case .payPal:
             return []
@@ -248,9 +233,9 @@ public class PrimerHeadlessUniversalCheckout {
     public func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType) {
         DispatchQueue.main.async {
             
-            var settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            settings.hasDisabledSuccessScreen = true
-            settings.isInitialLoadingHidden = true
+            PrimerSettings.current.uiOptions.isInitScreenEnabled = false
+            PrimerSettings.current.uiOptions.isSuccessScreenEnabled = false
+            PrimerSettings.current.uiOptions.isErrorScreenEnabled = false
             
             switch paymentMethod {
             case .goCardlessMandate,
@@ -261,14 +246,14 @@ public class PrimerHeadlessUniversalCheckout {
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
                 return
             case .applePay:
-                if settings.merchantIdentifier == nil {
+                if PrimerSettings.current.paymentMethodOptions.applePayOptions == nil {
                     let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
                     PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
                     return
                 }
             case .payPal:
-                if settings.urlScheme == nil {
+                if PrimerSettings.current.paymentMethodOptions.urlScheme == nil {
                     let err = PrimerError.invalidUrlScheme(urlScheme: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
                     PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)

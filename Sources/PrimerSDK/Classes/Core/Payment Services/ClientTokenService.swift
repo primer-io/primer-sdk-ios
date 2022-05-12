@@ -14,7 +14,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         
     /// The client token from the DepedencyContainer
     static var decodedClientToken: DecodedClientToken? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
+        let state: AppStateProtocol = AppState.current
         guard let clientToken = state.clientToken else { return nil }
         guard let jwtTokenPayload = clientToken.jwtTokenPayload,
               let expDate = jwtTokenPayload.expDate
@@ -136,9 +136,6 @@ extension ClientTokenService {
     }
     
     static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void) {
-        
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
         // 1. Validate the token manually or return the previous one from current App State
         do {
             _ = try validateInternally(clientToken)
@@ -149,14 +146,13 @@ extension ClientTokenService {
         
         // 2. Validate the token from the dedicated API
         validateToken(clientToken) { error in
-            
             guard error == nil else {
                 completion(error)
                 return
             }
             
             // 3. Assign the new token to the App State
-            state.clientToken = clientToken
+            AppState.current.clientToken = clientToken
             completion(nil)
         }
     }
@@ -167,8 +163,7 @@ extension ClientTokenService {
     // MARK: Reset
     
     static func resetClientToken() {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        state.clientToken = nil
+        AppState.current.clientToken = nil
     }
 }
 

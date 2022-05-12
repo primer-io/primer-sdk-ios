@@ -35,9 +35,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    override func validate() throws {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
+    override func validate() throws {        
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -56,25 +54,25 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
         
-        guard settings.countryCode != nil else {
-            let err = PrimerError.invalidSetting(name: "countryCode", value: settings.countryCode?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard AppState.current.apiConfiguration?.clientSession?.order?.countryCode != nil else {
+            let err = PrimerError.invalidSetting(name: "countryCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             throw err
         }
         
-        guard settings.currency != nil else {
-            let err = PrimerError.invalidSetting(name: "currency", value: settings.countryCode?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard AppState.current.currency != nil else {
+            let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             throw err
         }
         
-        guard settings.merchantIdentifier != nil else {
-            let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: settings.merchantIdentifier, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard PrimerSettings.current.paymentMethodOptions.applePayOptions != nil else {
+            let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             throw err
         }
         
-        guard !(settings.orderItems ?? []).isEmpty else {
+        guard !(AppState.current.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() }) ?? []).isEmpty else {
             let err = PrimerError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             throw err
@@ -141,9 +139,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
                 return
             }
-            
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
+                        
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
@@ -151,13 +147,16 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return
             }
             
-            let countryCode = settings.countryCode!
-            let currency = settings.currency!
-            let merchantIdentifier = settings.merchantIdentifier!
-            let orderItems = [
-                try! OrderItem(
-                    name: "Total", unitAmount: settings.amount ?? 0, quantity: 1)
-            ]
+            let countryCode = AppState.current.apiConfiguration!.clientSession!.order!.countryCode!
+            let currency = AppState.current.currency!
+            let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions!.merchantIdentifier
+
+            var orderItems: [OrderItem]
+            if let lineItems = AppState.current.apiConfiguration?.clientSession?.order?.lineItems {
+                orderItems = lineItems.compactMap({ try? $0.toOrderItem() })
+            } else {
+                orderItems = [try! OrderItem(name: "Total", unitAmount: AppState.current.amount ?? 0, quantity: 1)]
+            }
             
             let applePayRequest = ApplePayRequest(
                 currency: currency,
@@ -188,8 +187,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 applePayReceiveDataCompletion = { result in
                     switch result {
                     case .success(let applePayPaymentResponse):
-                        let state: AppStateProtocol = DependencyContainer.resolve()
-                        
                         guard let applePayConfigId = self.config.id else {
                             let err = PrimerError.invalidValue(key: "configuration.id", value: self.config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                             ErrorHandler.handle(error: err)
@@ -202,7 +199,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                             token: applePayPaymentResponse.token,
                             sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
                         )
-                        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
+                        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: AppState.current)
                         
                         let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                         apiClient.tokenizePaymentMethod(

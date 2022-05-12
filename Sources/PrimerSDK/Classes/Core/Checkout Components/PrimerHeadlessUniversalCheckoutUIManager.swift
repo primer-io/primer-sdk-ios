@@ -34,7 +34,7 @@ extension PrimerHeadlessUniversalCheckout {
     public class UIManager: PrimerHeadlessUniversalCheckoutUIManager {
         
         private(set) public var paymentMethodType: PrimerPaymentMethodType
-        private let appState: AppStateProtocol = DependencyContainer.resolve()
+        private let appState: AppStateProtocol = AppState.current
         
         required public init(paymentMethodType: PrimerPaymentMethodType) throws {
             
@@ -235,8 +235,7 @@ extension PrimerHeadlessUniversalCheckout {
                         klarnaCustomerToken: nil,
                         sessionData: nil)
                     
-                    let primerSettings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                    let customerId = primerSettings.customerId
+                    let customerId = AppState.current.apiConfiguration?.clientSession?.customer?.id
                     let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil, customerId: customerId)
                     seal.fulfill(request)
                     

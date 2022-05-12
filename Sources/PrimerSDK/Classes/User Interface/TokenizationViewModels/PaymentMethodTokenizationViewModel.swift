@@ -158,14 +158,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                                      value: "Additional fee may apply",
                                      comment: "Additional fee may apply - Surcharge (Label)")
         default:
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            guard let currency = settings.currency else { return nil }
-            
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            guard let availablePaymentMethods = state.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
-            
+            guard let currency = AppState.current.currency else { return nil }
+            guard let availablePaymentMethods = AppState.current.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
             guard let str = availablePaymentMethods.filter({ $0.type == config.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
-            
             return "+\(str)"
         }
     }()

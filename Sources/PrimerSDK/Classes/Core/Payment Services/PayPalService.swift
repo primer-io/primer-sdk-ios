@@ -18,13 +18,11 @@ internal class PayPalService: PayPalServiceProtocol {
     }
 
     private func prepareUrlAndTokenAndId(path: String) -> (DecodedClientToken, URL, String)? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             return nil
         }
 
-        guard let configId = state.apiConfiguration?.getConfigId(for: .payPal) else {
+        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: .payPal) else {
             return nil
         }
 
@@ -40,8 +38,6 @@ internal class PayPalService: PayPalServiceProtocol {
     }
 
     func startOrderSession(_ completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -49,31 +45,29 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        guard let configId = state.apiConfiguration?.getConfigId(for: .payPal) else {
-            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.apiConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: .payPal) else {
+            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: AppState.current.apiConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
         
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-        guard let amount = settings.amount else {
-            let err = PrimerError.invalidSetting(name: "amount", value: settings.amount != nil ? "\(settings.amount!)" : nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard let amount = AppState.current.amount else {
+            let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
 
-        guard let currency = settings.currency else {
-            let err = PrimerError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard let currency = AppState.current.currency else {
+            let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
 
-        guard var urlScheme = settings.urlScheme else {
-            let err = PrimerError.invalidValue(key: "urlScheme", value: settings.urlScheme, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard var urlScheme = PrimerSettings.current.paymentMethodOptions.urlScheme else {
+            let err = PrimerError.invalidValue(key: "urlScheme", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -106,7 +100,7 @@ internal class PayPalService: PayPalServiceProtocol {
     }
 
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
+        let state: AppStateProtocol = AppState.current
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -122,10 +116,8 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
         
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-        guard var urlScheme = settings.urlScheme else {
-            let err = PrimerError.invalidValue(key: "urlScheme", value: settings.urlScheme, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard var urlScheme = PrimerSettings.current.paymentMethodOptions.urlScheme else {
+            let err = PrimerError.invalidValue(key: "urlScheme", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -157,7 +149,7 @@ internal class PayPalService: PayPalServiceProtocol {
     }
 
     func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
+        let state: AppStateProtocol = AppState.current
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -197,7 +189,7 @@ internal class PayPalService: PayPalServiceProtocol {
     }
     
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
+        let state: AppStateProtocol = AppState.current
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])

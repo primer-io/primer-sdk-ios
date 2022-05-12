@@ -24,14 +24,10 @@ var mockClientToken = DecodedClientToken(accessToken: "bla", exp: 2000000000, co
 //)
 
 var mockSettings = PrimerSettings(
-    merchantIdentifier: "mid",
-    customerId: "cid",
-    amount: 200,
-    currency: .GBP,
-    countryCode: .gb,
-    urlScheme: "urlScheme",
-    urlSchemeIdentifier: "urlSchemeIdentifier",
-    orderItems: [try! OrderItem(name: "foo", unitAmount: 200, quantity: 1)]
+    paymentMethodOptions: PrimerPaymentMethodOptions(
+        urlScheme: "urlScheme",
+        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "mid")
+    )
 )
 
 class MockPrimerDelegate: PrimerDelegate {
@@ -87,71 +83,11 @@ class MockPrimerDelegate: PrimerDelegate {
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
-    
-    var isManualPaymentHandlingEnabled: Bool {
-        return false
-    }
-    
-    var paymentHandling: PrimerPaymentHandling = .auto
-    
-    var hasDisabledSuccessScreen: Bool = false
-    
-    var debugOptions: PrimerDebugOptions
-        
-    var orderId: String?
-    
-    var billingAddress: Address?
-    
-    var is3DSOnVaultingEnabled: Bool
-    var customer: Customer?
-    
-    var localeData: LocaleData { return LocaleData(languageCode: nil, regionCode: nil) }
-    
-    var merchantCapabilities: [MerchantCapability]?
-    
-    var supportedNetworks: [PaymentNetwork]?
-    var isInitialLoadingHidden: Bool = false
-    
-    var klarnaPaymentDescription: String?
-    
-    var klarnaSessionType: KlarnaSessionType?
-    
-    var orderItems: [OrderItem]? = []
-
-    var isFullScreenOnly: Bool {
-        return false
-    }
-
-    var directDebitHasNoAmount: Bool {
-        return true
-    }
-
-    var urlScheme: String? = ""
-
-    var urlSchemeIdentifier: String? = ""
-
-    var amount: Int? = 100
-
-    var currency: Currency? = .EUR
-
-    var merchantIdentifier: String? = "mid"
-
-    var countryCode: CountryCode? = .fr
-
-    var applePayEnabled: Bool = false
-
-    var customerId: String? = "cid"
-
-    var theme: PrimerTheme { return PrimerTheme() }
-
-    init() {
-        self.is3DSOnVaultingEnabled = true
-        self.debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
-    }
-    
-    func modify(withClientSession clientSession: ClientSessionAPIResponse) {
-        
-    }
+    var paymentHandling = PrimerPaymentHandling.auto
+    var localeData = LocaleData()
+    var paymentMethodOptions = PrimerPaymentMethodOptions()
+    var uiOptions = PrimerUIOptions()
+    var debugOptions = PrimerDebugOptions()
 }
 
 let mockPaymentMethodConfig = PrimerAPIConfiguration(
@@ -212,18 +148,11 @@ class MockLocator {
         DependencyContainer.register(MockPaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
         DependencyContainer.register(MockPayPalService() as PayPalServiceProtocol)
         DependencyContainer.register(MockTokenizationService(paymentInstrumentType: PrimerPaymentMethodType.paymentCard.rawValue, tokenType: TokenType.singleUse.rawValue) as TokenizationServiceProtocol)
-        DependencyContainer.register(MockDirectDebitService() as DirectDebitServiceProtocol)
         DependencyContainer.register(MockVaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(MockVaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(MockExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
         DependencyContainer.register(MockCreateResumePaymentService() as CreateResumePaymentServiceProtocol)
-    }
-}
-
-class MockDirectDebitService: DirectDebitServiceProtocol {
-    func createMandate(_ directDebitMandate: DirectDebitMandate, completion: @escaping (Error?) -> Void) {
-
     }
 }
 

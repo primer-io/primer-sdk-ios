@@ -14,8 +14,7 @@ class MockAsyncPaymentMethodTokenizationViewModel: ExternalPaymentMethodTokeniza
     
     var failValidation: Bool = false {
         didSet {
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            state.clientToken = nil
+            AppState.current.clientToken = nil
         }
     }
     var returnedPaymentMethodJson: String?

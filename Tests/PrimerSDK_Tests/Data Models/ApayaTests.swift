@@ -21,7 +21,7 @@ class ApayaDataModelTests: XCTestCase {
         let state: AppStateProtocol = MockAppState()
         state.apiConfiguration = mockPaymentMethodConfig
         DependencyContainer.register(state as AppStateProtocol)
-        let settings = PrimerSettings(currency: .GBP)
+        let settings = PrimerSettings()
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         
         do {
@@ -36,7 +36,7 @@ class ApayaDataModelTests: XCTestCase {
         let state: AppStateProtocol = MockAppState()
         state.apiConfiguration = mockPaymentMethodConfig
         DependencyContainer.register(state as AppStateProtocol)
-        let settings = PrimerSettings(currency: .GBP)
+        let settings = PrimerSettings()
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         
         let url = URL(string: rootUrl + "pt=ExamplePTValue&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91")
