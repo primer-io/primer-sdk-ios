@@ -15,20 +15,18 @@ public enum KlarnaSessionType: String, Codable {
 }
 
 public struct LocaleData: Codable {
-    let languageCode: String?
-    var localeCode: String?
+    let languageCode: String
+    var localeCode: String
     let regionCode: String?
     
     public init(languageCode: String? = nil, regionCode: String? = nil) {
-        self.languageCode = languageCode ?? Locale.current.languageCode
+        self.languageCode = (languageCode ?? Locale.current.languageCode) ?? "en"
         self.regionCode = regionCode ?? Locale.current.regionCode
         
-        if let languageCode = self.languageCode {
-            if let regionCode = self.regionCode {
-                self.localeCode = "\(languageCode)-\(regionCode)"
-            } else {
-                self.localeCode = "\(languageCode)"
-            }
+        if let regionCode = self.regionCode {
+            self.localeCode = "\(self.languageCode)-\(regionCode)"
+        } else {
+            self.localeCode = self.languageCode
         }
     }
 }

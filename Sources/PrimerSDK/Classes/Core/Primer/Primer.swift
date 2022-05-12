@@ -77,11 +77,11 @@ public class Primer {
     // MARK: - CONFIGURATION
 
     /**
-     Configure SDK's settings and/or theme
+     Configure SDK's settings
      */
 
-    public func configure(settings: PrimerSettings2? = nil, delegate: PrimerDelegate? = nil) {
-        DependencyContainer.register((settings ?? PrimerSettings2()) as PrimerSettingsProtocol2)
+    public func configure(settings: PrimerSettings? = nil, delegate: PrimerDelegate? = nil) {
+        DependencyContainer.register((settings ?? PrimerSettings()) as PrimerSettingsProtocol)
         self.delegate = delegate
     }
     
@@ -328,8 +328,7 @@ public class Primer {
     }
     
     public func setImplementedReactNativeCallbacks(_ implementedReactNativeCallbacks: ImplementedReactNativeCallbacks) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        state.implementedReactNativeCallbacks = implementedReactNativeCallbacks
+        AppState.current.implementedReactNativeCallbacks = implementedReactNativeCallbacks
     }
     
 }

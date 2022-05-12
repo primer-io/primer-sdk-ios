@@ -117,9 +117,7 @@ internal class PrimerRootViewController: PrimerViewController {
     }
     
     private func render() {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if settings.isInitialLoadingHidden == false {
+        if PrimerSettings.current.uiOptions.isInitScreenEnabled {
             blurBackground()
             showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
@@ -127,12 +125,7 @@ internal class PrimerRootViewController: PrimerViewController {
         let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
         viewModel.loadConfig({ [weak self] error in
-            DispatchQueue.main.async {
-                
-                let state: AppStateProtocol = DependencyContainer.resolve()
-                let pms = state.paymentMethods
-                print(pms)
-                
+            DispatchQueue.main.async {                
                 guard error == nil else {
                     var primerErr: PrimerError!
                     if let error = error as? PrimerError {
@@ -426,11 +419,10 @@ internal class PrimerRootViewController: PrimerViewController {
         }
         
         DispatchQueue.main.async {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             var show = true
             
             if self.nc.viewControllers.isEmpty {
-                show = !settings.isInitialLoadingHidden
+                show = PrimerSettings.current.uiOptions.isInitScreenEnabled
             }
             
             let height = self.nc.viewControllers.first?.view.bounds.height ?? 300
@@ -574,10 +566,11 @@ extension PrimerRootViewController {
 extension PrimerRootViewController {
     
     func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, withMessage message: String? = nil) {
+        let isResultScreenEnabled = PrimerSettings.current.uiOptions.isSuccessScreenEnabled ?
+        PrimerSettings.current.uiOptions.isSuccessScreenEnabled :
+        PrimerSettings.current.uiOptions.isErrorScreenEnabled
         
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if settings.hasDisabledSuccessScreen {
+        if !isResultScreenEnabled {
             Primer.shared.dismiss()
         } else {
             let status: PrimerResultViewController.ScreenType = (type != .failure) ? .success : .failure

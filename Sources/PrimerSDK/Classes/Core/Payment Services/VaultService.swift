@@ -14,7 +14,7 @@ internal class VaultService: VaultServiceProtocol {
     }
 
     func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
+        let state: AppStateProtocol = AppState.current
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])

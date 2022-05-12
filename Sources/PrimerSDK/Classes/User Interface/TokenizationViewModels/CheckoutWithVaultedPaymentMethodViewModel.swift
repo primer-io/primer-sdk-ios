@@ -206,9 +206,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     
     private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            if settings.isManualPaymentHandlingEnabled {
+            if PrimerSettings.current.paymentHandling == .manual {
                 PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
                     switch resumeDecision.type {
                     case .fail(let message):
@@ -290,9 +288,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     
     func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedClientToken?> {
         return Promise { seal in
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
-            if settings.isManualPaymentHandlingEnabled {
+            if PrimerSettings.current.paymentHandling == .manual {
                 PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
                     switch resumeDecision.type {
                     case .succeed:

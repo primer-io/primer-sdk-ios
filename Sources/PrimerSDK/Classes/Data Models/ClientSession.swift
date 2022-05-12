@@ -26,9 +26,6 @@ internal class ClientSessionAPIResponse: Codable {
         self.paymentMethod = (try? container.decode(ClientSessionAPIResponse.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
         self.order = (try? container.decode(ClientSessionAPIResponse.Order?.self, forKey: .order)) ?? nil
         self.customer = (try? container.decode(ClientSessionAPIResponse.Customer?.self, forKey: .customer)) ?? nil
-        
-        // Replace settings
-        PrimerSettings.modify(withClientSession: self)
     }
     
     internal func encode(to encoder: Encoder) throws {
@@ -326,8 +323,7 @@ extension ClientSessionAPIResponse.Action {
     
     private static func setPrimerConfiguration(_ apiConfiguration: PrimerAPIConfiguration) -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
-            let appState: AppStateProtocol = DependencyContainer.resolve()
-            appState.apiConfiguration = apiConfiguration
+            AppState.current.apiConfiguration = apiConfiguration
             seal.fulfill(apiConfiguration)
         }
     }

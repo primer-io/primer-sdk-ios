@@ -21,9 +21,6 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     override func validate() throws {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -36,7 +33,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
         
-        guard let configuration = state.apiConfiguration else {
+        guard let configuration = AppState.current.apiConfiguration else {
             let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             throw err
@@ -49,8 +46,8 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
         
-        guard settings.currency != nil else {
-            let err = PrimerError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard AppState.current.currency != nil else {
+            let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -116,26 +113,24 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
         guard let decodedClientToken = ClientTokenService.decodedClientToken,
-              let merchantAccountId = state.apiConfiguration?.getProductId(for: .apaya)
+              let merchantAccountId = AppState.current.apiConfiguration?.getProductId(for: .apaya)
         else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             return completion(.failure(err))
         }
         
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        guard let currency = settings.currency else {
-            let err = PrimerError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard let currency = AppState.current.currency else {
+            let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             return completion(.failure(err))
         }
         
         let body = Apaya.CreateSessionAPIRequest(merchantAccountId: merchantAccountId,
-                                                 language: settings.localeData.languageCode ?? "en",
+                                                 language: PrimerSettings.current.localeData.languageCode,
                                                  currencyCode: currency.rawValue,
-                                                 phoneNumber: settings.customer?.mobilePhoneNumber)
+                                                 phoneNumber: AppState.current.apiConfiguration?.clientSession?.customer?.mobileNumber)
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.createApayaSession(clientToken: decodedClientToken, request: body) { [weak self] result in
@@ -208,11 +203,8 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse, completion: @escaping (_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        guard let currencyStr = settings.currency?.rawValue else {
-            let err = PrimerError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        guard let currencyStr = AppState.current.currency?.rawValue else {
+            let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
@@ -227,7 +219,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         
         let request = PaymentMethodTokenizationRequest(
             paymentInstrument: instrument,
-            state: state
+            state: AppState.current
         )
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -251,7 +243,6 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         
     }
-    
 }
 
 extension ApayaTokenizationViewModel: WKNavigationDelegate {

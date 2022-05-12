@@ -163,8 +163,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     override func validate() throws {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -178,14 +176,14 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
         
         if !Primer.shared.flow.internalSessionFlow.vaulted {
-            if settings.amount == nil {
-                let err = PrimerError.invalidSetting(name: "amount", value: settings.amount != nil ? "\(settings.amount!)" : nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            if AppState.current.amount == nil {
+                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 throw err
             }
             
-            if settings.currency == nil {
-                let err = PrimerError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            if AppState.current.currency == nil {
+                let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -355,16 +353,14 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     seal.reject(err)
                     return
                 }
-                
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                
+                                
                 let tokenizationRequest = BlikPaymentMethodTokenizationRequest(
                     paymentInstrument: BlikPaymentMethodOptions(
                         paymentMethodType: config.type,
                         paymentMethodConfigId: configId,
                         sessionInfo: BlikPaymentMethodOptions.SessionInfo(
                             blikCode: blikCode,
-                            locale: settings.localeData.localeCode ?? "en-UK")))
+                            locale: PrimerSettings.current.localeData.localeCode ?? "en-UK")))
                 
                 let apiClient = PrimerAPIClient()
                 apiClient.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: tokenizationRequest) { result in

@@ -155,9 +155,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private func createOAuthSession(_ url: URL) -> Promise<URL> {
         return Promise { seal in
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            guard var urlScheme = settings.urlScheme else {
-                let err = PrimerError.invalidValue(key: "settings.urlScheme", value: settings.urlScheme, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            guard var urlScheme = PrimerSettings.current.paymentMethodOptions.urlScheme else {
+                let err = PrimerError.invalidValue(key: "settings.urlScheme", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -301,9 +300,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private func tokenize(instrument: PaymentInstrument) -> Promise<PaymentMethodToken> {
         return Promise { seal in
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: state)
-            
+            let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: AppState.current)
+
             let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
             tokenizationService.tokenize(request: request) { result in
                 switch result {

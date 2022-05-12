@@ -82,8 +82,7 @@ public struct Apaya {
                 throw err
             }
             
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            guard let merchantAccountId = state.apiConfiguration?.getProductId(for: .apaya) else {
+            guard let merchantAccountId = AppState.current.apiConfiguration?.getProductId(for: .apaya) else {
                 let err = PrimerError.invalidValue(key: "apaya-merchantAccountId", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 throw err

@@ -20,15 +20,13 @@ internal class ExternalViewModel: ExternalViewModelProtocol {
     }
 
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
         if ClientTokenService.decodedClientToken.exists {
             let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
             vaultService.loadVaultedPaymentMethods({ err in
                 if let err = err {
                     completion(.failure(err))
                 } else {
-                    let paymentMethods = state.paymentMethods
+                    let paymentMethods = AppState.current.paymentMethods
                     completion(.success(paymentMethods))
                 }
             })

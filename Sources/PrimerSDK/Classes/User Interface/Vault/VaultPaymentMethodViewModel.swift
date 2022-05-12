@@ -10,17 +10,14 @@ internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
 internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
 
     var paymentMethods: [PaymentMethodToken] {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.paymentMethods
+        return AppState.current.paymentMethods
     }
     var selectedPaymentMethodId: String? {
         get {
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            return state.selectedPaymentMethodId
+            return AppState.current.selectedPaymentMethodId
         }
         set {
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            state.selectedPaymentMethodId = newValue
+            AppState.current.selectedPaymentMethodId = newValue
         }
     }
 
@@ -36,11 +33,9 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
     func deletePaymentMethod(with paymentMethodToken: String, and completion: @escaping (Error?) -> Void) {
         let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
         vaultService.deleteVaultedPaymentMethod(with: paymentMethodToken) { _ in
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            
             // reset selected payment method if that has been deleted
-            if paymentMethodToken == state.selectedPaymentMethodId {
-                state.selectedPaymentMethodId = nil
+            if paymentMethodToken == AppState.current.selectedPaymentMethodId {
+                AppState.current.selectedPaymentMethodId = nil
             }
 
             // reload vaulted payment methods
