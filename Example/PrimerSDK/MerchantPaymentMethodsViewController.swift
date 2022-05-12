@@ -48,8 +48,11 @@ class MerchantPaymentMethodsViewController: UIViewController {
                 }
             } else if let clientToken = clientToken {
                 let settings = PrimerSettings(
-                    merchantIdentifier: "merchant.dx.team",
-                    urlScheme: "merchant://")
+                    paymentMethodOptions: PrimerPaymentMethodOptions(
+                        urlScheme: "merchant://",
+                        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
+                    )
+                )
                 PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, completion: { (pms, err) in
                     DispatchQueue.main.async {
                         self.activityIndicator?.stopAnimating()

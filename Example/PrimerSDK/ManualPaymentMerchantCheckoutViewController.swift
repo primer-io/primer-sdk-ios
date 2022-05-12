@@ -52,12 +52,6 @@ class ManualPaymentMerchantCheckoutViewController: UIViewController {
     var paymentResponsesData: [Data] = []
     
     var clientToken: String?
-    
-    var vaultApayaSettings: PrimerSettings!
-    var vaultPayPalSettings: PrimerSettings!
-    var vaultKlarnaSettings: PrimerSettings!
-    var applePaySettings: PrimerSettings!
-    var generalSettings: PrimerSettings!
     var amount = 200
     var currency: Currency = .EUR
     var customerId: String!
@@ -73,29 +67,12 @@ class ManualPaymentMerchantCheckoutViewController: UIViewController {
         super.viewDidLoad()
         title = "Primer [\(environment.rawValue)]"
         
-        generalSettings = PrimerSettings(
-            merchantIdentifier: "merchant.dx.team",
-            klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: nil,
-            urlScheme: "merchant://",
-            urlSchemeIdentifier: "merchant",
-            isFullScreenOnly: false,
-            hasDisabledSuccessScreen: false,
-            paymentHandling: .manual,
-            directDebitHasNoAmount: false,
-            isInitialLoadingHidden: false,
-            is3DSOnVaultingEnabled: true,
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
-        )
-        
-        let settings = PrimerSettings2(
-            paymentHandling: .manual,
+        let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
                 urlScheme: "merchant://",
                 applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
             )
         )
-        
         Primer.shared.configure(settings: settings, delegate: self)
     }
     
