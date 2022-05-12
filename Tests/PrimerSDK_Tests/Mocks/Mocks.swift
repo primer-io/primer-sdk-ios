@@ -122,8 +122,6 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
         return false
     }
 
-    var businessDetails: PrimerBusiness?
-
     var directDebitHasNoAmount: Bool {
         return true
     }
