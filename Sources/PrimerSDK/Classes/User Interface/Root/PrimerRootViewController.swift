@@ -131,7 +131,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     if let error = error as? PrimerError {
                         primerErr = error
                     } else {
-                        primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: nil)
+                        primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: nil, diagnosticsId: nil)
                     }
                     
                     self?.handleErrorBasedOnSDKSettings(primerErr)
@@ -487,14 +487,14 @@ extension PrimerRootViewController {
     
     func presentPaymentMethod(type: PrimerPaymentMethodType) {
         guard let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
-            let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: { errorDecision in
                 switch errorDecision.type {
                 case .fail(let message):
                     var merchantErr: Error!
                     if let message = message {
-                        merchantErr = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        merchantErr = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     } else {
                         merchantErr = NSError.emptyDescriptionError
                     }
