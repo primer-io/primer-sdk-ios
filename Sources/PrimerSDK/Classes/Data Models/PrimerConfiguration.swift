@@ -159,7 +159,7 @@ extension PrimerAPIConfiguration {
                 self.saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
                 
                 if self.cardHolderName == nil && self.saveCardCheckbox == nil {
-                    let err = ParserError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let err = InternalError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
                     throw err
                 }
@@ -211,7 +211,7 @@ extension PrimerAPIConfiguration {
                     self.phoneNumber == nil &&
                     self.state == nil
                 {
-                    let err = ParserError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let err = InternalError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
                     throw err
                 }

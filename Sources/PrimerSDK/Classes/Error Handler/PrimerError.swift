@@ -117,67 +117,6 @@ internal enum NetworkError: PrimerErrorProtocol {
     
 }
 
-internal enum ParserError: PrimerErrorProtocol {
-    case failedToEncode(message: String?, userInfo: [String: String]?)
-    case failedToDecode(message: String?, userInfo: [String: String]?)
-    case failedToSerialize(message: String?, userInfo: [String: String]?)
-    
-    var errorId: String {
-        switch self {
-        case .failedToEncode:
-            return "failed-to-encode"
-        case .failedToDecode:
-            return "failed-to-decode"
-        case .failedToSerialize:
-            return "failed-to-serialize"
-        }
-    }
-    
-    var errorDescription: String? {
-        switch self {
-        case .failedToEncode(let message, _):
-            return "[\(errorId)] Failed to encode\(message == nil ? "" : " (\(message!)")"
-        case .failedToDecode(let message, _):
-            return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)")"
-        case .failedToSerialize(let message, _):
-            return "[\(errorId)] Failed to serialize\(message == nil ? "" : " (\(message!)")"
-        }
-    }
-    
-    var info: [String: String]? {
-        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
-        
-        switch self {
-        case .failedToEncode(_, let userInfo),
-                .failedToDecode(_, let userInfo),
-                .failedToSerialize(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        }
-        
-        return tmpUserInfo
-    }
-    
-    var errorUserInfo: [String : Any] {
-        return info ?? [:]
-    }
-    
-    var recoverySuggestion: String? {
-        switch self {
-        case .failedToEncode:
-            return "Check object's encode(to:) function for wrong CodingKeys, or unexpected values."
-        case .failedToDecode:
-            return "Check object's init(from:) function for wrong CodingKeys, or unexpected values."
-        case .failedToSerialize:
-            return "Check if all object's properties can be serialized."
-        }
-    }
-
-    var exposedError: Error {
-        return self
-    }
-    
-}
-
 internal enum ValidationError: PrimerErrorProtocol {
     case invalidCardholderName(userInfo: [String: String]?)
     case invalidCardnumber(userInfo: [String: String]?)
@@ -238,6 +177,67 @@ internal enum ValidationError: PrimerErrorProtocol {
         return nil
     }
     
+    var exposedError: Error {
+        return self
+    }
+    
+}
+
+internal enum InternalError: PrimerErrorProtocol {
+    case failedToEncode(message: String?, userInfo: [String: String]?)
+    case failedToDecode(message: String?, userInfo: [String: String]?)
+    case failedToSerialize(message: String?, userInfo: [String: String]?)
+    
+    var errorId: String {
+        switch self {
+        case .failedToEncode:
+            return "failed-to-encode"
+        case .failedToDecode:
+            return "failed-to-decode"
+        case .failedToSerialize:
+            return "failed-to-serialize"
+        }
+    }
+    
+    var errorDescription: String? {
+        switch self {
+        case .failedToEncode(let message, _):
+            return "[\(errorId)] Failed to encode\(message == nil ? "" : " (\(message!)")"
+        case .failedToDecode(let message, _):
+            return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)")"
+        case .failedToSerialize(let message, _):
+            return "[\(errorId)] Failed to serialize\(message == nil ? "" : " (\(message!)")"
+        }
+    }
+    
+    var info: [String: String]? {
+        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
+        
+        switch self {
+        case .failedToEncode(_, let userInfo),
+                .failedToDecode(_, let userInfo),
+                .failedToSerialize(_, let userInfo):
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        }
+        
+        return tmpUserInfo
+    }
+    
+    var errorUserInfo: [String : Any] {
+        return info ?? [:]
+    }
+    
+    var recoverySuggestion: String? {
+        switch self {
+        case .failedToEncode:
+            return "Check object's encode(to:) function for wrong CodingKeys, or unexpected values."
+        case .failedToDecode:
+            return "Check object's init(from:) function for wrong CodingKeys, or unexpected values."
+        case .failedToSerialize:
+            return "Check if all object's properties can be serialized."
+        }
+    }
+
     var exposedError: Error {
         return self
     }
