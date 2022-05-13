@@ -84,7 +84,7 @@ class MockPrimerDelegate: PrimerDelegate {
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
     var paymentHandling = PrimerPaymentHandling.auto
-    var localeData = LocaleData()
+    var localeData = PrimerLocaleData()
     var paymentMethodOptions = PrimerPaymentMethodOptions()
     var uiOptions = PrimerUIOptions()
     var debugOptions = PrimerDebugOptions()
