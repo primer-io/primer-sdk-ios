@@ -19,6 +19,7 @@ internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
 }
 
 internal enum PrimerValidationError: PrimerErrorProtocol {
+    
     case invalidCardholderName(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidCardnumber(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidCvv(userInfo: [String: String]?, diagnosticsId: String?)
@@ -97,10 +98,10 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
     var exposedError: Error {
         return self
     }
-    
 }
 
 internal enum InternalError: PrimerErrorProtocol {
+    
     case failedToEncode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case failedToDecode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case failedToSerialize(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
@@ -245,12 +246,12 @@ internal enum InternalError: PrimerErrorProtocol {
     }
 
     var exposedError: Error {
-        return self
+        return PrimerError.unknown(userInfo: self.errorUserInfo as? [String: String], diagnosticsId: self.diagnosticsId).exposedError
     }
-    
 }
 
 internal enum PrimerError: PrimerErrorProtocol {
+    
     case generic(message: String, userInfo: [String: String]?, diagnosticsId: String?)
     case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String?)
     case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String?)
@@ -280,6 +281,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case cancelledByCustomer(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case paymentFailed(userInfo: [String: String]?, diagnosticsId: String?)
     case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String?)
+    case unknown(userInfo: [String: String]?, diagnosticsId: String?)
     
     var errorId: String {
         switch self {
@@ -341,6 +343,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "merchant-error"
         case .paymentFailed:
             return PrimerPaymentErrorCode.failed.rawValue
+        case .unknown:
+            return "unknown"
         }
     }
     
@@ -403,6 +407,8 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .paymentFailed(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .applePayTimedOut(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .unknown(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         }
     }
@@ -474,6 +480,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] The payment failed, retry. (diagnosticsId: \(self.diagnosticsId)"
         case .applePayTimedOut:
             return "[\(errorId)] Apple Pay timed out (diagnosticsId: \(self.diagnosticsId)"
+        case .unknown:
+            return "[\(errorId)] Something went wrong (diagnosticsId: \(self.diagnosticsId)"
         }
     }
     
@@ -509,7 +517,8 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .merchantError(_, let userInfo, _),
                 .cancelledByCustomer(_, let userInfo, _),
                 .paymentFailed(let userInfo, _),
-                .applePayTimedOut(let userInfo, _):
+                .applePayTimedOut(let userInfo, _),
+                .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
             tmpUserInfo["diagnosticsId"] = self.diagnosticsId
         }
@@ -589,13 +598,14 @@ internal enum PrimerError: PrimerErrorProtocol {
             return nil
         case .applePayTimedOut:
             return "Make sure you have an active internet connection and your Apple Pay configuration is correct."
+        case .unknown:
+            return "Contact Primer and provide them diagnostics id \(self.diagnosticsId)"
         }
     }
     
     var exposedError: Error {
         return self
     }
-    
 }
 
 // TODO: Reiew custom initializer for simplified payment error
@@ -615,6 +625,7 @@ extension PrimerError {
 }
 
 fileprivate extension Array where Element == Error {
+    
     var combinedDescription: String {
         var message: String = ""
         
