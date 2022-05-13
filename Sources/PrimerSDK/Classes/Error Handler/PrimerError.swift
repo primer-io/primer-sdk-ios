@@ -17,106 +17,6 @@ internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var info: [String: String]? { get }
 }
 
-internal enum NetworkError: PrimerErrorProtocol {
-    case connectivityErrors(errors: [Error], userInfo: [String: String]?)
-    case invalidUrl(url: String?, userInfo: [String: String]?)
-    case invalidValue(key: String, value: Any?, userInfo: [String: String]?)
-    case noData(userInfo: [String: String]?)
-    case serverError(status: Int, response: PrimerServerErrorResponse?, userInfo: [String: String]?)
-    case unauthorized(url: String, method: HTTPMethod, userInfo: [String: String]?)
-    case underlyingErrors(errors: [Error], userInfo: [String: String]?)
-    
-    var errorId: String {
-        switch self {
-        case .connectivityErrors:
-            return "connectivity-errors"
-        case .invalidUrl:
-            return "invalid-url"
-        case .invalidValue:
-            return "invalid-value"
-        case .noData:
-            return "no-data"
-        case .serverError:
-            return "server-error"
-        case .unauthorized:
-            return "unauthorized"
-        case .underlyingErrors:
-            return "underlying-errors"
-        }
-    }
-    
-    var errorDescription: String? {
-        switch self {
-        case .connectivityErrors(let errors, _):
-            return "[\(errorId)] Connectivity failure | Errors: \(errors.combinedDescription)"
-        case .invalidUrl(let url, _):
-            return "[\(errorId)] Invalid URL \(url ?? "nil")"
-        case .invalidValue(let key, let value, _):
-            return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key)"
-        case .noData:
-            return "[\(errorId)] No data"
-        case .serverError(let status, let response, _):
-            var resStr: String = "nil"
-            if let response = response,
-               let resData = try? JSONEncoder().encode(response),
-                let str = resData.prettyPrintedJSONString as String?
-            {
-                resStr = str
-            }
-            return "[\(errorId)] Server error [\(status)] Response: \(resStr)"
-        case .unauthorized(let url, let method, _):
-            return "[\(errorId)] Unauthorized response for URL \(url) [\(method.rawValue)]"
-        case .underlyingErrors(let errors, _):
-            return "[\(errorId)] Multiple errors occured | Errors \(errors.combinedDescription)"
-        }
-    }
-    
-    var info: [String: String]? {
-        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
-        
-        switch self {
-        case .connectivityErrors(_, let userInfo),
-                .invalidUrl(_, let userInfo),
-                .invalidValue(_, _, let userInfo),
-                .noData(let userInfo),
-                .serverError(_, _, let userInfo),
-                .unauthorized(_, _, let userInfo),
-                .underlyingErrors(_, let userInfo):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        }
-        
-        return tmpUserInfo
-    }
-    
-    var errorUserInfo: [String : Any] {
-        return info ?? [:]
-    }
-    
-    var recoverySuggestion: String? {
-        switch self {
-        case .connectivityErrors:
-            return "Check underlying conectivity errors for more information."
-        case .invalidUrl:
-            return "Provide a valid URL, meaning that it must include http(s):// at the begining and also follow URL formatting rules."
-        case .invalidValue(let key, let value, _):
-            return "Check if value \(value ?? "nil") is valid for key \(key)"
-        case .noData:
-            return "If you were expecting data on this response, check that your backend has sent the appropriate data."
-        case .serverError:
-            return "Check the server's response to debug this error further."
-        case .unauthorized:
-            return "Check that the you have provided the SDK with a client token."
-        case .underlyingErrors(let errors, _):
-            return "Check underlying errors' recovery suggestions for more information.\nRecovery Suggestions:\n\(errors.compactMap({ ($0 as NSError).localizedRecoverySuggestion }))"
-        }
-    }
-    
-    var exposedError: Error {
-        return self
-    }
-    
-}
-
 internal enum PrimerValidationError: PrimerErrorProtocol {
     case invalidCardholderName(userInfo: [String: String]?)
     case invalidCardnumber(userInfo: [String: String]?)
@@ -187,6 +87,13 @@ internal enum InternalError: PrimerErrorProtocol {
     case failedToEncode(message: String?, userInfo: [String: String]?)
     case failedToDecode(message: String?, userInfo: [String: String]?)
     case failedToSerialize(message: String?, userInfo: [String: String]?)
+    case connectivityErrors(errors: [Error], userInfo: [String: String]?)
+    case invalidUrl(url: String?, userInfo: [String: String]?)
+    case invalidValue(key: String, value: Any?, userInfo: [String: String]?)
+    case noData(userInfo: [String: String]?)
+    case serverError(status: Int, response: PrimerServerErrorResponse?, userInfo: [String: String]?)
+    case unauthorized(url: String, method: HTTPMethod, userInfo: [String: String]?)
+    case underlyingErrors(errors: [Error], userInfo: [String: String]?)
     
     var errorId: String {
         switch self {
@@ -196,6 +103,20 @@ internal enum InternalError: PrimerErrorProtocol {
             return "failed-to-decode"
         case .failedToSerialize:
             return "failed-to-serialize"
+        case .connectivityErrors:
+            return "connectivity-errors"
+        case .invalidUrl:
+            return "invalid-url"
+        case .invalidValue:
+            return "invalid-value"
+        case .noData:
+            return "no-data"
+        case .serverError:
+            return "server-error"
+        case .unauthorized:
+            return "unauthorized"
+        case .underlyingErrors:
+            return "underlying-errors"
         }
     }
     
@@ -207,6 +128,27 @@ internal enum InternalError: PrimerErrorProtocol {
             return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)")"
         case .failedToSerialize(let message, _):
             return "[\(errorId)] Failed to serialize\(message == nil ? "" : " (\(message!)")"
+        case .connectivityErrors(let errors, _):
+            return "[\(errorId)] Connectivity failure | Errors: \(errors.combinedDescription)"
+        case .invalidUrl(let url, _):
+            return "[\(errorId)] Invalid URL \(url ?? "nil")"
+        case .invalidValue(let key, let value, _):
+            return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key)"
+        case .noData:
+            return "[\(errorId)] No data"
+        case .serverError(let status, let response, _):
+            var resStr: String = "nil"
+            if let response = response,
+               let resData = try? JSONEncoder().encode(response),
+                let str = resData.prettyPrintedJSONString as String?
+            {
+                resStr = str
+            }
+            return "[\(errorId)] Server error [\(status)] Response: \(resStr)"
+        case .unauthorized(let url, let method, _):
+            return "[\(errorId)] Unauthorized response for URL \(url) [\(method.rawValue)]"
+        case .underlyingErrors(let errors, _):
+            return "[\(errorId)] Multiple errors occured | Errors \(errors.combinedDescription)"
         }
     }
     
@@ -216,7 +158,14 @@ internal enum InternalError: PrimerErrorProtocol {
         switch self {
         case .failedToEncode(_, let userInfo),
                 .failedToDecode(_, let userInfo),
-                .failedToSerialize(_, let userInfo):
+                .failedToSerialize(_, let userInfo),
+                .connectivityErrors(_, let userInfo),
+                .invalidUrl(_, let userInfo),
+                .invalidValue(_, _, let userInfo),
+                .noData(let userInfo),
+                .serverError(_, _, let userInfo),
+                .unauthorized(_, _, let userInfo),
+                .underlyingErrors(_, let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -235,6 +184,20 @@ internal enum InternalError: PrimerErrorProtocol {
             return "Check object's init(from:) function for wrong CodingKeys, or unexpected values."
         case .failedToSerialize:
             return "Check if all object's properties can be serialized."
+        case .connectivityErrors:
+            return "Check underlying conectivity errors for more information."
+        case .invalidUrl:
+            return "Provide a valid URL, meaning that it must include http(s):// at the begining and also follow URL formatting rules."
+        case .invalidValue(let key, let value, _):
+            return "Check if value \(value ?? "nil") is valid for key \(key)"
+        case .noData:
+            return "If you were expecting data on this response, check that your backend has sent the appropriate data."
+        case .serverError:
+            return "Check the server's response to debug this error further."
+        case .unauthorized:
+            return "Check that the you have provided the SDK with a client token."
+        case .underlyingErrors(let errors, _):
+            return "Check underlying errors' recovery suggestions for more information.\nRecovery Suggestions:\n\(errors.compactMap({ ($0 as NSError).localizedRecoverySuggestion }))"
         }
     }
 
