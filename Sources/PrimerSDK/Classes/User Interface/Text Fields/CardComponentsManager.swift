@@ -201,26 +201,26 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     private func validateCardComponents() throws {
         var errors: [Error] = []
         if !cardnumberField.cardnumber.isValidCardNumber {
-            errors.append(ValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
+            errors.append(PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         }
         
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
-            errors.append(ValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
+            errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         }
         
         if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
-            errors.append(ValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
+            errors.append(PrimerValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         }
         
         if let cardholderField  = cardholderField {
             if !cardholderField.cardholderName.isValidCardholderName {
-                errors.append(ValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
+                errors.append(PrimerValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
             }
         }
         
         if let postalCodeField = postalCodeField {
             if !postalCodeField.postalCode.isValidPostalCode {
-                let err = ValidationError.invalidPostalCode(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerValidationError.invalidPostalCode(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 errors.append(err)
             }
