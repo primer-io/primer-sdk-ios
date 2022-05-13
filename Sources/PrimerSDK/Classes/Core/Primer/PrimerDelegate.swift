@@ -85,28 +85,34 @@ internal class PrimerDelegateProxy {
     
     static func primerDidFailWithError(_ error: PrimerErrorProtocol, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
         DispatchQueue.main.async {
+            var exposedError: Error!
+            
             if error as? InternalError != nil {
-                
+                exposedError = error.exposedError
             } else {
                 if case .merchantError = (error as? PrimerError) {
                     decisionHandler(.fail(withErrorMessage: error.errorDescription))
+                    return
                 } else {
-                    if Primer.shared.delegate?.primerDidFailWithError != nil {
-                        Primer.shared.delegate?.primerDidFailWithError?(error.exposedError, data: data, decisionHandler: { errorDecision in
-                            switch errorDecision.type {
-                            case .fail(let message):
-                                DispatchQueue.main.async {
-                                    decisionHandler(.fail(withErrorMessage: message))
-                                }
-                            }
-                        })
-                    } else {
-                        print("WARNING: Delegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
-                        decisionHandler(.fail(withErrorMessage: nil))
-                    }
-                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: error.exposedError)
+                    exposedError = error.exposedError
                 }
             }
+            
+            if Primer.shared.delegate?.primerDidFailWithError != nil {
+                Primer.shared.delegate?.primerDidFailWithError?(exposedError, data: data, decisionHandler: { errorDecision in
+                    switch errorDecision.type {
+                    case .fail(let message):
+                        DispatchQueue.main.async {
+                            decisionHandler(.fail(withErrorMessage: message))
+                        }
+                    }
+                })
+            } else {
+                print("WARNING: Delegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
+                decisionHandler(.fail(withErrorMessage: nil))
+            }
+            
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: exposedError)
         }
     }
     
