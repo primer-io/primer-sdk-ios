@@ -85,19 +85,13 @@ internal class PrimerDelegateProxy {
     
     static func primerDidFailWithError(_ error: PrimerErrorProtocol, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
         DispatchQueue.main.async {
-            var exposedError: Error!
-            
-            if error as? InternalError != nil {
-                exposedError = error.exposedError
-            } else {
-                if case .merchantError = (error as? PrimerError) {
-                    decisionHandler(.fail(withErrorMessage: error.errorDescription))
-                    return
-                } else {
-                    exposedError = error.exposedError
-                }
+            if case .merchantError = (error as? PrimerError) {
+                decisionHandler(.fail(withErrorMessage: error.errorDescription))
+                return
             }
             
+            let exposedError: Error = error.exposedError
+
             if Primer.shared.delegate?.primerDidFailWithError != nil {
                 Primer.shared.delegate?.primerDidFailWithError?(exposedError, data: data, decisionHandler: { errorDecision in
                     switch errorDecision.type {
