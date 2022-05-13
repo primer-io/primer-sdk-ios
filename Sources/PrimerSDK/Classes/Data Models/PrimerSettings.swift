@@ -4,7 +4,7 @@
 
 internal protocol PrimerSettingsProtocol {
     var paymentHandling: PrimerPaymentHandling { get }
-    var localeData: LocaleData { get }
+    var localeData: PrimerLocaleData { get }
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
     var uiOptions: PrimerUIOptions { get }
     var debugOptions: PrimerDebugOptions { get }
@@ -17,20 +17,20 @@ public class PrimerSettings: PrimerSettingsProtocol {
         return settings as! PrimerSettings
     }
     let paymentHandling: PrimerPaymentHandling
-    let localeData: LocaleData
+    let localeData: PrimerLocaleData
     let paymentMethodOptions: PrimerPaymentMethodOptions
     let uiOptions: PrimerUIOptions
     let debugOptions: PrimerDebugOptions
     
     public init(
         paymentHandling: PrimerPaymentHandling = .auto,
-        localeData: LocaleData? = nil,
+        localeData: PrimerLocaleData? = nil,
         paymentMethodOptions: PrimerPaymentMethodOptions? = nil,
         uiOptions: PrimerUIOptions? = nil,
         debugOptions: PrimerDebugOptions? = nil
     ) {
         self.paymentHandling = paymentHandling
-        self.localeData = localeData ?? LocaleData()
+        self.localeData = localeData ?? PrimerLocaleData()
         self.paymentMethodOptions = paymentMethodOptions ?? PrimerPaymentMethodOptions()
         self.uiOptions = uiOptions ?? PrimerUIOptions()
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
