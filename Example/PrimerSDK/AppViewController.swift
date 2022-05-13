@@ -10,10 +10,12 @@ import PrimerSDK
 import UIKit
 
 var environment: Environment = .sandbox
+var customDefinedApiKey: String?
 
 class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
     @IBOutlet weak var environmentControl: UISegmentedControl!
+    @IBOutlet weak var apiKeyTextField: UITextField!
     @IBOutlet weak var customerIdTextField: UITextField!
     @IBOutlet weak var phoneNumberTextField: UITextField!
     @IBOutlet weak var countryCodeTextField: UITextField!
@@ -92,6 +94,11 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         self.navigationController?.pushViewController(mcfvc, animated: true)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        evaluateCustomDefinedApiKey()
+    }
+    
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
@@ -118,5 +125,17 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         } else {
             currencyTextField.text = Currency.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         }
+    }
+}
+
+extension AppViewController {
+    
+    func evaluateCustomDefinedApiKey() {
+        
+        guard apiKeyTextField.text?.isEmpty == false else {
+            return
+        }
+        
+        customDefinedApiKey = apiKeyTextField.text
     }
 }
