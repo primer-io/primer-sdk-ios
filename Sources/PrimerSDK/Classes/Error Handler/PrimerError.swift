@@ -117,7 +117,7 @@ internal enum NetworkError: PrimerErrorProtocol {
     
 }
 
-internal enum ValidationError: PrimerErrorProtocol {
+internal enum PrimerValidationError: PrimerErrorProtocol {
     case invalidCardholderName(userInfo: [String: String]?)
     case invalidCardnumber(userInfo: [String: String]?)
     case invalidCvv(userInfo: [String: String]?)
