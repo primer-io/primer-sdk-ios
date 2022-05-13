@@ -24,7 +24,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     
     override func validate() throws {
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -72,7 +72,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     fileprivate func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -120,7 +120,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                     seal.reject(err)
                 }
             } else {
-                let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 seal.reject(error)
             }
         }
@@ -139,7 +139,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     internal override func startPolling(on url: URL) -> Promise<String> {
         let p: Promise? = Promise<String> { seal in
             self.didCancel = {
-                let err = PrimerError.cancelled(paymentMethodType: .xfers, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.cancelled(paymentMethodType: .xfers, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 self.pollingRetryTimer?.invalidate()

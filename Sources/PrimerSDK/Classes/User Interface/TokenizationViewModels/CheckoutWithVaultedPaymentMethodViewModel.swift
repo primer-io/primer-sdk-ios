@@ -58,7 +58,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 if let error = err as? PrimerError {
                     primerErr = error
                 } else {
-                    primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil)
+                    primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: nil)
                 }
                 
                 firstly {
@@ -134,7 +134,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
                     switch paymentCreationDecision.type {
                     case .abort(let errorMessage):
-                        let error = PrimerError.generic(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        let error = PrimerError.generic(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         seal.reject(error)
                     case .continue:
                         seal.fulfill()
@@ -147,7 +147,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     private func exchangePaymentMethodToken(_ paymentMethodToken: PaymentMethodToken) -> Promise<PaymentMethodToken> {
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -212,7 +212,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                     case .fail(let message):
                         var merchantErr: Error!
                         if let message = message {
-                            let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                            let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                             merchantErr = err
                         } else {
                             merchantErr = NSError.emptyDescriptionError
@@ -229,7 +229,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 
             } else {
                 guard let resumePaymentId = self.resumePaymentId else {
-                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: resumePaymentIdError)
                     seal.reject(resumePaymentIdError)
                     return
@@ -240,7 +240,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 }
                 .done { paymentResponse -> Void in
                     guard let paymentResponse = paymentResponse else {
-                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
                         throw err
                     }
@@ -270,7 +270,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 }
                 
                 guard let status = paymentResponse?.status, status != .failed else {
-                    seal.reject(PrimerError.paymentFailed(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
+                    seal.reject(PrimerError.paymentFailed(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
                     return
                 }
                 
@@ -304,7 +304,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         }
                         .done {
                             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
@@ -318,7 +318,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                     case .fail(let message):
                         var merchantErr: Error!
                         if let message = message {
-                            let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                            let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                             merchantErr = err
                         } else {
                             merchantErr = NSError.emptyDescriptionError
@@ -329,7 +329,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
 
             } else {
                 guard let paymentMethodTokenString = paymentMethodTokenData.token else {
-                    let paymentMethodTokenError = PrimerError.invalidValue(key: "resumePaymentId", value: "Payment method token not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let paymentMethodTokenError = PrimerError.invalidValue(key: "resumePaymentId", value: "Payment method token not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: paymentMethodTokenError)
                     throw paymentMethodTokenError
                 }
@@ -339,7 +339,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 }
                 .done { paymentResponse -> Void in
                     guard paymentResponse != nil else {
-                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         throw err
                     }
 
@@ -352,7 +352,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         }
                         .done { checkoutData in
                             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
@@ -379,8 +379,8 @@ class CheckoutWithVaultedPaymentMethodViewModel {
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
     #if canImport(Primer3DS)
                 guard let paymentMethodTokenData = singleUsePaymentMethodTokenData else {
-                    let err = ParserError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                    let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: containerErr)
                     seal.reject(containerErr)
                     return
@@ -393,8 +393,8 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         DispatchQueue.main.async {
                             guard let threeDSPostAuthResponse = paymentMethodToken.1,
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                                let decoderError = ParserError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                                let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                let decoderError = InternalError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                 ErrorHandler.handle(error: err)
                                 seal.reject(err)
                                 return
@@ -404,7 +404,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         }
                         
                     case .failure(let err):
-                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: containerErr)
                         seal.reject(containerErr)
                     }
@@ -416,7 +416,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     #endif
                 
             } else {
-                let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
             }
@@ -433,7 +433,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 }
                 
                 guard let status = paymentResponse?.status, status != .failed else {
-                    seal.reject(PrimerError.paymentFailed(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
+                    seal.reject(PrimerError.paymentFailed(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
                     return
                 }
                 

@@ -22,7 +22,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     private var tokenizationService: TokenizationServiceProtocol?
     override func validate() throws {
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -180,7 +180,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     private func fetchBanks() -> Promise<[Bank]> {
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -250,7 +250,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
                 paymentMethodType: config.type.rawValue))
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return

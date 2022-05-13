@@ -17,7 +17,7 @@ internal class VaultService: VaultServiceProtocol {
         let state: AppStateProtocol = AppState.current
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(err)
             return
@@ -45,7 +45,7 @@ internal class VaultService: VaultServiceProtocol {
 
     func deleteVaultedPaymentMethod(with id: String, _ completion: @escaping (Error?) -> Void) {        
         guard let clientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(err)
             return
@@ -56,7 +56,7 @@ internal class VaultService: VaultServiceProtocol {
         api.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { (result) in
             switch result {
             case .failure(let err):
-                let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 completion(containerErr)
             case .success:

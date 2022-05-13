@@ -19,7 +19,7 @@ class ClientTokenServiceTests: XCTestCase {
         guard var currentDecodedToken = tokenToValidate.jwtTokenPayload,
               let expDate = currentDecodedToken.expDate,
               expDate > Date() else {
-            let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: error)
             throw error
         }

@@ -123,7 +123,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         isCalled = true
 
         guard throwsError == false else {
-            completion(.failure(PrimerError.generic(message: "Mocked error", userInfo: nil)))
+            completion(.failure(PrimerError.generic(message: "Mocked error", userInfo: nil, diagnosticsId: nil)))
             return
         }
         guard let response = response else { return }
@@ -140,7 +140,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         isCalled = true
 
         guard throwsError == false else {
-            completion(.failure(PrimerError.generic(message: "Mocked error", userInfo: nil)))
+            completion(.failure(PrimerError.generic(message: "Mocked error", userInfo: nil, diagnosticsId: nil)))
             return
         }
 
@@ -157,7 +157,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         isCalled = true
 
         guard throwsError == false else {
-            completion(.failure(PrimerError.generic(message: "Mocked error", userInfo: nil)))
+            completion(.failure(PrimerError.generic(message: "Mocked error", userInfo: nil, diagnosticsId: nil)))
             return
         }
 
