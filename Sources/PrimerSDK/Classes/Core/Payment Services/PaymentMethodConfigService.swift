@@ -15,7 +15,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
 
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {
         guard let clientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(err)
             return
@@ -52,7 +52,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
                 seal.fulfill(paymentMethodsConfig)
             } else {
                 guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
