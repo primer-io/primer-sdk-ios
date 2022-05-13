@@ -283,7 +283,7 @@ public class Primer {
             (.payNLGiropay, .vault),
             (.xfers, .vault),
             (.other, _):
-            let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: { errorDecision in
                 switch errorDecision.type {
