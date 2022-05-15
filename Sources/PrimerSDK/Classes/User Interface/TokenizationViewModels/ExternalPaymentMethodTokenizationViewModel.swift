@@ -98,7 +98,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return nil
         case .coinbase:
             // TODO: Add localized string via Strings.swift
-            return "Pay with crypto"
+            return NSLocalizedString(
+                "payWithCrypto",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Pay with crypto",
+                comment: "Pay - pay with crypto (Button text)")
         default:
             assert(true, "Shouldn't end up in here")
             return nil

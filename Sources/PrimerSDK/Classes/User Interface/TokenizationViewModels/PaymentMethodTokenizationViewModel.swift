@@ -272,13 +272,17 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }
     
     lazy var paymentMethodButton: PrimerButton = {
+        
+        // TODO: Find better way to handle it. Perhaps a new property for each config?
+        let customPaddingSettingsCard: [PaymentMethodConfigType] = [.paymentCard, .coinbase]
+        
         let paymentMethodButton = PrimerButton()
         paymentMethodButton.accessibilityIdentifier = config.type.rawValue
         paymentMethodButton.clipsToBounds = true
         paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
         let imagePadding: CGFloat = 20
         let leftPadding = UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0
-        let defaultRightPadding = config.type == .paymentCard ? imagePadding : 0
+        let defaultRightPadding = customPaddingSettingsCard.contains(config.type) ? imagePadding : 0
         let rightPadding = UILocalizableUtil.isRightToLeftLocale ? 0 : defaultRightPadding
         paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 0,
                                                            left: leftPadding,
