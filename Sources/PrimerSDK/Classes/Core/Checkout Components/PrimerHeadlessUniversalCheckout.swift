@@ -357,6 +357,8 @@ public struct PrimerAsset {
             brand = .payPal
         case .xfers:
             brand = .xfers
+        case .opennode:
+            brand = .opennode
         case .other:
             return nil
         }
@@ -415,6 +417,7 @@ public struct PrimerAsset {
         case vipps, visa, volt, voucherify, vyne
         case wordline, worldPay = "worldpay"
         case xfers
+        case opennode
         
         public func getImage(assetType: PrimerAsset.ImageType) -> UIImage? {
             var imageName = rawValue
