@@ -59,6 +59,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return "Vipps"
         case .adyenPayTrail:
             return "Pay Trail"
+        case .twoCtwoP:
+            return "2C2P"
         default:
             assert(true, "Shouldn't end up in here")
             return ""
@@ -94,6 +96,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .adyenInterac,
                 .adyenPayTrail:
             return nil
+        case .twoCtwoP:
+            return Strings.PrimerButton.payInInstallments
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -143,6 +147,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenVipps:
             return UIImage(named: "vipps-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .twoCtwoP:
+            return UIImage(named: "2c2p-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -193,6 +199,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
         case .payNLPayconiq:
             return UIColor(red: 255.0/255, green: 71.0/255, blue: 133.0/255, alpha: 1.0)
+        case .twoCtwoP:
+            return .white
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -225,7 +233,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLBancontact,
                 .payNLGiropay,
                 .payNLIdeal,
-                .payNLPayconiq:
+                .payNLPayconiq,
+                .twoCtwoP:
             return nil
         default:
             assert(true, "Shouldn't end up in here")
@@ -255,7 +264,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
-                .payNLPayconiq:
+                .payNLPayconiq,
+                .twoCtwoP:
             return 0.0
         case .buckarooBancontact,
                 .buckarooEps,

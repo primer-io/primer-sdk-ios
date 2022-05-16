@@ -355,6 +355,8 @@ public struct PrimerAsset {
             return nil
         case .payPal:
             brand = .payPal
+        case .twoCtwoP:
+            brand = .twoCtwoP
         case .xfers:
             brand = .xfers
         case .other:
@@ -414,6 +416,7 @@ public struct PrimerAsset {
         case tableau, taxjar, telserv, tink, trilo, trueLayer = "truelayer", trueMoney = "truemoney", trustly, twillio, twint
         case vipps, visa, volt, voucherify, vyne
         case wordline, worldPay = "worldpay"
+        case twoCtwoP = "2c2p"
         case xfers
         
         public func getImage(assetType: PrimerAsset.ImageType) -> UIImage? {
