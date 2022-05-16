@@ -224,6 +224,8 @@ public class PrimerHeadlessUniversalCheckout {
             return []
         case .xfers:
             return []
+        case .twoCtwoP:
+            return []
         case .other(_):
             return []
         }

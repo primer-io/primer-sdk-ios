@@ -337,6 +337,9 @@ public class Primer {
         case (.paymentCard, .checkout):
             flow = .completeDirectCheckout
             
+        case (.twoCtwoP, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .twoCtwoP)
+
         case (.xfers, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .xfers)
             
@@ -378,6 +381,7 @@ public class Primer {
             (.payNLBancontact, .vault),
             (.payNLPayconiq, .vault),
             (.payNLGiropay, .vault),
+            (.twoCtwoP, .vault),
             (.xfers, .vault),
             (.other, _):
             let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
