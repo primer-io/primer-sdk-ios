@@ -16,7 +16,7 @@ public enum KlarnaSessionType: String, Codable {
 
 public struct PrimerLocaleData: Codable {
     let languageCode: String
-    var localeCode: String
+    let localeCode: String
     let regionCode: String?
     
     public init(languageCode: String? = nil, regionCode: String? = nil) {
