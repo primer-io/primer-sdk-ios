@@ -107,6 +107,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .paymentCard
         case "PAYPAL":
             self = .payPal
+        case "TWOC2P":
+            self = .twoCtwoP
         case "XFERS_PAYNOW":
             self = .xfers
         default:
@@ -181,7 +183,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case .payPal:
             return "PAYPAL"
         case .twoCtwoP:
-            return "2C2P"
+            return "TWOC2P"
         case .xfers:
             return "XFERS_PAYNOW"
         case .other(let rawValue):

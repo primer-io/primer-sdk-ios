@@ -148,7 +148,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .adyenVipps:
             return UIImage(named: "vipps-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .twoCtwoP:
-            return UIImage(named: "2c2p-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+            return UIImage(named: "2c2p-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -233,9 +233,10 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLBancontact,
                 .payNLGiropay,
                 .payNLIdeal,
-                .payNLPayconiq,
-                .twoCtwoP:
+                .payNLPayconiq:
             return nil
+        case .twoCtwoP:
+            return UIColor(red: 0, green: 79.0/255, blue: 92.0/255, alpha: 1.0)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
