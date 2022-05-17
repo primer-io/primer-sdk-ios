@@ -7,7 +7,7 @@
 
 #if canImport(UIKit)
 
-import Foundation
+import UIKit
 
 extension UINavigationController {
     func pushViewController(viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
