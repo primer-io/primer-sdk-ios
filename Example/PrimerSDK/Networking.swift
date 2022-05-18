@@ -25,8 +25,13 @@ enum HTTPMethod: String {
 
 struct Payment {
     
+    struct PaymentMethod: Encodable {
+        let descriptor: String
+    }
+    
     struct Request: Encodable {
         let paymentMethodToken: String
+        let paymentMethod: PaymentMethod?
     }
 
     struct Response: Codable {
@@ -199,7 +204,8 @@ class Networking {
         
         let url = environment.baseUrl.appendingPathComponent("/api/payments/")
 
-        let body = Payment.Request(paymentMethodToken: paymentMethodToken)
+        let body = Payment.Request(paymentMethodToken: paymentMethodToken,
+                                   paymentMethod: Payment.PaymentMethod(descriptor: UUID().uuidString))
 
         var bodyData: Data!
 
