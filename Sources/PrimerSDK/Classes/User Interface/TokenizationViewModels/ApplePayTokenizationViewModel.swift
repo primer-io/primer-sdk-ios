@@ -133,6 +133,12 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             ErrorHandler.handle(error: err)
             throw err
         }
+        
+        guard settings.businessDetails?.name != nil else {
+            let err = PrimerError.invalidValue(key: "settings.businessDetails.name", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            ErrorHandler.handle(error: err)
+            throw err
+        }
     }
     
     @objc
@@ -168,6 +174,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         do {
             try self.validate()
         } catch {
+            PrimerDelegateProxy.checkoutFailed(with: error)
             self.handle(error: error)
             return
         }
@@ -236,10 +243,13 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         let countryCode = settings.countryCode!
         let currency = settings.currency!
         let merchantIdentifier = settings.merchantIdentifier!
-        let orderItems = [
-            try! OrderItem(
-                name: "Total", unitAmount: settings.amount ?? 0, quantity: 1)
-        ]
+        var orderItems: [OrderItem]
+        
+        if let lineItems = settings.orderItems {
+            orderItems = lineItems
+        } else {
+            orderItems = [try! OrderItem(name: settings.businessDetails?.name ?? "", unitAmount: settings.amount ?? 0, quantity: 1)]
+        }
         
         let applePayRequest = ApplePayRequest(
             currency: currency,
@@ -256,7 +266,12 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             request.merchantIdentifier = merchantIdentifier
             request.merchantCapabilities = [.capability3DS]
             request.supportedNetworks = supportedNetworks
-            request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
+            
+            var applePayItems = applePayRequest.items.compactMap({ $0.applePayItem })
+            let totalAmount = applePayRequest.items.compactMap({ ($0.unitAmount ?? 0) * $0.quantity }).reduce(0, +)
+            let totalItem = PKPaymentSummaryItem(label: settings.businessDetails?.name ?? "", amount: NSDecimalNumber(value: totalAmount).dividing(by: 100))
+            applePayItems.append(totalItem)
+            request.paymentSummaryItems = applePayItems
             
             guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
                 let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
