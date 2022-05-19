@@ -71,13 +71,14 @@ class MerchantCheckoutViewController: UIViewController {
         title = "Primer [\(environment.rawValue)]"
         
         generalSettings = PrimerSettings(
-            merchantIdentifier: "merchant.dx.team",
+            merchantIdentifier: "merchant.checkout.team",
             klarnaSessionType: .recurringPayment,
             klarnaPaymentDescription: nil,
             urlScheme: "merchant://",
             urlSchemeIdentifier: "merchant",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
+            businessDetails: BusinessDetails(name: "Business Name", address: nil),
             directDebitHasNoAmount: false,
             isInitialLoadingHidden: false,
             is3DSOnVaultingEnabled: true,
@@ -208,10 +209,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 countryCode: countryCode,
                 lineItems: [
                     ClientSessionRequestBody.Order.LineItem(
-                        itemId: "_item_id_0",
-                        description: "Item",
+                        itemId: "shoes-28190",
+                        description: "Fancy shoes",
                         amount: amount,
-                        quantity: 1)
+                        quantity: 2)
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
                 vaultOnSuccess: true,
@@ -358,14 +359,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 }
                 
                 self.transactionResponse = TransactionResponse(id: res.id, date: dateStr, status: res.status.rawValue, requiredAction: requiredAction)
-                
-                if requiredAction.name == "3DS_AUTHENTICATION", res.status == .pending {
-                    resumeHandler.handle(newClientToken: requiredAction.clientToken)
-                } else if requiredAction.name == "USE_PRIMER_SDK", res.status == .pending {
-                    resumeHandler.handle(newClientToken: requiredAction.clientToken)
-                } else {
-                    resumeHandler.handleSuccess()
-                }
+                resumeHandler.handle(newClientToken: requiredAction.clientToken)
                 
             } else {
                 assert(true)

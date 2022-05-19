@@ -270,6 +270,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?)
     case missingCustomUI(paymentMethod: PaymentMethodConfigType, userInfo: [String: String]?)
+    case applePayTimedOut(userInfo: [String: String]?)
     
     var errorId: String {
         switch self {
@@ -323,6 +324,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "generic-underlying-errors"
         case .missingCustomUI:
             return "missing-custom-ui"
+        case .applePayTimedOut:
+            return "apple-pay-timed-out"
         }
     }
     
@@ -384,6 +387,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Multiple errors occured: \(errors.combinedDescription)"
         case .missingCustomUI(let paymentMethod, _):
             return "[\(errorId)] Missing custom user interface for \(paymentMethod.rawValue)"
+        case .applePayTimedOut:
+            return "[\(errorId)] Apple Pay timed out"
         }
     }
     
@@ -415,7 +420,8 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .unableToPresentPaymentMethod(_, let userInfo),
                 .unsupportedIntent(_, let userInfo),
                 .underlyingErrors(_, let userInfo),
-                .missingCustomUI(_, let userInfo):
+                .missingCustomUI(_, let userInfo),
+                .applePayTimedOut(let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -486,6 +492,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "Check underlying errors for more information."
         case .missingCustomUI(let paymentMethod, _):
             return "You have to built your UI for \(paymentMethod.rawValue) and utilize PrimerCheckoutComponents.UIManager's functionality."
+        case .applePayTimedOut:
+            return "Make sure you have an active internet connection and your Apple Pay configuration is correct."
         }
     }
     
