@@ -274,9 +274,9 @@ public class PrimerSettings: PrimerSettingsProtocol {
 
 public struct BusinessDetails: Codable {
     public var name: String
-    public var address: Address
+    public var address: Address?
 
-    public init(name: String, address: Address) {
+    public init(name: String, address: Address?) {
         self.name = name
         self.address = address
     }
