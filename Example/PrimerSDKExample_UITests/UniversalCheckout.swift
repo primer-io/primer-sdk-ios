@@ -64,7 +64,7 @@ class UniversalCheckout: XCTestCase {
     }
     
     func testPresentApplePay() throws {
-        let pm = Base.paymentMethods.filter({ $0.id == "APPLE_PAY" }).first!
+        let pm = Base.paymentMethods.filter({ $0.alias == "APPLE_PAY" }).first!
         
         try base.testInitialize(
             env: pm.environment.rawValue,
@@ -77,13 +77,13 @@ class UniversalCheckout: XCTestCase {
 
         try base.openUniversalCheckout()
 
-        if let amountExpectation = pm.expecations?.amount {
+        if let amountExpectation = pm.expectations?.amount {
             let amountText = app.staticTexts[amountExpectation]
             XCTAssert(amountText.exists, "Amount '\(amountExpectation)' should exist")
         }
         
         let scrollView = app.scrollViews["primer_container_scroll_view"]
-        if let surchargeExpectation = pm.expecations?.surcharge {
+        if let surchargeExpectation = pm.expectations?.surcharge {
             Base.validateSurcharge(surchargeExpectation, forPaymentMethod: pm.id)
         }
         
@@ -98,9 +98,8 @@ class UniversalCheckout: XCTestCase {
         applePay.buttons["Pay Total, €1.19"].tap()
     }
 
-
     func testPayPal() throws {
-        let payment = Base.paymentMethods.filter({ $0.id == "PAYPAL" }).first!
+        let payment = Base.paymentMethods.filter({ $0.alias == "PAYPAL" }).first!
         try base.testPayment(payment, cancelPayment: false)
 
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
@@ -123,12 +122,12 @@ class UniversalCheckout: XCTestCase {
     }
     
     func testAdyenAlipay() throws {
-        let payment = Base.paymentMethods.filter({ $0.id == "ADYEN_ALIPAY" }).first!
+        let payment = Base.paymentMethods.filter({ $0.alias == "ADYEN_ALIPAY" }).first!
         try base.testPayment(payment)
     }
     
     func testAdyenGiropay() throws {
-        let payment = Base.paymentMethods.filter({ $0.id == "ADYEN_GIROPAY" }).first!
+        let payment = Base.paymentMethods.filter({ $0.alias == "ADYEN_GIROPAY" }).first!
         try base.testPayment(payment, cancelPayment: false)
         
         let safariWebView = app.otherElements.matching(NSPredicate(format: "identifier CONTAINS 'BrowserView?WebViewProcessID'"))
@@ -177,17 +176,17 @@ class UniversalCheckout: XCTestCase {
     }
     
     func testAdyenMobilePay() throws {
-        let payment = Base.paymentMethods.filter({ $0.id == "ADYEN_MOBILEPAY" }).first!
+        let payment = Base.paymentMethods.filter({ $0.alias == "ADYEN_MOBILEPAY" }).first!
         try base.testPayment(payment)
     }
     
     func testPayNLBancontact() throws {
-        let payment = Base.paymentMethods.filter({ $0.id == "PAY_NL_BANCONTACT" }).first!
+        let payment = Base.paymentMethods.filter({ $0.alias == "PAY_NL_BANCONTACT" }).first!
         try base.testPayment(payment)
     }
     
     func testCardSurcharge() throws {
-        let payment = Base.paymentMethods.filter({ $0.id == "PAYMENT_CARD" }).first!
+        let payment = Base.paymentMethods.filter({ $0.alias == "PAYMENT_CARD" }).first!
         try openCardForm(for: payment)
         
         let cardnumberTextField = app/*@START_MENU_TOKEN@*/.textFields["card_txt_fld"]/*[[".textFields[\"4242 4242 4242 4242\"]",".textFields[\"card_txt_fld\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
@@ -196,7 +195,7 @@ class UniversalCheckout: XCTestCase {
         let cardholderTextField = app.textFields["card_holder_txt_fld"]
         let submitButton = app.buttons["submit_btn"]
         
-        if let submitButtonTexts = payment.expecations?.buttonTexts {
+        if let submitButtonTexts = payment.expectations?.buttonTexts {
             for text in submitButtonTexts {
                 let submitButtonText = submitButton.staticTexts[text]
                 XCTAssert(submitButtonText.exists, "Submit button should have text '\(text)'")
@@ -259,44 +258,44 @@ class UniversalCheckout: XCTestCase {
         try base.resultScreenExpectations(for: payment)
     }
     
-    func testPass3DSChallenge() throws {
-        let threeDSPayment = Base.paymentMethods.filter({ $0.id == "3DS_PAYMENT_CARD" }).first!
+    func testPassProcessor3DSChallenge() throws {
+        let threeDSPayment = Base.paymentMethods.filter({ $0.alias == "PAYMENT_CARD_WITH_PROCESSOR_3DS_SUCCESS" }).first!
+        let card = Base.cards.filter({ $0.alias == "FAILING_CARD_PROCESSOR_3DS" }).first!
         try openCardForm(for: threeDSPayment)
-        
-        let cardnumberTextField = app/*@START_MENU_TOKEN@*/.textFields["card_txt_fld"]/*[[".textFields[\"4242 4242 4242 4242\"]",".textFields[\"card_txt_fld\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
-        let expiryTextField = app.textFields["expiry_txt_fld"]
-        let cvcTextField = app.textFields["cvc_txt_fld"]
-        let cardholderTextField = app.textFields["card_holder_txt_fld"]
-        let submitButton = app.buttons["submit_btn"]
-        
-        if let submitButtonTexts = threeDSPayment.expecations?.buttonTexts {
-            for text in submitButtonTexts {
-                let submitButtonText = submitButton.staticTexts[text]
-                XCTAssert(submitButtonText.exists, "Submit button should have text '\(text)'")
-            }
-        }
-        
-        XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
-        
-        cardnumberTextField.tap()
-        cardnumberTextField.typeText("9120000000000006")
-        
-        expiryTextField.tap()
-        expiryTextField.typeText("0222")
-        
-        XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
-        
-        cvcTextField.tap()
-        cvcTextField.typeText("123")
-        
-        XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
-        
-        cardholderTextField.tap()
-        cardholderTextField.typeText("John Smith")
-        
-        XCTAssert(submitButton.isEnabled, "Submit button should be enabled")
-        
-        submitButton.tap()
+        fillCardDataWithCard(card, for: threeDSPayment, tappingPayOnceEnabled: true)
+                
+        let completeButton = app.webViews.firstMatch.buttons.containing(NSPredicate(format: "label CONTAINS 'COMPLETE'")).firstMatch
+        let completeButtonIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: completeButton, handler: nil)
+        wait(for: [completeButtonIsHittable], timeout: 30)
+        completeButton.tap()
+                
+        try base.successMessageExists()
+        try base.dismissSDK()
+        try base.resultScreenExpectations(for: threeDSPayment)
+    }
+    
+    func testFailProcessor3DSChallenge() throws {
+        let threeDSPayment = Base.paymentMethods.filter({ $0.alias == "PAYMENT_CARD_WITH_PROCESSOR_3DS_FAIL" }).first!
+        let card = Base.cards.filter({ $0.alias == "FAILING_CARD_PROCESSOR_3DS" }).first!
+        try openCardForm(for: threeDSPayment)
+        fillCardDataWithCard(card, for: threeDSPayment, tappingPayOnceEnabled: true)
+                
+        let completeButton = app.webViews.firstMatch.buttons.containing(NSPredicate(format: "label CONTAINS 'COMPLETE'")).firstMatch
+        let completeButtonIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: completeButton, handler: nil)
+        wait(for: [completeButtonIsHittable], timeout: 30)
+        completeButton.tap()
+                
+        try base.successMessageExists()
+        try base.dismissSDK()
+        try base.resultScreenExpectations(for: threeDSPayment)
+    }
+
+    
+    func testPass3DSChallenge() throws {
+        let threeDSPayment = Base.paymentMethods.filter({ $0.alias == "3DS_PAYMENT_CARD" }).first!
+        let card = Base.cards.filter({ $0.alias == "3DS_PAYMENT_CARD" }).first!
+        try openCardForm(for: threeDSPayment)
+        fillCardDataWithCard(card, for: threeDSPayment, tappingPayOnceEnabled: true)
         
         let threeDSNavigationBar = app.otherElements.otherElements.navigationBars["SECURE CHECKOUT"]
         let threeDSNavigationBarExists = expectation(for: Expectation.exists, evaluatedWith: threeDSNavigationBar, handler: nil)
@@ -432,13 +431,13 @@ class UniversalCheckout: XCTestCase {
         
         try base.openUniversalCheckout()
 
-        if let amountExpectation = payment.expecations?.amount {
+        if let amountExpectation = payment.expectations?.amount {
             let amountText = app.staticTexts[amountExpectation]
             XCTAssert(amountText.exists, "Amount '\(amountExpectation)' should exist")
         }
 
         let scrollView = app.scrollViews["primer_container_scroll_view"]
-        if let surchargeExpectation = payment.expecations?.surcharge {
+        if let surchargeExpectation = payment.expectations?.surcharge {
             Base.validateSurcharge(surchargeExpectation, forPaymentMethod: payment.id)
         }
         
@@ -453,5 +452,78 @@ class UniversalCheckout: XCTestCase {
         }
         
         paymentMethodButton.tap()
+    }
+    
+    func fillCardDataWithCard(_ card: Card,
+                              for payment: Payment,
+                              checkingSubmitButton: Bool = true,
+                              tappingPayOnceEnabled: Bool = false) {
+        
+        let cardnumberTextField = app/*@START_MENU_TOKEN@*/.textFields["card_txt_fld"]/*[[".textFields[\"4242 4242 4242 4242\"]",".textFields[\"card_txt_fld\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+        let expiryTextField = app.textFields["expiry_txt_fld"]
+        let cvcTextField = app.textFields["cvc_txt_fld"]
+        let cardholderTextField = app.textFields["card_holder_txt_fld"]
+        let postalCodeTextField = app.textFields["postal_code_txt_fld"]
+        let submitButton = app.buttons["submit_btn"]
+
+        if let submitButtonTexts = payment.expectations?.buttonTexts {
+            for text in submitButtonTexts {
+                let submitButtonText = submitButton.staticTexts[text]
+                XCTAssert(submitButtonText.exists, "Submit button should have text '\(text)'")
+            }
+        }
+        
+        if checkingSubmitButton {
+            XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
+        }
+
+        cardnumberTextField.tap()
+        cardnumberTextField.typeText(card.number)
+        
+        if checkingSubmitButton {
+            XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
+        }
+        
+        if let expirationDateString = card.expirationDateString {
+            expiryTextField.tap()
+            expiryTextField.typeText(expirationDateString)
+        }
+        
+        if checkingSubmitButton {
+            XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
+        }
+        
+        if let cvv = card.cvv {
+            cvcTextField.tap()
+            cvcTextField.typeText(cvv)
+        }
+        
+        if checkingSubmitButton {
+            XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
+        }
+        
+        if let cardholderName = card.cardholderName {
+            cardholderTextField.tap()
+            cardholderTextField.typeText(cardholderName)
+        }
+        
+        if let postalCode = card.postalCode {
+            
+            if checkingSubmitButton {
+                XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
+            }
+            
+            postalCodeTextField.tap()
+            postalCodeTextField.typeText(postalCode)
+        }
+        
+        if checkingSubmitButton {
+            XCTAssert(submitButton.isEnabled, "Submit button should be enabled")
+        }
+        
+        if tappingPayOnceEnabled {
+            submitButton.tap()
+        }
+        
     }
 }

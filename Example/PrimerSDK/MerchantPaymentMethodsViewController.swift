@@ -49,8 +49,9 @@ class MerchantPaymentMethodsViewController: UIViewController {
                 }
             } else if let clientToken = clientToken {
                 let settings = PrimerSettings(
-                    merchantIdentifier: "merchant.dx.team",
-                    urlScheme: "merchant://")
+                    merchantIdentifier: "merchant.checkout.team",
+                    urlScheme: "merchant://",
+                    businessDetails: BusinessDetails(name: "Business Name", address: nil))
                 PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, completion: { (pms, err) in
                     DispatchQueue.main.async {
                         self.activityIndicator?.stopAnimating()
@@ -100,8 +101,8 @@ class MerchantPaymentMethodsViewController: UIViewController {
                 countryCode: .fr,
                 lineItems: [
                     ClientSessionRequestBody.Order.LineItem(
-                        itemId: "_item_id_0",
-                        description: "Item",
+                        itemId: "shoes-72189",
+                        description: "Fancy shoes",
                         amount: 1000,
                         quantity: 1)
                 ]),
