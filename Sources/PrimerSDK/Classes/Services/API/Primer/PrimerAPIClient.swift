@@ -107,17 +107,6 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-//    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void) {
-//        let endpoint = PrimerAPI.createDirectDebitMandate(clientToken: clientToken, mandateRequest: mandateRequest)
-//        networkService.request(endpoint) { (result: Result<DirectDebitCreateMandateResponse, Error>) in
-//            switch result {
-//            case .success(let apiConfiguration):
-//                completion(.success(apiConfiguration))
-//            case .failure(let err):
-//                completion(.failure(err))
-//            }
-//        }
-//    }
 
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.createPayPalOrderSession(clientToken: clientToken, payPalCreateOrderRequest: payPalCreateOrderRequest)
