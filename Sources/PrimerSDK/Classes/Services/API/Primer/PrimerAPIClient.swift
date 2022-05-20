@@ -16,7 +16,6 @@ protocol PrimerAPIClientProtocol {
     func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
     func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Void, Error>) -> Void)
     func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
-//    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void)
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void)
     func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalCreateBillingAgreementResponse, Error>) -> Void)
     func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void)
