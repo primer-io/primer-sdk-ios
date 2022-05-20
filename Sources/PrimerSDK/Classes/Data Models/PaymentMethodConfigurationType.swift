@@ -2,7 +2,7 @@
 
 import Foundation
 
-public enum PaymentMethodConfigType: Codable, Equatable {
+public enum PaymentMethodConfigType: Codable, Equatable, Hashable {
     
     case adyenAlipay
     case adyenBlik
