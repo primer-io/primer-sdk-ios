@@ -13,7 +13,11 @@ public class Primer {
     
     // MARK: - PROPERTIES
     internal var primerWindow: UIWindow?
-    public var delegate: PrimerDelegate? // TODO: should this be weak?
+    public var delegate: PrimerDelegate?
+    public var settings: PrimerSettings {
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        return settings as! PrimerSettings
+    }
     internal var flow: PrimerSessionFlow!
     internal var presentingViewController: UIViewController?
     internal var primerRootVC: PrimerRootViewController?
