@@ -401,11 +401,6 @@ public class Primer {
             }
         }
     }
-    
-    public func setImplementedReactNativeCallbacks(_ implementedReactNativeCallbacks: ImplementedReactNativeCallbacks) {
-        AppState.current.implementedReactNativeCallbacks = implementedReactNativeCallbacks
-    }
-    
 }
 
 #endif
