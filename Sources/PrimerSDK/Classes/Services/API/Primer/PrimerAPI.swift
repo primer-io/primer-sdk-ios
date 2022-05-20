@@ -43,8 +43,6 @@ enum PrimerAPI: Endpoint, Equatable {
     case fetchConfiguration(clientToken: DecodedClientToken)
     case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
     case deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String)
-    
-//    case createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
     case createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest)
     case createPayPalSBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest)
     case confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest)
@@ -71,7 +69,6 @@ enum PrimerAPI: Endpoint, Equatable {
     case validateClientToken(request: ClientTokenValidationRequest)
     
     // Create - Resume Payment
-    
     case createPayment(clientToken: DecodedClientToken, paymentRequest: Payment.CreateRequest)
     case resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Payment.ResumeRequest)
 
@@ -92,7 +89,6 @@ internal extension PrimerAPI {
         
         switch self {
         case .deleteVaultedPaymentMethod(let clientToken, _),
-//                .createDirectDebitMandate(let clientToken, _),
                 .exchangePaymentMethodToken(let clientToken, _),
                 .fetchVaultedPaymentMethods(let clientToken),
                 .createPayPalOrderSession(let clientToken, _),
@@ -151,7 +147,6 @@ internal extension PrimerAPI {
     var baseURL: String? {
         switch self {
         case .createPayPalOrderSession(let clientToken, _),
-//                .createDirectDebitMandate(let clientToken, _),
                 .createPayPalSBillingAgreementSession(let clientToken, _),
                 .confirmPayPalBillingAgreement(let clientToken, _),
                 .createKlarnaPaymentSession(let clientToken, _),
@@ -184,8 +179,9 @@ internal extension PrimerAPI {
             return request.clientToken.jwtTokenPayload?.pciUrl
         }
     }
-    // MARK: Path
     
+    // MARK: Path
+
     var path: String {
         switch self {
         case .deleteVaultedPaymentMethod(_, let id):
@@ -208,8 +204,6 @@ internal extension PrimerAPI {
             return "/klarna/customer-tokens"
         case .finalizeKlarnaPaymentSession:
             return "/klarna/payment-sessions/finalize"
-//        case .createDirectDebitMandate:
-//            return "/gocardless/mandates"
         case .tokenizePaymentMethod:
             return "/payment-instruments"
         case .begin3DSRemoteAuth(_, let paymentMethodToken, _):
@@ -254,7 +248,6 @@ internal extension PrimerAPI {
                 .fetchVaultedPaymentMethods:
             return .get
         case .createPayPalOrderSession,
-//                .createDirectDebitMandate,
                 .createPayPalSBillingAgreementSession,
                 .confirmPayPalBillingAgreement,
                 .createKlarnaPaymentSession,
@@ -291,8 +284,6 @@ internal extension PrimerAPI {
     
     var body: Data? {
         switch self {
-//        case .createDirectDebitMandate(_, let mandateRequest):
-//            return try? JSONEncoder().encode(mandateRequest)
         case .createPayPalOrderSession(_, let payPalCreateOrderRequest):
             return try? JSONEncoder().encode(payPalCreateOrderRequest)
         case .createPayPalSBillingAgreementSession(_, let payPalCreateBillingAgreementRequest):
