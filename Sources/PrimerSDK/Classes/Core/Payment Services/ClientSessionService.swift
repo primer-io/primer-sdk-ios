@@ -39,9 +39,6 @@ internal class ClientSessionService: ClientSessionServiceProtocol {
         }
     }
     
-//    private func requestPrimerConfigurationWithActions(actionsRequest: ClientSessionUpdateRequest, completion: @escaping (PrimerAPIConfiguration?, Error?) -> Void) {
-//
-//    }
 }
 
 #endif
