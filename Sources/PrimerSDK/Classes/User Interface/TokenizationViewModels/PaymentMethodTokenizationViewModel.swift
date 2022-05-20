@@ -182,6 +182,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "interac"
         case .adyenMobilePay:
             return "mobile-pay"
+        case .adyenPayshop:
+            return "payshop"
         case .adyenPayTrail:
             return "paytrail"
         case .adyenSofort,

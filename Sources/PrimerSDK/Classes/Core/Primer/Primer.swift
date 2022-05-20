@@ -279,7 +279,10 @@ public class Primer {
             
         case (.adyenVipps, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenVipps)
-            
+        
+        case (.adyenPayshop, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenPayshop)
+
         case (.apaya, .vault):
             flow = .addApayaToVault
             
@@ -372,6 +375,7 @@ public class Primer {
             (.adyenTrustly, .vault),
             (.adyenTwint, .vault),
             (.adyenMobilePay, .vault),
+            (.adyenPayshop, .vault),
             (.adyenVipps, .vault),
             (.mollieBankcontact, .vault),
             (.mollieIdeal, .vault),
