@@ -225,6 +225,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "paypal"
         case .xfers:
             return "xfers"
+        case .twoCtwoP:
+            return "2c2p"
         case .other(rawValue: let rawValue):
             return rawValue
         }
