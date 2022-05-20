@@ -226,6 +226,8 @@ public class PrimerHeadlessUniversalCheckout {
             return []
         case .xfers:
             return []
+        case .opennode:
+            return []
         case .twoCtwoP:
             return []
         case .other(_):
@@ -363,6 +365,8 @@ public struct PrimerAsset {
             brand = .twoCtwoP
         case .xfers:
             brand = .xfers
+        case .opennode:
+            brand = .opennode
         case .other:
             return nil
         }
@@ -422,6 +426,7 @@ public struct PrimerAsset {
         case wordline, worldPay = "worldpay"
         case twoCtwoP = "2c2p"
         case xfers
+        case opennode
         
         public func getImage(assetType: PrimerAsset.ImageType) -> UIImage? {
             var imageName = rawValue

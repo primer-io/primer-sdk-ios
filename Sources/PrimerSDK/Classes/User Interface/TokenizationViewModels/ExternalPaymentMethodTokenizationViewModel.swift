@@ -150,6 +150,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenVipps:
             return UIImage(named: "vipps-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .opennode:
+            return UIImage(named: "opennode-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .twoCtwoP:
             return UIImage(named: "2c2p-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .adyenPayshop:
@@ -206,7 +208,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
         case .payNLPayconiq:
             return UIColor(red: 255.0/255, green: 71.0/255, blue: 133.0/255, alpha: 1.0)
-        case .twoCtwoP:
+        case .opennode, .twoCtwoP:
             return .white
         default:
             assert(true, "Shouldn't end up in here")
@@ -240,7 +242,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .payNLBancontact,
                 .payNLGiropay,
                 .payNLIdeal,
-                .payNLPayconiq:
+                .payNLPayconiq,
+                .opennode:
             return nil
         case .twoCtwoP:
             return UIColor(red: 0, green: 79.0/255, blue: 92.0/255, alpha: 1.0)

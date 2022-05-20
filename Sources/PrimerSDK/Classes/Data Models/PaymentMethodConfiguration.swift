@@ -39,7 +39,8 @@ class PaymentMethodConfig: Codable {
             .payNLBancontact,
             .payNLGiropay,
             .payNLPayconiq,
-            .twoCtwoP
+            .opennode,
+            .twoCtwoP,
             .adyenPayshop
         ]
         
