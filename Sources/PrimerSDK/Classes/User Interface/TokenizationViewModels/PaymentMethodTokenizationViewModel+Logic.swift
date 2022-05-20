@@ -36,7 +36,7 @@ extension PaymentMethodTokenizationViewModel {
                     self.didFinishPayment?(nil)
                     self.nullifyEventCallbacks()
                     
-                    if PrimerSettings.current.paymentHandling == .manual, let checkoutData = checkoutData {
+                    if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
                         PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     }
                     
