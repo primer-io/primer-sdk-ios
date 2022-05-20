@@ -25,6 +25,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
     case buckarooGiropay
     case buckarooIdeal
     case buckarooSofort
+    case coinbase
     case goCardlessMandate
     case googlePay
     case hoolah
@@ -87,6 +88,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             self = .buckarooIdeal
         case "BUCKAROO_SOFORT":
             self = .buckarooSofort
+        case "COINBASE":
+            self = .coinbase
         case "GOCARDLESS":
             self = .goCardlessMandate
         case "GOOGLE_PAY":
@@ -166,6 +169,8 @@ public enum PaymentMethodConfigType: Codable, Equatable {
             return "BUCKAROO_IDEAL"
         case .buckarooSofort:
             return "BUCKAROO_SOFORT"
+        case .coinbase:
+            return "COINBASE"
         case .goCardlessMandate:
             return "GOCARDLESS"
         case .googlePay:
@@ -223,6 +228,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
                 .buckarooGiropay,
                 .buckarooIdeal,
                 .buckarooSofort,
+                .coinbase,
                 .hoolah,
                 .mollieBankcontact,
                 .mollieIdeal,
@@ -262,9 +268,10 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case adyenGiropay
         case adyenIDeal
         case adyenInterac
-        case adyenPayTrail
         case adyenMobilePay
+        case adyenPayTrail
         case adyenSofort
+        case adyenPayshop
         case adyenTrustly
         case adyenTwint
         case adyenVipps
@@ -276,6 +283,7 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case buckarooGiropay
         case buckarooIdeal
         case buckarooSofort
+        case coinbase
         case goCardlessMandate
         case googlePay
         case hoolah
@@ -289,7 +297,9 @@ public enum PaymentMethodConfigType: Codable, Equatable {
         case payNLPayconiq
         case paymentCard
         case payPal
+        case twoCtwoP
         case xfers
+        case opennode
         case other
     }
     

@@ -189,6 +189,8 @@ public class PrimerHeadlessUniversalCheckout {
             return []
         case .buckarooSofort:
             return []
+        case .coinbase:
+            return []
         case .goCardlessMandate:
             return []
         case .googlePay:
@@ -347,6 +349,8 @@ public struct PrimerAsset {
             brand = .bankcontact
         case .buckarooEps:
             brand = .eps
+        case .coinbase:
+            brand = .coinBase
         case .goCardlessMandate:
             brand = .goCardless
         case .googlePay:

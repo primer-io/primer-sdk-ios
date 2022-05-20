@@ -309,7 +309,10 @@ public class Primer {
             
         case (.buckarooSofort, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooSofort)
-                        
+
+        case (.coinbase, .checkout):
+            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .coinbase)
+
         case (.hoolah, .checkout):
             flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
             
@@ -375,6 +378,7 @@ public class Primer {
             (.buckarooGiropay, .vault),
             (.buckarooIdeal, .vault),
             (.buckarooSofort, .vault),
+            (.coinbase, .vault),
             (.hoolah, .vault),
             (.payNLIdeal, .vault),
             (.adyenSofort, .vault),
