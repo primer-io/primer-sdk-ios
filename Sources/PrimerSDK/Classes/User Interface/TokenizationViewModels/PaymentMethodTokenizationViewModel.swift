@@ -635,7 +635,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     lazy var paymentMethodButton: PrimerButton = {
         
         // TODO: Find better way to handle it. Perhaps a new property for each config?
-        let customPaddingSettingsCard: [PaymentMethodConfigType] = [.paymentCard, .coinbase]
+        let customPaddingSettingsCard: [PrimerPaymentMethodType] = [.paymentCard, .coinbase]
         
         let paymentMethodButton = PrimerButton()
         paymentMethodButton.accessibilityIdentifier = config.type.rawValue

@@ -152,7 +152,7 @@ public class Primer {
         ///
         /// In case of a `nil` paramter being passed to the second value of the tuple, we'll treat that as a checkoutWithAsyncPaymentMethod
         /// 
-        let flowIntentPaymentMethods: [PaymentMethodConfigType: (intent: PrimerSessionIntent, flow: PrimerSessionFlow?)] = [
+        let flowIntentPaymentMethods: [PrimerPaymentMethodType: (intent: PrimerSessionIntent, flow: PrimerSessionFlow?)] = [
             .adyenAlipay: (.checkout, nil),
             .adyenDotPay: (.checkout, nil),
             .adyenGiropay: (.checkout, nil),
@@ -195,7 +195,7 @@ public class Primer {
             let sessionFlow = paymentMethod.value.1 ?? .checkoutWithAsyncPaymentMethod(paymentMethodType: paymentMethod.key)
             flow = sessionFlow
         } else {
-            let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: { errorDecision in
                 switch errorDecision.type {
