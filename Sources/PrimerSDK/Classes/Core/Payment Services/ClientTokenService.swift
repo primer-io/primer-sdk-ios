@@ -6,6 +6,7 @@ import Foundation
 internal typealias RawJWTToken = String
 
 internal protocol ClientTokenServiceProtocol {
+    static var decodedClientToken: DecodedClientToken? { get }
     static func storeClientToken(_ clientToken: String) -> Promise<Void>
     static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void)
 }
@@ -14,8 +15,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         
     /// The client token from the DepedencyContainer
     static var decodedClientToken: DecodedClientToken? {
-        let state: AppStateProtocol = AppState.current
-        guard let clientToken = state.clientToken else { return nil }
+        guard let clientToken = AppState.current.clientToken else { return nil }
         guard let jwtTokenPayload = clientToken.jwtTokenPayload,
               let expDate = jwtTokenPayload.expDate
         else {

@@ -72,6 +72,9 @@
             </BuildableReference>
             <SkippedTests>
                <Test
+                  Identifier = "Klarna/testInitKlarna()">
+               </Test>
+               <Test
                   Identifier = "UniversalCheckout/testAdyenAlipay()">
                </Test>
                <Test

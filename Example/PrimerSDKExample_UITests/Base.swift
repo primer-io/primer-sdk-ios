@@ -75,20 +75,20 @@ class Base: XCTestCase {
              number: "9120000000000006",
              expirationDateString: "0225",
              cvv: "123",
-             cardholderName: "John Smith",
+             cardholderName: nil,
              postalCode: nil),
         Card(alias: "FAILING_CARD_PROCESSOR_3DS",
              number: "4000008400001629",
              expirationDateString: "0225",
              cvv: "123",
              cardholderName: "John Smith",
-             postalCode: nil),
+             postalCode: "EC1V"),
         Card(alias: "SUCCESS_CARD_PROCESSOR_3DS",
              number: "4000000000003220",
              expirationDateString: "0225",
              cvv: "123",
              cardholderName: "John Smith",
-             postalCode: nil),
+             postalCode: "EC1V"),
 
     ]
     
@@ -156,7 +156,7 @@ class Base: XCTestCase {
             currency: "DKK",
             countryCode: "DK",
             amount: "100",
-            expecations: Payment.Expecations(
+            expectations: Payment.Expectations(
                 amount: "kr.1.00",
                 surcharge: nil,
                 webviewImage: "mobilepay-logo",
@@ -266,11 +266,11 @@ class Base: XCTestCase {
             countryCode: "FR",
             amount: "10500",
             expectations: Payment.Expectations(
-                amount: "EUR 105.00",
+                amount: "€105.00",
                 surcharge: "Additional fee may apply",
                 webviewImage: nil,
                 webviewTexts: nil,
-                buttonTexts: ["Pay € 105.00"],
+                buttonTexts: ["Pay €105.00"],
                 resultScreenTexts: nil
             )
         )

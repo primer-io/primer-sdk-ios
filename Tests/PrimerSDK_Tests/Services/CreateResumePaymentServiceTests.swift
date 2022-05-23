@@ -23,10 +23,8 @@ class CreateResumePaymentServiceTests: XCTestCase {
             let jsonData = Data(cardPaymentCreationResponse.utf8)
             let mockedResponse = try JSONDecoder().decode(Payment.Response.self, from: jsonData)
             let api = MockPrimerAPIClient(with: jsonData, throwsError: false)
-            let state = MockAppState()
-
+            MockLocator.registerDependencies()
             DependencyContainer.register(api as PrimerAPIClientProtocol)
-            DependencyContainer.register(state as AppStateProtocol)
 
             let service = CreateResumePaymentService()
             service.createPayment(paymentRequest: Payment.CreateRequest(token: "a_payment_method_token")) { response, error in

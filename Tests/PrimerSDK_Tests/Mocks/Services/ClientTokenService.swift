@@ -11,6 +11,22 @@
 
 class MockClientTokenService: ClientTokenServiceProtocol {
     
+    /// The client token from the DepedencyContainer
+    static var decodedClientToken: DecodedClientToken? {
+        guard let clientToken = MockAppState.current.clientToken else { return nil }
+        guard let jwtTokenPayload = clientToken.jwtTokenPayload,
+              let expDate = jwtTokenPayload.expDate
+        else {
+            return nil
+        }
+        
+        if expDate < Date() {
+            return nil
+        }
+        
+        return jwtTokenPayload
+    }
+    
     static func storeClientToken(_ clientToken: String) -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
