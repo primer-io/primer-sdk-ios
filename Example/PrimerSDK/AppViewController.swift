@@ -78,7 +78,9 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
             amount: amount,
             performPayment: performPaymentSwitch.isOn)
         
-        navigationController?.pushViewController(mcvc, animated: true)
+        self.evaluateCustomDefinedApiKey()
+        
+        self.navigationController?.pushViewController(mcvc, animated: true)
     }
     
     @IBAction func checkoutComponentsButtonTapped(_ sender: Any) {
@@ -91,12 +93,10 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         mcfvc.view.translatesAutoresizingMaskIntoConstraints = false
         mcfvc.view.heightAnchor.constraint(equalToConstant: self.view.bounds.height).isActive = true
         mcfvc.view.widthAnchor.constraint(equalToConstant: self.view.bounds.width).isActive = true
+        
+        self.evaluateCustomDefinedApiKey()
+        
         self.navigationController?.pushViewController(mcfvc, animated: true)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        evaluateCustomDefinedApiKey()
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -131,11 +131,6 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
 extension AppViewController {
     
     func evaluateCustomDefinedApiKey() {
-        
-        guard apiKeyTextField.text?.isEmpty == false else {
-            return
-        }
-        
-        customDefinedApiKey = apiKeyTextField.text
+        customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
     }
 }
