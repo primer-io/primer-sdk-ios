@@ -1,5 +1,23 @@
 #if canImport(UIKit)
 
+internal struct CurrencyElement: Codable {
+    let name: String
+    let symbol: String
+    let symbolNative: String
+    let code: Currency
+    let namePlural: String
+    let decimalDigits: Int
+    let rounding: Double
+}
+
+internal var loadedCurrencies: [CurrencyElement]? = {
+    let jsonParser = JSONParser()
+    guard let currenciesData = jsonParser.loadJsonData(fileName: "currencies") else {
+        return nil
+    }
+    return try? jsonParser.parse([CurrencyElement].self, from: currenciesData)
+}()
+
 public enum Currency: String, Codable, CaseIterable {
     case AED
     case AFN
@@ -42,6 +60,7 @@ public enum Currency: String, Codable, CaseIterable {
     case DKK
     case DOP
     case DZD
+    case EEK
     case EGP
     case ERN
     case ETB
@@ -89,6 +108,8 @@ public enum Currency: String, Codable, CaseIterable {
     case LKR
     case LRD
     case LSL
+    case LTL
+    case LVL
     case LYD
     case MAD
     case MDL
@@ -155,6 +176,7 @@ public enum Currency: String, Codable, CaseIterable {
     case USD
     case UYU
     case UZS
+    case VEF
     case VES
     case VND
     case VUV
@@ -165,352 +187,21 @@ public enum Currency: String, Codable, CaseIterable {
     case XPF
     case YER
     case ZAR
+    case ZMK
     case ZMW
+    case ZWL
     
+    var currencyElement: CurrencyElement? {
+        loadedCurrencies?.first{ $0.code == self }
+    }
+
     var symbol: String? {
-        switch self {
-        case .AED:
-            return "د.إ"
-        case .AFN:
-            return "؋"
-        case .ALL:
-            return "L"
-        case .AMD:
-            return "֏"
-        case .ANG:
-            return "ƒ"
-        case .AOA:
-            return "Kz"
-        case .ARS:
-            return "$"
-        case .AUD:
-            return "$"
-        case .AWG:
-            return "ƒ"
-        case .AZN:
-            return "₼"
-        case .BAM:
-            return "KM"
-        case .BBD:
-            return "$"
-        case .BDT:
-            return "৳"
-        case .BGN:
-            return "лв."
-        case .BHD:
-            return ".د.ب"
-        case .BIF:
-            return "Fr"
-        case .BMD:
-            return "$"
-        case .BND:
-            return "$"
-        case .BOB:
-            return "Bs."
-        case .BRL:
-            return "R$"
-        case .BSD:
-            return "$"
-        case .BTN:
-            return "Nu."
-        case .BWP:
-            return "P"
-        case .BYN:
-            return "Br"
-        case .BZD:
-            return "$"
-        case .CAD:
-            return "$"
-        case .CDF:
-            return "Fr"
-        case .CHF:
-            return "Fr."
-        case .CKD:
-            return "$"
-        case .CLP:
-            return "$"
-        case .CNY:
-            return "¥"
-        case .COP:
-            return "$"
-        case .CRC:
-            return "₡"
-        case .CUC:
-            return "$"
-        case .CUP:
-            return "$"
-        case .CVE:
-            return "$"
-        case .CZK:
-            return "Kč"
-        case .DJF:
-            return "Fr"
-        case .DKK:
-            return "kr."
-        case .DOP:
-            return "$"
-        case .DZD:
-            return "د.ج"
-        case .EGP:
-            return "£"
-        case .ERN:
-            return "Nfk"
-        case .ETB:
-            return "Br"
-        case .EUR:
-            return "€"
-        case .FJD:
-            return "$"
-        case .FKP:
-            return "£"
-        case .FOK:
-            return "kr"
-        case .GBP:
-            return "£"
-        case .GEL:
-            return "₾"
-        case .GGP:
-            return "£"
-        case .GHS:
-            return "₵"
-        case .GIP:
-            return "£"
-        case .GMD:
-            return "D"
-        case .GNF:
-            return "Fr"
-        case .GTQ:
-            return "Q"
-        case .GYD:
-            return "$"
-        case .HKD:
-            return "$"
-        case .HNL:
-            return "L"
-        case .HRK:
-            return "kn"
-        case .HTG:
-            return "G"
-        case .HUF:
-            return "Ft"
-        case .IDR:
-            return "Rp"
-        case .ILS:
-            return "₪"
-        case .IMP:
-            return "£"
-        case .INR:
-            return "₹"
-        case .IQD:
-            return "ع.د"
-        case .IRR:
-            return "﷼"
-        case .ISK:
-            return "kr"
-        case .JEP:
-            return "£"
-        case .JMD:
-            return "$"
-        case .JOD:
-            return "د.ا"
-        case .JPY:
-            return "¥"
-        case .KES:
-            return "Sh"
-        case .KGS:
-            return "с"
-        case .KHR:
-            return "៛"
-        case .KID:
-            return "$"
-        case .KMF:
-            return "Fr"
-        case .KPW:
-            return "₩"
-        case .KRW:
-            return "₩"
-        case .KWD:
-            return "د.ك"
-        case .KYD:
-            return "$"
-        case .KZT:
-            return "₸"
-        case .LAK:
-            return "₭"
-        case .LBP:
-            return "ل.ل"
-        case .LKR:
-            return "Rs"
-        case .LRD:
-            return "$"
-        case .LSL:
-            return "L"
-        case .LYD:
-            return "ل.د"
-        case .MAD:
-            return "د.م."
-        case .MDL:
-            return "L"
-        case .MGA:
-            return "Ar"
-        case .MKD:
-            return "ден"
-        case .MMK:
-            return "Ks"
-        case .MNT:
-            return "₮"
-        case .MOP:
-            return "P"
-        case .MRU:
-            return "UM"
-        case .MUR:
-            return "₨"
-        case .MVR:
-            return ".ރ"
-        case .MWK:
-            return "MK"
-        case .MXN:
-            return "$"
-        case .MYR:
-            return "RM"
-        case .MZN:
-            return "MT"
-        case .NAD:
-            return "$"
-        case .NGN:
-            return "₦"
-        case .NIO:
-            return "C$"
-        case .NOK:
-            return "kr"
-        case .NPR:
-            return "रू"
-        case .NZD:
-            return "$"
-        case .OMR:
-            return "ر.ع."
-        case .PAB:
-            return "B/."
-        case .PEN:
-            return "S/."
-        case .PGK:
-            return "K"
-        case .PHP:
-            return "₱"
-        case .PKR:
-            return "₨"
-        case .PLN:
-            return "zł"
-        case .PND:
-            return "$"
-        case .PRB:
-            return "р."
-        case .PYG:
-            return "₲"
-        case .QAR:
-            return "ر.ق"
-        case .RON:
-            return "lei"
-        case .RSD:
-            return "din."
-        case .RUB:
-            return "₽"
-        case .RWF:
-            return "Fr"
-        case .SAR:
-            return "﷼‎"
-        case .SBD:
-            return "$"
-        case .SCR:
-            return "₨"
-        case .SDG:
-            return "ج.س."
-        case .SEK:
-            return "kr"
-        case .SGD:
-            return "$"
-        case .SHP:
-            return "£"
-        case .SLL:
-            return "Le"
-        case .SLS:
-            return "Sl"
-        case .SOS:
-            return "Sh"
-        case .SRD:
-            return "$"
-        case .SSP:
-            return "£"
-        case .STN:
-            return "Db"
-        case .SYP:
-            return "£"
-        case .SZL:
-            return "L"
-        case .THB:
-            return "฿"
-        case .TJS:
-            return "ЅМ"
-        case .TMT:
-            return "m"
-        case .TND:
-            return "د.ت"
-        case .TOP:
-            return "T$"
-        case .TRY:
-            return "₺"
-        case .TTD:
-            return "$"
-        case .TVD:
-            return "$"
-        case .TWD:
-            return "$"
-        case .TZS:
-            return "Sh"
-        case .UAH:
-            return "₴"
-        case .UGX:
-            return "Sh"
-        case .USD:
-            return "$"
-        case .UYU:
-            return "$"
-        case .UZS:
-            return "so'm"
-        case .VES:
-            return "Bs."
-        case .VND:
-            return "₫"
-        case .VUV:
-            return "Vt"
-        case .WST:
-            return "T"
-        case .XAF:
-            return "Fr"
-        case .XCD:
-            return "$"
-        case .XOF:
-            return "Fr"
-        case .XPF:
-            return "₣"
-        case .YER:
-            return "ر.ي"
-        case .ZAR:
-            return "R"
-        case .ZMW:
-            return "ZK"
-        }
+        return currencyElement?.symbolNative
     }
     
     var isZeroDecimal: Bool {
-        switch self {
-        case .JPY, .KRW, .CLP, .VND:
-            return true
-        default:
-            return false
-        }
+        return currencyElement?.decimalDigits == 0
     }
-    
 }
 
 #endif
