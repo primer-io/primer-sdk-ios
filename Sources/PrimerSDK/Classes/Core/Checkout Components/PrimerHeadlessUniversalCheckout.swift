@@ -161,6 +161,8 @@ public class PrimerHeadlessUniversalCheckout {
             return []
         case .adyenMobilePay:
             return []
+        case .adyenPayshop:
+			return []
         case .adyenPayTrail:
             return []
         case .adyenSofort:
@@ -186,6 +188,8 @@ public class PrimerHeadlessUniversalCheckout {
         case .buckarooIdeal:
             return []
         case .buckarooSofort:
+            return []
+        case .coinbase:
             return []
         case .goCardlessMandate:
             return []
@@ -223,6 +227,10 @@ public class PrimerHeadlessUniversalCheckout {
         case .payPal:
             return []
         case .xfers:
+            return []
+        case .opennode:
+            return []
+        case .twoCtwoP:
             return []
         case .other(_):
             return []
@@ -316,6 +324,8 @@ public struct PrimerAsset {
             brand = .interac
         case .adyenMobilePay:
             brand = .mobilePay
+        case .adyenPayshop:
+            brand = .payshop
         case .adyenPayTrail:
             brand = .payTrail
         case .adyenSofort,
@@ -339,6 +349,8 @@ public struct PrimerAsset {
             brand = .bankcontact
         case .buckarooEps:
             brand = .eps
+        case .coinbase:
+            brand = .coinBase
         case .goCardlessMandate:
             brand = .goCardless
         case .googlePay:
@@ -353,8 +365,12 @@ public struct PrimerAsset {
             return nil
         case .payPal:
             brand = .payPal
+        case .twoCtwoP:
+            brand = .twoCtwoP
         case .xfers:
             brand = .xfers
+        case .opennode:
+            brand = .opennode
         case .other:
             return nil
         }
@@ -406,13 +422,15 @@ public struct PrimerAsset {
         case layBuy = "lay-buy", looker
         case masterCard = "master-card", mbWay = "mb-way", mercadoPago = "mercado-pago", metamask, mobilePay = "mobile-pay", mollie
         case neonomics, netSuite = "netsuite", nexi, nuvei
-        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, payTrail = "paytrail"
+        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, payTrail = "paytrail", payshop
         case ravelin, riskified
         case seon, sepa, sift, signifyd, sofort, stitch, stripe, swish
         case tableau, taxjar, telserv, tink, trilo, trueLayer = "truelayer", trueMoney = "truemoney", trustly, twillio, twint
         case vipps, visa, volt, voucherify, vyne
         case wordline, worldPay = "worldpay"
+        case twoCtwoP = "2c2p"
         case xfers
+        case opennode
         
         public func getImage(assetType: PrimerAsset.ImageType) -> UIImage? {
             var imageName = rawValue
