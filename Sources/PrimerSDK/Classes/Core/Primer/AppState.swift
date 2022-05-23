@@ -8,21 +8,22 @@
 #if canImport(UIKit)
 
 internal protocol AppStateProtocol: AnyObject {
-    
+    static var current: AppStateProtocol { get }
+    var amount: Int? { get }
+    var currency: Currency? { get }
     var clientToken: String? { get set }
     var apiConfiguration: PrimerAPIConfiguration? { get set }
     var paymentMethods: [PaymentMethodToken] { get set }
     var selectedPaymentMethodId: String? { get set }
     var selectedPaymentMethod: PaymentMethodToken? { get }
     var implementedReactNativeCallbacks: ImplementedReactNativeCallbacks? { get set }
-
 }
 
 internal class AppState: AppStateProtocol {
     
-    static var current: AppState {
+    static var current: AppStateProtocol {
         let appState: AppStateProtocol = DependencyContainer.resolve()
-        return appState as! AppState
+        return appState
     }
     
     var amount: Int? {

@@ -16,13 +16,10 @@ class ApayaDataModelTests: XCTestCase {
     let rootUrl = "https://primer.io/apaya/result/?"
     
     func test_apaya_web_view_result_created_from_correct_url() throws {
+        
         let url = URL(string: rootUrl + "success=1&token=A9IotQFdJBSYjth7h)hGWmFAgzVjxU6xeGGT)AaAbB=&pt=ExamplePTValue&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91&success=1")
         
-        let state: AppStateProtocol = MockAppState()
-        state.apiConfiguration = mockPaymentMethodConfig
-        DependencyContainer.register(state as AppStateProtocol)
-        let settings = PrimerSettings()
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        MockLocator.registerDependencies()
         
         do {
             let apayaWebViewResponse = try Apaya.WebViewResponse(url: url!)
@@ -33,12 +30,9 @@ class ApayaDataModelTests: XCTestCase {
     }
     
     func test_apaya_web_view_result_fails_on_success_not_provided() throws {
-        let state: AppStateProtocol = MockAppState()
-        state.apiConfiguration = mockPaymentMethodConfig
-        DependencyContainer.register(state as AppStateProtocol)
-        let settings = PrimerSettings()
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
         
+        MockLocator.registerDependencies()
+
         let url = URL(string: rootUrl + "pt=ExamplePTValue&status=SETUP_SUCCESS&HashedIdentifier=602&MX=MX&MCC=208&MNC=91")
         do {
             _ = try Apaya.WebViewResponse(url: url!)

@@ -117,9 +117,7 @@ class MerchantCheckoutViewController: UIViewController {
 
 extension MerchantCheckoutViewController: PrimerDelegate {
     
-    func primerWillCreatePaymentWithData(_ data: CheckoutPaymentMethodData, decisionHandler: @escaping (PaymentCreationDecision?) -> Void) {
-        decisionHandler(.continuePaymentCreation())
-    }
+    // Required
     
     func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(data)\n")

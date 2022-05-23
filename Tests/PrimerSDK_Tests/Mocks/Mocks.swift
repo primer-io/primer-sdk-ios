@@ -105,6 +105,19 @@ let mockPaymentMethodConfig = PrimerAPIConfiguration(
 
 class MockAppState: AppStateProtocol {
     
+    static var current: AppStateProtocol {
+        let appState: AppStateProtocol = DependencyContainer.resolve()
+        return appState
+    }
+    
+    var amount: Int? {
+        return MockAppState.current.apiConfiguration?.clientSession?.order?.merchantAmount ?? AppState.current.apiConfiguration?.clientSession?.order?.totalOrderAmount
+    }
+    
+    var currency: Currency? {
+        return MockAppState.current.apiConfiguration?.clientSession?.order?.currencyCode
+    }
+
     var clientToken: String?
     var apiConfiguration: PrimerAPIConfiguration?
     var paymentMethods: [PaymentMethodToken] = []
