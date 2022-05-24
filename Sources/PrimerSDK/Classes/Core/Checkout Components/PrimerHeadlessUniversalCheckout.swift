@@ -209,6 +209,10 @@ public class PrimerHeadlessUniversalCheckout {
             return requiredFields
         case .payPal:
             return []
+        case .primerTestPayPal,
+                .primerTestKlarna,
+                .primerTestSofort:
+            return []
         case .xfers:
             return []
         case .opennode:
@@ -312,7 +316,8 @@ public struct PrimerAsset {
         case .adyenPayTrail:
             brand = .payTrail
         case .adyenSofort,
-                .buckarooSofort:
+                .buckarooSofort,
+                .primerTestSofort:
             brand = .sofort
         case .adyenTrustly:
             brand = .trustly
@@ -340,13 +345,15 @@ public struct PrimerAsset {
             brand = .googlePay
         case .hoolah:
             brand = .hoolah
-        case .klarna:
+        case .klarna,
+                .primerTestKlarna:
             brand = .klarna
         case .payNLPayconiq:
             brand = .payconiq
         case .paymentCard:
             return nil
-        case .payPal:
+        case .payPal,
+                .primerTestPayPal:
             brand = .payPal
         case .twoCtwoP:
             brand = .twoCtwoP

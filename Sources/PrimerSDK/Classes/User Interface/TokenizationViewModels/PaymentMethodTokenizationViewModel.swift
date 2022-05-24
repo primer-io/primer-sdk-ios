@@ -124,7 +124,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "Pay NL Ideal"
         case .payNLPayconiq:
             return "Pay NL Payconiq"
-        case .adyenSofort:
+        case .adyenSofort,
+                .primerTestSofort:
             return "Sofort"
         case .adyenTwint:
             return "Twint"
@@ -542,7 +543,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .adyenPayTrail:
             return "paytrail"
         case .adyenSofort,
-                .buckarooSofort:
+                .buckarooSofort,
+                .primerTestSofort:
             return "sofort"
         case .adyenTrustly:
             return "trustly"
@@ -572,13 +574,15 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "google-pay"
         case .hoolah:
             return "hoolah"
-        case .klarna:
+        case .klarna,
+                .primerTestKlarna:
             return "klarna"
         case .payNLPayconiq:
             return "payconiq"
         case .paymentCard:
             return "card"
-        case .payPal:
+        case .payPal,
+                .primerTestPayPal:
             return "paypal"
         case .xfers:
             return "xfers"
