@@ -125,8 +125,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
         self.activityIndicator?.color = .black
         self.activityIndicator?.startAnimating()
 
-        let networking = Networking()
-        networking.createPayment(with: paymentMethodToken) { (res, err) in
+        Networking.createPayment(with: paymentMethodToken) { (res, err) in
             DispatchQueue.main.async {
                 self.activityIndicator?.stopAnimating()
                 self.activityIndicator?.removeFromSuperview()

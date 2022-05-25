@@ -10,10 +10,12 @@ import PrimerSDK
 import UIKit
 
 var environment: Environment = .sandbox
+var customDefinedApiKey: String?
 
 class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
     @IBOutlet weak var environmentControl: UISegmentedControl!
+    @IBOutlet weak var apiKeyTextField: UITextField!
     @IBOutlet weak var customerIdTextField: UITextField!
     @IBOutlet weak var phoneNumberTextField: UITextField!
     @IBOutlet weak var countryCodeTextField: UITextField!
@@ -29,9 +31,9 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.fr.rawValue
+        countryCodeTextField.text = CountryCode.vn.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
-        currencyTextField.text = Currency.EUR.rawValue
+        currencyTextField.text = Currency.VND.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.placeholder = "In minor units (type 100 for 1.00)"
         amountTextField.text = "10"
@@ -76,7 +78,9 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
             amount: amount,
             performPayment: performPaymentSwitch.isOn)
         
-        navigationController?.pushViewController(mcvc, animated: true)
+        self.evaluateCustomDefinedApiKey()
+        
+        self.navigationController?.pushViewController(mcvc, animated: true)
     }
     
     @IBAction func checkoutComponentsButtonTapped(_ sender: Any) {
@@ -89,6 +93,9 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         mcfvc.view.translatesAutoresizingMaskIntoConstraints = false
         mcfvc.view.heightAnchor.constraint(equalToConstant: self.view.bounds.height).isActive = true
         mcfvc.view.widthAnchor.constraint(equalToConstant: self.view.bounds.width).isActive = true
+        
+        self.evaluateCustomDefinedApiKey()
+        
         self.navigationController?.pushViewController(mcfvc, animated: true)
     }
     
@@ -118,5 +125,12 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         } else {
             currencyTextField.text = Currency.allCases.sorted(by: { $0.rawValue < $1.rawValue })[row].rawValue
         }
+    }
+}
+
+extension AppViewController {
+    
+    func evaluateCustomDefinedApiKey() {
+        customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
     }
 }
