@@ -36,7 +36,8 @@
             "Sources/PrimerSDK/Resources/*.xcassets",
             "Sources/PrimerSDK/Resources/Localizable/*",
             "Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}",
-            "Sources/PrimerSDK/Resources/Nibs/*"
+            "Sources/PrimerSDK/Resources/Nibs/*",
+            "Sources/PrimerSDK/Resources/JSONs/*"
           ]
         },
         "pod_target_xcconfig": {
