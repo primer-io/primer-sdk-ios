@@ -78,7 +78,7 @@ class MerchantCheckoutViewController: UIViewController {
             urlSchemeIdentifier: "merchant",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
-            businessDetails: BusinessDetails(name: "Business Name", address: nil),
+            businessDetails: BusinessDetails(name: "Primer Swag Shop", address: nil),
             directDebitHasNoAmount: false,
             isInitialLoadingHidden: false,
             is3DSOnVaultingEnabled: true,
@@ -211,8 +211,18 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     ClientSessionRequestBody.Order.LineItem(
                         itemId: "shoes-28190",
                         description: "Fancy shoes",
-                        amount: amount,
-                        quantity: 2)
+                        amount: 10,
+                        quantity: 1),
+                    ClientSessionRequestBody.Order.LineItem(
+                        itemId: "hoodies-28190",
+                        description: "Cool hoodie",
+                        amount: 20,
+                        quantity: 2),
+                    ClientSessionRequestBody.Order.LineItem(
+                        itemId: "hats-28190",
+                        description: "Kickass hat",
+                        amount: 30,
+                        quantity: 3)
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
                 vaultOnSuccess: true,
