@@ -19,7 +19,18 @@ public struct OrderItem: Codable {
     public var isPending: Bool = false
     
     public var applePayItem: PKPaymentSummaryItem {
-        let item = PKPaymentSummaryItem(label: name, amount: NSDecimalNumber(value: (unitAmount ?? 0)*quantity).dividing(by: 100))
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        let currency = settings.currency!
+        
+        var applePayItemAmount: NSDecimalNumber!
+        
+        if currency.isZeroDecimal {
+            applePayItemAmount = NSDecimalNumber(value: (unitAmount ?? 0)*quantity)
+        } else {
+            applePayItemAmount = NSDecimalNumber(value: (unitAmount ?? 0)*quantity).dividing(by: 100)
+        }
+        
+        let item = PKPaymentSummaryItem(label: name, amount: applePayItemAmount)
         item.type = isPending ? .pending : .final
         return item
     }

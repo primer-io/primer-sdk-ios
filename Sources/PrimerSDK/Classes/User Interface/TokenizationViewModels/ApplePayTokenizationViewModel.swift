@@ -229,7 +229,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
         }
     }
 
-    
     private func payWithApple(completion: @escaping (PaymentMethodToken?, Error?) -> Void) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
@@ -268,8 +267,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel, Externa
             request.supportedNetworks = supportedNetworks
             
             var applePayItems = applePayRequest.items.compactMap({ $0.applePayItem })
-            let totalAmount = applePayRequest.items.compactMap({ ($0.unitAmount ?? 0) * $0.quantity }).reduce(0, +)
-            let totalItem = PKPaymentSummaryItem(label: settings.businessDetails?.name ?? "", amount: NSDecimalNumber(value: totalAmount).dividing(by: 100))
+            let totalAmount = applePayItems.compactMap({ $0.amount }).reduce(0, +)
+            let totalItem = PKPaymentSummaryItem(label: settings.businessDetails?.name ?? "", amount: totalAmount)
             applePayItems.append(totalItem)
             request.paymentSummaryItems = applePayItems
             
@@ -445,6 +444,12 @@ extension ApplePayTokenizationViewModel {
         self.applePayControllerCompletion = nil
         self.completion?(self.paymentMethod, nil)
         self.completion = nil
+    }
+}
+
+internal extension NSDecimalNumber {
+    static func +(lhs: NSDecimalNumber, rhs: NSDecimalNumber) -> NSDecimalNumber {
+        return lhs.adding(rhs)
     }
 }
 
