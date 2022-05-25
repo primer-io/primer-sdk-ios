@@ -17,4 +17,16 @@ internal class JSONParser: Parser {
     }
 }
 
+extension JSONParser {
+    
+    func loadJsonData(fileName: String) -> Data? {
+        
+        guard let url = Bundle.primerResources.url(forResource: fileName, withExtension: "json") else {
+            return nil
+        }
+        
+        return try? Data(contentsOf: url)
+    }
+}
+
 #endif
