@@ -68,7 +68,7 @@ class MerchantCheckoutViewController: UIViewController {
         let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
                 urlScheme: "merchant://",
-                applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
+                applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team", merchantName: "MMM")
             )
         )
         Primer.shared.configure(settings: settings, delegate: self)

@@ -50,7 +50,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
                 let settings = PrimerSettings(
                     paymentMethodOptions: PrimerPaymentMethodOptions(
                         urlScheme: "merchant://",
-                        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
+                        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team", merchantName: "MMM")
                     )
                 )
                 PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, completion: { (pms, err) in
