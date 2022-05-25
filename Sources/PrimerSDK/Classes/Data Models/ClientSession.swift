@@ -188,7 +188,7 @@ internal class ClientSessionAPIResponse: Codable {
             
             func toOrderItem() throws -> OrderItem {
                 return try OrderItem(
-                    name: self.description ?? "Item",
+                    name: (PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? self.description) ?? "Item",
                     unitAmount: self.amount,
                     quantity: self.quantity,
                     isPending: false)

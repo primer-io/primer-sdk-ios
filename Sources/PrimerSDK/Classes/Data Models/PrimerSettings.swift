@@ -47,6 +47,7 @@ public enum PrimerPaymentHandling {
 // MARK: - PAYMENT METHOD OPTIONS
 
 internal protocol PrimerPaymentMethodOptionsProtocol {
+    
     var urlScheme: String? { get }
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
@@ -54,6 +55,7 @@ internal protocol PrimerPaymentMethodOptionsProtocol {
 }
 
 public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol {
+    
     let urlScheme: String?
     let applePayOptions: PrimerApplePayOptions?
     var klarnaOptions: PrimerKlarnaOptions?
@@ -81,9 +83,11 @@ internal protocol PrimerApplePayOptionsProtocol {
 public class PrimerApplePayOptions: PrimerApplePayOptionsProtocol {
     
     let merchantIdentifier: String
+    let merchantName: String
     
-    public init(merchantIdentifier: String) {
+    public init(merchantIdentifier: String, merchantName: String) {
         self.merchantIdentifier = merchantIdentifier
+        self.merchantName = merchantName
     }
 }
 

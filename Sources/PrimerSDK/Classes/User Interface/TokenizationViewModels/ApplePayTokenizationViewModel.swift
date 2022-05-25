@@ -152,10 +152,11 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions!.merchantIdentifier
 
             var orderItems: [OrderItem]
-            if let lineItems = AppState.current.apiConfiguration?.clientSession?.order?.lineItems {
-                orderItems = lineItems.compactMap({ try? $0.toOrderItem() })
+            
+            if let lineItems = AppState.current.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() }) {
+                orderItems = lineItems
             } else {
-                orderItems = [try! OrderItem(name: "Total", unitAmount: AppState.current.amount ?? 0, quantity: 1)]
+                orderItems = [try! OrderItem(name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "", unitAmount: AppState.current.amount ?? 0, quantity: 1)]
             }
             
             let applePayRequest = ApplePayRequest(
@@ -237,7 +238,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
 }
 
 @available(iOS 11.0, *)
