@@ -211,18 +211,8 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                     ClientSessionRequestBody.Order.LineItem(
                         itemId: "shoes-28190",
                         description: "Fancy shoes",
-                        amount: 10,
+                        amount: amount,
                         quantity: 1),
-                    ClientSessionRequestBody.Order.LineItem(
-                        itemId: "hoodies-28190",
-                        description: "Cool hoodie",
-                        amount: 20,
-                        quantity: 2),
-                    ClientSessionRequestBody.Order.LineItem(
-                        itemId: "hats-28190",
-                        description: "Kickass hat",
-                        amount: 30,
-                        quantity: 3)
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
                 vaultOnSuccess: true,
