@@ -282,9 +282,10 @@ public class Primer {
             .xfers: (.checkout, nil),
             .opennode: (.checkout, nil),
             .payPal: (.checkout, .checkoutWithPayPal),
+            .paymentCard: (.checkout, .completeDirectCheckout),
             .apaya: (.vault, .addApayaToVault),
             .klarna: (.vault, .addKlarnaToVault),
-            .paymentCard: (.checkout, .completeDirectCheckout),
+            .paymentCard: (.vault, .addCardToVault),
             .payPal: (.vault, .addPayPalToVault)
         ]
         
