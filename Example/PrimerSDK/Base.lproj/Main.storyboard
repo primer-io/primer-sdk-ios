@@ -18,27 +18,51 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="OUf-n8-A9K">
-                                <rect key="frame" x="16" y="96" width="382" height="33"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="32" id="8Zn-Vn-FNd"/>
-                                </constraints>
-                                <segments>
-                                    <segment title="Local"/>
-                                    <segment title="Dev"/>
-                                    <segment title="Sandbox"/>
-                                    <segment title="Staging"/>
-                                    <segment title="Production"/>
-                                </segments>
-                                <connections>
-                                    <action selector="environmentValueChanged:" destination="Hsc-Wl-Q65" eventType="valueChanged" id="Kj3-RL-pQg"/>
-                                </connections>
-                            </segmentedControl>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="KuL-hw-zDD">
-                                <rect key="frame" x="16" y="144" width="382" height="486"/>
+                                <rect key="frame" x="16" y="96" width="382" height="630"/>
                                 <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="kfQ-ex-CD1" userLabel="Settings">
+                                        <rect key="frame" x="0.0" y="0.0" width="382" height="120"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Environment:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ysg-e6-VCh">
+                                                <rect key="frame" x="0.0" y="0.0" width="382" height="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="HhM-iV-pMY">
+                                                <rect key="frame" x="0.0" y="25" width="382" height="32"/>
+                                                <segments>
+                                                    <segment title="Local"/>
+                                                    <segment title="Dev"/>
+                                                    <segment title="Sandbox"/>
+                                                    <segment title="Staging"/>
+                                                    <segment title="Production"/>
+                                                </segments>
+                                                <connections>
+                                                    <action selector="environmentValueChanged:" destination="Hsc-Wl-Q65" eventType="valueChanged" id="I8N-Rc-Y6I"/>
+                                                </connections>
+                                            </segmentedControl>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Checkout handling:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eXG-wi-l6M">
+                                                <rect key="frame" x="0.0" y="64" width="382" height="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="yvG-dF-jY8">
+                                                <rect key="frame" x="0.0" y="89" width="382" height="32"/>
+                                                <segments>
+                                                    <segment title="Automatic"/>
+                                                    <segment title="Manual"/>
+                                                </segments>
+                                                <connections>
+                                                    <action selector="paymentHandlingValueChanged:" destination="Hsc-Wl-Q65" eventType="valueChanged" id="Ws5-f4-kYW"/>
+                                                </connections>
+                                            </segmentedControl>
+                                        </subviews>
+                                    </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Ojo-uf-w50" userLabel="Form Stack View">
-                                        <rect key="frame" x="0.0" y="0.0" width="382" height="250"/>
+                                        <rect key="frame" x="0.0" y="144" width="382" height="250"/>
                                         <subviews>
                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Custom defined API-KEY" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wzb-Mm-C6G">
                                                 <rect key="frame" x="0.0" y="0.0" width="382" height="34"/>
@@ -81,7 +105,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Lpg-yS-48o" userLabel="Perform Payment Stack View">
-                                        <rect key="frame" x="0.0" y="274" width="382" height="31"/>
+                                        <rect key="frame" x="0.0" y="418" width="382" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Perform payment" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cFw-qi-n9P">
                                                 <rect key="frame" x="0.0" y="0.0" width="325" height="31"/>
@@ -95,7 +119,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" spacing="32" translatesAutoresizingMaskIntoConstraints="NO" id="KAf-TR-l1d" userLabel="Buttons List Stack View">
-                                        <rect key="frame" x="0.0" y="329" width="382" height="157"/>
+                                        <rect key="frame" x="0.0" y="473" width="382" height="157"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
                                                 <rect key="frame" x="122" y="0.0" width="138" height="31"/>
@@ -138,13 +162,9 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <gestureRecognizers/>
                         <constraints>
-                            <constraint firstItem="OUf-n8-A9K" firstAttribute="centerX" secondItem="ecX-48-OcF" secondAttribute="centerX" id="Gau-ZU-h6M"/>
-                            <constraint firstItem="OUf-n8-A9K" firstAttribute="leading" secondItem="ecX-48-OcF" secondAttribute="leading" constant="16" id="Ti1-0e-97a"/>
+                            <constraint firstItem="KuL-hw-zDD" firstAttribute="top" secondItem="ecX-48-OcF" secondAttribute="top" constant="8" id="5lE-db-n2X"/>
                             <constraint firstItem="ecX-48-OcF" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="KuL-hw-zDD" secondAttribute="bottom" constant="16" id="bFT-Z1-KKT"/>
-                            <constraint firstItem="ecX-48-OcF" firstAttribute="trailing" secondItem="OUf-n8-A9K" secondAttribute="trailing" constant="16" id="kjf-Hi-pjf"/>
                             <constraint firstItem="KuL-hw-zDD" firstAttribute="leading" secondItem="ecX-48-OcF" secondAttribute="leading" constant="16" id="qWM-jB-9re"/>
-                            <constraint firstItem="KuL-hw-zDD" firstAttribute="top" secondItem="OUf-n8-A9K" secondAttribute="bottom" constant="16" id="vIM-y9-tA8"/>
-                            <constraint firstItem="OUf-n8-A9K" firstAttribute="top" secondItem="ecX-48-OcF" secondAttribute="top" constant="8" id="wzT-s4-9kl"/>
                             <constraint firstItem="ecX-48-OcF" firstAttribute="trailing" secondItem="KuL-hw-zDD" secondAttribute="trailing" constant="16" id="xFZ-pU-bXt"/>
                         </constraints>
                         <connections>
@@ -155,10 +175,11 @@
                     <connections>
                         <outlet property="amountTextField" destination="W9k-iX-6KF" id="pRt-ot-cC9"/>
                         <outlet property="apiKeyTextField" destination="wzb-Mm-C6G" id="q8b-Zf-SmD"/>
+                        <outlet property="checkoutHandlingControl" destination="yvG-dF-jY8" id="AI6-nv-wsp"/>
                         <outlet property="countryCodeTextField" destination="LRA-Ro-g2N" id="Gh5-Fo-30O"/>
                         <outlet property="currencyTextField" destination="uht-tM-QtC" id="N7Y-8W-14p"/>
                         <outlet property="customerIdTextField" destination="Q8f-7x-ncT" id="IUu-6E-jOm"/>
-                        <outlet property="environmentControl" destination="OUf-n8-A9K" id="STs-4V-xIH"/>
+                        <outlet property="environmentControl" destination="HhM-iV-pMY" id="gBe-aA-vZJ"/>
                         <outlet property="performPaymentSwitch" destination="Ink-cM-1O4" id="lD8-Ge-IJ8"/>
                         <outlet property="phoneNumberTextField" destination="qPf-Sa-EQI" id="Tlr-os-MLG"/>
                     </connections>

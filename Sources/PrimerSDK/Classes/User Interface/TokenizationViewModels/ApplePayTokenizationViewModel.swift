@@ -78,11 +78,11 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
         
-        guard settings.businessDetails?.name != nil else {
-            let err = PrimerError.invalidValue(key: "settings.businessDetails.name", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+//        guard settings.businessDetails?.name != nil else {
+//            let err = PrimerError.invalidValue(key: "settings.businessDetails.name", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+//            ErrorHandler.handle(error: err)
+//            throw err
+//        }
     }
     
     override func start() {

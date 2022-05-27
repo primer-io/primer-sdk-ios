@@ -65,22 +65,7 @@ class MerchantCheckoutViewController: UIViewController {
         super.viewDidLoad()
         title = "Primer [\(environment.rawValue)]"
         
-        generalSettings = PrimerSettings(
-            merchantIdentifier: "merchant.checkout.team",
-            klarnaSessionType: .recurringPayment,
-            klarnaPaymentDescription: nil,
-            urlScheme: "merchant://",
-            urlSchemeIdentifier: "merchant",
-            isFullScreenOnly: false,
-            hasDisabledSuccessScreen: false,
-            businessDetails: BusinessDetails(name: "Primer Swag Shop", address: nil),
-            directDebitHasNoAmount: false,
-            isInitialLoadingHidden: false,
-            is3DSOnVaultingEnabled: true,
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
-        )
-        
-        let settings = PrimerSettings2(
+        let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
                 urlScheme: "merchant://",
                 applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
@@ -93,103 +78,9 @@ class MerchantCheckoutViewController: UIViewController {
     
     @IBAction func openVaultButtonTapped(_ sender: Any) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
-        
-        let clientSessionRequestBody = ClientSessionRequestBody(
-            customerId: customerId,
-            orderId: "ios_order_id_\(String.randomString(length: 8))",
-            currencyCode: currency,
-            amount: nil,
-            metadata: ["key": "val"],
-            customer: ClientSessionRequestBody.Customer(
-                firstName: "John",
-                lastName: "Smith",
-                emailAddress: "john@primer.io",
-                mobileNumber: "+4478888888888",
-                billingAddress: Address(
-                    firstName: "John",
-                    lastName: "Smith",
-                    addressLine1: "65 York Road",
-                    addressLine2: nil,
-                    city: "London",
-                    state: nil,
-                    countryCode: "GB",
-                    postalCode: "NW06 4OM"),
-                shippingAddress: Address(
-                    firstName: "John",
-                    lastName: "Smith",
-                    addressLine1: "9446 Richmond Road",
-                    addressLine2: nil,
-                    city: "London",
-                    state: nil,
-                    countryCode: "GB",
-                    postalCode: "EC53 8BT")
-            ),
-            order: ClientSessionRequestBody.Order(
-                countryCode: countryCode,
-                lineItems: [
-                    ClientSessionRequestBody.Order.LineItem(
-                        itemId: "shoes-28190",
-                        description: "Fancy shoes",
-                        amount: amount,
-                        quantity: 1),
-                ]),
-            paymentMethod: ClientSessionRequestBody.PaymentMethod(
-                vaultOnSuccess: true,
-                options:
-                [
-                    "APPLE_PAY": [
-                        "surcharge": [
-                            "amount": 19
-                        ]
-                    ],
-                    "PAY_NL_IDEAL": [
-                        "surcharge": [
-                            "amount": 39
-                        ]
-                    ],
-                    "PAYPAL": [
-                        "surcharge": [
-                            "amount": 49
-                        ]
-                    ],
-                    "ADYEN_TWINT": [
-                        "surcharge": [
-                            "amount": 59
-                        ]
-                    ],
-                    "ADYEN_IDEAL": [
-                        "surcharge": [
-                            "amount": 69
-                        ]
-                    ],
-                    "ADYEN_GIROPAY": [
-                        "surcharge": [
-                            "amount": 79
-                        ]
-                    ],
-                    "BUCKAROO_BANCONTACT": [
-                        "surcharge": [
-                            "amount": 89
-                        ]
-                    ],
-                    "PAYMENT_CARD": [
-                        "networks": [
-                            "VISA": [
-                                "surcharge": [
-                                    "amount": 109
-                                ]
-                            ],
-                            "MASTERCARD": [
-                                "surcharge": [
-                                    "amount": 129
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            )
-        )
-        
+                
+        let clientSessionRequestBody = Networking().clientSessionRequestBodyWithCurrency(customerId, phoneNumber: phoneNumber, countryCode: countryCode, currency: currency, amount: amount)
+
         Networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
             if let err = err {
                 print(err)
@@ -205,10 +96,9 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func openUniversalCheckoutTapped(_ sender: Any) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
         
-        let networking = Networking()
-        let clientSessionRequestBody = networking.clientSessionRequestBodyWithCurrency(customerId, phoneNumber: phoneNumber, countryCode: countryCode, currency: currency, amount: amount)
+        let clientSessionRequestBody = Networking().clientSessionRequestBodyWithCurrency(customerId, phoneNumber: phoneNumber, countryCode: countryCode, currency: currency, amount: amount)
 
-        networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
+        Networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
             if let err = err {
                 print(err)
                 let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])

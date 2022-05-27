@@ -19,12 +19,10 @@ public struct OrderItem: Codable {
     public var isPending: Bool = false
     
     public var applePayItem: PKPaymentSummaryItem {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        let currency = settings.currency!
         
         var applePayItemAmount: NSDecimalNumber!
         
-        if currency.isZeroDecimal {
+        if AppState.current.currency?.isZeroDecimal == true {
             applePayItemAmount = NSDecimalNumber(value: (unitAmount ?? 0)*quantity)
         } else {
             applePayItemAmount = NSDecimalNumber(value: (unitAmount ?? 0)*quantity).dividing(by: 100)

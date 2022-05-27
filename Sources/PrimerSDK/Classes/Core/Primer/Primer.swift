@@ -194,9 +194,9 @@ public class Primer {
             case .paymentCard:
                 flow = .completeDirectCheckout
             default:
-                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.checkoutFailed(with: err)
+                PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
                 return
             }
             
@@ -211,9 +211,9 @@ public class Primer {
             case .payPal:
                 flow = .addPayPalToVault
             default:
-                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.checkoutFailed(with: err)
+                PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
                 return
             }
         }

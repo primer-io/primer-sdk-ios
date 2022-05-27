@@ -11,11 +11,12 @@ import UIKit
 
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
-var paymentHandling: PaymentHandling = .manual
+var paymentHandling: PaymentHandling = .auto
 
 class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
     @IBOutlet weak var environmentControl: UISegmentedControl!
+    @IBOutlet weak var checkoutHandlingControl: UISegmentedControl!
     @IBOutlet weak var apiKeyTextField: UITextField!
     @IBOutlet weak var customerIdTextField: UITextField!
     @IBOutlet weak var phoneNumberTextField: UITextField!
