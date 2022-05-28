@@ -134,6 +134,16 @@ internal class PrimerRootViewController: PrimerViewController {
                     return
                 }
                 
+                let state: AppStateProtocol = DependencyContainer.resolve()
+                
+                if Primer.shared.flow.internalSessionFlow.vaulted, state.primerConfiguration?.clientSession?.customer?.id == nil {
+                    let err = PrimerError.invalidValue(key: "customer.id", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"])
+                    ErrorHandler.handle(error: err)
+                    Primer.shared.primerRootVC?.handle(error: err)
+                    return
+                    
+                }
+                
                 switch self?.flow {
                 case .`default`:
                     self?.blurBackground()
