@@ -237,7 +237,7 @@ extension PrimerHeadlessUniversalCheckout {
                     
                     let primerSettings: PrimerSettingsProtocol = DependencyContainer.resolve()
                     let customerId = primerSettings.customerId
-                    let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil, customerId: customerId)
+                    let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil)
                     seal.fulfill(request)
                     
                 default:

@@ -9,13 +9,12 @@ struct PaymentMethodTokenizationRequest: TokenizationRequest {
     let paymentFlow: PaymentFlow?
 
     init(paymentInstrument: PaymentInstrument, state: AppStateProtocol?) {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         self.paymentInstrument = paymentInstrument
         self.tokenType = Primer.shared.flow.internalSessionFlow.vaulted ? .multiUse : .singleUse
         self.paymentFlow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
     }
     
-    init(paymentInstrument: PaymentInstrument, paymentFlow: PaymentFlow?, customerId: String?) {
+    init(paymentInstrument: PaymentInstrument, paymentFlow: PaymentFlow?) {
         self.paymentInstrument = paymentInstrument
         self.paymentFlow = (paymentFlow == .vault) ? .vault : nil
         self.tokenType = (paymentFlow == .vault) ? .multiUse : .singleUse
