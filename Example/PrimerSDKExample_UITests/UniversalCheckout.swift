@@ -313,7 +313,7 @@ class UniversalCheckout: XCTestCase {
     }
     
     func testFail3DSChallenge() throws {
-        let threeDSPayment = Base.paymentMethods.filter({ $0.id == "3DS_PAYMENT_CARD" }).first!
+        let threeDSPayment = Base.paymentMethods.filter({ $0.alias == "3DS_PAYMENT_CARD" }).first!
         try openCardForm(for: threeDSPayment)
         
         let cardnumberTextField = app/*@START_MENU_TOKEN@*/.textFields["card_txt_fld"]/*[[".textFields[\"4242 4242 4242 4242\"]",".textFields[\"card_txt_fld\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
@@ -367,7 +367,7 @@ class UniversalCheckout: XCTestCase {
     }
     
     func testCancel3DSChallenge() throws {
-        let threeDSPayment = Base.paymentMethods.filter({ $0.id == "3DS_PAYMENT_CARD" }).first!
+        let threeDSPayment = Base.paymentMethods.filter({ $0.alias == "3DS_PAYMENT_CARD" }).first!
         try openCardForm(for: threeDSPayment)
         
         let cardnumberTextField = app/*@START_MENU_TOKEN@*/.textFields["card_txt_fld"]/*[[".textFields[\"4242 4242 4242 4242\"]",".textFields[\"card_txt_fld\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
