@@ -32,4 +32,24 @@ struct Strings {
             comment: "A generic error message that is displayed on the error view")
     }
     
+    enum PrimerTestFlowDecision {
+        
+        static let successTitle = NSLocalizedString(
+            "primer-test-payment-method-success-flow-title",
+            bundle: Bundle.primerResources,
+            value: "Authorized",
+            comment: "The title of the mocked successful flow for a Test Payment Method")
+
+        static let declineTitle = NSLocalizedString(
+            "primer-test-payment-method-decline-flow-title",
+            bundle: Bundle.primerResources,
+            value: "Declined",
+            comment: "The title of the mocked declined flow for a Test Payment Method")
+
+        static let failTitle = NSLocalizedString(
+            "primer-test-payment-method-fail-flow-title",
+            bundle: Bundle.primerResources,
+            value: "Failed",
+            comment: "The title of the mocked failed flow for a Test Payment Method")
+    }
 }

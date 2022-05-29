@@ -37,7 +37,7 @@ internal class PrimerRootViewController: PrimerViewController {
         self.flow = flow
         super.init(nibName: nil, bundle: nil)
     }
-        
+    
     required init?(coder: NSCoder) {
         fatalError()
     }
@@ -46,13 +46,13 @@ internal class PrimerRootViewController: PrimerViewController {
         super.viewDidLoad()
         
         NotificationCenter.default.addObserver(self,
-               selector: #selector(self.keyboardNotification(notification:)),
-               name: UIResponder.keyboardWillShowNotification,
-               object: nil)
+                                               selector: #selector(self.keyboardNotification(notification:)),
+                                               name: UIResponder.keyboardWillShowNotification,
+                                               object: nil)
         NotificationCenter.default.addObserver(self,
-               selector: #selector(self.keyboardNotification(notification:)),
-               name: UIResponder.keyboardWillHideNotification,
-               object: nil)
+                                               selector: #selector(self.keyboardNotification(notification:)),
+                                               name: UIResponder.keyboardWillHideNotification,
+                                               object: nil)
         
         if #available(iOS 13.0, *) {
             let window = Primer.shared.primerWindow ?? UIApplication.shared.windows[0]
@@ -125,7 +125,7 @@ internal class PrimerRootViewController: PrimerViewController {
         let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
         viewModel.loadConfig({ [weak self] error in
-            DispatchQueue.main.async {                
+            DispatchQueue.main.async {
                 guard error == nil else {
                     var primerErr: PrimerError!
                     if let error = error as? PrimerError {
@@ -143,12 +143,12 @@ internal class PrimerRootViewController: PrimerViewController {
                     self?.blurBackground()
                     let pucvc = PrimerUniversalCheckoutViewController()
                     self?.show(viewController: pucvc)
-
+                    
                 case .defaultWithVault:
                     self?.blurBackground()
                     let pvmvc = PrimerVaultManagerViewController()
                     self?.show(viewController: pvmvc)
-
+                    
                 case .completeDirectCheckout:
                     self?.blurBackground()
                     self?.presentPaymentMethod(type: .paymentCard)
@@ -160,14 +160,14 @@ internal class PrimerRootViewController: PrimerViewController {
                     } else {
                         print("WARNING: PayPal is not available prior to iOS 11.")
                     }
-
+                    
                 case .addCardToVault:
                     self?.blurBackground()
                     self?.presentPaymentMethod(type: .paymentCard)
                     
                 case .addDirectDebitToVault:
                     break
-
+                    
                 case .addKlarnaToVault:
                     self?.presentPaymentMethod(type: .klarna)
                     
@@ -189,6 +189,9 @@ internal class PrimerRootViewController: PrimerViewController {
                 case .addApayaToVault:
                     self?.presentPaymentMethod(type: .apaya)
                     
+                case .checkoutWithPrimerTestPaymentMethod(let paymentMethodType):
+                    self?.presentPrimerTestViewControllerForPaymentMethodType(paymentMethodType)
+                    
                 case .checkoutWithAsyncPaymentMethod(let paymentMethodType):
                     self?.presentPaymentMethod(type: paymentMethodType)
                     
@@ -197,7 +200,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     
                 case .none:
                     break
-
+                    
                 }
             }
         })
@@ -383,7 +386,7 @@ internal class PrimerRootViewController: PrimerViewController {
         UIView.animate(withDuration: self.presentationDuration, delay: 0, options: .curveEaseInOut) {
             self.view.layoutIfNeeded()
         } completion: { _ in
-
+            
         }
     }
     
@@ -398,11 +401,11 @@ internal class PrimerRootViewController: PrimerViewController {
         }
         
         let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc.navigationBar.bounds.height)
-
+        
         childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
-
+        
         nc.popViewController(animated: false)
-
+        
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
             self.view.layoutIfNeeded()
         } completion: { _ in
@@ -460,7 +463,7 @@ internal class PrimerRootViewController: PrimerViewController {
         
         let navigationControllerHeight = calculateNavigationControllerHeight(for: mainScreenViewController.childViewController)
         self.childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
-
+        
         UIView.animate(
             withDuration: 0.3,
             delay: TimeInterval(0),
@@ -480,7 +483,13 @@ internal class PrimerRootViewController: PrimerViewController {
             return viewController.view.bounds.size.height + nc.navigationBar.bounds.height
         }
     }
+}
+
+extension PrimerRootViewController {
     
+    func presentPrimerTestViewControllerForPaymentMethodType(_ type: PrimerPaymentMethodType) {
+        
+    }
 }
 
 extension PrimerRootViewController {
@@ -523,23 +532,25 @@ extension PrimerRootViewController {
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         
-        paymentMethodTokenizationViewModel.didPresentPaymentMethodUI = {
-            
-        }
+        paymentMethodTokenizationViewModel.didPresentPaymentMethodUI = {}
         
         paymentMethodTokenizationViewModel.willDismissPaymentMethodUI = {
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         
-//        paymentMethodTokenizationViewModel.tokenizationCompletion = { (tok, err) in
-//            if let err = err {
-//                Primer.shared.primerRootVC?.handle(error: err)
-//            } else {
-//                Primer.shared.primerRootVC?.handleSuccess()
-//            }
-//        }
+        //        paymentMethodTokenizationViewModel.tokenizationCompletion = { (tok, err) in
+        //            if let err = err {
+        //                Primer.shared.primerRootVC?.handle(error: err)
+        //            } else {
+        //                Primer.shared.primerRootVC?.handleSuccess()
+        //            }
+        //        }
         
-        paymentMethodTokenizationViewModel.startTokenizationFlow()
+        firstly {
+            paymentMethodTokenizationViewModel.startTokenizationFlow()
+        }
+        .done { _ in }
+        .catch { _ in }
     }
 }
 
