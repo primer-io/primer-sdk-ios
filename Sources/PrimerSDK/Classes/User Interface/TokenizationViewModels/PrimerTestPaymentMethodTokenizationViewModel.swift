@@ -11,14 +11,16 @@ import UIKit
 
 class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
+    // MARK: - PROPERTIES
+
     internal private(set) var decisions = PrimerTestPaymentMethodOptions.FlowDecision.allCases
     private var selectedDecision: PrimerTestPaymentMethodOptions.FlowDecision!
     private var decisionSelectionCompletion: ((PrimerTestPaymentMethodOptions.FlowDecision) -> Void)?
     private var payButtonTappedCompletion: (() -> Void)?
-    private var lastSelection: NSIndexPath!
-
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    private var lastSelectedIndexPath: IndexPath?
+    
+    var viewHeight: CGFloat {
+        180+(CGFloat(decisions.count)*tableView.rowHeight)
     }
 
     internal lazy var tableView: UITableView = {
@@ -27,19 +29,62 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         let tableView = UITableView()
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
+        tableView.rowHeight = 56
         tableView.backgroundColor = theme.view.backgroundColor
         
         if #available(iOS 11.0, *) {
             tableView.contentInsetAdjustmentBehavior = .never
         }
 
-        tableView.rowHeight = 41
         tableView.register(FlowDecisionTableViewCell.self, forCellReuseIdentifier: FlowDecisionTableViewCell.identifier)
+        tableView.register(HeaderFooterLabelView.self, forHeaderFooterViewReuseIdentifier: "header")
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
     }()
     
+    private lazy var _originalImage: UIImage? = {
+        switch self.config.type {
+        case .primerTestPayPal:
+            return UIImage(named: "paypal-logo-1", in: Bundle.primerResources, compatibleWith: nil)
+        default:
+            return self.buttonImage
+        }
+    }()
+    
+//    lazy var submitButton: PrimerButton = {
+//        let submitButton = PrimerButton()
+//        submitButton.translatesAutoresizingMaskIntoConstraints = false
+//        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+//        submitButton.isAccessibilityElement = true
+//        submitButton.accessibilityIdentifier = "submit_btn"
+//        submitButton.isEnabled = false
+//        submitButton.setTitle(buttonTitle, for: .normal)
+//        submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
+//        submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
+//        submitButton.layer.cornerRadius = 4
+//        submitButton.clipsToBounds = true
+//        submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
+//        return submitButton
+//    }()
+    
+    // MARK: - DEINIT
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
+    // MARK: - OVERRIDES
+
+    override var originalImage: UIImage? {
+        get {
+            _originalImage
+        }
+        set {
+            _originalImage = newValue
+        }
+    }
+        
     override func validate() throws {
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -181,10 +226,26 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
 
 extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
     
+    // MARK: - Table View delegate methods
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+
+    func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+        return 8
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header") as? HeaderFooterLabelView
+        header?.configure(text: "This is a mocked flow for sandbox. Choose the result you want to test from the list below.")
+        return header
+    }
+        
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return decisions.count
     }
-    
+        
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let decision = decisions[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "FlowDecisionTableViewCell", for: indexPath) as! FlowDecisionTableViewCell
@@ -193,12 +254,11 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if self.lastSelection != nil {
-            self.tableView.cellForRow(at: self.lastSelection as IndexPath)?.accessoryType = .none
+        if let lastSelectedIndexPath = self.lastSelectedIndexPath {
+            self.tableView.deselectRow(at: lastSelectedIndexPath, animated: true)
         }
-        self.tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        self.lastSelection = indexPath as NSIndexPath
-        self.tableView.deselectRow(at: indexPath, animated: true)
+        self.lastSelectedIndexPath = indexPath
+        self.selectedDecision = decisions[indexPath.row]
         self.decisionSelectionCompletion?(self.selectedDecision)
     }
 }

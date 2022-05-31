@@ -21,7 +21,7 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
     init(viewModel: PrimerTestPaymentMethodTokenizationViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.buttonImage!
+        self.titleImage = viewModel.originalImage!
         self.titleImageTintColor = viewModel.buttonTintColor
     }
     
@@ -47,15 +47,7 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
                 place: .bankSelectionList))
         Analytics.Service.record(event: viewEvent)
 
-        view.backgroundColor = theme.view.backgroundColor
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.heightAnchor.constraint(equalToConstant: 120+(CGFloat(viewModel.decisions.count)*viewModel.tableView.rowHeight)).isActive = true
-        viewModel.tableView.isScrollEnabled = false
-        verticalStackView.spacing = 5
-        
-        let tableViewMockView = UIView()
-        tableViewMockView.translatesAutoresizingMaskIntoConstraints = false
-        verticalStackView.addArrangedSubview(tableViewMockView)
+        setupView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -68,6 +60,21 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
             self.verticalStackView.addArrangedSubview(self.viewModel.tableView)
             self.viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
         }
+    }
+}
+
+extension PrimerTestPaymentMethodViewController {
+    
+    private func setupView() {
+        view.backgroundColor = theme.view.backgroundColor
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.heightAnchor.constraint(equalToConstant: viewModel.viewHeight).isActive = true
+        viewModel.tableView.isScrollEnabled = false
+        verticalStackView.removeConstraints(verticalStackView.constraints)
+        verticalStackView.pin(view: view, leading: 20, top: 0, trailing: -20, bottom: -20)
+        let tableViewMockView = UIView()
+        tableViewMockView.translatesAutoresizingMaskIntoConstraints = false
+        verticalStackView.addArrangedSubview(tableViewMockView)
     }
 }
 
