@@ -68,10 +68,10 @@ class MerchantPaymentMethodsViewController: UIViewController {
     
     private func requestClientToken(completion: @escaping (String?, Error?) -> Void) {
         let clientSessionRequestBody = ClientSessionRequestBody(
-            customerId: "customerId",
-            orderId: "ios_order_id_\(String.randomString(length: 8))",
-            currencyCode: .EUR,
-            amount: nil,
+            customerId: "ios-customer-\(String.randomString(length: 8))",
+            orderId: "ios-order-\(String.randomString(length: 8))",
+            currencyCode: currency,
+            amount: amount,
             metadata: ["key": "val"],
             customer: ClientSessionRequestBody.Customer(
                 firstName: "John",
@@ -98,7 +98,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
                     postalCode: "EC53 8BT")
             ),
             order: ClientSessionRequestBody.Order(
-                countryCode: .fr,
+                countryCode: countryCode,
                 lineItems: [
                     ClientSessionRequestBody.Order.LineItem(
                         itemId: "shoes-72189",
