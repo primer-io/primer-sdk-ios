@@ -107,7 +107,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
                         quantity: 1)
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
-                vaultOnSuccess: true,
+                vaultOnSuccess: false,
                 options: [
                     "PAYMENT_CARD": [
                         "networks": [
