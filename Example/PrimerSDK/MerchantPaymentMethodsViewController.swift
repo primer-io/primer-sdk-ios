@@ -236,8 +236,7 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
     }
     
     func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
-        let networking = Networking()
-        networking.createPayment(with: paymentMethodToken) { (res, err) in
+        Networking.createPayment(with: paymentMethodToken) { (res, err) in
             DispatchQueue.main.async {
                 self.activityIndicator?.stopAnimating()
                 self.activityIndicator?.removeFromSuperview()

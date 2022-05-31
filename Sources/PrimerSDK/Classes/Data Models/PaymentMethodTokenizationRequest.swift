@@ -7,21 +7,18 @@ struct PaymentMethodTokenizationRequest: TokenizationRequest {
     let paymentInstrument: PaymentInstrument
     let tokenType: TokenType
     let paymentFlow: PaymentFlow?
-    let customerId: String?
 
     init(paymentInstrument: PaymentInstrument, state: AppStateProtocol?) {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         self.paymentInstrument = paymentInstrument
         self.tokenType = Primer.shared.flow.internalSessionFlow.vaulted ? .multiUse : .singleUse
         self.paymentFlow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
-        self.customerId = Primer.shared.flow.internalSessionFlow.vaulted ? settings.customerId : nil
     }
     
     init(paymentInstrument: PaymentInstrument, paymentFlow: PaymentFlow?, customerId: String?) {
         self.paymentInstrument = paymentInstrument
         self.paymentFlow = (paymentFlow == .vault) ? .vault : nil
         self.tokenType = (paymentFlow == .vault) ? .multiUse : .singleUse
-        self.customerId = customerId
     }
 
 }

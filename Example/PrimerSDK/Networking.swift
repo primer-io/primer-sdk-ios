@@ -25,8 +25,13 @@ enum HTTPMethod: String {
 
 struct Payment {
     
+    struct PaymentMethod: Encodable {
+        let descriptor: String
+    }
+    
     struct Request: Encodable {
         let paymentMethodToken: String
+        let paymentMethod: PaymentMethod?
     }
 
     struct Response: Codable {
@@ -105,8 +110,15 @@ class Networking {
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         }
         
+        if let customDefinedApiKey = customDefinedApiKey {
+            request.addValue(customDefinedApiKey, forHTTPHeaderField: "x-api-key")
+        }
+        
         if let headers = headers {
-            for header in headers {
+            // We have a dedicated argument that takes x-api-key into account
+            // in case a custom one gets defined before SDK initialization
+            // so in case this array contains the same key, it won't be added
+            for header in headers.filter({ $0.value != "x-api-key"}) {
                 request.addValue(header.value, forHTTPHeaderField: header.key)
             }
         }
@@ -191,7 +203,10 @@ class Networking {
         }).resume()
     }
     
-    func createPayment(with paymentMethod: PaymentMethodToken, completion: @escaping (Payment.Response?, Error?) -> Void) {
+    static func createPayment(with paymentMethod: PaymentMethodToken,
+                              customDefinedApiKey: String? = nil,
+                              completion: @escaping (Payment.Response?, Error?) -> Void) {
+        
         guard let paymentMethodToken = paymentMethod.token else {
             completion(nil, NetworkError.missingParams)
             return
@@ -199,7 +214,8 @@ class Networking {
         
         let url = environment.baseUrl.appendingPathComponent("/api/payments/")
 
-        let body = Payment.Request(paymentMethodToken: paymentMethodToken)
+        let body = Payment.Request(paymentMethodToken: paymentMethodToken,
+                                   paymentMethod: Payment.PaymentMethod(descriptor: UUID().uuidString))
 
         var bodyData: Data!
 
@@ -233,7 +249,7 @@ class Networking {
             }
     }
     
-    func requestClientSession(requestBody: ClientSessionRequestBody, completion: @escaping (String?, Error?) -> Void) {
+    static func requestClientSession(requestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil, completion: @escaping (String?, Error?) -> Void) {
         let url = environment.baseUrl.appendingPathComponent("/api/client-session")
 
         let bodyData: Data!
@@ -277,7 +293,7 @@ class Networking {
             }
     }
     
-    func requestClientSessionWithActions(clientToken: String, actions: [PrimerSDK.ClientSession.Action], completion: @escaping (String?, Error?) -> Void) {
+    static func requestClientSessionWithActions(clientToken: String, actions: [PrimerSDK.ClientSession.Action], completion: @escaping (String?, Error?) -> Void) {
         let url = environment.baseUrl.appendingPathComponent("/api/client-session/actions")
 
         var merchantActions: [ClientSession.Action] = []

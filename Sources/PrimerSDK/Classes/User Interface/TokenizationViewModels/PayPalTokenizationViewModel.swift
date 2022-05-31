@@ -219,7 +219,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
                 return self.createOAuthSession(url)
             }
             .then { url -> Promise<PaymentInstrument> in
-                return self.generatePaypalPaymentInstrument()
+                return self.createPaypalPaymentInstrument()
             }
             .then { instrument -> Promise<PaymentMethodToken> in
                 return self.tokenize(instrument: instrument)
@@ -346,39 +346,79 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    private func generatePaypalPaymentInstrument() -> Promise<PaymentInstrument> {
+    private func createPaypalPaymentInstrument() -> Promise<PaymentInstrument> {
         return Promise { seal in
-            guard let orderId = orderId else {
-                let err = PrimerError.invalidValue(key: "orderId", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
-            }
-            
-            firstly {
-                self.fetchPayPalExternalPayerInfo(orderId: orderId)
-            }
-            .done { response in
-                self.generatePaypalPaymentInstrument(externalPayerInfo: response.externalPayerInfo) { result in
-                    switch result {
-                    case .success(let paymentInstrument):
-                        seal.fulfill(paymentInstrument)
-                    case .failure(let err):
-                        seal.reject(err)
+            if Primer.shared.flow.internalSessionFlow.vaulted {
+                firstly {
+                    self.generateBillingAgreementConfirmation()
+                }
+                .done { billingAgreement in
+                    let paymentInstrument = PaymentInstrument(
+                        paypalBillingAgreementId: billingAgreement.billingAgreementId,
+                        shippingAddress: billingAgreement.shippingAddress,
+                        externalPayerInfo: billingAgreement.externalPayerInfo)
+                    seal.fulfill(paymentInstrument)
+                }
+                .catch { err in
+                    seal.reject(err)
+                }
+            } else {
+                guard let orderId = orderId else {
+                    let err = PrimerError.invalidValue(key: "orderId", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                firstly {
+                    self.fetchPayPalExternalPayerInfo(orderId: orderId)
+                }
+                .then { res -> Promise<PaymentInstrument> in
+                    return self.generatePaypalPaymentInstrument(externalPayerInfo: res.externalPayerInfo)
+                }
+                .done { response in
+                    self.generatePaypalPaymentInstrument(externalPayerInfo: response.externalPayerInfo) { result in
+                        switch result {
+                        case .success(let paymentInstrument):
+                            seal.fulfill(paymentInstrument)
+                        case .failure(let err):
+                            seal.reject(err)
+                        }
                     }
                 }
+                .catch { err in
+                    seal.reject(err)
+                }
             }
-            .catch { err in
-                seal.reject(err)
+            
+        }
+    }
+    
+    private func generatePaypalPaymentInstrument(externalPayerInfo: ExternalPayerInfo?) -> Promise<PaymentInstrument> {
+        return Promise { seal in
+            self.generatePaypalPaymentInstrument(externalPayerInfo: externalPayerInfo) { result in
+                switch result {
+                case .success(let paymentInstrument):
+                    seal.fulfill(paymentInstrument)
+                case .failure(let err):
+                    seal.reject(err)
+                }
             }
         }
     }
     
-    private func generatePaypalPaymentInstrument(externalPayerInfo: ExternalPayerInfo, completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
+    private func generatePaypalPaymentInstrument(externalPayerInfo: ExternalPayerInfo?, completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
         switch Primer.shared.flow.internalSessionFlow.uxMode {
         case .CHECKOUT:
             guard let orderId = orderId else {
                 let err = PrimerError.invalidValue(key: "orderId", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                completion(.failure(err))
+                return
+            }
+            
+            guard let externalPayerInfo = externalPayerInfo else {
+                let err = PrimerError.invalidValue(key: "externalPayerInfo", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 completion(.failure(err))
                 return
@@ -389,13 +429,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             
         case .VAULT:
             guard let confirmedBillingAgreement = self.confirmBillingAgreementResponse else {
-                generateBillingAgreementConfirmation { [weak self] err in
-                    if let err = err {
-                        completion(.failure(err))
-                    } else {
-                        self?.generatePaypalPaymentInstrument(externalPayerInfo: externalPayerInfo, completion: completion)
-                    }
-                }
+                let err = PrimerError.invalidValue(key: "confirmedBillingAgreement", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                completion(.failure(err))
                 return
             }
             let paymentInstrument = PaymentInstrument(
@@ -408,17 +444,30 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    private func generateBillingAgreementConfirmation(_ completion: @escaping (Error?) -> Void) {
+    private func generateBillingAgreementConfirmation() -> Promise<PayPalConfirmBillingAgreementResponse> {
+        return Promise { seal in
+            self.generateBillingAgreementConfirmation { (billingAgreementRes, err) in
+                if let err = err {
+                    seal.reject(err)
+                } else if let billingAgreementRes = billingAgreementRes {
+                    self.confirmBillingAgreementResponse = billingAgreementRes
+                    seal.fulfill(billingAgreementRes)
+                }
+            }
+        }
+    }
+    
+    private func generateBillingAgreementConfirmation(_ completion: @escaping (PayPalConfirmBillingAgreementResponse?, Error?) -> Void) {
         let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
         paypalService.confirmBillingAgreement({ result in
             switch result {
             case .failure(let err):
                 let contaiinerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
-                completion(contaiinerErr)
+                completion(nil, contaiinerErr)
             case .success(let res):
                 self.confirmBillingAgreementResponse = res
-                completion(nil)
+                completion(res, nil)
             }
         })
     }

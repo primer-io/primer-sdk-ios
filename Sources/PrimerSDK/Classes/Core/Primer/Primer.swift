@@ -246,144 +246,73 @@ public class Primer {
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
         checkoutSessionId = UUID().uuidString
         
-        switch (paymentMethod, intent) {
-        case (.adyenAlipay, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenAlipay)
-            
-        case (.adyenDotPay, .checkout):
-            flow = .checkoutWithAdyenBank
-            
-        case (.adyenGiropay, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenGiropay)
-            
-        case (.adyenIDeal, .checkout):
-            flow = .checkoutWithAdyenBank
-
-        case (.adyenInterac, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenInterac)
-
-        case (.adyenMobilePay, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenMobilePay)
+        var flow: PrimerSessionFlow!
         
-        case (.adyenPayTrail, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenPayTrail)
+        if case .checkout = intent {
+            switch paymentMethod {
+            case .adyenAlipay,
+                    .adyenDotPay,
+                    .adyenGiropay,
+                    .adyenIDeal,
+                    .adyenInterac,
+                    .adyenMobilePay,
+                    .adyenPayTrail,
+                    .adyenSofort,
+                    .adyenTrustly,
+                    .adyenTwint,
+                    .adyenVipps,
+                    .adyenPayshop,
+                    .atome,
+                    .adyenBlik,
+                    .buckarooBancontact,
+                    .buckarooEps,
+                    .buckarooGiropay,
+                    .buckarooIdeal,
+                    .buckarooSofort,
+                    .coinbase,
+                    .hoolah,
+                    .mollieBankcontact,
+                    .mollieIdeal,
+                    .payNLBancontact,
+                    .payNLGiropay,
+                    .payNLPayconiq,
+                    .twoCtwoP,
+                    .xfers,
+                    .opennode:
+                flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: paymentMethod)
+            case .applePay:
+                flow = .checkoutWithApplePay
+                    
+            case .klarna:
+                flow = .checkoutWithKlarna
+                    
+            case .payPal:
+                flow = .checkoutWithPayPal
+            case .paymentCard:
+                flow = .completeDirectCheckout
+            default:
+                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                PrimerDelegateProxy.checkoutFailed(with: err)
+                return
+            }
             
-        case (.adyenSofort, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenSofort)
-            
-        case (.adyenTrustly, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenTrustly)
-            
-        case (.adyenTwint, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenTwint)
-            
-        case (.adyenVipps, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenVipps)
-            
-        case (.apaya, .vault):
-            flow = .addApayaToVault
-            
-        case (.applePay, .checkout):
-            flow = .checkoutWithApplePay
-            
-        case (.atome, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .atome)
-            
-        case (.adyenBlik, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .adyenBlik)
-            
-        case (.buckarooBancontact, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooEps)
-            
-        case (.buckarooEps, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooEps)
-            
-        case (.buckarooGiropay, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooEps)
-            
-        case (.buckarooIdeal, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooIdeal)
-            
-        case (.buckarooSofort, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .buckarooSofort)
-                        
-        case (.hoolah, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .hoolah)
-            
-        case (.klarna, .vault):
-            flow = .addKlarnaToVault
-            
-        case (.klarna, .checkout):
-            flow = .checkoutWithKlarna
-            
-        case (.mollieBankcontact, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .mollieBankcontact)
-            
-        case (.mollieIdeal, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .mollieIdeal)
-            
-        case (.payNLBancontact, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLBancontact)
-            
-        case (.payNLGiropay, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLGiropay)
-            
-        case (.payNLIdeal, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLIdeal)
-            
-        case (.payNLPayconiq, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .payNLPayconiq)
-            
-        case (.paymentCard, .checkout):
-            flow = .completeDirectCheckout
-            
-        case (.xfers, .checkout):
-            flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: .xfers)
-            
-        case (.paymentCard, .vault):
-            flow = .addCardToVault
-
-        case (.payPal, .checkout):
-            flow = .checkoutWithPayPal
-            
-        case (.payPal, .vault):
-            flow = .addPayPalToVault
-            
-        case (.apaya, .checkout),
-            (.applePay, .vault),
-            (.goCardlessMandate, _),
-            (.googlePay, _),
-            (.adyenAlipay, .vault),
-            (.adyenDotPay, .vault),
-            (.adyenGiropay, .vault),
-            (.adyenIDeal, .vault),
-            (.adyenInterac, .vault),
-            (.adyenPayTrail, .vault),
-            (.atome, .vault),
-            (.adyenBlik, .vault),
-            (.buckarooBancontact, .vault),
-            (.buckarooEps, .vault),
-            (.buckarooGiropay, .vault),
-            (.buckarooIdeal, .vault),
-            (.buckarooSofort, .vault),
-            (.hoolah, .vault),
-            (.payNLIdeal, .vault),
-            (.adyenSofort, .vault),
-            (.adyenTrustly, .vault),
-            (.adyenTwint, .vault),
-            (.adyenMobilePay, .vault),
-            (.adyenVipps, .vault),
-            (.mollieBankcontact, .vault),
-            (.mollieIdeal, .vault),
-            (.payNLBancontact, .vault),
-            (.payNLPayconiq, .vault),
-            (.payNLGiropay, .vault),
-            (.xfers, .vault),
-            (.other, _):
-            let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.checkoutFailed(with: err)
-            return
+        } else {
+            switch paymentMethod {
+            case .apaya:
+                flow = .addApayaToVault
+            case .klarna:
+                flow = .addKlarnaToVault
+            case .paymentCard:
+                flow = .addCardToVault
+            case .payPal:
+                flow = .addPayPalToVault
+            default:
+                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                PrimerDelegateProxy.checkoutFailed(with: err)
+                return
+            }
         }
         
         let sdkEvent = Analytics.Event(
@@ -409,6 +338,7 @@ public class Primer {
         
         self.show(on: viewController, flow: flow, with: clientToken, completion: completion)
     }
+    
     // swiftlint:enable cyclomatic_complexity
 
     /**

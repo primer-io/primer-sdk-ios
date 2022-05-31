@@ -78,7 +78,7 @@ class MerchantCheckoutViewController: UIViewController {
             urlSchemeIdentifier: "merchant",
             isFullScreenOnly: false,
             hasDisabledSuccessScreen: false,
-            businessDetails: BusinessDetails(name: "Business Name", address: nil),
+            businessDetails: BusinessDetails(name: "Primer Swag Shop", address: nil),
             directDebitHasNoAmount: false,
             isInitialLoadingHidden: false,
             is3DSOnVaultingEnabled: true,
@@ -212,7 +212,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                         itemId: "shoes-28190",
                         description: "Fancy shoes",
                         amount: amount,
-                        quantity: 2)
+                        quantity: 1),
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
                 vaultOnSuccess: true,
@@ -271,8 +271,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             )
         )
         
-        let networking = Networking()
-        networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
+        Networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
             if let err = err {
                 print(err)
                 let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
@@ -331,8 +330,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
             return
         }
         
-        let networking = Networking()
-        networking.createPayment(with: paymentMethodToken) { res, err in
+        Networking.createPayment(with: paymentMethodToken) { res, err in
             if let err = err {
                 print(err)
                 let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong creating the payment..."])

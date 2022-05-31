@@ -11,10 +11,17 @@ import Foundation
 struct Strings {
     
     enum PrimerButton {
+        
         static let title = NSLocalizedString(
-            "PRIMER_BUTTON_TITLE_DEFAULT",
+            "primer-button-title-default",
             bundle: Bundle.primerResources,
             comment: "The title of the primer deafult button")
+        
+        static let payInInstallments = NSLocalizedString(
+            "primer-button-title-pay-in-installments",
+            bundle: Bundle.primerResources,
+            value: "Pay in installments",
+            comment: "The title of the primer 'pay in installments' button")
     }
     
     enum Generic {

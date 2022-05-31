@@ -322,7 +322,7 @@ class UniversalCheckout: XCTestCase {
         let cardholderTextField = app.textFields["card_holder_txt_fld"]
         let submitButton = app.buttons["submit_btn"]
         
-        if let submitButtonTexts = threeDSPayment.expecations?.buttonTexts {
+        if let submitButtonTexts = threeDSPayment.expectations?.buttonTexts {
             for text in submitButtonTexts {
                 let submitButtonText = submitButton.staticTexts[text]
                 XCTAssert(submitButtonText.exists, "Submit button should have text '\(text)'")
@@ -376,7 +376,7 @@ class UniversalCheckout: XCTestCase {
         let cardholderTextField = app.textFields["card_holder_txt_fld"]
         let submitButton = app.buttons["submit_btn"]
         
-        if let submitButtonTexts = threeDSPayment.expecations?.buttonTexts {
+        if let submitButtonTexts = threeDSPayment.expectations?.buttonTexts {
             for text in submitButtonTexts {
                 let submitButtonText = submitButton.staticTexts[text]
                 XCTAssert(submitButtonText.exists, "Submit button should have text '\(text)'")

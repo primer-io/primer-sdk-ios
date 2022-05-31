@@ -35,28 +35,33 @@
                                 </connections>
                             </segmentedControl>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="KuL-hw-zDD">
-                                <rect key="frame" x="16" y="144" width="382" height="432"/>
+                                <rect key="frame" x="16" y="144" width="382" height="486"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Ojo-uf-w50" userLabel="Form Stack View">
-                                        <rect key="frame" x="0.0" y="0.0" width="382" height="196"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="382" height="250"/>
                                         <subviews>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Customer ID" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Q8f-7x-ncT">
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Custom defined API-KEY" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wzb-Mm-C6G">
                                                 <rect key="frame" x="0.0" y="0.0" width="382" height="34"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
+                                            </textField>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Customer ID" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Q8f-7x-ncT">
+                                                <rect key="frame" x="0.0" y="54" width="382" height="34"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits"/>
                                             </textField>
                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Phone number" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qPf-Sa-EQI">
-                                                <rect key="frame" x="0.0" y="54" width="382" height="34"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
-                                            </textField>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Country" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="LRA-Ro-g2N">
                                                 <rect key="frame" x="0.0" y="108" width="382" height="34"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
                                             </textField>
-                                            <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="To4-vd-EsZ" userLabel="Currenty Amount Stack View">
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Country" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="LRA-Ro-g2N">
                                                 <rect key="frame" x="0.0" y="162" width="382" height="34"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
+                                            </textField>
+                                            <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="To4-vd-EsZ" userLabel="Currenty Amount Stack View">
+                                                <rect key="frame" x="0.0" y="216" width="382" height="34"/>
                                                 <subviews>
                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="EUR" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uht-tM-QtC">
                                                         <rect key="frame" x="0.0" y="0.0" width="60" height="34"/>
@@ -76,7 +81,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Lpg-yS-48o" userLabel="Perform Payment Stack View">
-                                        <rect key="frame" x="0.0" y="220" width="382" height="31"/>
+                                        <rect key="frame" x="0.0" y="274" width="382" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Perform payment" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cFw-qi-n9P">
                                                 <rect key="frame" x="0.0" y="0.0" width="325" height="31"/>
@@ -90,7 +95,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" spacing="32" translatesAutoresizingMaskIntoConstraints="NO" id="KAf-TR-l1d" userLabel="Buttons List Stack View">
-                                        <rect key="frame" x="0.0" y="275" width="382" height="157"/>
+                                        <rect key="frame" x="0.0" y="329" width="382" height="157"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
                                                 <rect key="frame" x="122" y="0.0" width="138" height="31"/>
@@ -149,6 +154,7 @@
                     <navigationItem key="navigationItem" id="kYZ-5n-R2a"/>
                     <connections>
                         <outlet property="amountTextField" destination="W9k-iX-6KF" id="pRt-ot-cC9"/>
+                        <outlet property="apiKeyTextField" destination="wzb-Mm-C6G" id="q8b-Zf-SmD"/>
                         <outlet property="countryCodeTextField" destination="LRA-Ro-g2N" id="Gh5-Fo-30O"/>
                         <outlet property="currencyTextField" destination="uht-tM-QtC" id="N7Y-8W-14p"/>
                         <outlet property="customerIdTextField" destination="Q8f-7x-ncT" id="IUu-6E-jOm"/>
@@ -333,7 +339,7 @@
                                 </subviews>
                             </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Postal code:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zgj-Y0-gEw">
-                                <rect key="frame" x="20" y="80" width="374" height="21"/>
+                                <rect key="frame" x="20" y="80" width="374" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>

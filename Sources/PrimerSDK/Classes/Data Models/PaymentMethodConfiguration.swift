@@ -34,11 +34,15 @@ class PaymentMethodConfig: Codable {
             .buckarooGiropay,
             .buckarooIdeal,
             .buckarooSofort,
+            .coinbase,
             .mollieBankcontact,
             .mollieIdeal,
             .payNLBancontact,
             .payNLGiropay,
             .payNLPayconiq,
+            .opennode,
+            .twoCtwoP,
+            .adyenPayshop
         ]
         
         if type == .paymentCard {
