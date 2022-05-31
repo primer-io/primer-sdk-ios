@@ -68,9 +68,7 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     private func continueValidateSession() -> Promise<Void> {
-        
         return Promise { seal in
-            
             let appState: AppStateProtocol = DependencyContainer.resolve()
 
             guard let clientToken = appState.clientToken else {
@@ -109,13 +107,10 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     internal func validateSession() -> Promise<Void> {
-        
         return Promise { seal in
-            
             let appState: AppStateProtocol = DependencyContainer.resolve()
             
             if appState.clientToken == nil, let clientToken = PrimerHeadlessUniversalCheckout.current.clientToken {
-                
                 firstly {
                     ClientTokenService.storeClientToken(clientToken)
                 }
@@ -127,7 +122,6 @@ public class PrimerHeadlessUniversalCheckout {
                 }
                 
             } else {
-                
                 firstly {
                     continueValidateSession()
                 }
@@ -213,7 +207,6 @@ public class PrimerHeadlessUniversalCheckout {
             return []
         case .paymentCard:
             let appState: AppStateProtocol = DependencyContainer.resolve()
-
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
             
             if let checkoutModule = appState.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
@@ -224,6 +217,7 @@ public class PrimerHeadlessUniversalCheckout {
             }
             
             return requiredFields
+            
         case .payPal:
             return []
         case .xfers:
@@ -516,9 +510,6 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
             
-//            DispatchQueue.global(qos: .userInitiated).async {
-//            DispatchQueue.main.async {
-            
             if self.inputElement.type == .cardNumber {
                 if let cardNetwork = self.inputElement.type.detectType(for: newText) as? CardNetwork {
                     if self.detectedType == nil, cardNetwork != .unknown {
@@ -561,7 +552,6 @@ extension PrimerHeadlessUniversalCheckout {
             return false
         }
     }
-    
 }
 
 #endif
