@@ -25,7 +25,6 @@ class FlowDecisionTableViewCell: UITableViewCell {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         backgroundColor = theme.view.backgroundColor
         layer.cornerRadius = theme.view.cornerRadius
-        textLabel?.text = decision.displayFlowTitle
     }
     
     required init?(coder: NSCoder) {
@@ -34,6 +33,7 @@ class FlowDecisionTableViewCell: UITableViewCell {
     
     func configure(decision: PrimerTestPaymentMethodOptions.FlowDecision) {
         self.decision = decision
+        textLabel?.text = decision.displayFlowTitle
     }
 }
 

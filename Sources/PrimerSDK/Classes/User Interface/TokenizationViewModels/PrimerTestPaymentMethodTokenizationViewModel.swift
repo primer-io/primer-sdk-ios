@@ -34,11 +34,19 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         }
 
         tableView.rowHeight = 41
-        tableView.register(BankTableViewCell.self, forCellReuseIdentifier: BankTableViewCell.identifier)
+        tableView.register(FlowDecisionTableViewCell.self, forCellReuseIdentifier: FlowDecisionTableViewCell.identifier)
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
     }()
+    
+    override func validate() throws {
+        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+    }
     
     override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         

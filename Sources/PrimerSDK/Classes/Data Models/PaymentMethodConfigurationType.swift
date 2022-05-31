@@ -251,8 +251,6 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
-                .primerTestPayPal,
-                .primerTestKlarna,
                 .primerTestSofort,
                 .opennode,
                 .twoCtwoP,
@@ -270,7 +268,9 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
             return false
             
         case .paymentCard,
-                .payPal:
+                .payPal,
+                .primerTestPayPal,
+                .primerTestKlarna:
             return true
         
         case .other:
