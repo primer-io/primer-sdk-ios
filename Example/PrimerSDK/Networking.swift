@@ -215,7 +215,7 @@ class Networking {
         let url = environment.baseUrl.appendingPathComponent("/api/payments/")
 
         let body = Payment.Request(paymentMethodToken: paymentMethodToken,
-                                   paymentMethod: Payment.PaymentMethod(descriptor: UUID().uuidString))
+                                   paymentMethod: paymentMethod.paymentInstrumentType == .paymentCard ? nil : Payment.PaymentMethod(descriptor: UUID().uuidString))
 
         var bodyData: Data!
 
