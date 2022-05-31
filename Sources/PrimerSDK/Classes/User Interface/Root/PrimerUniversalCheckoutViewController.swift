@@ -177,6 +177,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 .done { errMessage in
                     Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: errMessage)
                 }
+                .catch { _ in }
                 return
             }
             
