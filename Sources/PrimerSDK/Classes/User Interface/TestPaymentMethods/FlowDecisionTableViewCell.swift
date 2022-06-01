@@ -63,6 +63,7 @@ extension FlowDecisionTableViewCell {
     func configure(decision: PrimerTestPaymentMethodOptions.FlowDecision) {
         self.decision = decision
         textLabel?.text = decision.displayFlowTitle
+        accessibilityIdentifier = "decision_\(decision)"
     }
 }
 
