@@ -166,7 +166,7 @@ class UniversalCheckout: XCTestCase {
         let submitButton = app.buttons.matching(NSPredicate(format: "label == 'Absenden'")).firstMatch
         submitButton.tap()
         
-        try base.successMessageExists()
+        try base.successViewExists()
         try base.dismissSDK()
         try base.resultScreenExpectations(for: payment)
     }
@@ -265,7 +265,7 @@ class UniversalCheckout: XCTestCase {
         wait(for: [completeButtonIsHittable], timeout: 30)
         completeButton.tap()
                 
-        try base.successMessageExists()
+        try base.successViewExists()
         try base.dismissSDK()
         try base.resultScreenExpectations(for: threeDSPayment)
     }
@@ -281,7 +281,7 @@ class UniversalCheckout: XCTestCase {
         wait(for: [completeButtonIsHittable], timeout: 30)
         completeButton.tap()
                 
-        try base.successMessageExists()
+        try base.successViewExists()
         try base.dismissSDK()
         try base.resultScreenExpectations(for: threeDSPayment)
     }

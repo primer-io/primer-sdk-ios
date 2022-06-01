@@ -273,6 +273,56 @@ class Base: XCTestCase {
                 buttonTexts: ["Pay €105.00"],
                 resultScreenTexts: nil
             )
+        ),
+        Payment(
+            alias: "PRIMER_TEST_KLARNA_AUTHORIZED",
+            id: "PRIMER_TEST_KLARNA",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "FR",
+            amount: "1050",
+            expectations: Payment.Expectations(
+                amount: "€10.50",
+                surcharge: nil,
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay €10.50"],
+                resultScreenTexts: [
+                    "status": "SUCCESS"
+                ]
+            )
+        ),
+        Payment(
+            alias: "PRIMER_TEST_PAYPAL_DECLINED",
+            id: "PRIMER_TEST_PAYPAL",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "DE",
+            amount: "1050",
+            expectations: Payment.Expectations(
+                amount: "€10.50",
+                surcharge: nil,
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay €10.50"],
+                resultScreenTexts: nil
+            )
+        ),
+        Payment(
+            alias: "PRIMER_TEST_SOFORT_FAILED",
+            id: "PRIMER_TEST_SOFORT",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "IT",
+            amount: "1050",
+            expectations: Payment.Expectations(
+                amount: "€10.50",
+                surcharge: nil,
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay €10.50"],
+                resultScreenTexts: nil
+            )
         )
     ]
     
@@ -403,10 +453,16 @@ class Base: XCTestCase {
         wait(for: [expectation], timeout: 3.0)
     }
     
-    func successMessageExists() throws {
-        let successLabel = app.staticTexts["Success!"]
-        let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
-        wait(for: [successLabelExists], timeout: 30)
+    func failViewExists() throws {
+        let failImage = app.images["x-circle"]
+        let failImageExists = expectation(for: Expectation.exists, evaluatedWith: failImage, handler: nil)
+        wait(for: [failImageExists], timeout: 30)
+    }
+    
+    func successViewExists() throws {
+        let successImage = app.images["check-circle"]
+        let successImageExists = expectation(for: Expectation.exists, evaluatedWith: successImage, handler: nil)
+        wait(for: [successImageExists], timeout: 30)
     }
     
     func resultScreenExpectations(for payment: Payment) throws {
