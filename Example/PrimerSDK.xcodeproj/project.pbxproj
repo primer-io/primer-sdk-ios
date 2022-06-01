@@ -45,6 +45,7 @@
 		1DED53B02739561800CD9DE6 /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DED53AF2739561800CD9DE6 /* ThemeTests.swift */; };
 		2C4480D52819755700BD431A /* CreateResumePaymentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4480D42819755700BD431A /* CreateResumePaymentService.swift */; };
 		2C4480D728197F7E00BD431A /* CreateResumePaymentServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4480D628197F7E00BD431A /* CreateResumePaymentServiceTests.swift */; };
+		2C6091192847AB0200543412 /* UniversalCheckout+PrimerTestPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6091182847AB0200543412 /* UniversalCheckout+PrimerTestPaymentMethods.swift */; };
 		2CCD4DB5282A8DB800F9BD2E /* ManualPaymentMerchantCheckoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCD4DB4282A8DB800F9BD2E /* ManualPaymentMerchantCheckoutViewController.swift */; };
 		2CCD4DB7282A906C00F9BD2E /* Networking+Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCD4DB6282A906C00F9BD2E /* Networking+Models.swift */; };
 		2CE2888A2818665400649E61 /* AsyncPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE288892818665400649E61 /* AsyncPaymentMethodTokenizationViewModel.swift */; };
@@ -140,6 +141,7 @@
 		283DA7B53B613F340147E214 /* Pods-PrimerSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		2C4480D42819755700BD431A /* CreateResumePaymentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateResumePaymentService.swift; sourceTree = "<group>"; };
 		2C4480D628197F7E00BD431A /* CreateResumePaymentServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateResumePaymentServiceTests.swift; sourceTree = "<group>"; };
+		2C6091182847AB0200543412 /* UniversalCheckout+PrimerTestPaymentMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UniversalCheckout+PrimerTestPaymentMethods.swift"; sourceTree = "<group>"; };
 		2CCD4DB4282A8DB800F9BD2E /* ManualPaymentMerchantCheckoutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManualPaymentMerchantCheckoutViewController.swift; sourceTree = "<group>"; };
 		2CCD4DB6282A906C00F9BD2E /* Networking+Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Networking+Models.swift"; sourceTree = "<group>"; };
 		2CE288892818665400649E61 /* AsyncPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
@@ -311,6 +313,7 @@
 				1582B9AC260A402E00C80BD7 /* Base.swift */,
 				1582B9A3260A3FD300C80BD7 /* Info.plist */,
 				15F9E67C2678C88000F6B6C1 /* UniversalCheckout.swift */,
+				2C6091182847AB0200543412 /* UniversalCheckout+PrimerTestPaymentMethods.swift */,
 				15300DB8267A1211009A1B9C /* Vault.swift */,
 				15300DBA267A1646009A1B9C /* VaultKlarna.swift */,
 				849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */,
@@ -698,6 +701,7 @@
 				15F9E67D2678C88000F6B6C1 /* UniversalCheckout.swift in Sources */,
 				1582B9AD260A402E00C80BD7 /* Base.swift in Sources */,
 				849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */,
+				2C6091192847AB0200543412 /* UniversalCheckout+PrimerTestPaymentMethods.swift in Sources */,
 				1582B9A2260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift in Sources */,
 				15300DBB267A1646009A1B9C /* VaultKlarna.swift in Sources */,
 				2CEBAEB82847C71C0023A253 /* UniversalCheckout+PrimerTestPaymentMethods.swift in Sources */,
