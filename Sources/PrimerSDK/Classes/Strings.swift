@@ -22,6 +22,11 @@ struct Strings {
             bundle: Bundle.primerResources,
             value: "Pay in installments",
             comment: "The title of the primer 'pay in installments' button")
+        
+        static let pay = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                      bundle: Bundle.primerResources,
+                                      value: "Pay",
+                                      comment: "Pay - Card Form View (Sumbit button text)")
     }
     
     enum Generic {

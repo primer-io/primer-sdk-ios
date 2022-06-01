@@ -513,7 +513,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .adyenMobilePay,
                 .adyenVipps,
                 .adyenInterac,
-                .adyenPayTrail:
+                .adyenPayTrail,
+                .primerTestSofort:
             return .white
         case .adyenIDeal,
                 .adyenTrustly,
