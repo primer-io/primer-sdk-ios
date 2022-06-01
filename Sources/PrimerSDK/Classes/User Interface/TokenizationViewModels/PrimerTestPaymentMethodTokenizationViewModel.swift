@@ -45,6 +45,8 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         switch config.type {
         case .primerTestPayPal:
             return UIImage(named: "paypal-logo-1", in: Bundle.primerResources, compatibleWith: nil)
+        case .primerTestSofort:
+            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             return buttonImage
         }
