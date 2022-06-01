@@ -49,18 +49,6 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
 
         setupView()
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        
-        super.viewDidAppear(animated)
-        
-        if self.viewModel.tableView.superview == nil {
-            let lastView = self.verticalStackView.arrangedSubviews.last!
-            self.verticalStackView.removeArrangedSubview(lastView)
-            self.verticalStackView.addArrangedSubview(self.viewModel.tableView)
-            self.viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
-        }
-    }
 }
 
 extension PrimerTestPaymentMethodViewController {
@@ -72,9 +60,8 @@ extension PrimerTestPaymentMethodViewController {
         viewModel.tableView.isScrollEnabled = false
         verticalStackView.removeConstraints(verticalStackView.constraints)
         verticalStackView.pin(view: view, leading: 20, top: 0, trailing: -20, bottom: -20)
-        let tableViewMockView = UIView()
-        tableViewMockView.translatesAutoresizingMaskIntoConstraints = false
-        verticalStackView.addArrangedSubview(tableViewMockView)
+        verticalStackView.addArrangedSubview(viewModel.tableView)
+        viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
     }
 }
 
