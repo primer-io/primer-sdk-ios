@@ -8,6 +8,9 @@
 class HeaderFooterLabelView: UITableViewHeaderFooterView {
 
     private let label = UILabel(frame: .zero)
+    private let labelNumberOfLines = 0
+    private let systemFontSize: CGFloat = 16
+    private let padding: CGFloat = 16
 
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
@@ -21,10 +24,8 @@ class HeaderFooterLabelView: UITableViewHeaderFooterView {
 
         label.textColor = .systemGray
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 16)
-        
-        let padding: CGFloat = 16
+        label.numberOfLines = labelNumberOfLines
+        label.font = .systemFont(ofSize: systemFontSize)
         
         label.pin(view: containerView, leading: 0, top: 0, trailing: 0, bottom: -padding)
         containerView.pin(view: contentView)

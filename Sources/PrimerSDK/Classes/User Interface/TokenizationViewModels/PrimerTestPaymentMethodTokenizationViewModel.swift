@@ -11,7 +11,7 @@ import UIKit
 
 class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
-    // MARK: - PROPERTIES
+    // MARK: - Properties
 
     internal private(set) var decisions = PrimerTestPaymentMethodOptions.FlowDecision.allCases
     private var selectedDecision: PrimerTestPaymentMethodOptions.FlowDecision!
@@ -44,37 +44,37 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     }()
     
     private lazy var _originalImage: UIImage? = {
-        switch self.config.type {
+        switch config.type {
         case .primerTestPayPal:
             return UIImage(named: "paypal-logo-1", in: Bundle.primerResources, compatibleWith: nil)
         default:
-            return self.buttonImage
+            return buttonImage
         }
     }()
     
-//    lazy var submitButton: PrimerButton = {
-//        let submitButton = PrimerButton()
-//        submitButton.translatesAutoresizingMaskIntoConstraints = false
-//        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-//        submitButton.isAccessibilityElement = true
-//        submitButton.accessibilityIdentifier = "submit_btn"
-//        submitButton.isEnabled = false
-//        submitButton.setTitle(buttonTitle, for: .normal)
-//        submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-//        submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
-//        submitButton.layer.cornerRadius = 4
-//        submitButton.clipsToBounds = true
-//        submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
-//        return submitButton
-//    }()
+    lazy var submitButton: PrimerButton = {
+        let submitButton = PrimerButton()
+        submitButton.translatesAutoresizingMaskIntoConstraints = false
+        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        submitButton.isAccessibilityElement = true
+        submitButton.accessibilityIdentifier = "submit_btn"
+        submitButton.isEnabled = false
+        submitButton.setTitle(buttonTitle, for: .normal)
+        submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
+        submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
+        submitButton.layer.cornerRadius = 4
+        submitButton.clipsToBounds = true
+        submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
+        return submitButton
+    }()
     
-    // MARK: - DEINIT
+    // MARK: - Deinit
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    // MARK: - OVERRIDES
+    // MARK: - Overrides
 
     override var originalImage: UIImage? {
         get {
@@ -105,7 +105,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: config.type.rawValue,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -152,6 +152,48 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
 extension PrimerTestPaymentMethodTokenizationViewModel {
     
+    fileprivate func enableSubmitButtonIfNeeded() {
+        
+        if lastSelectedIndexPath != nil {
+            submitButton.isEnabled = true
+            submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
+        } else {
+            submitButton.isEnabled = false
+            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
+        }
+    }
+}
+
+extension PrimerTestPaymentMethodTokenizationViewModel {
+    
+    // MARK: - Pay Action
+
+    @objc
+    private func payButtonTapped(_ sender: UIButton) {
+        
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .submit,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+        
+        payButtonTappedCompletion?()
+    }
+}
+
+extension PrimerTestPaymentMethodTokenizationViewModel {
+    
+    // MARK: - Flow Promises
+    
     private func presentDecisionsViewController() -> Promise<Void> {
         return Promise { seal in
             let testPaymentMethodsVC = PrimerTestPaymentMethodViewController(viewModel: self)
@@ -181,6 +223,8 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
 
 extension PrimerTestPaymentMethodTokenizationViewModel {
     
+    // MARK: - Tokenize
+    
     private func tokenize(decision: PrimerTestPaymentMethodOptions.FlowDecision) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.tokenize(decision: decision) { paymentMethodTokenData, err in
@@ -197,9 +241,9 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
     
     private func tokenize(decision: PrimerTestPaymentMethodOptions.FlowDecision, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
         let req = TestPaymentMethodTokenizationRequest(
-            paymentInstrument: PrimerTestPaymentMethodOptions(paymentMethodType: self.config.type,
-                                                              paymentMethodConfigId: self.config.id!,
-                                                              sessionInfo: PrimerTestPaymentMethodOptions.SessionInfo(flowDecision: self.selectedDecision!)))
+            paymentInstrument: PrimerTestPaymentMethodOptions(paymentMethodType: config.type,
+                                                              paymentMethodConfigId: config.id!,
+                                                              sessionInfo: PrimerTestPaymentMethodOptions.SessionInfo(flowDecision: selectedDecision!)))
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -241,6 +285,21 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
         header?.configure(text: "This is a mocked flow for sandbox. Choose the result you want to test from the list below.")
         return header
     }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 66
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+        
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let stackView = UIStackView(arrangedSubviews: [submitButton])
+        stackView.alignment = .center
+        stackView.spacing = 16
+        return stackView
+    }
         
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return decisions.count
@@ -254,12 +313,13 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let lastSelectedIndexPath = self.lastSelectedIndexPath {
-            self.tableView.deselectRow(at: lastSelectedIndexPath, animated: true)
+        if let lastSelectedIndexPath = lastSelectedIndexPath {
+            tableView.deselectRow(at: lastSelectedIndexPath, animated: true)
         }
-        self.lastSelectedIndexPath = indexPath
-        self.selectedDecision = decisions[indexPath.row]
-        self.decisionSelectionCompletion?(self.selectedDecision)
+        lastSelectedIndexPath = indexPath
+        selectedDecision = decisions[indexPath.row]
+        decisionSelectionCompletion?(selectedDecision)
+        enableSubmitButtonIfNeeded()
     }
 }
 
