@@ -188,10 +188,7 @@ internal class PrimerRootViewController: PrimerViewController {
                     
                 case .addApayaToVault:
                     self?.presentPaymentMethod(type: .apaya)
-                    
-                case .checkoutWithPrimerTestPaymentMethod(let paymentMethodType):
-                    self?.presentPrimerTestViewControllerForPaymentMethodType(paymentMethodType)
-                    
+                                        
                 case .checkoutWithAsyncPaymentMethod(let paymentMethodType):
                     self?.presentPaymentMethod(type: paymentMethodType)
                     
