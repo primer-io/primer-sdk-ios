@@ -94,41 +94,35 @@ class Base: XCTestCase {
     
     static var paymentMethods: [Payment] = [
         Payment(
-            alias: "PAYMENT_CARD_WITH_PROCESSOR_3DS_SUCCESS",
-            id: "PAYMENT_CARD",
-            environment: .staging,
-            currency: "GBP",
-            countryCode: "GB",
-            amount: "10011",
+            id: "ADYEN_DOTPAY",
+            environment: .sandbox,
+            currency: "PLN",
+            countryCode: "PL",
+            amount: "288",
             expectations: Payment.Expectations(
-                amount: "£100.11",
-                surcharge: "Additional fee may apply",
+                amount: "zł2.88",
+                surcharge: nil,
                 webviewImage: nil,
                 webviewTexts: nil,
-                buttonTexts: ["Pay £100.11"],
+                buttonTexts: nil,
                 resultScreenTexts: [
-                    "status": "SETTLED",
-                    "amount": "GBP 100.11"
+                    "status": "SUCCESS"
                 ]
             )
         ),
         Payment(
-            alias: "PAYMENT_CARD_WITH_PROCESSOR_3DS_FAIL",
-            id: "PAYMENT_CARD",
-            environment: .staging,
-            currency: "GBP",
-            countryCode: "GB",
-            amount: "10011",
+            id: "ADYEN_BLIK",
+            environment: .sandbox,
+            currency: "PLN",
+            countryCode: "PL",
+            amount: "288",
             expectations: Payment.Expectations(
-                amount: "£100.11",
-                surcharge: "Additional fee may apply",
-                webviewImage: nil,
+                amount: "zł2.88",
+                surcharge: nil,
+                webviewImage: "blik",
                 webviewTexts: nil,
-                buttonTexts: ["Pay £100.11"],
-                resultScreenTexts: [
-                    "status": "DECLINED",
-                    "amount": "GBP 100.11"
-                ]
+                buttonTexts: nil,
+                resultScreenTexts: nil
             )
         ),
         Payment(
@@ -144,9 +138,7 @@ class Base: XCTestCase {
                 webviewTexts: nil,
                 buttonTexts: nil,
                 resultScreenTexts: [
-                    "status": "SETTLED",
-                    "actions": "USE_PRIMER_SDK",
-                    "amount": "EUR 1.79"
+                    "status": "SUCCESS"
                 ]
             )
         ),
@@ -259,7 +251,6 @@ class Base: XCTestCase {
             )
         ),
         Payment(
-            alias: "3DS_PAYMENT_CARD",
             id: "PAYMENT_CARD",
             environment: .sandbox,
             currency: "EUR",
@@ -535,14 +526,14 @@ class Base: XCTestCase {
             }
         }
         
-        let adyenGiropayButton = scrollView.otherElements.buttons[payment.id]
-        adyenGiropayButton.tap()
+        let paymentButton = scrollView.otherElements.buttons[payment.id]
+        paymentButton.tap()
         
         let webViews = app.webViews
         if let webViewImageExpectation = payment.expectations?.webviewImage {
-            let webViewGiroPayImage = webViews.images[webViewImageExpectation]
-            let webViewGiroPayImageExists = expectation(for: Expectation.exists, evaluatedWith: webViewGiroPayImage, handler: nil)
-            wait(for: [webViewGiroPayImageExists], timeout: 30)
+            let webViewPaymentImage = webViews.images[webViewImageExpectation]
+            let webViewPaymentImageExists = expectation(for: Expectation.exists, evaluatedWith: webViewPaymentImage, handler: nil)
+            wait(for: [webViewPaymentImageExists], timeout: 30)
         }
         
         if let webviewTexts = payment.expectations?.webviewTexts {

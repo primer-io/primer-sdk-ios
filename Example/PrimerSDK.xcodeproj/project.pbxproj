@@ -52,6 +52,7 @@
 		2CE2888E281954FE00649E61 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2888D281954FE00649E61 /* String+Extensions.swift */; };
 		2CE288902819550400649E61 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2888F2819550400649E61 /* Data+Extensions.swift */; };
 		2CE288922819553100649E61 /* Range+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE288912819553100649E61 /* Range+Extensions.swift */; };
+		2CEBAEB82847C71C0023A253 /* UniversalCheckout+PrimerTestPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CEBAEB72847C71C0023A253 /* UniversalCheckout+PrimerTestPaymentMethods.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
@@ -146,6 +147,7 @@
 		2CE2888D281954FE00649E61 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		2CE2888F2819550400649E61 /* Data+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extensions.swift"; sourceTree = "<group>"; };
 		2CE288912819553100649E61 /* Range+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Range+Extensions.swift"; sourceTree = "<group>"; };
+		2CEBAEB72847C71C0023A253 /* UniversalCheckout+PrimerTestPaymentMethods.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UniversalCheckout+PrimerTestPaymentMethods.swift"; sourceTree = "<group>"; };
 		3B55FBF1D40BE6B25F29A5D9 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		45CA532A34F52954A21835C5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* PrimerSDK_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrimerSDK_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -304,6 +306,7 @@
 		1582B9A0260A3FD300C80BD7 /* PrimerSDKExample_UITests */ = {
 			isa = PBXGroup;
 			children = (
+				2CEBAEB72847C71C0023A253 /* UniversalCheckout+PrimerTestPaymentMethods.swift */,
 				1582B9A1260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift */,
 				1582B9AC260A402E00C80BD7 /* Base.swift */,
 				1582B9A3260A3FD300C80BD7 /* Info.plist */,
@@ -697,6 +700,7 @@
 				849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */,
 				1582B9A2260A3FD300C80BD7 /* PrimerSDKExample_UITests.swift in Sources */,
 				15300DBB267A1646009A1B9C /* VaultKlarna.swift in Sources */,
+				2CEBAEB82847C71C0023A253 /* UniversalCheckout+PrimerTestPaymentMethods.swift in Sources */,
 				151B098C267A276100FB49B8 /* Vault.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
