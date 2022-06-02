@@ -49,8 +49,9 @@ class MerchantPaymentMethodsViewController: UIViewController {
                 }
             } else if let clientToken = clientToken {
                 let settings = PrimerSettings(
-                    merchantIdentifier: "merchant.dx.team",
-                    urlScheme: "merchant://")
+                    merchantIdentifier: "merchant.checkout.team",
+                    urlScheme: "merchant://",
+                    businessDetails: BusinessDetails(name: "Business Name", address: nil))
                 PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, completion: { (pms, err) in
                     DispatchQueue.main.async {
                         self.activityIndicator?.stopAnimating()
@@ -67,10 +68,10 @@ class MerchantPaymentMethodsViewController: UIViewController {
     
     private func requestClientToken(completion: @escaping (String?, Error?) -> Void) {
         let clientSessionRequestBody = ClientSessionRequestBody(
-            customerId: "customerId",
-            orderId: "ios_order_id_\(String.randomString(length: 8))",
-            currencyCode: .EUR,
-            amount: nil,
+            customerId: "ios-customer-\(String.randomString(length: 8))",
+            orderId: "ios-order-\(String.randomString(length: 8))",
+            currencyCode: currency,
+            amount: amount,
             metadata: ["key": "val"],
             customer: ClientSessionRequestBody.Customer(
                 firstName: "John",
@@ -97,16 +98,16 @@ class MerchantPaymentMethodsViewController: UIViewController {
                     postalCode: "EC53 8BT")
             ),
             order: ClientSessionRequestBody.Order(
-                countryCode: .fr,
+                countryCode: countryCode,
                 lineItems: [
                     ClientSessionRequestBody.Order.LineItem(
-                        itemId: "_item_id_0",
-                        description: "Item",
+                        itemId: "shoes-72189",
+                        description: "Fancy shoes",
                         amount: 1000,
                         quantity: 1)
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
-                vaultOnSuccess: true,
+                vaultOnSuccess: false,
                 options: [
                     "PAYMENT_CARD": [
                         "networks": [

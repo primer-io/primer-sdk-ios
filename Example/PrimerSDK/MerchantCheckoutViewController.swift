@@ -215,7 +215,7 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                         quantity: 1),
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
-                vaultOnSuccess: true,
+                vaultOnSuccess: false,
                 options: nil
 //                [
 //                    "APPLE_PAY": [
