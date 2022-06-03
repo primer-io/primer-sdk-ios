@@ -37,7 +37,7 @@ protocol CardComponentsManagerProtocol {
     var amount: Int? { get }
     var currency: Currency? { get }
     var decodedClientToken: DecodedClientToken? { get }
-    var paymentMethodsConfig: PrimerConfiguration? { get }
+    var paymentMethodsConfig: PrimerAPIConfiguration? { get }
     
     func tokenize()
 }
@@ -60,7 +60,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     internal var decodedClientToken: DecodedClientToken? {
         return ClientTokenService.decodedClientToken
     }
-    internal var paymentMethodsConfig: PrimerConfiguration?
+    internal var paymentMethodsConfig: PrimerAPIConfiguration?
     private(set) public var isLoading: Bool = false
     internal private(set) var paymentMethod: PaymentMethodToken?
     
@@ -100,7 +100,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             
             guard let delegate = delegate else {
                 print("Warning: Delegate has not been set")
-                let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -166,13 +166,13 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         }
     }
     
-    private func fetchPaymentMethodConfigIfNeeded() -> Promise<PrimerConfiguration> {
+    private func fetchPaymentMethodConfigIfNeeded() -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
             if let paymentMethodsConfig = paymentMethodsConfig {
                 seal.fulfill(paymentMethodsConfig)
             } else {
                 guard let decodedClientToken = decodedClientToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -201,33 +201,33 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     private func validateCardComponents() throws {
         var errors: [Error] = []
         if !cardnumberField.cardnumber.isValidCardNumber {
-            errors.append(ValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
+            errors.append(PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
         }
         
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
-            errors.append(ValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
+            errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
         }
         
         if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
-            errors.append(ValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
+            errors.append(PrimerValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
         }
         
         if let cardholderField  = cardholderField {
             if !cardholderField.cardholderName.isValidCardholderName {
-                errors.append(ValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
+                errors.append(PrimerValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
             }
         }
         
         if let postalCodeField = postalCodeField {
             if !postalCodeField.postalCode.isValidPostalCode {
-                let err = ValidationError.invalidPostalCode(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerValidationError.invalidPostalCode(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 errors.append(err)
             }
         }
         
         if !errors.isEmpty {
-            let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -242,7 +242,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             firstly {
                 self.fetchClientTokenIfNeeded()
             }
-            .then { decodedClientToken -> Promise<PrimerConfiguration> in
+            .then { decodedClientToken -> Promise<PrimerAPIConfiguration> in
                 return self.fetchPaymentMethodConfigIfNeeded()
             }
             .done { paymentMethodsConfig in
@@ -266,18 +266,15 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     klarnaCustomerToken: nil,
                     sessionData: nil)
                 
-                let paymentFlow: PaymentFlow? = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
                 let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout, customerId: self.customerId)
                 
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                 apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest) { result in
                     switch result {
                     case .success(let paymentMethodToken):
-                        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                        let state: AppStateProtocol = DependencyContainer.resolve()
                                                 
                         var isThreeDSEnabled: Bool = false
-                        if state.primerConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                        if AppState.current.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                             isThreeDSEnabled = true
                         }
 
@@ -288,7 +285,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
                         if paymentMethodToken.paymentInstrumentType == .paymentCard,
                            Primer.shared.flow.internalSessionFlow.vaulted,
-                           settings.is3DSOnVaultingEnabled,
+                           PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.is3DSOnVaultingEnabled,
                            paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
                            isThreeDSEnabled {
                             #if canImport(Primer3DS)
@@ -305,7 +302,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                             }
                             
                             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                 ErrorHandler.handle(error: err)
                                 self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                                 return
@@ -340,7 +337,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         }
                 
                     case .failure(let err):
-                        let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: containerErr)
                         self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                     }
@@ -350,7 +347,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 self.setIsLoading(false)
             }
-        } catch PrimerError.underlyingErrors(errors: let errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
+        } catch PrimerError.underlyingErrors(errors: let errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil) {
             delegate?.cardComponentsManager?(self, tokenizationFailedWith: errors)
             setIsLoading(false)
         } catch {
@@ -390,7 +387,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         return ClientTokenService.decodedClientToken
     }
     
-    var paymentMethodsConfig: PrimerConfiguration?
+    var paymentMethodsConfig: PrimerAPIConfiguration?
     
     public init(
         flow: PaymentFlow,

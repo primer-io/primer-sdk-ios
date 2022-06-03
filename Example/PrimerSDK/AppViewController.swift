@@ -11,10 +11,12 @@ import UIKit
 
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
+var paymentHandling: PaymentHandling = .auto
 
 class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
     @IBOutlet weak var environmentControl: UISegmentedControl!
+    @IBOutlet weak var checkoutHandlingControl: UISegmentedControl!
     @IBOutlet weak var apiKeyTextField: UITextField!
     @IBOutlet weak var customerIdTextField: UITextField!
     @IBOutlet weak var phoneNumberTextField: UITextField!
@@ -27,13 +29,16 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         super.viewDidLoad()
         environmentControl.selectedSegmentIndex = environment.intValue
         environmentControl.accessibilityIdentifier = "env_control"
+        checkoutHandlingControl.selectedSegmentIndex = paymentHandling.rawValue
+        checkoutHandlingControl.accessibilityIdentifier = "payment_control"
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
+        customerIdTextField.text = "customer-\(String.randomString(length: 8))"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.vn.rawValue
+        countryCodeTextField.text = CountryCode.gb.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
-        currencyTextField.text = Currency.VND.rawValue
+        currencyTextField.text = Currency.GBP.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.placeholder = "In minor units (type 100 for 1.00)"
         amountTextField.text = "10"
@@ -64,23 +69,37 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         environment = Environment(intValue: sender.selectedSegmentIndex)
     }
     
+    @IBAction func paymentHandlingValueChanged(_ sender: UISegmentedControl) {
+        if let selectedPaymentHandling = PaymentHandling(rawValue: sender.selectedSegmentIndex) {
+            paymentHandling = selectedPaymentHandling
+        }
+    }
+    
     @IBAction func initializePrimerButtonTapped(_ sender: Any) {
         var amount: Int?
         if let amountStr = amountTextField.text {
             amount = Int(amountStr)
         }
         
-        let mcvc = MerchantCheckoutViewController.instantiate(
-            customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
-            phoneNumber: phoneNumberTextField.text,
-            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
-            currency: Currency(rawValue: currencyTextField.text ?? ""),
-            amount: amount,
-            performPayment: performPaymentSwitch.isOn)
-        
-        self.evaluateCustomDefinedApiKey()
-        
-        self.navigationController?.pushViewController(mcvc, animated: true)
+        if paymentHandling == .manual {
+            let mpmcvc = ManualPaymentMerchantCheckoutViewController.instantiate(
+                customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
+                phoneNumber: phoneNumberTextField.text,
+                countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
+                currency: Currency(rawValue: currencyTextField.text ?? ""),
+                amount: amount,
+                performPayment: performPaymentSwitch.isOn)
+            navigationController?.pushViewController(mpmcvc, animated: true)
+        } else {
+            let mcvc = MerchantCheckoutViewController.instantiate(
+                customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
+                phoneNumber: phoneNumberTextField.text,
+                countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
+                currency: Currency(rawValue: currencyTextField.text ?? ""),
+                amount: amount,
+                performPayment: performPaymentSwitch.isOn)
+            navigationController?.pushViewController(mcvc, animated: true)
+        }
     }
     
     @IBAction func checkoutComponentsButtonTapped(_ sender: Any) {

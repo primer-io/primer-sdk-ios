@@ -9,8 +9,6 @@
 
 import UIKit
 
-public typealias PrimerPaymentMethodType = PaymentMethodConfigType
-
 public class PrimerHeadlessUniversalCheckout {
     
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate?
@@ -26,7 +24,7 @@ public class PrimerHeadlessUniversalCheckout {
         }
         
         guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
-            let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             DispatchQueue.main.async {
                 completion(nil, err)
@@ -49,7 +47,7 @@ public class PrimerHeadlessUniversalCheckout {
         .done {
             let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
             if (availablePaymentMethodsTypes ?? []).isEmpty {
-                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 DispatchQueue.main.async {
                     completion(nil, err)
@@ -68,20 +66,16 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     private func continueValidateSession() -> Promise<Void> {
-        
         return Promise { seal in
-            
-            let appState: AppStateProtocol = DependencyContainer.resolve()
-
-            guard let clientToken = appState.clientToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token is nil"])
+            guard let clientToken = AppState.current.clientToken else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token is nil"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
             
             guard let decodedClientToken = clientToken.jwtTokenPayload else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token cannot be decoded"])
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token cannot be decoded"], diagnosticsId: nil)
                 seal.reject(err)
                 return
             }
@@ -92,14 +86,14 @@ public class PrimerHeadlessUniversalCheckout {
                 seal.reject(error)
             }
             
-            guard let primerConfiguration = appState.primerConfiguration else {
-                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            guard let apiConfiguration = AppState.current.apiConfiguration else {
+                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 seal.reject(err)
                 return
             }
             
-            guard let paymentMethods = primerConfiguration.paymentMethods, !paymentMethods.isEmpty else {
-                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
+                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 seal.reject(err)
                 return
             }
@@ -109,13 +103,8 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     internal func validateSession() -> Promise<Void> {
-        
         return Promise { seal in
-            
-            let appState: AppStateProtocol = DependencyContainer.resolve()
-            
-            if appState.clientToken == nil, let clientToken = PrimerHeadlessUniversalCheckout.current.clientToken {
-                
+            if AppState.current.clientToken == nil, let clientToken = PrimerHeadlessUniversalCheckout.current.clientToken {
                 firstly {
                     ClientTokenService.storeClientToken(clientToken)
                 }
@@ -125,9 +114,7 @@ public class PrimerHeadlessUniversalCheckout {
                 .catch { error in
                     seal.reject(error)
                 }
-                
             } else {
-                
                 firstly {
                     continueValidateSession()
                 }
@@ -142,10 +129,10 @@ public class PrimerHeadlessUniversalCheckout {
     }
 
     internal func listAvailablePaymentMethodsTypes() -> [PrimerPaymentMethodType]? {
-        return PrimerConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
+        return PrimerAPIConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
     }
     
-    public func listRequiredInputElementTypes(for paymentMethodType: PaymentMethodConfigType) -> [PrimerInputElementType]? {
+    public func listRequiredInputElementTypes(for paymentMethodType: PrimerPaymentMethodType) -> [PrimerInputElementType]? {
         switch paymentMethodType {
         case .adyenAlipay:
             return []
@@ -212,17 +199,13 @@ public class PrimerHeadlessUniversalCheckout {
         case .payNLPayconiq:
             return []
         case .paymentCard:
-            let appState: AppStateProtocol = DependencyContainer.resolve()
-
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
-            
-            if let checkoutModule = appState.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
-               let options = checkoutModule.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions {
+            if let checkoutModule = AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
+               let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
                 if options.cardHolderName == true {
                     requiredFields.append(.cardholderName)
                 }
             }
-            
             return requiredFields
         case .payPal:
             return []
@@ -238,7 +221,7 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     public static func makeButton(for paymentMethodType: PrimerPaymentMethodType) -> UIButton? {
-        guard let paymentMethodConfigs = PrimerConfiguration.paymentMethodConfigs else { return nil }
+        guard let paymentMethodConfigs = PrimerAPIConfiguration.paymentMethodConfigs else { return nil }
         guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
         return paymentMethodConfig.tokenizationViewModel?.paymentMethodButton
     }
@@ -247,7 +230,7 @@ public class PrimerHeadlessUniversalCheckout {
         return brand.getImage(assetType: assetType)
     }
     
-    public static func getAsset(for paymentMethodType: PaymentMethodConfigType, assetType: PrimerAsset.ImageType) -> UIImage? {
+    public static func getAsset(for paymentMethodType: PrimerPaymentMethodType, assetType: PrimerAsset.ImageType) -> UIImage? {
         return PrimerAsset.getAsset(for: paymentMethodType, assetType: assetType)
     }
     
@@ -255,24 +238,24 @@ public class PrimerHeadlessUniversalCheckout {
         return PrimerAsset.getAsset(for: cardNetwork, assetType: assetType)
     }
     
-    public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType) {
+    public func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType) {
         DispatchQueue.main.async {
             
-            var settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            settings.hasDisabledSuccessScreen = true
-            settings.isInitialLoadingHidden = true
+            PrimerSettings.current.uiOptions.isInitScreenEnabled = false
+            PrimerSettings.current.uiOptions.isSuccessScreenEnabled = false
+            PrimerSettings.current.uiOptions.isErrorScreenEnabled = false
             
             switch paymentMethod {
             case .goCardlessMandate,
                     .paymentCard,
                     .other:
-                let err = PrimerError.missingCustomUI(paymentMethod: paymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.missingCustomUI(paymentMethod: paymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
                 return
             case .applePay:
-                if settings.merchantIdentifier == nil {
-                    let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                if PrimerSettings.current.paymentMethodOptions.applePayOptions == nil {
+                    let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
                     return
@@ -286,8 +269,8 @@ public class PrimerHeadlessUniversalCheckout {
                 }
                 
             case .payPal:
-                if settings.urlScheme == nil {
-                    let err = PrimerError.invalidUrlScheme(urlScheme: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                if PrimerSettings.current.paymentMethodOptions.urlScheme == nil {
+                    let err = PrimerError.invalidUrlScheme(urlScheme: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
                     return
@@ -298,7 +281,7 @@ public class PrimerHeadlessUniversalCheckout {
             
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationStarted()
             
-            Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout, on: UIViewController())
+//            Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout)
         }
     }
 }
@@ -309,7 +292,7 @@ public struct PrimerAsset {
         return brand.getImage(assetType: assetType)
     }
     
-    public static func getAsset(for paymentMethodType: PaymentMethodConfigType, assetType: PrimerAsset.ImageType) -> UIImage? {
+    public static func getAsset(for paymentMethodType: PrimerPaymentMethodType, assetType: PrimerAsset.ImageType) -> UIImage? {
         var brand: PrimerAsset.Brand?
         
         switch paymentMethodType {

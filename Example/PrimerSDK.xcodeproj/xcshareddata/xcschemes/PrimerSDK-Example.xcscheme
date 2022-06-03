@@ -70,6 +70,20 @@
                BlueprintName = "PrimerSDKExample_UITests"
                ReferencedContainer = "container:PrimerSDK.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "Klarna/testInitKlarna()">
+               </Test>
+               <Test
+                  Identifier = "UniversalCheckout/testAdyenAlipay()">
+               </Test>
+               <Test
+                  Identifier = "UniversalCheckout/testAdyenMobilePay()">
+               </Test>
+               <Test
+                  Identifier = "UniversalCheckout/testPayNLBancontact()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

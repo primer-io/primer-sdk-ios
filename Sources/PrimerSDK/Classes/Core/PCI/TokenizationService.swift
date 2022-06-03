@@ -24,7 +24,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
         onTokenizeSuccess: @escaping (Result<PaymentMethodToken, Error>) -> Void
     ) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             onTokenizeSuccess(.failure(err))
             return
@@ -33,7 +33,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
         log(logLevel: .verbose, title: nil, message: "Client Token: \(decodedClientToken)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
         guard let pciURL = decodedClientToken.pciUrl else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             onTokenizeSuccess(.failure(err))
             return
@@ -42,7 +42,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
         log(logLevel: .verbose, title: nil, message: "PCI URL: \(pciURL)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
         guard let url = URL(string: "\(pciURL)/payment-instruments") else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             onTokenizeSuccess(.failure(err))
             return
@@ -58,13 +58,10 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 DispatchQueue.main.async { onTokenizeSuccess(.failure(err)) }
                 
             case .success(let paymentMethodToken):
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                let state: AppStateProtocol = DependencyContainer.resolve()
-                
                 self.tokenizedPaymentMethodToken = paymentMethodToken
                 
                 var isThreeDSEnabled: Bool = false
-                if state.primerConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                if AppState.current.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                     isThreeDSEnabled = true
                 }
 
@@ -75,7 +72,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
                 if paymentMethodToken.paymentInstrumentType == .paymentCard,
                    Primer.shared.flow.internalSessionFlow.vaulted,
-                   settings.is3DSOnVaultingEnabled,
+                   PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.is3DSOnVaultingEnabled,
                    paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
                    isThreeDSEnabled {
                     #if canImport(Primer3DS)
@@ -91,9 +88,9 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     }
                     
                     guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                        let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                        let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
-                        PrimerDelegateProxy.checkoutFailed(with: err.exposedError)
+                        onTokenizeSuccess(.failure(err))
                         return
                     }
 

@@ -1,5 +1,5 @@
 //
-//  PrimerConfiguration.swift
+//  PrimerAPIConfiguration.swift
 //  PrimerSDK
 //
 //  Created by Evangelos on 28/12/21.
@@ -12,25 +12,18 @@ import PassKit
 
 protocol CheckoutModuleOptions: Codable {}
 
-struct PrimerConfiguration: Codable {
+struct PrimerAPIConfiguration: Codable {
     
-    static var current: PrimerConfiguration? {
-        let appState: AppStateProtocol = DependencyContainer.resolve()
-        return appState.primerConfiguration
+    static var current: PrimerAPIConfiguration? {
+        return AppState.current.apiConfiguration
     }
     
     static var paymentMethodConfigs: [PaymentMethodConfig]? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        let pms = state
-            .primerConfiguration?
-            .paymentMethods
-        
-        return pms
+        return AppState.current.apiConfiguration?.paymentMethods
     }
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
-        var viewModels = PrimerConfiguration.paymentMethodConfigs?
+        var viewModels = PrimerAPIConfiguration.paymentMethodConfigs?
             .filter({ $0.type.isEnabled })
             .compactMap({ $0.tokenizationViewModel })
         ?? []
@@ -58,7 +51,7 @@ struct PrimerConfiguration: Codable {
     
     let coreUrl: String?
     let pciUrl: String?
-    let clientSession: ClientSession?
+    let clientSession: ClientSessionAPIResponse?
     let paymentMethods: [PaymentMethodConfig]?
     let keys: ThreeDS.Keys?
     let checkoutModules: [CheckoutModule]?
@@ -71,7 +64,7 @@ struct PrimerConfiguration: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
         self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
-        self.clientSession = (try? container.decode(ClientSession?.self, forKey: .clientSession)) ?? nil
+        self.clientSession = (try? container.decode(ClientSessionAPIResponse?.self, forKey: .clientSession)) ?? nil
         let throwables = try container.decode([Throwable<PaymentMethodConfig>].self, forKey: .paymentMethods)
         self.paymentMethods = throwables.compactMap({ $0.value })
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
@@ -81,7 +74,7 @@ struct PrimerConfiguration: Codable {
         if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
             for paymentMethodOption in options {
                 if let type = paymentMethodOption["type"] as? String {
-                    if type == PaymentMethodConfigType.paymentCard.rawValue,
+                    if type == PrimerPaymentMethodType.paymentCard.rawValue,
                         let networks = paymentMethodOption["networks"] as? [[String: Any]],
                        !networks.isEmpty
                     {
@@ -101,7 +94,7 @@ struct PrimerConfiguration: Codable {
             }
         }
         
-        if let paymentMethod = self.paymentMethods?.filter({ $0.type == PaymentMethodConfigType.paymentCard }).first {
+        if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard }).first {
             paymentMethod.hasUnknownSurcharge = true
             paymentMethod.surcharge = nil
         }
@@ -110,10 +103,10 @@ struct PrimerConfiguration: Codable {
     init(
         coreUrl: String?,
         pciUrl: String?,
-        clientSession: ClientSession?,
+        clientSession: ClientSessionAPIResponse?,
         paymentMethods: [PaymentMethodConfig]?,
         keys: ThreeDS.Keys?,
-        checkoutModules: [PrimerConfiguration.CheckoutModule]?
+        checkoutModules: [PrimerAPIConfiguration.CheckoutModule]?
     ) {
         self.coreUrl = coreUrl
         self.pciUrl = pciUrl
@@ -123,12 +116,12 @@ struct PrimerConfiguration: Codable {
         self.checkoutModules = checkoutModules
     }
     
-    func getConfigId(for type: PaymentMethodConfigType) -> String? {
+    func getConfigId(for type: PrimerPaymentMethodType) -> String? {
         guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
         return method.id
     }
     
-    func getProductId(for type: PaymentMethodConfigType) -> String? {
+    func getProductId(for type: PrimerPaymentMethodType) -> String? {
         guard let method = self.paymentMethods?
                 .first(where: { method in return method.type == type }) else { return nil }
         
@@ -140,7 +133,7 @@ struct PrimerConfiguration: Codable {
     }
 }
 
-extension PrimerConfiguration {
+extension PrimerAPIConfiguration {
     struct CheckoutModule: Codable {
         let type: String
         let requestUrlStr: String?
@@ -166,7 +159,7 @@ extension PrimerConfiguration {
                 self.saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
                 
                 if self.cardHolderName == nil && self.saveCardCheckbox == nil {
-                    let err = ParserError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let err = InternalError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     throw err
                 }
@@ -218,7 +211,7 @@ extension PrimerConfiguration {
                     self.phoneNumber == nil &&
                     self.state == nil
                 {
-                    let err = ParserError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let err = InternalError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     throw err
                 }

@@ -75,20 +75,20 @@ class Base: XCTestCase {
              number: "9120000000000006",
              expirationDateString: "0225",
              cvv: "123",
-             cardholderName: "John Smith",
+             cardholderName: nil,
              postalCode: nil),
         Card(alias: "FAILING_CARD_PROCESSOR_3DS",
              number: "4000008400001629",
              expirationDateString: "0225",
              cvv: "123",
              cardholderName: "John Smith",
-             postalCode: nil),
+             postalCode: "EC1V"),
         Card(alias: "SUCCESS_CARD_PROCESSOR_3DS",
              number: "4000000000003220",
              expirationDateString: "0225",
              cvv: "123",
              cardholderName: "John Smith",
-             postalCode: nil),
+             postalCode: "EC1V"),
 
     ]
     
@@ -157,7 +157,7 @@ class Base: XCTestCase {
             countryCode: "DK",
             amount: "100",
             expectations: Payment.Expectations(
-                amount: "DKK 1.00",
+                amount: "kr.1.00",
                 surcharge: nil,
                 webviewImage: "mobilepay-logo",
                 webviewTexts: nil,
@@ -165,7 +165,7 @@ class Base: XCTestCase {
                 resultScreenTexts: [
                     "status": "PENDING",
                     "actions": "USE_PRIMER_SDK",
-                    "amount": "DKK 1.00"
+                    "amount": "kr.1.00"
                 ]
             )
         ),
@@ -173,7 +173,7 @@ class Base: XCTestCase {
             id: "PAY_NL_BANCONTACT",
             environment: .sandbox,
             currency: "EUR",
-            countryCode: "NL",
+            countryCode: "BE",
             amount: "100",
             expectations: Payment.Expectations(
                 amount: "€1.00",
@@ -182,9 +182,7 @@ class Base: XCTestCase {
                 webviewTexts: ["Primer API Ltd", "€ 1,00"],
                 buttonTexts: nil,
                 resultScreenTexts: [
-                    "status": "PENDING",
-                    "actions": "USE_PRIMER_SDK",
-                    "amount": "EUR 1.29"
+                    "status": "SUCCESS"
                 ]
             )
         ),
@@ -238,8 +236,7 @@ class Base: XCTestCase {
                 webviewTexts: nil,
                 buttonTexts: nil,
                 resultScreenTexts: [
-                    "status": "FAILED",
-                    "amount": "GBP 10.49"
+                    "status": "SUCCESS"
                 ]
             )
         ),
@@ -269,11 +266,11 @@ class Base: XCTestCase {
             countryCode: "FR",
             amount: "10500",
             expectations: Payment.Expectations(
-                amount: "EUR 105.00",
+                amount: "€105.00",
                 surcharge: "Additional fee may apply",
                 webviewImage: nil,
                 webviewTexts: nil,
-                buttonTexts: ["Pay € 105.00"],
+                buttonTexts: ["Pay €105.00"],
                 resultScreenTexts: nil
             )
         )
@@ -543,6 +540,7 @@ class Base: XCTestCase {
 }
 
 extension XCUIElement {
+    
     func clearText() {
         guard let stringValue = self.value as? String else {
             return

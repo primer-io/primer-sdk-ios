@@ -275,7 +275,6 @@ internal extension String {
         
         return str
     }
-    
 }
 
 #endif
