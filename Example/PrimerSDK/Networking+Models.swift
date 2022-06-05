@@ -31,7 +31,7 @@ extension Networking {
                     addressLine2: nil,
                     city: "London",
                     state: nil,
-                    countryCode: "GB",
+                    countryCode: countryCode?.rawValue ?? "GB",
                     postalCode: "NW06 4OM"),
                 shippingAddress: Address(
                     firstName: "John",
@@ -40,7 +40,7 @@ extension Networking {
                     addressLine2: nil,
                     city: "London",
                     state: nil,
-                    countryCode: "GB",
+                    countryCode: countryCode?.rawValue ?? "GB",
                     postalCode: "EC53 8BT")
             ),
             order: ClientSessionRequestBody.Order(
@@ -59,58 +59,58 @@ extension Networking {
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
                 vaultOnSuccess: false,
-                options:
-                [
-                    "APPLE_PAY": [
-                        "surcharge": [
-                            "amount": 19
-                        ]
-                    ],
-                    "PAY_NL_IDEAL": [
-                        "surcharge": [
-                            "amount": 39
-                        ]
-                    ],
-                    "PAYPAL": [
-                        "surcharge": [
-                            "amount": 49
-                        ]
-                    ],
-                    "ADYEN_TWINT": [
-                        "surcharge": [
-                            "amount": 59
-                        ]
-                    ],
-                    "ADYEN_IDEAL": [
-                        "surcharge": [
-                            "amount": 69
-                        ]
-                    ],
-                    "ADYEN_GIROPAY": [
-                        "surcharge": [
-                            "amount": 79
-                        ]
-                    ],
-                    "BUCKAROO_BANCONTACT": [
-                        "surcharge": [
-                            "amount": 89
-                        ]
-                    ],
-                    "PAYMENT_CARD": [
-                        "networks": [
-                            "VISA": [
-                                "surcharge": [
-                                    "amount": 109
-                                ]
-                            ],
-                            "MASTERCARD": [
-                                "surcharge": [
-                                    "amount": 129
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                options: nil
+//                [
+//                    "APPLE_PAY": [
+//                        "surcharge": [
+//                            "amount": 19
+//                        ]
+//                    ],
+//                    "PAY_NL_IDEAL": [
+//                        "surcharge": [
+//                            "amount": 39
+//                        ]
+//                    ],
+//                    "PAYPAL": [
+//                        "surcharge": [
+//                            "amount": 49
+//                        ]
+//                    ],
+//                    "ADYEN_TWINT": [
+//                        "surcharge": [
+//                            "amount": 59
+//                        ]
+//                    ],
+//                    "ADYEN_IDEAL": [
+//                        "surcharge": [
+//                            "amount": 69
+//                        ]
+//                    ],
+//                    "ADYEN_GIROPAY": [
+//                        "surcharge": [
+//                            "amount": 79
+//                        ]
+//                    ],
+//                    "BUCKAROO_BANCONTACT": [
+//                        "surcharge": [
+//                            "amount": 89
+//                        ]
+//                    ],
+//                    "PAYMENT_CARD": [
+//                        "networks": [
+//                            "VISA": [
+//                                "surcharge": [
+//                                    "amount": 109
+//                                ]
+//                            ],
+//                            "MASTERCARD": [
+//                                "surcharge": [
+//                                    "amount": 129
+//                                ]
+//                            ]
+//                        ]
+//                    ]
+//                ]
             )
         )
     }
