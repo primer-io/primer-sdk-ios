@@ -31,14 +31,16 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         environmentControl.accessibilityIdentifier = "env_control"
         checkoutHandlingControl.selectedSegmentIndex = paymentHandling == .auto ? 0 : 1
         checkoutHandlingControl.accessibilityIdentifier = "payment_control"
+        apiKeyTextField.accessibilityIdentifier = "api_key_txt_field"
+        apiKeyTextField.text = nil
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
         customerIdTextField.text = "ios-customer-\(String.randomString(length: 8))"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.fr.rawValue
+        countryCodeTextField.text = CountryCode.se.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
-        currencyTextField.text = Currency.EUR.rawValue
+        currencyTextField.text = Currency.SEK.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.placeholder = "In minor units (type 100 for 1.00)"
         amountTextField.text = "1010"
@@ -112,11 +114,12 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
             amount = Int(amountStr)
         }
         
-        let mcfvc = MerchantPaymentMethodsViewController.instantiate(amount: amount ?? 90,
-                                                                     currency: Currency(rawValue: currencyTextField.text ?? "")!,
-                                                                     countryCode: CountryCode(rawValue: countryCodeTextField.text ?? "")!,
-                                                                     customerId: customerIdTextField.text,
-                                                                     phoneNumber: phoneNumberTextField.text)
+        let mcfvc = MerchantPaymentMethodsViewController.instantiate(
+            amount: amount ?? 1000,
+            currency: Currency(rawValue: currencyTextField.text ?? "")!,
+            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? "")!,
+            customerId: customerIdTextField.text,
+            phoneNumber: phoneNumberTextField.text)
         
         mcfvc.view.translatesAutoresizingMaskIntoConstraints = false
         mcfvc.view.heightAnchor.constraint(equalToConstant: self.view.bounds.height).isActive = true
