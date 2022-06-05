@@ -156,10 +156,48 @@ class Networking {
         }).resume()
     }
     
+    static func resumePayment(_ paymentId: String,
+                              withToken resumeToken: String,
+                              completion: @escaping (Payment.Response?, Error?) -> Void) {
+        let url = environment.baseUrl.appendingPathComponent("/api/payments/\(paymentId)/resume")
+
+        let body = Payment.ResumeRequest(token: resumeToken)
+
+        var bodyData: Data!
+
+        do {
+            bodyData = try JSONEncoder().encode(body)
+        } catch {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+
+        let networking = Networking()
+        networking.request(
+            apiVersion: nil,
+            url: url,
+            method: .post,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        let paymentResponse = try JSONDecoder().decode(Payment.Response.self, from: data)
+                        completion(paymentResponse, nil)
+                    } catch {
+                        completion(nil, error)
+                    }
+
+                case .failure(let err):
+                    completion(nil, err)
+                }
+            }
+    }
+    
     static func createPayment(with paymentMethod: PaymentMethodToken,
                               customDefinedApiKey: String? = nil,
                               completion: @escaping (Payment.Response?, Error?) -> Void) {
-        
         guard let paymentMethodToken = paymentMethod.token else {
             completion(nil, NetworkError.missingParams)
             return
