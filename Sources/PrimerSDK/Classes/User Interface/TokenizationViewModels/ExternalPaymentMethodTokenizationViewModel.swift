@@ -76,6 +76,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: self.config.type.rawValue)
                 return self.tokenize()
             }
             .done { paymentMethodTokenData in
@@ -133,7 +134,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.willDismissPaymentMethodUI?()
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
-                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodPresented()
+                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: self.config.type.rawValue)
                         self.didDismissPaymentMethodUI?()
                         seal.fulfill(())
                     }
