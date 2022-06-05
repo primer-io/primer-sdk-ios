@@ -417,6 +417,7 @@ public struct Payment {
         public enum Status: String, Codable {
             case authorized = "AUTHORIZED"
             case settled = "SETTLED"
+            case settling = "SETTLING"
             case declined = "DECLINED"
             case failed = "FAILED"
             case pending = "PENDING"
