@@ -171,6 +171,7 @@ public protocol PrimerInputElement {
 
 @objc
 public protocol PrimerInputElementDelegate: AnyObject {
+    
     @objc optional func inputElementShouldFocus(_ sender: PrimerInputElement) -> Bool
     @objc optional func inputElementDidFocus(_ sender: PrimerInputElement)
     @objc optional func inputElementShouldBlur(_ sender: PrimerInputElement) -> Bool
@@ -180,14 +181,23 @@ public protocol PrimerInputElementDelegate: AnyObject {
     @objc optional func inputElementDidDetectType(_ sender: PrimerInputElement, type: Any?)
 }
 
-public protocol PrimerHeadlessUniversalCheckoutDelegate: AnyObject {
-    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully()
-    func primerHeadlessUniversalCheckoutPreparationStarted()
-    func primerHeadlessUniversalCheckoutTokenizationStarted()
-    func primerHeadlessUniversalCheckoutPaymentMethodPresented()
-    func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?)
-    func primerHeadlessUniversalCheckoutResume(withResumeToken resumeToken: String, resumeHandler: ResumeHandlerProtocol?)
-    func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error)
+@objc
+public protocol PrimerHeadlessUniversalCheckoutDelegate {
+    
+    @objc func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: [String])
+    @objc func primerHeadlessUniversalCheckoutPreparationStarted()
+    @objc func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String)
+    @objc func primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: String)
+    @objc func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
+    @objc func primerHeadlessUniversalDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
+    @objc func primerHeadlessUniversalCheckoutDidFail(withError err: Error)
+    
+    
+    
+    @objc func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData)
+    @objc func primerClientSessionWillUpdate()
+    @objc func primerClientSessionDidUpdate(_ clientSession: PrimerClientSession)
+    @objc func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void)
 }
 
 #endif
