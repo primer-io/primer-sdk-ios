@@ -36,12 +36,12 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.fr.rawValue
+        countryCodeTextField.text = CountryCode.de.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
         currencyTextField.text = Currency.EUR.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.placeholder = "In minor units (type 100 for 1.00)"
-        amountTextField.text = "1000"
+        amountTextField.text = "10000"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
         performPaymentSwitch.isOn = true
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
@@ -108,7 +108,13 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
             amount = Int(amountStr)
         }
         
-        let mcfvc = MerchantPaymentMethodsViewController.instantiate(amount: amount ?? 1, currency: Currency(rawValue: currencyTextField.text ?? "")!, countryCode: CountryCode(rawValue: countryCodeTextField.text ?? "")!)
+        let mcfvc = MerchantPaymentMethodsViewController.instantiate(
+            amount: amount ?? 1000,
+            currency: Currency(rawValue: currencyTextField.text ?? "")!,
+            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? "")!,
+            customerId: customerIdTextField.text,
+            phoneNumber: phoneNumberTextField.text)
+        
         mcfvc.view.translatesAutoresizingMaskIntoConstraints = false
         mcfvc.view.heightAnchor.constraint(equalToConstant: self.view.bounds.height).isActive = true
         mcfvc.view.widthAnchor.constraint(equalToConstant: self.view.bounds.width).isActive = true

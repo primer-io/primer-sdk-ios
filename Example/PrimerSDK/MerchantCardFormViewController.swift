@@ -23,6 +23,7 @@ class MerchantCardFormViewController: UIViewController {
     var paymentResponsesData: [Data] = []
     var activityIndicator: UIActivityIndicatorView?
     var paymentButton: UIButton!
+    var paymentId: String?
     
     var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager?
     
@@ -95,68 +96,47 @@ class MerchantCardFormViewController: UIViewController {
 }
 
 extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegate {
-    func primerHeadlessUniversalCheckoutResume(withResumeToken resumeToken: String, resumeHandler: ResumeHandlerProtocol?) {
-        
+    
+    func primerHeadlessUniversalCheckoutPreparationStarted() {
+        print("🤯🤯🤯 \(#function)")
     }
     
-    func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
-        if let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
-           (threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess) {
-            var message: String = ""
-
-            if let reasonCode = threeDSecureAuthentication.reasonCode {
-                message += "[\(reasonCode)] "
-            }
-
-            if let reasonText = threeDSecureAuthentication.reasonText {
-                message += reasonText
-            }
-
-            threeDSAlert = UIAlertController(title: "3DS Error", message: message, preferredStyle: .alert)
-            threeDSAlert?.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-                self?.threeDSAlert = nil
-            }))
-        }
-
-        self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
-        self.view.addSubview(self.activityIndicator!)
-        self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
-        self.activityIndicator?.color = .black
-        self.activityIndicator?.startAnimating()
-
-        Networking.createPayment(with: paymentMethodToken) { (res, err) in
+    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: [String]) {
+        print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
+    }
+    
+    func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {
+        print("🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
+    }
+    
+    func primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: String) {
+        print("🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
+    }
+    
+    func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+        print("🤯🤯🤯 \(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
+        
+        Networking.createPayment(with: paymentMethodTokenData) { (res, err) in
             DispatchQueue.main.async {
                 self.activityIndicator?.stopAnimating()
                 self.activityIndicator?.removeFromSuperview()
                 self.activityIndicator = nil
-
-                if !self.paymentResponsesData.isEmpty {
-                    let rvc = HUCResultViewController.instantiate(data: self.paymentResponsesData)
-                    self.navigationController?.pushViewController(rvc, animated: true)
-                }
             }
 
             if let err = err {
-                resumeHandler?.handle(error: err)
+                // No need to handle anything
             } else if let res = res {
-                if let data = try? JSONEncoder().encode(res) {
-                    DispatchQueue.main.async {
-                        let rvc = HUCResultViewController.instantiate(data: [data])
-                        self.navigationController?.pushViewController(rvc, animated: true)
-                    }
-                }
+                self.paymentId = res.id
                 
-                guard let requiredAction = res.requiredAction else {
-                    resumeHandler?.handleSuccess()
-                    return
-                }
-                
-                self.resumePaymentId = res.id
-                
-                if requiredAction.name == .threeDSAuthentication, res.status == .pending {
-                    resumeHandler?.handle(newClientToken: requiredAction.clientToken)
+                if res.requiredAction?.clientToken != nil {
+                    decisionHandler(.continueWithNewClientToken(res.requiredAction!.clientToken))
                 } else {
-                    resumeHandler?.handleSuccess()
+                    if let data = try? JSONEncoder().encode(res) {
+//                        DispatchQueue.main.async {
+//                            let rvc = HUCResultViewController.instantiate(data: [data])
+//                            self.navigationController?.pushViewController(rvc, animated: true)
+//                        }
+                    }
                 }
 
             } else {
@@ -165,39 +145,161 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
         }
     }
     
-    func primerHeadlessUniversalCheckoutPreparationStarted() {
+    func primerHeadlessUniversalDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+        print("🤯🤯🤯 \(#function)\nresumeToken: \(resumeToken)")
         
-    }
-    
-    func primerHeadlessUniversalCheckoutTokenizationStarted() {
-        
-    }
-    
-    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully() {
-        
-    }
-    
-    func primerHeadlessUniversalCheckoutPaymentMethodPresented() {
-        
-    }
-    
-    func primerHeadlessUniversalCheckoutTokenizationSucceededTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
-        
-    }
-    
-    func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error) {
-        DispatchQueue.main.async {
-            self.activityIndicator?.stopAnimating()
-            self.activityIndicator?.removeFromSuperview()
-            self.activityIndicator = nil
-
-            if !self.paymentResponsesData.isEmpty {
-                let rvc = HUCResultViewController.instantiate(data: self.paymentResponsesData)
-                self.navigationController?.pushViewController(rvc, animated: true)
+        Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
+            if let err = err {
+                // ...
+            } else {
+                decisionHandler(.succeed())
             }
         }
-        print(err)
     }
+    
+    func primerHeadlessUniversalCheckoutDidFail(withError err: Error) {
+        print("🤯🤯🤯 \(#function)\nerror: \(err)")
+    }
+    
+    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
+        print("🤯🤯🤯 \(#function)\ndata: \(data)")
+    }
+    
+    func primerClientSessionWillUpdate() {
+        print("🤯🤯🤯 \(#function)")
+    }
+    
+    func primerClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
+        print("🤯🤯🤯 \(#function)\nclientSession: \(clientSession)")
+    }
+    
+    func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+        print("🤯🤯🤯 \(#function)\ndata: \(data)")
+        decisionHandler(.continuePaymentCreation())
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+//    func primerHeadlessUniversalCheckoutResume(withResumeToken resumeToken: String, resumeHandler: ResumeHandlerProtocol?) {
+//
+//    }
+//
+//    func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
+//        if let threeDSecureAuthentication = paymentMethodToken.threeDSecureAuthentication,
+//           (threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess) {
+//            var message: String = ""
+//
+//            if let reasonCode = threeDSecureAuthentication.reasonCode {
+//                message += "[\(reasonCode)] "
+//            }
+//
+//            if let reasonText = threeDSecureAuthentication.reasonText {
+//                message += reasonText
+//            }
+//
+//            threeDSAlert = UIAlertController(title: "3DS Error", message: message, preferredStyle: .alert)
+//            threeDSAlert?.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
+//                self?.threeDSAlert = nil
+//            }))
+//        }
+//
+//        self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
+//        self.view.addSubview(self.activityIndicator!)
+//        self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
+//        self.activityIndicator?.color = .black
+//        self.activityIndicator?.startAnimating()
+//
+//        Networking.createPayment(with: paymentMethodToken) { (res, err) in
+//            DispatchQueue.main.async {
+//                self.activityIndicator?.stopAnimating()
+//                self.activityIndicator?.removeFromSuperview()
+//                self.activityIndicator = nil
+//
+//                if !self.paymentResponsesData.isEmpty {
+//                    let rvc = HUCResultViewController.instantiate(data: self.paymentResponsesData)
+//                    self.navigationController?.pushViewController(rvc, animated: true)
+//                }
+//            }
+//
+//            if let err = err {
+//                resumeHandler?.handle(error: err)
+//            } else if let res = res {
+//                if let data = try? JSONEncoder().encode(res) {
+//                    DispatchQueue.main.async {
+//                        let rvc = HUCResultViewController.instantiate(data: [data])
+//                        self.navigationController?.pushViewController(rvc, animated: true)
+//                    }
+//                }
+//
+//                guard let requiredAction = res.requiredAction else {
+//                    resumeHandler?.handleSuccess()
+//                    return
+//                }
+//
+//                self.resumePaymentId = res.id
+//
+//                if requiredAction.name == .threeDSAuthentication, res.status == .pending {
+//                    resumeHandler?.handle(newClientToken: requiredAction.clientToken)
+//                } else {
+//                    resumeHandler?.handleSuccess()
+//                }
+//
+//            } else {
+//                assert(true)
+//            }
+//        }
+//    }
+//
+//    func primerHeadlessUniversalCheckoutPreparationStarted() {
+//
+//    }
+//
+//    func primerHeadlessUniversalCheckoutTokenizationStarted() {
+//
+//    }
+//
+//    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully() {
+//
+//    }
+//
+//    func primerHeadlessUniversalCheckoutPaymentMethodPresented() {
+//
+//    }
+//
+//    func primerHeadlessUniversalCheckoutTokenizationSucceededTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
+//
+//    }
+//
+//    func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error) {
+//        DispatchQueue.main.async {
+//            self.activityIndicator?.stopAnimating()
+//            self.activityIndicator?.removeFromSuperview()
+//            self.activityIndicator = nil
+//
+//            if !self.paymentResponsesData.isEmpty {
+//                let rvc = HUCResultViewController.instantiate(data: self.paymentResponsesData)
+//                self.navigationController?.pushViewController(rvc, animated: true)
+//            }
+//        }
+//        print(err)
+//    }
  
 }
 
