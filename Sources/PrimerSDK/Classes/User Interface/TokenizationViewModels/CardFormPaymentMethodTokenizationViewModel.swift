@@ -201,7 +201,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     required init(config: PaymentMethodConfig) {
-        self.flow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout
+        self.flow = (Primer.shared.flow?.internalSessionFlow.vaulted ?? false) ? .vault : .checkout
         super.init(config: config)
         
         self.cardComponentsManager = CardComponentsManager(
