@@ -112,19 +112,13 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         self.didFinishPayment = { err in
             self.submitButton.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-            self.willDismissPaymentMethodUI?()
-            self.didDismissPaymentMethodUI?()
         }
         
         super.start()
     }
     
     override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
-        
-        DispatchQueue.main.async {
-            UIApplication.shared.endIgnoringInteractionEvents()
-        }
-        
+                
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -141,14 +135,17 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         Analytics.Service.record(event: event)
         
         return Promise { seal in
+            
             firstly {
                 self.validateReturningPromise()
             }
-            .then {
-                self.presentDecisionsViewController()
+            .then { () -> Promise<Void> in
+                self.willPresentPaymentMethodUI?()
+                return self.presentDecisionsViewController()
             }
             .then { () -> Promise<PrimerTestPaymentMethodOptions.FlowDecision> in
-                self.awaitDecisionSelection()
+                self.didPresentPaymentMethodUI?()
+                return self.awaitDecisionSelection()
             }
             .then { decision -> Promise<Void> in
                 self.selectedDecision = decision
@@ -159,11 +156,13 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                self.willDismissPaymentMethodUI?()
                 self.didStartTokenization?()
                 return self.tokenize(decision: self.selectedDecision!)
             }
             .ensure { [unowned self] in
                 DispatchQueue.main.async {
+                    self.didDismissPaymentMethodUI?()
                     self.didFinishTokenization?(nil)
                     self.didFinishPayment?(nil)
                 }
