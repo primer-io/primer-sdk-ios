@@ -13,10 +13,6 @@ import XCTest
 class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     var selectedPaymentMethod: PaymentMethodToken?
     
-    var mandate: DirectDebitMandate {
-        return DirectDebitMandate()
-    }
-    
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] {
         return []
     }

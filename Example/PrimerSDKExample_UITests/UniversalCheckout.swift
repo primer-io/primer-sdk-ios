@@ -395,7 +395,7 @@ class UniversalCheckout: XCTestCase {
 
     
     func testPass3DSChallenge() throws {
-        let threeDSPayment = Base.paymentMethods.filter({ $0.alias == "PAYMENT_CARD" }).first!
+        let threeDSPayment = Base.paymentMethods.filter({ $0.alias == "3DS_PAYMENT_CARD" }).first!
         let card = Base.cards.filter({ $0.alias == "3DS_PAYMENT_CARD" }).first!
         try openCardForm(for: threeDSPayment)
         fillCardDataWithCard(card, for: threeDSPayment, tappingPayOnceEnabled: true)
@@ -416,7 +416,7 @@ class UniversalCheckout: XCTestCase {
     }
     
     func testFail3DSChallenge() throws {
-        let threeDSPayment = Base.paymentMethods.filter({ $0.alias == "PAYMENT_CARD" }).first!
+        let threeDSPayment = Base.paymentMethods.filter({ $0.alias == "3DS_PAYMENT_CARD" }).first!
         let card = Base.cards.filter({ $0.alias == "3DS_PAYMENT_CARD" }).first!
         try openCardForm(for: threeDSPayment)
         fillCardDataWithCard(card, for: threeDSPayment, tappingPayOnceEnabled: true)
@@ -437,7 +437,7 @@ class UniversalCheckout: XCTestCase {
     }
     
     func testCancel3DSChallenge() throws {
-        let threeDSPayment = Base.paymentMethods.filter({ $0.alias == "PAYMENT_CARD" }).first!
+        let threeDSPayment = Base.paymentMethods.filter({ $0.alias == "3DS_PAYMENT_CARD" }).first!
         let card = Base.cards.filter({ $0.alias == "3DS_PAYMENT_CARD" }).first!
         try openCardForm(for: threeDSPayment)
         fillCardDataWithCard(card, for: threeDSPayment, tappingPayOnceEnabled: true)

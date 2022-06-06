@@ -8,6 +8,7 @@
 #if canImport(UIKit)
 
 import Foundation
+import PassKit
 
 protocol CheckoutModuleOptions: Codable {}
 
@@ -26,6 +27,14 @@ struct PrimerAPIConfiguration: Codable {
             .filter({ $0.type.isEnabled })
             .compactMap({ $0.tokenizationViewModel })
         ?? []
+        
+        let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
+        if !PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
+            if let applePayViewModel = viewModels.filter({ $0.config.type == .applePay }).first,
+               let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
+                viewModels.remove(at: applePayViewModelIndex)
+            }
+        }
         
         for (index, viewModel) in viewModels.enumerated() {
             if viewModel.config.type == .applePay {

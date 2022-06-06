@@ -11,7 +11,7 @@ import Foundation
 import PassKit
 
 @available(*, deprecated, message: "Set the order items in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
-public struct OrderItem: Codable {
+internal struct OrderItem: Codable {
     
     public let name: String
     public let unitAmount: Int?
@@ -19,7 +19,16 @@ public struct OrderItem: Codable {
     public var isPending: Bool = false
     
     public var applePayItem: PKPaymentSummaryItem {
-        let item = PKPaymentSummaryItem(label: name, amount: NSDecimalNumber(value: (unitAmount ?? 0)*quantity).dividing(by: 100))
+        
+        var applePayItemAmount: NSDecimalNumber!
+        
+        if AppState.current.currency?.isZeroDecimal == true {
+            applePayItemAmount = NSDecimalNumber(value: (unitAmount ?? 0)*quantity)
+        } else {
+            applePayItemAmount = NSDecimalNumber(value: (unitAmount ?? 0)*quantity).dividing(by: 100)
+        }
+        
+        let item = PKPaymentSummaryItem(label: name, amount: applePayItemAmount)
         item.type = isPending ? .pending : .final
         return item
     }

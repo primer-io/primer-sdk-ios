@@ -57,8 +57,6 @@ class MerchantCheckoutViewController: UIViewController {
     var threeDSAlert: UIAlertController?
     var performPayment: Bool = false
     
-    var customer: PrimerSDK.Customer?
-    var address: PrimerSDK.Address?
     var checkoutData: PrimerCheckoutData?
     
     override func viewDidLoad() {
@@ -68,7 +66,7 @@ class MerchantCheckoutViewController: UIViewController {
         let settings = PrimerSettings(
             paymentMethodOptions: PrimerPaymentMethodOptions(
                 urlScheme: "merchant://",
-                applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team")
+                applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team", merchantName: "Primer Merchant")
             )
         )
         Primer.shared.configure(settings: settings, delegate: self)
@@ -79,10 +77,9 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func openVaultButtonTapped(_ sender: Any) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
                 
-        let networking = Networking()
-        let clientSessionRequestBody = networking.clientSessionRequestBodyWithCurrency(customerId, phoneNumber: phoneNumber, countryCode: countryCode, currency: currency, amount: amount)
+        let clientSessionRequestBody = Networking().clientSessionRequestBodyWithCurrency(customerId, phoneNumber: phoneNumber, countryCode: countryCode, currency: currency, amount: amount)
 
-        networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
+        Networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
             if let err = err {
                 print(err)
                 let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
@@ -97,10 +94,9 @@ class MerchantCheckoutViewController: UIViewController {
     @IBAction func openUniversalCheckoutTapped(_ sender: Any) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\n")
         
-        let networking = Networking()
-        let clientSessionRequestBody = networking.clientSessionRequestBodyWithCurrency(customerId, phoneNumber: phoneNumber, countryCode: countryCode, currency: currency, amount: amount)
+        let clientSessionRequestBody = Networking().clientSessionRequestBodyWithCurrency(customerId, phoneNumber: phoneNumber, countryCode: countryCode, currency: currency, amount: amount)
 
-        networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
+        Networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
             if let err = err {
                 print(err)
                 let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])

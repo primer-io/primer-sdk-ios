@@ -251,6 +251,7 @@ class Base: XCTestCase {
             )
         ),
         Payment(
+            alias: "3DS_PAYMENT_CARD",
             id: "PAYMENT_CARD",
             environment: .sandbox,
             currency: "EUR",

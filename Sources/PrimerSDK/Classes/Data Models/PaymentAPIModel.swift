@@ -504,7 +504,8 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class PrimerClientSession: NSObject {
+@objc public class PrimerClientSession: NSObject, Codable {
+    
     public let customerId: String?
     public let orderId: String?
     public let currencyCode: String?
@@ -530,7 +531,8 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class PrimerOrder: NSObject {
+@objc public class PrimerOrder: NSObject, Codable {
+    
     public let countryCode: String?
     
     public init(countryCode: String?) {
@@ -538,7 +540,8 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class PrimerCustomer: NSObject {
+@objc public class PrimerCustomer: NSObject, Codable {
+    
     public let emailAddress: String?
     public let mobileNumber: String?
     public let firstName: String?
@@ -563,7 +566,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class PrimerLineItem: NSObject {
+@objc public class PrimerLineItem: NSObject, Codable {
     
     public let itemId: String?
     public let itemDescription: String?
@@ -592,7 +595,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class PrimerAddress: NSObject {
+@objc public class PrimerAddress: NSObject, Codable {
     
     public let firstName: String?
     public let lastName: String?

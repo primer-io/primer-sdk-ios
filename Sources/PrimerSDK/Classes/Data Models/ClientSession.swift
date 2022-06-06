@@ -92,7 +92,9 @@ internal class ClientSessionAPIResponse: Codable {
         let countryCode: CountryCode?
         
         internal func toString() -> String {
-            return "\(addressLine1 ?? "")\(addressLine2?.withComma ?? "")\(city?.withComma ?? "")\(postalCode?.withComma ?? "")\(countryCode?.rawValue.withComma ?? "")"
+            return [firstName, lastName, addressLine1, addressLine2, city, postalCode, state, countryCode?.rawValue]
+                .compactMap({ $0 })
+                .joined(separator: ", ")
         }
         
     }
@@ -188,7 +190,7 @@ internal class ClientSessionAPIResponse: Codable {
             
             func toOrderItem() throws -> OrderItem {
                 return try OrderItem(
-                    name: self.description ?? "Item",
+                    name: (PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? self.description) ?? "Item",
                     unitAmount: self.amount,
                     quantity: self.quantity,
                     isPending: false)

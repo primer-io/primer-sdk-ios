@@ -26,7 +26,7 @@ var mockClientToken = DecodedClientToken(accessToken: "bla", exp: 2000000000, co
 var mockSettings = PrimerSettings(
     paymentMethodOptions: PrimerPaymentMethodOptions(
         urlScheme: "urlScheme",
-        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "mid")
+        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "mid", merchantName: "name")
     )
 )
 
