@@ -11,7 +11,7 @@ import UIKit
 
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
-var paymentHandling: PaymentHandling = .auto
+var paymentHandling: PrimerPaymentHandling = .auto
 
 class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
@@ -29,16 +29,16 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         super.viewDidLoad()
         environmentControl.selectedSegmentIndex = environment.intValue
         environmentControl.accessibilityIdentifier = "env_control"
-        checkoutHandlingControl.selectedSegmentIndex = paymentHandling.rawValue
+        checkoutHandlingControl.selectedSegmentIndex = paymentHandling == .auto ? 0 : 1
         checkoutHandlingControl.accessibilityIdentifier = "payment_control"
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
         customerIdTextField.text = "customer-\(String.randomString(length: 8))"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.fr.rawValue
+        countryCodeTextField.text = CountryCode.se.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
-        currencyTextField.text = Currency.EUR.rawValue
+        currencyTextField.text = Currency.SEK.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.placeholder = "In minor units (type 100 for 1.00)"
         amountTextField.text = "1000"
@@ -70,8 +70,10 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     }
     
     @IBAction func paymentHandlingValueChanged(_ sender: UISegmentedControl) {
-        if let selectedPaymentHandling = PaymentHandling(rawValue: sender.selectedSegmentIndex) {
-            paymentHandling = selectedPaymentHandling
+        if sender.selectedSegmentIndex == 0 {
+            paymentHandling = .auto
+        } else {
+            paymentHandling = .manual
         }
     }
     
