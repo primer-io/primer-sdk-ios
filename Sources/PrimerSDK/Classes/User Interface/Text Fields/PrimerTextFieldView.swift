@@ -62,12 +62,13 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public var isEmpty: Bool {
         return textField.isEmpty
     }
-    
+        
     // MARK: - PROXY
     
     public override var backgroundColor: UIColor? { didSet {
         textField?.backgroundColor = backgroundColor
     } }
+    
     public var text: String? { didSet { textField.text = text } }
     public var attributedText: NSAttributedString? { didSet { textField.attributedText = attributedText } }
     public var textColor: UIColor? { didSet { textField.textColor = textColor } }
@@ -134,29 +135,17 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public override func resignFirstResponder() -> Bool {
         return textField.resignFirstResponder()
     }
-    
-//    public override var inputView: UIView? {
-//        get {
-//            return textField.inputView
-//        }
-//        set {
-//            textField.inputView = newValue
-//        }
-//    }
-//    public override var inputAccessoryView: UIView? {
-//        get {
-//            return textField.inputAccessoryView
-//        }
-//        set {
-//            textField.inputAccessoryView = newValue
-//        }
-//    }
+
     public var clearsOnInsertion: Bool = false { didSet { textField.clearsOnInsertion = clearsOnInsertion }}
     
+    override func loadNib() -> UIView {
+        let bundle = Bundle.primerResources
+        let nib = UINib(nibName: Self.superclass()?.className ?? className, bundle: bundle)
+        return nib.instantiate(withOwner: self, options: nil).first as! UIView
+    }
     
     override func xibSetup() {
         super.xibSetup()
-                        
         backgroundColor = .clear
         view.backgroundColor = .clear
         textField.backgroundColor = backgroundColor
