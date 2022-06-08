@@ -131,8 +131,8 @@ internal protocol PrimerUIOptionsProtocol {
 public class PrimerUIOptions: PrimerUIOptionsProtocol {
     
     public internal(set) var isInitScreenEnabled: Bool
-    public internal(set) var  isSuccessScreenEnabled: Bool
-    public internal(set) var  isErrorScreenEnabled: Bool
+    public internal(set) var isSuccessScreenEnabled: Bool
+    public internal(set) var isErrorScreenEnabled: Bool
     public let theme: PrimerTheme
     
     public init(
