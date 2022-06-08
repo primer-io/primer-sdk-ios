@@ -235,8 +235,7 @@ extension PrimerHeadlessUniversalCheckout {
                         klarnaCustomerToken: nil,
                         sessionData: nil)
                     
-                    let customerId = AppState.current.apiConfiguration?.clientSession?.customer?.id
-                    let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil, customerId: customerId)
+                    let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil)
                     seal.fulfill(request)
                     
                 default:
