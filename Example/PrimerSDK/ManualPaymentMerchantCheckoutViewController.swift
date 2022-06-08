@@ -161,9 +161,7 @@ extension ManualPaymentMerchantCheckoutViewController: PrimerDelegate {
                 
                 self.transactionResponse = TransactionResponse(id: res.id!, date: dateStr, status: res.status.rawValue, requiredAction: requiredAction)
                 
-                if requiredAction.name.rawValue == "3DS_AUTHENTICATION", res.status == .pending {
-                    decisionHandler(.continueWithNewClientToken(requiredAction.clientToken))
-                } else if requiredAction.name.rawValue == "USE_PRIMER_SDK", res.status == .pending {
+                if res.status == .pending {
                     decisionHandler(.continueWithNewClientToken(requiredAction.clientToken))
                 } else {
                     decisionHandler(.succeed())
