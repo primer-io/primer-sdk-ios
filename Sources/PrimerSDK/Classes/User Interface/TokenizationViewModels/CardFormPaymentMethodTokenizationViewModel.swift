@@ -512,19 +512,15 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     func configurePayButton(amount: Int) {
         DispatchQueue.main.async {
-            if !Primer.shared.flow.internalSessionFlow.vaulted {                
-                var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                              tableName: nil,
-                                              bundle: Bundle.primerResources,
-                                              value: "Pay",
-                                              comment: "Pay - Card Form View (Sumbit button text)") //+ " " + (amount.toCurrencyString(currency: settings.currency) ?? "")
-                
-                if let currency = AppState.current.currency {
-                    title += " \(amount.toCurrencyString(currency: currency))"
-                }
-                
-                self.submitButton.setTitle(title, for: .normal)
-            }
+            guard !Primer.shared.flow.internalSessionFlow.vaulted, let currency = AppState.current.currency else { return }
+            var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                          tableName: nil,
+                                          bundle: Bundle.primerResources,
+                                          value: "Pay",
+                                          comment: "Pay - Card Form View (Sumbit button text)")
+            
+            title += " \(amount.toCurrencyString(currency: currency))"
+            self.submitButton.setTitle(title, for: .normal)
         }
     }
     
@@ -749,11 +745,25 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 ]
             ]
             
-            ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(params)
             cardNumberContainerView.rightImage2 = cardNetwork.icon
+            
+            firstly {
+                ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(params)
+            }
+            .done {
+                self.updateButtonUI()
+            }
+            .catch { _ in }
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
             cardNumberContainerView.rightImage2 = nil
-            ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
+            
+            firstly {
+                ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
+            }
+            .done {
+                self.updateButtonUI()
+            }
+            .catch { _ in }
         }
     }
 }
