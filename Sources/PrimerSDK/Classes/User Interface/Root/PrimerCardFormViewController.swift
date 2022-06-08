@@ -67,7 +67,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         renderCardnumberRow()
         renderExpiryAndCvvRow()
-        if (formPaymentMethodTokenizationViewModel.requirePostalCode) {
+        if (formPaymentMethodTokenizationViewModel.isShowingBillingAddressFieldsRequired) {
             renderPostalCodeFieldRow()
         }
         
@@ -140,18 +140,18 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     private func onConfigurationFetched() {
         let postalCodeView = formPaymentMethodTokenizationViewModel.postalCodeContainerView
-        let isPostalCodeViewHidden: Bool = !postalCodeFieldRow.arrangedSubviews.contains(postalCodeView)
+        let isBillingAddressViewHidden: Bool = !postalCodeFieldRow.arrangedSubviews.contains(postalCodeView)
         let parentVC = parent as? PrimerContainerViewController
         
-        let requirePostalCode = formPaymentMethodTokenizationViewModel.requirePostalCode
+        let isShowingBillingAddressFieldsRequired = formPaymentMethodTokenizationViewModel.isShowingBillingAddressFieldsRequired
         
-        if (requirePostalCode && isPostalCodeViewHidden) {
+        if (isShowingBillingAddressFieldsRequired && isBillingAddressViewHidden) {
             parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
                 self?.postalCodeFieldRow.insertArrangedSubview(postalCodeView, at: 0)
             }
         }
         
-        if (!requirePostalCode && !isPostalCodeViewHidden) {
+        if (!isShowingBillingAddressFieldsRequired && !isBillingAddressViewHidden) {
             parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
                 self?.postalCodeFieldRow.removeArrangedSubview(postalCodeView)
                 postalCodeView.removeFromSuperview()

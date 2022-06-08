@@ -18,48 +18,23 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
     
     override func xibSetup() {
         super.xibSetup()
-        
-        textField.keyboardType = .numberPad
-        textField.isAccessibilityElement = true
-        textField.accessibilityIdentifier = "card_txt_fld"
+        keyboardType = .numberPad
+        isTextFieldAccessibilityElement = true
+        textFieldaccessibilityIdentifier = "card_txt_fld"
         textField.delegate = self
+        isEditingAnalyticsEnabled = true
+        editingAnalyticsObjectId = .cardNumber
         isValid = { text in
             return text.isValidCardNumber
         }
     }
     
     public override func textFieldDidBeginEditing(_ textField: UITextField) {
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .focus,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
-                    url: nil),
-                extra: nil,
-                objectType: .input,
-                objectId: .cardNumber,
-                objectClass: "\(Self.self)",
-                place: .cardForm))
-        Analytics.Service.record(event: viewEvent)
+        super.textFieldDidBeginEditing(textField)
     }
     
     public override func textFieldDidEndEditing(_ textField: UITextField) {
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .blur,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
-                    url: nil),
-                extra: nil,
-                objectType: .input,
-                objectId: .cardNumber,
-                objectClass: "\(Self.self)",
-                place: .cardForm))
-        Analytics.Service.record(event: viewEvent)
+        super.textFieldDidEndEditing(textField)
     }
     
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {

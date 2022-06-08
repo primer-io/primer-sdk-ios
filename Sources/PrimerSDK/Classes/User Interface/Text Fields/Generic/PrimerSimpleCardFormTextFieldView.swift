@@ -2,44 +2,34 @@
 
 import UIKit
 
-public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
+public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
     
-    internal var postalCode: String {
-        return textField._text ?? ""
-    }
+    internal var validationError: ValidationError?
     
     override func xibSetup() {
         super.xibSetup()
         keyboardType = .namePhonePad
-        isTextFieldAccessibilityElement = true
-        textFieldaccessibilityIdentifier = "postal_code_txt_fld"
-        textField.delegate = self
-        isEditingAnalyticsEnabled = true
-        isValid = { text in
-            // todo: look into more sophisticated postal code validation, ascii check for now
-            return text.isValidPostalCode
-        }
     }
     
     public override func textFieldDidBeginEditing(_ textField: UITextField) {
         super.textFieldDidEndEditing(textField)
-        let event = cardFormFieldDidBeginEditingEventWithObjectId(.billingAddressPostalCode)
-        sendTextFieldDidEndEditingAnalyticsEventIfNeeded(event)
+        if let objectId = editingAnalyticsObjectId {
+            let event = cardFormFieldDidBeginEditingEventWithObjectId(objectId)
+            sendTextFieldDidEndEditingAnalyticsEventIfNeeded(event)
+        }
     }
     
     public override func textFieldDidEndEditing(_ textField: UITextField) {
         super.textFieldDidEndEditing(textField)
-        let event = cardFormFieldDidEndEditingEventWithObjectId(.billingAddressPostalCode)
-        sendTextFieldDidEndEditingAnalyticsEventIfNeeded(event)
+        if let objectId = editingAnalyticsObjectId {
+            let event = cardFormFieldDidEndEditingEventWithObjectId(objectId)
+            sendTextFieldDidEndEditingAnalyticsEventIfNeeded(event)
+        }
     }
-
-    // todo: refactor into separate functions somewhere
+    
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let positionOriginal = textField.beginningOfDocument
-        let cursorLocation = textField.position(
-            from: positionOriginal,
-            offset: (range.location + NSString(string: string).length)
-        )
+        let cursorLocation = textField.position(from: positionOriginal, offset: (range.location + NSString(string: string).length))
         
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField._text ?? ""
@@ -49,9 +39,10 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            let err = ValidationError.invalidPostalCode(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            validation = .invalid(err)
+            if let validationError = validationError {
+                ErrorHandler.handle(error: validationError)
+                validation = .invalid(validationError)
+            }
         default:
             validation = .notAvailable
         }
@@ -72,7 +63,6 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
         
         return false
     }
-    
 }
 
 #endif

@@ -193,134 +193,51 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     lazy var cardNumberField: PrimerCardNumberFieldView = {
-        let cardNumberField = PrimerCardNumberFieldView()
-        cardNumberField.placeholder = "4242 4242 4242 4242"
-        cardNumberField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cardNumberField.textColor = theme.input.text.color
-        cardNumberField.borderStyle = .none
-        cardNumberField.delegate = self
-        return cardNumberField
+        PrimerCardNumberField.cardNumberFieldViewWithDelegate(self)
     }()
     
-    var requirePostalCode: Bool {
+    var isShowingBillingAddressFieldsRequired: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let billingAddressModule = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
-        return (billingAddressModule.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
+        let billingAddressModuleOptions = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions
+        return billingAddressModuleOptions != nil
     }
     
     lazy var expiryDateField: PrimerExpiryDateFieldView = {
-        let expiryDateField = PrimerExpiryDateFieldView()
-        expiryDateField.placeholder = "02/22"
-        expiryDateField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        expiryDateField.textColor = theme.input.text.color
-        expiryDateField.delegate = self
-        return expiryDateField
+        return PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
     }()
     
     lazy var cvvField: PrimerCVVFieldView = {
-        let cvvField = PrimerCVVFieldView()
-        cvvField.placeholder = "123"
-        cvvField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cvvField.textColor = theme.input.text.color
-        cvvField.delegate = self
-        return cvvField
+        PrimerCVVField.cvvFieldViewWithDelegate(self)
     }()
     
     lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
         if !isCardholderNameFieldEnabled { return nil }
-        let cardholderNameField = PrimerCardholderNameFieldView()
-        cardholderNameField.placeholder = NSLocalizedString("primer-form-text-field-placeholder-cardholder",
-                                                            tableName: nil,
-                                                            bundle: Bundle.primerResources,
-                                                            value: "e.g. John Doe",
-                                                            comment: "e.g. John Doe - Form Text Field Placeholder (Cardholder name)")
-        cardholderNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cardholderNameField.textColor = theme.input.text.color
-        cardholderNameField.delegate = self
-        return cardholderNameField
+        return PrimerCardholderNameField.cardholderNameFieldViewWithDelegate(self)
     }()
-    
-    private var localSamplePostalCode: String {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        let countryCode = state.primerConfiguration?.clientSession?.order?.countryCode
-        return PostalCode.sample(for: countryCode)
-    }
-    
-    lazy var postalCodeField: PrimerPostalCodeFieldView = {
-        let postalCodeField = PrimerPostalCodeFieldView()
-        postalCodeField.placeholder = localSamplePostalCode
-        postalCodeField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        postalCodeField.textColor = theme.input.text.color
-        postalCodeField.delegate = self
-        return postalCodeField
-    }()
-    
+        
     internal lazy var cardNumberContainerView: PrimerCustomFieldView = {
-        let cardNumberContainerView = PrimerCustomFieldView()
-        cardNumberContainerView.fieldView = cardNumberField
-        cardNumberContainerView.placeholderText = NSLocalizedString("primer-form-text-field-title-card-number",
-                                                                    tableName: nil,
-                                                                    bundle: Bundle.primerResources,
-                                                                    value: "Card number",
-                                                                    comment: "Card number - Form Text Field Title (Card number)")
-        cardNumberContainerView.setup()
-        cardNumberContainerView.tintColor = theme.input.border.color(for: .selected)
-        return cardNumberContainerView
+        PrimerCardNumberField.expiryDateContainerViewWithFieldView(cardNumberField)
     }()
     
-    internal lazy var expiryDateContainerView: PrimerCustomFieldView = {
-        let expiryDateContainerView = PrimerCustomFieldView()
-        expiryDateContainerView.fieldView = expiryDateField
-        expiryDateContainerView.placeholderText = NSLocalizedString("primer-form-text-field-title-expiry-date",
-                                                                    tableName: nil,
-                                                                    bundle: Bundle.primerResources,
-                                                                    value: "Expiry date",
-                                                                    comment: "Expiry date - Form Text Field Title (Expiry date)")
-        expiryDateContainerView.setup()
-        expiryDateContainerView.tintColor = theme.input.border.color(for: .selected)
-        return expiryDateContainerView
+    lazy var expiryDateContainerView: PrimerCustomFieldView = {
+        return PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
     }()
     
     internal lazy var cvvContainerView: PrimerCustomFieldView = {
-        let cvvContainerView = PrimerCustomFieldView()
-        cvvContainerView.fieldView = cvvField
-        cvvContainerView.placeholderText = NSLocalizedString("primer-card-form-cvv",
-                                                             tableName: nil,
-                                                             bundle: Bundle.primerResources,
-                                                             value: "CVV",
-                                                             comment: "CVV - Card Form (CVV text field placeholder text)")
-        cvvContainerView.setup()
-        cvvContainerView.tintColor = theme.input.border.color(for: .selected)
-        return cvvContainerView
+        PrimerCVVField.cvvContainerViewFieldView(cvvField)
     }()
     
     internal lazy var cardholderNameContainerView: PrimerCustomFieldView? = {
         if !isCardholderNameFieldEnabled { return nil }
-        let cardholderNameContainerView = PrimerCustomFieldView()
-        cardholderNameContainerView.fieldView = cardholderNameField
-        cardholderNameContainerView.placeholderText = NSLocalizedString("primer-card-form-name",
-                                                                        tableName: nil,
-                                                                        bundle: Bundle.primerResources,
-                                                                        value: "Name",
-                                                                        comment: "Cardholder name")
-        cardholderNameContainerView.setup()
-        cardholderNameContainerView.tintColor = theme.input.border.color(for: .selected)
-        return cardholderNameContainerView
+        return PrimerCardholderNameField.cardholderNameContainerViewFieldView(cardNumberField)
     }()
-    
-    private var localPostalCodeTitle: String {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        let countryCode = state.primerConfiguration?.clientSession?.order?.countryCode
-        return PostalCode.name(for: countryCode)
-    }
-    
+        
+    lazy var postalCodeField: PrimerPostalCodeFieldView = {
+        PrimerPostalCodeField.postalCodeViewWithDelegate(self)
+    }()
+        
     internal lazy var postalCodeContainerView: PrimerCustomFieldView = {
-        let postalCodeContainerView = PrimerCustomFieldView()
-        postalCodeContainerView.fieldView = postalCodeField
-        postalCodeContainerView.placeholderText = localPostalCodeTitle
-        postalCodeContainerView.setup()
-        postalCodeContainerView.tintColor = theme.input.border.color(for: .selected)
-        return postalCodeContainerView
+        PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeField)
     }()
     
     lazy var submitButton: PrimerButton = {
@@ -371,7 +288,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             expiryDateField: expiryDateField,
             cvvField: cvvField,
             cardholderNameField: cardholderNameField,
-            postalCodeField: requirePostalCode ? postalCodeField : nil
+            postalCodeField: isShowingBillingAddressFieldsRequired ? postalCodeField : nil
         )
         cardComponentsManager.delegate = self
     }
@@ -556,7 +473,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             
             var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
             
-            if (requirePostalCode) {
+            if (isShowingBillingAddressFieldsRequired) {
                 let state: AppStateProtocol = DependencyContainer.resolve()
                 
                 let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
@@ -749,7 +666,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
             } else if primerTextFieldView is PrimerCardholderNameFieldView {
                 cardholderNameContainerView?.errorText = "Invalid name"
             } else if primerTextFieldView is PrimerPostalCodeFieldView {
-                postalCodeContainerView.errorText = "\(localPostalCodeTitle) is required" // todo: localise if UK, etc.
+                postalCodeContainerView.errorText = "\(PrimerPostalCodeField.localPostalCodeTitle) is required" // todo: localise if UK, etc.
             }
         } else {
             // We don't know for sure if the text is valid
@@ -774,7 +691,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
             cvvField.isTextValid,
         ]
         
-        if requirePostalCode { validations.append(postalCodeField.isTextValid) }
+        if isShowingBillingAddressFieldsRequired { validations.append(postalCodeField.isTextValid) }
         if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
         
         if validations.allSatisfy({ $0 == true }) {

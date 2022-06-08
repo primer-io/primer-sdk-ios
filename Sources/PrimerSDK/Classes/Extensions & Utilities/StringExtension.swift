@@ -169,14 +169,21 @@ internal extension String {
         return isValid
     }
     
-    var isTypingValidCardholderName: Bool? {
-        if isValidCardholderName { return true }
-        return nil
+    var isTypingNonDecimalCharacters: Bool {
+        isValidNonDecimalString
+    }
+    
+    var isValidNonDecimalString: Bool {
+        if isEmpty { return false }
+        return rangeOfCharacter(from: .decimalDigits) == nil
     }
     
     var isValidCardholderName: Bool {
-        if isEmpty { return false }
-        return rangeOfCharacter(from: .decimalDigits) == nil
+        return isValidNonDecimalString
+    }
+    
+    var isTypingValidCardholderName: Bool {
+        isValidCardholderName
     }
     
     var isValidPostalCode: Bool {

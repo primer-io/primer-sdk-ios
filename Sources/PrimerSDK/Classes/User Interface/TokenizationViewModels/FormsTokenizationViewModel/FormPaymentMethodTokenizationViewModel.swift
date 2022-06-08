@@ -152,83 +152,36 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     lazy var cardNumberField: PrimerCardNumberFieldView = {
-        let cardNumberField = PrimerCardNumberFieldView()
-        cardNumberField.placeholder = "4242 4242 4242 4242"
-        cardNumberField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cardNumberField.textColor = theme.input.text.color
-        cardNumberField.borderStyle = .none
-        cardNumberField.delegate = self
-        return cardNumberField
+        PrimerCardNumberField.cardNumberFieldViewWithDelegate(self)
     }()
-    
-    var requireCardHolderName: Bool {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let cardHolderNameModule = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first else { return false }
-        return (cardHolderNameModule.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName ?? false
-    }
-    
+        
     lazy var expiryDateField: PrimerExpiryDateFieldView = {
-        let expiryDateField = PrimerExpiryDateFieldView()
-        expiryDateField.placeholder = "02/22"
-        expiryDateField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        expiryDateField.textColor = theme.input.text.color
-        expiryDateField.delegate = self
-        return expiryDateField
+        return PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
     }()
     
     lazy var cvvField: PrimerCVVFieldView = {
-        let cvvField = PrimerCVVFieldView()
-        cvvField.placeholder = "123"
-        cvvField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cvvField.textColor = theme.input.text.color
-        cvvField.delegate = self
-        return cvvField
+        PrimerCVVField.cvvFieldViewWithDelegate(self)
     }()
-    
+
     lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
         if !isCardholderNameFieldEnabled { return nil }
-        let cardholderNameField = PrimerCardholderNameFieldView()
-        cardholderNameField.placeholder = NSLocalizedString("primer-form-text-field-placeholder-cardholder",
-                                                            tableName: nil,
-                                                            bundle: Bundle.primerResources,
-                                                            value: "e.g. John Doe",
-                                                            comment: "e.g. John Doe - Form Text Field Placeholder (Cardholder name)")
-        cardholderNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cardholderNameField.textColor = theme.input.text.color
-        cardholderNameField.delegate = self
-        return cardholderNameField
+        return PrimerCardholderNameField.cardholderNameFieldViewWithDelegate(self)
     }()
     
-    var requirePostalCode: Bool {
+    lazy var postalCodeField: PrimerPostalCodeFieldView = {
+        PrimerPostalCodeField.postalCodeViewWithDelegate(self)
+    }()
+    
+    internal lazy var postalCodeContainerView: PrimerCustomFieldView = {
+        PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeField)
+    }()
+    
+    var isShowingBillingAddressFieldsRequired: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
         guard let billingAddressModule = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
         return (billingAddressModule.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode ?? false
     }
-    
-    private var localSamplePostalCode: String {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        let countryCode = state.primerConfiguration?.clientSession?.order?.countryCode
-        return PostalCode.sample(for: countryCode)
-    }
-    
-    lazy var postalCodeField: PrimerPostalCodeFieldView = {
-        let postalCodeField = PrimerPostalCodeFieldView()
-        postalCodeField.placeholder = localSamplePostalCode
-        postalCodeField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        postalCodeField.textColor = theme.input.text.color
-        postalCodeField.delegate = self
-        return postalCodeField
-    }()
-    
-    internal lazy var postalCodeContainerView: PrimerCustomFieldView = {
-        let postalCodeContainerView = PrimerCustomFieldView()
-        postalCodeContainerView.fieldView = postalCodeField
-        postalCodeContainerView.placeholderText = localSamplePostalCode
-        postalCodeContainerView.setup()
-        postalCodeContainerView.tintColor = theme.input.border.color(for: .selected)
-        return postalCodeContainerView
-     }()
-    
+
     var inputTextFieldsStackViews: [UIStackView] {
         var stackViews: [UIStackView] = []
         for input in self.inputs {
@@ -567,7 +520,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 
                 var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
                 
-                if (requirePostalCode) {
+                if (isShowingBillingAddressFieldsRequired) {
                     let state: AppStateProtocol = DependencyContainer.resolve()
                     
                     let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
@@ -791,8 +744,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             cvvField.isTextValid
         ]
 
-        if requirePostalCode { validations.append(postalCodeField.isTextValid) }
-        if let cardholderNameField = cardholderNameField, requireCardHolderName { validations.append(cardholderNameField.isTextValid) }
+        if isShowingBillingAddressFieldsRequired { validations.append(postalCodeField.isTextValid) }
+        if let cardholderNameField = cardholderNameField, isCardholderNameFieldEnabled { validations.append(cardholderNameField.isTextValid) }
 
         if validations.allSatisfy({ $0 == true }) {
             submitButton.isEnabled = true

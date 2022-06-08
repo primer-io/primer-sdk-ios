@@ -184,6 +184,11 @@ internal enum ValidationError: PrimerErrorProtocol {
     case invalidCvv(userInfo: [String: String]?)
     case invalidExpiryDate(userInfo: [String: String]?)
     case invalidPostalCode(userInfo: [String: String]?)
+    case invalidFirstName(userInfo: [String: String]?)
+    case invalidLastName(userInfo: [String: String]?)
+    case invalidAddress(userInfo: [String: String]?)
+    case invalidState(userInfo: [String: String]?)
+    case invalidCountry(userInfo: [String: String]?)
     
     var errorId: String {
         switch self {
@@ -197,6 +202,16 @@ internal enum ValidationError: PrimerErrorProtocol {
             return "invalid-expiry-date"
         case .invalidPostalCode:
             return "invalid-postal-code"
+        case .invalidFirstName:
+            return "invalid-first-name"
+        case .invalidLastName:
+            return "invalid-last-name"
+        case .invalidAddress:
+            return "invalid-address"
+        case .invalidState:
+            return "invalid-state"
+        case .invalidCountry:
+            return "invalid-country"
         }
     }
     
@@ -212,6 +227,16 @@ internal enum ValidationError: PrimerErrorProtocol {
             return "[\(errorId)] Invalid expiry date"
         case .invalidPostalCode:
             return "[\(errorId)] Invalid postal code"
+        case .invalidFirstName:
+            return "[\(errorId)] Invalid first name"
+        case .invalidLastName:
+            return "[\(errorId)] Invalid last name"
+        case .invalidAddress:
+            return "[\(errorId)] Invalid address"
+        case .invalidState:
+            return "[\(errorId)] Invalid state"
+        case .invalidCountry:
+            return "[\(errorId)] Invalid country"
         }
     }
     
@@ -223,7 +248,12 @@ internal enum ValidationError: PrimerErrorProtocol {
                 .invalidCardnumber(let userInfo),
                 .invalidCvv(let userInfo),
                 .invalidExpiryDate(let userInfo),
-                .invalidPostalCode(let userInfo):
+                .invalidPostalCode(let userInfo),
+                .invalidFirstName(let userInfo),
+                .invalidLastName(let userInfo),
+                .invalidAddress(let userInfo),
+                .invalidState(let userInfo),
+                .invalidCountry(let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         

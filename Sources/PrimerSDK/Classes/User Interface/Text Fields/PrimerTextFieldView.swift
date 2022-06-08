@@ -44,6 +44,8 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     @IBOutlet internal weak var textField: PrimerTextField!
     internal var isValid: ((_ text: String) -> Bool?)?
     internal(set) public var isTextValid: Bool = false
+    internal var editingAnalyticsObjectId: Analytics.Event.Property.ObjectId?
+    internal(set) public var isEditingAnalyticsEnabled: Bool = false
     public var delegate: PrimerTextFieldViewDelegate?
     internal var validation: PrimerTextField.Validation = .notAvailable {
         didSet {
@@ -91,6 +93,9 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public var clearButtonMode: UITextField.ViewMode = .never { didSet { textField.clearButtonMode = clearButtonMode }}
     public var leftViewMode: UITextField.ViewMode = .never { didSet { textField.leftViewMode = leftViewMode }}
     public var rightViewMode: UITextField.ViewMode = .never { didSet { textField.rightViewMode = rightViewMode }}
+    public var keyboardType: UIKeyboardType = .default { didSet { textField.keyboardType = keyboardType }}
+    public var isTextFieldAccessibilityElement: Bool = false { didSet { textField.isAccessibilityElement = isTextFieldAccessibilityElement }}
+    public var textFieldaccessibilityIdentifier: String? { didSet { textField.accessibilityIdentifier = textFieldaccessibilityIdentifier }}
     
     public func borderRectForBounds(forBounds bounds: CGRect) -> CGRect {
         return textField.borderRect(forBounds: bounds)
@@ -140,7 +145,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     
     override func loadNib() -> UIView {
         let bundle = Bundle.primerResources
-        let nib = UINib(nibName: Self.superclass()?.className ?? className, bundle: bundle)
+        let nib = UINib(nibName: PrimerTextFieldView.className, bundle: bundle)
         return nib.instantiate(withOwner: self, options: nil).first as! UIView
     }
     

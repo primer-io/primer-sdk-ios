@@ -82,11 +82,9 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
         self.postalCodeField = postalCodeField
-        
+        self.cardholderField = cardholderNameField
         super.init()
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
-        
-        self.cardholderField = cardholderNameField
     }
     
     internal func setIsLoading(_ isLoading: Bool) {

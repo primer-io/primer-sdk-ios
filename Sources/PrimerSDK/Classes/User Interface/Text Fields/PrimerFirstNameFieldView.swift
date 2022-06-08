@@ -1,26 +1,19 @@
-//
-//  PrimerCardholderFieldView.swift
-//  PrimerSDK
-//
-//  Created by Evangelos Pittas on 5/7/21.
-//
-
 #if canImport(UIKit)
 
 import UIKit
 
-public final class PrimerCardholderNameFieldView: PrimerSimpleCardFormTextFieldView {
+public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
     
-    internal var cardholderName: String {
+    internal var firstName: String {
         return textField._text ?? ""
     }
     
     override func xibSetup() {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
-        textFieldaccessibilityIdentifier = "card_holder_txt_fld"
+        textFieldaccessibilityIdentifier = "first_name_txt_fld"
         isEditingAnalyticsEnabled = true
-        editingAnalyticsObjectId = .cardHolder
+        editingAnalyticsObjectId = .billingAddressFirstName
         validationError = .invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
         isValid = { text in
             return text.isTypingNonDecimalCharacters
