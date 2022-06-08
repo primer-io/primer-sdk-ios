@@ -190,7 +190,7 @@ internal class ClientSessionAPIResponse: Codable {
             
             func toOrderItem() throws -> OrderItem {
                 return try OrderItem(
-                    name: (PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? self.description) ?? "Item",
+                    name: (self.description ?? PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName) ?? "Item",
                     unitAmount: self.amount,
                     quantity: self.quantity,
                     isPending: false)
@@ -200,22 +200,22 @@ internal class ClientSessionAPIResponse: Codable {
         // MARK: ClientSession.Order.Fee
         
         internal struct Fee: Codable {
-            let id: String
+            let type: String
             let amount: Int
             
             enum CodingKeys: String, CodingKey {
-                case id, amount
+                case type, amount
             }
             
             internal init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
-                id = try container.decode(String.self, forKey: .id)
+                type = try container.decode(String.self, forKey: .type)
                 amount = try container.decode(Int.self, forKey: .amount)
             }
             
             internal func encode(to encoder: Encoder) throws {
                 var container = encoder.container(keyedBy: CodingKeys.self)
-                try container.encode(id, forKey: .id)
+                try container.encode(type, forKey: .type)
                 try container.encode(amount, forKey: .amount)
             }
         }
