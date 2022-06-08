@@ -123,7 +123,6 @@ class MockAppState: AppStateProtocol {
     var paymentMethods: [PaymentMethodToken] = []
     var selectedPaymentMethodId: String?
     var selectedPaymentMethod: PaymentMethodToken?
-    var implementedReactNativeCallbacks: ImplementedReactNativeCallbacks?
 
     init(
         decodedClientToken: DecodedClientToken? = mockClientToken,
