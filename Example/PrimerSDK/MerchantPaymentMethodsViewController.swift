@@ -83,6 +83,22 @@ class MerchantPaymentMethodsViewController: UIViewController {
             }
         }
     }
+    
+    // MARK: - HELPERS
+    
+    private func showLoadingOverlay() {
+        self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
+        self.view.addSubview(self.activityIndicator!)
+        self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
+        self.activityIndicator?.color = .black
+        self.activityIndicator?.startAnimating()
+    }
+    
+    private func hideLoadingOverlay() {
+        self.activityIndicator?.stopAnimating()
+        self.activityIndicator?.removeFromSuperview()
+        self.activityIndicator = nil
+    }
 }
 
 extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableViewDelegate {
@@ -117,12 +133,7 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
     
     func primerHeadlessUniversalCheckoutPreparationStarted() {
         print("\n\n🤯🤯🤯 \(#function)")
-        
-        self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
-        self.view.addSubview(self.activityIndicator!)
-        self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
-        self.activityIndicator?.color = .black
-        self.activityIndicator?.startAnimating()
+        self.showLoadingOverlay()
     }
     
     func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {
@@ -137,20 +148,20 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
         
         Networking.createPayment(with: paymentMethodTokenData) { (res, err) in
-            DispatchQueue.main.async {
-                self.activityIndicator?.stopAnimating()
-                self.activityIndicator?.removeFromSuperview()
-                self.activityIndicator = nil
-            }
-
             if let err = err {
-
+                DispatchQueue.main.async {
+                    self.hideLoadingOverlay()
+                }
             } else if let res = res {
                 self.paymentId = res.id
                 
                 if res.requiredAction?.clientToken != nil {
                     decisionHandler(.continueWithNewClientToken(res.requiredAction!.clientToken))
                 } else {
+                    DispatchQueue.main.async {
+                        self.hideLoadingOverlay()
+                    }
+                    
                     if let data = try? JSONEncoder().encode(res) {
                         DispatchQueue.main.async {
                             let rvc = HUCResultViewController.instantiate(data: [data])
@@ -169,6 +180,10 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
         print("\n\n🤯🤯🤯 \(#function)\nresumeToken: \(resumeToken)")
         
         Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
+            DispatchQueue.main.async {
+                self.hideLoadingOverlay()
+            }
+            
             if let err = err {
                 decisionHandler(.fail(withErrorMessage: "Merchant App\nFailed to resume payment."))
             } else {
@@ -180,17 +195,17 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
     func primerHeadlessUniversalCheckoutDidFail(withError err: Error) {
         print("\n\n🤯🤯🤯 \(#function)\nerror: \(err)")
         
-        self.activityIndicator?.stopAnimating()
-        self.activityIndicator?.removeFromSuperview()
-        self.activityIndicator = nil
+        DispatchQueue.main.async {
+            self.hideLoadingOverlay()
+        }
     }
     
     func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\n\n🤯🤯🤯 \(#function)\ndata: \(data)")
         
-        self.activityIndicator?.stopAnimating()
-        self.activityIndicator?.removeFromSuperview()
-        self.activityIndicator = nil
+        DispatchQueue.main.async {
+            self.hideLoadingOverlay()
+        }
     }
     
     func primerClientSessionWillUpdate() {
