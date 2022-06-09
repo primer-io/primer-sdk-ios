@@ -30,16 +30,16 @@ class PrimerAddressLine1Field: PrimerAddressField {
     }
     
     static func addressLine1FieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerAddressLine1FieldView {
-        let addressLine1Field = PrimerAddressLine1FieldView()
-        addressLine1Field.placeholder = NSLocalizedString("primer-form-text-field-placeholder-address-line-1",
+        let addressLine1FieldView = PrimerAddressLine1FieldView()
+        addressLine1FieldView.placeholder = NSLocalizedString("primer-form-text-field-placeholder-address-line-1",
                                                             tableName: nil,
                                                             bundle: Bundle.primerResources,
                                                             value: "Address line 1",
                                                             comment: "e.g. Address line 1 - Form Text Field Placeholder (Address line 1)")
-        addressLine1Field.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        addressLine1Field.textColor = theme.input.text.color
-        addressLine1Field.delegate = delegate
-        return addressLine1Field
+        addressLine1FieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        addressLine1FieldView.textColor = theme.input.text.color
+        addressLine1FieldView.delegate = delegate
+        return addressLine1FieldView
     }
 }
 
@@ -59,16 +59,16 @@ class PrimerAddressLine2Field: PrimerAddressField {
     }
     
     static func addressLine2FieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerAddressLine2FieldView {
-        let addressLine2Field = PrimerAddressLine2FieldView()
-        addressLine2Field.placeholder = NSLocalizedString("primer-form-text-field-placeholder-address-line-2",
+        let addressLine2FieldView = PrimerAddressLine2FieldView()
+        addressLine2FieldView.placeholder = NSLocalizedString("primer-form-text-field-placeholder-address-line-2",
                                                             tableName: nil,
                                                             bundle: Bundle.primerResources,
                                                             value: "Address line 2 (optional)",
                                                             comment: "e.g. Address line 2 - Form Text Field Placeholder (Address line 2)")
-        addressLine2Field.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        addressLine2Field.textColor = theme.input.text.color
-        addressLine2Field.delegate = delegate
-        return addressLine2Field
+        addressLine2FieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        addressLine2FieldView.textColor = theme.input.text.color
+        addressLine2FieldView.delegate = delegate
+        return addressLine2FieldView
     }
 }
 

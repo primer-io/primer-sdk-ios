@@ -13,22 +13,7 @@ import UIKit
 class PrimerCardFormViewController: PrimerFormViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
-    private let cardholderNameContainerView = PrimerCustomFieldView()
     private let submitButton = PrimerButton()
-    
-    // todo: refactor to dynamic form builder
-    private lazy var expiryAndCvvRow = row
-    private lazy var postalCodeFieldRow = row
-    
-    private var row: UIStackView {
-        let horizontalStackView = UIStackView()
-        horizontalStackView.axis = .horizontal
-        horizontalStackView.alignment = .fill
-        horizontalStackView.distribution = .fillEqually
-        horizontalStackView.spacing = 16
-        return horizontalStackView
-    }
     
     private let formPaymentMethodTokenizationViewModel: CardFormPaymentMethodTokenizationViewModel
     
@@ -59,27 +44,9 @@ class PrimerCardFormViewController: PrimerFormViewController {
                 place: .cardForm))
         Analytics.Service.record(event: viewEvent)
         
+        setupView()
+        
         formPaymentMethodTokenizationViewModel.onConfigurationFetched = onConfigurationFetched
-        
-        title = Content.PrimerCardFormView.title
-        view.backgroundColor = theme.view.backgroundColor
-        verticalStackView.spacing = 6
-        
-        renderCardnumberRow()
-        renderExpiryAndCvvRow()
-        if (formPaymentMethodTokenizationViewModel.isShowingBillingAddressFieldsRequired) {
-            renderPostalCodeFieldRow()
-        }
-        
-        // separator view
-        let separatorView = PrimerView()
-        separatorView.translatesAutoresizingMaskIntoConstraints = false
-        separatorView.heightAnchor.constraint(equalToConstant: 8).isActive = true
-        verticalStackView.addArrangedSubview(separatorView)
-        
-        // submit button
-        renderSubmitButton()
-                
         formPaymentMethodTokenizationViewModel.completion = { (paymentMethodToken, err) in
             if let err = err {
                 Primer.shared.primerRootVC?.handle(error: err)
@@ -94,18 +61,29 @@ class PrimerCardFormViewController: PrimerFormViewController {
         _ = formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
     }
     
-    private func renderCardnumberRow() {
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.cardNumberContainerView)
+    private func setupView() {
+        
+        title = Content.PrimerCardFormView.title
+        view.backgroundColor = theme.view.backgroundColor
+        verticalStackView.spacing = 6
+        renderCardAndBillingAddressFields()
+        renderSaveCardView()
+        
+        // separator view
+        let separatorView = PrimerView()
+        separatorView.translatesAutoresizingMaskIntoConstraints = false
+        separatorView.heightAnchor.constraint(equalToConstant: 8).isActive = true
+        verticalStackView.addArrangedSubview(separatorView)
+        
+        // submit button
+        renderSubmitButton()
+    }
+    
+    private func renderCardAndBillingAddressFields() {
+        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.formView)
     }
 
-    private func renderExpiryAndCvvRow() {
-        expiryAndCvvRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.expiryDateContainerView)
-        expiryAndCvvRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.cvvContainerView)
-        verticalStackView.addArrangedSubview(expiryAndCvvRow)
-        
-        if let cardholderNameContainerView = formPaymentMethodTokenizationViewModel.cardholderNameContainerView {
-            verticalStackView.addArrangedSubview(cardholderNameContainerView)
-        }
+    private func renderSaveCardView() {
         
         if !Primer.shared.flow.internalSessionFlow.vaulted {
             let saveCardSwitchContainerStackView = UIStackView()
@@ -127,37 +105,12 @@ class PrimerCardFormViewController: PrimerFormViewController {
         }
     }
     
-    private func renderPostalCodeFieldRow() {
-        postalCodeFieldRow.addArrangedSubview(formPaymentMethodTokenizationViewModel.postalCodeContainerView)
-        postalCodeFieldRow.addArrangedSubview(PrimerView())
-        verticalStackView.addArrangedSubview(postalCodeFieldRow)
-    }
-    
     private func renderSubmitButton() {
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
         submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
     }
     
-    private func onConfigurationFetched() {
-        let postalCodeView = formPaymentMethodTokenizationViewModel.postalCodeContainerView
-        let isBillingAddressViewHidden: Bool = !postalCodeFieldRow.arrangedSubviews.contains(postalCodeView)
-        let parentVC = parent as? PrimerContainerViewController
-        
-        let isShowingBillingAddressFieldsRequired = formPaymentMethodTokenizationViewModel.isShowingBillingAddressFieldsRequired
-        
-        if (isShowingBillingAddressFieldsRequired && isBillingAddressViewHidden) {
-            parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
-                self?.postalCodeFieldRow.insertArrangedSubview(postalCodeView, at: 0)
-            }
-        }
-        
-        if (!isShowingBillingAddressFieldsRequired && !isBillingAddressViewHidden) {
-            parentVC?.layoutContainerViewControllerIfNeeded { [weak self] in
-                self?.postalCodeFieldRow.removeArrangedSubview(postalCodeView)
-                postalCodeView.removeFromSuperview()
-            }
-        }
-        
+    private func onConfigurationFetched() {        
        view.layoutIfNeeded()
     }
 }

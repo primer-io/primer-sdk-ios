@@ -276,82 +276,143 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
     
     // MARK: - Billing address
-    
+        
     // MARK: First name
     
-    internal lazy var firstNameField: PrimerFirstNameFieldView = {
+    internal lazy var firstNameFieldView: PrimerFirstNameFieldView = {
         PrimerFirstNameField.firstNameFieldViewWithDelegate(self)
     }()
         
     internal lazy var firstNameContainerView: PrimerCustomFieldView = {
-        PrimerFirstNameField.firstNameFieldContainerViewFieldView(firstNameField)
+        PrimerFirstNameField.firstNameFieldContainerViewFieldView(firstNameFieldView)
     }()
-
+    
+    internal var firstNameField: BillingAddressField {
+        (firstNameFieldView, firstNameContainerView, billingAddressCheckoutModuleOptions?.firstName == false)
+    }
+    
     // MARK: Last name
     
-    internal lazy var lastNameField: PrimerLastNameFieldView = {
+    internal lazy var lastNameFieldView: PrimerLastNameFieldView = {
         PrimerLastNameField.lastNameFieldViewWithDelegate(self)
     }()
             
     internal lazy var lastNameContainerView: PrimerCustomFieldView = {
-        PrimerLastNameField.lastNameFieldContainerViewFieldView(lastNameField)
+        PrimerLastNameField.lastNameFieldContainerViewFieldView(lastNameFieldView)
     }()
+    
+    internal var lastNameField: BillingAddressField {
+        (lastNameFieldView, lastNameContainerView, billingAddressCheckoutModuleOptions?.lastName == false)
+    }
     
     // MARK: Address Line 1
 
-    internal lazy var addressLine1Field: PrimerAddressLine1FieldView = {
+    internal lazy var addressLine1FieldView: PrimerAddressLine1FieldView = {
         PrimerAddressLine1Field.addressLine1FieldViewWithDelegate(self)
     }()
             
     internal lazy var addressLine1ContainerView: PrimerCustomFieldView = {
-        PrimerAddressLine1Field.addressLine1ContainerViewFieldView(addressLine1Field)
+        PrimerAddressLine1Field.addressLine1ContainerViewFieldView(addressLine1FieldView)
     }()
     
+    internal var addressLine1Field: BillingAddressField {
+        (addressLine1FieldView, addressLine1ContainerView, billingAddressCheckoutModuleOptions?.addressLine1 == false)
+    }
+
     // MARK: Address Line 2
 
-    internal lazy var addressLine2Field: PrimerAddressLine2FieldView = {
+    internal lazy var addressLine2FieldView: PrimerAddressLine2FieldView = {
         PrimerAddressLine2Field.addressLine2FieldViewWithDelegate(self)
     }()
             
     internal lazy var addressLine2ContainerView: PrimerCustomFieldView = {
-        PrimerAddressLine2Field.addressLine2ContainerViewFieldView(addressLine2Field)
+        PrimerAddressLine2Field.addressLine2ContainerViewFieldView(addressLine2FieldView)
     }()
+    
+    internal var addressLine2Field: BillingAddressField {
+        (addressLine2FieldView, addressLine2ContainerView, billingAddressCheckoutModuleOptions?.addressLine2 == false)
+    }
     
     // MARK: City
 
-    internal lazy var cityField: PrimerCityFieldView = {
+    internal lazy var cityFieldView: PrimerCityFieldView = {
         PrimerCityField.cityFieldViewWithDelegate(self)
     }()
             
     internal lazy var cityContainerView: PrimerCustomFieldView = {
-        PrimerCityField.cityFieldContainerViewFieldView(cityField)
+        PrimerCityField.cityFieldContainerViewFieldView(cityFieldView)
     }()
+    
+    internal var cityField: BillingAddressField {
+        (cityFieldView, cityContainerView, billingAddressCheckoutModuleOptions?.city == false)
+    }
     
     // MARK: State
 
-    internal lazy var stateField: PrimerStateFieldView = {
+    internal lazy var stateFieldView: PrimerStateFieldView = {
         PrimerStateField.stateFieldViewWithDelegate(self)
     }()
             
     internal lazy var stateContainerView: PrimerCustomFieldView = {
-        PrimerStateField.stateFieldContainerViewFieldView(stateField)
+        PrimerStateField.stateFieldContainerViewFieldView(stateFieldView)
     }()
+    
+    internal var stateField: BillingAddressField {
+        (stateFieldView, stateContainerView, billingAddressCheckoutModuleOptions?.state == false)
+    }
 
     // MARK: Postal code
     
-    internal lazy var postalCodeField: PrimerPostalCodeFieldView = {
+    internal lazy var postalCodeFieldView: PrimerPostalCodeFieldView = {
         PrimerPostalCodeField.postalCodeViewWithDelegate(self)
     }()
         
     internal lazy var postalCodeContainerView: PrimerCustomFieldView = {
-        PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeField)
+        PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeFieldView)
     }()
-
+    
+    internal var postalCodeField: BillingAddressField {
+        (postalCodeFieldView, postalCodeContainerView, billingAddressCheckoutModuleOptions?.postalCode == false)
+    }
+    
+    // MARK: All billing address fields
+    
+    internal var billingAddressCheckoutModuleOptions: PrimerConfiguration.CheckoutModule.PostalCodeOptions? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.primerConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions
+    }
+    
+    internal var billingAddressFields: [[BillingAddressField]] {
+        guard isShowingBillingAddressFieldsRequired else { return [] }
+        return [
+            [firstNameField, lastNameField],
+            [addressLine1Field],
+            [addressLine2Field],
+            [postalCodeField, cityField],
+            [stateField],
+        ]
+    }
+    
+    internal var formView: PrimerFormView {
+        let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
+        let allVisibleBillingAddressFieldContainerViews = allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
+        var formViews: [[UIView?]] = [
+            [cardNumberContainerView],
+            [expiryDateContainerView, cvvContainerView],
+            [cardholderNameContainerView],
+            [postalCodeContainerView],
+        ]
+        formViews.append(contentsOf: allVisibleBillingAddressFieldContainerViews)
+        return PrimerFormView(frame: .zero, formViews: formViews)
+    }
+    
     // MARK: - Init
     
     required init(config: PaymentMethodConfig) {
         self.flow = (Primer.shared.flow?.internalSessionFlow.vaulted ?? false) ? .vault : .checkout
         super.init(config: config)
+        
+        let billingAddressFieldViews = billingAddressFields.flatMap { $0 }.map { $0.fieldView }
         
         self.cardComponentsManager = CardComponentsManager(
             flow: flow,
@@ -359,7 +420,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             expiryDateField: expiryDateField,
             cvvField: cvvField,
             cardholderNameField: cardholderNameField,
-            postalCodeField: isShowingBillingAddressFieldsRequired ? postalCodeField : nil
+            billingAddressFieldViews: billingAddressFieldViews
         )
         cardComponentsManager.delegate = self
     }
@@ -548,34 +609,22 @@ extension CardFormPaymentMethodTokenizationViewModel {
             var actions = [ClientSession.Action(type: "SELECT_PAYMENT_METHOD", params: params)]
             
             if (isShowingBillingAddressFieldsRequired) {
-                let state: AppStateProtocol = DependencyContainer.resolve()
-                let updatedBillingAddress = ClientSession.Address(firstName: firstNameField.firstName,
-                                                                  lastName: lastNameField.lastName,
-                                                                  addressLine1: addressLine1Field.addressLine1,
-                                                                  addressLine2: addressLine2Field.addressLine2,
-                                                                  city: nil,
-                                                                  postalCode: postalCodeField.postalCode,
-                                                                  state: stateField.state,
+                let updatedBillingAddress = ClientSession.Address(firstName: firstNameFieldView.firstName,
+                                                                  lastName: lastNameFieldView.lastName,
+                                                                  addressLine1: addressLine1FieldView.addressLine1,
+                                                                  addressLine2: addressLine2FieldView.addressLine2,
+                                                                  city: cityFieldView.city,
+                                                                  postalCode: postalCodeFieldView.postalCode,
+                                                                  state: stateFieldView.state,
                                                                   countryCode: nil)
                 
-                var currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
-                
-                let billingAddressParams = [
-                    "firstName": currentBillingAddress?.firstName as Any,
-                    "lastName": currentBillingAddress?.lastName as Any,
-                    "addressLine1": currentBillingAddress?.addressLine1 as Any,
-                    "addressLine2": currentBillingAddress?.addressLine2 as Any,
-                    "city": currentBillingAddress?.city as Any,
-                    "postalCode": postalCodeField.postalCode,
-                    "state": currentBillingAddress?.state as Any,
-                    "countryCode": currentBillingAddress?.countryCode as Any
-                ] as [String: Any]
-                
-                let billingAddressAction = ClientSession.Action(
-                    type: "SET_BILLING_ADDRESS",
-                    params: billingAddressParams
-                )
-                actions.append(billingAddressAction)
+                if let updatedBillingAddressDictionary = try? updatedBillingAddress.asDictionary() {
+                    let billingAddressAction = ClientSession.Action(
+                        type: "SET_BILLING_ADDRESS",
+                        params: updatedBillingAddressDictionary
+                    )
+                    actions.append(billingAddressAction)
+                }
             }
             
             ClientSession.Action.dispatchMultiple(resumeHandler: self, actions: actions)
@@ -774,7 +823,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
             cvvField.isTextValid,
         ]
         
-        if isShowingBillingAddressFieldsRequired { validations.append(postalCodeField.isTextValid) }
+        if isShowingBillingAddressFieldsRequired { validations.append(postalCodeFieldView.isTextValid) }
         if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
         
         if validations.allSatisfy({ $0 == true }) {

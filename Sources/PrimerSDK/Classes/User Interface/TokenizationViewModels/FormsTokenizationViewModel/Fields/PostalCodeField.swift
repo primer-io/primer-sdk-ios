@@ -23,12 +23,12 @@ class PrimerPostalCodeField: PrimerCardFormFieldProtocol {
     }
     
     static func postalCodeViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerPostalCodeFieldView {
-        let postalCodeField = PrimerPostalCodeFieldView()
-        postalCodeField.placeholder = localSamplePostalCode
-        postalCodeField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        postalCodeField.textColor = theme.input.text.color
-        postalCodeField.delegate = delegate
-        return postalCodeField
+        let postalCodeFieldView = PrimerPostalCodeFieldView()
+        postalCodeFieldView.placeholder = localSamplePostalCode
+        postalCodeFieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        postalCodeFieldView.textColor = theme.input.text.color
+        postalCodeFieldView.delegate = delegate
+        return postalCodeFieldView
     }
 }
 

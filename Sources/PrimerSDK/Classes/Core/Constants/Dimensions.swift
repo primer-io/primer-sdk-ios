@@ -8,6 +8,10 @@ public struct PrimerDimensions {
     public static let safeArea: CGFloat = 10.0
     public static let zero: CGFloat = CGFloat.zero
     
+    public struct StackViewSpacing {
+        public static let `default`: CGFloat = 16.0
+    }
+    
     public struct Component {
         public static let cornerRadius: CGFloat = 4.0
         public static let borderWidth: CGFloat = 1.6

@@ -27,16 +27,16 @@ class PrimerFirstNameField: PrimerCardFormFieldProtocol {
     }
     
     static func firstNameFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerFirstNameFieldView {
-        let firstNameField = PrimerFirstNameFieldView()
-        firstNameField.placeholder = NSLocalizedString("primer-form-text-field-placeholder-first-name",
+        let firstNameFieldView = PrimerFirstNameFieldView()
+        firstNameFieldView.placeholder = NSLocalizedString("primer-form-text-field-placeholder-first-name",
                                                             tableName: nil,
                                                             bundle: Bundle.primerResources,
                                                             value: "e.g. John",
                                                             comment: "e.g. John - Form Text Field Placeholder (Address first name)")
-        firstNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        firstNameField.textColor = theme.input.text.color
-        firstNameField.delegate = delegate
-        return firstNameField
+        firstNameFieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        firstNameFieldView.textColor = theme.input.text.color
+        firstNameFieldView.delegate = delegate
+        return firstNameFieldView
     }
 }
 

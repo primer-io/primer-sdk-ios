@@ -27,16 +27,16 @@ class PrimerStateField: PrimerCardFormFieldProtocol {
     }
     
     static func stateFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerStateFieldView {
-        let stateField = PrimerStateFieldView()
-        stateField.placeholder = NSLocalizedString("primer-form-text-field-placeholder-state",
+        let stateFieldView = PrimerStateFieldView()
+        stateFieldView.placeholder = NSLocalizedString("primer-form-text-field-placeholder-state",
                                                             tableName: nil,
                                                             bundle: Bundle.primerResources,
                                                             value: "State",
                                                             comment: "Form Text Field Placeholder (Address state)")
-        stateField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        stateField.textColor = theme.input.text.color
-        stateField.delegate = delegate
-        return stateField
+        stateFieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        stateFieldView.textColor = theme.input.text.color
+        stateFieldView.delegate = delegate
+        return stateFieldView
     }
 }
 

@@ -19,7 +19,7 @@ class PrimerLastNameField: PrimerCardFormFieldProtocol {
         lastNameFieldContainerView.placeholderText = NSLocalizedString("primer-card-form-last-name",
                                                                         tableName: nil,
                                                                         bundle: Bundle.primerResources,
-                                                                        value: "First Name",
+                                                                        value: "Last Name",
                                                                         comment: "The billing address last name")
         lastNameFieldContainerView.setup()
         lastNameFieldContainerView.tintColor = theme.input.border.color(for: .selected)
@@ -27,16 +27,16 @@ class PrimerLastNameField: PrimerCardFormFieldProtocol {
     }
     
     static func lastNameFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerLastNameFieldView {
-        let lastNameField = PrimerLastNameFieldView()
-        lastNameField.placeholder = NSLocalizedString("primer-form-text-field-placeholder-last-name",
+        let lastNameFieldView = PrimerLastNameFieldView()
+        lastNameFieldView.placeholder = NSLocalizedString("primer-form-text-field-placeholder-last-name",
                                                             tableName: nil,
                                                             bundle: Bundle.primerResources,
-                                                            value: "e.g. John",
-                                                            comment: "e.g. John - Form Text Field Placeholder (Address last name)")
-        lastNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        lastNameField.textColor = theme.input.text.color
-        lastNameField.delegate = delegate
-        return lastNameField
+                                                            value: "e.g. Doe",
+                                                            comment: "e.g. Doe - Form Text Field Placeholder (Address last name)")
+        lastNameFieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        lastNameFieldView.textColor = theme.input.text.color
+        lastNameFieldView.delegate = delegate
+        return lastNameFieldView
     }
 }
 

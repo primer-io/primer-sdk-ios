@@ -42,6 +42,10 @@ protocol CardComponentsManagerProtocol {
     func tokenize()
 }
 
+typealias BillingAddressField = (fieldView: PrimerTextFieldView,
+                                     containerFieldView: PrimerCustomFieldView,
+                                     isFieldHidden: Bool)
+
 @objc
 public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     
@@ -49,7 +53,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var expiryDateField: PrimerExpiryDateFieldView
     public var cvvField: PrimerCVVFieldView
     public var cardholderField: PrimerCardholderNameFieldView?
-    public var postalCodeField: PrimerPostalCodeFieldView?
+    public var billingAddressFieldViews: [PrimerTextFieldView]?
     
     private(set) public var flow: PaymentFlow
     public var delegate: CardComponentsManagerDelegate?
@@ -75,14 +79,14 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,
         cardholderNameField: PrimerCardholderNameFieldView?,
-        postalCodeField: PrimerPostalCodeFieldView?
+        billingAddressFieldViews: [PrimerTextFieldView]?
     ) {
         self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
-        self.postalCodeField = postalCodeField
         self.cardholderField = cardholderNameField
+        self.billingAddressFieldViews = billingAddressFieldViews
         super.init()
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
     }
@@ -197,7 +201,9 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     }
     
     private func validateCardComponents() throws {
+        
         var errors: [Error] = []
+        
         if !cardnumberField.cardnumber.isValidCardNumber {
             errors.append(ValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         }
@@ -209,21 +215,20 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
             errors.append(ValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         }
-        
-        if let cardholderField  = cardholderField {
-            if !cardholderField.cardholderName.isValidCardholderName {
-                errors.append(ValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
-            }
-        }
-        
-        if let postalCodeField = postalCodeField {
-            if !postalCodeField.postalCode.isValidPostalCode {
+                
+        if let postalCodeFieldView = billingAddressFieldViews?.first(where: { ($0 as? PrimerPostalCodeFieldView) != nil }) as? PrimerPostalCodeFieldView {
+            if !postalCodeFieldView.postalCode.isValidPostalCode {
                 let err = ValidationError.invalidPostalCode(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
                 errors.append(err)
             }
         }
         
+        billingAddressFieldViews?.map { $0 as? PrimerSimpleCardFormTextFieldView }.compactMap { $0?.validationError }.forEach {
+            ErrorHandler.handle(error: $0)
+            errors.append($0)
+        }
+                
         if !errors.isEmpty {
             let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -370,7 +375,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var cardholderField: PrimerCardholderNameFieldView?
     
-    var postalCodeField: PrimerPostalCodeFieldView?
+    var postalCodeFieldView: PrimerPostalCodeFieldView?
     
     var flow: PaymentFlow
     
@@ -396,7 +401,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,
         cardholderNameField: PrimerCardholderNameFieldView?,
-        postalCodeField: PrimerPostalCodeFieldView
+        postalCodeFieldView: PrimerPostalCodeFieldView
     ) {
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         self.flow = flow
@@ -404,7 +409,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
         self.cardholderField = cardholderNameField
-        self.postalCodeField = postalCodeField
+        self.postalCodeFieldView = postalCodeFieldView
     }
     
     convenience init(
@@ -418,7 +423,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
             expiryDateField: PrimerExpiryDateFieldView(),
             cvvField: PrimerCVVFieldView(),
             cardholderNameField: PrimerCardholderNameFieldView(),
-            postalCodeField: PrimerPostalCodeFieldView()
+            postalCodeFieldView: PrimerPostalCodeFieldView()
         )
     }
     

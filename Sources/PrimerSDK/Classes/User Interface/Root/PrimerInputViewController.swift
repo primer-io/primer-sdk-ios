@@ -33,8 +33,8 @@ internal class PrimerInputViewController: PrimerFormViewController {
                 
         verticalStackView.spacing = 16
         
-        for stackView in formPaymentMethodTokenizationViewModel.inputTextFieldsStackViews {
-            verticalStackView.addArrangedSubview(stackView)
+        for verticalStackView in formPaymentMethodTokenizationViewModel.inputTextFieldsStackViews {
+            verticalStackView.addArrangedSubview(verticalStackView)
         }
         
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)

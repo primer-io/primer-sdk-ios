@@ -28,7 +28,7 @@ class PrimerFormViewController: PrimerViewController {
         verticalStackView.pin(view: view, leading: 20, top: 20, trailing: -20, bottom: -20)
     }
     
-    static func renderPaymentMethods(_ paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol], on stackView: UIStackView) {
+    static func renderPaymentMethods(_ paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol], on verticalStackView: UIStackView) {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         let availablePaymentMethodsContainerStackView = UIStackView()
@@ -57,7 +57,7 @@ class PrimerFormViewController: PrimerViewController {
             for viewModel in paymentMethodTokenizationViewModels {
                 availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.paymentMethodButton)
             }
-            stackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
+            verticalStackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
             
         } else {
             // No surcharge fee
@@ -73,7 +73,7 @@ class PrimerFormViewController: PrimerViewController {
                 for viewModel in noAdditionalFeePaymentMethodsViewModels {
                     availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.paymentMethodButton)
                 }
-                stackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
+                verticalStackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
                 return
             }
             
@@ -122,7 +122,7 @@ class PrimerFormViewController: PrimerViewController {
             }
             
             availablePaymentMethodsContainerStackView.addArrangedSubview(availablePaymentMethodsStackView)
-            stackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
+            verticalStackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
         }
     }
     

@@ -27,16 +27,16 @@ class PrimerCityField: PrimerCardFormFieldProtocol {
     }
     
     static func cityFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerCityFieldView {
-        let cityField = PrimerCityFieldView()
-        cityField.placeholder = NSLocalizedString("primer-form-text-field-placeholder-city",
+        let cityFieldView = PrimerCityFieldView()
+        cityFieldView.placeholder = NSLocalizedString("primer-form-text-field-placeholder-city",
                                                             tableName: nil,
                                                             bundle: Bundle.primerResources,
                                                             value: "City",
                                                             comment: "Form Text Field Placeholder (Address city)")
-        cityField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        cityField.textColor = theme.input.text.color
-        cityField.delegate = delegate
-        return cityField
+        cityFieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        cityFieldView.textColor = theme.input.text.color
+        cityFieldView.delegate = delegate
+        return cityFieldView
     }
 }
 
