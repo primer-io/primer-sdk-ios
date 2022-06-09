@@ -79,7 +79,11 @@ extension PaymentMethodTokenizationViewModel {
             self.didStartTokenization = nil
             self.didFinishTokenization = nil
             
-            if self.config.type == .applePay, let primerErr = err as? PrimerError, case .cancelled = primerErr {
+            if let primerErr = err as? PrimerError,
+               case .cancelled = primerErr,
+               self.config.type == .applePay,
+               PrimerHeadlessUniversalCheckout.current.delegate == nil
+            {
                 firstly {
                     ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
                 }
@@ -88,6 +92,7 @@ extension PaymentMethodTokenizationViewModel {
                 }
                 // The above promises will never end up on error.
                 .catch { _ in }
+                
             } else {
                 firstly {
                     ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
