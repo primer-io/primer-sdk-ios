@@ -19,7 +19,6 @@ class MerchantPaymentMethodsViewController: UIViewController {
         return mpmvc
     }
 
-    lazy var endpoint: String = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     var environment: Environment!
     var amount: Int!
     var currency: Currency!
@@ -49,9 +48,11 @@ class MerchantPaymentMethodsViewController: UIViewController {
                 }
             } else if let clientToken = clientToken {
                 let settings = PrimerSettings(
-                    merchantIdentifier: "merchant.checkout.team",
-                    urlScheme: "merchant://",
-                    businessDetails: BusinessDetails(name: "Business Name", address: nil))
+                    paymentMethodOptions: PrimerPaymentMethodOptions(
+                        urlScheme: "merchant://",
+                        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team", merchantName: "Primer Merchant")
+                    )
+                )
                 PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, completion: { (pms, err) in
                     DispatchQueue.main.async {
                         self.activityIndicator?.stopAnimating()
@@ -67,67 +68,13 @@ class MerchantPaymentMethodsViewController: UIViewController {
     }
     
     private func requestClientToken(completion: @escaping (String?, Error?) -> Void) {
-        let clientSessionRequestBody = ClientSessionRequestBody(
-            customerId: "ios-customer-\(String.randomString(length: 8))",
-            orderId: "ios-order-\(String.randomString(length: 8))",
-            currencyCode: currency,
-            amount: amount,
-            metadata: ["key": "val"],
-            customer: ClientSessionRequestBody.Customer(
-                firstName: "John",
-                lastName: "Smith",
-                emailAddress: "john@primer.io",
-                mobileNumber: "+4478888888888",
-                billingAddress: Address(
-                    firstName: "John",
-                    lastName: "Smith",
-                    addressLine1: "65 York Road",
-                    addressLine2: nil,
-                    city: "London",
-                    state: nil,
-                    countryCode: "GB",
-                    postalCode: "NW06 4OM"),
-                shippingAddress: Address(
-                    firstName: "John",
-                    lastName: "Smith",
-                    addressLine1: "9446 Richmond Road",
-                    addressLine2: nil,
-                    city: "London",
-                    state: nil,
-                    countryCode: "GB",
-                    postalCode: "EC53 8BT")
-            ),
-            order: ClientSessionRequestBody.Order(
-                countryCode: countryCode,
-                lineItems: [
-                    ClientSessionRequestBody.Order.LineItem(
-                        itemId: "shoes-72189",
-                        description: "Fancy shoes",
-                        amount: 1000,
-                        quantity: 1)
-                ]),
-            paymentMethod: ClientSessionRequestBody.PaymentMethod(
-                vaultOnSuccess: false,
-                options: [
-                    "PAYMENT_CARD": [
-                        "networks": [
-                            "VISA": [
-                                "surcharge": [
-                                    "amount": 109
-                                ]
-                            ],
-                            "MASTERCARD": [
-                                "surcharge": [
-                                    "amount": 129
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            )
-        )
         
-        
+        let clientSessionRequestBody = Networking().clientSessionRequestBodyWithCurrency("customerId",
+                                                                                         phoneNumber: nil,
+                                                                                         countryCode: .fr,
+                                                                                         currency: .EUR,
+                                                                                         amount: 1000)
+
         requestClientSession(requestBody: clientSessionRequestBody, completion: { (token, err) in
             completion(token, err)
         })
@@ -195,7 +142,7 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let paymentMethodType = self.availablePaymentMethods[indexPath.row]
-        if paymentMethodType == PaymentMethodConfigType.paymentCard {
+        if paymentMethodType == PrimerPaymentMethodType.paymentCard {
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
@@ -248,7 +195,7 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
             } else if let res = res {
                 if let data = try? JSONEncoder().encode(res) {
                     DispatchQueue.main.async {
-                        let rvc = ResultViewController.instantiate(data: [data])
+                        let rvc = HUCResultViewController.instantiate(data: [data])
                         self.navigationController?.pushViewController(rvc, animated: true)
                     }
                 }

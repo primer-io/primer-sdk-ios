@@ -52,13 +52,12 @@ internal extension PaymentMethodToken {
         switch self.paymentInstrumentType {
         case .paymentCard:
             guard let ntwrk = self.paymentInstrumentData?.network else { return nil }
-            guard let cardholder = self.paymentInstrumentData?.cardholderName else { return nil }
             guard let last4 = self.paymentInstrumentData?.last4Digits else { return nil }
             guard let expMonth = self.paymentInstrumentData?.expirationMonth else { return nil }
             guard let expYear = self.paymentInstrumentData?.expirationYear else { return nil }
             return CardButtonViewModel(
                 network: ntwrk,
-                cardholder: cardholder,
+                cardholder: self.paymentInstrumentData?.cardholderName ?? "",
                 last4: "•••• \(last4)",
                 expiry: NSLocalizedString("primer-saved-card",
                                           tableName: nil,
@@ -105,8 +104,7 @@ struct CardButtonViewModel {
     let imageName: ImageName
     let paymentMethodType: PaymentInstrumentType
     var surCharge: Int? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let options = state.primerConfiguration?.clientSession?.paymentMethod?.options else { return nil }
+        guard let options = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options else { return nil }
         guard let paymentCardOption = options.filter({ $0["type"] as? String == "PAYMENT_CARD" }).first else { return nil }
         guard let networks = paymentCardOption["networks"] as? [[String: Any]] else { return nil }
         guard let tmpNetwork = networks.filter({ ($0["type"] as? String)?.lowercased() == network.lowercased() }).first else { return nil }
@@ -163,7 +161,7 @@ public enum PaymentInstrumentType: String, Codable {
         self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
     }
     
-    var paymentMethodType: PaymentMethodConfigType {
+    var paymentMethodType: PrimerPaymentMethodType {
         switch self {
         case .apayaToken:
             return .apaya

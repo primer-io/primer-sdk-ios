@@ -312,11 +312,6 @@ struct ClientSessionRequestBody {
 
 }
 
-public struct ClientSessionActionsRequest: Encodable {
-    let clientToken: String
-    let actions: [ClientSession.Action]
-}
-
 extension Encodable {
     func asDictionary() throws -> [String: Any] {
         let data = try JSONEncoder().encode(self)
@@ -431,11 +426,4 @@ public struct Address: Codable {
 
         return dic.keys.count == 0 ? nil : dic
     }
-}
-
-struct TransactionResponse {
-    var id: String
-    var date: String
-    var status: String
-    var requiredAction: Payment.Response.RequiredAction?
 }

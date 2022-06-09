@@ -10,12 +10,13 @@
 import Foundation
 
 protocol PrimerAPIClientProtocol {
+    
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<GetVaultedPaymentMethodsResponse, Error>) -> Void)
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse>
     func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
     func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Void, Error>) -> Void)
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void)
-    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void)
+    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
+//    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void)
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void)
     func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalCreateBillingAgreementResponse, Error>) -> Void)
     func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void)
@@ -29,13 +30,20 @@ protocol PrimerAPIClientProtocol {
     func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (_ result: Result<[Bank], Error>) -> Void)
     func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
     
+    func requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
+    
     func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
     func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void)
+
     func validateClientToken(request: ClientTokenValidationRequest, completion: @escaping (_ result: Result<SuccessResponse, Error>) -> Void)
+    // Create - Resume Payment
+    
+    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Payment.CreateRequest, completion: @escaping (_ result: Result<Payment.Response, Error>) -> Void)
+    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Payment.ResumeRequest, completion: @escaping (_ result: Result<Payment.Response, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
-    
+        
     internal let networkService: NetworkService
 
     // MARK: - Object lifecycle
@@ -53,8 +61,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         networkService.request(endpoint) { (result: Result<GetVaultedPaymentMethodsResponse, Error>) in
             switch result {
             case .success(let vaultedPaymentMethodsResponse):
-                let state: AppStateProtocol = DependencyContainer.resolve()
-                state.selectedPaymentMethodId = vaultedPaymentMethodsResponse.data.first?.id
+                AppState.current.selectedPaymentMethodId = vaultedPaymentMethodsResponse.data.first?.id
                 completion(.success(vaultedPaymentMethodsResponse))
             case .failure(let err):
                 completion(.failure(err))
@@ -88,29 +95,29 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerConfiguration, Error>) -> Void) {
+    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken)
-        networkService.request(endpoint) { (result: Result<PrimerConfiguration, Error>) in
+        networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>) in
             switch result {
-            case .success(let primerConfiguration):
-                completion(.success(primerConfiguration))
+            case .success(let apiConfiguration):
+                completion(.success(apiConfiguration))
             case .failure(let err):
                 completion(.failure(err))
             }
         }
     }
 
-    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void) {
-        let endpoint = PrimerAPI.createDirectDebitMandate(clientToken: clientToken, mandateRequest: mandateRequest)
-        networkService.request(endpoint) { (result: Result<DirectDebitCreateMandateResponse, Error>) in
-            switch result {
-            case .success(let primerConfiguration):
-                completion(.success(primerConfiguration))
-            case .failure(let err):
-                completion(.failure(err))
-            }
-        }
-    }
+//    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void) {
+//        let endpoint = PrimerAPI.createDirectDebitMandate(clientToken: clientToken, mandateRequest: mandateRequest)
+//        networkService.request(endpoint) { (result: Result<DirectDebitCreateMandateResponse, Error>) in
+//            switch result {
+//            case .success(let apiConfiguration):
+//                completion(.success(apiConfiguration))
+//            case .failure(let err):
+//                completion(.failure(err))
+//            }
+//        }
+//    }
 
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.createPayPalOrderSession(clientToken: clientToken, payPalCreateOrderRequest: payPalCreateOrderRequest)
@@ -241,6 +248,18 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
+    func requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest, completion: @escaping (Result<PrimerAPIConfiguration, Error>) -> Void) {
+        let endpoint = PrimerAPI.requestPrimerConfigurationWithActions(clientToken: clientToken, request: request)
+        networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>) in
+            switch result {
+            case .success(let response):
+                completion(.success(response))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
     func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void) {
         let endpoint = PrimerAPI.sendAnalyticsEvents(url: url, body: body)
         networkService.request(endpoint) { (result: Result<Analytics.Service.Response, Error>) in
@@ -274,6 +293,31 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             case .failure(let error):
                 ErrorHandler.handle(error: error)
                 completion(.failure(error))
+            }
+        }
+    }
+
+    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Payment.CreateRequest, completion: @escaping (Result<Payment.Response, Error>) -> Void) {
+        let endpoint = PrimerAPI.createPayment(clientToken: clientToken, paymentRequest: paymentRequestBody)
+        networkService.request(endpoint) { (result: Result<Payment.Response, Error>) in
+            switch result {
+            case .success(let res):
+                completion(.success(res))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    
+    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Payment.ResumeRequest, completion: @escaping (Result<Payment.Response, Error>) -> Void) {
+        let endpoint = PrimerAPI.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest)
+        networkService.request(endpoint) { (result: Result<Payment.Response, Error>) in
+            switch result {
+            case .success(let res):
+                completion(.success(res))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
     }

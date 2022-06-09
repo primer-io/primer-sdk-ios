@@ -39,41 +39,4 @@ extension PrimerAPIClient {
     
 }
 
-extension MockPrimerAPIClient {
-    
-    func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
-        isCalled = true
-        guard let response = response else {
-            let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
-            completion(.failure(nsErr))
-            return
-        }
-        
-        do {
-            let value = try JSONDecoder().decode(ThreeDS.BeginAuthResponse.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-    
-    func continue3DSAuth(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
-        isCalled = true
-        
-        guard let response = response else {
-            let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
-            completion(.failure(nsErr))
-            return
-        }
-        
-        do {
-            let value = try JSONDecoder().decode(ThreeDS.PostAuthResponse.self, from: response)
-            completion(.success(value))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-    
-}
-
 #endif

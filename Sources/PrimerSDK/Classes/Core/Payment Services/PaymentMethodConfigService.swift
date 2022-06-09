@@ -14,10 +14,8 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
     }
 
     func fetchConfig(_ completion: @escaping (Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
         guard let clientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(err)
             return
@@ -30,7 +28,7 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
             case .failure(let error):
                 completion(error)
             case .success(let config):
-                state.primerConfiguration = config
+                AppState.current.apiConfiguration = config
                 completion(nil)
             }
         }
@@ -48,13 +46,13 @@ internal class PaymentMethodConfigService: PaymentMethodConfigServiceProtocol {
         }
     }
     
-    func fetchPrimerConfigurationIfNeeded() -> Promise<PrimerConfiguration> {
+    func fetchPrimerConfigurationIfNeeded() -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
-            if let paymentMethodsConfig = PrimerConfiguration.current {
+            if let paymentMethodsConfig = PrimerAPIConfiguration.current {
                 seal.fulfill(paymentMethodsConfig)
             } else {
                 guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return

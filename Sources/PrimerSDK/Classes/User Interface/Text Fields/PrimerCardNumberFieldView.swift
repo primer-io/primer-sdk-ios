@@ -35,7 +35,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
                 action: .focus,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
                     url: nil),
                 extra: nil,
                 objectType: .input,
@@ -52,7 +52,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
                 action: .blur,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
                     url: nil),
                 extra: nil,
                 objectType: .input,
@@ -84,7 +84,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
             if self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false {
                 self.validation = .valid
             } else {
-                let err = ValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 self.validation = PrimerTextField.Validation.invalid(err)
             }

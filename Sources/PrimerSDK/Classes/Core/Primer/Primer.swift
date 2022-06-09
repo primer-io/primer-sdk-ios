@@ -77,116 +77,21 @@ public class Primer {
     // MARK: - CONFIGURATION
 
     /**
-     Configure SDK's settings and/or theme
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
+     Configure SDK's settings
      */
 
-    public func configure(settings: PrimerSettings? = nil, theme: PrimerTheme? = nil) {
-        DispatchQueue.main.async {
-            if let settings = settings {
-                DependencyContainer.register(settings as PrimerSettingsProtocol)
-            }
-
-            if let theme = theme {
-                DependencyContainer.register(theme as PrimerThemeProtocol)
-            }
-            
-            let event = Analytics.Event(
-                eventType: .sdkEvent,
-                properties: SDKEventProperties(
-                    name: #function,
-                    params: nil))
-            Analytics.Service.record(event: event)
-        }
-    }
-
-    /**
-     Set form's top title
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
-     */
-    public func setFormTopTitle(_ text: String, for formType: PrimerFormType) {
-        let event = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "title": text,
-                    "formType": formType.rawValue
-                ]))
-        Analytics.Service.record(event: event)
-    }
-
-    /**
-     Set form's main title
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
-     */
-    public func setFormMainTitle(_ text: String, for formType: PrimerFormType) {
-        let event = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "title": text,
-                    "formType": formType.rawValue
-                ]))
-        Analytics.Service.record(event: event)
-    }
-
-    /**
-     Pre-fill direct debit details of user in form
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
-     */
-    @available(swift, obsoleted: 4.1, message: "Set direct debit details in the client session.")
-    public func setDirectDebitDetails(
-        firstName: String,
-        lastName: String,
-        email: String,
-        iban: String,
-        address: Address
-    ) {
-
-    }
-
-    /**
-     Presents a bottom sheet view for Primer checkout. To determine the user journey specify the PrimerSessionFlow of the method. Additionally a parent view controller needs to be passed in to display the sheet view.
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
-     */
-    @available(*, deprecated, message: "Use showUniversalCheckout or showVaultManager instead.")
-    public func showCheckout(_ controller: UIViewController, flow: PrimerSessionFlow) {
-        let event = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "flow": flow.internalSessionFlow.rawValue
-                ]))
-        Analytics.Service.record(event: event)
-        
-        show(flow: flow)
+    public func configure(settings: PrimerSettings? = nil, delegate: PrimerDelegate? = nil) {
+        DependencyContainer.register((settings ?? PrimerSettings()) as PrimerSettingsProtocol)
+        self.delegate = delegate
     }
     
-    public func showUniversalCheckout(on viewController: UIViewController, clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
+    // MARK: - SHOW
 
+    /**
+     Show Primer Checkout
+     */
+
+    public func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
         checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
@@ -210,11 +115,10 @@ public class Primer {
                 id: self.timingEventId!))
         
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-                
-        self.show(on: viewController, flow: .default, with: clientToken, completion: completion)
+        self.show(flow: .default, with: clientToken, completion: completion)
     }
     
-    public func showVaultManager(on viewController: UIViewController, clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
+    public func showVaultManager(clientToken: String, completion: ((Error?) -> Void)? = nil) {
         checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
@@ -238,12 +142,11 @@ public class Primer {
                 id: self.timingEventId!))
         
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-
-        self.show(on: viewController, flow: .defaultWithVault, with: clientToken)
+        self.show(flow: .defaultWithVault, with: clientToken)
     }
     
     // swiftlint:disable cyclomatic_complexity
-    public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType, withIntent intent: PrimerSessionIntent, on viewController: UIViewController, with clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
+    public func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         checkoutSessionId = UUID().uuidString
         
         var flow: PrimerSessionFlow!
@@ -291,9 +194,9 @@ public class Primer {
             case .paymentCard:
                 flow = .completeDirectCheckout
             default:
-                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.checkoutFailed(with: err)
+                PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
                 return
             }
             
@@ -308,9 +211,9 @@ public class Primer {
             case .payPal:
                 flow = .addPayPalToVault
             default:
-                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.checkoutFailed(with: err)
+                PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
                 return
             }
         }
@@ -336,32 +239,10 @@ public class Primer {
                 id: self.timingEventId!))
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
-        self.show(on: viewController, flow: flow, with: clientToken, completion: completion)
+        self.show(flow: flow, with: clientToken, completion: completion)
     }
     
     // swiftlint:enable cyclomatic_complexity
-
-    /**
-     Performs an asynchronous get call returning all the saved payment methods for the user ID specified in the settings object when instantiating Primer. Provide a completion handler to access the returned list of saved payment methods (these have already been added to Primer vault and can be sent directly to your backend to authorize or capture a payment)
-     
-     - Author:
-     Primer
-     - Version:
-     1.4.0
-     */
-    public func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
-        let event = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: nil))
-        Analytics.Service.record(event: event)
-        
-        DispatchQueue.main.async {
-            let externalViewModel: ExternalViewModelProtocol = DependencyContainer.resolve()
-            externalViewModel.fetchVaultedPaymentMethods(completion)
-        }
-    }
 
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
@@ -395,28 +276,19 @@ public class Primer {
                 self?.primerRootVC = nil
                 self?.primerWindow?.resignKey()
                 self?.primerWindow = nil
-                PrimerDelegateProxy.onCheckoutDismissed()
+                PrimerDelegateProxy.primerDidDismiss()
             })
         }
     }
     
-    private func show(on viewController: UIViewController, flow: PrimerSessionFlow, with clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
-        
-        guard let clientToken = clientToken else {
-            presentingViewController = viewController
-            show(flow: flow)
-            completion?(nil)
-            return
-        }
-        
+    private func show(flow: PrimerSessionFlow, with clientToken: String, completion: ((Error?) -> Void)? = nil) {
         ClientTokenService.storeClientToken(clientToken) { [weak self] error in
-            self?.presentingViewController = viewController
             self?.show(flow: flow)
             completion?(error)
         }
     }
     
-    public func show(flow: PrimerSessionFlow) {
+    private func show(flow: PrimerSessionFlow) {
         self.flow = flow
         
         let event = Analytics.Event(
@@ -432,6 +304,7 @@ public class Primer {
             if self.primerRootVC == nil {
                 self.primerRootVC = PrimerRootViewController(flow: flow)
             }
+            self.presentingViewController = self.primerRootVC
             
             if self.primerWindow == nil {
                 if #available(iOS 13.0, *) {
@@ -453,12 +326,6 @@ public class Primer {
             }
         }
     }
-    
-    public func setImplementedReactNativeCallbacks(_ implementedReactNativeCallbacks: ImplementedReactNativeCallbacks) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        state.implementedReactNativeCallbacks = implementedReactNativeCallbacks
-    }
-    
 }
 
 #endif

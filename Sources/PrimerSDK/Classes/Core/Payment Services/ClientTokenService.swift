@@ -2,23 +2,20 @@
 
 import Foundation
 
+/// Helper typealias to identify the JWT Token
+internal typealias RawJWTToken = String
+
 internal protocol ClientTokenServiceProtocol {
+    static var decodedClientToken: DecodedClientToken? { get }
     static func storeClientToken(_ clientToken: String) -> Promise<Void>
     static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void)
-    func fetchClientToken(_ completion: @escaping (Error?) -> Void)
-    func fetchClientToken() -> Promise<Void>
-    func fetchClientTokenIfNeeded() -> Promise<Void>
 }
 
 internal class ClientTokenService: ClientTokenServiceProtocol {
-    
-    /// Helper typealias to identify the JWT Token
-    private typealias RawJWTToken = String
-    
+        
     /// The client token from the DepedencyContainer
     static var decodedClientToken: DecodedClientToken? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let clientToken = state.clientToken else { return nil }
+        guard let clientToken = AppState.current.clientToken else { return nil }
         guard let jwtTokenPayload = clientToken.jwtTokenPayload,
               let expDate = jwtTokenPayload.expDate
         else {
@@ -72,7 +69,7 @@ extension ClientTokenService {
         guard var currentDecodedToken = tokenToValidate.jwtTokenPayload,
               let expDate = currentDecodedToken.expDate,
               expDate > Date() else {
-            let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: error)
             throw error
         }
@@ -139,9 +136,6 @@ extension ClientTokenService {
     }
     
     static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void) {
-        
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
         // 1. Validate the token manually or return the previous one from current App State
         do {
             _ = try validateInternally(clientToken)
@@ -152,14 +146,13 @@ extension ClientTokenService {
         
         // 2. Validate the token from the dedicated API
         validateToken(clientToken) { error in
-            
             guard error == nil else {
                 completion(error)
                 return
             }
             
             // 3. Assign the new token to the App State
-            state.clientToken = clientToken
+            AppState.current.clientToken = clientToken
             completion(nil)
         }
     }
@@ -170,82 +163,7 @@ extension ClientTokenService {
     // MARK: Reset
     
     static func resetClientToken() {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        state.clientToken = nil
-    }
-}
-
-extension ClientTokenService {
-    
-    // MARK: Fetcthing
-    
-    /**
-     performs asynchronous call passed in by app developer, decodes the returned Base64 Primer client token string and adds it to shared state.
-     */
-    func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
-        
-        PrimerDelegateProxy.clientTokenCallback({ (token, error) in
-                        
-            guard error == nil, let token = token else {
-                completion(error)
-                return
-            }
-            
-            ClientTokenService.storeClientToken(token) { error in
-                completion(error)
-                return
-            }
-        })
-    }
-    
-    func fetchClientToken() -> Promise<Void> {
-        return Promise { seal in
-            self.fetchClientToken { err in
-                if let err = err {
-                    seal.reject(err)
-                } else {
-                    seal.fulfill()
-                }
-            }
-        }
-    }
-    
-    func fetchClientTokenIfNeeded() -> Promise<Void> {
-        return Promise { seal in
-            do {
-                if let decodedClientToken = ClientTokenService.decodedClientToken {
-                    try decodedClientToken.validate()
-                    seal.fulfill()
-                } else {
-                    firstly {
-                        self.fetchClientToken()
-                    }
-                    .done {
-                        seal.fulfill()
-                    }
-                    .catch { err in
-                        seal.reject(err)
-                    }
-                }
-                
-            } catch {
-                switch error {
-                case PrimerError.invalidClientToken:
-                    firstly {
-                        self.fetchClientToken()
-                    }
-                    .done { decodedClientToken in
-                        seal.fulfill(decodedClientToken)
-                    }
-                    .catch { err in
-                        seal.reject(err)
-                    }
-                default:
-                    seal.reject(error)
-                }
-            }
-            
-        }
+        AppState.current.clientToken = nil
     }
 }
 

@@ -11,6 +11,22 @@
 
 class MockClientTokenService: ClientTokenServiceProtocol {
     
+    /// The client token from the DepedencyContainer
+    static var decodedClientToken: DecodedClientToken? {
+        guard let clientToken = MockAppState.current.clientToken else { return nil }
+        guard let jwtTokenPayload = clientToken.jwtTokenPayload,
+              let expDate = jwtTokenPayload.expDate
+        else {
+            return nil
+        }
+        
+        if expDate < Date() {
+            return nil
+        }
+        
+        return jwtTokenPayload
+    }
+    
     static func storeClientToken(_ clientToken: String) -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
@@ -52,7 +68,7 @@ class MockClientTokenService: ClientTokenServiceProtocol {
     
     func fetchClientToken(_ completion: @escaping (Error?) -> Void) {
         loadCheckoutConfigCalled = true
-        if (throwError) { return completion(PrimerError.generic(message: "An error occured", userInfo: nil)) }
+        if (throwError) { return completion(PrimerError.generic(message: "An error occured", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)) }
         return completion(nil)
     }
 }

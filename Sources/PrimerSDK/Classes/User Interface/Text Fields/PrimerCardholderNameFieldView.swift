@@ -34,7 +34,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
                 action: .focus,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
                     url: nil),
                 extra: nil,
                 objectType: .input,
@@ -51,7 +51,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
                 action: .blur,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
                     url: nil),
                 extra: nil,
                 objectType: .input,
@@ -74,7 +74,7 @@ public final class PrimerCardholderNameFieldView: PrimerTextFieldView {
         case true:
             validation = .valid
         case false:
-            let err = ValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             validation = .invalid(err)
         default:

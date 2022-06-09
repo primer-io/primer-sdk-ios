@@ -117,9 +117,7 @@ internal class PrimerRootViewController: PrimerViewController {
     }
     
     private func render() {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if settings.isInitialLoadingHidden == false {
+        if PrimerSettings.current.uiOptions.isInitScreenEnabled {
             blurBackground()
             showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
@@ -127,19 +125,25 @@ internal class PrimerRootViewController: PrimerViewController {
         let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
         
         viewModel.loadConfig({ [weak self] error in
-            DispatchQueue.main.async {
-                
+            DispatchQueue.main.async {                
                 guard error == nil else {
-                    Primer.shared.primerRootVC?.handle(error: error!)
+                    var primerErr: PrimerError!
+                    if let error = error as? PrimerError {
+                        primerErr = error
+                    } else {
+                        primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: nil, diagnosticsId: nil)
+                    }
+                    
+                    self?.handleErrorBasedOnSDKSettings(primerErr)
                     return
                 }
                 
                 let state: AppStateProtocol = DependencyContainer.resolve()
                 
-                if Primer.shared.flow.internalSessionFlow.vaulted, state.primerConfiguration?.clientSession?.customer?.id == nil {
-                    let err = PrimerError.invalidValue(key: "customer.id", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"])
+                if Primer.shared.flow.internalSessionFlow.vaulted, state.apiConfiguration?.clientSession?.customer?.id == nil {
+                    let err = PrimerError.invalidValue(key: "customer.id", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
-                    Primer.shared.primerRootVC?.handle(error: err)
+                    Primer.shared.primerRootVC?.handleErrorBasedOnSDKSettings(err)
                     return
                     
                 }
@@ -425,11 +429,10 @@ internal class PrimerRootViewController: PrimerViewController {
         }
         
         DispatchQueue.main.async {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             var show = true
             
             if self.nc.viewControllers.isEmpty {
-                show = !settings.isInitialLoadingHidden
+                show = PrimerSettings.current.uiOptions.isInitScreenEnabled
             }
             
             let height = self.nc.viewControllers.first?.view.bounds.height ?? 300
@@ -492,16 +495,28 @@ internal class PrimerRootViewController: PrimerViewController {
 
 extension PrimerRootViewController {
     
-    func presentPaymentMethod(type: PaymentMethodConfigType) {
-        guard let paymentMethodTokenizationViewModel = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
-            let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+    func presentPaymentMethod(type: PrimerPaymentMethodType) {
+        guard let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
+            let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.checkoutFailed(with: err)
+            PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: { errorDecision in
+                switch errorDecision.type {
+                case .fail(let message):
+                    var merchantErr: Error!
+                    if let message = message {
+                        merchantErr = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    } else {
+                        merchantErr = NSError.emptyDescriptionError
+                    }
+                    
+                    Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: merchantErr.localizedDescription)
+                }
+            })
             return
         }
         
         var imgView: UIImageView?
-        if let squareLogo = PrimerConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.squareLogo {
+        if let squareLogo = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.squareLogo {
             imgView = UIImageView()
             imgView?.image = squareLogo
             imgView?.contentMode = .scaleAspectFit
@@ -514,71 +529,27 @@ extension PrimerRootViewController {
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         
-        if var asyncPaymentMethodViewModel = paymentMethodTokenizationViewModel as? ExternalPaymentMethodTokenizationViewModelProtocol {
-            asyncPaymentMethodViewModel.willPresentExternalView = {
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-            }
-            
-            asyncPaymentMethodViewModel.didPresentExternalView = {
-                
-            }
-            
-            asyncPaymentMethodViewModel.willDismissExternalView = {
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-            }
+        paymentMethodTokenizationViewModel.willPresentPaymentMethodUI = {
+            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         
-        paymentMethodTokenizationViewModel.completion = { (tok, err) in
-            if let err = err {
-                Primer.shared.primerRootVC?.handle(error: err)
-            } else {
-                Primer.shared.primerRootVC?.handleSuccess()
-            }
+        paymentMethodTokenizationViewModel.didPresentPaymentMethodUI = {
+            
         }
+        
+        paymentMethodTokenizationViewModel.willDismissPaymentMethodUI = {
+            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
+        }
+        
+//        paymentMethodTokenizationViewModel.tokenizationCompletion = { (tok, err) in
+//            if let err = err {
+//                Primer.shared.primerRootVC?.handle(error: err)
+//            } else {
+//                Primer.shared.primerRootVC?.handleSuccess()
+//            }
+//        }
         
         paymentMethodTokenizationViewModel.startTokenizationFlow()
-    }
-    
-    func handleSuccessfulTokenization(paymentMethod: PaymentMethodToken) {
-        DispatchQueue.main.async { [weak self] in
-            
-            guard let strongSelf = self else {
-                let err = PrimerError.generic(
-                    message: "self has been deinitialized",
-                    userInfo: [
-                        "file": #file,
-                        "function": #function,
-                        "class": "\(Self.self)",
-                        "line": "\(#line)"]
-                )
-                ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.checkoutFailed(with: err)
-                return
-            }
-            
-            strongSelf.showLoadingScreenIfNeeded(imageView: nil, message: nil)
-            
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, resumeHandler: strongSelf)
-            PrimerDelegateProxy.onTokenizeSuccess(paymentMethod, { error in
-                DispatchQueue.main.async { [weak self] in
-                    guard let _ = self else {
-                        let error = PrimerError.generic(
-                            message: "self has been deinitialized",
-                            userInfo: [
-                                "file": #file,
-                                "function": #function,
-                                "class": "\(Self.self)",
-                                "line": "\(#line)"]
-                        )
-                        ErrorHandler.handle(error: error)
-                        PrimerDelegateProxy.checkoutFailed(with: error)
-                        return
-                    }
-                    
-                    self?.dismissOrShowResultScreen(error)
-                }
-            })
-        }
     }
 }
 
@@ -589,50 +560,31 @@ extension PrimerRootViewController: UIGestureRecognizerDelegate {
     }
 }
 
-extension PrimerRootViewController: ResumeHandlerProtocol {
-    func handle(newClientToken clientToken: String) {
-        ClientTokenService.storeClientToken(clientToken) { [weak self] error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    ErrorHandler.handle(error: error)
-                    PrimerDelegateProxy.onResumeError(error)
-                    self?.handle(error: error)
-                }
-            }
-        }
-    }
 
-    func handle(error: Error) {
-        DispatchQueue.main.async {
-            self.dismissOrShowResultScreen(error)
-        }
-    }
-        
-    func handleSuccess() {
-        DispatchQueue.main.async {
-            self.dismissOrShowResultScreen()
+extension PrimerRootViewController {
+    
+    private func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
+        PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
+            switch errorDecision.type {
+            case .fail(let message):
+                Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: message)
+            }
         }
     }
 }
 
 extension PrimerRootViewController {
     
-    func dismissOrShowResultScreen(_ error: Error? = nil) {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+    func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, withMessage message: String? = nil) {
+        let isResultScreenEnabled = PrimerSettings.current.uiOptions.isSuccessScreenEnabled ?
+        PrimerSettings.current.uiOptions.isSuccessScreenEnabled :
+        PrimerSettings.current.uiOptions.isErrorScreenEnabled
         
-        if settings.hasDisabledSuccessScreen {
+        if !isResultScreenEnabled {
             Primer.shared.dismiss()
         } else {
-            let status: PrimerResultViewController.ScreenType = error == nil ? .success : .failure
-            
-            var msg: String?
-            if error as? PrimerError != nil {
-                msg = Strings.Generic.somethingWentWrong
-            } else {
-                msg = error?.localizedDescription
-            }
-            
-            let resultViewController = PrimerResultViewController(screenType: status, message: msg)
+            let status: PrimerResultViewController.ScreenType = (type != .failure) ? .success : .failure
+            let resultViewController = PrimerResultViewController(screenType: status, message: message)
             resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
             resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
             Primer.shared.primerRootVC?.show(viewController: resultViewController)

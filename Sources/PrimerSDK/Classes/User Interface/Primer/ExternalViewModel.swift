@@ -20,35 +20,20 @@ internal class ExternalViewModel: ExternalViewModelProtocol {
     }
 
     func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
         if ClientTokenService.decodedClientToken.exists {
             let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
             vaultService.loadVaultedPaymentMethods({ err in
                 if let err = err {
                     completion(.failure(err))
                 } else {
-                    let paymentMethods = state.paymentMethods
+                    let paymentMethods = AppState.current.paymentMethods
                     completion(.success(paymentMethods))
                 }
             })
         } else {
-            let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.fetchClientToken({ err in
-                if let err = err {
-                    completion(.failure(err))
-                } else {
-                    let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-                    vaultService.loadVaultedPaymentMethods({ err in
-                        if let err = err {
-                            completion(.failure(err))
-                        } else {
-                            let paymentMethods = state.paymentMethods
-                            completion(.success(paymentMethods))
-                        }
-                    })
-                }
-            })
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            completion(.failure(err))
         }
     }
 }

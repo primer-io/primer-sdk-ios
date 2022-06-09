@@ -9,12 +9,21 @@
 import PrimerSDK
 import UIKit
 
-extension MerchantCheckoutViewController {
+extension UIViewController {
+    
+    @objc var endpoint: String {
+        "https://us-central1-primerdemo-8741b.cloudfunctions.net"
+    }
+}
+
+extension UIViewController {
     
     // MARK: - PRIMER HELPERS
     
-    internal func fetchPaymentMethods() {
-        guard let url = URL(string: "\(endpoint)/api/payment-instruments") else {
+    internal func fetchPaymentMethodsForCustomerId(_ customerId: String?) {
+        
+        guard let url = URL(string: "\(endpoint)/api/payment-instruments"),
+              let customerId = customerId else {
             return
         }
         

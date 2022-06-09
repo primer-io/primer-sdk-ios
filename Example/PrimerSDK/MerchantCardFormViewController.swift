@@ -12,7 +12,6 @@ import UIKit
 class MerchantCardFormViewController: UIViewController {
     
     var stackView: UIStackView!
-    lazy var endpoint: String = "https://us-central1-primerdemo-8741b.cloudfunctions.net"
     
     var cardNumberTextField: PrimerInputTextField?
     var expiryTextField: PrimerInputTextField?
@@ -20,7 +19,7 @@ class MerchantCardFormViewController: UIViewController {
     var cardHolderNameTextField: PrimerInputTextField?
     var environment: Environment = .staging
     var threeDSAlert: UIAlertController?
-    var transactionResponse: TransactionResponse?
+    var resumePaymentId: String?
     var paymentResponsesData: [Data] = []
     var activityIndicator: UIActivityIndicatorView?
     var paymentButton: UIButton!
@@ -132,7 +131,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
                 self.activityIndicator = nil
 
                 if !self.paymentResponsesData.isEmpty {
-                    let rvc = ResultViewController.instantiate(data: self.paymentResponsesData)
+                    let rvc = HUCResultViewController.instantiate(data: self.paymentResponsesData)
                     self.navigationController?.pushViewController(rvc, animated: true)
                 }
             }
@@ -142,7 +141,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
             } else if let res = res {
                 if let data = try? JSONEncoder().encode(res) {
                     DispatchQueue.main.async {
-                        let rvc = ResultViewController.instantiate(data: [data])
+                        let rvc = HUCResultViewController.instantiate(data: [data])
                         self.navigationController?.pushViewController(rvc, animated: true)
                     }
                 }
@@ -152,18 +151,9 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
                     return
                 }
                 
-                guard let dateStr = res.dateStr else {
-                    resumeHandler?.handleSuccess()
-                    return
-                }
+                self.resumePaymentId = res.id
                 
-                self.transactionResponse = TransactionResponse(
-                    id: res.id,
-                    date: dateStr,
-                    status: res.status.rawValue,
-                    requiredAction: requiredAction)
-                
-                if requiredAction.name == "3DS_AUTHENTICATION", res.status == .pending {
+                if requiredAction.name == .threeDSAuthentication, res.status == .pending {
                     resumeHandler?.handle(newClientToken: requiredAction.clientToken)
                 } else {
                     resumeHandler?.handleSuccess()
@@ -202,7 +192,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
             self.activityIndicator = nil
 
             if !self.paymentResponsesData.isEmpty {
-                let rvc = ResultViewController.instantiate(data: self.paymentResponsesData)
+                let rvc = HUCResultViewController.instantiate(data: self.paymentResponsesData)
                 self.navigationController?.pushViewController(rvc, animated: true)
             }
         }

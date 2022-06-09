@@ -34,7 +34,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
                 action: .focus,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
                     url: nil),
                 extra: nil,
                 objectType: .input,
@@ -51,7 +51,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
                 action: .blur,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: PaymentMethodConfigType.paymentCard.rawValue,
+                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
                     url: nil),
                 extra: nil,
                 objectType: .input,
@@ -72,7 +72,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         if (self.isValid?(newText) ?? false) {
             validation = .valid
         } else {
-            let err = ValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             validation = .invalid(err)
         }

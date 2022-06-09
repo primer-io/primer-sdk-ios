@@ -31,7 +31,7 @@ struct CardOptions: PaymentMethodOptions {
 
 struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     
-    let paymentMethodType: PaymentMethodConfigType
+    let paymentMethodType: PrimerPaymentMethodType
     let paymentMethodConfigId: String
     let type: String = "OFF_SESSION_PAYMENT"
     let sessionInfo: SessionInfo?
@@ -41,7 +41,7 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     }
     
     init(
-        paymentMethodType: PaymentMethodConfigType,
+        paymentMethodType: PrimerPaymentMethodType,
         paymentMethodConfigId: String,
         sessionInfo: SessionInfo?
     ) {
@@ -61,14 +61,14 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     struct SessionInfo: Codable {
         var locale: String
         var platform: String = "IOS"
-        var redirectionUrl: String? = PrimerSettings.current.urlScheme
+        var redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
     }
     
 }
 
 struct BlikPaymentMethodOptions: PaymentMethodOptions {
     
-    let paymentMethodType: PaymentMethodConfigType
+    let paymentMethodType: PrimerPaymentMethodType
     let paymentMethodConfigId: String
     let type: String = "OFF_SESSION_PAYMENT"
     let sessionInfo: SessionInfo?
@@ -78,7 +78,7 @@ struct BlikPaymentMethodOptions: PaymentMethodOptions {
     }
     
     init(
-        paymentMethodType: PaymentMethodConfigType,
+        paymentMethodType: PrimerPaymentMethodType,
         paymentMethodConfigId: String,
         sessionInfo: SessionInfo?
     ) {
@@ -99,7 +99,7 @@ struct BlikPaymentMethodOptions: PaymentMethodOptions {
         let blikCode: String
         let locale: String
         let platform: String = "IOS"
-        let redirectionUrl: String? = PrimerSettings.current.urlScheme
+        let redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
     }
     
 }

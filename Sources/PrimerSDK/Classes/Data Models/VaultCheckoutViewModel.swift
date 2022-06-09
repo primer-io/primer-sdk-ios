@@ -15,7 +15,6 @@ internal protocol VaultCheckoutViewModelProtocol {
     var selectedPaymentMethod: PaymentMethodToken? { get }
     var amountStringed: String? { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
-    func authorizePayment(_ completion: @escaping (Error?) -> Void)
 }
 
 internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
@@ -23,28 +22,24 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     private var resumeHandler: ResumeHandlerProtocol!
 
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] {
-        return PrimerConfiguration.paymentMethodConfigViewModels
+        return PrimerAPIConfiguration.paymentMethodConfigViewModels
     }
 
     var amountStringed: String? {
         if Primer.shared.flow == nil { return nil }
         if Primer.shared.flow.internalSessionFlow.vaulted { return nil }
         
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        guard let amount = settings.amount else { return nil }
-        guard let currency = settings.currency else { return nil }
+        guard let amount = AppState.current.amount else { return nil }
+        guard let currency = AppState.current.currency else { return nil }
         return amount.toCurrencyString(currency: currency)
     }
 
     var paymentMethods: [PaymentMethodToken] {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
         if #available(iOS 11.0, *) {
-            return state.paymentMethods
+            return AppState.current.paymentMethods
         } else {
-            return state.paymentMethods.filter {
+            return AppState.current.paymentMethods.filter {
                 switch $0.paymentInstrumentType {
-                case .goCardlessMandate: return true
                 case .paymentCard: return true
                 default: return false
                 }
@@ -53,8 +48,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     }
 
     var selectedPaymentMethod: PaymentMethodToken? {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        return state.selectedPaymentMethod
+        return AppState.current.selectedPaymentMethod
     }
 
     deinit {
@@ -62,7 +56,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     }
     
     init() {
-        resumeHandler = self
+//        resumeHandler = self
     }
 
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
@@ -77,82 +71,12 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
                 }
             })
         } else {
-            let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-            clientTokenService.fetchClientToken({ err in
-                if let err = err {
-                    completion(err)
-                } else {
-                    let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                    paymentMethodConfigService.fetchConfig({ err in
-                        if let err = err {
-                            completion(err)
-                        } else {
-                            let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-                            vaultService.loadVaultedPaymentMethods(completion)
-                        }
-                    })
-                }
-            })
-        }
-    }
-
-    func authorizePayment(_ completion: @escaping (Error?) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let selectedPaymentMethod = state.selectedPaymentMethod else {
-            let err = PrimerError.invalidValue(key: "state.selectedPaymentMethod", value: state.selectedPaymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(err)
-            return
-        }
-        
-        PrimerDelegateProxy.onTokenizeSuccess(selectedPaymentMethod, resumeHandler: self)
-    }
-
-}
-
-extension VaultCheckoutViewModel: ResumeHandlerProtocol {
-    func handle(error: Error) {
-        DispatchQueue.main.async {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-            if settings.hasDisabledSuccessScreen {
-                Primer.shared.dismiss()
-            } else {
-                var msg: String?
-                if error as? PrimerError != nil {
-                    msg = Strings.Generic.somethingWentWrong
-
-                } else {
-                    msg = error.localizedDescription
-                }
-                
-                let evc = PrimerResultViewController(screenType: .failure, message: msg)
-                evc.view.translatesAutoresizingMaskIntoConstraints = false
-                evc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                Primer.shared.primerRootVC?.show(viewController: evc)
-            }
         }
     }
-    
-    func handle(newClientToken clientToken: String) {
-        ClientTokenService.storeClientToken(clientToken) { _ in }
-    }
-    
-    func handleSuccess() {
-        DispatchQueue.main.async {
-            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
-            if settings.hasDisabledSuccessScreen {
-                Primer.shared.dismiss()
-            } else {
-                let svc = PrimerResultViewController(screenType: .success, message: nil)
-                svc.view.translatesAutoresizingMaskIntoConstraints = false
-                svc.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-                Primer.shared.primerRootVC?.show(viewController: svc)
-            }
-        }
-    }
 }
 
 #endif
-

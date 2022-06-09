@@ -8,13 +8,10 @@
 #if canImport(UIKit)
 
 @testable import PrimerSDK
+import XCTest
 
 class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     var selectedPaymentMethod: PaymentMethodToken?
-    
-    var mandate: DirectDebitMandate {
-        return DirectDebitMandate()
-    }
     
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] {
         return []
@@ -31,22 +28,19 @@ class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     var selectedPaymentMethodToken: String? = "id"
     
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
-        let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
-        clientTokenService.fetchClientToken({ err in
-            if let err = err {
-                completion(err)
-            } else {
-                let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                paymentMethodConfigService.fetchConfig({ err in
-                    if let err = err {
-                        completion(err)
-                    } else {
-                        let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-                        vaultService.loadVaultedPaymentMethods(completion)
-                    }
-                })
-            }
-        })
+        if ClientTokenService.decodedClientToken.exists {
+            let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
+            paymentMethodConfigService.fetchConfig({ err in
+                if let err = err {
+                    completion(err)
+                } else {
+                    let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                    vaultService.loadVaultedPaymentMethods(completion)
+                }
+            })
+        } else {
+            XCTAssert(true)
+        }
     }
     
     func authorizePayment(_ completion: @escaping (Error?) -> Void) {
