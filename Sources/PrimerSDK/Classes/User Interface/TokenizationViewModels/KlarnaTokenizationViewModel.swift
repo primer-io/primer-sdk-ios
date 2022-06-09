@@ -135,15 +135,13 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     instrument = PaymentInstrument(klarnaCustomerToken: res.customerTokenId, sessionData: res.sessionData)
                     request = PaymentMethodTokenizationRequest(
                         paymentInstrument: instrument,
-                        paymentFlow: .vault,
-                        customerId: nil)
+                        paymentFlow: .vault)
                     
                 } else {
                     instrument = PaymentInstrument(klarnaAuthorizationToken: self.authorizationToken!, sessionData: res.sessionData)
                     request = PaymentMethodTokenizationRequest(
                         paymentInstrument: instrument,
-                        paymentFlow: .checkout,
-                        customerId: AppState.current.apiConfiguration?.clientSession?.customer?.id)
+                        paymentFlow: .checkout)
                 }
                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()

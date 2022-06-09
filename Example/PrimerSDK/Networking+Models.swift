@@ -47,10 +47,15 @@ extension Networking {
                 countryCode: countryCode,
                 lineItems: [
                     ClientSessionRequestBody.Order.LineItem(
-                        itemId: "_item_id_0",
-                        description: "Item",
+                        itemId: "shoes-382190",
+                        description: "Fancy Shoes",
                         amount: amount,
-                        quantity: 1)
+                        quantity: 1),
+//                    ClientSessionRequestBody.Order.LineItem(
+//                        itemId: "hats-321441",
+//                        description: "Cool Hat",
+//                        amount: amount,
+//                        quantity: 2)
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
                 vaultOnSuccess: false,

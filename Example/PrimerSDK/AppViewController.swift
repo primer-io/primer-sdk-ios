@@ -11,7 +11,7 @@ import UIKit
 
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
-var paymentHandling: PaymentHandling = .auto
+var paymentHandling: PrimerPaymentHandling = .auto
 
 class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
@@ -29,12 +29,12 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         super.viewDidLoad()
         environmentControl.selectedSegmentIndex = environment.intValue
         environmentControl.accessibilityIdentifier = "env_control"
-        checkoutHandlingControl.selectedSegmentIndex = paymentHandling.rawValue
+        checkoutHandlingControl.selectedSegmentIndex = paymentHandling == .auto ? 0 : 1
         checkoutHandlingControl.accessibilityIdentifier = "payment_control"
         apiKeyTextField.accessibilityIdentifier = "api_key_txt_field"
         apiKeyTextField.text = nil
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
-        customerIdTextField.text = "customer-\(String.randomString(length: 8))"
+        customerIdTextField.text = "ios-customer-\(String.randomString(length: 8))"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
@@ -43,7 +43,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         currencyTextField.text = Currency.EUR.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.placeholder = "In minor units (type 100 for 1.00)"
-        amountTextField.text = "1000"
+        amountTextField.text = "1010"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
         performPaymentSwitch.isOn = true
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
@@ -72,8 +72,10 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     }
     
     @IBAction func paymentHandlingValueChanged(_ sender: UISegmentedControl) {
-        if let selectedPaymentHandling = PaymentHandling(rawValue: sender.selectedSegmentIndex) {
-            paymentHandling = selectedPaymentHandling
+        if sender.selectedSegmentIndex == 0 {
+            paymentHandling = .auto
+        } else {
+            paymentHandling = .manual
         }
     }
     
@@ -82,6 +84,8 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         if let amountStr = amountTextField.text {
             amount = Int(amountStr)
         }
+        
+        self.evaluateCustomDefinedApiKey()
         
         if paymentHandling == .manual {
             let mpmcvc = ManualPaymentMerchantCheckoutViewController.instantiate(

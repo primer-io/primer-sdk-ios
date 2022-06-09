@@ -9,11 +9,6 @@
 import Foundation
 import PrimerSDK
 
-enum PaymentHandling: Int {
-    case auto
-    case manual
-}
-
 enum Environment: String, Codable {
     case local, dev, sandbox, staging, production
     
