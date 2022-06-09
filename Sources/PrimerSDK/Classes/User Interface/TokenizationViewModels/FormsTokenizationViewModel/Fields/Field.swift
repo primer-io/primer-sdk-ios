@@ -9,6 +9,9 @@
 
 import UIKit
 
-protocol PrimerCardFormFieldProtocol {}
+protocol PrimerCardFormFieldProtocol {
+    // Declare a container
+    // Declare a view with its delegate
+}
 
 #endif
