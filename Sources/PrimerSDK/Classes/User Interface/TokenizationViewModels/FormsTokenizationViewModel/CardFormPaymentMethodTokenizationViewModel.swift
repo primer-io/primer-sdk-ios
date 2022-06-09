@@ -279,7 +279,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     // MARK: First name
     
-    lazy var firstNameField: PrimerFirstNameFieldView = {
+    internal lazy var firstNameField: PrimerFirstNameFieldView = {
         PrimerFirstNameField.firstNameFieldViewWithDelegate(self)
     }()
         
@@ -289,7 +289,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: Last name
     
-    lazy var lastNameField: PrimerLastNameFieldView = {
+    internal lazy var lastNameField: PrimerLastNameFieldView = {
         PrimerLastNameField.lastNameFieldViewWithDelegate(self)
     }()
             
@@ -299,7 +299,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     // MARK: Address Line 1
 
-    lazy var addressLine1Field: PrimerAddressLine1FieldView = {
+    internal lazy var addressLine1Field: PrimerAddressLine1FieldView = {
         PrimerAddressLine1Field.addressLine1FieldViewWithDelegate(self)
     }()
             
@@ -309,7 +309,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     // MARK: Address Line 2
 
-    lazy var addressLine2Field: PrimerAddressLine2FieldView = {
+    internal lazy var addressLine2Field: PrimerAddressLine2FieldView = {
         PrimerAddressLine2Field.addressLine2FieldViewWithDelegate(self)
     }()
             
@@ -317,9 +317,19 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         PrimerAddressLine2Field.addressLine2ContainerViewFieldView(addressLine2Field)
     }()
     
+    // MARK: City
+
+    internal lazy var cityField: PrimerCityFieldView = {
+        PrimerCityField.cityFieldViewWithDelegate(self)
+    }()
+            
+    internal lazy var cityContainerView: PrimerCustomFieldView = {
+        PrimerCityField.cityFieldContainerViewFieldView(cityField)
+    }()
+    
     // MARK: State
 
-    lazy var stateField: PrimerStateFieldView = {
+    internal lazy var stateField: PrimerStateFieldView = {
         PrimerStateField.stateFieldViewWithDelegate(self)
     }()
             
@@ -329,14 +339,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: Postal code
     
-    lazy var postalCodeField: PrimerPostalCodeFieldView = {
+    internal lazy var postalCodeField: PrimerPostalCodeFieldView = {
         PrimerPostalCodeField.postalCodeViewWithDelegate(self)
     }()
         
     internal lazy var postalCodeContainerView: PrimerCustomFieldView = {
         PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeField)
     }()
-    
+
     // MARK: - Init
     
     required init(config: PaymentMethodConfig) {
@@ -539,8 +549,16 @@ extension CardFormPaymentMethodTokenizationViewModel {
             
             if (isShowingBillingAddressFieldsRequired) {
                 let state: AppStateProtocol = DependencyContainer.resolve()
+                let updatedBillingAddress = ClientSession.Address(firstName: firstNameField.firstName,
+                                                                  lastName: lastNameField.lastName,
+                                                                  addressLine1: addressLine1Field.addressLine1,
+                                                                  addressLine2: addressLine2Field.addressLine2,
+                                                                  city: nil,
+                                                                  postalCode: postalCodeField.postalCode,
+                                                                  state: stateField.state,
+                                                                  countryCode: nil)
                 
-                let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
+                var currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
                 
                 let billingAddressParams = [
                     "firstName": currentBillingAddress?.firstName as Any,

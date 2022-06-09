@@ -87,6 +87,7 @@ extension Analytics.Event {
             case billingAddressLastName = "BILLING_ADDRESS_LAST_NAME"
             case billingAddressLine1 = "BILLING_ADDRESS_LINE_1"
             case billingAddressLine2 = "BILLING_ADDRESS_LINE_2"
+            case billingAddressCity = "BILLING_ADDRESS_CITY"
             case billingAddressState = "BILLING_ADDRESS_STATE"
             case billingAddressCountry = "BILLING_ADDRESS_COUNTRY"
         }
