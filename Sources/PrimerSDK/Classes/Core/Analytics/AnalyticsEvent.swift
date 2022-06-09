@@ -94,6 +94,7 @@ extension Analytics.Event {
         
         enum Place: String, Codable {
             case bankSelectionList = "BANK_SELECTION_LIST"
+            case countrySelectionList = "COUNTRY_SELECTION_LIST"
             case cardForm = "CARD_FORM"
             case directCheckout = "DIRECT_CHECKOUT"
             case dynamicForm = "DYNAMIC_FORM"

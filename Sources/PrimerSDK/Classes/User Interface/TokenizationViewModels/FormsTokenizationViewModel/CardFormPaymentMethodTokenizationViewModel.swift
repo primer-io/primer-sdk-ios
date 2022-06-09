@@ -31,6 +31,48 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
     var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
     var onClientSessionActionCompletion: ((Error?) -> Void)?
+    var dataSource = CountryCode.allCases {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+    var countries = CountryCode.allCases
+
+    internal lazy var tableView: UITableView = {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
+        let tableView = UITableView()
+        tableView.showsVerticalScrollIndicator = false
+        tableView.showsHorizontalScrollIndicator = false
+        tableView.backgroundColor = theme.view.backgroundColor
+        
+        if #available(iOS 11.0, *) {
+            tableView.contentInsetAdjustmentBehavior = .never
+        }
+
+        tableView.rowHeight = 41
+        tableView.register(CountryTableViewCell.self, forCellReuseIdentifier: CountryTableViewCell.className)
+        tableView.dataSource = self
+        tableView.delegate = self
+        return tableView
+    }()
+    
+    internal lazy var searchCountryTextField: PrimerSearchTextField = {
+        let textField = PrimerSearchTextField(frame: .zero)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        textField.delegate = self
+        textField.borderStyle = .none
+        textField.layer.cornerRadius = 3.0
+        textField.font = UIFont.systemFont(ofSize: 16.0)
+        textField.placeholder = NSLocalizedString("search-country-placeholder",
+                                                        tableName: nil,
+                                                        bundle: Bundle.primerResources,
+                                                        value: "Search country",
+                                                        comment: "Search country - Search country textfield placeholder")
+        textField.rightViewMode = .always
+        return textField
+    }()
 
     var cardNetwork: CardNetwork? {
         didSet {
@@ -233,6 +275,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return billingAddressModuleOptions != nil
     }
     
+    internal lazy var countrySelectorViewController: CountrySelectorViewController = {
+        CountrySelectorViewController(viewModel: self)
+    }()
+    
     // MARK: - Card number field
     
     internal lazy var cardNumberField: PrimerCardNumberFieldView = {
@@ -276,6 +322,24 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
     
     // MARK: - Billing address
+    
+    // MARK: Country
+        
+    private lazy var countryFieldView: PrimerCountryFieldView = {
+        PrimerCountryField.countryFieldViewWithDelegate(self)
+    }()
+
+    private lazy var countryFieldContainerView: PrimerCustomFieldView = {
+        PrimerCountryField.countryContainerViewFieldView(countryFieldView, openCountriesListPressed: {
+            DispatchQueue.main.async {
+                Primer.shared.primerRootVC?.show(viewController: self.countrySelectorViewController)
+            }
+        })
+    }()
+    
+    private var countryField: BillingAddressField {
+        (countryFieldView, countryFieldContainerView, billingAddressCheckoutModuleOptions?.countryCode == false)
+    }
         
     // MARK: First name
     
@@ -385,6 +449,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     internal var billingAddressFields: [[BillingAddressField]] {
         guard isShowingBillingAddressFieldsRequired else { return [] }
         return [
+            [countryField],
             [firstNameField, lastNameField],
             [addressLine1Field],
             [addressLine2Field],
@@ -400,7 +465,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             [cardNumberContainerView],
             [expiryDateContainerView, cvvContainerView],
             [cardholderNameContainerView],
-            [postalCodeContainerView],
         ]
         formViews.append(contentsOf: allVisibleBillingAddressFieldContainerViews)
         return PrimerFormView(frame: .zero, formViews: formViews)
@@ -1074,7 +1138,74 @@ extension CardFormPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
             self.didPresentExternalView?()
         }
     }
+}
+
+extension CardFormPaymentMethodTokenizationViewModel {
     
+    func cancel() {
+        
+    }
+}
+
+extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return dataSource.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let country = dataSource[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as! CountryTableViewCell
+        cell.configure(viewModel: country)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let country = self.dataSource[indexPath.row]
+        countryField.fieldView.textField.text = "\(country.flag) \(country.country)"
+        Primer.shared.primerRootVC?.popViewController()
+    }
+}
+
+extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if string == "\n" {
+            // Keyboard's return button tapoped
+            textField.resignFirstResponder()
+            return false
+        }
+        
+        var query: String
+        
+        if string.isEmpty {
+            query = String((textField.text ?? "").dropLast())
+        } else {
+            query = (textField.text ?? "") + string
+        }
+        
+        if query.isEmpty {
+            dataSource = countries
+            return true
+        }
+        
+        var countryResults: [CountryCode] = []
+        
+        for country in countries {
+            if country.country.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
+                countryResults.append(country)
+            }
+        }
+        
+        dataSource = countryResults
+        
+        return true
+    }
+    
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        dataSource = countries
+        return true
+    }
 }
 
 #endif
