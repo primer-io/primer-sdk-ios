@@ -13,12 +13,15 @@ import UIKit
 
 class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
+    // MARK: - Properties
+    
     private var flow: PaymentFlow
     private var cardComponentsManager: CardComponentsManager!
     var onConfigurationFetched: (() -> Void)?
     
     // FIXME: Is this the fix for the button's indicator?
     private var isTokenizing = false
+    
     var willPresentExternalView: (() -> Void)?
     var didPresentExternalView: (() -> Void)?
     var willDismissExternalView: (() -> Void)?
@@ -27,6 +30,47 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     var onResumeTokenCompletion: ((_ paymentMethod: PaymentMethodToken?, _ error: Error?) -> Void)?
     var onClientToken: ((_ clientToken: String?, _ err: Error?) -> Void)?
+    var onClientSessionActionCompletion: ((Error?) -> Void)?
+
+    var cardNetwork: CardNetwork? {
+        didSet {
+            cvvField.cardNetwork = cardNetwork ?? .unknown
+        }
+    }
+    
+    lazy var submitButton: PrimerButton = {
+        var buttonTitle: String = ""
+        if flow == .checkout {
+            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+            buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                            tableName: nil,
+                                            bundle: Bundle.primerResources,
+                                            value: "Pay",
+                                            comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
+        } else if flow == .vault {
+            buttonTitle = NSLocalizedString("primer-card-form-add-card",
+                                            tableName: nil,
+                                            bundle: Bundle.primerResources,
+                                            value: "Add card",
+                                            comment: "Add card - Card Form (Vault title text)")
+        }
+        
+        let submitButton = PrimerButton()
+        submitButton.translatesAutoresizingMaskIntoConstraints = false
+        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        submitButton.isAccessibilityElement = true
+        submitButton.accessibilityIdentifier = "submit_btn"
+        submitButton.isEnabled = false
+        submitButton.setTitle(buttonTitle, for: .normal)
+        submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
+        submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
+        submitButton.layer.cornerRadius = 4
+        submitButton.clipsToBounds = true
+        submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
+        return submitButton
+    }()
+    
+    // MARK: - Overrides
     
     private lazy var _title: String = {
         return "Payment Card"
@@ -182,56 +226,109 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         get { return _buttonCornerRadius }
         set { _buttonCornerRadius = newValue }
     }
-    
-    private var isCardholderNameFieldEnabled: Bool {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        if (state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName == false {
-            return false
-        } else {
-            return true
-        }
-    }
-    
-    lazy var cardNumberField: PrimerCardNumberFieldView = {
-        PrimerCardNumberField.cardNumberFieldViewWithDelegate(self)
-    }()
-    
+        
     var isShowingBillingAddressFieldsRequired: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let billingAddressModuleOptions = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions
         return billingAddressModuleOptions != nil
     }
     
-    lazy var expiryDateField: PrimerExpiryDateFieldView = {
+    // MARK: - Card number field
+    
+    lazy var cardNumberField: PrimerCardNumberFieldView = {
+        PrimerCardNumberField.cardNumberFieldViewWithDelegate(self)
+    }()
+    
+    internal lazy var cardNumberContainerView: PrimerCustomFieldView = {
+        PrimerCardNumberField.cardNumberContainerViewWithFieldView(cardNumberField)
+    }()
+
+    // MARK: - Cardholder name field
+
+    internal lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
+        if !PrimerCardholderNameField.isCardholderNameFieldEnabled { return nil }
+        return PrimerCardholderNameField.cardholderNameFieldViewWithDelegate(self)
+    }()
+    
+    internal lazy var cardholderNameContainerView: PrimerCustomFieldView? = {
+        if !PrimerCardholderNameField.isCardholderNameFieldEnabled { return nil }
+        return PrimerCardholderNameField.cardholderNameContainerViewFieldView(cardholderNameField)
+    }()
+        
+    // MARK: - Expiry date field
+    
+    internal lazy var expiryDateField: PrimerExpiryDateFieldView = {
         return PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
     }()
     
-    lazy var cvvField: PrimerCVVFieldView = {
-        PrimerCVVField.cvvFieldViewWithDelegate(self)
-    }()
-    
-    lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
-        if !isCardholderNameFieldEnabled { return nil }
-        return PrimerCardholderNameField.cardholderNameFieldViewWithDelegate(self)
-    }()
-        
-    internal lazy var cardNumberContainerView: PrimerCustomFieldView = {
-        PrimerCardNumberField.expiryDateContainerViewWithFieldView(cardNumberField)
-    }()
-    
-    lazy var expiryDateContainerView: PrimerCustomFieldView = {
+    internal lazy var expiryDateContainerView: PrimerCustomFieldView = {
         return PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
     }()
+
+    // MARK: - CVV field
     
+    internal lazy var cvvField: PrimerCVVFieldView = {
+        PrimerCVVField.cvvFieldViewWithDelegate(self)
+    }()
+        
     internal lazy var cvvContainerView: PrimerCustomFieldView = {
         PrimerCVVField.cvvContainerViewFieldView(cvvField)
     }()
     
-    internal lazy var cardholderNameContainerView: PrimerCustomFieldView? = {
-        if !isCardholderNameFieldEnabled { return nil }
-        return PrimerCardholderNameField.cardholderNameContainerViewFieldView(cardNumberField)
+    // MARK: - Billing address
+    
+    // MARK: First name
+    
+    lazy var firstNameField: PrimerFirstNameFieldView = {
+        PrimerFirstNameField.firstNameFieldViewWithDelegate(self)
     }()
         
+    internal lazy var firstNameContainerView: PrimerCustomFieldView = {
+        PrimerFirstNameField.firstNameFieldContainerViewFieldView(firstNameField)
+    }()
+
+    // MARK: Last name
+    
+    lazy var lastNameField: PrimerLastNameFieldView = {
+        PrimerLastNameField.lastNameFieldViewWithDelegate(self)
+    }()
+            
+    internal lazy var lastNameContainerView: PrimerCustomFieldView = {
+        PrimerLastNameField.lastNameFieldContainerViewFieldView(lastNameField)
+    }()
+    
+    // MARK: Address Line 1
+
+    lazy var addressLine1Field: PrimerAddressLine1FieldView = {
+        PrimerAddressLine1Field.addressLine1FieldViewWithDelegate(self)
+    }()
+            
+    internal lazy var addressLine1ContainerView: PrimerCustomFieldView = {
+        PrimerAddressLine1Field.addressLine1ContainerViewFieldView(addressLine1Field)
+    }()
+    
+    // MARK: Address Line 2
+
+    lazy var addressLine2Field: PrimerAddressLine2FieldView = {
+        PrimerAddressLine2Field.addressLine2FieldViewWithDelegate(self)
+    }()
+            
+    internal lazy var addressLine2ContainerView: PrimerCustomFieldView = {
+        PrimerAddressLine2Field.addressLine2ContainerViewFieldView(addressLine2Field)
+    }()
+    
+    // MARK: State
+
+    lazy var stateField: PrimerStateFieldView = {
+        PrimerStateField.stateFieldViewWithDelegate(self)
+    }()
+            
+    internal lazy var stateContainerView: PrimerCustomFieldView = {
+        PrimerStateField.stateFieldContainerViewFieldView(stateField)
+    }()
+
+    // MARK: Postal code
+    
     lazy var postalCodeField: PrimerPostalCodeFieldView = {
         PrimerPostalCodeField.postalCodeViewWithDelegate(self)
     }()
@@ -240,43 +337,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeField)
     }()
     
-    lazy var submitButton: PrimerButton = {
-        var buttonTitle: String = ""
-        if flow == .checkout {
-            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-            buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                            tableName: nil,
-                                            bundle: Bundle.primerResources,
-                                            value: "Pay",
-                                            comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
-        } else if flow == .vault {
-            buttonTitle = NSLocalizedString("primer-card-form-add-card",
-                                            tableName: nil,
-                                            bundle: Bundle.primerResources,
-                                            value: "Add card",
-                                            comment: "Add card - Card Form (Vault title text)")
-        }
-        
-        let submitButton = PrimerButton()
-        submitButton.translatesAutoresizingMaskIntoConstraints = false
-        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        submitButton.isAccessibilityElement = true
-        submitButton.accessibilityIdentifier = "submit_btn"
-        submitButton.isEnabled = false
-        submitButton.setTitle(buttonTitle, for: .normal)
-        submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-        submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
-        submitButton.layer.cornerRadius = 4
-        submitButton.clipsToBounds = true
-        submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
-        return submitButton
-    }()
-    
-    var cardNetwork: CardNetwork? {
-        didSet {
-            cvvField.cardNetwork = cardNetwork ?? .unknown
-        }
-    }
+    // MARK: - Init
     
     required init(config: PaymentMethodConfig) {
         self.flow = (Primer.shared.flow?.internalSessionFlow.vaulted ?? false) ? .vault : .checkout
@@ -292,6 +353,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         )
         cardComponentsManager.delegate = self
     }
+    
+    // MARK: - Functions Overrides
     
     override func validate() throws {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -368,6 +431,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
         }
     }
+}
+
+extension CardFormPaymentMethodTokenizationViewModel {
     
     fileprivate func continueTokenizationFlow() {
         do {
@@ -420,9 +486,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
         }
     }
-    
-    var onClientSessionActionCompletion: ((Error?) -> Void)?
-    
+        
     @objc
     func payButtonTapped(_ sender: UIButton) {
         let viewEvent = Analytics.Event(
@@ -588,6 +652,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
         }
     }
+
 }
 
 extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate {

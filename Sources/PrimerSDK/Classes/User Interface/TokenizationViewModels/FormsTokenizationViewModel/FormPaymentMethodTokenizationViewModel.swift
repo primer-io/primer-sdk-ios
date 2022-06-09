@@ -142,15 +142,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         set { _buttonTintColor = newValue }
     }
     
-    private var isCardholderNameFieldEnabled: Bool {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        if (state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName == false {
-            return false
-        } else {
-            return true
-        }
-    }
-    
     lazy var cardNumberField: PrimerCardNumberFieldView = {
         PrimerCardNumberField.cardNumberFieldViewWithDelegate(self)
     }()
@@ -164,7 +155,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }()
 
     lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
-        if !isCardholderNameFieldEnabled { return nil }
+        if !PrimerCardholderNameField.isCardholderNameFieldEnabled { return nil }
         return PrimerCardholderNameField.cardholderNameFieldViewWithDelegate(self)
     }()
     
@@ -745,7 +736,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         ]
 
         if isShowingBillingAddressFieldsRequired { validations.append(postalCodeField.isTextValid) }
-        if let cardholderNameField = cardholderNameField, isCardholderNameFieldEnabled { validations.append(cardholderNameField.isTextValid) }
+        if let cardholderNameField = cardholderNameField, PrimerCardholderNameField.isCardholderNameFieldEnabled { validations.append(cardholderNameField.isTextValid) }
 
         if validations.allSatisfy({ $0 == true }) {
             submitButton.isEnabled = true

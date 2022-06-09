@@ -13,7 +13,7 @@ class PrimerCardNumberField: PrimerCardFormFieldProtocol {
     
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    static func expiryDateContainerViewWithFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
+    static func cardNumberContainerViewWithFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
         let cardNumberContainerView = PrimerCustomFieldView()
         cardNumberContainerView.fieldView = view
         cardNumberContainerView.placeholderText = NSLocalizedString("primer-form-text-field-title-card-number",

@@ -58,8 +58,8 @@ class PrimerAddressLine2Field: PrimerAddressField {
         return addressLine2FieldContainerView
     }
     
-    static func addressLine2FieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerAddressLine1FieldView {
-        let addressLine2Field = PrimerAddressLine1FieldView()
+    static func addressLine2FieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerAddressLine2FieldView {
+        let addressLine2Field = PrimerAddressLine2FieldView()
         addressLine2Field.placeholder = NSLocalizedString("primer-form-text-field-placeholder-address-line-2",
                                                             tableName: nil,
                                                             bundle: Bundle.primerResources,

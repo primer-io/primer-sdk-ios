@@ -13,7 +13,10 @@ class PrimerCardholderNameField: PrimerCardFormFieldProtocol {
     
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    static func cardholderNameContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
+    static func cardholderNameContainerViewFieldView(_ view: PrimerTextFieldView?) -> PrimerCustomFieldView? {
+        guard let view = view else {
+            return nil
+        }
         let cardholderNameContainerView = PrimerCustomFieldView()
         cardholderNameContainerView.fieldView = view
         cardholderNameContainerView.placeholderText = NSLocalizedString("primer-card-form-name",
@@ -37,6 +40,15 @@ class PrimerCardholderNameField: PrimerCardFormFieldProtocol {
         cardholderNameField.textColor = theme.input.text.color
         cardholderNameField.delegate = delegate
         return cardholderNameField
+    }
+}
+
+extension PrimerCardholderNameField {
+    
+    internal static var isCardholderNameFieldEnabled: Bool {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        let cardInfoOptions = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerConfiguration.CheckoutModule.CardInformationOptions
+        return cardInfoOptions?.cardHolderName == true
     }
 }
 
