@@ -238,117 +238,176 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     // MARK: - Card number field
     
-    lazy var cardNumberField: PrimerCardNumberFieldView = {
+    internal lazy var cardNumberField: PrimerCardNumberFieldView = {
         PrimerCardNumberField.cardNumberFieldViewWithDelegate(self)
     }()
     
-    internal lazy var cardNumberContainerView: PrimerCustomFieldView = {
+    private lazy var cardNumberContainerView: PrimerCustomFieldView = {
         PrimerCardNumberField.cardNumberContainerViewWithFieldView(cardNumberField)
     }()
 
     // MARK: - Cardholder name field
 
-    internal lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
+    private lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
         if !PrimerCardholderNameField.isCardholderNameFieldEnabled { return nil }
         return PrimerCardholderNameField.cardholderNameFieldViewWithDelegate(self)
     }()
     
-    internal lazy var cardholderNameContainerView: PrimerCustomFieldView? = {
+    private lazy var cardholderNameContainerView: PrimerCustomFieldView? = {
         if !PrimerCardholderNameField.isCardholderNameFieldEnabled { return nil }
         return PrimerCardholderNameField.cardholderNameContainerViewFieldView(cardholderNameField)
     }()
         
     // MARK: - Expiry date field
     
-    internal lazy var expiryDateField: PrimerExpiryDateFieldView = {
+    private lazy var expiryDateField: PrimerExpiryDateFieldView = {
         return PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
     }()
     
-    internal lazy var expiryDateContainerView: PrimerCustomFieldView = {
+    private lazy var expiryDateContainerView: PrimerCustomFieldView = {
         return PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
     }()
 
     // MARK: - CVV field
     
-    internal lazy var cvvField: PrimerCVVFieldView = {
+    private lazy var cvvField: PrimerCVVFieldView = {
         PrimerCVVField.cvvFieldViewWithDelegate(self)
     }()
         
-    internal lazy var cvvContainerView: PrimerCustomFieldView = {
+    private lazy var cvvContainerView: PrimerCustomFieldView = {
         PrimerCVVField.cvvContainerViewFieldView(cvvField)
     }()
     
     // MARK: - Billing address
-    
+        
     // MARK: First name
     
-    internal lazy var firstNameFieldView: PrimerFirstNameFieldView = {
+    private lazy var firstNameFieldView: PrimerFirstNameFieldView = {
         PrimerFirstNameField.firstNameFieldViewWithDelegate(self)
     }()
         
-    internal lazy var firstNameContainerView: PrimerCustomFieldView = {
+    private lazy var firstNameContainerView: PrimerCustomFieldView = {
         PrimerFirstNameField.firstNameFieldContainerViewFieldView(firstNameFieldView)
     }()
-
+    
+    private var firstNameField: BillingAddressField {
+        (firstNameFieldView, firstNameContainerView, billingAddressCheckoutModuleOptions?.firstName == false)
+    }
+    
     // MARK: Last name
     
-    internal lazy var lastNameFieldView: PrimerLastNameFieldView = {
+    private lazy var lastNameFieldView: PrimerLastNameFieldView = {
         PrimerLastNameField.lastNameFieldViewWithDelegate(self)
     }()
             
-    internal lazy var lastNameContainerView: PrimerCustomFieldView = {
+    private lazy var lastNameContainerView: PrimerCustomFieldView = {
         PrimerLastNameField.lastNameFieldContainerViewFieldView(lastNameFieldView)
     }()
     
+    private var lastNameField: BillingAddressField {
+        (lastNameFieldView, lastNameContainerView, billingAddressCheckoutModuleOptions?.lastName == false)
+    }
+    
     // MARK: Address Line 1
 
-    internal lazy var addressLine1FieldView: PrimerAddressLine1FieldView = {
+    private lazy var addressLine1FieldView: PrimerAddressLine1FieldView = {
         PrimerAddressLine1Field.addressLine1FieldViewWithDelegate(self)
     }()
             
-    internal lazy var addressLine1ContainerView: PrimerCustomFieldView = {
+    private lazy var addressLine1ContainerView: PrimerCustomFieldView = {
         PrimerAddressLine1Field.addressLine1ContainerViewFieldView(addressLine1FieldView)
     }()
     
+    private var addressLine1Field: BillingAddressField {
+        (addressLine1FieldView, addressLine1ContainerView, billingAddressCheckoutModuleOptions?.addressLine1 == false)
+    }
+
     // MARK: Address Line 2
 
-    internal lazy var addressLine2FieldView: PrimerAddressLine2FieldView = {
+    private lazy var addressLine2FieldView: PrimerAddressLine2FieldView = {
         PrimerAddressLine2Field.addressLine2FieldViewWithDelegate(self)
     }()
             
-    internal lazy var addressLine2ContainerView: PrimerCustomFieldView = {
+    private lazy var addressLine2ContainerView: PrimerCustomFieldView = {
         PrimerAddressLine2Field.addressLine2ContainerViewFieldView(addressLine2FieldView)
     }()
     
+    private var addressLine2Field: BillingAddressField {
+        (addressLine2FieldView, addressLine2ContainerView, billingAddressCheckoutModuleOptions?.addressLine2 == false)
+    }
+    
     // MARK: City
 
-    internal lazy var cityFieldView: PrimerCityFieldView = {
+    private lazy var cityFieldView: PrimerCityFieldView = {
         PrimerCityField.cityFieldViewWithDelegate(self)
     }()
             
-    internal lazy var cityContainerView: PrimerCustomFieldView = {
+    private lazy var cityContainerView: PrimerCustomFieldView = {
         PrimerCityField.cityFieldContainerViewFieldView(cityFieldView)
     }()
     
+    private var cityField: BillingAddressField {
+        (cityFieldView, cityContainerView, billingAddressCheckoutModuleOptions?.city == false)
+    }
+    
     // MARK: State
 
-    internal lazy var stateFieldView: PrimerStateFieldView = {
+    private lazy var stateFieldView: PrimerStateFieldView = {
         PrimerStateField.stateFieldViewWithDelegate(self)
     }()
             
-    internal lazy var stateContainerView: PrimerCustomFieldView = {
+    private lazy var stateContainerView: PrimerCustomFieldView = {
         PrimerStateField.stateFieldContainerViewFieldView(stateFieldView)
     }()
+    
+    private var stateField: BillingAddressField {
+        (stateFieldView, stateContainerView, billingAddressCheckoutModuleOptions?.state == false)
+    }
 
     // MARK: Postal code
     
-    internal lazy var postalCodeFieldView: PrimerPostalCodeFieldView = {
+    private lazy var postalCodeFieldView: PrimerPostalCodeFieldView = {
         PrimerPostalCodeField.postalCodeViewWithDelegate(self)
     }()
         
-    internal lazy var postalCodeContainerView: PrimerCustomFieldView = {
+    private lazy var postalCodeContainerView: PrimerCustomFieldView = {
         PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeFieldView)
     }()
+    
+    private var postalCodeField: BillingAddressField {
+        (postalCodeFieldView, postalCodeContainerView, billingAddressCheckoutModuleOptions?.postalCode == false)
+    }
+    
+    // MARK: All billing address fields
+    
+    internal var billingAddressCheckoutModuleOptions: PrimerConfiguration.CheckoutModule.PostalCodeOptions? {
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        return state.primerConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions
+    }
+    
+    internal var billingAddressFields: [[BillingAddressField]] {
+        guard isShowingBillingAddressFieldsRequired else { return [] }
+        return [
+            [firstNameField, lastNameField],
+            [addressLine1Field],
+            [addressLine2Field],
+            [postalCodeField, cityField],
+            [stateField],
+        ]
+    }
+    
+    internal var formView: PrimerFormView {
+        let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
+        let allVisibleBillingAddressFieldContainerViews = allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
+        var formViews: [[UIView?]] = [
+            [cardNumberContainerView],
+            [expiryDateContainerView, cvvContainerView],
+            [cardholderNameContainerView],
+            [postalCodeContainerView],
+        ]
+        formViews.append(contentsOf: allVisibleBillingAddressFieldContainerViews)
+        return PrimerFormView(frame: .zero, formViews: formViews)
+    }
 
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
