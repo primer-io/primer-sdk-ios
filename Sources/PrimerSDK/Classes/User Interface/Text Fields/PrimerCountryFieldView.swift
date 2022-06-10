@@ -4,8 +4,8 @@ import UIKit
 
 public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
     
-    internal var country: String {
-        return textField._text ?? ""
+    internal var country: String? {
+        return textField._text
     }
     
     internal var countryCode: CountryCode?
@@ -17,12 +17,25 @@ public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "country_txt_fld"
         isEditingAnalyticsEnabled = true
+        textField.delegate = self
         editingAnalyticsObjectId = .billingAddressCountry
         validationError = .invalidCountry(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
         isValid = { text in
-            return text.isTypingNonDecimalCharacters
+            return !text.isEmpty
         }
         setupTextFieldView()
+    }
+    
+    public override func textFieldDidBeginEditing(_ textField: UITextField) {
+        super.textFieldDidBeginEditing(textField)
+    }
+    
+    public override func textFieldDidEndEditing(_ textField: UITextField) {
+        super.textFieldDidEndEditing(textField)
+    }
+    
+    public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        return false
     }
 }
 

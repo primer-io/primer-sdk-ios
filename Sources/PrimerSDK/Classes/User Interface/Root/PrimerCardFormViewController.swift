@@ -45,8 +45,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
         Analytics.Service.record(event: viewEvent)
         
         setupView()
-        
-        formPaymentMethodTokenizationViewModel.onConfigurationFetched = onConfigurationFetched
         formPaymentMethodTokenizationViewModel.completion = { (paymentMethodToken, err) in
             if let err = err {
                 Primer.shared.primerRootVC?.handle(error: err)
@@ -108,10 +106,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private func renderSubmitButton() {
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
         submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
-    }
-    
-    private func onConfigurationFetched() {        
-       view.layoutIfNeeded()
     }
 }
 

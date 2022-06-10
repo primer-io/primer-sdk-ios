@@ -43,8 +43,8 @@ protocol CardComponentsManagerProtocol {
 }
 
 typealias BillingAddressField = (fieldView: PrimerTextFieldView,
-                                     containerFieldView: PrimerCustomFieldView,
-                                     isFieldHidden: Bool)
+                                 containerFieldView: PrimerCustomFieldView,
+                                 isFieldHidden: Bool)
 
 @objc
 public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
@@ -109,7 +109,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             }
             
             delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
-                                
+                
                 guard error == nil, let clientToken = clientToken else {
                     seal.reject(error!)
                     return
@@ -121,7 +121,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         seal.reject(error!)
                         return
                     }
-
+                    
                     if let decodedClientToken = self.decodedClientToken {
                         seal.fulfill(decodedClientToken)
                     }
@@ -215,23 +215,15 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
             errors.append(ValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]))
         }
-                
-        if let postalCodeFieldView = billingAddressFieldViews?.first(where: { ($0 as? PrimerPostalCodeFieldView) != nil }) as? PrimerPostalCodeFieldView {
-            if !postalCodeFieldView.postalCode.isValidPostalCode {
-                let err = ValidationError.invalidPostalCode(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                errors.append(err)
-            }
-        }
         
-        billingAddressFieldViews?.forEach { element in
-            if let simpleCardFormTextFieldView = element as? PrimerSimpleCardFormTextFieldView,
-                let validationError = simpleCardFormTextFieldView.validationError {
+        billingAddressFieldViews?.filter { $0.isTextValid == false }.forEach {
+            if let simpleCardFormTextFieldView = $0 as? PrimerSimpleCardFormTextFieldView,
+               let validationError = simpleCardFormTextFieldView.validationError {
                 ErrorHandler.handle(error: validationError)
                 errors.append(validationError)
             }
         }
-                
+        
         if !errors.isEmpty {
             let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
             ErrorHandler.handle(error: err)
@@ -281,12 +273,12 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     case .success(let paymentMethodToken):
                         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                         let state: AppStateProtocol = DependencyContainer.resolve()
-                                                
+                        
                         var isThreeDSEnabled: Bool = false
                         if state.primerConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                             isThreeDSEnabled = true
                         }
-
+                        
                         /// 3DS requirements on tokenization are:
                         ///     - The payment method has to be a card
                         ///     - It has to be a vault flow
@@ -297,7 +289,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                            settings.is3DSOnVaultingEnabled,
                            paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
                            isThreeDSEnabled {
-                            #if canImport(Primer3DS)
+#if canImport(Primer3DS)
                             let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
                             DependencyContainer.register(threeDSService)
                             
@@ -316,35 +308,35 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                                 self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                                 return
                             }
-
+                            
                             threeDSService.perform3DS(
-                                    paymentMethodToken: paymentMethodToken,
+                                paymentMethodToken: paymentMethodToken,
                                 protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2,
                                 beginAuthExtraData: beginAuthExtraData,
-                                    sdkDismissed: { () in
-
-                                    }, completion: { result in
-                                        switch result {
-                                        case .success(let res):
-                                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: res.0)
-                                            
-                                        case .failure(let err):
-                                            // Even if 3DS fails, continue...
-                                            log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
-                                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
-                                            
-                                        }
-                                    })
+                                sdkDismissed: { () in
+                                    
+                                }, completion: { result in
+                                    switch result {
+                                    case .success(let res):
+                                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: res.0)
+                                        
+                                    case .failure(let err):
+                                        // Even if 3DS fails, continue...
+                                        log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
+                                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                                        
+                                    }
+                                })
                             
-                            #else
+#else
                             print("\nWARNING!\nCannot perform 3DS, Primer3DS SDK is missing. Continue without 3DS\n")
                             self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
-                            #endif
+#endif
                             
                         } else {
                             self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
                         }
-                
+                        
                     case .failure(let err):
                         let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                         ErrorHandler.handle(error: containerErr)
@@ -433,7 +425,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     func tokenize() {
         
     }
-
+    
 }
 
 #endif

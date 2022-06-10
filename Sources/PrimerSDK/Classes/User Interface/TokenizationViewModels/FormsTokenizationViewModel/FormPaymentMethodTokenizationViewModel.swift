@@ -30,7 +30,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     private var flow: PaymentFlow
     var inputs: [Input] = []
     private var cardComponentsManager: CardComponentsManager!
-    var onConfigurationFetched: (() -> Void)?
     
     // FIXME: Is this the fix for the button's indicator?
     private var isTokenizing = false

@@ -4,8 +4,8 @@ import UIKit
 
 public final class PrimerCityFieldView: PrimerSimpleCardFormTextFieldView {
     
-    internal var city: String {
-        return textField._text ?? ""
+    internal var city: String? {
+        return textField._text
     }
     
     override func xibSetup() {

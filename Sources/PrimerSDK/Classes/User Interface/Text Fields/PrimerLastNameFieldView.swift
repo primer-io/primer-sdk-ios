@@ -4,8 +4,8 @@ import UIKit
 
 public final class PrimerLastNameFieldView: PrimerSimpleCardFormTextFieldView {
     
-    internal var lastName: String {
-        return textField._text ?? ""
+    internal var lastName: String? {
+        return textField._text
     }
     
     override func xibSetup() {
@@ -14,7 +14,7 @@ public final class PrimerLastNameFieldView: PrimerSimpleCardFormTextFieldView {
         textFieldaccessibilityIdentifier = "last_name_txt_fld"
         isEditingAnalyticsEnabled = true
         editingAnalyticsObjectId = .billingAddressLastName
-        validationError = .invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        validationError = .invalidLastName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
         isValid = { text in
             return text.isTypingNonDecimalCharacters
         }

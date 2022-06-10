@@ -4,8 +4,8 @@ import UIKit
 
 public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
     
-    internal var postalCode: String {
-        return textField._text ?? ""
+    internal var postalCode: String? {
+        return textField._text
     }
     
     override func xibSetup() {

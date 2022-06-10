@@ -17,7 +17,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     private var flow: PaymentFlow
     private var cardComponentsManager: CardComponentsManager!
-    var onConfigurationFetched: (() -> Void)?
     
     // FIXME: Is this the fix for the button's indicator?
     private var isTokenizing = false
@@ -1058,9 +1057,6 @@ extension CardFormPaymentMethodTokenizationViewModel {
                     self.configurePayButton(amount: amount)
                 }
                 
-                // determine postal code textfield visibility
-                self.onConfigurationFetched?()
-                
                 self.onClientSessionActionCompletion?(nil)
             }
             .catch { err in
@@ -1153,6 +1149,7 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
         let country = self.dataSource[indexPath.row]
         countryFieldView.textField.text = "\(country.flag) \(country.country)"
         countryFieldView.countryCode = country
+        countryFieldView.validation = .valid
         Primer.shared.primerRootVC?.popViewController()
     }
 }
