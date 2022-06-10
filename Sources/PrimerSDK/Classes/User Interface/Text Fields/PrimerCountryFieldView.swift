@@ -8,6 +8,8 @@ public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
         return textField._text ?? ""
     }
     
+    internal var countryCode: CountryCode?
+    
     internal var onOpenCountriesListPressed: PrimerAction?
     
     override func xibSetup() {

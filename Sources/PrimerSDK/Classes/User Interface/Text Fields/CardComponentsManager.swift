@@ -224,9 +224,12 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             }
         }
         
-        billingAddressFieldViews?.map { $0 as? PrimerSimpleCardFormTextFieldView }.compactMap { $0?.validationError }.forEach {
-            ErrorHandler.handle(error: $0)
-            errors.append($0)
+        billingAddressFieldViews?.forEach { element in
+            if let simpleCardFormTextFieldView = element as? PrimerSimpleCardFormTextFieldView,
+                let validationError = simpleCardFormTextFieldView.validationError {
+                ErrorHandler.handle(error: validationError)
+                errors.append(validationError)
+            }
         }
                 
         if !errors.isEmpty {

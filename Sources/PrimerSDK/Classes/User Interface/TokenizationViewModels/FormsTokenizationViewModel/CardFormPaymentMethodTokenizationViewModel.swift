@@ -458,9 +458,16 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         ]
     }
     
-    internal var formView: PrimerFormView {
+    internal var allVisibleBillingAddressFieldViews: [PrimerTextFieldView] {
+        billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
+    }
+    
+    internal var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
         let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
-        let allVisibleBillingAddressFieldContainerViews = allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
+        return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
+    }
+    
+    internal var formView: PrimerFormView {
         var formViews: [[UIView?]] = [
             [cardNumberContainerView],
             [expiryDateContainerView, cvvContainerView],
@@ -475,16 +482,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     required init(config: PaymentMethodConfig) {
         self.flow = (Primer.shared.flow?.internalSessionFlow.vaulted ?? false) ? .vault : .checkout
         super.init(config: config)
-        
-        let billingAddressFieldViews = billingAddressFields.flatMap { $0 }.map { $0.fieldView }
-        
+                
         self.cardComponentsManager = CardComponentsManager(
             flow: flow,
             cardnumberField: cardNumberField,
             expiryDateField: expiryDateField,
             cvvField: cvvField,
             cardholderNameField: cardholderNameField,
-            billingAddressFieldViews: billingAddressFieldViews
+            billingAddressFieldViews: allVisibleBillingAddressFieldViews
         )
         cardComponentsManager.delegate = self
     }
@@ -680,7 +685,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                                                                   city: cityFieldView.city,
                                                                   postalCode: postalCodeFieldView.postalCode,
                                                                   state: stateFieldView.state,
-                                                                  countryCode: nil)
+                                                                  countryCode: countryFieldView.countryCode)
                 
                 if let updatedBillingAddressDictionary = try? updatedBillingAddress.asDictionary() {
                     let billingAddressAction = ClientSession.Action(
@@ -881,13 +886,17 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
     
     fileprivate func enableSubmitButtonIfNeeded() {
+        
         var validations = [
             cardNumberField.isTextValid,
             expiryDateField.isTextValid,
-            cvvField.isTextValid,
+            cvvField.isTextValid
         ]
         
-        if isShowingBillingAddressFieldsRequired { validations.append(postalCodeFieldView.isTextValid) }
+        if isShowingBillingAddressFieldsRequired {
+            validations.append(contentsOf: allVisibleBillingAddressFieldViews.map { $0.isTextValid })
+        }
+        
         if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
         
         if validations.allSatisfy({ $0 == true }) {
@@ -908,26 +917,6 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        // Dispatch postal code action if valid postal code.
-        if let fieldView = (primerTextFieldView as? PrimerPostalCodeFieldView), isValid  == true {
-            let state: AppStateProtocol = DependencyContainer.resolve()
-            
-            let currentBillingAddress = state.primerConfiguration?.clientSession?.customer?.billingAddress
-            
-            let params = [
-                "firstName": currentBillingAddress?.firstName as Any,
-                "lastName": currentBillingAddress?.lastName as Any,
-                "addressLine1": currentBillingAddress?.addressLine1 as Any,
-                "addressLine2": currentBillingAddress?.addressLine2 as Any,
-                "city": currentBillingAddress?.city as Any,
-                "postalCode": fieldView.postalCode,
-                "state": currentBillingAddress?.state as Any,
-                "countryCode": currentBillingAddress?.countryCode as Any
-            ] as [String: Any]
-            
-            ClientSession.Action.setPostalCode(resumeHandler: self, withParameters: params)
-        }
-        
         autofocusToNextFieldIfNeeded(for: primerTextFieldView, isValid: isValid)
         showTexfieldViewErrorIfNeeded(for: primerTextFieldView, isValid: isValid)
         enableSubmitButtonIfNeeded()
@@ -1162,7 +1151,8 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let country = self.dataSource[indexPath.row]
-        countryField.fieldView.textField.text = "\(country.flag) \(country.country)"
+        countryFieldView.textField.text = "\(country.flag) \(country.country)"
+        countryFieldView.countryCode = country
         Primer.shared.primerRootVC?.popViewController()
     }
 }
