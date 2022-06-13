@@ -216,58 +216,58 @@ extension MerchantCheckoutViewController: PrimerDelegate {
                 ]),
             paymentMethod: ClientSessionRequestBody.PaymentMethod(
                 vaultOnSuccess: false,
-                options: nil
-//                [
-//                    "APPLE_PAY": [
-//                        "surcharge": [
-//                            "amount": 19
-//                        ]
-//                    ],
-//                    "PAY_NL_IDEAL": [
-//                        "surcharge": [
-//                            "amount": 39
-//                        ]
-//                    ],
-//                    "PAYPAL": [
-//                        "surcharge": [
-//                            "amount": 49
-//                        ]
-//                    ],
-//                    "ADYEN_TWINT": [
-//                        "surcharge": [
-//                            "amount": 59
-//                        ]
-//                    ],
-//                    "ADYEN_IDEAL": [
-//                        "surcharge": [
-//                            "amount": 69
-//                        ]
-//                    ],
-//                    "ADYEN_GIROPAY": [
-//                        "surcharge": [
-//                            "amount": 79
-//                        ]
-//                    ],
-//                    "BUCKAROO_BANCONTACT": [
-//                        "surcharge": [
-//                            "amount": 89
-//                        ]
-//                    ],
-//                    "PAYMENT_CARD": [
-//                        "networks": [
-//                            "VISA": [
-//                                "surcharge": [
-//                                    "amount": 109
-//                                ]
-//                            ],
-//                            "MASTERCARD": [
-//                                "surcharge": [
-//                                    "amount": 129
-//                                ]
-//                            ]
-//                        ]
-//                    ]
-//                ]
+                options:
+                [
+                    "APPLE_PAY": [
+                        "surcharge": [
+                            "amount": 19
+                        ]
+                    ],
+                    "PAY_NL_IDEAL": [
+                        "surcharge": [
+                            "amount": 39
+                        ]
+                    ],
+                    "PAYPAL": [
+                        "surcharge": [
+                            "amount": 49
+                        ]
+                    ],
+                    "ADYEN_TWINT": [
+                        "surcharge": [
+                            "amount": 59
+                        ]
+                    ],
+                    "ADYEN_IDEAL": [
+                        "surcharge": [
+                            "amount": 69
+                        ]
+                    ],
+                    "ADYEN_GIROPAY": [
+                        "surcharge": [
+                            "amount": 79
+                        ]
+                    ],
+                    "BUCKAROO_BANCONTACT": [
+                        "surcharge": [
+                            "amount": 89
+                        ]
+                    ],
+                    "PAYMENT_CARD": [
+                        "networks": [
+                            "VISA": [
+                                "surcharge": [
+                                    "amount": 109
+                                ]
+                            ],
+                            "MASTERCARD": [
+                                "surcharge": [
+                                    "amount": 129
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
             )
         )
         
@@ -283,25 +283,24 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         }
     }
     
-//    func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
-//        guard let clientToken = clientToken else {
-//            print("Failed to find client token")
-//            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong setting the actions..."])
-//            resumeHandler?.handle(error: merchantErr)
-//            return
-//        }
-//
-//        let networking = Networking()
-//        networking.requestClientSessionWithActions(clientToken: clientToken, actions: actions) { (newClientToken, err) in
-//            if let err = err {
-//                print(err)
-//                let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong setting the actions..."])
-//                resumeHandler?.handle(error: merchantErr)
-//            } else if let newClientToken = newClientToken {
-//                resumeHandler?.handle(newClientToken: newClientToken)
-//            }
-//        }
-//    }
+    func onClientSessionActions(_ actions: [ClientSession.Action], resumeHandler: ResumeHandlerProtocol?) {
+        guard let clientToken = clientToken else {
+            print("Failed to find client token")
+            let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong setting the actions..."])
+            resumeHandler?.handle(error: merchantErr)
+            return
+        }
+
+        Networking.requestClientSessionWithActions(clientToken: clientToken, actions: actions) { (newClientToken, err) in
+            if let err = err {
+                print(err)
+                let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Oh no, something went wrong setting the actions..."])
+                resumeHandler?.handle(error: merchantErr)
+            } else if let newClientToken = newClientToken {
+                resumeHandler?.handle(newClientToken: newClientToken)
+            }
+        }
+    }
     
     func onTokenizeSuccess(_ paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Method: \(paymentMethodToken)\n")
