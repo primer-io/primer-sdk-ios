@@ -134,7 +134,7 @@ extension PrimerButton {
                            title: String?,
                            imageLogo: UIImage?) {
         self.theme = theme
-        self.title = title ?? Strings.PrimerButton.title
+        self.title = title ?? Strings.PaymentButton.pay
         self.imageLogo = imageLogo
     }
     

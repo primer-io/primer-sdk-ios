@@ -35,11 +35,7 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
                 place: .vaultManager))
         Analytics.Service.record(event: viewEvent)
         
-        title = NSLocalizedString("primer-vault-nav-bar-title",
-                                  tableName: nil,
-                                  bundle: Bundle.primerResources,
-                                  value: "Add payment method",
-                                  comment: "Add payment method - Vault Navigation Bar Title")
+        title = Strings.CardFormView.vaultNavBarTitle
 
         view.backgroundColor = theme.view.backgroundColor
         

@@ -37,12 +37,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 place: .universalCheckout))
         Analytics.Service.record(event: viewEvent)
         
-        title = NSLocalizedString("primer-checkout-nav-bar-title",
-                                  tableName: nil,
-                                  bundle: Bundle.primerResources,
-                                  value: "Choose payment method",
-                                  comment: "Choose payment method - Checkout Navigation Bar Title")
-        
+        title = Strings.CheckoutView.navBarTitle
         view.backgroundColor = theme.view.backgroundColor
         
         verticalStackView.spacing = 14.0
@@ -125,11 +120,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             titleHorizontalStackView.spacing = 8.0
             
             let savedPaymentMethodLabel = UILabel()
-            savedPaymentMethodLabel.text = NSLocalizedString("primer-vault-checkout-payment-method-title",
-                                                             tableName: nil,
-                                                             bundle: Bundle.primerResources,
-                                                             value: "SAVED PAYMENT METHOD",
-                                                             comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
+            savedPaymentMethodLabel.text = Strings.VaultPaymentMethodViewContent.savedPaymentMethod
             savedPaymentMethodLabel.adjustsFontSizeToFitWidth = true
             savedPaymentMethodLabel.minimumScaleFactor = 0.8
             savedPaymentMethodLabel.textColor = theme.text.subtitle.color
@@ -139,13 +130,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             let seeAllButton = UIButton()
             seeAllButton.translatesAutoresizingMaskIntoConstraints = false
             seeAllButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-            
-            let seeAllButtonTitle = NSLocalizedString("see-all",
-                                                      tableName: nil,
-                                                      bundle: Bundle.primerResources,
-                                                      value: "See all",
-                                                      comment: "See all - Universal checkout")
-            seeAllButton.setTitle(seeAllButtonTitle, for: .normal)
+            seeAllButton.setTitle(Strings.VaultPaymentMethodViewContent.seeAllButtonTitle, for: .normal)
             seeAllButton.titleLabel?.adjustsFontSizeToFitWidth = true
             seeAllButton.titleLabel?.minimumScaleFactor = 0.7
             seeAllButton.setTitleColor(theme.text.system.color, for: .normal)
@@ -205,11 +190,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 payButton = PrimerButton()
             }
             
-            var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                          tableName: nil,
-                                          bundle: Bundle.primerResources,
-                                          value: "Pay",
-                                          comment: "Pay - Card Form View (Sumbit button text)") //+ " " + (amount.toCurrencyString(currency: settings.currency) ?? "")
+            var title = Strings.PaymentButton.pay
             
             if amount != 0, let currency = AppState.current.currency {
                 title += " \(amount.toCurrencyString(currency: currency))"

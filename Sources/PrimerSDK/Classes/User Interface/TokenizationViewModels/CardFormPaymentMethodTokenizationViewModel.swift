@@ -70,11 +70,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
         if !isCardholderNameFieldEnabled { return nil }
         let cardholderNameField = PrimerCardholderNameFieldView()
-        cardholderNameField.placeholder = NSLocalizedString("primer-form-text-field-placeholder-cardholder",
-                                                            tableName: nil,
-                                                            bundle: Bundle.primerResources,
-                                                            value: "e.g. John Doe",
-                                                            comment: "e.g. John Doe - Form Text Field Placeholder (Cardholder name)")
+        cardholderNameField.placeholder = Strings.CardFormView.cardholderTextFieldPlaceholder
         cardholderNameField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         cardholderNameField.textColor = theme.input.text.color
         cardholderNameField.delegate = self
@@ -98,11 +94,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     internal lazy var cardNumberContainerView: PrimerCustomFieldView = {
         let cardNumberContainerView = PrimerCustomFieldView()
         cardNumberContainerView.fieldView = cardNumberField
-        cardNumberContainerView.placeholderText = NSLocalizedString("primer-form-text-field-title-card-number",
-                                                                    tableName: nil,
-                                                                    bundle: Bundle.primerResources,
-                                                                    value: "Card number",
-                                                                    comment: "Card number - Form Text Field Title (Card number)")
+        cardNumberContainerView.placeholderText = Strings.CardFormView.cardNumberTextFieldTitle
         cardNumberContainerView.setup()
         cardNumberContainerView.tintColor = theme.input.border.color(for: .selected)
         return cardNumberContainerView
@@ -111,11 +103,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     internal lazy var expiryDateContainerView: PrimerCustomFieldView = {
         let expiryDateContainerView = PrimerCustomFieldView()
         expiryDateContainerView.fieldView = expiryDateField
-        expiryDateContainerView.placeholderText = NSLocalizedString("primer-form-text-field-title-expiry-date",
-                                                                    tableName: nil,
-                                                                    bundle: Bundle.primerResources,
-                                                                    value: "Expiry date",
-                                                                    comment: "Expiry date - Form Text Field Title (Expiry date)")
+        expiryDateContainerView.placeholderText = Strings.CardFormView.expiryDateTextFieldTitle
         expiryDateContainerView.setup()
         expiryDateContainerView.tintColor = theme.input.border.color(for: .selected)
         return expiryDateContainerView
@@ -124,11 +112,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     internal lazy var cvvContainerView: PrimerCustomFieldView = {
         let cvvContainerView = PrimerCustomFieldView()
         cvvContainerView.fieldView = cvvField
-        cvvContainerView.placeholderText = NSLocalizedString("primer-card-form-cvv",
-                                                             tableName: nil,
-                                                             bundle: Bundle.primerResources,
-                                                             value: "CVV",
-                                                             comment: "CVV - Card Form (CVV text field placeholder text)")
+        cvvContainerView.placeholderText = Strings.CardFormView.cvvTextFieldTitle
         cvvContainerView.setup()
         cvvContainerView.tintColor = theme.input.border.color(for: .selected)
         return cvvContainerView
@@ -138,11 +122,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         if !isCardholderNameFieldEnabled { return nil }
         let cardholderNameContainerView = PrimerCustomFieldView()
         cardholderNameContainerView.fieldView = cardholderNameField
-        cardholderNameContainerView.placeholderText = NSLocalizedString("primer-card-form-name",
-                                                                        tableName: nil,
-                                                                        bundle: Bundle.primerResources,
-                                                                        value: "Name",
-                                                                        comment: "Cardholder name")
+        cardholderNameContainerView.placeholderText = Strings.CardFormView.cardholderTextFieldTitle
         cardholderNameContainerView.setup()
         cardholderNameContainerView.tintColor = theme.input.border.color(for: .selected)
         return cardholderNameContainerView
@@ -166,17 +146,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         var buttonTitle: String = ""
         if flow == .checkout {
             let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-            buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                            tableName: nil,
-                                            bundle: Bundle.primerResources,
-                                            value: "Pay",
-                                            comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
+            buttonTitle = Strings.PaymentButton.pay + " " + (viewModel.amountStringed ?? "")
         } else if flow == .vault {
-            buttonTitle = NSLocalizedString("primer-card-form-add-card",
-                                            tableName: nil,
-                                            bundle: Bundle.primerResources,
-                                            value: "Add card",
-                                            comment: "Add card - Card Form (Vault title text)")
+            buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle
         }
         
         let submitButton = PrimerButton()
@@ -513,12 +485,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     func configurePayButton(amount: Int) {
         DispatchQueue.main.async {
             guard !Primer.shared.flow.internalSessionFlow.vaulted, let currency = AppState.current.currency else { return }
-            var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                          tableName: nil,
-                                          bundle: Bundle.primerResources,
-                                          value: "Pay",
-                                          comment: "Pay - Card Form View (Sumbit button text)")
-            
+            var title = Strings.PaymentButton.pay
             title += " \(amount.toCurrencyString(currency: currency))"
             self.submitButton.setTitle(title, for: .normal)
         }
