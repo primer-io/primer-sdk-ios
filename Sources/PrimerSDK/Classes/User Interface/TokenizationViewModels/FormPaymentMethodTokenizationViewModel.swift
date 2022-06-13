@@ -87,27 +87,15 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             switch Primer.shared.intent {
             case .checkout:
                 let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-                buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Pay",
-                                                comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
-                
+                buttonTitle = Strings.PaymentButton.pay + " " + (viewModel.amountStringed ?? "")
             case .vault:
-                buttonTitle = NSLocalizedString("primer-card-form-add-card",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Add card",
-                                                comment: "Add card - Card Form (Vault title text)")
-                
-            case .none:
-                assert(true, "Intent should have been set")
+                buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle
             }
 
             btn.setTitle(buttonTitle, for: .normal)
             
         default:
-            btn.setTitle("Confirm", for: .normal)
+            btn.setTitle(Strings.ConfirmMandateView.submitButtonTitle, for: .normal)
         }
         
         return btn
@@ -126,25 +114,10 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         case .adyenBlik:
             let input1 = Input()
             input1.name = "OTP"
-            input1.topPlaceholder = NSLocalizedString(
-                "input_hint_form_blik_otp",
-                tableName: nil,
-                bundle: Bundle.primerResources,
-                value: "6 digit code",
-                comment: "6 digit code - Text field top placeholder")
-            input1.textFieldPlaceholder = NSLocalizedString(
-                "payment_method_blik_loading_placeholder",
-                tableName: nil,
-                bundle: Bundle.primerResources,
-                value: "Enter your one time password",
-                comment: "Enter your one time password - Text field placeholder")
+            input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
+            input1.textFieldPlaceholder = Strings.Blik.inputTextFieldPlaceholder
             input1.keyboardType = .numberPad
-            input1.descriptor = NSLocalizedString(
-                "input_description_otp",
-                tableName: nil,
-                bundle: Bundle.primerResources,
-                value: "Get the code from your banking app.",
-                comment: "Get the code from your banking app - Blik descriptor")
+            input1.descriptor = Strings.Blik.inputDescriptor
             input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
             input1.maxCharactersAllowed = 6
             input1.isValid = { text in

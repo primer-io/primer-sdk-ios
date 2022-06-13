@@ -61,7 +61,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         
         formPaymentMethodTokenizationViewModel.onConfigurationFetched = onConfigurationFetched
         
-        title = Content.PrimerCardFormView.title
+        title = Strings.PrimerCardFormView.title
         view.backgroundColor = theme.view.backgroundColor
         verticalStackView.spacing = 6
         
