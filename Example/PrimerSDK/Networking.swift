@@ -306,22 +306,20 @@ class Networking {
                     ])
                 merchantActions.append(newAction)
             } else if action.type == "SET_BILLING_ADDRESS" {
-                if let postalCode = (action.params?["postalCode"] as? String) {
-                    var billingAddress: [String: String] = [:]
-                    
-                    action.params?.forEach { entry in
-                        if let value = entry.value as? String {
-                            billingAddress[entry.key] = value
-                        }
+                var billingAddress: [String: String] = [:]
+                
+                action.params?.forEach { entry in
+                    if let value = entry.value as? String {
+                        billingAddress[entry.key] = value
                     }
-                    
-                    let newAction = ClientSession.Action(
-                        type: action.type,
-                        params: [ "billingAddress": billingAddress ]
-                    )
-                    
-                    merchantActions.append(newAction)
                 }
+                
+                let newAction = ClientSession.Action(
+                    type: action.type,
+                    params: [ "billingAddress": billingAddress ]
+                )
+                
+                merchantActions.append(newAction)
             } else {
                 merchantActions.append(action)
             }
