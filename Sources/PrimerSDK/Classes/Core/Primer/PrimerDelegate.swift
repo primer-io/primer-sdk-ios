@@ -100,6 +100,14 @@ internal class PrimerDelegateProxy {
             }
             
             let exposedError: Error = error.exposedError
+            
+            if Primer.shared.delegate?.primerDidFailWithError == nil,
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail == nil
+            {
+                print("WARNING: Delegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
+                decisionHandler(.fail(withErrorMessage: nil))
+                return
+            }
 
             if Primer.shared.delegate?.primerDidFailWithError != nil {
                 Primer.shared.delegate?.primerDidFailWithError?(exposedError, data: data, decisionHandler: { errorDecision in
@@ -111,12 +119,10 @@ internal class PrimerDelegateProxy {
                     }
                 })
                 
-            } else if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail != nil {
+            }
+            
+            if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail != nil {
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail(withError: exposedError)
-                
-            } else {
-                print("WARNING: Delegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
-                decisionHandler(.fail(withErrorMessage: nil))
             }
         }
     }
@@ -152,8 +158,8 @@ internal class PrimerDelegateProxy {
         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: paymentMethods)
     }
     
-    static func primerHeadlessUniversalCheckoutPreparationStarted() {
-        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationStarted()
+    static func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String) {
+        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: paymentMethodType)
     }
     
     static func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {
