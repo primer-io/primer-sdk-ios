@@ -27,12 +27,147 @@ internal class Input {
 
 class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
+    // MARK: - Properties
+    
     private var flow: PaymentFlow
     var inputs: [Input] = []
     private var cardComponentsManager: CardComponentsManager!
     
     // FIXME: Is this the fix for the button's indicator?
     private var isTokenizing = false
+            
+    var inputTextFieldsStackViews: [UIStackView] {
+        var stackViews: [UIStackView] = []
+        for input in self.inputs {
+            let verticalStackView = UIStackView()
+            verticalStackView.spacing = 2
+            verticalStackView.axis = .vertical
+            verticalStackView.alignment = .fill
+            verticalStackView.distribution = .fill
+
+            let inputTextFieldView = PrimerGenericFieldView()
+            inputTextFieldView.delegate = self
+            inputTextFieldView.translatesAutoresizingMaskIntoConstraints = false
+            inputTextFieldView.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            inputTextFieldView.textField.keyboardType = input.keyboardType ?? .default
+            inputTextFieldView.allowedCharacterSet = input.allowedCharacterSet
+            inputTextFieldView.maxCharactersAllowed = input.maxCharactersAllowed
+            inputTextFieldView.isValid = input.isValid
+            inputTextFieldView.shouldMaskText = false
+            input.primerTextFieldView = inputTextFieldView
+            
+            let inputContainerView = PrimerCustomFieldView()
+            inputContainerView.fieldView = inputTextFieldView
+            inputContainerView.placeholderText = input.topPlaceholder
+            inputContainerView.setup()
+            inputContainerView.tintColor = .systemBlue
+            verticalStackView.addArrangedSubview(inputContainerView)
+            
+            if let descriptor = input.descriptor {
+                let lbl = UILabel()
+                lbl.font = UIFont.systemFont(ofSize: 12)
+                lbl.translatesAutoresizingMaskIntoConstraints = false
+                lbl.text = descriptor
+                verticalStackView.addArrangedSubview(lbl)
+            }
+            stackViews.append(verticalStackView)
+        }
+        
+        return stackViews
+    }
+    
+    lazy var submitButton: PrimerButton = {
+        let btn = PrimerButton()
+        btn.isEnabled = false
+        btn.clipsToBounds = true
+        btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        btn.layer.cornerRadius = 4
+        btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
+        btn.setTitleColor(.white, for: .normal)
+        btn.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
+        
+        switch config.type {
+        case .paymentCard:
+            var buttonTitle: String = ""
+            if flow == .checkout {
+                let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+                buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                                tableName: nil,
+                                                bundle: Bundle.primerResources,
+                                                value: "Pay",
+                                                comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
+            } else if flow == .vault {
+                buttonTitle = NSLocalizedString("primer-card-form-add-card",
+                                                tableName: nil,
+                                                bundle: Bundle.primerResources,
+                                                value: "Add card",
+                                                comment: "Add card - Card Form (Vault title text)")
+            }
+            btn.setTitle(buttonTitle, for: .normal)
+            
+        default:
+            btn.setTitle("Confirm", for: .normal)
+        }
+        
+        return btn
+    }()
+    
+    var dataSource = CountryCode.allCases {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+    var countries = CountryCode.allCases
+
+    internal lazy var tableView: UITableView = {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
+        let tableView = UITableView()
+        tableView.showsVerticalScrollIndicator = false
+        tableView.showsHorizontalScrollIndicator = false
+        tableView.backgroundColor = theme.view.backgroundColor
+        
+        if #available(iOS 11.0, *) {
+            tableView.contentInsetAdjustmentBehavior = .never
+        }
+
+        tableView.rowHeight = 41
+        tableView.register(CountryTableViewCell.self, forCellReuseIdentifier: CountryTableViewCell.className)
+        tableView.dataSource = self
+        tableView.delegate = self
+        return tableView
+    }()
+    
+    internal lazy var searchCountryTextField: PrimerSearchTextField = {
+        let textField = PrimerSearchTextField(frame: .zero)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        textField.delegate = self
+        textField.borderStyle = .none
+        textField.layer.cornerRadius = 3.0
+        textField.font = UIFont.systemFont(ofSize: 16.0)
+        textField.placeholder = NSLocalizedString("search-country-placeholder",
+                                                        tableName: nil,
+                                                        bundle: Bundle.primerResources,
+                                                        value: "Search country",
+                                                        comment: "Search country - Search country textfield placeholder")
+        textField.rightViewMode = .always
+        return textField
+    }()
+
+    var cardNetwork: CardNetwork? {
+        didSet {
+            cvvField.cardNetwork = cardNetwork ?? .unknown
+        }
+    }
+    
+    var onClientSessionActionCompletion: ((Error?) -> Void)?
+    var onResumeHandlerCompletion: ((URL?, Error?) -> Void)?
+    var onResumeTokenCompletion: ((Error?) -> Void)?
+    private var isCanceled: Bool = false
+    
+    // MARK: - Overrides
     
     private lazy var _title: String = { return "Form" }()
     override var title: String  {
@@ -136,105 +271,22 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             return nil
         }
     }()
+    
     override var buttonTintColor: UIColor? {
         get { return _buttonTintColor }
         set { _buttonTintColor = newValue }
     }
-        
+
     var isShowingBillingAddressFieldsRequired: Bool {
         let state: AppStateProtocol = DependencyContainer.resolve()
         let billingAddressModuleOptions = state.primerConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerConfiguration.CheckoutModule.PostalCodeOptions
         return billingAddressModuleOptions != nil
     }
-
-    var inputTextFieldsStackViews: [UIStackView] {
-        var stackViews: [UIStackView] = []
-        for input in self.inputs {
-            let verticalStackView = UIStackView()
-            verticalStackView.spacing = 2
-            verticalStackView.axis = .vertical
-            verticalStackView.alignment = .fill
-            verticalStackView.distribution = .fill
-
-            let inputTextFieldView = PrimerGenericFieldView()
-            inputTextFieldView.delegate = self
-            inputTextFieldView.translatesAutoresizingMaskIntoConstraints = false
-            inputTextFieldView.heightAnchor.constraint(equalToConstant: 35).isActive = true
-            inputTextFieldView.textField.keyboardType = input.keyboardType ?? .default
-            inputTextFieldView.allowedCharacterSet = input.allowedCharacterSet
-            inputTextFieldView.maxCharactersAllowed = input.maxCharactersAllowed
-            inputTextFieldView.isValid = input.isValid
-            inputTextFieldView.shouldMaskText = false
-            input.primerTextFieldView = inputTextFieldView
-            
-            let inputContainerView = PrimerCustomFieldView()
-            inputContainerView.fieldView = inputTextFieldView
-            inputContainerView.placeholderText = input.topPlaceholder
-            inputContainerView.setup()
-            inputContainerView.tintColor = .systemBlue
-            verticalStackView.addArrangedSubview(inputContainerView)
-            
-            if let descriptor = input.descriptor {
-                let lbl = UILabel()
-                lbl.font = UIFont.systemFont(ofSize: 12)
-                lbl.translatesAutoresizingMaskIntoConstraints = false
-                lbl.text = descriptor
-                verticalStackView.addArrangedSubview(lbl)
-            }
-            stackViews.append(verticalStackView)
-        }
-        
-        return stackViews
-    }
     
-    lazy var submitButton: PrimerButton = {
-        let btn = PrimerButton()
-        btn.isEnabled = false
-        btn.clipsToBounds = true
-        btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        btn.layer.cornerRadius = 4
-        btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
-        btn.setTitleColor(.white, for: .normal)
-        btn.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
-        
-        switch config.type {
-        case .paymentCard:
-            var buttonTitle: String = ""
-            if flow == .checkout {
-                let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-                buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Pay",
-                                                comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
-            } else if flow == .vault {
-                buttonTitle = NSLocalizedString("primer-card-form-add-card",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Add card",
-                                                comment: "Add card - Card Form (Vault title text)")
-            }
-            btn.setTitle(buttonTitle, for: .normal)
-            
-        default:
-            btn.setTitle("Confirm", for: .normal)
-        }
-        
-        return btn
+    internal lazy var countrySelectorViewController: CountrySelectorViewController = {
+        CountrySelectorViewController(viewModel: self)
     }()
 
-    var cardNetwork: CardNetwork? {
-        didSet {
-            cvvField.cardNetwork = cardNetwork ?? .unknown
-        }
-    }
-    
-    var onClientSessionActionCompletion: ((Error?) -> Void)?
-    var onResumeHandlerCompletion: ((URL?, Error?) -> Void)?
-    var onResumeTokenCompletion: ((Error?) -> Void)?
-    private var isCanceled: Bool = false
-    
     // MARK: - Card number field
     
     internal lazy var cardNumberField: PrimerCardNumberFieldView = {
@@ -278,6 +330,10 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }()
     
     // MARK: - Billing address
+        
+    private var countryField: BillingAddressField {
+        (countryFieldView, countryFieldContainerView, billingAddressCheckoutModuleOptions?.countryCode == false)
+    }
         
     // MARK: First name
     
@@ -335,6 +391,20 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         (addressLine2FieldView, addressLine2ContainerView, billingAddressCheckoutModuleOptions?.addressLine2 == false)
     }
     
+    // MARK: Postal code
+    
+    private lazy var postalCodeFieldView: PrimerPostalCodeFieldView = {
+        PrimerPostalCodeField.postalCodeViewWithDelegate(self)
+    }()
+        
+    private lazy var postalCodeContainerView: PrimerCustomFieldView = {
+        PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeFieldView)
+    }()
+    
+    private var postalCodeField: BillingAddressField {
+        (postalCodeFieldView, postalCodeContainerView, billingAddressCheckoutModuleOptions?.postalCode == false)
+    }
+    
     // MARK: City
 
     private lazy var cityFieldView: PrimerCityFieldView = {
@@ -362,20 +432,20 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     private var stateField: BillingAddressField {
         (stateFieldView, stateContainerView, billingAddressCheckoutModuleOptions?.state == false)
     }
-
-    // MARK: Postal code
     
-    private lazy var postalCodeFieldView: PrimerPostalCodeFieldView = {
-        PrimerPostalCodeField.postalCodeViewWithDelegate(self)
-    }()
+    // MARK: Country
         
-    private lazy var postalCodeContainerView: PrimerCustomFieldView = {
-        PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeFieldView)
+    private lazy var countryFieldView: PrimerCountryFieldView = {
+        PrimerCountryField.countryFieldViewWithDelegate(self)
     }()
-    
-    private var postalCodeField: BillingAddressField {
-        (postalCodeFieldView, postalCodeContainerView, billingAddressCheckoutModuleOptions?.postalCode == false)
-    }
+
+    private lazy var countryFieldContainerView: PrimerCustomFieldView = {
+        PrimerCountryField.countryContainerViewFieldView(countryFieldView, openCountriesListPressed: {
+            DispatchQueue.main.async {
+                Primer.shared.primerRootVC?.show(viewController: self.countrySelectorViewController)
+            }
+        })
+    }()
     
     // MARK: All billing address fields
     
@@ -387,6 +457,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     internal var billingAddressFields: [[BillingAddressField]] {
         guard isShowingBillingAddressFieldsRequired else { return [] }
         return [
+            [countryField],
             [firstNameField, lastNameField],
             [addressLine1Field],
             [addressLine2Field],
@@ -395,23 +466,27 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         ]
     }
     
-    internal var formView: PrimerFormView {
+    internal var allVisibleBillingAddressFieldViews: [PrimerTextFieldView] {
+        billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
+    }
+    
+    internal var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
         let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
-        let allVisibleBillingAddressFieldContainerViews = allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
+        return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
+    }
+    
+    internal var formView: PrimerFormView {
         var formViews: [[UIView?]] = [
             [cardNumberContainerView],
             [expiryDateContainerView, cvvContainerView],
             [cardholderNameContainerView],
-            [postalCodeContainerView],
         ]
         formViews.append(contentsOf: allVisibleBillingAddressFieldContainerViews)
         return PrimerFormView(frame: .zero, formViews: formViews)
     }
 
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
+    // MARK: - Init
+
     required init(config: PaymentMethodConfig) {
         self.flow = .checkout
         if let flow = Primer.shared.flow, flow.internalSessionFlow.vaulted {
@@ -454,18 +529,10 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    func cancel() {
-        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
-        self.onClientSessionActionCompletion = nil
-        self.onResumeHandlerCompletion = nil
-        self.onResumeTokenCompletion = nil
-        
-        let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-        ErrorHandler.handle(error: err)
-        self.completion?(nil, err)
-        self.completion = nil
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
-    
+        
     override func validate() throws {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
@@ -665,8 +732,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                                                                       city: cityFieldView.city,
                                                                       postalCode: postalCodeFieldView.postalCode,
                                                                       state: stateFieldView.state,
-                                                                      countryCode: nil)
-                    
+                                                                      countryCode: countryFieldView.countryCode)
+
                     if let updatedBillingAddressDictionary = try? updatedBillingAddress.asDictionary() {
                         
                         let billingAddressAction = ClientSession.Action(
@@ -873,15 +940,19 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
 
     fileprivate func enableSubmitButtonIfNeeded() {
+        
         var validations = [
             cardNumberField.isTextValid,
             expiryDateField.isTextValid,
             cvvField.isTextValid
         ]
-
-        if isShowingBillingAddressFieldsRequired { validations.append(postalCodeFieldView.isTextValid) }
-        if let cardholderNameField = cardholderNameField, PrimerCardholderNameField.isCardholderNameFieldEnabled { validations.append(cardholderNameField.isTextValid) }
-
+        
+        if isShowingBillingAddressFieldsRequired {
+            validations.append(contentsOf: allVisibleBillingAddressFieldViews.map { $0.isTextValid })
+        }
+        
+        if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
+        
         if validations.allSatisfy({ $0 == true }) {
             submitButton.isEnabled = true
             submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
@@ -1112,6 +1183,84 @@ extension FormPaymentMethodTokenizationViewModel {
                 self.onResumeTokenCompletion = nil
             }
         }
+    }
+}
+
+extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return dataSource.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let country = dataSource[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as! CountryTableViewCell
+        cell.configure(viewModel: country)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let country = self.dataSource[indexPath.row]
+        countryFieldView.textField.text = "\(country.flag) \(country.country)"
+        countryFieldView.countryCode = country
+        countryFieldView.validation = .valid
+        Primer.shared.primerRootVC?.popViewController()
+    }
+}
+
+extension FormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol {
+    
+    func cancel() {
+        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+        self.onClientSessionActionCompletion = nil
+        self.onResumeHandlerCompletion = nil
+        self.onResumeTokenCompletion = nil
+        
+        let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+        ErrorHandler.handle(error: err)
+        self.completion?(nil, err)
+        self.completion = nil
+    }
+}
+
+extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if string == "\n" {
+            // Keyboard's return button tapoped
+            textField.resignFirstResponder()
+            return false
+        }
+        
+        var query: String
+        
+        if string.isEmpty {
+            query = String((textField.text ?? "").dropLast())
+        } else {
+            query = (textField.text ?? "") + string
+        }
+        
+        if query.isEmpty {
+            dataSource = countries
+            return true
+        }
+        
+        var countryResults: [CountryCode] = []
+        
+        for country in countries {
+            if country.country.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
+                countryResults.append(country)
+            }
+        }
+        
+        dataSource = countryResults
+        
+        return true
+    }
+    
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        dataSource = countries
+        return true
     }
 }
 

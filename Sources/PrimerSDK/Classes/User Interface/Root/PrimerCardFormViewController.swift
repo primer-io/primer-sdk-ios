@@ -12,9 +12,7 @@ import UIKit
 /// Subclass of the PrimerFormViewController that uses the checkout components and the card components manager
 class PrimerCardFormViewController: PrimerFormViewController {
     
-    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private let submitButton = PrimerButton()
-    
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()    
     private let formPaymentMethodTokenizationViewModel: CardFormPaymentMethodTokenizationViewModel
     
     init(viewModel: CardFormPaymentMethodTokenizationViewModel) {
@@ -105,7 +103,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     private func renderSubmitButton() {
         verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
-        submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
     }
 }
 

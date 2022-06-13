@@ -170,6 +170,7 @@ extension PrimerButton {
 extension PrimerButton {
     
     func startAnimating() {
+        if activityIndicator.isAnimating { return }
         activityIndicator.startAnimating()
         var buttonStates: [ActivityIndicatorButtonState] = []
         for state in [UIControl.State.disabled] {
@@ -179,7 +180,9 @@ extension PrimerButton {
             setImage(UIImage(), for: state)
         }
         self.activityIndicatorButtonStates = buttonStates
-        isEnabled = false
+        DispatchQueue.main.async {
+            self.isEnabled = false
+        }
     }
 
     func stopAnimating() {
@@ -188,7 +191,9 @@ extension PrimerButton {
             setTitle(buttonState.title, for: buttonState.state)
             setImage(buttonState.image, for: buttonState.state)
         }
-        isEnabled = true
+        DispatchQueue.main.async {
+            self.isEnabled = true
+        }
     }
 }
 

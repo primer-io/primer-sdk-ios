@@ -6,7 +6,7 @@ internal class CountrySelectorViewController: PrimerFormViewController {
     
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    private var viewModel: CardFormPaymentMethodTokenizationViewModel!
+    private var viewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol!
     private let countries = CountryCode.allCases
     internal private(set) var subtitle: String?
     
@@ -16,7 +16,7 @@ internal class CountrySelectorViewController: PrimerFormViewController {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(viewModel: CardFormPaymentMethodTokenizationViewModel) {
+    init(viewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }

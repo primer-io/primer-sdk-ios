@@ -321,21 +321,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
     
     // MARK: - Billing address
-    
-    // MARK: Country
         
-    private lazy var countryFieldView: PrimerCountryFieldView = {
-        PrimerCountryField.countryFieldViewWithDelegate(self)
-    }()
-
-    private lazy var countryFieldContainerView: PrimerCustomFieldView = {
-        PrimerCountryField.countryContainerViewFieldView(countryFieldView, openCountriesListPressed: {
-            DispatchQueue.main.async {
-                Primer.shared.primerRootVC?.show(viewController: self.countrySelectorViewController)
-            }
-        })
-    }()
-    
     private var countryField: BillingAddressField {
         (countryFieldView, countryFieldContainerView, billingAddressCheckoutModuleOptions?.countryCode == false)
     }
@@ -396,6 +382,20 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         (addressLine2FieldView, addressLine2ContainerView, billingAddressCheckoutModuleOptions?.addressLine2 == false)
     }
     
+    // MARK: Postal code
+    
+    private lazy var postalCodeFieldView: PrimerPostalCodeFieldView = {
+        PrimerPostalCodeField.postalCodeViewWithDelegate(self)
+    }()
+        
+    private lazy var postalCodeContainerView: PrimerCustomFieldView = {
+        PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeFieldView)
+    }()
+    
+    private var postalCodeField: BillingAddressField {
+        (postalCodeFieldView, postalCodeContainerView, billingAddressCheckoutModuleOptions?.postalCode == false)
+    }
+    
     // MARK: City
 
     private lazy var cityFieldView: PrimerCityFieldView = {
@@ -423,20 +423,20 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private var stateField: BillingAddressField {
         (stateFieldView, stateContainerView, billingAddressCheckoutModuleOptions?.state == false)
     }
-
-    // MARK: Postal code
     
-    private lazy var postalCodeFieldView: PrimerPostalCodeFieldView = {
-        PrimerPostalCodeField.postalCodeViewWithDelegate(self)
-    }()
+    // MARK: Country
         
-    private lazy var postalCodeContainerView: PrimerCustomFieldView = {
-        PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeFieldView)
+    private lazy var countryFieldView: PrimerCountryFieldView = {
+        PrimerCountryField.countryFieldViewWithDelegate(self)
     }()
-    
-    private var postalCodeField: BillingAddressField {
-        (postalCodeFieldView, postalCodeContainerView, billingAddressCheckoutModuleOptions?.postalCode == false)
-    }
+
+    private lazy var countryFieldContainerView: PrimerCustomFieldView = {
+        PrimerCountryField.countryContainerViewFieldView(countryFieldView, openCountriesListPressed: {
+            DispatchQueue.main.async {
+                Primer.shared.primerRootVC?.show(viewController: self.countrySelectorViewController)
+            }
+        })
+    }()
     
     // MARK: All billing address fields
     
@@ -491,6 +491,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             billingAddressFieldViews: allVisibleBillingAddressFieldViews
         )
         cardComponentsManager.delegate = self
+    }
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     // MARK: - Functions Overrides
@@ -1125,7 +1129,7 @@ extension CardFormPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
     }
 }
 
-extension CardFormPaymentMethodTokenizationViewModel {
+extension CardFormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     
     func cancel() {
         
