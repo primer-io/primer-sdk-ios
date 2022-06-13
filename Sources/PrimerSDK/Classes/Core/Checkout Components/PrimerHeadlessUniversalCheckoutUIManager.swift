@@ -114,7 +114,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationStarted()
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue)
             
             firstly {
                 PrimerHeadlessUniversalCheckout.current.validateSession()
