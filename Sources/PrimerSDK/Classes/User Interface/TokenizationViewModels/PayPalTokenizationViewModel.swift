@@ -46,13 +46,11 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     override func start() {
-        self.willPresentExternalView = {
-            
-        }
-        
         self.didPresentExternalView = {
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: PrimerPaymentMethodType.payPal.rawValue)
         }
+        
+        super.start()
     }
     
     override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
