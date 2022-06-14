@@ -154,8 +154,8 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: [String]) {
-        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: paymentMethods)
+    static func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
+        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(paymentMethodTypes)
     }
     
     static func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String) {

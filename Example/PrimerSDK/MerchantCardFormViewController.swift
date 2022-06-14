@@ -101,8 +101,8 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
         print("🤯🤯🤯 \(#function)")
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: [String]) {
-        print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
+    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
+        print("🤯🤯🤯 \(#function)\npaymentMethodTypes: \(paymentMethodTypes)")
     }
     
     func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {

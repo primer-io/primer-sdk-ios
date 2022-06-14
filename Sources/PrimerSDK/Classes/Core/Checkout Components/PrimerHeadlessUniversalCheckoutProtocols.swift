@@ -184,7 +184,7 @@ public protocol PrimerInputElementDelegate: AnyObject {
 @objc
 public protocol PrimerHeadlessUniversalCheckoutDelegate {
     
-    @objc func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: [String])
+    @objc func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String])
     @objc func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String)
     @objc func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String)
     @objc func primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: String)
