@@ -854,6 +854,16 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
                 _ = cvvField.becomeFirstResponder()
             } else if primerTextFieldView is PrimerCVVFieldView {
                 _ = cardholderNameField?.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerFirstNameFieldView {
+                _ = firstNameFieldView.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerLastNameFieldView {
+                _ = lastNameFieldView.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerPostalCodeFieldView {
+                _ = postalCodeFieldView.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerCityFieldView {
+                _ = cityFieldView.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerStateFieldView {
+                _ = stateFieldView.becomeFirstResponder()
             }
         }
     }
@@ -862,15 +872,29 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         if isValid == false, !primerTextFieldView.isEmpty {
             // We know for sure that the text is not valid, even if the user hasn't finished typing.
             if primerTextFieldView is PrimerCardNumberFieldView {
-                cardNumberContainerView.errorText = "Invalid card number"
+                cardNumberContainerView.errorText = Strings.CardFormValidation.invalidCardNumber
             } else if primerTextFieldView is PrimerExpiryDateFieldView {
-                expiryDateContainerView.errorText = "Invalid date"
+                expiryDateContainerView.errorText = Strings.CardFormValidation.invalidExpirationDate
             } else if primerTextFieldView is PrimerCVVFieldView {
-                cvvContainerView.errorText = "Invalid CVV"
+                cvvContainerView.errorText = Strings.CardFormValidation.invalidCVV
             } else if primerTextFieldView is PrimerCardholderNameFieldView {
-                cardholderNameContainerView?.errorText = "Invalid name"
+                cardholderNameContainerView?.errorText = Strings.CardFormValidation.invalidCardNumber
             } else if primerTextFieldView is PrimerPostalCodeFieldView {
-                postalCodeContainerView.errorText = "\(PrimerPostalCodeField.localPostalCodeTitle) is required" // todo: localise if UK, etc.
+                postalCodeContainerView.errorText = "\(PrimerPostalCodeField.localPostalCodeTitle) \(Strings.Generic.isRequiredSuffix)"
+            } else if primerTextFieldView is PrimerCountryFieldView {
+                countryFieldContainerView.errorText = Strings.CardFormValidation.invalidCountry
+            } else if primerTextFieldView is PrimerFirstNameFieldView {
+                firstNameContainerView.errorText = Strings.CardFormValidation.invalidFirstName
+            } else if primerTextFieldView is PrimerLastNameFieldView {
+                lastNameContainerView.errorText = Strings.CardFormValidation.invalidLastName
+            } else if primerTextFieldView is PrimerCityFieldView {
+                cityContainerView.errorText = Strings.CardFormValidation.invalidCity
+            } else if primerTextFieldView is PrimerStateFieldView {
+                stateContainerView.errorText = Strings.CardFormValidation.invalidState
+            } else if primerTextFieldView is PrimerAddressLine1FieldView {
+                addressLine1ContainerView.errorText = Strings.CardFormValidation.invalidAddress
+            } else if primerTextFieldView is PrimerAddressLine2FieldView {
+                addressLine2ContainerView.errorText = Strings.CardFormValidation.invalidAddress
             }
         } else {
             // We don't know for sure if the text is valid
@@ -884,6 +908,20 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
                 cardholderNameContainerView?.errorText = nil
             } else if primerTextFieldView is PrimerPostalCodeFieldView {
                 postalCodeContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerCountryFieldView {
+                countryFieldContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerFirstNameFieldView {
+                firstNameContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerLastNameFieldView {
+                lastNameContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerCityFieldView {
+                cityContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerStateFieldView {
+                stateContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerAddressLine1FieldView {
+                addressLine1ContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerAddressLine2FieldView {
+                addressLine2ContainerView.errorText = nil
             }
         }
     }

@@ -80,10 +80,10 @@ internal class BankSelectorViewController: PrimerFormViewController {
         
         verticalStackView.addArrangedSubview(viewModel.searchBankTextField!)
         
-        let separator2 = UIView()
-        separator2.translatesAutoresizingMaskIntoConstraints = false
-        separator2.heightAnchor.constraint(equalToConstant: 5).isActive = true
-        verticalStackView.addArrangedSubview(separator2)
+        let separator = UIView()
+        separator.translatesAutoresizingMaskIntoConstraints = false
+        separator.heightAnchor.constraint(equalToConstant: 5).isActive = true
+        verticalStackView.addArrangedSubview(separator)
         
         let tableViewMockView = UIView()
         tableViewMockView.translatesAutoresizingMaskIntoConstraints = false

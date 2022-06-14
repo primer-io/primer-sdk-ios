@@ -17,12 +17,12 @@ class PostalCode {
     }
     
     static func name(for countryCode: CountryCode?) -> String {
-        guard let countryCode = countryCode else { return "Postal code" }
+        guard let countryCode = countryCode else { return Strings.PostalCode.defaultPostalCodeName }
         switch (countryCode) {
         case CountryCode.us:
-            return "Zip code"
+            return Strings.PostalCode.zipCodeName
         default:
-            return "Postal code"
+            return Strings.PostalCode.defaultPostalCodeName
         }
     }
 }

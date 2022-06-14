@@ -5,7 +5,9 @@
 //  Created by Dario Carlomagno on 09/06/22.
 //
 
-import Foundation
+#if canImport(UIKit)
+
+import UIKit
 
 class PrimerFormView: PrimerView {
     
@@ -93,3 +95,5 @@ extension PrimerFormView {
         }
     }
 }
+
+#endif

@@ -64,10 +64,10 @@ internal class CountrySelectorViewController: PrimerFormViewController {
         
         verticalStackView.addArrangedSubview(viewModel.searchCountryTextField)
                 
-        let separator2 = UIView()
-        separator2.translatesAutoresizingMaskIntoConstraints = false
-        separator2.heightAnchor.constraint(equalToConstant: 5).isActive = true
-        verticalStackView.addArrangedSubview(separator2)
+        let separator = UIView()
+        separator.translatesAutoresizingMaskIntoConstraints = false
+        separator.heightAnchor.constraint(equalToConstant: 5).isActive = true
+        verticalStackView.addArrangedSubview(separator)
         
         self.verticalStackView.addArrangedSubview(self.viewModel.tableView)
         self.viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false

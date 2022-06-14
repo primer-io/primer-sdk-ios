@@ -220,7 +220,7 @@ internal enum ValidationError: PrimerErrorProtocol {
         case .invalidCardholderName:
             return "[\(errorId)] Invalid cardholder name"
         case .invalidCardnumber:
-            return "[\(errorId)] Invalid cardnumber"
+            return "[\(errorId)] Invalid card number"
         case .invalidCvv:
             return "[\(errorId)] Invalid CVV"
         case .invalidExpiryDate:

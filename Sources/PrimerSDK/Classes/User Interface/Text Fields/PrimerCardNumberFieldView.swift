@@ -29,14 +29,6 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         }
     }
     
-    public override func textFieldDidBeginEditing(_ textField: UITextField) {
-        super.textFieldDidBeginEditing(textField)
-    }
-    
-    public override func textFieldDidEndEditing(_ textField: UITextField) {
-        super.textFieldDidEndEditing(textField)
-    }
-    
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField._text ?? ""

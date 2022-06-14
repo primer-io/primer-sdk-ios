@@ -8,6 +8,7 @@ public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
         isEditingAnalyticsEnabled = true
+        textField.delegate = self
         isValid = { text in
             return text.isTypingNonDecimalCharacters
         }

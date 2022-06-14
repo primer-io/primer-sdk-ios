@@ -26,14 +26,6 @@ public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
         setupTextFieldView()
     }
     
-    public override func textFieldDidBeginEditing(_ textField: UITextField) {
-        super.textFieldDidBeginEditing(textField)
-    }
-    
-    public override func textFieldDidEndEditing(_ textField: UITextField) {
-        super.textFieldDidEndEditing(textField)
-    }
-    
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return false
     }

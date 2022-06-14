@@ -13,6 +13,7 @@ public final class PrimerCityFieldView: PrimerSimpleCardFormTextFieldView {
         isTextFieldAccessibilityElement = true
         textFieldaccessibilityIdentifier = "city_txt_fld"
         isEditingAnalyticsEnabled = true
+        textField.delegate = self
         editingAnalyticsObjectId = .billingAddressCity
         validationError = .invalidState(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
         isValid = { text in
