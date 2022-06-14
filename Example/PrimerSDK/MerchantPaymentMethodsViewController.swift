@@ -127,7 +127,7 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
 
 extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutDelegate {
     
-    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully(paymentMethods: [String]) {
+    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
         print("\n\n🤯🤯🤯 \(#function)")
     }
     
