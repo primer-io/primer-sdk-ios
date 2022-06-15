@@ -330,7 +330,7 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header") as? HeaderFooterLabelView
-        header?.configure(text: "This is a mocked flow for sandbox. Choose the result you want to test from the list below.")
+        header?.configure(text: Strings.PrimerTest.headerViewText)
         return header
     }
     

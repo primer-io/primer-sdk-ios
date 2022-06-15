@@ -37,6 +37,15 @@ struct Strings {
             comment: "A generic error message that is displayed on the error view")
     }
     
+    enum PrimerTest {
+        
+        static let headerViewText = NSLocalizedString(
+            "primer-test-header-description",
+            bundle: Bundle.primerResources,
+            value: "This is a mocked flow for sandbox. Choose the result you want to test from the list below.",
+            comment: "The title of the header for the flow decision view")
+    }
+    
     enum PrimerTestFlowDecision {
         
         static let successTitle = NSLocalizedString(
