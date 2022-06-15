@@ -126,7 +126,7 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
 }
 
 extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutDelegate {
-    
+
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
         print("\n\n🤯🤯🤯 \(#function)")
     }
@@ -140,7 +140,7 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
-    func primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutPaymentMethodShowed(paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
@@ -176,7 +176,7 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
         }
     }
     
-    func primerHeadlessUniversalDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         print("\n\n🤯🤯🤯 \(#function)\nresumeToken: \(resumeToken)")
         
         Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
@@ -200,7 +200,7 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
         }
     }
     
-    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
+    func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\n\n🤯🤯🤯 \(#function)\ndata: \(data)")
         
         DispatchQueue.main.async {
@@ -208,15 +208,15 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
         }
     }
     
-    func primerClientSessionWillUpdate() {
+    func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
         print("\n\n🤯🤯🤯 \(#function)")
     }
     
-    func primerClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
+    func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
         print("\n\n🤯🤯🤯 \(#function)\nclientSession: \(clientSession)")
     }
     
-    func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+    func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         print("\n\n🤯🤯🤯 \(#function)\ndata: \(data)")
         decisionHandler(.continuePaymentCreation())
     }
