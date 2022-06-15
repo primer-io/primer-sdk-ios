@@ -128,7 +128,6 @@ internal class PrimerRootViewController: PrimerViewController {
         
         viewModel.loadConfig({ [weak self] error in
             DispatchQueue.main.async {
-                
                 guard error == nil else {
                     Primer.shared.primerRootVC?.handle(error: error!)
                     return

@@ -8,7 +8,7 @@ internal protocol PrimerSettingsProtocol {
     var merchantIdentifier: String? { get }
     @available(*, deprecated, message: "Set the countryCode in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var countryCode: CountryCode? { get }
-    var klarnaSessionType: KlarnaSessionType? { get }
+    var klarnaSessionType: KlarnaSessionType? { get set }
     var klarnaPaymentDescription: String? { get }
     @available(*, deprecated, message: "Set the customerId in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
     var customerId: String? { get }

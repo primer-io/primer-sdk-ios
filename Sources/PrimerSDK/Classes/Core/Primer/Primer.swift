@@ -401,7 +401,6 @@ public class Primer {
     }
     
     private func show(on viewController: UIViewController, flow: PrimerSessionFlow, with clientToken: String? = nil, completion: ((Error?) -> Void)? = nil) {
-        
         guard let clientToken = clientToken else {
             presentingViewController = viewController
             show(flow: flow)

@@ -251,7 +251,6 @@ public class PrimerHeadlessUniversalCheckout {
     
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType) {
         DispatchQueue.main.async {
-            
             var settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             settings.hasDisabledSuccessScreen = true
             settings.isInitialLoadingHidden = true
@@ -264,6 +263,7 @@ public class PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
                 return
+                
             case .applePay:
                 if settings.merchantIdentifier == nil {
                     let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -279,6 +279,9 @@ public class PrimerHeadlessUniversalCheckout {
                     return
                 }
                 
+            case .klarna:
+                settings.klarnaSessionType = .hostedPaymentPage
+                
             case .payPal:
                 if settings.urlScheme == nil {
                     let err = PrimerError.invalidUrlScheme(urlScheme: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -286,6 +289,7 @@ public class PrimerHeadlessUniversalCheckout {
                     PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
                     return
                 }
+                
             default:
                 break
             }
