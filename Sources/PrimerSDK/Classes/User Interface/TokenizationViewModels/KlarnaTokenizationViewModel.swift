@@ -178,14 +178,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
         .then { authorizationToken -> Promise<KlarnaCustomerTokenAPIResponse> in
             self.authorizationToken = authorizationToken
-            
-            if Primer.shared.flow.internalSessionFlow.vaulted {
-                return self.createKlarnaCustomerToken(authorizationToken: authorizationToken)
-            } else {
-                return self.finalizePaymentSession()
-            }
+            return self.createKlarnaCustomerToken(authorizationToken: authorizationToken)
         }
-        .then { res -> Promise<PaymentMethodToken> in
+        .then { customerTokenResponse -> Promise<PaymentMethodToken> in
             DispatchQueue.main.async {
                 self.willDismissExternalView?()
             }
@@ -196,17 +191,25 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
             })
             
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
             var instrument: PaymentInstrument
             var request: PaymentMethodTokenizationRequest
+            
             if Primer.shared.flow.internalSessionFlow.vaulted {
-                instrument = PaymentInstrument(klarnaCustomerToken: res.customerTokenId, sessionData: res.sessionData)
+                instrument = PaymentInstrument(
+                    klarnaCustomerToken: customerTokenResponse.customerTokenId!,
+                    sessionData: customerTokenResponse.sessionData)
+                
                 request = PaymentMethodTokenizationRequest(
                     paymentInstrument: instrument,
                     paymentFlow: .vault,
                     customerId: nil)
                 
             } else {
-                instrument = PaymentInstrument(klarnaAuthorizationToken: self.authorizationToken!, sessionData: res.sessionData)
+                instrument = PaymentInstrument(
+                    klarnaCustomerToken: customerTokenResponse.customerTokenId!,
+                    sessionData: customerTokenResponse.sessionData)
+                
                 request = PaymentMethodTokenizationRequest(
                     paymentInstrument: instrument,
                     paymentFlow: .checkout,
