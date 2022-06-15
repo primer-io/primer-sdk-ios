@@ -134,7 +134,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.willDismissPaymentMethodUI?()
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
-                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: self.config.type.rawValue)
+                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodShowed?(paymentMethodType: self.config.type.rawValue)
                         self.didDismissPaymentMethodUI?()
                         seal.fulfill(())
                     }

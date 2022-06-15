@@ -143,7 +143,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
             .catch { error in
                 ErrorHandler.handle(error: error)
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail(withError: error)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error)
             }
         }
         
@@ -869,7 +869,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
             ErrorHandler.handle(error: err)
             
             DispatchQueue.main.async {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail(withError: err)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
             }
         }
     }
