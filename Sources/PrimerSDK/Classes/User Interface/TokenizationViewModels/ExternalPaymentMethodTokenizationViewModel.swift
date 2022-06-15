@@ -191,8 +191,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
         return Promise { seal in
             if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-                if let decodedClientToken = ClientTokenService.decodedClientToken,
-                   let redirectUrlStr = decodedClientToken.redirectUrl,
+                if let redirectUrlStr = decodedClientToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),
                    let statusUrlStr = decodedClientToken.statusUrl,
                    let statusUrl = URL(string: statusUrlStr),
