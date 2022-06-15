@@ -25,13 +25,8 @@ public class PrimerHeadlessUniversalCheckout {
             PrimerHeadlessUniversalCheckout.current.delegate = delegate
         }
         
-        guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
-            let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            DispatchQueue.main.async {
-                completion(nil, err)
-            }
-            return
+        if PrimerHeadlessUniversalCheckout.current.delegate == nil {
+            print("WARNING: PrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
         }
                         
         if let settings = settings {
