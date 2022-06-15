@@ -242,8 +242,7 @@ public enum PaymentMethodConfigType: Codable, Equatable, Hashable {
             guard let flow = Primer.shared.flow else { return false }
             return !flow.internalSessionFlow.vaulted
             
-        case .apaya,
-                .klarna:
+        case .apaya:
             guard let flow = Primer.shared.flow else { return false }
             return flow.internalSessionFlow.vaulted
             
@@ -251,7 +250,8 @@ public enum PaymentMethodConfigType: Codable, Equatable, Hashable {
                 .googlePay:
             return false
             
-        case .paymentCard,
+        case .klarna,
+                .paymentCard,
                 .payPal:
             return true
         
