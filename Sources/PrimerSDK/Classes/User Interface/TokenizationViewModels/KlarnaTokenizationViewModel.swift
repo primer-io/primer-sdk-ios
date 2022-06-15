@@ -112,12 +112,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
             .then { authorizationToken -> Promise<KlarnaCustomerTokenAPIResponse> in
                 self.authorizationToken = authorizationToken
-                
-                if Primer.shared.intent == .vault {
-                    return self.createKlarnaCustomerToken(authorizationToken: authorizationToken)
-                } else {
-                    return self.finalizePaymentSession()
-                }
+                return self.createKlarnaCustomerToken(authorizationToken: authorizationToken)
             }
             .then { res -> Promise<PaymentMethodToken> in
                 DispatchQueue.main.async {
@@ -131,8 +126,12 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 
                 var instrument: PaymentInstrument
                 var request: PaymentMethodTokenizationRequest
+                
                 if Primer.shared.intent == .vault {
-                    instrument = PaymentInstrument(klarnaCustomerToken: res.customerTokenId, sessionData: res.sessionData)
+                    instrument = PaymentInstrument(
+                        klarnaAuthorizationToken: self.authorizationToken!,
+                        sessionData: res.sessionData)
+                    
                     request = PaymentMethodTokenizationRequest(
                         paymentInstrument: instrument,
                         paymentFlow: .vault)
