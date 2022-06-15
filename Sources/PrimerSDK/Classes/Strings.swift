@@ -22,6 +22,11 @@ struct Strings {
             bundle: Bundle.primerResources,
             value: "Pay in installments",
             comment: "The title of the primer 'pay in installments' button")
+        
+        static let pay = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                      bundle: Bundle.primerResources,
+                                      value: "Pay",
+                                      comment: "Pay - Card Form View (Sumbit button text)")
     }
     
     enum Generic {
@@ -32,4 +37,24 @@ struct Strings {
             comment: "A generic error message that is displayed on the error view")
     }
     
+    enum PrimerTestFlowDecision {
+        
+        static let successTitle = NSLocalizedString(
+            "primer-test-payment-method-success-flow-title",
+            bundle: Bundle.primerResources,
+            value: "Authorized",
+            comment: "The title of the mocked successful flow for a Test Payment Method")
+
+        static let declineTitle = NSLocalizedString(
+            "primer-test-payment-method-decline-flow-title",
+            bundle: Bundle.primerResources,
+            value: "Declined",
+            comment: "The title of the mocked declined flow for a Test Payment Method")
+
+        static let failTitle = NSLocalizedString(
+            "primer-test-payment-method-fail-flow-title",
+            bundle: Bundle.primerResources,
+            value: "Failed",
+            comment: "The title of the mocked failed flow for a Test Payment Method")
+    }
 }

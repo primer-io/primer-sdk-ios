@@ -38,6 +38,9 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
     case payNLPayconiq
     case paymentCard
     case payPal
+    case primerTestPayPal
+    case primerTestKlarna
+    case primerTestSofort
     case twoCtwoP
     case xfers
     case opennode
@@ -114,6 +117,12 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
             self = .paymentCard
         case "PAYPAL":
             self = .payPal
+        case "PRIMER_TEST_PAYPAL":
+            self = .primerTestPayPal
+        case "PRIMER_TEST_KLARNA":
+            self = .primerTestKlarna
+        case "PRIMER_TEST_SOFORT":
+            self = .primerTestSofort
         case "TWOC2P":
             self = .twoCtwoP
         case "XFERS_PAYNOW":
@@ -195,6 +204,12 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
             return "PAYMENT_CARD"
         case .payPal:
             return "PAYPAL"
+        case .primerTestPayPal:
+            return "PRIMER_TEST_PAYPAL"
+        case .primerTestKlarna:
+            return "PRIMER_TEST_KLARNA"
+        case .primerTestSofort:
+            return "PRIMER_TEST_SOFORT"
         case .twoCtwoP:
             return "TWOC2P"
         case .xfers:
@@ -236,6 +251,7 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
+                .primerTestSofort,
                 .opennode,
                 .twoCtwoP,
                 .xfers:
@@ -251,8 +267,10 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
             return false
             
         case .klarna,
-                .paymentCard,
-                .payPal:
+				.paymentCard,
+                .payPal,
+                .primerTestPayPal,
+                .primerTestKlarna:
             return true
         
         case .other:

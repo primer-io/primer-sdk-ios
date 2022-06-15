@@ -31,6 +31,8 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         environmentControl.accessibilityIdentifier = "env_control"
         checkoutHandlingControl.selectedSegmentIndex = paymentHandling == .auto ? 0 : 1
         checkoutHandlingControl.accessibilityIdentifier = "payment_control"
+        apiKeyTextField.accessibilityIdentifier = "api_key_txt_field"
+        apiKeyTextField.text = nil
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
         customerIdTextField.text = "ios-customer-\(String.randomString(length: 8))"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"

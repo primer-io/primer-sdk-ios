@@ -30,6 +30,10 @@ struct BankSelectorTokenizationRequest: TokenizationRequest {
     let paymentInstrument: PaymentInstrument
 }
 
+struct TestPaymentMethodTokenizationRequest: TokenizationRequest {
+    let paymentInstrument: PrimerTestPaymentMethodOptions
+}
+
 struct BlikPaymentMethodTokenizationRequest: TokenizationRequest {
     let paymentInstrument: BlikPaymentMethodOptions
 }

@@ -108,7 +108,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "Hoolah"
         case .adyenInterac:
             return "Interac"
-        case .klarna:
+        case .klarna,
+                .primerTestKlarna:
             return "Klarna"
         case .mollieBankcontact:
             return "Mollie Bancontact"
@@ -124,7 +125,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "Pay NL Ideal"
         case .payNLPayconiq:
             return "Pay NL Payconiq"
-        case .adyenSofort:
+        case .adyenSofort,
+                .primerTestSofort:
             return "Sofort"
         case .adyenTwint:
             return "Twint"
@@ -136,7 +138,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "Vipps"
         case .adyenPayTrail:
             return "Pay Trail"
-        case .payPal:
+        case .payPal,
+                .primerTestPayPal:
             return "PayPal"
         case .xfers:
             return "XFers"
@@ -195,6 +198,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .adyenInterac,
                 .adyenPayTrail,
                 .payPal,
+                .primerTestPayPal,
+                .primerTestSofort,
+                .primerTestKlarna,
                 .xfers:
             return nil
             
@@ -260,7 +266,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return UIImage(named: "interac-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .hoolah:
             return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .klarna:
+        case .klarna,
+                .primerTestKlarna:
             return UIImage(named: "klarna-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .payNLIdeal,
                 .buckarooIdeal,
@@ -273,7 +280,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .payNLPayconiq:
             return UIImage(named: "payconiq-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .buckarooSofort,
-                .adyenSofort:
+                .adyenSofort,
+                .primerTestSofort:
             return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .adyenTrustly:
             return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
@@ -283,7 +291,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return UIImage(named: "vipps-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .paymentCard:
             return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .payPal:
+        case .payPal,
+                .primerTestPayPal:
             return UIImage(named: "paypal-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .xfers:
             return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
@@ -309,7 +318,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .adyenInterac:
             return UIColor(red: 254.0/255, green: 185.0/255, blue: 43.0/255, alpha: 1.0)
         case .adyenSofort,
-                .buckarooSofort:
+                .buckarooSofort,
+                .primerTestSofort:
             return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
         case .adyenMobilePay:
             return UIColor(red: 90.0/255, green: 120.0/255, blue: 255.0/255, alpha: 1.0)
@@ -331,7 +341,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return .white
         case .hoolah:
             return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
-        case .klarna:
+        case .klarna,
+                .primerTestKlarna:
             return UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1.0)
         case .buckarooBancontact,
                 .mollieBankcontact,
@@ -347,7 +358,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return UIColor(red: 255.0/255, green: 71.0/255, blue: 133.0/255, alpha: 1.0)
         case .paymentCard:
             return theme.paymentMethodButton.color(for: .enabled)
-        case .payPal:
+        case .payPal,
+                .primerTestPayPal:
             return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
         case .xfers:
             return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
@@ -382,7 +394,11 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
-                .payPal:
+                .payPal,
+                .primerTestPayPal,
+                .primerTestKlarna,
+                .primerTestSofort,
+                .xfers:
             return nil
         case .apaya,
                 .paymentCard:
@@ -410,11 +426,15 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
+                .klarna,
                 .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
-                .payPal:
+                .payPal,
+                .primerTestPayPal,
+                .primerTestKlarna,
+                .primerTestSofort:
             return 0.0
         case .adyenDotPay,
                 .apaya,
@@ -448,11 +468,16 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .buckarooGiropay,
                 .buckarooSofort,
                 .hoolah,
+                .klarna,
                 .mollieIdeal,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
-                .payPal:
+                .payPal,
+                .primerTestPayPal,
+                .primerTestKlarna,
+                .primerTestSofort,
+                .xfers:
             return nil
         case .apaya,
                 .paymentCard:
@@ -488,15 +513,18 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .adyenMobilePay,
                 .adyenVipps,
                 .adyenInterac,
-                .adyenPayTrail:
+                .adyenPayTrail,
+                .primerTestSofort:
             return .white
         case .adyenIDeal,
                 .adyenTrustly,
-                .klarna:
+                .klarna,
+                .primerTestKlarna:
             return .black
         case .adyenGiropay,
                 .adyenTwint,
-                .payPal:
+                .payPal,
+                .primerTestPayPal:
             return nil
         case .apaya,
                 .paymentCard:
@@ -542,7 +570,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .adyenPayTrail:
             return "paytrail"
         case .adyenSofort,
-                .buckarooSofort:
+                .buckarooSofort,
+                .primerTestSofort:
             return "sofort"
         case .adyenTrustly:
             return "trustly"
@@ -572,13 +601,15 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "google-pay"
         case .hoolah:
             return "hoolah"
-        case .klarna:
+        case .klarna,
+                .primerTestKlarna:
             return "klarna"
         case .payNLPayconiq:
             return "payconiq"
         case .paymentCard:
             return "card"
-        case .payPal:
+        case .payPal,
+                .primerTestPayPal:
             return "paypal"
         case .xfers:
             return "xfers"
