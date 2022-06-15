@@ -5,20 +5,19 @@ protocol TokenizationRequest: Encodable {}
 struct PaymentMethodTokenizationRequest: TokenizationRequest {
     
     let paymentInstrument: PaymentInstrument
-    let tokenType: TokenType
+    let tokenType: TokenType?
     let paymentFlow: PaymentFlow?
 
     init(paymentInstrument: PaymentInstrument, state: AppStateProtocol?) {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         self.paymentInstrument = paymentInstrument
-        self.tokenType = Primer.shared.flow.internalSessionFlow.vaulted ? .multiUse : .singleUse
+        self.tokenType = Primer.shared.flow.internalSessionFlow.vaulted ? .multiUse : nil
         self.paymentFlow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
     }
     
     init(paymentInstrument: PaymentInstrument, paymentFlow: PaymentFlow?, customerId: String?) {
         self.paymentInstrument = paymentInstrument
         self.paymentFlow = (paymentFlow == .vault) ? .vault : nil
-        self.tokenType = (paymentFlow == .vault) ? .multiUse : .singleUse
+        self.tokenType = (paymentFlow == .vault) ? .multiUse : nil
     }
 
 }
