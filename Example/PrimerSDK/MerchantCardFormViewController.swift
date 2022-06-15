@@ -96,7 +96,7 @@ class MerchantCardFormViewController: UIViewController {
 }
 
 extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegate {
-    
+
     func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String) {
         print("🤯🤯🤯 \(#function)")
     }
@@ -145,7 +145,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
         }
     }
     
-    func primerHeadlessUniversalDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         print("🤯🤯🤯 \(#function)\nresumeToken: \(resumeToken)")
         
         Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
@@ -161,19 +161,19 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
         print("🤯🤯🤯 \(#function)\nerror: \(err)")
     }
     
-    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
+    func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("🤯🤯🤯 \(#function)\ndata: \(data)")
     }
     
-    func primerClientSessionWillUpdate() {
+    func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
         print("🤯🤯🤯 \(#function)")
     }
     
-    func primerClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
+    func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
         print("🤯🤯🤯 \(#function)\nclientSession: \(clientSession)")
     }
     
-    func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+    func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         print("🤯🤯🤯 \(#function)\ndata: \(data)")
         decisionHandler(.continuePaymentCreation())
     }
