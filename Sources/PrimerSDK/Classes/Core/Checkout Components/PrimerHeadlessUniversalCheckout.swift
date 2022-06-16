@@ -25,13 +25,8 @@ public class PrimerHeadlessUniversalCheckout {
             PrimerHeadlessUniversalCheckout.current.delegate = delegate
         }
         
-        guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
-            let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            DispatchQueue.main.async {
-                completion(nil, err)
-            }
-            return
+        if PrimerHeadlessUniversalCheckout.current.delegate == nil {
+            print("WARNING: PrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
         }
                         
         if let settings = settings {
@@ -251,7 +246,14 @@ public class PrimerHeadlessUniversalCheckout {
     
     public func showPaymentMethod(_ paymentMethod: PaymentMethodConfigType) {
         DispatchQueue.main.async {
-            
+            let appState: AppStateProtocol = DependencyContainer.resolve()
+            guard let clientToken = appState.clientToken else {
+                print("WARNING: Make sure you have called 'start(withClientToken:settings:delegate:completion:' with a valid client token prior to showing a payment method.")
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
+                return
+            }
             var settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             settings.hasDisabledSuccessScreen = true
             settings.isInitialLoadingHidden = true
@@ -264,6 +266,7 @@ public class PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
                 return
+                
             case .applePay:
                 if settings.merchantIdentifier == nil {
                     let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -279,6 +282,9 @@ public class PrimerHeadlessUniversalCheckout {
                     return
                 }
                 
+            case .klarna:
+                settings.klarnaSessionType = .hostedPaymentPage
+                
             case .payPal:
                 if settings.urlScheme == nil {
                     let err = PrimerError.invalidUrlScheme(urlScheme: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
@@ -286,13 +292,13 @@ public class PrimerHeadlessUniversalCheckout {
                     PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
                     return
                 }
+                
             default:
                 break
             }
             
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationStarted()
-            
-            Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout, on: UIViewController())
+            Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout, on: UIViewController(), with: clientToken)
         }
     }
 }
