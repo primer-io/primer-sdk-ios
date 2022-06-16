@@ -45,8 +45,8 @@ class UniversalCheckout: XCTestCase {
         expectation(for: Expectation.doesNotExist, evaluatedWith: vaultTitle, handler: nil)
         waitForExpectations(timeout: 15, handler: nil)
         
-        let amountText = app.staticTexts["£2.00"]
-        XCTAssert(amountText.exists, "Amount '£2.00' should exist")
+        let amountText = app.staticTexts["£1.00"]
+        XCTAssert(amountText.exists, "Amount '£1.00' should exist")
         
         let savedPaymentMethodTitle = app.staticTexts["SAVED PAYMENT METHOD"]
         let seeAllButton = app.staticTexts["See all"]
@@ -95,7 +95,7 @@ class UniversalCheckout: XCTestCase {
         wait(for: [applePayExists], timeout: 15.0)
         _ = applePay.wait(for: .runningForeground, timeout: 5)
 
-        applePay.buttons["Pay Total, €1.19"].tap()
+        applePay.buttons["Pay Primer Merchant, €1.19"].tap()
     }
 
     func testPayPal() throws {
@@ -224,11 +224,9 @@ class UniversalCheckout: XCTestCase {
         
         let safariWebView = app.otherElements.matching(NSPredicate(format: "identifier CONTAINS 'BrowserView?WebViewProcessID'"))
         
-        let buttonImage = safariWebView.images.matching(NSPredicate(format: "label CONTAINS 'BLIK'")).firstMatch
-        let buttonImageIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: buttonImage, handler: nil)
-        wait(for: [buttonImageIsHittable], timeout: 30)
-        buttonImage.tap()
-
+        let blikCell = app.cells.staticTexts.matching(NSPredicate(format: "label CONTAINS 'BLIK'")).firstMatch
+        blikCell.tap()
+        
         let firstNameTextField = app.otherElements.containing(NSPredicate(format: "label == 'Firstname:'")).firstMatch.textFields.firstMatch
         let firstNameTextFieldIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: firstNameTextField, handler: nil)
         wait(for: [firstNameTextFieldIsHittable], timeout: 30)
@@ -264,10 +262,10 @@ class UniversalCheckout: XCTestCase {
         wait(for: [acceptButtonIsHittable], timeout: 30)
         acceptButton.tap()
         
-        let successLabel = app.staticTexts["result_component_view_message_label"]
-        let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
-        wait(for: [successLabelExists], timeout: 15)
-        
+        let successImage = app.images["check-circle"]
+        let successImageExists = expectation(for: Expectation.exists, evaluatedWith: successImage, handler: nil)
+        wait(for: [successImageExists], timeout: 15)
+
         let scrollView = app.scrollViews["primer_container_scroll_view"]
         scrollView.swipeDown()
         

@@ -40,7 +40,13 @@ class MockClientTokenService: ClientTokenServiceProtocol {
     
     func fetchClientToken() -> Promise<Void> {
         return Promise { seal in
-            seal.fulfill()
+            fetchClientToken { error in
+                guard error == nil else {
+                    seal.reject(error!)
+                    return
+                }
+                seal.fulfill()
+            }
         }
     }
     

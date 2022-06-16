@@ -28,7 +28,7 @@ class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     var selectedPaymentMethodToken: String? = "id"
     
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
-        if ClientTokenService.decodedClientToken.exists {
+        if MockClientTokenService.decodedClientToken.exists {
             let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
             paymentMethodConfigService.fetchConfig({ err in
                 if let err = err {
@@ -39,7 +39,10 @@ class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
                 }
             })
         } else {
-            XCTAssert(true)
+            let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
+            if clientTokenService is MockClientTokenService {
+                (clientTokenService as! MockClientTokenService).fetchClientToken()
+            }
         }
     }
     

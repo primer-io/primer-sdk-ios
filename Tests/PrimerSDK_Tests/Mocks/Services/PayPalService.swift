@@ -21,7 +21,7 @@ class MockPayPalService: PayPalServiceProtocol {
 
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         startBillingAgreementSessionCalled = true
-        completion(.success(""))
+        completion(.success("https://primer.io"))
     }
 
     var startOrderSessionCalled = false
