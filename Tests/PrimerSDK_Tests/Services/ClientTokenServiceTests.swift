@@ -72,7 +72,7 @@ class ClientTokenServiceTests: XCTestCase {
 
 extension ClientTokenServiceTests {
     
-    static func storeClientToken(_ clientToken: String, on state: AppState, completion: @escaping (Error?) -> Void) {
+    static func storeClientToken(_ clientToken: String, on state: AppStateProtocol, completion: @escaping (Error?) -> Void) {
                 
         // 1. Validate the token internally
         do {
