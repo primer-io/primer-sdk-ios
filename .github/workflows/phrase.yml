@@ -1,0 +1,17 @@
+name: Translate
+
+on: pull_request
+
+jobs:
+  upload-dictionary:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: cURL Request to Phrase API
+      run: |
+        curl -i "https://api.phrase.com/v2/projects/$PROJECT_ID/uploads" -H "Authorization: token $ACCESS_KEY" -F file=@$GITHUB_WORKSPACE/Sources/PrimerSDK/Resources/Localizable/en.lproj/Localizable.strings -F file_format=strings -F locale_id=$LOCALE_ID
+      env:
+        PROJECT_ID: ${{ secrets.PHRASE_PROJECT_ID }}
+        ACCESS_KEY: ${{ secrets.PHRASE_ACCESS_KEY }}
+        LOCALE_ID: ${{ secrets.PHRASE_LOCALE_ID }}
