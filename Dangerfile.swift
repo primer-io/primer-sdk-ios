@@ -1,9 +1,11 @@
 import Danger
+import SwiftLint
 //import DangerSwiftCoverage
 
 let danger = Danger()
 let pr = danger.github.pullRequest
 let editedFiles = danger.git.modifiedFiles + danger.git.createdFiles
+let isReleasePr = pr.head.ref.hasPrefix("release")
 
 // You can use these functions to send feedback:
 // message("Highlight something in the table")
@@ -26,6 +28,14 @@ if swiftFilesWithCopyright.count > 0 {
     fail("In Danger we don't include copyright headers, found them in: \(files)")
 }
 
+// MARK: - Check UIKit import
+
+let swiftFilesContainsUIKitImport = editedFiles.filter {
+    $0.fileType == .swift &&
+    danger.utils.readFile($0).contains("#if canImport(UIKit)") &&
+    $0.name != "Dangerfile.swift"
+}
+
 // MARK: - PR Length
 
 var bigPRThreshold = 600;
@@ -39,13 +49,13 @@ if (additions + deletions > bigPRThreshold) {
 
 // The PR title needs to start with DEX-
 
-if pr.title.hasPrefix("DEX-") == false {
-    warn("Please add ticket number prefix to the PR")
+if !isReleasePr && pr.title.hasPrefix("DEX-") == false {
+    warn("Please add ticket number prefix (DEX-{TICKET-NUMBER} to the PR")
 }
 
 // MARK: - PR WIP
 
-if pr.title.contains("WIP") {
+if pr.title.contains("WIP") || pr.draft == true {
     warn("PR is classed as Work in Progress")
 }
 
@@ -63,14 +73,6 @@ if pr.assignees?.count == 0 {
 
 let files = editedFiles.filter { $0.fileType == .swift }
 SwiftLint.lint(.files(files), inline: true, swiftlintPath: "Sources/.swiftlint.yml")
-
-// MARK: - Check UIKit import
-
-let swiftFilesContainsUIKitImport = editedFiles.filter {
-    $0.fileType == .swift &&
-    danger.utils.readFile($0).contains("#if canImport(UIKit)") &&
-    $0.name != "Dangerfile.swift"
-}
 
 if swiftFilesContainsUIKitImport.count > 0 {
     let files = swiftFilesContainsUIKitImport.joined(separator: ", ")
