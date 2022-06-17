@@ -35,6 +35,11 @@ let swiftFilesContainsUIKitImport = editedFiles.filter {
     $0.name != "Dangerfile.swift"
 }
 
+if swiftFilesContainsUIKitImport.count > 0 {
+    let files = swiftFilesContainsUIKitImport.joined(separator: ", ")
+    fail("Please check your 'canImport(UIKit)` in the following files: \(files)")
+}
+
 // MARK: - PR Length
 
 var bigPRThreshold = 600;
@@ -73,10 +78,6 @@ if pr.assignees?.count == 0 {
 //let files = editedFiles.filter { $0.fileType == .swift }
 //SwiftLint.lint(.files(files), inline: true, swiftlintPath: "Sources/.swiftlint.yml")
 //
-//if swiftFilesContainsUIKitImport.count > 0 {
-//    let files = swiftFilesContainsUIKitImport.joined(separator: ", ")
-//    fail("Please check your 'canImport(UIKit)` in the following files: \(files)")
-//}
 
 // MARK: Check Coverage
 
