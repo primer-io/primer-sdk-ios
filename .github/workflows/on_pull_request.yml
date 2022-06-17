@@ -63,9 +63,7 @@ jobs:
 
       - name: Execute Danger checks
         run: |
-        # Install danger-swift, and a bundled danger-js locally
           brew install danger/tap/danger-swift
-        # Run danger
           danger-swift ci
         env:
           GITHUB_TOKEN: ${{ github.token }}
