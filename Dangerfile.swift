@@ -40,6 +40,19 @@ if swiftFilesContainsUIKitImport.count > 0 {
     fail("Please check your 'canImport(UIKit)` in the following files: \(files)")
 }
 
+// MARK: - PR Contains Tests
+
+// Raw check based on created / updated files containing `import XCTest`
+
+let swiftTestFilesContainChanges = editedFiles.filter {
+    $0.fileType == .swift &&
+    danger.utils.readFile($0).contains("import XCTest")
+}
+
+if swiftTestFilesContainChanges.count == 0 {
+    warn("This PR doesn't seem to contain any updated Unit Test 🤔. Please consider double checking it.🙏")
+}
+
 // MARK: - PR Length
 
 var bigPRThreshold = 600;
