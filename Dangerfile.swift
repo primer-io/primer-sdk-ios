@@ -70,13 +70,13 @@ if pr.assignees?.count == 0 {
 
 // Use a different path for SwiftLint
 
-let files = editedFiles.filter { $0.fileType == .swift }
-SwiftLint.lint(.files(files), inline: true, swiftlintPath: "Sources/.swiftlint.yml")
-
-if swiftFilesContainsUIKitImport.count > 0 {
-    let files = swiftFilesContainsUIKitImport.joined(separator: ", ")
-    fail("Please check your 'canImport(UIKit)` in the following files: \(files)")
-}
+//let files = editedFiles.filter { $0.fileType == .swift }
+//SwiftLint.lint(.files(files), inline: true, swiftlintPath: "Sources/.swiftlint.yml")
+//
+//if swiftFilesContainsUIKitImport.count > 0 {
+//    let files = swiftFilesContainsUIKitImport.joined(separator: ", ")
+//    fail("Please check your 'canImport(UIKit)` in the following files: \(files)")
+//}
 
 // MARK: Check Coverage
 
