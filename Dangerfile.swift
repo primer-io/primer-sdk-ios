@@ -1,5 +1,4 @@
 import Danger
-import SwiftLint
 //import DangerSwiftCoverage
 
 let danger = Danger()
