@@ -81,7 +81,7 @@ if pr.title.contains("WIP") || pr.draft == true {
 // Always ensure we assign someone
 
 if pr.assignees?.count == 0 {
-    warn("Please assign someone asing from CODEOWNERS (checkout-pci-reviewers) to review this PR.")
+    warn("Please assign someone aside from CODEOWNERS (@checkout-pci-reviewers) to review this PR.")
 }
 
 // MARK: - SwiftLint
