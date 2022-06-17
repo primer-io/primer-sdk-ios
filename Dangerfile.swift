@@ -49,7 +49,7 @@ if (additions + deletions > bigPRThreshold) {
 // The PR title needs to start with DEX-
 
 if !isReleasePr && pr.title.hasPrefix("DEX-") == false {
-    warn("Please add ticket number prefix (DEX-{TICKET-NUMBER} to the PR")
+    warn("Please add ticket number prefix 'DEX-{TICKET-NUMBER}' to the PR")
 }
 
 // MARK: - PR WIP
@@ -63,7 +63,7 @@ if pr.title.contains("WIP") || pr.draft == true {
 // Always ensure we assign someone
 
 if pr.assignees?.count == 0 {
-    warn("Please assign someone to review this PR.")
+    warn("Please assign someone asing from CODEOWNERS (checkout-pci-reviewers) to review this PR.")
 }
 
 // MARK: - SwiftLint
