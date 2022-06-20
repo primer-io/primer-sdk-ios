@@ -24,14 +24,9 @@ public class PrimerHeadlessUniversalCheckout {
             PrimerHeadlessUniversalCheckout.current.delegate = delegate
         }
         
-        guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
-            let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            DispatchQueue.main.async {
-                completion(nil, err)
-            }
-            return
-        }
+        if PrimerHeadlessUniversalCheckout.current.delegate == nil {
+                    print("WARNING: PrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
+                }
                         
         if let settings = settings {
             DependencyContainer.register(settings as PrimerSettingsProtocol)
@@ -243,15 +238,17 @@ public class PrimerHeadlessUniversalCheckout {
         return PrimerAsset.getAsset(for: cardNetwork, assetType: assetType)
     }
     
-    public func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType) {
+    public func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType, completion: ((_ viewController: UIViewController) -> Void)? = nil) {
         DispatchQueue.main.async {
-            guard let clientToken = self.clientToken else {
-                let err = PrimerError.invalidClientToken(userInfo: nil, diagnosticsId: nil)
+            let appState: AppStateProtocol = DependencyContainer.resolve()
+            guard let clientToken = appState.clientToken else {
+                print("WARNING: Make sure you have called 'start(withClientToken:settings:delegate:completion:' with a valid client token prior to showing a payment method.")
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail(withError: err)
                 return
             }
-
+            
             PrimerSettings.current.uiOptions.isInitScreenEnabled = false
             PrimerSettings.current.uiOptions.isSuccessScreenEnabled = false
             PrimerSettings.current.uiOptions.isErrorScreenEnabled = false
