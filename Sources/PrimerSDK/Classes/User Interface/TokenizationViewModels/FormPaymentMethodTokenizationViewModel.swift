@@ -90,6 +90,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 buttonTitle = Strings.PaymentButton.pay + " " + (viewModel.amountStringed ?? "")
             case .vault:
                 buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle
+            case .none:
+                 assert(true, "Intent should have been set")
             }
 
             btn.setTitle(buttonTitle, for: .normal)

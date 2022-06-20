@@ -148,8 +148,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         case .checkout:
             let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
             buttonTitle = Strings.PaymentButton.pay + " " + (viewModel.amountStringed ?? "")
-        } else if flow == .vault {
+        case .vault:
             buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle
+        case .none:
+             assert(true, "Intent should have been set")
         }
         
         let submitButton = PrimerButton()

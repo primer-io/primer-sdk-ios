@@ -329,7 +329,7 @@ extension Strings {
             comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
         
         static var mainTitleText: String {
-            if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
+            if Primer.shared.intent == .vault {
                 return availablePaymentMethodsTitle
             } else {
                 return savedPaymentMethodsTitle
