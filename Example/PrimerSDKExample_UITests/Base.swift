@@ -94,41 +94,35 @@ class Base: XCTestCase {
     
     static var paymentMethods: [Payment] = [
         Payment(
-            alias: "PAYMENT_CARD_WITH_PROCESSOR_3DS_SUCCESS",
-            id: "PAYMENT_CARD",
-            environment: .staging,
-            currency: "GBP",
-            countryCode: "GB",
-            amount: "10011",
+            id: "ADYEN_DOTPAY",
+            environment: .sandbox,
+            currency: "PLN",
+            countryCode: "PL",
+            amount: "288",
             expectations: Payment.Expectations(
-                amount: "£100.11",
-                surcharge: "Additional fee may apply",
+                amount: "zł2.88",
+                surcharge: nil,
                 webviewImage: nil,
                 webviewTexts: nil,
-                buttonTexts: ["Pay £100.11"],
+                buttonTexts: nil,
                 resultScreenTexts: [
-                    "status": "SETTLED",
-                    "amount": "GBP 100.11"
+                    "status": "SUCCESS"
                 ]
             )
         ),
         Payment(
-            alias: "PAYMENT_CARD_WITH_PROCESSOR_3DS_FAIL",
-            id: "PAYMENT_CARD",
-            environment: .staging,
-            currency: "GBP",
-            countryCode: "GB",
-            amount: "10011",
+            id: "ADYEN_BLIK",
+            environment: .sandbox,
+            currency: "PLN",
+            countryCode: "PL",
+            amount: "288",
             expectations: Payment.Expectations(
-                amount: "£100.11",
-                surcharge: "Additional fee may apply",
-                webviewImage: nil,
+                amount: "zł2.88",
+                surcharge: nil,
+                webviewImage: "blik",
                 webviewTexts: nil,
-                buttonTexts: ["Pay £100.11"],
-                resultScreenTexts: [
-                    "status": "DECLINED",
-                    "amount": "GBP 100.11"
-                ]
+                buttonTexts: nil,
+                resultScreenTexts: nil
             )
         ),
         Payment(
@@ -144,9 +138,7 @@ class Base: XCTestCase {
                 webviewTexts: nil,
                 buttonTexts: nil,
                 resultScreenTexts: [
-                    "status": "SETTLED",
-                    "actions": "USE_PRIMER_SDK",
-                    "amount": "EUR 1.79"
+                    "status": "SUCCESS"
                 ]
             )
         ),
@@ -271,6 +263,56 @@ class Base: XCTestCase {
                 webviewImage: nil,
                 webviewTexts: nil,
                 buttonTexts: ["Pay €105.00"],
+                resultScreenTexts: nil
+            )
+        ),
+        Payment(
+            alias: "PRIMER_TEST_KLARNA_AUTHORIZED",
+            id: "PRIMER_TEST_KLARNA",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "FR",
+            amount: "1050",
+            expectations: Payment.Expectations(
+                amount: "€10.50",
+                surcharge: nil,
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay €10.50"],
+                resultScreenTexts: [
+                    "status": "SUCCESS"
+                ]
+            )
+        ),
+        Payment(
+            alias: "PRIMER_TEST_PAYPAL_DECLINED",
+            id: "PRIMER_TEST_PAYPAL",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "DE",
+            amount: "1050",
+            expectations: Payment.Expectations(
+                amount: "€10.50",
+                surcharge: nil,
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay €10.50"],
+                resultScreenTexts: nil
+            )
+        ),
+        Payment(
+            alias: "PRIMER_TEST_SOFORT_FAILED",
+            id: "PRIMER_TEST_SOFORT",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "IT",
+            amount: "1050",
+            expectations: Payment.Expectations(
+                amount: "€10.50",
+                surcharge: nil,
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay €10.50"],
                 resultScreenTexts: nil
             )
         )
@@ -403,10 +445,16 @@ class Base: XCTestCase {
         wait(for: [expectation], timeout: 3.0)
     }
     
-    func successMessageExists() throws {
-        let successLabel = app.staticTexts["Success!"]
-        let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
-        wait(for: [successLabelExists], timeout: 30)
+    func failViewExists() throws {
+        let failImage = app.images["x-circle"]
+        let failImageExists = expectation(for: Expectation.exists, evaluatedWith: failImage, handler: nil)
+        wait(for: [failImageExists], timeout: 30)
+    }
+    
+    func successViewExists() throws {
+        let successImage = app.images["check-circle"]
+        let successImageExists = expectation(for: Expectation.exists, evaluatedWith: successImage, handler: nil)
+        wait(for: [successImageExists], timeout: 30)
     }
     
     func resultScreenExpectations(for payment: Payment) throws {
@@ -479,14 +527,14 @@ class Base: XCTestCase {
             }
         }
         
-        let adyenGiropayButton = scrollView.otherElements.buttons[payment.id]
-        adyenGiropayButton.tap()
+        let paymentButton = scrollView.otherElements.buttons[payment.id]
+        paymentButton.tap()
         
         let webViews = app.webViews
         if let webViewImageExpectation = payment.expectations?.webviewImage {
-            let webViewGiroPayImage = webViews.images[webViewImageExpectation]
-            let webViewGiroPayImageExists = expectation(for: Expectation.exists, evaluatedWith: webViewGiroPayImage, handler: nil)
-            wait(for: [webViewGiroPayImageExists], timeout: 30)
+            let webViewPaymentImage = webViews.images[webViewImageExpectation]
+            let webViewPaymentImageExists = expectation(for: Expectation.exists, evaluatedWith: webViewPaymentImage, handler: nil)
+            wait(for: [webViewPaymentImageExists], timeout: 30)
         }
         
         if let webviewTexts = payment.expectations?.webviewTexts {

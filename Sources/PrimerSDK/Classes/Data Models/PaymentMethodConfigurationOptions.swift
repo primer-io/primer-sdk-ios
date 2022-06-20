@@ -29,6 +29,49 @@ struct CardOptions: PaymentMethodOptions {
     let processorConfigId: String?
 }
 
+struct PrimerTestPaymentMethodOptions: PaymentMethodOptions {
+    
+    let paymentMethodType: PrimerPaymentMethodType
+    let paymentMethodConfigId: String
+    let type: String = "OFF_SESSION_PAYMENT"
+    let sessionInfo: SessionInfo?
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(type, forKey: .type)
+        try container.encode(paymentMethodType.rawValue, forKey: .paymentMethodType)
+        try container.encode(paymentMethodConfigId, forKey: .paymentMethodConfigId)
+        try? container.encode(sessionInfo, forKey: .sessionInfo)
+    }
+    
+    struct SessionInfo: Codable {
+        var locale: String = PrimerSettings.current.localeData.localeCode
+        var platform: String = "IOS"
+        var flowDecision: FlowDecision
+    }
+    
+    enum FlowDecision: String, Codable, CaseIterable {
+        case success = "SUCCESS"
+        case decline = "DECLINE"
+        case fail    = "FAIL"
+    }
+}
+
+extension PrimerTestPaymentMethodOptions.FlowDecision {
+    
+    var displayFlowTitle: String {
+        switch self {
+        case .success:
+            return Strings.PrimerTestFlowDecision.successTitle
+        case .decline:
+            return Strings.PrimerTestFlowDecision.declineTitle
+        case .fail:
+            return Strings.PrimerTestFlowDecision.failTitle
+        }
+    }
+    
+}
+
 struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     
     let paymentMethodType: PrimerPaymentMethodType
