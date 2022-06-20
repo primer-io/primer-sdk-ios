@@ -127,7 +127,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            if Primer.shared.flow.internalSessionFlow.vaulted {
+            if Primer.shared.intent == .vault {
                 let err = PrimerError.unsupportedIntent(intent: .vault, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)

@@ -113,8 +113,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
             let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
             
-            switch Primer.shared.flow.internalSessionFlow.uxMode {
-            case .CHECKOUT:
+            switch Primer.shared.intent {
+            case .checkout:
                 paypalService.startOrderSession { result in
                     switch result {
                     case .success(let res):
@@ -132,7 +132,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         seal.reject(err)
                     }
                 }
-            case .VAULT:
+            case .vault:
                 paypalService.startBillingAgreementSession { result in
                     switch result {
                     case .success(let urlStr):
@@ -149,6 +149,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         seal.reject(err)
                     }
                 }
+            case .none:
+                assert(true, "Intent should already be set")
             }
         }
     }
@@ -223,7 +225,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private func createPaypalPaymentInstrument() -> Promise<PaymentInstrument> {
         return Promise { seal in
-            if Primer.shared.flow.internalSessionFlow.vaulted {
+            if Primer.shared.intent == .vault {
                 firstly {
                     self.generateBillingAgreementConfirmation()
                 }
@@ -283,8 +285,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func generatePaypalPaymentInstrument(externalPayerInfo: ExternalPayerInfo?, completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
-        switch Primer.shared.flow.internalSessionFlow.uxMode {
-        case .CHECKOUT:
+        switch Primer.shared.intent {
+        case .checkout:
             guard let orderId = orderId else {
                 let err = PrimerError.invalidValue(key: "orderId", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -302,7 +304,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             let paymentInstrument = PaymentInstrument(paypalOrderId: orderId, externalPayerInfo: externalPayerInfo)
             completion(.success(paymentInstrument))
             
-        case .VAULT:
+        case .vault:
             guard let confirmedBillingAgreement = self.confirmBillingAgreementResponse else {
                 let err = PrimerError.invalidValue(key: "confirmedBillingAgreement", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -316,6 +318,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             )
             
             completion(.success(paymentInstrument))
+            
+        case .none:
+            assert(true, "Intent should have been set.")
         }
     }
     

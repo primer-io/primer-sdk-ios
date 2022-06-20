@@ -201,7 +201,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     required init(config: PaymentMethodConfig) {
-        self.flow = (Primer.shared.flow?.internalSessionFlow.vaulted ?? false) ? .vault : .checkout
+        self.flow = Primer.shared.intent == .vault ? .vault : .checkout
         super.init(config: config)
         
         self.cardComponentsManager = CardComponentsManager(
@@ -258,7 +258,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             throw err
         }
         
-        if !Primer.shared.flow.internalSessionFlow.vaulted {
+        if Primer.shared.intent == .checkout {
             if AppState.current.amount == nil {
                 let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -512,7 +512,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     func configurePayButton(amount: Int) {
         DispatchQueue.main.async {
-            guard !Primer.shared.flow.internalSessionFlow.vaulted, let currency = AppState.current.currency else { return }
+            guard Primer.shared.intent == .checkout,
+                  let currency = AppState.current.currency else {
+                return
+            }
+            
             var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
                                           tableName: nil,
                                           bundle: Bundle.primerResources,

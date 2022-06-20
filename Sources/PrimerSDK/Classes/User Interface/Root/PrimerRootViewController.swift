@@ -11,6 +11,7 @@ import UIKit
 
 internal class PrimerRootViewController: PrimerViewController {
     
+    private var paymentMethodType: PrimerPaymentMethodType?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     var backgroundView = PrimerView()
     var childView: PrimerView = PrimerView()
@@ -21,7 +22,6 @@ internal class PrimerRootViewController: PrimerViewController {
     private var topPadding: CGFloat = 0.0
     private var bottomPadding: CGFloat = 0.0
     private let presentationDuration: TimeInterval = 0.3
-    private(set) var flow: PrimerSessionFlow
     
     private lazy var availableScreenHeight: CGFloat = {
         return UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
@@ -33,8 +33,8 @@ internal class PrimerRootViewController: PrimerViewController {
         NotificationCenter.default.removeObserver(self)
     }
     
-    init(flow: PrimerSessionFlow) {
-        self.flow = flow
+    init(paymentMethodType: PrimerPaymentMethodType?) {
+        self.paymentMethodType = paymentMethodType
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -140,7 +140,7 @@ internal class PrimerRootViewController: PrimerViewController {
                 
                 let state: AppStateProtocol = DependencyContainer.resolve()
                 
-                if Primer.shared.flow.internalSessionFlow.vaulted, state.apiConfiguration?.clientSession?.customer?.id == nil {
+                if Primer.shared.intent == .vault, state.apiConfiguration?.clientSession?.customer?.id == nil {
                     let err = PrimerError.invalidValue(key: "customer.id", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     Primer.shared.primerRootVC?.handleErrorBasedOnSDKSettings(err)
@@ -148,66 +148,22 @@ internal class PrimerRootViewController: PrimerViewController {
                     
                 }
                 
-                switch self?.flow {
-                case .`default`:
-                    self?.blurBackground()
+                switch Primer.shared.intent {
+                case .checkout:
                     let pucvc = PrimerUniversalCheckoutViewController()
                     self?.show(viewController: pucvc)
-                    
-                case .defaultWithVault:
-                    self?.blurBackground()
+                case .vault:
                     let pvmvc = PrimerVaultManagerViewController()
                     self?.show(viewController: pvmvc)
-                    
-                case .completeDirectCheckout:
-                    self?.blurBackground()
-                    self?.presentPaymentMethod(type: .paymentCard)
-                    
-                case .addPayPalToVault,
-                        .checkoutWithPayPal:
-                    if #available(iOS 11.0, *) {
-                        self?.presentPaymentMethod(type: .payPal)
-                    } else {
-                        print("WARNING: PayPal is not available prior to iOS 11.")
-                    }
-                    
-                case .addCardToVault:
-                    self?.blurBackground()
-                    self?.presentPaymentMethod(type: .paymentCard)
-                    
-                case .addDirectDebitToVault:
-                    break
-                    
-                case .addKlarnaToVault:
-                    self?.presentPaymentMethod(type: .klarna)
-                    
-                case .addDirectDebit:
-                    break
-                    
-                case .checkoutWithKlarna:
-                    if #available(iOS 11.0, *) {
-                        self?.presentPaymentMethod(type: .klarna)
-                    } else {
-                        print("WARNING: Klarna is not available prior to iOS 11.")
-                    }
-                    
-                case .checkoutWithApplePay:
-                    if #available(iOS 11.0, *) {
-                        self?.presentPaymentMethod(type: .applePay)
-                    }
-                    
-                case .addApayaToVault:
-                    self?.presentPaymentMethod(type: .apaya)
-                                        
-                case .checkoutWithAsyncPaymentMethod(let paymentMethodType):
-                    self?.presentPaymentMethod(type: paymentMethodType)
-                    
-                case .checkoutWithAdyenBank:
-                    self?.presentPaymentMethod(type: .adyenDotPay)
-                    
                 case .none:
-                    break
-                    
+                    guard let paymentMethodType = self?.paymentMethodType else {
+                        let err = PrimerError.invalidValue(key: "paymentMethodType", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a payment method type"], diagnosticsId: nil)
+                        ErrorHandler.handle(error: err)
+                        Primer.shared.primerRootVC?.handleErrorBasedOnSDKSettings(err)
+                        return
+                    }
+
+                    self?.presentPaymentMethod(type: paymentMethodType)
                 }
             }
         })
@@ -446,7 +402,7 @@ internal class PrimerRootViewController: PrimerViewController {
     
     internal func popToMainScreen(completion: (() -> Void)?) {
         var vcToPop: PrimerContainerViewController?
-        if Primer.shared.flow.internalSessionFlow.vaulted {
+        if Primer.shared.intent == .vault {
             for vc in nc.viewControllers {
                 if let cvc = vc as? PrimerContainerViewController, cvc.childViewController is PrimerVaultManagerViewController {
                     vcToPop = cvc

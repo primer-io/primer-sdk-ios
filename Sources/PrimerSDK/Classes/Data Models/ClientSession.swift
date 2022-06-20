@@ -336,7 +336,7 @@ extension ClientSessionAPIResponse.Action {
     static func unselectPaymentMethodIfNeeded() -> Promise<Void> {
         return Promise { seal in
             
-            guard !Primer.shared.flow.internalSessionFlow.vaulted else {
+            guard Primer.shared.intent == .checkout else {
                 seal.fulfill()
                 return
             }
@@ -357,7 +357,7 @@ extension ClientSessionAPIResponse.Action {
     static func selectPaymentMethodWithParametersIfNeeded(_ parameters: [String: Any]) -> Promise<Void> {
         return Promise { seal in
             
-            guard !Primer.shared.flow.internalSessionFlow.vaulted else {
+            guard Primer.shared.intent == .checkout else {
                 seal.fulfill()
                 return
             }

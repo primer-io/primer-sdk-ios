@@ -108,7 +108,7 @@ struct VaultCheckoutViewContent {
 
 struct VaultPaymentMethodViewContent {
     var mainTitleText: String {
-        if case .VAULT = Primer.shared.flow.internalSessionFlow.uxMode {
+        if Primer.shared.intent == .vault {
             return NSLocalizedString("primer-vault-payment-method-available-payment-methods",
                                                              tableName: nil,
                                                              bundle: Bundle.primerResources,

@@ -41,9 +41,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
         
-        let klarnaSessionType: KlarnaSessionType = Primer.shared.flow.internalSessionFlow.vaulted ? .recurringPayment : .hostedPaymentPage
+        let klarnaSessionType: KlarnaSessionType = Primer.shared.intent == .vault ? .recurringPayment : .hostedPaymentPage
         
-        if Primer.shared.flow == .checkoutWithKlarna && AppState.current.amount == nil  {
+        if Primer.shared.intent == .checkout && AppState.current.amount == nil  {
             let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
@@ -112,7 +112,12 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
             .then { authorizationToken -> Promise<KlarnaCustomerTokenAPIResponse> in
                 self.authorizationToken = authorizationToken
-                return self.createKlarnaCustomerToken(authorizationToken: authorizationToken)
+                
+                if Primer.shared.intent == .vault {
+                    return self.createKlarnaCustomerToken(authorizationToken: authorizationToken)
+                } else {
+                    return self.finalizePaymentSession()
+                }
             }
             .then { res -> Promise<PaymentMethodToken> in
                 DispatchQueue.main.async {
@@ -126,12 +131,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 
                 var instrument: PaymentInstrument
                 var request: PaymentMethodTokenizationRequest
-                
-                if Primer.shared.flow.internalSessionFlow.vaulted {
-                    instrument = PaymentInstrument(
-                        klarnaAuthorizationToken: self.authorizationToken!,
-                        sessionData: res.sessionData)
-                    
+                if Primer.shared.intent == .vault {
+                    instrument = PaymentInstrument(klarnaCustomerToken: res.customerTokenId, sessionData: res.sessionData)
                     request = PaymentMethodTokenizationRequest(
                         paymentInstrument: instrument,
                         paymentFlow: .vault)
@@ -187,10 +188,10 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return
         }
         
-        let klarnaSessionType: KlarnaSessionType = (Primer.shared.flow.internalSessionFlow.vaulted) ? .recurringPayment : .hostedPaymentPage
+        let klarnaSessionType: KlarnaSessionType = Primer.shared.intent == .vault ? .recurringPayment : .hostedPaymentPage
 
         var amount = AppState.current.amount
-        if amount == nil && Primer.shared.flow == .checkoutWithKlarna {
+        if amount == nil && Primer.shared.intent == .checkout {
             let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
