@@ -115,7 +115,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     required init(config: PaymentMethodConfig) {
         self.flow = .checkout
-        if let flow = Primer.shared.flow, flow.internalSessionFlow.vaulted {
+        if Primer.shared.intent == .vault {
             self.flow = .vault
         }
         super.init(config: config)
@@ -175,7 +175,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             throw err
         }
         
-        if !Primer.shared.flow.internalSessionFlow.vaulted {
+        if Primer.shared.intent == .checkout {
             if AppState.current.amount == nil {
                 let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)

@@ -266,7 +266,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     klarnaCustomerToken: nil,
                     sessionData: nil)
                 
-                let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout)
+                let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: Primer.shared.intent == .vault ? .vault : .checkout)
                 
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                 apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest) { result in
@@ -284,7 +284,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         ///     - is3DSOnVaultingEnabled has to be enabled by the developer
                         ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
                         if paymentMethodToken.paymentInstrumentType == .paymentCard,
-                           Primer.shared.flow.internalSessionFlow.vaulted,
+                           Primer.shared.intent == .vault,
                            PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.is3DSOnVaultingEnabled,
                            paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
                            isThreeDSEnabled {

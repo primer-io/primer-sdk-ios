@@ -20,17 +20,8 @@ internal class PresentationController: UIPresentationController {
     override func presentationTransitionWillBegin() {
         self.blurEffectView.alpha = 0
         self.containerView?.addSubview(blurEffectView)
-        self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (_) in            
-            switch Primer.shared.flow.internalSessionFlow {
-            case .vaultKlarna,
-                 .vaultPayPal,
-                 .checkoutWithKlarna,
-                 .vaultApaya:
-                self.blurEffectView.alpha = PrimerSettings.current.uiOptions.isInitScreenEnabled ? 0.7 : 0.0
-            default:
-                self.blurEffectView.alpha = 0.7
-            }
-            
+        self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (_) in
+            self.blurEffectView.alpha = PrimerSettings.current.uiOptions.isInitScreenEnabled ? 0.7 : 0.0
         }, completion: { (_) in })
     }
 

@@ -10,8 +10,8 @@ struct PaymentMethodTokenizationRequest: TokenizationRequest {
 
     init(paymentInstrument: PaymentInstrument, state: AppStateProtocol?) {
         self.paymentInstrument = paymentInstrument
-        self.tokenType = Primer.shared.flow.internalSessionFlow.vaulted ? .multiUse : nil
-        self.paymentFlow = Primer.shared.flow.internalSessionFlow.vaulted ? .vault : nil
+        self.tokenType = Primer.shared.intent == .vault ? .multiUse : nil
+        self.paymentFlow = Primer.shared.intent == .vault ? .vault : nil
     }
     
     init(paymentInstrument: PaymentInstrument, paymentFlow: PaymentFlow?) {

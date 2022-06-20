@@ -255,26 +255,20 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
                 .opennode,
                 .twoCtwoP,
                 .xfers:
-            guard let flow = Primer.shared.flow else { return false }
-            return !flow.internalSessionFlow.vaulted
+            return Primer.shared.intent == .checkout
             
         case .apaya:
-            guard let flow = Primer.shared.flow else { return false }
-            return flow.internalSessionFlow.vaulted
+            return Primer.shared.intent == .vault
             
         case .goCardlessMandate,
-                .googlePay:
+                .googlePay,
+                .other:
             return false
             
         case .klarna,
-				.paymentCard,
-                .payPal,
-                .primerTestPayPal,
-                .primerTestKlarna:
+                .paymentCard,
+                .payPal:
             return true
-        
-        case .other:
-            return false
         }
     }
     // swiftlint:enable cyclomatic_complexity
