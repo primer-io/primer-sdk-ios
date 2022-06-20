@@ -18,7 +18,7 @@ public class PrimerHeadlessUniversalCheckout {
     fileprivate init() {}
     
     public func start(withClientToken clientToken: String, settings: PrimerSettings? = nil, delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil, completion: @escaping (_ paymentMethodTypes: [PrimerPaymentMethodType]?, _ err: Error?) -> Void) {
-        Primer.shared.flow = .default
+        Primer.shared.intent = .checkout
         
         if delegate != nil {
             PrimerHeadlessUniversalCheckout.current.delegate = delegate
