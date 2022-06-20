@@ -18,6 +18,7 @@ class PaymentMethodConfig: Codable {
     var surcharge: Int?
     var hasUnknownSurcharge: Bool = false
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
+        
         let asyncPaymentMethodTypes: [PrimerPaymentMethodType] = [
             .adyenMobilePay,
             .adyenVipps,
@@ -45,6 +46,12 @@ class PaymentMethodConfig: Codable {
             .adyenPayshop
         ]
         
+        let testPaymentMethodTypes: [PrimerPaymentMethodType] = [
+            .primerTestPayPal,
+            .primerTestKlarna,
+            .primerTestSofort
+        ]
+        
         if type == .paymentCard {
             return CardFormPaymentMethodTokenizationViewModel(config: self)
         } else if type == .applePay {
@@ -61,6 +68,8 @@ class PaymentMethodConfig: Codable {
             return ApayaTokenizationViewModel(config: self)
         } else if asyncPaymentMethodTypes.contains(type) {
             return ExternalPaymentMethodTokenizationViewModel(config: self)
+        } else if testPaymentMethodTypes.contains(type) {
+            return PrimerTestPaymentMethodTokenizationViewModel(config: self)
         } else if type == .adyenDotPay || type == .adyenIDeal {
             return BankSelectorTokenizationViewModel(config: self)
         } else if type == .adyenBlik {

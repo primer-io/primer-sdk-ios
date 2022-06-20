@@ -48,10 +48,9 @@ class MerchantCheckoutViewController: UIViewController {
         title = "Primer [\(environment.rawValue)]"
         
         let settings = PrimerSettings(
-            paymentHandling: paymentHandling,
+            paymentHandling: paymentHandling == .auto ? .auto : .manual,
             paymentMethodOptions: PrimerPaymentMethodOptions(
-                urlScheme: "merchant://primer.io",
-                applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.checkout.team", merchantName: "Primer Merchant")
+                applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team", merchantName: "Primer Merchant")
             )
         )
         Primer.shared.configure(settings: settings, delegate: self)
