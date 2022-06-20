@@ -251,6 +251,8 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
+                .primerTestKlarna,
+                .primerTestPayPal,
                 .primerTestSofort,
                 .opennode,
                 .twoCtwoP,
