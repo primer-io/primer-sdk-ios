@@ -6,7 +6,7 @@ struct PaymentMethodTokenizationRequest: TokenizationRequest {
     
     let paymentInstrument: PaymentInstrument
     let tokenType: TokenType?
-    let paymentFlow: PaymentFlow?
+    let paymentFlow: PrimerSessionIntent?
 
     init(paymentInstrument: PaymentInstrument, state: AppStateProtocol?) {
         self.paymentInstrument = paymentInstrument
@@ -14,7 +14,7 @@ struct PaymentMethodTokenizationRequest: TokenizationRequest {
         self.paymentFlow = Primer.shared.intent == .vault ? .vault : nil
     }
     
-    init(paymentInstrument: PaymentInstrument, paymentFlow: PaymentFlow?) {
+    init(paymentInstrument: PaymentInstrument, paymentFlow: PrimerSessionIntent?) {
         self.paymentInstrument = paymentInstrument
         self.paymentFlow = (paymentFlow == .vault) ? .vault : nil
         self.tokenType = (paymentFlow == .vault) ? .multiUse : nil
@@ -84,11 +84,6 @@ internal struct BankSelectorSessionInfo: Codable {
 public enum TokenType: String, Codable {
     case multiUse = "MULTI_USE"
     case singleUse = "SINGLE_USE"
-}
-
-public enum PaymentFlow: String, Encodable {
-    case vault = "VAULT"
-    case checkout = "CHECKOUT"
 }
 
 struct ApplePaySourceConfig: Codable {

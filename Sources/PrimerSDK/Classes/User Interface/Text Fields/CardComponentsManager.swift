@@ -30,7 +30,6 @@ protocol CardComponentsManagerProtocol {
     var expiryDateField: PrimerExpiryDateFieldView { get }
     var cvvField: PrimerCVVFieldView { get }
     var cardholderField: PrimerCardholderNameFieldView? { get }
-    var flow: PaymentFlow { get }
     var delegate: CardComponentsManagerDelegate? { get }
     var customerId: String? { get }
     var merchantIdentifier: String? { get }
@@ -51,7 +50,6 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var cardholderField: PrimerCardholderNameFieldView?
     public var postalCodeField: PrimerPostalCodeFieldView?
     
-    private(set) public var flow: PaymentFlow
     public var delegate: CardComponentsManagerDelegate?
     public var customerId: String?
     public var merchantIdentifier: String?
@@ -70,14 +68,12 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     
     /// The CardComponentsManager can be initialized with/out an access token. In the case that is initialized without an access token, the delegate function cardComponentsManager(_:clientTokenCallback:) will be called. You can initialize an instance (representing a session) by providing the flow (checkout or vault) and registering the necessary PrimerTextFieldViews
     public init(
-        flow: PaymentFlow,
         cardnumberField: PrimerCardNumberFieldView,
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,
         cardholderNameField: PrimerCardholderNameFieldView?,
         postalCodeField: PrimerPostalCodeFieldView?
     ) {
-        self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
@@ -370,9 +366,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     var cardholderField: PrimerCardholderNameFieldView?
     
     var postalCodeField: PrimerPostalCodeFieldView?
-    
-    var flow: PaymentFlow
-    
+        
     var delegate: CardComponentsManagerDelegate?
     
     var customerId: String?
@@ -390,7 +384,6 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     var paymentMethodsConfig: PrimerAPIConfiguration?
     
     public init(
-        flow: PaymentFlow,
         cardnumberField: PrimerCardNumberFieldView,
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,
@@ -398,7 +391,6 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         postalCodeField: PrimerPostalCodeFieldView
     ) {
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
-        self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
@@ -412,7 +404,6 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         let cardnumberFieldView = PrimerCardNumberFieldView()
         cardnumberFieldView.textField._text = cardnumber
         self.init(
-            flow: .checkout,
             cardnumberField: cardnumberFieldView,
             expiryDateField: PrimerExpiryDateFieldView(),
             cvvField: PrimerCVVFieldView(),

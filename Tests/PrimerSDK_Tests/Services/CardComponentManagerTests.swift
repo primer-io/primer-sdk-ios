@@ -21,7 +21,6 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var postalCodeField: PrimerPostalCodeFieldView?
     
-    var flow: PaymentFlow
     
     var delegate: CardComponentsManagerDelegate?
     
@@ -39,7 +38,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var paymentMethodsConfig: PrimerAPIConfiguration?
     
-    public init(flow: PaymentFlow,
+    public init(
         cardnumberField: PrimerCardNumberFieldView,
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,
@@ -47,7 +46,6 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         postalCodeField: PrimerPostalCodeFieldView
     ) {
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
-        self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
@@ -60,7 +58,6 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         let cardnumberFieldView = PrimerCardNumberFieldView()
         cardnumberFieldView.textField._text = cardnumber
         self.init(
-            flow: .checkout,
             cardnumberField: cardnumberFieldView,
             expiryDateField: PrimerExpiryDateFieldView(),
             cvvField: PrimerCVVFieldView(),

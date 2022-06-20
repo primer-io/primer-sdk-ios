@@ -13,7 +13,6 @@ import UIKit
 
 class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
-    private var flow: PaymentFlow
     private var cardComponentsManager: CardComponentsManager!
     var onConfigurationFetched: (() -> Void)?
     
@@ -164,19 +163,25 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     lazy var submitButton: PrimerButton = {
         var buttonTitle: String = ""
-        if flow == .checkout {
+        
+        switch Primer.shared.intent {
+        case .checkout:
             let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
             buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
                                             tableName: nil,
                                             bundle: Bundle.primerResources,
                                             value: "Pay",
                                             comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
-        } else if flow == .vault {
+            
+        case .vault:
             buttonTitle = NSLocalizedString("primer-card-form-add-card",
                                             tableName: nil,
                                             bundle: Bundle.primerResources,
                                             value: "Add card",
                                             comment: "Add card - Card Form (Vault title text)")
+            
+        case .none:
+            assert(true, "Intent should have been set")
         }
         
         let submitButton = PrimerButton()
@@ -201,11 +206,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     required init(config: PaymentMethodConfig) {
-        self.flow = Primer.shared.intent == .vault ? .vault : .checkout
         super.init(config: config)
         
         self.cardComponentsManager = CardComponentsManager(
-            flow: flow,
             cardnumberField: cardNumberField,
             expiryDateField: expiryDateField,
             cvvField: cvvField,
