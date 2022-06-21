@@ -16,11 +16,7 @@ class PrimerStateField: PrimerCardFormFieldProtocol {
     static func stateFieldContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
         let stateFieldContainerView = PrimerCustomFieldView()
         stateFieldContainerView.fieldView = view
-        stateFieldContainerView.placeholderText = NSLocalizedString("primer-card-form-state",
-                                                                        tableName: nil,
-                                                                        bundle: Bundle.primerResources,
-                                                                        value: "State",
-                                                                        comment: "The billing address state")
+        stateFieldContainerView.placeholderText = Strings.CardFormView.State.label
         stateFieldContainerView.setup()
         stateFieldContainerView.tintColor = theme.input.border.color(for: .selected)
         return stateFieldContainerView
@@ -28,11 +24,7 @@ class PrimerStateField: PrimerCardFormFieldProtocol {
     
     static func stateFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerStateFieldView {
         let stateFieldView = PrimerStateFieldView()
-        stateFieldView.placeholder = NSLocalizedString("primer-form-text-field-placeholder-state",
-                                                            tableName: nil,
-                                                            bundle: Bundle.primerResources,
-                                                            value: "State",
-                                                            comment: "Form Text Field Placeholder (Address state)")
+        stateFieldView.placeholder = Strings.CardFormView.State.placeholder
         stateFieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
         stateFieldView.textColor = theme.input.text.color
         stateFieldView.delegate = delegate

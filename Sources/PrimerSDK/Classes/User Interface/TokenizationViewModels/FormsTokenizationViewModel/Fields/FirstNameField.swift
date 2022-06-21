@@ -16,11 +16,7 @@ class PrimerFirstNameField: PrimerCardFormFieldProtocol {
     static func firstNameFieldContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
         let firstNameFieldContainerView = PrimerCustomFieldView()
         firstNameFieldContainerView.fieldView = view
-        firstNameFieldContainerView.placeholderText = NSLocalizedString("primer-card-form-first-name",
-                                                                        tableName: nil,
-                                                                        bundle: Bundle.primerResources,
-                                                                        value: "First Name",
-                                                                        comment: "The billing address first name")
+        firstNameFieldContainerView.placeholderText = Strings.CardFormView.FirstName.label
         firstNameFieldContainerView.setup()
         firstNameFieldContainerView.tintColor = theme.input.border.color(for: .selected)
         return firstNameFieldContainerView
@@ -28,11 +24,7 @@ class PrimerFirstNameField: PrimerCardFormFieldProtocol {
     
     static func firstNameFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerFirstNameFieldView {
         let firstNameFieldView = PrimerFirstNameFieldView()
-        firstNameFieldView.placeholder = NSLocalizedString("primer-form-text-field-placeholder-first-name",
-                                                            tableName: nil,
-                                                            bundle: Bundle.primerResources,
-                                                            value: "e.g. John",
-                                                            comment: "e.g. John - Form Text Field Placeholder (Address first name)")
+        firstNameFieldView.placeholder = Strings.CardFormView.FirstName.placeholder
         firstNameFieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
         firstNameFieldView.textColor = theme.input.text.color
         firstNameFieldView.delegate = delegate

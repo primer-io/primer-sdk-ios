@@ -16,11 +16,7 @@ class PrimerCountryField: PrimerCardFormFieldProtocol {
     static func countryContainerViewFieldView(_ view: PrimerTextFieldView, openCountriesListPressed: @escaping PrimerAction) -> PrimerCustomFieldView {
         let countryFieldContainerView = PrimerCustomFieldView()
         countryFieldContainerView.fieldView = view
-        countryFieldContainerView.placeholderText = NSLocalizedString("primer-card-form-address-country",
-                                                                        tableName: nil,
-                                                                        bundle: Bundle.primerResources,
-                                                                        value: "Country",
-                                                                        comment: "The billing address country")
+        countryFieldContainerView.placeholderText = Strings.CardFormView.CountryCode.label
         countryFieldContainerView.setup()
         countryFieldContainerView.tintColor = theme.input.border.color(for: .selected)
         if let countryView = view as? PrimerCountryFieldView {
@@ -31,11 +27,7 @@ class PrimerCountryField: PrimerCardFormFieldProtocol {
     
     static func countryFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerCountryFieldView {
         let countryFieldView = PrimerCountryFieldView()
-        countryFieldView.placeholder = NSLocalizedString("primer-form-text-field-placeholder-address-country",
-                                                            tableName: nil,
-                                                            bundle: Bundle.primerResources,
-                                                            value: "Country",
-                                                            comment: "e.g. Country - Form Text Field Placeholder (Country)")
+        countryFieldView.placeholder = Strings.CardFormView.CountryCode.placeholder
         countryFieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
         countryFieldView.textColor = theme.input.text.color
         countryFieldView.delegate = delegate

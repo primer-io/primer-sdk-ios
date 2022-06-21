@@ -16,11 +16,7 @@ class PrimerCardNumberField: PrimerCardFormFieldProtocol {
     static func cardNumberContainerViewWithFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
         let cardNumberContainerView = PrimerCustomFieldView()
         cardNumberContainerView.fieldView = view
-        cardNumberContainerView.placeholderText = NSLocalizedString("primer-form-text-field-title-card-number",
-                                                                    tableName: nil,
-                                                                    bundle: Bundle.primerResources,
-                                                                    value: "Card number",
-                                                                    comment: "Card number - Form Text Field Title (Card number)")
+        cardNumberContainerView.placeholderText = Strings.CardFormView.CardNumber.label
         cardNumberContainerView.setup()
         cardNumberContainerView.tintColor = theme.input.border.color(for: .selected)
         return cardNumberContainerView
@@ -28,7 +24,7 @@ class PrimerCardNumberField: PrimerCardFormFieldProtocol {
     
     static func cardNumberFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerCardNumberFieldView {
         let cardNumberField = PrimerCardNumberFieldView()
-        cardNumberField.placeholder = "4242 4242 4242 4242"
+        cardNumberField.placeholder = Strings.CardFormView.CardNumber.placeholder
         cardNumberField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         cardNumberField.textColor = theme.input.text.color
         cardNumberField.borderStyle = .none

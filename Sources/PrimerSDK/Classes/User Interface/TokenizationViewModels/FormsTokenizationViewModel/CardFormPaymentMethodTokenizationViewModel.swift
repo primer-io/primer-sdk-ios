@@ -59,11 +59,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         textField.borderStyle = .none
         textField.layer.cornerRadius = 3.0
         textField.font = UIFont.systemFont(ofSize: 16.0)
-        textField.placeholder = NSLocalizedString("search-country-placeholder",
-                                                        tableName: nil,
-                                                        bundle: Bundle.primerResources,
-                                                        value: "Search country",
-                                                        comment: "Search country - Search country textfield placeholder")
+        textField.placeholder = Strings.CountrySelector.searchCountryTitle
         textField.rightViewMode = .always
         return textField
     }()
@@ -753,12 +749,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 return
             }
             
-            var title = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                          tableName: nil,
-                                          bundle: Bundle.primerResources,
-                                          value: "Pay",
-                                          comment: "Pay - Card Form View (Sumbit button text)")
-            
+            var title = Strings.PaymentButton.pay
             title += " \(amount.toCurrencyString(currency: currency))"
             self.submitButton.setTitle(title, for: .normal)
         }
@@ -880,13 +871,13 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         if isValid == false {
             // We know for sure that the text is not valid, even if the user hasn't finished typing.
             if primerTextFieldView is PrimerCardNumberFieldView, !primerTextFieldView.isEmpty {
-                cardNumberContainerView.errorText = Strings.CardFormValidation.invalidCardNumber
+                cardNumberContainerView.errorText = Strings.CardFormView.CardNumber.invalidErrorMessage
             } else if primerTextFieldView is PrimerExpiryDateFieldView, !primerTextFieldView.isEmpty {
-                expiryDateContainerView.errorText = Strings.CardFormValidation.invalidExpirationDate
+                expiryDateContainerView.errorText = Strings.CardFormView.ExpiryDate.invalidErrorMessage
             } else if primerTextFieldView is PrimerCVVFieldView, !primerTextFieldView.isEmpty {
-                cvvContainerView.errorText = Strings.CardFormValidation.invalidCVV
+                cvvContainerView.errorText = Strings.CardFormView.CVV.invalidErrorMessage
             } else if primerTextFieldView is PrimerCardholderNameFieldView, !primerTextFieldView.isEmpty {
-                cardholderNameContainerView?.errorText = Strings.CardFormValidation.invalidCardNumber
+                cardholderNameContainerView?.errorText = Strings.CardFormView.Cardholder.invalidErrorMessage
             } else if primerTextFieldView is PrimerPostalCodeFieldView {
                 postalCodeContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.PostalCode.isRequiredErrorMessage : Strings.CardFormView.PostalCode.invalidErrorMessage
             } else if primerTextFieldView is PrimerCountryFieldView {

@@ -16,11 +16,7 @@ class PrimerEpiryDateField: PrimerCardFormFieldProtocol {
     static func expiryDateContainerViewWithFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
         let expiryDateContainerView = PrimerCustomFieldView()
         expiryDateContainerView.fieldView = view
-        expiryDateContainerView.placeholderText = NSLocalizedString("primer-form-text-field-title-expiry-date",
-                                                                    tableName: nil,
-                                                                    bundle: Bundle.primerResources,
-                                                                    value: "Expiry date",
-                                                                    comment: "Expiry date - Form Text Field Title (Expiry date)")
+        expiryDateContainerView.placeholderText = Strings.CardFormView.ExpiryDate.label
         expiryDateContainerView.setup()
         expiryDateContainerView.tintColor = theme.input.border.color(for: .selected)
         return expiryDateContainerView
@@ -28,7 +24,7 @@ class PrimerEpiryDateField: PrimerCardFormFieldProtocol {
 
     static func expiryDateFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerExpiryDateFieldView {
         let expiryDateField = PrimerExpiryDateFieldView()
-        expiryDateField.placeholder = "02/25"
+        expiryDateField.placeholder = Strings.CardFormView.ExpiryDate.placeholder
         expiryDateField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         expiryDateField.textColor = theme.input.text.color
         expiryDateField.delegate = delegate

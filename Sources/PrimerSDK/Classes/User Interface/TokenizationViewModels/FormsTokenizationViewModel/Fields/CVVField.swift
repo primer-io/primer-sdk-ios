@@ -16,11 +16,7 @@ class PrimerCVVField: PrimerCardFormFieldProtocol {
     static func cvvContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
         let cvvContainerView = PrimerCustomFieldView()
         cvvContainerView.fieldView = view
-        cvvContainerView.placeholderText = NSLocalizedString("primer-card-form-cvv",
-                                                             tableName: nil,
-                                                             bundle: Bundle.primerResources,
-                                                             value: "CVV",
-                                                             comment: "CVV - Card Form (CVV text field placeholder text)")
+        cvvContainerView.placeholderText = Strings.CardFormView.CVV.label
         cvvContainerView.setup()
         cvvContainerView.tintColor = theme.input.border.color(for: .selected)
         return cvvContainerView
@@ -28,7 +24,7 @@ class PrimerCVVField: PrimerCardFormFieldProtocol {
     
     static func cvvFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerCVVFieldView {
         let cvvField = PrimerCVVFieldView()
-        cvvField.placeholder = "123"
+        cvvField.placeholder = Strings.CardFormView.CVV.placeholder
         cvvField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         cvvField.textColor = theme.input.text.color
         cvvField.delegate = delegate

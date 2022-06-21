@@ -16,11 +16,7 @@ class PrimerLastNameField: PrimerCardFormFieldProtocol {
     static func lastNameFieldContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
         let lastNameFieldContainerView = PrimerCustomFieldView()
         lastNameFieldContainerView.fieldView = view
-        lastNameFieldContainerView.placeholderText = NSLocalizedString("primer-card-form-last-name",
-                                                                        tableName: nil,
-                                                                        bundle: Bundle.primerResources,
-                                                                        value: "Last Name",
-                                                                        comment: "The billing address last name")
+        lastNameFieldContainerView.placeholderText = Strings.CardFormView.LastName.label
         lastNameFieldContainerView.setup()
         lastNameFieldContainerView.tintColor = theme.input.border.color(for: .selected)
         return lastNameFieldContainerView
@@ -28,11 +24,7 @@ class PrimerLastNameField: PrimerCardFormFieldProtocol {
     
     static func lastNameFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerLastNameFieldView {
         let lastNameFieldView = PrimerLastNameFieldView()
-        lastNameFieldView.placeholder = NSLocalizedString("primer-form-text-field-placeholder-last-name",
-                                                            tableName: nil,
-                                                            bundle: Bundle.primerResources,
-                                                            value: "e.g. Doe",
-                                                            comment: "e.g. Doe - Form Text Field Placeholder (Address last name)")
+        lastNameFieldView.placeholder = Strings.CardFormView.LastName.placeholder
         lastNameFieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
         lastNameFieldView.textColor = theme.input.text.color
         lastNameFieldView.delegate = delegate

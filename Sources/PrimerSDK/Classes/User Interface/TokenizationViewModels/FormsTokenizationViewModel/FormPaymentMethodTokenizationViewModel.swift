@@ -142,11 +142,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         textField.borderStyle = .none
         textField.layer.cornerRadius = 3.0
         textField.font = UIFont.systemFont(ofSize: 16.0)
-        textField.placeholder = NSLocalizedString("search-country-placeholder",
-                                                        tableName: nil,
-                                                        bundle: Bundle.primerResources,
-                                                        value: "Search country",
-                                                        comment: "Search country - Search country textfield placeholder")
+        textField.placeholder = Strings.CountrySelector.searchCountryTitle
         textField.rightViewMode = .always
         return textField
     }()
@@ -378,25 +374,10 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         case .adyenBlik:
             let input1 = Input()
             input1.name = "OTP"
-            input1.topPlaceholder = NSLocalizedString(
-                "input_hint_form_blik_otp",
-                tableName: nil,
-                bundle: Bundle.primerResources,
-                value: "6 digit code",
-                comment: "6 digit code - Text field top placeholder")
-            input1.textFieldPlaceholder = NSLocalizedString(
-                "payment_method_blik_loading_placeholder",
-                tableName: nil,
-                bundle: Bundle.primerResources,
-                value: "Enter your one time password",
-                comment: "Enter your one time password - Text field placeholder")
+            input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
+            input1.textFieldPlaceholder = Strings.Blik.inputTextFieldPlaceholder
             input1.keyboardType = .numberPad
-            input1.descriptor = NSLocalizedString(
-                "input_description_otp",
-                tableName: nil,
-                bundle: Bundle.primerResources,
-                value: "Get the code from your banking app.",
-                comment: "Get the code from your banking app - Blik descriptor")
+            input1.descriptor = Strings.Blik.inputDescriptor
             input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
             input1.maxCharactersAllowed = 6
             input1.isValid = { text in

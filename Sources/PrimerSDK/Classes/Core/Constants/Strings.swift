@@ -219,6 +219,25 @@ extension Strings {
             comment: "Expires - Saved card")
     }
     
+    // MARK: Country Selector
+    
+    enum CountrySelector {
+        
+        static let selectCountryTitle = NSLocalizedString(
+            "countrySelectPlaceholder",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Select a country",
+            comment: "Select a country - Choose your country title label")
+        
+        static let searchCountryTitle = NSLocalizedString(
+            "search-country-placeholder",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Search country",
+            comment: "Search country - Search country textfield placeholder")
+    }
+    
     // MARK: Bank Selector
     
     enum BankSelector {
@@ -389,6 +408,129 @@ extension Strings {
     
     struct CardFormView {
         
+        static let noAdditionalFeesTitle = NSLocalizedString(
+            "no_additional_fee",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "No additional fee",
+            comment: "No additional fee - Universal Checkout section text")
+        
+        static let additionalFeesTitle = NSLocalizedString(
+            "surcharge-additional-fee",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Additional fee may apply",
+            comment: "Additional fee may apply - Surcharge (Label)")
+        
+        static let vaultNavBarTitle = NSLocalizedString(
+            "primer-vault-nav-bar-title",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Add payment method",
+            comment: "Add payment method - Vault Navigation Bar Title")
+        
+        static let checkoutTitleText = NSLocalizedString(
+            "primer-card-form-checkout",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Checkout",
+            comment: "Checkout - Card Form (Checkout title text)")
+        
+        static let vaultSubmitButtonText = NSLocalizedString(
+            "primer-card-form-save",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Save",
+            comment: "Save - Card Form (Vault submit button text)")
+                        
+        enum CardNumber {
+                        
+            static let label = NSLocalizedString(
+                "primer-form-text-field-title-card-number",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Card number",
+                comment: "Card number - Form Text Field Title (Card number)")
+
+            static let placeholder = NSLocalizedString(
+                "primer-card-form-4242-4242-4242-4242",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "4242 4242 4242 4242",
+                comment: "4242 4242 4242 4242 - Card Form (Card text field placeholder text)")
+
+            static let invalidErrorMessage = NSLocalizedString(
+                "primer-error-card-form-card-number",
+                bundle: Bundle.primerResources,
+                value: "Invalid card number",
+                comment: "An error message displayed when the card number is not correct")
+        }
+        
+        enum ExpiryDate {
+            
+            static let label = NSLocalizedString(
+                "primer-form-text-field-title-expiry-date",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Expiry date",
+                comment: "Expiry date - Form Text Field Title (Expiry date)")
+            
+            static let placeholder = NSLocalizedString(
+                "primer-card-form-12-24",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "12/24",
+                comment: "12/24 - Card Form (Expiry text field placeholder text)")
+            
+            static let invalidErrorMessage = NSLocalizedString(
+                "primer-error-card-form-card-expiration-date",
+                bundle: Bundle.primerResources,
+                value: "Invalid date",
+                comment: "An error message displayed when the card expiration date is not correct")
+        }
+        
+        enum CVV {
+            
+            static let label = NSLocalizedString(
+                "primer-card-form-cvv",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "CVV",
+                comment: "CVV - Card Form (CVV text field placeholder text)")
+                    
+            
+            static let placeholder = "123"
+
+            static let invalidErrorMessage = NSLocalizedString(
+                "primer-error-card-form-card-cvv",
+                bundle: Bundle.primerResources,
+                value: "Invalid CVV",
+                comment: "An error message displayed when the cvv code is not correct")
+        }
+        
+        enum Cardholder {
+            
+            static let label = NSLocalizedString(
+                "primer-card-form-name",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Name",
+                comment: "Cardholder name")
+
+            static let placeholder = NSLocalizedString(
+                "primer-form-text-field-placeholder-cardholder",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "e.g. John Doe",
+                comment: "e.g. John Doe - Form Text Field Placeholder (Cardholder name)")
+
+            static let invalidErrorMessage = NSLocalizedString(
+                "cardholderErrorInvalid",
+                bundle: Bundle.primerResources,
+                value: "Invalid Cardholder name",
+                comment: "An error message displayed when the city field is not correct")
+        }
+        
         enum City {
             
             static let label = NSLocalizedString(
@@ -515,7 +657,7 @@ extension Strings {
             )
             
             static let invalidErrorMessage = NSLocalizedString(
-                "stateErrorInvalid",
+                "addressLine1ErrorInvalid",
                 bundle: Bundle.primerResources,
                 value: "Invalid Address Line 1",
                 comment: "An error message displayed when the Address line 1 is not correct")
@@ -548,7 +690,7 @@ extension Strings {
             )
             
             static let invalidErrorMessage = NSLocalizedString(
-                "stateErrorInvalid",
+                "addressLine2ErrorInvalid",
                 bundle: Bundle.primerResources,
                 value: "Invalid Address Line 2",
                 comment: "An error message displayed when the Address line 2 is not correct")
@@ -560,7 +702,7 @@ extension Strings {
                 "countryCodeLabel",
                 tableName: nil,
                 bundle: Bundle.primerResources,
-                value: "Country code",
+                value: "Country",
                 comment: "The billing address Country code container view label"
             )
 
@@ -568,7 +710,7 @@ extension Strings {
                 "countryCodePlaceholder",
                 tableName: nil,
                 bundle: Bundle.primerResources,
-                value: "Country code",
+                value: "Country",
                 comment: "Form Text Field Placeholder (Country code)"
             )
             
@@ -652,97 +794,6 @@ extension Strings {
                 value: "Invalid Last Name",
                 comment: "An error message displayed when the Last Name is not correct")
         }
-        
-        static let noAdditionalFeesTitle = NSLocalizedString(
-            "no_additional_fee",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "No additional fee",
-            comment: "No additional fee - Universal Checkout section text")
-        
-        static let additionalFeesTitle = NSLocalizedString(
-            "surcharge-additional-fee",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Additional fee may apply",
-            comment: "Additional fee may apply - Surcharge (Label)")
-        
-        static let vaultNavBarTitle = NSLocalizedString(
-            "primer-vault-nav-bar-title",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Add payment method",
-            comment: "Add payment method - Vault Navigation Bar Title")
-        
-        static let checkoutTitleText = NSLocalizedString(
-            "primer-card-form-checkout",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Checkout",
-            comment: "Checkout - Card Form (Checkout title text)")
-        
-        static let vaultSubmitButtonText = NSLocalizedString(
-            "primer-card-form-save",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Save",
-            comment: "Save - Card Form (Vault submit button text)")
-        
-        static let cardNumberTextFieldTitle = NSLocalizedString(
-            "primer-form-text-field-title-card-number",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Card number",
-            comment: "Card number - Form Text Field Title (Card number)")
-        
-        static let expiryDateTextFieldTitle = NSLocalizedString(
-            "primer-form-text-field-title-expiry-date",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Expiry date",
-            comment: "Expiry date - Form Text Field Title (Expiry date)")
-        
-        static let cvvTextFieldTitle = NSLocalizedString(
-            "primer-card-form-cvv",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "CVV",
-            comment: "CVV - Card Form (CVV text field placeholder text)")
-        
-        static let cardholderTextFieldTitle = NSLocalizedString(
-            "primer-card-form-name",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Name",
-            comment: "Cardholder name")
-        
-        static let cardholderTextFieldPlaceholder = NSLocalizedString(
-            "primer-form-text-field-placeholder-cardholder",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "e.g. John Doe",
-            comment: "e.g. John Doe - Form Text Field Placeholder (Cardholder name)")
-        
-        static let cardTextFieldPlaceholder = NSLocalizedString(
-            "primer-card-form-4242-4242-4242-4242",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "4242 4242 4242 4242",
-            comment: "4242 4242 4242 4242 - Card Form (Card text field placeholder text)")
-        
-        static let expiryTextFieldPlaceholder = NSLocalizedString(
-            "primer-card-form-12-24",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "12/24",
-            comment: "12/24 - Card Form (Expiry text field placeholder text)")
-        
-        static let cvcTextFieldPlaceholder = NSLocalizedString(
-            "primer-card-form-cvv",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "CVV",
-            comment: "CVV - Card Form (CVV text field placeholder text)")
     }
 }
 
@@ -808,36 +859,5 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Failed",
             comment: "The title of the mocked failed flow for a Test Payment Method")
-    }
-}
-
-extension Strings {
-    
-    enum CardFormValidation {
-                
-        static let invalidCardNumber = NSLocalizedString(
-            "primer-error-card-form-card-number",
-            bundle: Bundle.primerResources,
-            value: "Invalid card number",
-            comment: "An error message displayed when the card number is not correct")
-        
-        static let invalidExpirationDate = NSLocalizedString(
-            "primer-error-card-form-card-expiration-date",
-            bundle: Bundle.primerResources,
-            value: "Invalid date",
-            comment: "An error message displayed when the card expiration date is not correct")
-        
-        static let invalidCVV = NSLocalizedString(
-            "primer-error-card-form-card-cvv",
-            bundle: Bundle.primerResources,
-            value: "Invalid date",
-            comment: "An error message displayed when the cvv code is not correct")
-        
-        static let invalidCardholderName = NSLocalizedString(
-            "primer-error-card-form-cardholder-name",
-            bundle: Bundle.primerResources,
-            value: "Invalid date",
-            comment: "An error message displayed when the cardholder name is not correct")
-
     }
 }

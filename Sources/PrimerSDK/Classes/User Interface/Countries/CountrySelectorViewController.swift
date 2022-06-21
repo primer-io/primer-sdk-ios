@@ -53,11 +53,7 @@ internal class CountrySelectorViewController: PrimerFormViewController {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         let bankTitleLabel = UILabel()
-        bankTitleLabel.text = NSLocalizedString("choose-your-country-title-label",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Choose country",
-                                                comment: "Choose country - Choose your billing address country")
+        bankTitleLabel.text = Strings.CountrySelector.selectCountryTitle
         bankTitleLabel.font = UIFont.systemFont(ofSize: 20)
         bankTitleLabel.textColor = theme.text.title.color
         verticalStackView.addArrangedSubview(bankTitleLabel)
