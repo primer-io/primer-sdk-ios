@@ -16,7 +16,7 @@ class PrimerPostalCodeField: PrimerCardFormFieldProtocol {
     static func postalCodeContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
         let postalCodeContainerView = PrimerCustomFieldView()
         postalCodeContainerView.fieldView = view
-        postalCodeContainerView.placeholderText = localPostalCodeTitle
+        postalCodeContainerView.placeholderText = Strings.CardFormView.PostalCode.label
         postalCodeContainerView.setup()
         postalCodeContainerView.tintColor = theme.input.border.color(for: .selected)
         return postalCodeContainerView
@@ -24,7 +24,7 @@ class PrimerPostalCodeField: PrimerCardFormFieldProtocol {
     
     static func postalCodeViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerPostalCodeFieldView {
         let postalCodeFieldView = PrimerPostalCodeFieldView()
-        postalCodeFieldView.placeholder = localSamplePostalCode
+        postalCodeFieldView.placeholder = Strings.CardFormView.PostalCode.placeholder
         postalCodeFieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
         postalCodeFieldView.textColor = theme.input.text.color
         postalCodeFieldView.delegate = delegate
@@ -37,11 +37,6 @@ extension PrimerPostalCodeField {
     private static var localSamplePostalCode: String {
         let countryCode = AppState.current.apiConfiguration?.clientSession?.order?.countryCode
         return PostalCode.sample(for: countryCode)
-    }
-
-    static var localPostalCodeTitle: String {
-        let countryCode = AppState.current.apiConfiguration?.clientSession?.order?.countryCode
-        return PostalCode.name(for: countryCode)
     }
 }
 

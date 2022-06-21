@@ -81,7 +81,6 @@ extension Analytics.Event {
             case phone = "PHONE"
             case retry = "RETRY"
             case submit = "SUBMIT"
-            case zipCode = "ZIP_CODE"
             case billingAddressPostalCode = "BILLING_ADDRESS_POSTAL_CODE"
             case billingAddressFirstName = "BILLING_ADDRESS_FIRST_NAME"
             case billingAddressLastName = "BILLING_ADDRESS_LAST_NAME"

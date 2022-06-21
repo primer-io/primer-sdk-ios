@@ -16,11 +16,7 @@ class PrimerCityField: PrimerCardFormFieldProtocol {
     static func cityFieldContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
         let cityFieldContainerView = PrimerCustomFieldView()
         cityFieldContainerView.fieldView = view
-        cityFieldContainerView.placeholderText = NSLocalizedString("primer-card-form-city",
-                                                                        tableName: nil,
-                                                                        bundle: Bundle.primerResources,
-                                                                        value: "City",
-                                                                        comment: "The billing address city")
+        cityFieldContainerView.placeholderText = Strings.CardFormView.City.label
         cityFieldContainerView.setup()
         cityFieldContainerView.tintColor = theme.input.border.color(for: .selected)
         return cityFieldContainerView
@@ -28,11 +24,7 @@ class PrimerCityField: PrimerCardFormFieldProtocol {
     
     static func cityFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerCityFieldView {
         let cityFieldView = PrimerCityFieldView()
-        cityFieldView.placeholder = NSLocalizedString("primer-form-text-field-placeholder-city",
-                                                            tableName: nil,
-                                                            bundle: Bundle.primerResources,
-                                                            value: "City",
-                                                            comment: "Form Text Field Placeholder (Address city)")
+        cityFieldView.placeholder = Strings.CardFormView.City.placeholder
         cityFieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
         cityFieldView.textColor = theme.input.text.color
         cityFieldView.delegate = delegate

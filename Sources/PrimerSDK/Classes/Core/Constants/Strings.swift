@@ -29,7 +29,7 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "is required",
             comment: "A suffix to mark a required field or action being performed")
-
+        
         static let cancel = NSLocalizedString(
             "primer-alert-button-cancel",
             tableName: nil,
@@ -194,7 +194,7 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Payment card",
             comment: "Card form - Navigation Bar Title")
-
+        
         static let title = NSLocalizedString(
             "primer-form-type-main-title-card-form",
             tableName: nil,
@@ -387,7 +387,271 @@ extension Strings {
     
     // MARK: Card form
     
-    enum CardFormView {
+    struct CardFormView {
+        
+        enum City {
+            
+            static let label = NSLocalizedString(
+                "cityLabel",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "City",
+                comment: "The billing address city container view label"
+            )
+
+            static let placeholder = NSLocalizedString(
+                "cityPlaceholder",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "City",
+                comment: "Form Text Field Placeholder (Address city)"
+            )
+            
+            static let isRequiredErrorMessage = NSLocalizedString(
+                "cityErrorRequired",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "City is required",
+                comment: "City is required - Form Validation"
+            )
+            
+            static let invalidErrorMessage = NSLocalizedString(
+                "cityErrorInvalid",
+                bundle: Bundle.primerResources,
+                value: "Invalid city",
+                comment: "An error message displayed when the city field is not correct")
+        }
+        
+        enum PostalCode {
+            
+            static let label = NSLocalizedString(
+                "postalCodeLabel",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Postal code",
+                comment: "The billing address postal code container view label"
+            )
+
+            static let placeholder = NSLocalizedString(
+                "postalCodePlaceholder",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Postal Code",
+                comment: "Form Text Field Placeholder (Address postal code)"
+            )
+            
+            static let isRequiredErrorMessage = NSLocalizedString(
+                "postalCodeErrorRequired",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Postal code is required",
+                comment: "Postal code is required - Form Validation"
+            )
+            
+            static let invalidErrorMessage = NSLocalizedString(
+                "postalCodeErrorInvalid",
+                bundle: Bundle.primerResources,
+                value: "Invalid postal code",
+                comment: "An error message displayed when the postal code field is not correct")
+        }
+        
+        enum State {
+            
+            static let label = NSLocalizedString(
+                "stateLabel",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "State / Region / County",
+                comment: "The billing address state container view label"
+            )
+
+            static let placeholder = NSLocalizedString(
+                "statePlaceholder",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "State / Region / County",
+                comment: "Form Text Field Placeholder (Address State / Region / County)"
+            )
+            
+            static let isRequiredErrorMessage = NSLocalizedString(
+                "stateErrorRequired",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "State, Region or County is required",
+                comment: "State, Region or County is required - Form Validation"
+            )
+            
+            static let invalidErrorMessage = NSLocalizedString(
+                "stateErrorInvalid",
+                bundle: Bundle.primerResources,
+                value: "Invalid State, Region or County",
+                comment: "An error message displayed when the State, Region or County field is not correct")
+        }
+
+        enum AddressLine1 {
+            
+            static let label = NSLocalizedString(
+                "addressLine1Label",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Address line 1",
+                comment: "The billing address Address line 1 container view label"
+            )
+
+            static let placeholder = NSLocalizedString(
+                "addressLine1Placeholder",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Address line 1",
+                comment: "Form Text Field Placeholder (Address line 1)"
+            )
+            
+            static let isRequiredErrorMessage = NSLocalizedString(
+                "addressLine1ErrorRequired",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Address Line 1 is required",
+                comment: "State, Region or County is required - Form Validation"
+            )
+            
+            static let invalidErrorMessage = NSLocalizedString(
+                "stateErrorInvalid",
+                bundle: Bundle.primerResources,
+                value: "Invalid Address Line 1",
+                comment: "An error message displayed when the Address line 1 is not correct")
+        }
+
+        enum AddressLine2 {
+            
+            static let label = NSLocalizedString(
+                "addressLine2Label",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Address line 2",
+                comment: "The billing address Address line 2 container view label"
+            )
+
+            static let placeholder = NSLocalizedString(
+                "addressLine2Placeholder",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Address line 2",
+                comment: "Form Text Field Placeholder (Address line 2)"
+            )
+            
+            static let isRequiredErrorMessage = NSLocalizedString(
+                "addressLine2ErrorRequired",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Address Line 2 is required",
+                comment: "State, Region or County is required - Form Validation"
+            )
+            
+            static let invalidErrorMessage = NSLocalizedString(
+                "stateErrorInvalid",
+                bundle: Bundle.primerResources,
+                value: "Invalid Address Line 2",
+                comment: "An error message displayed when the Address line 2 is not correct")
+        }
+
+        enum CountryCode {
+            
+            static let label = NSLocalizedString(
+                "countryCodeLabel",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Country code",
+                comment: "The billing address Country code container view label"
+            )
+
+            static let placeholder = NSLocalizedString(
+                "countryCodePlaceholder",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Country code",
+                comment: "Form Text Field Placeholder (Country code)"
+            )
+            
+            static let isRequiredErrorMessage = NSLocalizedString(
+                "countryCodeErrorRequired",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Country is required",
+                comment: "Country is required - Form Validation"
+            )
+            
+            static let invalidErrorMessage = NSLocalizedString(
+                "countryCodeErrorInvalid",
+                bundle: Bundle.primerResources,
+                value: "Invalid Country",
+                comment: "An error message displayed when the Country is not correct")
+        }
+        
+        enum FirstName {
+            
+            static let label = NSLocalizedString(
+                "firstNameLabel",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "First name",
+                comment: "The billing address First name container view label"
+            )
+
+            static let placeholder = NSLocalizedString(
+                "firstNamePlaceholder",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "First name",
+                comment: "Form Text Field Placeholder (First name)"
+            )
+            
+            static let isRequiredErrorMessage = NSLocalizedString(
+                "firstNameErrorRequired",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "First name is required",
+                comment: "First name is required - Form Validation"
+            )
+            
+            static let invalidErrorMessage = NSLocalizedString(
+                "firstNameErrorInvalid",
+                bundle: Bundle.primerResources,
+                value: "Invalid First Name",
+                comment: "An error message displayed when the First Name is not correct")
+        }
+        
+        enum LastName {
+            
+            static let label = NSLocalizedString(
+                "lastNameLabel",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Last name",
+                comment: "The billing address Last name container view label"
+            )
+
+            static let placeholder = NSLocalizedString(
+                "lastNamePlaceholder",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Last name",
+                comment: "Form Text Field Placeholder (Last name)"
+            )
+            
+            static let isRequiredErrorMessage = NSLocalizedString(
+                "lastNameErrorRequired",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Last name is required",
+                comment: "Last name is required - Form Validation"
+            )
+            
+            static let invalidErrorMessage = NSLocalizedString(
+                "lastNameErrorInvalid",
+                bundle: Bundle.primerResources,
+                value: "Invalid Last Name",
+                comment: "An error message displayed when the Last Name is not correct")
+        }
         
         static let noAdditionalFeesTitle = NSLocalizedString(
             "no_additional_fee",
@@ -549,27 +813,8 @@ extension Strings {
 
 extension Strings {
     
-    enum PostalCode {
-        
-        static let defaultPostalCodeName = NSLocalizedString(
-            "primer-card-form-postal-code-default-name",
-            bundle: Bundle.primerResources,
-            value: "Postal code",
-            comment: "The default naming of Postal Code")
-        
-        static let zipCodeName = NSLocalizedString(
-            "primer-card-form-postal-code-zip-code-name",
-            bundle: Bundle.primerResources,
-            value: "Zip code",
-            comment: "The naming representation of Postal Code for e.g. USA")
-    }
-    
-}
-
-extension Strings {
-    
     enum CardFormValidation {
-        
+                
         static let invalidCardNumber = NSLocalizedString(
             "primer-error-card-form-card-number",
             bundle: Bundle.primerResources,
@@ -593,42 +838,6 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Invalid date",
             comment: "An error message displayed when the cardholder name is not correct")
-        
-        static let invalidCountry = NSLocalizedString(
-            "primer-error-card-form-country",
-            bundle: Bundle.primerResources,
-            value: "Invalid country",
-            comment: "An error message displayed when the country field is not correct")
-        
-        static let invalidFirstName = NSLocalizedString(
-            "primer-error-card-form-first-name",
-            bundle: Bundle.primerResources,
-            value: "Invalid first name",
-            comment: "An error message displayed when the first name field is not correct")
-        
-        static let invalidLastName = NSLocalizedString(
-            "primer-error-card-form-last-name",
-            bundle: Bundle.primerResources,
-            value: "Invalid last name",
-            comment: "An error message displayed when the last name field is not correct")
 
-        static let invalidCity = NSLocalizedString(
-            "primer-error-card-form-city",
-            bundle: Bundle.primerResources,
-            value: "Invalid city",
-            comment: "An error message displayed when the city field is not correct")
-        
-        static let invalidState = NSLocalizedString(
-            "primer-error-card-form-state",
-            bundle: Bundle.primerResources,
-            value: "Invalid State",
-            comment: "An error message displayed when the state field is not correct")
-        
-        // Valid for both Address Line 1 and Address Line 2 fields
-        static let invalidAddress = NSLocalizedString(
-            "primer-error-card-form-address",
-            bundle: Bundle.primerResources,
-            value: "Invalid address",
-            comment: "An error message displayed when the address field is not correct")
     }
 }

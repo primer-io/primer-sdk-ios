@@ -876,32 +876,33 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
     
     fileprivate func showTexfieldViewErrorIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        if isValid == false, !primerTextFieldView.isEmpty {
+        
+        if isValid == false {
             // We know for sure that the text is not valid, even if the user hasn't finished typing.
-            if primerTextFieldView is PrimerCardNumberFieldView {
+            if primerTextFieldView is PrimerCardNumberFieldView, !primerTextFieldView.isEmpty {
                 cardNumberContainerView.errorText = Strings.CardFormValidation.invalidCardNumber
-            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+            } else if primerTextFieldView is PrimerExpiryDateFieldView, !primerTextFieldView.isEmpty {
                 expiryDateContainerView.errorText = Strings.CardFormValidation.invalidExpirationDate
-            } else if primerTextFieldView is PrimerCVVFieldView {
+            } else if primerTextFieldView is PrimerCVVFieldView, !primerTextFieldView.isEmpty {
                 cvvContainerView.errorText = Strings.CardFormValidation.invalidCVV
-            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+            } else if primerTextFieldView is PrimerCardholderNameFieldView, !primerTextFieldView.isEmpty {
                 cardholderNameContainerView?.errorText = Strings.CardFormValidation.invalidCardNumber
             } else if primerTextFieldView is PrimerPostalCodeFieldView {
-                postalCodeContainerView.errorText = "\(PrimerPostalCodeField.localPostalCodeTitle) \(Strings.Generic.isRequiredSuffix)"
+                postalCodeContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.PostalCode.isRequiredErrorMessage : Strings.CardFormView.PostalCode.invalidErrorMessage
             } else if primerTextFieldView is PrimerCountryFieldView {
-                countryFieldContainerView.errorText = Strings.CardFormValidation.invalidCountry
+                countryFieldContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.CountryCode.isRequiredErrorMessage : Strings.CardFormView.CountryCode.invalidErrorMessage
             } else if primerTextFieldView is PrimerFirstNameFieldView {
-                firstNameContainerView.errorText = Strings.CardFormValidation.invalidFirstName
+                firstNameContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.FirstName.isRequiredErrorMessage :  Strings.CardFormView.FirstName.invalidErrorMessage
             } else if primerTextFieldView is PrimerLastNameFieldView {
-                lastNameContainerView.errorText = Strings.CardFormValidation.invalidLastName
+                lastNameContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.LastName.isRequiredErrorMessage :  Strings.CardFormView.LastName.invalidErrorMessage
             } else if primerTextFieldView is PrimerCityFieldView {
-                cityContainerView.errorText = Strings.CardFormValidation.invalidCity
+                cityContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.City.isRequiredErrorMessage :  Strings.CardFormView.City.invalidErrorMessage
             } else if primerTextFieldView is PrimerStateFieldView {
-                stateContainerView.errorText = Strings.CardFormValidation.invalidState
+                stateContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.State.isRequiredErrorMessage :  Strings.CardFormView.State.invalidErrorMessage
             } else if primerTextFieldView is PrimerAddressLine1FieldView {
-                addressLine1ContainerView.errorText = Strings.CardFormValidation.invalidAddress
+                addressLine1ContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.AddressLine1.isRequiredErrorMessage :  Strings.CardFormView.AddressLine1.invalidErrorMessage
             } else if primerTextFieldView is PrimerAddressLine2FieldView {
-                addressLine2ContainerView.errorText = Strings.CardFormValidation.invalidAddress
+                addressLine2ContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.AddressLine2.isRequiredErrorMessage :  Strings.CardFormView.AddressLine2.invalidErrorMessage
             }
         } else {
             // We don't know for sure if the text is valid

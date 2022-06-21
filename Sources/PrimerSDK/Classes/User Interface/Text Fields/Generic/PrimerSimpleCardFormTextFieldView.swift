@@ -12,7 +12,7 @@ public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
     }
     
     public override func textFieldDidBeginEditing(_ textField: UITextField) {
-        super.textFieldDidEndEditing(textField)
+        super.textFieldDidBeginEditing(textField)
         if let objectId = editingAnalyticsObjectId {
             let event = cardFormFieldDidBeginEditingEventWithObjectId(objectId)
             sendTextFieldDidEndEditingAnalyticsEventIfNeeded(event)
