@@ -53,6 +53,13 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     func handleFailureFlow(errorMessage: String?)
 }
 
+internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
+    func cancel()
+    var tableView: UITableView { get set }
+    var searchCountryTextField: PrimerSearchTextField { get set }
+    var config: PaymentMethodConfig { get set }
+}
+
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
 
     var config: PaymentMethodConfig

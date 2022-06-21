@@ -82,10 +82,19 @@ extension Analytics.Event {
             case retry = "RETRY"
             case submit = "SUBMIT"
             case zipCode = "ZIP_CODE"
+            case billingAddressPostalCode = "BILLING_ADDRESS_POSTAL_CODE"
+            case billingAddressFirstName = "BILLING_ADDRESS_FIRST_NAME"
+            case billingAddressLastName = "BILLING_ADDRESS_LAST_NAME"
+            case billingAddressLine1 = "BILLING_ADDRESS_LINE_1"
+            case billingAddressLine2 = "BILLING_ADDRESS_LINE_2"
+            case billingAddressCity = "BILLING_ADDRESS_CITY"
+            case billingAddressState = "BILLING_ADDRESS_STATE"
+            case billingAddressCountry = "BILLING_ADDRESS_COUNTRY"
         }
         
         enum Place: String, Codable {
             case bankSelectionList = "BANK_SELECTION_LIST"
+            case countrySelectionList = "COUNTRY_SELECTION_LIST"
             case cardForm = "CARD_FORM"
             case directCheckout = "DIRECT_CHECKOUT"
             case dynamicForm = "DYNAMIC_FORM"

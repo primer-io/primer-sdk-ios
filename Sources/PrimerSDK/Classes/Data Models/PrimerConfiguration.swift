@@ -134,6 +134,7 @@ struct PrimerAPIConfiguration: Codable {
 }
 
 extension PrimerAPIConfiguration {
+    
     struct CheckoutModule: Codable {
         let type: String
         let requestUrlStr: String?
