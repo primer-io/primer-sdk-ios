@@ -114,7 +114,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationDidStart(for: PrimerPaymentMethodType.paymentCard.rawValue)
             
             firstly {
                 PrimerHeadlessUniversalCheckout.current.validateSession()
@@ -129,7 +129,7 @@ extension PrimerHeadlessUniversalCheckout {
                 self.buildRequestBody()
             }
             .then { requestbody -> Promise<PaymentMethodToken> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue)
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: PrimerPaymentMethodType.paymentCard.rawValue)
                 return self.tokenize(request: requestbody)
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in

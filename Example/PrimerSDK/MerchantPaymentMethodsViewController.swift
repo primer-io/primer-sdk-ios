@@ -120,6 +120,7 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
+            PrimerHeadlessUniversalCheckout.makeButton(for: .payPal)
             PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
         }
     }
@@ -131,16 +132,16 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
         print("\n\n🤯🤯🤯 \(#function)")
     }
     
-    func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)")
         self.showLoadingOverlay()
     }
     
-    func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
-    func primerHeadlessUniversalCheckoutPaymentMethodShowed(paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
@@ -218,7 +219,7 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
     
     func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         print("\n\n🤯🤯🤯 \(#function)\ndata: \(data)")
-        decisionHandler(.continuePaymentCreation())
+        decisionHandler(.abortPaymentCreation(withErrorMessage: "YOUR_ERROR_MESSAGE"))
     }
 }
 

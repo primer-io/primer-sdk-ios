@@ -280,7 +280,7 @@ public class PrimerHeadlessUniversalCheckout {
                 break
             }
             
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationStarted?(paymentMethodType: paymentMethod.rawValue)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationDidStart?(for: paymentMethod.rawValue)
             Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout, andClientToken: clientToken)
         }
     }

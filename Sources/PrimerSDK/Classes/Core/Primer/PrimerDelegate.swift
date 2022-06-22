@@ -164,21 +164,21 @@ internal class PrimerDelegateProxy {
         }
     }
     
-    static func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String) {
+    static func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationStarted?(paymentMethodType: paymentMethodType)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationDidStart?(for: paymentMethodType)
         }
     }
     
-    static func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {
+    static func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationStarted?(paymentMethodType: paymentMethodType)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationDidStart?(for: paymentMethodType)
         }
     }
     
-    static func primerHeadlessUniversalCheckoutPaymentMethodShowed(paymentMethodType: String) {
+    static func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodShowed?(paymentMethodType: paymentMethodType)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: paymentMethodType)
         }
     }
 }

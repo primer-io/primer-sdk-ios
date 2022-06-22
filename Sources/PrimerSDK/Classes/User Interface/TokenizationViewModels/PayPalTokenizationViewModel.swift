@@ -47,7 +47,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func start() {
         self.didPresentExternalView = {
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodShowed(paymentMethodType: self.config.type.rawValue)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type.rawValue)
         }
         
         super.start()
@@ -82,7 +82,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: self.config.type.rawValue)
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type.rawValue)
                 return self.tokenize()
             }
             .done { paymentMethodTokenData in

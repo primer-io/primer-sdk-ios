@@ -97,7 +97,7 @@ class MerchantCardFormViewController: UIViewController {
 
 extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegate {
 
-    func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
         print("🤯🤯🤯 \(#function)")
     }
     
@@ -109,7 +109,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
         print("🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
-    func primerHeadlessUniversalCheckoutPaymentMethodPresented(paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
         print("🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
@@ -181,6 +181,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
 }
 
 extension MerchantCardFormViewController: PrimerInputElementDelegate {
+    
     func inputElementDidFocus(_ sender: PrimerInputElement) {
 
     }

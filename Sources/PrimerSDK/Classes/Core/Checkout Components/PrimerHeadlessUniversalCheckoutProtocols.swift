@@ -185,9 +185,9 @@ public protocol PrimerInputElementDelegate: AnyObject {
 public protocol PrimerHeadlessUniversalCheckoutDelegate {
     
     @objc func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String])
-    @objc optional func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String)
-    @objc optional func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String)
-    @objc optional func primerHeadlessUniversalCheckoutPaymentMethodShowed(paymentMethodType: String)
+    @objc optional func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String)
+    @objc optional func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String)
+    @objc optional func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String)
     @objc optional func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
     @objc optional func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
     @objc optional func primerHeadlessUniversalCheckoutDidFail(withError err: Error)
