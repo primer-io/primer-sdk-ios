@@ -804,11 +804,8 @@ extension CardFormPaymentMethodTokenizationViewModel {
                                                                   state: stateFieldView.state,
                                                                   countryCode: countryFieldView.countryCode)
                 
-                if let updatedBillingAddressDictionary = try? updatedBillingAddress.asDictionary() {
-                    let billingAddressAction = ClientSessionAPIResponse.Action(
-                        type: .setBillingAddress,
-                        params: updatedBillingAddressDictionary
-                    )
+                if let billingAddress = try? updatedBillingAddress.asDictionary() {
+                    let billingAddressAction: ClientSessionAPIResponse.Action = .setBillingAddressActionWithParameters(billingAddress)
                     actions.append(billingAddressAction)
                 }
             }
@@ -949,21 +946,6 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
 }
 
-extension CardFormPaymentMethodTokenizationViewModel {
-    
-    private func updateBillingAddressWithParameters(_ parameters: [String: Any]) {
-        
-        firstly {
-            ClientSessionAPIResponse.Action.setPostalCodeWithParameters(parameters)
-        }
-        .done{}
-        .catch { error in
-            // FIXME:
-//            self.handle(error: error)
-        }
-    }
-}
-
 extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
     
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {
@@ -971,23 +953,6 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        // Dispatch postal code action if valid postal code.
-        if let fieldView = (primerTextFieldView as? PrimerPostalCodeFieldView), isValid  == true {
-            let currentBillingAddress = AppState.current.apiConfiguration?.clientSession?.customer?.billingAddress
-            let billingAddressWithUpdatedPostalCode = ClientSessionAPIResponse.Address(firstName: currentBillingAddress?.firstName,
-                                                                            lastName: currentBillingAddress?.lastName,
-                                                                            addressLine1: currentBillingAddress?.addressLine1,
-                                                                            addressLine2: currentBillingAddress?.addressLine2,
-                                                                            city: currentBillingAddress?.city,
-                                                                            postalCode: fieldView.postalCode,
-                                                                            state: currentBillingAddress?.state,
-                                                                            countryCode: currentBillingAddress?.countryCode)
-            
-            if let billingAddressWithUpdatedPostalCode = try? billingAddressWithUpdatedPostalCode.asDictionary() {
-                self.updateBillingAddressWithParameters(ClientSessionAPIResponse.Action.makeBillingAddressDictionaryRequestFromParameters(billingAddressWithUpdatedPostalCode))
-            }
-        }
-        
         autofocusToNextFieldIfNeeded(for: primerTextFieldView, isValid: isValid)
         showTexfieldViewErrorIfNeeded(for: primerTextFieldView, isValid: isValid)
         enableSubmitButtonIfNeeded()
