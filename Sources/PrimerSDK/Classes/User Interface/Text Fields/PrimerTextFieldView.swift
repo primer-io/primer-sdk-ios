@@ -172,10 +172,14 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     }
     
     public func textFieldDidEndEditing(_ textField: UITextField) {
+        
         guard let primerTextField = textField as? PrimerTextField else { return }
-        validation = (self.isValid?(primerTextField._text ?? "") ?? false)
-            ? PrimerTextField.Validation.valid
-        : PrimerTextField.Validation.invalid(PrimerError.invalidValue(key: "primerTextField.text", value: textField.text, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
+        
+        if let isValid = self.isValid {
+            validation = (isValid(primerTextField._text ?? "") ?? false)
+                ? PrimerTextField.Validation.valid
+            : PrimerTextField.Validation.invalid(PrimerError.invalidValue(key: "primerTextField.text", value: textField.text, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
+        }
         
         switch validation {
         case .valid:

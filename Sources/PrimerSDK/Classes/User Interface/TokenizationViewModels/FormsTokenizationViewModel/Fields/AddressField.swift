@@ -48,6 +48,7 @@ class PrimerAddressLine2Field: PrimerAddressField {
     
     static func addressLine2FieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerAddressLine2FieldView {
         let addressLine2FieldView = PrimerAddressLine2FieldView()
+        addressLine2FieldView.placeholder = Strings.CardFormView.AddressLine2.placeholder
         addressLine2FieldView.heightAnchor.constraint(equalToConstant: 36).isActive = true
         addressLine2FieldView.textColor = theme.input.text.color
         addressLine2FieldView.delegate = delegate

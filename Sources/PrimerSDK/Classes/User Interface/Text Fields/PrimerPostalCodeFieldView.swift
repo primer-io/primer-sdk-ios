@@ -22,7 +22,7 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
     }
     
     public override func textFieldDidBeginEditing(_ textField: UITextField) {
-        super.textFieldDidEndEditing(textField)
+        super.textFieldDidBeginEditing(textField)
         let event = cardFormFieldDidBeginEditingEventWithObjectId(.billingAddressPostalCode)
         sendTextFieldDidEndEditingAnalyticsEventIfNeeded(event)
     }
