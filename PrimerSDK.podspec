@@ -21,10 +21,11 @@ Pod::Spec.new do |s|
         ss.ios.resource_bundles = {
             'PrimerResources' => [
                 'Sources/PrimerSDK/Resources/*.xcassets',
-                'Sources/PrimerSDK/Resources/Localizable/*',
+                'Sources/PrimerSDK/Resources/Localizable/**/*.strings',
+                'Sources/PrimerSDK/Resources/Localizable/**/*.stringsdict',
                 'Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}',
                 'Sources/PrimerSDK/Resources/Nibs/*',
-                'Sources/PrimerSDK/Resources/JSONs/*'
+                'Sources/PrimerSDK/Resources/JSONs/**/*.json'
             ]
         }
         ss.ios.pod_target_xcconfig = {

@@ -315,6 +315,44 @@ class Base: XCTestCase {
                 buttonTexts: ["Pay €10.50"],
                 resultScreenTexts: nil
             )
+        ),
+        Payment(
+            alias: "PAYMENT_CARD_WITH_PROCESSOR_3DS_SUCCESS",
+            id: "PAYMENT_CARD",
+            environment: .staging,
+            currency: "GBP",
+            countryCode: "GB",
+            amount: "10011",
+            expectations: Payment.Expectations(
+                amount: "£100.11",
+                surcharge: "Additional fee may apply",
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay £100.11"],
+                resultScreenTexts: [
+                    "status": "SETTLED",
+                    "amount": "GBP 100.11"
+                ]
+            )
+        ),
+        Payment(
+            alias: "PAYMENT_CARD_WITH_PROCESSOR_3DS_FAIL",
+            id: "PAYMENT_CARD",
+            environment: .staging,
+            currency: "GBP",
+            countryCode: "GB",
+            amount: "10011",
+            expectations: Payment.Expectations(
+                amount: "£100.11",
+                surcharge: "Additional fee may apply",
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: ["Pay £100.11"],
+                resultScreenTexts: [
+                    "status": "DECLINED",
+                    "amount": "GBP 100.11"
+                ]
+            )
         )
     ]
     
