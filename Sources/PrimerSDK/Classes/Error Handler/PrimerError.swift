@@ -25,21 +25,11 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
     case invalidCvv(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidExpiryDate(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidPostalCode(userInfo: [String: String]?, diagnosticsId: String?)
-    
-    var errorId: String {
-        switch self {
-        case .invalidCardholderName:
-            return "invalid-cardholder-name"
-        case .invalidCardnumber:
-            return "invalid-cardnumber"
-        case .invalidCvv:
-            return "invalid-cvv"
-        case .invalidExpiryDate:
-            return "invalid-expiry-date"
-        case .invalidPostalCode:
-            return "invalid-postal-code"
-        }
-    }
+    case invalidFirstName(userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidLastName(userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidAddress(userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidState(userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidCountry(userInfo: [String: String]?, diagnosticsId: String?)
     
     var diagnosticsId: String {
         switch self {
@@ -53,21 +43,66 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
             return diagnosticsId ?? UUID().uuidString
         case .invalidPostalCode(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
+        case .invalidFirstName(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .invalidLastName(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .invalidAddress(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .invalidState(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .invalidCountry(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        }
+    }
+
+    var errorId: String {
+        switch self {
+        case .invalidCardholderName:
+            return "invalid-cardholder-name"
+        case .invalidCardnumber:
+            return "invalid-cardnumber"
+        case .invalidCvv:
+            return "invalid-cvv"
+        case .invalidExpiryDate:
+            return "invalid-expiry-date"
+        case .invalidPostalCode:
+            return "invalid-postal-code"
+        case .invalidFirstName:
+            return "invalid-first-name"
+        case .invalidLastName:
+            return "invalid-last-name"
+        case .invalidAddress:
+            return "invalid-address"
+        case .invalidState:
+            return "invalid-state"
+        case .invalidCountry:
+            return "invalid-country"
         }
     }
     
     var errorDescription: String? {
         switch self {
-        case .invalidCardholderName(_, _):
-            return "[\(errorId)] Invalid cardholder name (diagnosticsId: \(self.diagnosticsId)"
-        case .invalidCardnumber(_, _):
-            return "[\(errorId)] Invalid cardnumber (diagnosticsId: \(self.diagnosticsId)"
-        case .invalidCvv(_, _):
-            return "[\(errorId)] Invalid CVV (diagnosticsId: \(self.diagnosticsId)"
-        case .invalidExpiryDate(_, _):
-            return "[\(errorId)] Invalid expiry date (diagnosticsId: \(self.diagnosticsId)"
-        case .invalidPostalCode(_, _):
-            return "[\(errorId)] Invalid postal code (diagnosticsId: \(self.diagnosticsId)"
+        case .invalidCardholderName:
+            return "[\(errorId)] Invalid cardholder name"
+        case .invalidCardnumber:
+            return "[\(errorId)] Invalid card number"
+        case .invalidCvv:
+            return "[\(errorId)] Invalid CVV"
+        case .invalidExpiryDate:
+            return "[\(errorId)] Invalid expiry date"
+        case .invalidPostalCode:
+            return "[\(errorId)] Invalid postal code"
+        case .invalidFirstName:
+            return "[\(errorId)] Invalid first name"
+        case .invalidLastName:
+            return "[\(errorId)] Invalid last name"
+        case .invalidAddress:
+            return "[\(errorId)] Invalid address"
+        case .invalidState:
+            return "[\(errorId)] Invalid state"
+        case .invalidCountry:
+            return "[\(errorId)] Invalid country"
         }
     }
     
@@ -79,9 +114,13 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
                 .invalidCardnumber(let userInfo, _),
                 .invalidCvv(let userInfo, _),
                 .invalidExpiryDate(let userInfo, _),
-                .invalidPostalCode(let userInfo, _):
+                .invalidPostalCode(let userInfo, _),
+                .invalidFirstName(let userInfo, _),
+                .invalidLastName(let userInfo, _),
+                .invalidAddress(let userInfo, _),
+                .invalidState(let userInfo, _),
+                .invalidCountry(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-            tmpUserInfo["diagnosticsId"] = self.diagnosticsId
         }
         
         return tmpUserInfo
@@ -98,6 +137,7 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
     var exposedError: Error {
         return self
     }
+    
 }
 
 internal enum InternalError: PrimerErrorProtocol {

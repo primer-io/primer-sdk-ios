@@ -63,11 +63,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         textField.borderStyle = .none
         textField.layer.cornerRadius = 3.0
         textField.font = UIFont.systemFont(ofSize: 16.0)
-        textField.placeholder = NSLocalizedString("search-bank-placeholder",
-                                                        tableName: nil,
-                                                        bundle: Bundle.primerResources,
-                                                        value: "Search bank",
-                                                        comment: "Search bank - Search bank textfield placeholder")
+        textField.placeholder = Strings.BankSelector.searchBankTitle
         textField.rightViewMode = .always
         return textField
     }()

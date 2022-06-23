@@ -44,6 +44,8 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     @IBOutlet internal weak var textField: PrimerTextField!
     internal var isValid: ((_ text: String) -> Bool?)?
     internal(set) public var isTextValid: Bool = false
+    internal var editingAnalyticsObjectId: Analytics.Event.Property.ObjectId?
+    internal(set) public var isEditingAnalyticsEnabled: Bool = false
     public var delegate: PrimerTextFieldViewDelegate?
     internal var validation: PrimerTextField.Validation = .notAvailable {
         didSet {
@@ -62,12 +64,13 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public var isEmpty: Bool {
         return textField.isEmpty
     }
-    
+        
     // MARK: - PROXY
     
     public override var backgroundColor: UIColor? { didSet {
         textField?.backgroundColor = backgroundColor
     } }
+    
     public var text: String? { didSet { textField.text = text } }
     public var attributedText: NSAttributedString? { didSet { textField.attributedText = attributedText } }
     public var textColor: UIColor? { didSet { textField.textColor = textColor } }
@@ -90,6 +93,9 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public var clearButtonMode: UITextField.ViewMode = .never { didSet { textField.clearButtonMode = clearButtonMode }}
     public var leftViewMode: UITextField.ViewMode = .never { didSet { textField.leftViewMode = leftViewMode }}
     public var rightViewMode: UITextField.ViewMode = .never { didSet { textField.rightViewMode = rightViewMode }}
+    public var keyboardType: UIKeyboardType = .default { didSet { textField.keyboardType = keyboardType }}
+    public var isTextFieldAccessibilityElement: Bool = false { didSet { textField.isAccessibilityElement = isTextFieldAccessibilityElement }}
+    public var textFieldaccessibilityIdentifier: String? { didSet { textField.accessibilityIdentifier = textFieldaccessibilityIdentifier }}
     
     public func borderRectForBounds(forBounds bounds: CGRect) -> CGRect {
         return textField.borderRect(forBounds: bounds)
@@ -134,29 +140,17 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public override func resignFirstResponder() -> Bool {
         return textField.resignFirstResponder()
     }
-    
-//    public override var inputView: UIView? {
-//        get {
-//            return textField.inputView
-//        }
-//        set {
-//            textField.inputView = newValue
-//        }
-//    }
-//    public override var inputAccessoryView: UIView? {
-//        get {
-//            return textField.inputAccessoryView
-//        }
-//        set {
-//            textField.inputAccessoryView = newValue
-//        }
-//    }
+
     public var clearsOnInsertion: Bool = false { didSet { textField.clearsOnInsertion = clearsOnInsertion }}
     
+    override func loadNib() -> UIView {
+        let bundle = Bundle.primerResources
+        let nib = UINib(nibName: PrimerTextFieldView.className, bundle: bundle)
+        return nib.instantiate(withOwner: self, options: nil).first as! UIView
+    }
     
     override func xibSetup() {
         super.xibSetup()
-                        
         backgroundColor = .clear
         view.backgroundColor = .clear
         textField.backgroundColor = backgroundColor
@@ -245,7 +239,7 @@ class PrimerCustomFieldView: UIView {
         }
     }
     
-    private var stackView: UIStackView = UIStackView()
+    private var verticalStackView: UIStackView = UIStackView()
     private let errorLabel = UILabel()
     private let topPlaceholderLabel = UILabel()
     private let rightImageView1Container = UIView()
@@ -256,14 +250,14 @@ class PrimerCustomFieldView: UIView {
     private var theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     func setup() {
-        addSubview(stackView)
-        stackView.alignment = .fill
-        stackView.axis = .vertical
+        addSubview(verticalStackView)
+        verticalStackView.alignment = .fill
+        verticalStackView.axis = .vertical
 
         topPlaceholderLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         topPlaceholderLabel.text = placeholderText
         topPlaceholderLabel.textColor = theme.text.system.color
-        stackView.addArrangedSubview(topPlaceholderLabel)
+        verticalStackView.addArrangedSubview(topPlaceholderLabel)
         
         rightImageView1.contentMode = .scaleAspectFit
         rightImageView2.contentMode = .scaleAspectFit
@@ -297,21 +291,21 @@ class PrimerCustomFieldView: UIView {
         
         bottomLine.backgroundColor = theme.colors.primary
         bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        stackView.addArrangedSubview(textFieldStackView)
-        stackView.addArrangedSubview(bottomLine)
+        verticalStackView.addArrangedSubview(textFieldStackView)
+        verticalStackView.addArrangedSubview(bottomLine)
 
         errorLabel.textColor = theme.text.error.color
         errorLabel.heightAnchor.constraint(equalToConstant: 12.0).isActive = true
         errorLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         errorLabel.text = nil
         
-        stackView.addArrangedSubview(errorLabel)
+        verticalStackView.addArrangedSubview(errorLabel)
 
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
-        stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0).isActive = true
-        stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0).isActive = true
-        stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0).isActive = true
+        verticalStackView.translatesAutoresizingMaskIntoConstraints = false
+        verticalStackView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
+        verticalStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0).isActive = true
+        verticalStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0).isActive = true
+        verticalStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0).isActive = true
     }
 
 }

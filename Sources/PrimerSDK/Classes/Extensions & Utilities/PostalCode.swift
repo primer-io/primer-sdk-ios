@@ -14,17 +14,7 @@ class PostalCode {
         default:
             return "90210"
         }
-    }
-    
-    static func name(for countryCode: CountryCode?) -> String {
-        guard let countryCode = countryCode else { return "Postal code" }
-        switch (countryCode) {
-        case CountryCode.us:
-            return "Zip code"
-        default:
-            return "Postal code"
-        }
-    }
+    }    
 }
 
 #endif
