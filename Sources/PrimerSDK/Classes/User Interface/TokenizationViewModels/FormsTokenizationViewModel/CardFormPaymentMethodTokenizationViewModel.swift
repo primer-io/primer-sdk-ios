@@ -1046,6 +1046,7 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
         countryFieldView.textField.text = "\(country.flag) \(country.country)"
         countryFieldView.countryCode = country
         countryFieldView.validation = .valid
+        countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
         Primer.shared.primerRootVC?.popViewController()
     }
 }

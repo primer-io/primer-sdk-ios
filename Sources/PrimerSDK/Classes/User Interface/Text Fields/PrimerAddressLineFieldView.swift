@@ -10,7 +10,7 @@ public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         isValid = { text in
-            return text.isTypingNonDecimalCharacters
+            return !text.isEmpty
         }
         validationError = .invalidAddress(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
     }
