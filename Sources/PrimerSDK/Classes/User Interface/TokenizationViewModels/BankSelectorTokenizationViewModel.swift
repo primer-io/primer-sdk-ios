@@ -193,12 +193,20 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         
     @objc
     override func startTokenizationFlow() {
-        super.startTokenizationFlow()
+        didStartTokenization?()
         
-        DispatchQueue.main.async {
-            UIApplication.shared.endIgnoringInteractionEvents()
+        self.completion = { (tok, err) in
+            if let err = err {
+                self.handleFailedTokenizationFlow(error: err)
+            } else {
+                self.handleSuccessfulTokenizationFlow()
+            }
         }
         
+        DispatchQueue.main.async {
+            UIApplication.shared.beginIgnoringInteractionEvents()
+        }
+                
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -213,6 +221,15 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
                 objectClass: "\(Self.self)",
                 place: .bankSelectionList))
         Analytics.Service.record(event: event)
+        
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
+        
+        if PrimerDelegateProxy.isClientSessionActionsImplemented {
+            let params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            ClientSession.Action.selectPaymentMethod(resumeHandler: self, withParameters: params)
+        } else {
+            continueTokenizationFlow()
+        }
     }
     
     fileprivate func continueTokenizationFlow() {
@@ -236,6 +253,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             let bsvc = BankSelectorViewController(viewModel: self)
             DispatchQueue.main.async {
                 Primer.shared.primerRootVC?.show(viewController: bsvc)
+                UIApplication.shared.endIgnoringInteractionEvents()
             }
             
             return self.fetchPaymentMethodToken()
