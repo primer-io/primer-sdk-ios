@@ -7,6 +7,7 @@
 
 #if canImport(UIKit)
 
+import Foundation
 @testable import PrimerSDK
 
 class MockTokenizationService: TokenizationServiceProtocol {
