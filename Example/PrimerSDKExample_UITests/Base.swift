@@ -143,6 +143,23 @@ class Base: XCTestCase {
             )
         ),
         Payment(
+            id: "ADYEN_IDEAL",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "NL",
+            amount: "10100",
+            expectations: Payment.Expectations(
+                amount: "€101.00",
+                surcharge: "+€0.79",
+                webviewImage: "giropay",
+                webviewTexts: nil,
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "SUCCESS"
+                ]
+            )
+        ),
+        Payment(
             id: "ADYEN_MOBILEPAY",
             environment: .sandbox,
             currency: "DKK",
