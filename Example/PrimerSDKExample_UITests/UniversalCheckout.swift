@@ -12,17 +12,17 @@ class UniversalCheckout: XCTestCase {
     
     let app = XCUIApplication()
     let base = Base()
-
+    
     override func setUp() {
         super.setUp()
         app.launchArguments = ["UITesting"]
         app.launch()
     }
-
+    
     override func tearDown() {
         super.tearDown()
     }
-
+    
     func testUniversalCheckout() throws {
         try Base().testInitialize(
             env: "sandbox",
@@ -35,11 +35,11 @@ class UniversalCheckout: XCTestCase {
         
         let universalCheckoutButton = app.buttons["universal_checkout_button"]
         universalCheckoutButton.tap()
-
+        
         // Test that title is correct
         let checkoutTitle = app.staticTexts["Choose payment method"]
         let vaultTitle = app.staticTexts["Add payment method"]
-
+        
         
         expectation(for: Expectation.exists, evaluatedWith: checkoutTitle, handler: nil)
         expectation(for: Expectation.doesNotExist, evaluatedWith: vaultTitle, handler: nil)
@@ -74,9 +74,9 @@ class UniversalCheckout: XCTestCase {
             currency: pm.currency,
             amount: pm.amount,
             performPayment: true)
-
+        
         try base.openUniversalCheckout()
-
+        
         if let amountExpectation = pm.expectations?.amount {
             let amountText = app.staticTexts[amountExpectation]
             XCTAssert(amountText.exists, "Amount '\(amountExpectation)' should exist")
@@ -94,14 +94,14 @@ class UniversalCheckout: XCTestCase {
         let applePayExists = expectation(for: Expectation.exists, evaluatedWith: applePay, handler: nil)
         wait(for: [applePayExists], timeout: 15.0)
         _ = applePay.wait(for: .runningForeground, timeout: 5)
-
+        
         applePay.buttons["Pay Primer Merchant, €1.19"].tap()
     }
-
+    
     func testPayPal() throws {
         let payment = Base.paymentMethods.filter({ $0.alias == "PAYPAL" }).first!
         try base.testPayment(payment, cancelPayment: false)
-
+        
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
         let alert = springboard.alerts.firstMatch;
         let alertExists = expectation(for: Expectation.exists, evaluatedWith: alert, handler: nil)
@@ -113,7 +113,7 @@ class UniversalCheckout: XCTestCase {
         
         let cancelButton = app.buttons.matching(NSPredicate(format: "label == 'Cancel'")).firstMatch
         cancelButton.tap()
-
+        
         try base.dismissSDK()
     }
     
@@ -133,9 +133,9 @@ class UniversalCheckout: XCTestCase {
         wait(for: [banknameTextFieldIsHittable], timeout: 30)
         banknameTextField.tap()
         banknameTextField.typeText("Testbank Fiducia 44448888 GENODETT488")
-                
+        
         let autocompleteButton = app.webViews.firstMatch.staticTexts.matching(NSPredicate(format: "label == 'Testbank Fiducia 44448888 GENODETT488'")).firstMatch
-
+        
         if autocompleteButton.exists {
             let autocompleteButtonIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: autocompleteButton, handler: nil)
             wait(for: [autocompleteButtonIsHittable], timeout: 30)
@@ -146,14 +146,14 @@ class UniversalCheckout: XCTestCase {
         let continueButtonIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: continueButton, handler: nil)
         wait(for: [continueButtonIsHittable], timeout: 30)
         continueButton.tap()
-                
+        
         let agreeButton = app.webViews.firstMatch.buttons.matching(NSPredicate(format: "label == 'Annehmen'")).firstMatch
         if agreeButton.exists {
             let agreeButtonIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: agreeButton, handler: nil)
             wait(for: [agreeButtonIsHittable], timeout: 30)
             agreeButton.tap()
         }
-                
+        
         let scTextField = app.otherElements.containing(NSPredicate(format: "label == 'sc:'")).firstMatch.textFields.firstMatch
         let scTextFieldIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: scTextField, handler: nil)
         wait(for: [scTextFieldIsHittable], timeout: 30)
@@ -191,6 +191,33 @@ class UniversalCheckout: XCTestCase {
         try base.dismissSDK()
         try base.resultScreenExpectations(for: payment)
     }
+
+    func testAdyenIDeal() throws {
+        let app = XCUIApplication()
+        app/*@START_MENU_TOKEN@*/.staticTexts["Initialize Primer SDK"]/*[[".buttons[\"Initialize Primer SDK\"].staticTexts[\"Initialize Primer SDK\"]",".buttons[\"initialize_primer_sdk\"].staticTexts[\"Initialize Primer SDK\"]",".staticTexts[\"Initialize Primer SDK\"]"],[[[-1,2],[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        app/*@START_MENU_TOKEN@*/.staticTexts["Universal Checkout"]/*[[".buttons[\"Universal Checkout\"].staticTexts[\"Universal Checkout\"]",".buttons[\"universal_checkout_button\"].staticTexts[\"Universal Checkout\"]",".staticTexts[\"Universal Checkout\"]"],[[[-1,2],[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        
+        let scrollView = app.scrollViews["primer_container_scroll_view"]
+        let amountTextExists = expectation(for: Expectation.exists, evaluatedWith: scrollView, handler: nil)
+        var expectations = [amountTextExists]
+        wait(for: expectations, timeout: 15)
+        expectations = []
+        
+        let adyenIDealButton = scrollView.otherElements.buttons["ADYEN_IDEAL"]
+        adyenIDealButton.tap()
+        
+        let elementsQuery = scrollView.otherElements
+        elementsQuery.tables/*@START_MENU_TOKEN@*/.staticTexts["Test Issuer"]/*[[".cells.staticTexts[\"Test Issuer\"]",".staticTexts[\"Test Issuer\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        
+        let paymentLabel = app/*@START_MENU_TOKEN@*/.webViews.webViews.webViews.staticTexts["Payment: EUR 101.00"]/*[[".otherElements[\"BrowserView?WebViewProcessID=19242\"].webViews.webViews.webViews",".otherElements[\"Online transfer\"].staticTexts[\"Payment: EUR 101.00\"]",".staticTexts[\"Payment: EUR 101.00\"]",".webViews.webViews.webViews"],[[[-1,3,1],[-1,0,1]],[[-1,2],[-1,1]]],[0,0]]@END_MENU_TOKEN@*/
+        let paymentLabelExists = expectation(for: Expectation.exists, evaluatedWith: paymentLabel, handler: nil)
+        let continueButton = app/*@START_MENU_TOKEN@*/.webViews.webViews.webViews.buttons["Continue"]/*[[".otherElements[\"BrowserView?WebViewProcessID=19242\"].webViews.webViews.webViews",".otherElements[\"Online transfer\"].buttons[\"Continue\"]",".buttons[\"Continue\"]",".webViews.webViews.webViews"],[[[-1,3,1],[-1,0,1]],[[-1,2],[-1,1]]],[0,0]]@END_MENU_TOKEN@*/
+        let continueButtonExists = expectation(for: Expectation.exists, evaluatedWith: continueButton, handler: nil)
+        expectations = [paymentLabelExists, continueButtonExists]
+        wait(for: expectations, timeout: 15)
+        expectations = []
+        continueButton.tap()
+    }
     
     func testAdyenMobilePay() throws {
         let payment = Base.paymentMethods.filter({ $0.alias == "ADYEN_MOBILEPAY" }).first!
@@ -210,7 +237,7 @@ class UniversalCheckout: XCTestCase {
         let confirmButton = app.buttons.matching(NSPredicate(format: "label == 'Confirm'")).firstMatch
         
         XCTAssert(confirmButton.isEnabled == false, "The Confirm button should be disabled logo should be visible")
-
+        
         sixDigitsBlikTextField.typeText("666")
         
         XCTAssert(confirmButton.isEnabled, "The Confirm button should be enabled now")
@@ -241,7 +268,7 @@ class UniversalCheckout: XCTestCase {
         wait(for: [surnameTextFieldIsHittable], timeout: 30)
         surnameTextField.tap()
         surnameTextField.typeText("Smith")
-
+        
         toolBarDoneButton.tap()
         safariWebView.webViews.firstMatch.pinch(withScale: 0.5, velocity: -0.5)
         
@@ -253,7 +280,7 @@ class UniversalCheckout: XCTestCase {
         
         toolBarDoneButton.tap()
         safariWebView.webViews.firstMatch.pinch(withScale: 0.5, velocity: -0.5)
-                
+        
         let payButton = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Pay 2.88 PLN'")).firstMatch
         payButton.tap()
         
@@ -265,7 +292,7 @@ class UniversalCheckout: XCTestCase {
         let successImage = app.images["check-circle"]
         let successImageExists = expectation(for: Expectation.exists, evaluatedWith: successImage, handler: nil)
         wait(for: [successImageExists], timeout: 15)
-
+        
         let scrollView = app.scrollViews["primer_container_scroll_view"]
         scrollView.swipeDown()
         
@@ -341,7 +368,7 @@ class UniversalCheckout: XCTestCase {
         cardholderTextField.typeText("John Smith")
         
         XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
-
+        
         postalCodeTextField.tap()
         postalCodeTextField.typeText("EC1V")
         
@@ -364,12 +391,12 @@ class UniversalCheckout: XCTestCase {
         let card = Base.cards.filter({ $0.alias == "FAILING_CARD_PROCESSOR_3DS" }).first!
         try openCardForm(for: threeDSPayment)
         fillCardDataWithCard(card, for: threeDSPayment, tappingPayOnceEnabled: true)
-                
+        
         let completeButton = app.webViews.firstMatch.buttons.containing(NSPredicate(format: "label CONTAINS 'COMPLETE'")).firstMatch
         let completeButtonIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: completeButton, handler: nil)
         wait(for: [completeButtonIsHittable], timeout: 30)
         completeButton.tap()
-                
+        
         try base.successViewExists()
         try base.dismissSDK()
         try base.resultScreenExpectations(for: threeDSPayment)
@@ -380,17 +407,17 @@ class UniversalCheckout: XCTestCase {
         let card = Base.cards.filter({ $0.alias == "FAILING_CARD_PROCESSOR_3DS" }).first!
         try openCardForm(for: threeDSPayment)
         fillCardDataWithCard(card, for: threeDSPayment, tappingPayOnceEnabled: true)
-                
+        
         let completeButton = app.webViews.firstMatch.buttons.containing(NSPredicate(format: "label CONTAINS 'COMPLETE'")).firstMatch
         let completeButtonIsHittable = expectation(for: Expectation.isHittable, evaluatedWith: completeButton, handler: nil)
         wait(for: [completeButtonIsHittable], timeout: 30)
         completeButton.tap()
-                
+        
         try base.successViewExists()
         try base.dismissSDK()
         try base.resultScreenExpectations(for: threeDSPayment)
     }
-
+    
     
     func testPass3DSChallenge() throws {
         let threeDSPayment = Base.paymentMethods.filter({ $0.alias == "3DS_PAYMENT_CARD" }).first!
@@ -425,7 +452,7 @@ class UniversalCheckout: XCTestCase {
         
         let failChallengeRadioButton = app.children(matching: .window).element(boundBy: 0).scrollViews.children(matching: .other).element(boundBy: 0).children(matching: .other).element(boundBy: 1).children(matching: .other).element.children(matching: .other).element(boundBy: 0).children(matching: .other).element(boundBy: 1).children(matching: .other).element.children(matching: .button).element
         failChallengeRadioButton.tap()
-
+        
         let submit3DSButton = app.buttons["Submit"]
         submit3DSButton.tap()
         
@@ -470,12 +497,12 @@ extension UniversalCheckout {
             performPayment: true)
         
         try base.openUniversalCheckout()
-
+        
         if let amountExpectation = payment.expectations?.amount {
             let amountText = app.staticTexts[amountExpectation]
             XCTAssert(amountText.exists, "Amount '\(amountExpectation)' should exist")
         }
-
+        
         let scrollView = app.scrollViews["primer_container_scroll_view"]
         if let surchargeExpectation = payment.expectations?.surcharge {
             Base.validateSurcharge(surchargeExpectation, forPaymentMethod: payment.id)
@@ -499,7 +526,7 @@ extension UniversalCheckout {
         let cardholderTextField = app.textFields["card_holder_txt_fld"]
         let postalCodeTextField = app.textFields["postal_code_txt_fld"]
         let submitButton = app.buttons["submit_btn"]
-
+        
         if let submitButtonTexts = payment.expectations?.buttonTexts {
             for text in submitButtonTexts {
                 let submitButtonText = submitButton.staticTexts[text]
@@ -510,7 +537,7 @@ extension UniversalCheckout {
         if checkingSubmitButton {
             XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
         }
-
+        
         cardnumberTextField.tap()
         cardnumberTextField.typeText(card.number)
         
@@ -531,13 +558,13 @@ extension UniversalCheckout {
             cvcTextField.tap()
             cvcTextField.typeText(cvv)
         }
-                
+        
         if let cardholderName = card.cardholderName {
-
+            
             if checkingSubmitButton {
                 XCTAssert(!submitButton.isEnabled, "Submit button should be disabled")
             }
-
+            
             cardholderTextField.tap()
             cardholderTextField.typeText(cardholderName)
         }
