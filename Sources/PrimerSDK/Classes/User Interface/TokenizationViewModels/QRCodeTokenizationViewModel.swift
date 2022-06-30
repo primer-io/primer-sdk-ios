@@ -14,7 +14,6 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     
     private var tokenizationService: TokenizationServiceProtocol?
     internal var qrCode: String?
-    private var didCancel: (() -> Void)?
     
     deinit {
         tokenizationService = nil
@@ -112,7 +111,13 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                     self.presentQRCodePaymentMethod()
                 }
                 .then { () -> Promise<String> in
-                    return self.startPolling(on: statusUrl)
+                    let pollingModule = PollingModule(url: statusUrl)
+                    self.didCancel = {
+                        pollingModule.cancel()
+                        return
+                    }
+                    
+                    return pollingModule.start()
                 }
                 .done { resumeToken in
                     seal.fulfill(resumeToken)
@@ -135,31 +140,6 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             self.didPresentPaymentMethodUI?()
             seal.fulfill(())
         }
-    }
-    
-    internal override func startPolling(on url: URL) -> Promise<String> {
-        let p: Promise? = Promise<String> { seal in
-            self.didCancel = {
-                let err = PrimerError.cancelled(paymentMethodType: .xfers, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                self.pollingRetryTimer?.invalidate()
-                self.pollingRetryTimer = nil
-                return
-            }
-            
-            self.startPolling(on: url) { (id, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let id = id {
-                    seal.fulfill(id)
-                } else {
-                    assert(true, "Should have received one parameter")
-                }
-            }
-        }
-        
-        return p!
     }
     
     var pollingRetryTimer: Timer?
