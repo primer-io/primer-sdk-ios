@@ -294,6 +294,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .rapydGCash:
             let image = UIImage(named: "gcash-logo", in: Bundle.primerResources, compatibleWith: nil)
             return UIScreen.isDarkModeEnabled ? image?.withRenderingMode(.alwaysTemplate) : image
+        case .rapydPoli:
+            let image = UIImage(named: "poli-logo", in: Bundle.primerResources, compatibleWith: nil)
+            return UIScreen.isDarkModeEnabled ? image?.withRenderingMode(.alwaysTemplate) : image
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -364,6 +367,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return PrimerColors.white
         case .xfers:
             return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
+        case .rapydPoli:
+            return PrimerColors.white
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -404,6 +409,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return nil
         case .apaya,
                 .paymentCard,
+                .rapydPoli,
                 .rapydGrabPay:
             return theme.paymentMethodButton.text.color
         default:
@@ -446,8 +452,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .mollieBankcontact,
                 .payNLBancontact,
                 .paymentCard,
+                .rapydGCash,
                 .rapydGrabPay,
-                .rapydGCash:
+                .rapydPoli:
             return 1.0
         default:
             assert(true, "Shouldn't end up in here")
@@ -486,8 +493,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return nil
         case .apaya,
                 .paymentCard,
+                .rapydGCash,
                 .rapydGrabPay,
-                .rapydGCash:
+                .rapydPoli:
             return theme.paymentMethodButton.text.color
         case .buckarooBancontact,
                 .buckarooEps,
@@ -536,7 +544,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return nil
         case .apaya,
                 .paymentCard,
-                .rapydGrabPay:
+                .rapydGrabPay,
+                .rapydPoli:
             return theme.paymentMethodButton.text.color
         case .applePay,
                 .xfers:
@@ -630,6 +639,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "gcash"
         case .twoCtwoP:
             return "2c2p"
+        case .rapydPoli:
+            return "poli"
         case .other(rawValue: let rawValue):
             return rawValue
         }

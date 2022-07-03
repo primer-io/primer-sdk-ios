@@ -218,6 +218,8 @@ public class PrimerHeadlessUniversalCheckout {
             return []
         case .twoCtwoP:
             return []
+        case .rapydPoli:
+            return []
         case .rapydGrabPay:
             return []
         case .other(_):
@@ -381,6 +383,8 @@ public struct PrimerAsset {
             brand = .grabPay
         case .opennode:
             brand = .opennode
+        case .rapydPoli:
+            brand = .poli
         case .other:
             return nil
         }
@@ -440,6 +444,7 @@ public struct PrimerAsset {
         case wordline, worldPay = "worldpay"
         case twoCtwoP = "2c2p"
         case xfers
+        case poli
         case opennode
         
         public func getImage(assetType: PrimerAsset.ImageType) -> UIImage? {
