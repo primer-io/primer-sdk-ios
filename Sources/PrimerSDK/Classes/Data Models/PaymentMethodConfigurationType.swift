@@ -43,6 +43,7 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
     case primerTestSofort
     case rapydGCash
     case twoCtwoP
+    case rapydGrabPay
     case xfers
     case opennode
     case other(rawValue: String)
@@ -128,6 +129,8 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
             self = .rapydGCash
         case "TWOC2P":
             self = .twoCtwoP
+        case "RAPYD_GRABPAY":
+            self = .rapydGrabPay
         case "XFERS_PAYNOW":
             self = .xfers
         case "OPENNODE":
@@ -217,6 +220,8 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
             return "RAPYD_GCASH"
         case .twoCtwoP:
             return "TWOC2P"
+        case .rapydGrabPay:
+            return "RAPYD_GRABPAY"
         case .xfers:
             return "XFERS_PAYNOW"
         case .opennode:
@@ -262,6 +267,7 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
                 .rapydGCash,
                 .opennode,
                 .twoCtwoP,
+                .rapydGrabPay,
                 .xfers:
             return Primer.shared.intent == .checkout
             
@@ -320,6 +326,7 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
         case twoCtwoP
         case rapydGCash
         case xfers
+        case rapydGrabPay
         case opennode
         case other
     }

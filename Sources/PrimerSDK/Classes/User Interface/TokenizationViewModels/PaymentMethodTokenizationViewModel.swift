@@ -286,6 +286,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .payPal,
                 .primerTestPayPal:
             return UIImage(named: "paypal-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydGrabPay:
+            let image = UIImage(named: "grab-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
+            return UIScreen.isDarkModeEnabled ? image?.withRenderingMode(.alwaysTemplate) : image
         case .xfers:
             return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .rapydGCash:
@@ -356,7 +359,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .payPal,
                 .primerTestPayPal:
             return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
-        case .rapydGCash:
+        case .rapydGrabPay,
+				.rapydGCash:
             return PrimerColors.white
         case .xfers:
             return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
@@ -399,7 +403,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .xfers:
             return nil
         case .apaya,
-                .paymentCard:
+                .paymentCard,
+                .rapydGrabPay:
             return theme.paymentMethodButton.text.color
         default:
             assert(true, "Shouldn't end up in here")
@@ -441,6 +446,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .mollieBankcontact,
                 .payNLBancontact,
                 .paymentCard,
+                .rapydGrabPay,
                 .rapydGCash:
             return 1.0
         default:
@@ -480,6 +486,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return nil
         case .apaya,
                 .paymentCard,
+                .rapydGrabPay,
                 .rapydGCash:
             return theme.paymentMethodButton.text.color
         case .buckarooBancontact,
@@ -528,7 +535,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .primerTestPayPal:
             return nil
         case .apaya,
-                .paymentCard:
+                .paymentCard,
+                .rapydGrabPay:
             return theme.paymentMethodButton.text.color
         case .applePay,
                 .xfers:
@@ -616,6 +624,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "xfers"
         case .opennode:
             return "opennode"
+        case .rapydGrabPay:
+            return "grab-pay"
         case .rapydGCash:
             return "gcash"
         case .twoCtwoP:

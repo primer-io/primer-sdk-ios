@@ -44,6 +44,7 @@ class PaymentMethodConfig: Codable {
             .opennode,
             .rapydGCash,
             .twoCtwoP,
+            .rapydGrabPay,
             .adyenPayshop
         ]
         
