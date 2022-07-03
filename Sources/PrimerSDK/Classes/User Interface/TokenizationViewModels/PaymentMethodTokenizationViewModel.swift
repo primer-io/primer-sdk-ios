@@ -148,6 +148,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .payPal,
                 .primerTestPayPal:
             return "PayPal"
+        case .rapydGCash:
+            return "GCash"
         case .xfers:
             return "XFers"
         case .other:
@@ -204,6 +206,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .primerTestPayPal,
                 .primerTestSofort,
                 .primerTestKlarna,
+                .rapydGCash,
                 .xfers:
             return nil
             
@@ -285,6 +288,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return UIImage(named: "paypal-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .xfers:
             return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        case .rapydGCash:
+            let image = UIImage(named: "gcash-logo", in: Bundle.primerResources, compatibleWith: nil)
+            return UIScreen.isDarkModeEnabled ? image?.withRenderingMode(.alwaysTemplate) : image
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -350,6 +356,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .payPal,
                 .primerTestPayPal:
             return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
+        case .rapydGCash:
+            return PrimerColors.white
         case .xfers:
             return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
         default:
@@ -387,6 +395,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .primerTestPayPal,
                 .primerTestKlarna,
                 .primerTestSofort,
+                .rapydGCash,
                 .xfers:
             return nil
         case .apaya,
@@ -431,7 +440,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .buckarooEps,
                 .mollieBankcontact,
                 .payNLBancontact,
-                .paymentCard:
+                .paymentCard,
+                .rapydGCash:
             return 1.0
         default:
             assert(true, "Shouldn't end up in here")
@@ -469,7 +479,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .xfers:
             return nil
         case .apaya,
-                .paymentCard:
+                .paymentCard,
+                .rapydGCash:
             return theme.paymentMethodButton.text.color
         case .buckarooBancontact,
                 .buckarooEps,
@@ -503,7 +514,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .adyenVipps,
                 .adyenInterac,
                 .adyenPayTrail,
-                .primerTestSofort:
+                .primerTestSofort,
+                .rapydGCash:
             return .white
         case .adyenIDeal,
                 .adyenTrustly,
@@ -604,6 +616,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "xfers"
         case .opennode:
             return "opennode"
+        case .rapydGCash:
+            return "gcash"
         case .twoCtwoP:
             return "2c2p"
         case .other(rawValue: let rawValue):

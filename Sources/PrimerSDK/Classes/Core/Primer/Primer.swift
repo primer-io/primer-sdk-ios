@@ -185,6 +185,7 @@ public class Primer {
                     .payNLGiropay,
                     .payNLPayconiq,
                     .payPal,
+                    .rapydGCash,
                     .twoCtwoP,
                     .xfers:
                 break

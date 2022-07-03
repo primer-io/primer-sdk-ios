@@ -214,6 +214,8 @@ public class PrimerHeadlessUniversalCheckout {
             return []
         case .opennode:
             return []
+        case .rapydGCash:
+            return []
         case .twoCtwoP:
             return []
         case .other(_):
@@ -369,6 +371,8 @@ public struct PrimerAsset {
             brand = .payPal
         case .twoCtwoP:
             brand = .twoCtwoP
+        case .rapydGCash:
+            brand = .gCash
         case .xfers:
             brand = .xfers
         case .opennode:
