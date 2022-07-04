@@ -148,22 +148,18 @@ internal class PrimerRootViewController: PrimerViewController {
                     
                 }
                 
-                switch Primer.shared.intent {
-                case .checkout:
+                if let paymentMethodType = self?.paymentMethodType {
+                    self?.presentPaymentMethod(type: paymentMethodType)
+                } else if Primer.shared.intent == .checkout {
                     let pucvc = PrimerUniversalCheckoutViewController()
                     self?.show(viewController: pucvc)
-                case .vault:
+                } else if Primer.shared.intent == .vault {
                     let pvmvc = PrimerVaultManagerViewController()
                     self?.show(viewController: pvmvc)
-                case .none:
-                    guard let paymentMethodType = self?.paymentMethodType else {
-                        let err = PrimerError.invalidValue(key: "paymentMethodType", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a payment method type"], diagnosticsId: nil)
-                        ErrorHandler.handle(error: err)
-                        Primer.shared.primerRootVC?.handleErrorBasedOnSDKSettings(err)
-                        return
-                    }
-
-                    self?.presentPaymentMethod(type: paymentMethodType)
+                } else {
+                    let err = PrimerError.invalidValue(key: "paymentMethodType", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a payment method type"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    Primer.shared.primerRootVC?.handleErrorBasedOnSDKSettings(err)
                 }
             }
         })
