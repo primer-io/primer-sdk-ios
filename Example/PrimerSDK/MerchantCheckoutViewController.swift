@@ -30,7 +30,23 @@ class MerchantCheckoutViewController: UIViewController {
         return mcvc
     }
     
+    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var postalCodeLabel: UILabel!
+    
+    var paymentMethodsDataSource: [PaymentMethodToken] = [] {
+        didSet {
+            self.tableView.reloadData()
+        }
+    }
+    override var endpoint: String {
+        get {
+            if environment == .local {
+                return "https://primer-mock-back-end.herokuapp.com"
+            } else {
+                return "https://us-central1-primerdemo-8741b.cloudfunctions.net"
+            }
+        }
+    }
     
     var clientToken: String?
     var amount = 200
@@ -48,10 +64,9 @@ class MerchantCheckoutViewController: UIViewController {
         title = "Primer [\(environment.rawValue)]"
         
         let settings = PrimerSettings(
-            paymentHandling: paymentHandling,
+            paymentHandling: paymentHandling == .auto ? .auto : .manual,
             paymentMethodOptions: PrimerPaymentMethodOptions(
-                urlScheme: "merchant://primer.io",
-                applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.checkout.team", merchantName: "Primer Merchant")
+                applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team", merchantName: "Primer Merchant")
             )
         )
         Primer.shared.configure(settings: settings, delegate: self)
@@ -135,4 +150,46 @@ extension MerchantCheckoutViewController: PrimerDelegate {
         let message = "Merchant App | ERROR"
         decisionHandler(.fail(withErrorMessage: message))
     }
+}
+
+// MARK: - TABLE VIEW DATA SOURCE & DELEGATE
+
+extension MerchantCheckoutViewController: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return paymentMethodsDataSource.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let paymentMethod = paymentMethodsDataSource[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PaymentMethodCell", for: indexPath) as! PaymentMethodCell
+        
+        switch paymentMethod.paymentInstrumentType {
+        case .paymentCard:
+            let title = "•••• •••• •••• \(paymentMethod.paymentInstrumentData?.last4Digits ?? "••••")"
+            cell.configure(title: title, image: paymentMethod.icon.image!)
+        case .payPalBillingAgreement:
+            let title = paymentMethod.paymentInstrumentData?.externalPayerInfo?.email ?? "PayPal"
+            cell.configure(title: title, image: paymentMethod.icon.image!)
+        case .goCardlessMandate:
+            let title = "Direct Debit"
+            cell.configure(title: title, image: paymentMethod.icon.image!)
+        case .klarnaCustomerToken:
+            let title = paymentMethod.paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token"
+            cell.configure(title: title, image: paymentMethod.icon.image!)
+        case .apayaToken:
+            if let apayaViewModel = ApayaViewModel(paymentMethod: paymentMethod) {
+                cell.configure(title: "[\(apayaViewModel.carrier.name)] \(apayaViewModel.hashedIdentifier ?? "")", image: UIImage(named: "mobile"))
+            }
+        default:
+            cell.configure(title: "", image: nil)
+        }
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        presentPrimerOptions(indexPath.row)
+    }
+    
 }

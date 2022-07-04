@@ -114,7 +114,13 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
             amount = Int(amountStr)
         }
         
-        let mcfvc = MerchantPaymentMethodsViewController.instantiate(amount: amount ?? 1, currency: Currency(rawValue: currencyTextField.text ?? "")!, countryCode: CountryCode(rawValue: countryCodeTextField.text ?? "")!)
+        let mcfvc = MerchantPaymentMethodsViewController.instantiate(
+            amount: amount ?? 1000,
+            currency: Currency(rawValue: currencyTextField.text ?? "")!,
+            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? "")!,
+            customerId: customerIdTextField.text,
+            phoneNumber: phoneNumberTextField.text)
+        
         mcfvc.view.translatesAutoresizingMaskIntoConstraints = false
         mcfvc.view.heightAnchor.constraint(equalToConstant: self.view.bounds.height).isActive = true
         mcfvc.view.widthAnchor.constraint(equalToConstant: self.view.bounds.width).isActive = true

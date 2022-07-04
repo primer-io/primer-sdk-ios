@@ -11,19 +11,29 @@ import UIKit
 
 class MerchantPaymentMethodsViewController: UIViewController {
     
-    static func instantiate(amount: Int, currency: Currency, countryCode: CountryCode) -> MerchantPaymentMethodsViewController {
+    static func instantiate(
+        amount: Int,
+        currency: Currency,
+        countryCode: CountryCode,
+        customerId: String?,
+        phoneNumber: String?
+    ) -> MerchantPaymentMethodsViewController {
         let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantPaymentMethodsViewController") as! MerchantPaymentMethodsViewController
         mpmvc.amount = amount
         mpmvc.currency = currency
         mpmvc.countryCode = countryCode
+        mpmvc.customerId = customerId
+        mpmvc.phoneNumber = phoneNumber
         return mpmvc
     }
 
-    var environment: Environment!
     var amount: Int!
     var currency: Currency!
     var countryCode: CountryCode!
     var availablePaymentMethods: [PrimerPaymentMethodType] = []
+    var customerId: String?
+    var phoneNumber: String?
+    private var paymentId: String?
     
 
     @IBOutlet weak var tableView: UITableView!
@@ -39,20 +49,27 @@ class MerchantPaymentMethodsViewController: UIViewController {
         self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
         self.activityIndicator?.color = .black
         self.activityIndicator?.startAnimating()
-        self.requestClientToken { clientToken, err in
+        
+        let clientSessionRequestBody = Networking().clientSessionRequestBodyWithCurrency(customerId ?? String.randomString(length: 8),
+                                                                                         phoneNumber: phoneNumber,
+                                                                                         countryCode: countryCode,
+                                                                                         currency: currency,
+                                                                                         amount: amount)
+
+        Networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
             if let err = err {
-                DispatchQueue.main.async {
-                    self.activityIndicator?.stopAnimating()
-                    self.activityIndicator?.removeFromSuperview()
-                    self.activityIndicator = nil
-                }
+                print(err)
+                let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
+                print(merchantErr)
             } else if let clientToken = clientToken {
                 let settings = PrimerSettings(
+                    paymentHandling: paymentHandling == .auto ? .auto : .manual,
                     paymentMethodOptions: PrimerPaymentMethodOptions(
-                        urlScheme: "merchant://",
+                        urlScheme: "merchant://redirect",
                         applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team", merchantName: "Primer Merchant")
                     )
                 )
+                
                 PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, completion: { (pms, err) in
                     DispatchQueue.main.async {
                         self.activityIndicator?.stopAnimating()
@@ -67,68 +84,25 @@ class MerchantPaymentMethodsViewController: UIViewController {
         }
     }
     
-    private func requestClientToken(completion: @escaping (String?, Error?) -> Void) {
-        
-        let clientSessionRequestBody = Networking().clientSessionRequestBodyWithCurrency("customerId",
-                                                                                         phoneNumber: nil,
-                                                                                         countryCode: .fr,
-                                                                                         currency: .EUR,
-                                                                                         amount: 1000)
-
-        requestClientSession(requestBody: clientSessionRequestBody, completion: { (token, err) in
-            completion(token, err)
-        })
+    // MARK: - HELPERS
+    
+    private func showLoadingOverlay() {
+        self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
+        self.view.addSubview(self.activityIndicator!)
+        self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
+        self.activityIndicator?.color = .black
+        self.activityIndicator?.startAnimating()
     }
     
-    func requestClientSession(requestBody: ClientSessionRequestBody, completion: @escaping (String?, Error?) -> Void) {
-        guard let url = URL(string: "\(endpoint)/api/client-session") else {
-            return completion(nil, NetworkError.missingParams)
-        }
-        
-        let bodyData: Data!
-        
-        do {
-            if let requestBodyJson = requestBody.dictionaryValue {
-                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
-            } else {
-                completion(nil, NetworkError.serializationError)
-                return
-            }
-        } catch {
-            completion(nil, NetworkError.missingParams)
-            return
-        }
-        
-        let networking = Networking()
-        networking.request(
-            apiVersion: .v3,
-            url: url,
-            method: .post,
-            headers: nil,
-            queryParameters: nil,
-            body: bodyData) { result in
-                switch result {
-                case .success(let data):
-                    do {
-                        if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
-                            completion(token, nil)
-                        } else {
-                            let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
-                            completion(nil, err)
-                        }
-                        
-                    } catch {
-                        completion(nil, error)
-                    }
-                case .failure(let err):
-                    completion(nil, err)
-                }
-            }
+    private func hideLoadingOverlay() {
+        self.activityIndicator?.stopAnimating()
+        self.activityIndicator?.removeFromSuperview()
+        self.activityIndicator = nil
     }
-    
 }
 
 extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableViewDelegate {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.availablePaymentMethods.count
     }
@@ -152,51 +126,47 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
 }
 
 extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutDelegate {
-    func primerHeadlessUniversalCheckoutResume(withResumeToken resumeToken: String, resumeHandler: ResumeHandlerProtocol?) {
-        
-    }
 
-    func primerHeadlessUniversalCheckoutPreparationStarted() {
+    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
+        print("\n\n🤯🤯🤯 \(#function)")
+    }
+    
+    func primerHeadlessUniversalCheckoutPreparationStarted(paymentMethodType: String) {
+        print("\n\n🤯🤯🤯 \(#function)")
+        self.showLoadingOverlay()
+    }
+    
+    func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {
+        print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
+    }
+    
+    func primerHeadlessUniversalCheckoutPaymentMethodShowed(paymentMethodType: String) {
+        print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
+    }
+    
+    func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+        print("\n\n🤯🤯🤯 \(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
         
-    }
-    
-    func primerHeadlessUniversalCheckoutTokenizationStarted() {
-        
-    }
-    
-    func primerHeadlessUniversalCheckoutClientSessionDidSetUpSuccessfully() {
-
-    }
-    
-    func tokenizationPreparationStarted() {
-        self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
-        self.view.addSubview(self.activityIndicator!)
-        self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
-        self.activityIndicator?.color = .black
-        self.activityIndicator?.startAnimating()
-    }
-    
-    func primerHeadlessUniversalCheckoutPaymentMethodPresented() {
-        self.activityIndicator?.stopAnimating()
-        self.activityIndicator?.removeFromSuperview()
-        self.activityIndicator = nil
-    }
-    
-    func primerHeadlessUniversalCheckoutTokenizationSucceeded(paymentMethodToken: PaymentMethodToken, resumeHandler: ResumeHandlerProtocol?) {
-        Networking.createPayment(with: paymentMethodToken) { (res, err) in
-            DispatchQueue.main.async {
-                self.activityIndicator?.stopAnimating()
-                self.activityIndicator?.removeFromSuperview()
-                self.activityIndicator = nil
-            }
-
+        Networking.createPayment(with: paymentMethodTokenData) { (res, err) in
             if let err = err {
-                
+                DispatchQueue.main.async {
+                    self.hideLoadingOverlay()
+                }
             } else if let res = res {
-                if let data = try? JSONEncoder().encode(res) {
+                self.paymentId = res.id
+                
+                if res.requiredAction?.clientToken != nil {
+                    decisionHandler(.continueWithNewClientToken(res.requiredAction!.clientToken))
+                } else {
                     DispatchQueue.main.async {
-                        let rvc = HUCResultViewController.instantiate(data: [data])
-                        self.navigationController?.pushViewController(rvc, animated: true)
+                        self.hideLoadingOverlay()
+                    }
+                    
+                    if let data = try? JSONEncoder().encode(res) {
+                        DispatchQueue.main.async {
+                            let rvc = HUCResultViewController.instantiate(data: [data])
+                            self.navigationController?.pushViewController(rvc, animated: true)
+                        }
                     }
                 }
 
@@ -206,10 +176,49 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
         }
     }
     
-    func primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError err: Error) {
-        self.activityIndicator?.stopAnimating()
-        self.activityIndicator?.removeFromSuperview()
-        self.activityIndicator = nil
+    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+        print("\n\n🤯🤯🤯 \(#function)\nresumeToken: \(resumeToken)")
+        
+        Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
+            DispatchQueue.main.async {
+                self.hideLoadingOverlay()
+            }
+            
+            if let err = err {
+                decisionHandler(.fail(withErrorMessage: "Merchant App\nFailed to resume payment."))
+            } else {
+                decisionHandler(.succeed())
+            }
+        }
+    }
+    
+    func primerHeadlessUniversalCheckoutDidFail(withError err: Error) {
+        print("\n\n🤯🤯🤯 \(#function)\nerror: \(err)")
+        
+        DispatchQueue.main.async {
+            self.hideLoadingOverlay()
+        }
+    }
+    
+    func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
+        print("\n\n🤯🤯🤯 \(#function)\ndata: \(data)")
+        
+        DispatchQueue.main.async {
+            self.hideLoadingOverlay()
+        }
+    }
+    
+    func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
+        print("\n\n🤯🤯🤯 \(#function)")
+    }
+    
+    func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
+        print("\n\n🤯🤯🤯 \(#function)\nclientSession: \(clientSession)")
+    }
+    
+    func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+        print("\n\n🤯🤯🤯 \(#function)\ndata: \(data)")
+        decisionHandler(.continuePaymentCreation())
     }
 }
 

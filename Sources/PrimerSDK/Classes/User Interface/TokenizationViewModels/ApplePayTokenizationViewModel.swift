@@ -113,7 +113,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then {
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: self.config.type.rawValue)
                 return self.tokenize()
             }
             .done { paymentMethodTokenData in
@@ -234,7 +235,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     self.isCancelled = true
                     Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
                         DispatchQueue.main.async {
-                            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodPresented()
+                            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodShowed(paymentMethodType: self.config.type.rawValue)
                             self.didPresentPaymentMethodUI?()
                         }
                     })

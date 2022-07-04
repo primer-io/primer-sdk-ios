@@ -45,6 +45,14 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
+    override func start() {
+        self.didPresentExternalView = {
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodShowed(paymentMethodType: self.config.type.rawValue)
+        }
+        
+        super.start()
+    }
+    
     override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         let event = Analytics.Event(
             eventType: .ui,
@@ -68,13 +76,14 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
+                return ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
             }
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then {
-                self.tokenize()
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: self.config.type.rawValue)
+                return self.tokenize()
             }
             .done { paymentMethodTokenData in
                 seal.fulfill(paymentMethodTokenData)
@@ -95,6 +104,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return self.createOAuthSession(url)
             }
             .then { url -> Promise<PaymentInstrument> in
+                self.didPresentExternalView?()
                 return self.createPaypalPaymentInstrument()
             }
             .then { instrument -> Promise<PaymentMethodToken> in
