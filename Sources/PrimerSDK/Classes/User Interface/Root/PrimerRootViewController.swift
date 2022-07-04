@@ -498,11 +498,7 @@ extension PrimerRootViewController {
         //            }
         //        }
         
-        firstly {
-            paymentMethodTokenizationViewModel.startTokenizationFlow()
-        }
-        .done { _ in }
-        .catch { _ in }
+        paymentMethodTokenizationViewModel.start()
     }
 }
 
