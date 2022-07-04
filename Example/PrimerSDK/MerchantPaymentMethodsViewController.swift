@@ -219,7 +219,7 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
     
     func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         print("\n\n🤯🤯🤯 \(#function)\ndata: \(data)")
-        decisionHandler(.abortPaymentCreation(withErrorMessage: "YOUR_ERROR_MESSAGE"))
+        decisionHandler(.continuePaymentCreation())
     }
 }
 
