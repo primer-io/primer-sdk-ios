@@ -5,6 +5,10 @@
 //  Created by Dario Carlomagno on 31/05/22.
 //
 
+#if canImport(UIKit)
+
+import UIKit
+
 class HeaderFooterLabelView: UITableViewHeaderFooterView {
 
     private let label = UILabel(frame: .zero)
@@ -42,3 +46,5 @@ extension HeaderFooterLabelView {
         label.text = text
     }
 }
+
+#endif
