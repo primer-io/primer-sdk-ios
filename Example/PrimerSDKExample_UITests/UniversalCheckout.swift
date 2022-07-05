@@ -349,10 +349,10 @@ class UniversalCheckout: XCTestCase {
         
         submitButton.tap()
         
-        let successLabel = app.staticTexts["result_component_view_message_label"]
-        let successLabelExists = expectation(for: Expectation.exists, evaluatedWith: successLabel, handler: nil)
-        wait(for: [successLabelExists], timeout: 15)
-        
+        let successImage = app.images["check-circle"]
+        let successImageExists = expectation(for: Expectation.exists, evaluatedWith: successImage, handler: nil)
+        wait(for: [successImageExists], timeout: 15)
+
         let scrollView = app.scrollViews["primer_container_scroll_view"]
         scrollView.swipeDown()
         
@@ -483,15 +483,9 @@ extension UniversalCheckout {
         
         let paymentMethodButton = scrollView.otherElements.buttons[payment.id]
         
-        if !paymentMethodButton.exists {
-            var isHittable: Bool = false
-            while !isHittable {
-                scrollView.swipeUp()
-                isHittable = paymentMethodButton.isHittable
-            }
+        if scrollView.scrollRevealingElement(paymentMethodButton) {
+            paymentMethodButton.tap()
         }
-        
-        paymentMethodButton.tap()
     }
     
     func fillCardDataWithCard(_ card: Card,
