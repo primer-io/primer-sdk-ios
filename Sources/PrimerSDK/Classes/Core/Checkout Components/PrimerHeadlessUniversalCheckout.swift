@@ -14,7 +14,7 @@ public class PrimerHeadlessUniversalCheckout {
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate?
     private(set) public var clientToken: String?
     public static let current = PrimerHeadlessUniversalCheckout()
-    private let unsupportedPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenIDeal, .adyenDotPay, .adyenBlik, .goCardlessMandate, .xfers]
+    private let unsupportedPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenIDeal, .adyenDotPay, .adyenBlik, .goCardlessMandate, .primerTestKlarna, .primerTestSofort, .primerTestPayPal, .xfers]
     
     fileprivate init() {}
     
