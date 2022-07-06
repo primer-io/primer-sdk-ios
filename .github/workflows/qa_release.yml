@@ -101,6 +101,9 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          GITHUB_TEMP_PATH: ${{ secrets.DARIO_TOKEN_TEMP }}
           SOURCE_BRANCH: ${{ needs.branch.outputs.branch }}
 
   pod-lint:

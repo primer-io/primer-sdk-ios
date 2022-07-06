@@ -41,10 +41,6 @@ platform :ios do
   end
 
   lane :qa_release do
-    time = Time.new
-    str_time = time.strftime("%Y-%m-%d %H:%M:%S")
-    # Set timestamp as version_code to differentiate builds in firebase
-    build_number = time.to_i
 
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
     sdk_version_name = ENV['SOURCE_BRANCH']
@@ -60,8 +56,10 @@ platform :ios do
       xcodeproj: "./Example/PrimerSDK.xcodeproj"
     )
 
+    github_run_id = ENV["GITHUB_RUN_ID"]
+    github_run_number = ENV["GITHUB_RUN_NUMBER"]
     increment_build_number(
-      build_number: build_number,
+      build_number: "#{github_run_id}.#{github_run_number}",
       xcodeproj: "./Example/PrimerSDK.xcodeproj"
     )
 
@@ -81,17 +79,16 @@ platform :ios do
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
     )
 
-    # Build for appetize
+    # Build for appetize and browserstack
     build_app(
       scheme: "PrimerSDK-Example",
       sdk: "iphonesimulator", # Appetize needs a simulator app
       workspace: "./Example/PrimerSDK.xcworkspace",
       configuration: "Debug",
+      include_bitcode: false,
       export_method: "development",
-      archive_path: "/var/tmp/PrimerSDK_Example.xcarchive",
-      # Build speed optimisation
-      skip_package_ipa: true,
-      skip_package_pkg: true,
+      export_options: { compileBitcode: false},
+      archive_path: "/var/tmp/PrimerSDK_Example.xcarchive"
     )
 
     # Appetize needs the .app to be zipped
@@ -115,23 +112,25 @@ platform :ios do
       note: sdk_version_name
     )
 
-    # # Build for firebase
-    # build_app(
-    #   scheme: "PrimerSDK-Example",
-    #   workspace: "./Example/PrimerSDK.xcworkspace",
-    #   configuration: "Debug",
-    #   export_method: "development",
-    #   # Build speed optimisation
-    #   skip_package_pkg: true,
-    # )
 
-    # # Firebase
+    # Upload to Browserstack
+    upload_to_browserstack_app_automate(
+      browserstack_username: ENV["BROWSERSTACK_USERNAME"],
+      browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"],
+      file_path: ENV["IPA_OUTPUT_PATH"]
+    )
+
+    # Utilize the firebase client token to store in CI
+
+    #
+    # # Upload to Firebase
     # firebase_app_distribution(
     #   service_credentials_file: "firebase_credentials.json",
     #   app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
     #   groups: "primer-internal",
-    #   release_notes: "Preview release: " + sdk_version_name + " [" + str_time + "]"
+    #   release_notes: "QA release: " + sdk_version_name + " [" + str_time + "]"
     # )
+
   end
 
   lane :release do
@@ -176,8 +175,6 @@ platform :ios do
       keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
     )
-
-
 
     # Build for appetize
     build_app(
@@ -230,6 +227,7 @@ platform :ios do
       groups: "primer-internal",
       release_notes: "PR: " + sdk_version_name + " [" + str_time + "]"
     )
+
   end
 
   lane :preview do
@@ -316,14 +314,14 @@ platform :ios do
     )
 
     # Build for firebase
-    build_app(
-      scheme: "PrimerSDK-Example",
-      workspace: "./Example/PrimerSDK.xcworkspace",
-      configuration: "Debug",
-      export_method: "development",
-      # Build speed optimisation
-      skip_package_pkg: true,
-    )
+    # build_app(
+    #   scheme: "PrimerSDK-Example",
+    #   workspace: "./Example/PrimerSDK.xcworkspace",
+    #   configuration: "Debug",
+    #   export_method: "development",
+    #   # Build speed optimisation
+    #   skip_package_pkg: true,
+    # )
 
     # # Firebase
     # firebase_app_distribution(
@@ -332,6 +330,37 @@ platform :ios do
     #     groups: "internal-qa-team",
     #     release_notes: "PR: " + version_name + " | " + str_time,
     #   )
+
+  end
+
+  desc 'Create simulator compatible .app file'
+  lane :create_simulator_app do
+
+    Dir.mktmpdir do |dir|
+
+      build_app(
+        scheme: "PrimerSDK-Example",
+        workspace: "./Example/PrimerSDK.xcworkspace",
+        configuration: "Debug",
+        export_method: "development",
+        # Build speed optimisation
+        skip_package_pkg: true,
+      )
+
+      build_ios_app(
+        scheme: scheme_name,
+        workspace: xcworkspace_path,
+        configuration: build_configuration,
+        codesigning_identity: ENV['CODESIGNING_IDENTITY'],
+        destination: "generic/platform=iOS Simulator",
+        sdk: "iphonesimulator",
+        xcargs: "SYMROOT=#{dir}",
+        skip_package_ipa: true,
+        skip_archive: true
+      )
+
+    end
+
   end
 
 end
