@@ -14,6 +14,7 @@ public class PrimerHeadlessUniversalCheckout {
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate?
     private(set) public var clientToken: String?
     public static let current = PrimerHeadlessUniversalCheckout()
+    private let unsupportedPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenIDeal, .adyenDotPay, .adyenBlik, .goCardlessMandate, .xfers]
     
     fileprivate init() {}
     
@@ -125,7 +126,7 @@ public class PrimerHeadlessUniversalCheckout {
     }
 
     internal func listAvailablePaymentMethodsTypes() -> [PrimerPaymentMethodType]? {
-        return PrimerAPIConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
+        return PrimerAPIConfiguration.paymentMethodConfigs?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
     
     public func listRequiredInputElementTypes(for paymentMethodType: PrimerPaymentMethodType) -> [PrimerInputElementType]? {
@@ -244,6 +245,13 @@ public class PrimerHeadlessUniversalCheckout {
             guard let clientToken = appState.clientToken else {
                 print("WARNING: Make sure you have called 'start(withClientToken:settings:delegate:completion:' with a valid client token prior to showing a payment method.")
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
+                return
+            }
+            
+            if self.unsupportedPaymentMethodTypes.contains(paymentMethod) || paymentMethod == .paymentCard {
+                let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
                 return
