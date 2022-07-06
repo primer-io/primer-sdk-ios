@@ -452,8 +452,25 @@ class Base: XCTestCase {
             performPaymentSwitch.tap()
         }
         
+        let appSettingsBackgroundView = app.otherElements["app_settings_background_view"]
+        appSettingsBackgroundView.tap()
+        
         let initSDKButton = app.buttons["initialize_primer_sdk"]
-        initSDKButton.tap()
+        
+        if initSDKButton.waitForExistence(timeout: 5) {
+            initSDKButton.tap()
+        } else {
+            XCTAssert(true, "Failed")
+        }
+    }
+    
+    func testViewTap() {
+        
+        let app = XCUIApplication()
+        app.windows.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element(boundBy: 1).tap()
+        app/*@START_MENU_TOKEN@*/.textFields["amount_txt_field"]/*[[".textFields[\"In minor units (type 100 for 1.00)\"]",".textFields[\"amount_txt_field\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.tap()
+                        
     }
     
     func openUniversalCheckout() throws {

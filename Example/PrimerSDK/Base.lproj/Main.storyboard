@@ -160,6 +160,7 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="ecX-48-OcF"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <accessibility key="accessibilityConfiguration" identifier="app_settings_background_view"/>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="KuL-hw-zDD" firstAttribute="top" secondItem="ecX-48-OcF" secondAttribute="top" constant="8" id="5lE-db-n2X"/>
