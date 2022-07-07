@@ -51,10 +51,11 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then {
-                self.tokenize()
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type.rawValue)
+                return self.tokenize()
             }
             .done { tmpPaymentMethodTokenData in
                 seal.fulfill(tmpPaymentMethodTokenData)

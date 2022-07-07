@@ -13,8 +13,8 @@ public class Primer {
     
     // MARK: - PROPERTIES
     internal var primerWindow: UIWindow?
-    public var delegate: PrimerDelegate? // TODO: should this be weak?
-    internal var flow: PrimerSessionFlow!
+    public var delegate: PrimerDelegate?
+    public internal(set) var intent: PrimerSessionIntent?
     internal var presentingViewController: UIViewController?
     internal var primerRootVC: PrimerRootViewController?
     internal let sdkSessionId = UUID().uuidString
@@ -92,6 +92,7 @@ public class Primer {
      */
 
     public func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
+        intent = .checkout
         checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
@@ -99,7 +100,7 @@ public class Primer {
             properties: SDKEventProperties(
                 name: #function,
                 params: [
-                    "flow": PrimerInternalSessionFlow.checkout.rawValue
+                    "intent": intent!.rawValue
                 ]))
         
         let connectivityEvent = Analytics.Event(
@@ -115,10 +116,11 @@ public class Primer {
                 id: self.timingEventId!))
         
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-        self.show(flow: .default, with: clientToken, completion: completion)
+        self.show(paymentMethodType: nil, withClientToken: clientToken, completion: completion)
     }
     
     public func showVaultManager(clientToken: String, completion: ((Error?) -> Void)? = nil) {
+        intent = .vault
         checkoutSessionId = UUID().uuidString
         
         let sdkEvent = Analytics.Event(
@@ -126,7 +128,7 @@ public class Primer {
             properties: SDKEventProperties(
                 name: #function,
                 params: [
-                    "flow": PrimerInternalSessionFlow.vault.rawValue
+                    "intent": intent!.rawValue
                 ]))
         
         let connectivityEvent = Analytics.Event(
@@ -142,15 +144,14 @@ public class Primer {
                 id: self.timingEventId!))
         
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-        self.show(flow: .defaultWithVault, with: clientToken)
+        self.show(paymentMethodType: nil, withClientToken: clientToken, completion: completion)
     }
     
     // swiftlint:disable cyclomatic_complexity
     public func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
+        self.intent = intent
         checkoutSessionId = UUID().uuidString
-        
-        var flow: PrimerSessionFlow!
-        
+                
         if case .checkout = intent {
             switch paymentMethod {
             case .adyenAlipay,
@@ -165,6 +166,7 @@ public class Primer {
                     .adyenTwint,
                     .adyenVipps,
                     .adyenPayshop,
+                    .applePay,
                     .atome,
                     .adyenBlik,
                     .buckarooBancontact,
@@ -174,25 +176,19 @@ public class Primer {
                     .buckarooSofort,
                     .coinbase,
                     .hoolah,
+                    .klarna,
                     .mollieBankcontact,
                     .mollieIdeal,
+                    .opennode,
+                    .paymentCard,
                     .payNLBancontact,
                     .payNLGiropay,
                     .payNLPayconiq,
+                    .payPal,
                     .twoCtwoP,
-                    .xfers,
-                    .opennode:
-                flow = .checkoutWithAsyncPaymentMethod(paymentMethodType: paymentMethod)
-            case .applePay:
-                flow = .checkoutWithApplePay
-                    
-            case .klarna:
-                flow = .checkoutWithKlarna
-                    
-            case .payPal:
-                flow = .checkoutWithPayPal
-            case .paymentCard:
-                flow = .completeDirectCheckout
+                    .xfers:
+                break
+
             default:
                 let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -202,14 +198,11 @@ public class Primer {
             
         } else {
             switch paymentMethod {
-            case .apaya:
-                flow = .addApayaToVault
-            case .klarna:
-                flow = .addKlarnaToVault
-            case .paymentCard:
-                flow = .addCardToVault
-            case .payPal:
-                flow = .addPayPalToVault
+            case .apaya,
+                    .klarna,
+                    .paymentCard,
+                    .payPal:
+                break
             default:
                 let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -223,7 +216,7 @@ public class Primer {
             properties: SDKEventProperties(
                 name: #function,
                 params: [
-                    "flow": PrimerInternalSessionFlow.vault.rawValue
+                    "intent": self.intent!.rawValue
                 ]))
         
         let connectivityEvent = Analytics.Event(
@@ -239,7 +232,7 @@ public class Primer {
                 id: self.timingEventId!))
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
-        self.show(flow: flow, with: clientToken, completion: completion)
+        self.show(paymentMethodType: paymentMethod, withClientToken: clientToken, completion: completion)
     }
     
     // swiftlint:enable cyclomatic_complexity
@@ -263,7 +256,6 @@ public class Primer {
         Analytics.Service.sync()
         
         checkoutSessionId = nil
-        flow = nil
         ClientTokenService.resetClientToken()
         
         DispatchQueue.main.async { [weak self] in
@@ -281,28 +273,26 @@ public class Primer {
         }
     }
     
-    private func show(flow: PrimerSessionFlow, with clientToken: String, completion: ((Error?) -> Void)? = nil) {
+    private func show(paymentMethodType: PrimerPaymentMethodType?, withClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         ClientTokenService.storeClientToken(clientToken) { [weak self] error in
-            self?.show(flow: flow)
+            self?.show(paymentMethodType: paymentMethodType)
             completion?(error)
         }
     }
     
-    private func show(flow: PrimerSessionFlow) {
-        self.flow = flow
-        
+    private func show(paymentMethodType: PrimerPaymentMethodType?) {
         let event = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
                 params: [
-                    "flow": flow.internalSessionFlow.rawValue
+                    "intent": self.intent!.rawValue
                 ]))
         Analytics.Service.record(event: event)
         
         DispatchQueue.main.async {
             if self.primerRootVC == nil {
-                self.primerRootVC = PrimerRootViewController(flow: flow)
+                self.primerRootVC = PrimerRootViewController(paymentMethodType: paymentMethodType)
             }
             self.presentingViewController = self.primerRootVC
             

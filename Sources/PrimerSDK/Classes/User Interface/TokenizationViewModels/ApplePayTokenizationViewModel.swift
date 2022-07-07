@@ -113,7 +113,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then {
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type.rawValue)
                 return self.tokenize()
             }
             .done { paymentMethodTokenData in
@@ -127,7 +128,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            if Primer.shared.flow.internalSessionFlow.vaulted {
+            if Primer.shared.intent == .vault {
                 let err = PrimerError.unsupportedIntent(intent: .vault, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -234,7 +235,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     self.isCancelled = true
                     Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
                         DispatchQueue.main.async {
-                            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodPresented()
+                            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type.rawValue)
                             self.didPresentPaymentMethodUI?()
                         }
                     })

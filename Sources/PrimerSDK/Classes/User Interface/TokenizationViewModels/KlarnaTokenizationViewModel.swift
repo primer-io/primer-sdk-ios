@@ -41,9 +41,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
         
-        let klarnaSessionType: KlarnaSessionType = Primer.shared.flow.internalSessionFlow.vaulted ? .recurringPayment : .hostedPaymentPage
+        let klarnaSessionType: KlarnaSessionType = Primer.shared.intent == .vault ? .recurringPayment : .hostedPaymentPage
         
-        if Primer.shared.flow == .checkoutWithKlarna && AppState.current.amount == nil  {
+        if Primer.shared.intent == .checkout && AppState.current.amount == nil  {
             let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
@@ -127,7 +127,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 var instrument: PaymentInstrument
                 var request: PaymentMethodTokenizationRequest
                 
-                if Primer.shared.flow.internalSessionFlow.vaulted {
+                if Primer.shared.intent == .vault {
                     instrument = PaymentInstrument(
                         klarnaAuthorizationToken: self.authorizationToken!,
                         sessionData: res.sessionData)
@@ -187,10 +187,10 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return
         }
         
-        let klarnaSessionType: KlarnaSessionType = (Primer.shared.flow.internalSessionFlow.vaulted) ? .recurringPayment : .hostedPaymentPage
+        let klarnaSessionType: KlarnaSessionType = Primer.shared.intent == .vault ? .recurringPayment : .hostedPaymentPage
 
         var amount = AppState.current.amount
-        if amount == nil && Primer.shared.flow == .checkoutWithKlarna {
+        if amount == nil && Primer.shared.intent == .checkout {
             let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))

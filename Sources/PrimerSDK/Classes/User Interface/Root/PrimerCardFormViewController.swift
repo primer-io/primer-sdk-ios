@@ -107,7 +107,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(cardholderNameContainerView)
         }
         
-        if !Primer.shared.flow.internalSessionFlow.vaulted {
+        if Primer.shared.intent == .checkout {
             let saveCardSwitchContainerStackView = UIStackView()
             saveCardSwitchContainerStackView.axis = .horizontal
             saveCardSwitchContainerStackView.alignment = .fill

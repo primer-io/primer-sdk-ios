@@ -22,7 +22,7 @@ extension PaymentMethodTokenizationViewModel {
             self.didFinishTokenization?(nil)
             self.didFinishTokenization = nil
 
-            if Primer.shared.flow.internalSessionFlow.vaulted {
+            if Primer.shared.intent == .vault {
                 self.handleSuccessfulFlow()
             } else {
                 self.didStartPayment?()
@@ -79,7 +79,11 @@ extension PaymentMethodTokenizationViewModel {
             self.didStartTokenization = nil
             self.didFinishTokenization = nil
             
-            if self.config.type == .applePay, let primerErr = err as? PrimerError, case .cancelled = primerErr {
+            if let primerErr = err as? PrimerError,
+               case .cancelled = primerErr,
+               self.config.type == .applePay,
+               PrimerHeadlessUniversalCheckout.current.delegate == nil
+            {
                 firstly {
                     ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
                 }
@@ -88,6 +92,7 @@ extension PaymentMethodTokenizationViewModel {
                 }
                 // The above promises will never end up on error.
                 .catch { _ in }
+                
             } else {
                 firstly {
                     ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
@@ -313,7 +318,7 @@ extension PaymentMethodTokenizationViewModel {
         
     internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
-            if Primer.shared.flow.internalSessionFlow.vaulted {
+            if Primer.shared.intent == .vault {
                 seal.fulfill()
             } else {
                 let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)

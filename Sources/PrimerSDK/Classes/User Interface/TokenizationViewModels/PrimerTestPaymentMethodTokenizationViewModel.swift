@@ -192,7 +192,7 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
     
     private func configurePayButton(amount: Int) {
         var title = Strings.PrimerButton.pay
-        if !Primer.shared.flow.internalSessionFlow.vaulted {
+        if Primer.shared.intent == .checkout {
             if let currency = AppState.current.currency {
                 title += " \(amount.toCurrencyString(currency: currency))"
             }

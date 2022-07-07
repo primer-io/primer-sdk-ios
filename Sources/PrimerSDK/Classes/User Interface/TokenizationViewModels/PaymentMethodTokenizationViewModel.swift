@@ -212,7 +212,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                                      comment: "Pay by mobile - Payment By Mobile (Apaya)")
             
         case .paymentCard:
-            return Primer.shared.flow.internalSessionFlow.vaulted
+            return Primer.shared.intent == .vault
             ? NSLocalizedString("payment-method-type-card-vaulted",
                                 tableName: nil,
                                 bundle: Bundle.primerResources,

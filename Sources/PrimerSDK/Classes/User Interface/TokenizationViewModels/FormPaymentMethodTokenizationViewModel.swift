@@ -27,7 +27,6 @@ internal class Input {
 
 class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
-    private var flow: PaymentFlow
     var inputs: [Input] = []
     
     var inputTextFieldsStackViews: [UIStackView] {
@@ -84,20 +83,27 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         switch config.type {
         case .paymentCard:
             var buttonTitle: String = ""
-            if flow == .checkout {
+            
+            switch Primer.shared.intent {
+            case .checkout:
                 let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
                 buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
                                                 tableName: nil,
                                                 bundle: Bundle.primerResources,
                                                 value: "Pay",
                                                 comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
-            } else if flow == .vault {
+                
+            case .vault:
                 buttonTitle = NSLocalizedString("primer-card-form-add-card",
                                                 tableName: nil,
                                                 bundle: Bundle.primerResources,
                                                 value: "Add card",
                                                 comment: "Add card - Card Form (Vault title text)")
+                
+            case .none:
+                assert(true, "Intent should have been set")
             }
+
             btn.setTitle(buttonTitle, for: .normal)
             
         default:
@@ -114,10 +120,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     required init(config: PaymentMethodConfig) {
-        self.flow = .checkout
-        if let flow = Primer.shared.flow, flow.internalSessionFlow.vaulted {
-            self.flow = .vault
-        }
         super.init(config: config)
         
         switch config.type {
@@ -175,7 +177,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             throw err
         }
         
-        if !Primer.shared.flow.internalSessionFlow.vaulted {
+        if Primer.shared.intent == .checkout {
             if AppState.current.amount == nil {
                 let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -225,6 +227,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type.rawValue)
                 return self.tokenize()
             }
             .done { paymentMethodTokenData in
