@@ -10,6 +10,7 @@ username("sdk@primer.io") # Your Apple Developer Portal username
 
 shallow_clone true
 force_for_new_devices true
+clone_branch_directly true
 
 # For all available options run `fastlane match --help`
 # Remove the # in the beginning of the line to enable the other options
