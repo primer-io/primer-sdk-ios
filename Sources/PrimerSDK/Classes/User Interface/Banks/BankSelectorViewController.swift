@@ -25,8 +25,8 @@ internal class BankSelectorViewController: PrimerFormViewController {
     init(viewModel: BankSelectorTokenizationViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.buttonImage!
-        self.titleImageTintColor = viewModel.buttonTintColor
+        self.titleImage = viewModel.uiModule.buttonImage!
+        self.titleImageTintColor = viewModel.uiModule.buttonTintColor
     }
     
     required init?(coder: NSCoder) {

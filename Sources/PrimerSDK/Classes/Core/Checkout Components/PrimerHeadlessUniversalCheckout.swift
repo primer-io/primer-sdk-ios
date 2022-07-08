@@ -224,7 +224,7 @@ public class PrimerHeadlessUniversalCheckout {
     public static func makeButton(for paymentMethodType: PrimerPaymentMethodType) -> UIButton? {
         guard let paymentMethodConfigs = PrimerAPIConfiguration.paymentMethodConfigs else { return nil }
         guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
-        return paymentMethodConfig.tokenizationViewModel?.paymentMethodButton
+        return paymentMethodConfig.tokenizationViewModel?.uiModule.paymentMethodButton
     }
 
     public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType) -> UIImage? {

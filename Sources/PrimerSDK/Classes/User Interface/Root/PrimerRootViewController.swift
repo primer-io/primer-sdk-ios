@@ -467,7 +467,7 @@ extension PrimerRootViewController {
         }
         
         var imgView: UIImageView?
-        if let squareLogo = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.squareLogo {
+        if let squareLogo = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.uiModule.icon {
             imgView = UIImageView()
             imgView?.image = squareLogo
             imgView?.contentMode = .scaleAspectFit

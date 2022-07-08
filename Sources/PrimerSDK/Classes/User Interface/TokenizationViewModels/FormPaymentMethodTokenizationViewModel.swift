@@ -28,6 +28,7 @@ internal class Input {
 class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     var inputs: [Input] = []
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     var inputTextFieldsStackViews: [UIStackView] {
         var stackViews: [UIStackView] = []
@@ -208,7 +209,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 place: .cardForm))
         Analytics.Service.record(event: event)
         
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
