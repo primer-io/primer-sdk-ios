@@ -70,50 +70,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         return stackViews
     }
     
-    lazy var submitButton: PrimerButton = {
-        let btn = PrimerButton()
-        btn.isEnabled = false
-        btn.clipsToBounds = true
-        btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        btn.layer.cornerRadius = 4
-        btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
-        btn.setTitleColor(.white, for: .normal)
-        btn.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
-        
-        switch config.type {
-        case .paymentCard:
-            var buttonTitle: String = ""
-            
-            switch Primer.shared.intent {
-            case .checkout:
-                let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-                buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Pay",
-                                                comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
-                
-            case .vault:
-                buttonTitle = NSLocalizedString("primer-card-form-add-card",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Add card",
-                                                comment: "Add card - Card Form (Vault title text)")
-                
-            case .none:
-                assert(true, "Intent should have been set")
-            }
-
-            btn.setTitle(buttonTitle, for: .normal)
-            
-        default:
-            btn.setTitle("Confirm", for: .normal)
-        }
-        
-        return btn
-    }()
-    
     var userInputCompletion: (() -> Void)?
     
     deinit {
@@ -299,13 +255,11 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     fileprivate func enableSubmitButton(_ flag: Bool) {
-        self.submitButton.isEnabled = flag
+        self.uiModule.submitButton?.isEnabled = flag
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        self.submitButton.backgroundColor = flag ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
+        self.uiModule.submitButton?.backgroundColor = flag ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
     }
-    
-    @objc
-    func payButtonTapped(_ sender: UIButton) {
+    override func submitButtonTapped() {
         let viewEvent = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -325,7 +279,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
         switch config.type {
         case .adyenBlik:
-            self.submitButton.startAnimating()
+            self.uiModule.submitButton?.startAnimating()
             self.userInputCompletion?()
             
         default:

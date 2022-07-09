@@ -43,6 +43,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
     func handleSuccessfulFlow()
     func handleFailureFlow(errorMessage: String?)
+    func submitButtonTapped()
 }
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
@@ -88,6 +89,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }
     
     func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
+        fatalError("\(#function) must be overriden")
+    }
+    
+    func submitButtonTapped() {
         fatalError("\(#function) must be overriden")
     }
 }

@@ -147,6 +147,31 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
             }
         }
     }
+    
+    override func validate() throws {
+        
+    }
+    
+    // MARK: - Pay Action
+    
+    override func submitButtonTapped() {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: config.type.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .submit,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+        
+        payButtonTappedCompletion?()
+    }
 }
 
 extension PrimerTestPaymentMethodTokenizationViewModel {
@@ -170,7 +195,6 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
     }
     
     private func enableSubmitButtonIfNeeded() {
-        
         if lastSelectedIndexPath != nil {
             self.uiModule.submitButton?.isEnabled = true
             self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
@@ -178,32 +202,6 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
             self.uiModule.submitButton?.isEnabled = false
             self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
         }
-    }
-}
-
-extension PrimerTestPaymentMethodTokenizationViewModel {
-    
-    // MARK: - Pay Action
-    
-    @objc
-    private func payButtonTapped(_ sender: UIButton) {
-        
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: config.type.rawValue,
-                    url: nil),
-                extra: nil,
-                objectType: .button,
-                objectId: .submit,
-                objectClass: "\(Self.self)",
-                place: .cardForm))
-        Analytics.Service.record(event: viewEvent)
-        
-        payButtonTappedCompletion?()
     }
 }
 

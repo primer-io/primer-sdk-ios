@@ -15,7 +15,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     private let cardholderNameContainerView = PrimerCustomFieldView()
-    private let submitButton = PrimerButton()
     
     // todo: refactor to dynamic form builder
     private lazy var expiryAndCvvRow = row
@@ -134,7 +133,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
     }
     
     private func renderSubmitButton() {
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
+        guard let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton else { return }
+        verticalStackView.addArrangedSubview(submitButton)
         submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
     }
     

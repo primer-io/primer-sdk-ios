@@ -21,7 +21,7 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
     init(viewModel: PrimerTestPaymentMethodTokenizationViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.uiModule.originalImage!
+        self.titleImage = viewModel.uiModule.logo
         self.titleImageTintColor = viewModel.uiModule.buttonTintColor
     }
     

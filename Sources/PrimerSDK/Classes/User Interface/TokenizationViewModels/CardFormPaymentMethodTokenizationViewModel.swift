@@ -162,44 +162,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return postalCodeContainerView
     }()
     
-    lazy var submitButton: PrimerButton = {
-        var buttonTitle: String = ""
-        
-        switch Primer.shared.intent {
-        case .checkout:
-            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-            buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                            tableName: nil,
-                                            bundle: Bundle.primerResources,
-                                            value: "Pay",
-                                            comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
-            
-        case .vault:
-            buttonTitle = NSLocalizedString("primer-card-form-add-card",
-                                            tableName: nil,
-                                            bundle: Bundle.primerResources,
-                                            value: "Add card",
-                                            comment: "Add card - Card Form (Vault title text)")
-            
-        case .none:
-            assert(true, "Intent should have been set")
-        }
-        
-        let submitButton = PrimerButton()
-        submitButton.translatesAutoresizingMaskIntoConstraints = false
-        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        submitButton.isAccessibilityElement = true
-        submitButton.accessibilityIdentifier = "submit_btn"
-        submitButton.isEnabled = false
-        submitButton.setTitle(buttonTitle, for: .normal)
-        submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-        submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
-        submitButton.layer.cornerRadius = 4
-        submitButton.clipsToBounds = true
-        submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
-        return submitButton
-    }()
-    
     var cardNetwork: CardNetwork? {
         didSet {
             cvvField.cardNetwork = cardNetwork ?? .unknown
@@ -222,22 +184,22 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func start() {
         self.didStartTokenization = {
             self.isTokenizing = true
-            self.submitButton.startAnimating()
+            self.uiModule.submitButton?.startAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         }
         
         self.didFinishTokenization = { err in
-            self.submitButton.stopAnimating()
+            self.uiModule.submitButton?.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
         
         self.didStartPayment = {
-            self.submitButton.startAnimating()
+            self.uiModule.submitButton?.startAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         }
         
         self.didFinishPayment = { err in
-            self.submitButton.stopAnimating()
+            self.uiModule.submitButton?.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
             
             self.willDismissPaymentMethodUI?()
@@ -529,12 +491,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                                           comment: "Pay - Card Form View (Sumbit button text)")
             
             title += " \(amount.toCurrencyString(currency: currency))"
-            self.submitButton.setTitle(title, for: .normal)
+            self.uiModule.submitButton?.setTitle(title, for: .normal)
         }
     }
     
-    @objc
-    func payButtonTapped(_ sender: UIButton) {
+    override func submitButtonTapped() {
         let viewEvent = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -627,7 +588,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
-        isLoading ? submitButton.startAnimating() : submitButton.stopAnimating()
+        isLoading ? self.uiModule.submitButton?.startAnimating() : self.uiModule.submitButton?.stopAnimating()
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = !isLoading
     }
     
@@ -684,11 +645,11 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
         
         if validations.allSatisfy({ $0 == true }) {
-            submitButton.isEnabled = true
-            submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
+            self.uiModule.submitButton?.isEnabled = true
+            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
         } else {
-            submitButton.isEnabled = false
-            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
+            self.uiModule.submitButton?.isEnabled = false
+            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
         }
     }
     

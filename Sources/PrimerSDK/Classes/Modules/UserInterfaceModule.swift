@@ -108,8 +108,14 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }()
     
     lazy var originalImage: UIImage? = {
-        assert(true, "Should be overriden")
-        return nil
+        switch self.paymentMethodTokenizationViewModel.config.type {
+        case .primerTestPayPal:
+            return UIImage(named: "paypal-logo-1", in: Bundle.primerResources, compatibleWith: nil)
+        case .primerTestSofort:
+            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)
+        default:
+            return buttonImage
+        }
     }()
     
     lazy var logo: UIImage? = {
@@ -538,11 +544,83 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         paymentMethodButton.tintColor = buttonTintColor
         paymentMethodButton.layer.borderWidth = buttonBorderWidth
         paymentMethodButton.layer.borderColor = buttonBorderColor?.cgColor
-        paymentMethodButton.addTarget(self.paymentMethodTokenizationViewModel, action: #selector(PaymentMethodTokenizationViewModel.start), for: .touchUpInside)
+        paymentMethodButton.addTarget(self, action: #selector(paymentMethodButtonTapped(_:)), for: .touchUpInside)
         return paymentMethodButton
     }
     
-    var submitButton: PrimerButton?
+    lazy var submitButton: PrimerButton? = {
+        var buttonTitle: String = ""
+        
+        switch self.paymentMethodTokenizationViewModel.config.type {
+        case .paymentCard:
+            switch Primer.shared.intent {
+            case .checkout:
+                let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+                buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
+                                                tableName: nil,
+                                                bundle: Bundle.primerResources,
+                                                value: "Pay",
+                                                comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
+                
+            case .vault:
+                buttonTitle = NSLocalizedString("primer-card-form-add-card",
+                                                tableName: nil,
+                                                bundle: Bundle.primerResources,
+                                                value: "Add card",
+                                                comment: "Add card - Card Form (Vault title text)")
+                
+            case .none:
+                assert(true, "Intent should have been set")
+            }
+            
+            let submitButton = PrimerButton()
+            submitButton.translatesAutoresizingMaskIntoConstraints = false
+            submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            submitButton.isAccessibilityElement = true
+            submitButton.accessibilityIdentifier = "submit_btn"
+            submitButton.isEnabled = false
+            submitButton.setTitle(buttonTitle, for: .normal)
+            submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
+            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
+            submitButton.layer.cornerRadius = 4
+            submitButton.clipsToBounds = true
+            submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
+            return submitButton
+            
+        case .primerTestSofort,
+                .primerTestKlarna,
+                .primerTestPayPal:
+            let submitButton = PrimerButton()
+            submitButton.translatesAutoresizingMaskIntoConstraints = false
+            submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            submitButton.isAccessibilityElement = true
+            submitButton.accessibilityIdentifier = "submit_btn"
+            submitButton.isEnabled = false
+            submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
+            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
+            submitButton.layer.cornerRadius = 4
+            submitButton.clipsToBounds = true
+            submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
+            return submitButton
+            
+        case .adyenBlik,
+                .xfers:
+            let btn = PrimerButton()
+            btn.isEnabled = false
+            btn.clipsToBounds = true
+            btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
+            btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+            btn.layer.cornerRadius = 4
+            btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
+            btn.setTitleColor(.white, for: .normal)
+            btn.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
+            btn.setTitle("Confirm", for: .normal)
+            return btn
+            
+        default:
+            return nil
+        }
+    }()
     
     // MARK: - INITIALIZATION
     
@@ -578,6 +656,14 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         imgView.heightAnchor.constraint(equalToConstant: dimension).isActive = true
         imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
         return imgView
+    }
+    
+    @IBAction func paymentMethodButtonTapped(_ sender: UIButton) {
+        self.paymentMethodTokenizationViewModel.start()
+    }
+    
+    @IBAction func submitButtonTapped(_ sender: UIButton) {
+        self.paymentMethodTokenizationViewModel.submitButtonTapped()
     }
 }
 
