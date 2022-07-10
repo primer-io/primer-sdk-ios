@@ -593,7 +593,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return Promise { seal in
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
     #if canImport(Primer3DS)
-                guard let paymentMethodTokenData = paymentMethodTokenData else {
+                guard let _paymentMethodTokenData = paymentMethodTokenData else {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: containerErr)
@@ -602,7 +602,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 }
                 
                 let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodToken: paymentMethodTokenData, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                threeDSService.perform3DS(paymentMethodToken: _paymentMethodTokenData, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
                     case .success(let paymentMethodToken):
                         DispatchQueue.main.async {

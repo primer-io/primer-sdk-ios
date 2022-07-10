@@ -239,13 +239,13 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
                 .done { paymentResponse -> Void in
-                    guard let paymentResponse = paymentResponse else {
+                    guard let _paymentResponse = paymentResponse else {
                         let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
                         throw err
                     }
                     
-                    self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+                    self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: _paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
                 .catch { err in

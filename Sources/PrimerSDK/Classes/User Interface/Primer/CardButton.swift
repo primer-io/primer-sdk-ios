@@ -27,7 +27,7 @@ internal class CardButton: PrimerButton {
     var showIcon = true
 
     func render(model: CardButtonViewModel?, showIcon: Bool = true) {
-        guard let model = model else { return }
+        guard let _model = model else { return }
         accessibilityIdentifier = "saved_payment_method_button"
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -40,18 +40,18 @@ internal class CardButton: PrimerButton {
             toggleIcon()
         }
 
-        addCardIcon(image: model.imageName.image)
+        addCardIcon(image: _model.imageName.image)
         addBorder()
 
-        switch model.paymentMethodType {
+        switch _model.paymentMethodType {
         case .goCardlessMandate,
              .klarnaCustomerToken:
-            addDDMandateLabel(value: model.network)
+            addDDMandateLabel(value: _model.network)
         default:
-            addNetworkName(value: model.network)
-            addCardholderName(value: model.cardholder)
-            addLast4Digits(value: model.last4)
-            addExpiryDetails(value: model.expiry)
+            addNetworkName(value: _model.network)
+            addCardholderName(value: _model.cardholder)
+            addLast4Digits(value: _model.last4)
+            addExpiryDetails(value: _model.expiry)
         }
 
     }

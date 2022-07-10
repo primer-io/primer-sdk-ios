@@ -14,11 +14,11 @@ class PrimerCardholderNameField: PrimerCardFormFieldProtocol {
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     static func cardholderNameContainerViewFieldView(_ view: PrimerTextFieldView?) -> PrimerCustomFieldView? {
-        guard let view = view else {
+        guard let _view = view else {
             return nil
         }
         let cardholderNameContainerView = PrimerCustomFieldView()
-        cardholderNameContainerView.fieldView = view
+        cardholderNameContainerView.fieldView = _view
         cardholderNameContainerView.placeholderText = Strings.CardFormView.Cardholder.label
         cardholderNameContainerView.setup()
         cardholderNameContainerView.tintColor = theme.input.border.color(for: .selected)

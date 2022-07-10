@@ -12,8 +12,8 @@ struct Bank: Decodable {
     let name: String
     let iconUrlStr: String?
     lazy var iconUrl: URL? = {
-        guard let iconUrlStr = iconUrlStr else { return nil }
-        return URL(string: iconUrlStr)
+        guard let _iconUrlStr = iconUrlStr else { return nil }
+        return URL(string: _iconUrlStr)
     }()
     let disabled: Bool
     

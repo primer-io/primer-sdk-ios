@@ -103,14 +103,14 @@ internal extension DispatchQueue {
 // as long as the configured default is actually some kind of DispatchQueue.
 
 internal func selectDispatcher(given: DispatchQueue?, configured: Dispatcher, flags: DispatchWorkItemFlags?) -> Dispatcher {
-    guard let given = given else {
+    guard let _given = given else {
         if flags != nil {
             conf.logHandler(.nilDispatchQueueWithFlags)
         }
         return CurrentThreadDispatcher()
     }
-    if given !== DispatchQueue.pmkDefault {
-        return given.asDispatcher(flags: flags)
+    if _given !== DispatchQueue.pmkDefault {
+        return _given.asDispatcher(flags: flags)
     } else if let flags = flags, let configured = configured as? DispatchQueue {
         return configured.asDispatcher(flags: flags)
     } else if flags != nil {

@@ -15,8 +15,8 @@ struct DecodedClientToken: Codable {
     var env: String?
     var exp: Int?
     var expDate: Date? {
-        guard let exp = exp else { return nil }
-        return Date(timeIntervalSince1970: TimeInterval(exp))
+        guard let _exp = exp else { return nil }
+        return Date(timeIntervalSince1970: TimeInterval(_exp))
     }
     var intent: String?
     var paymentFlow: String?
@@ -73,13 +73,13 @@ struct DecodedClientToken: Codable {
             throw err
         }
         
-        guard let expDate = expDate else {
+        guard let _expDate = expDate else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Expiry date missing"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
         
-        if expDate < Date() {
+        if _expDate < Date() {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Expiry datetime has passed."], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err

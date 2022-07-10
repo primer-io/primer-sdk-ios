@@ -250,7 +250,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     seal.reject(err)
                 }
             } else {
-                guard let orderId = orderId else {
+                guard let _orderId = orderId else {
                     let err = PrimerError.invalidValue(key: "orderId", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -258,7 +258,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 }
                 
                 firstly {
-                    self.fetchPayPalExternalPayerInfo(orderId: orderId)
+                    self.fetchPayPalExternalPayerInfo(orderId: _orderId)
                 }
                 .then { res -> Promise<PaymentInstrument> in
                     return self.generatePaypalPaymentInstrument(externalPayerInfo: res.externalPayerInfo)
@@ -297,7 +297,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private func generatePaypalPaymentInstrument(externalPayerInfo: ExternalPayerInfo?, completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
         switch Primer.shared.intent {
         case .checkout:
-            guard let orderId = orderId else {
+            guard let _orderId = orderId else {
                 let err = PrimerError.invalidValue(key: "orderId", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 completion(.failure(err))
@@ -305,13 +305,13 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
             
             guard let externalPayerInfo = externalPayerInfo else {
-                let err = PrimerError.invalidValue(key: "externalPayerInfo", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidValue(key: "externalPayerInfo", value: _orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 completion(.failure(err))
                 return
             }
             
-            let paymentInstrument = PaymentInstrument(paypalOrderId: orderId, externalPayerInfo: externalPayerInfo)
+            let paymentInstrument = PaymentInstrument(paypalOrderId: _orderId, externalPayerInfo: externalPayerInfo)
             completion(.success(paymentInstrument))
             
         case .vault:
