@@ -15,7 +15,6 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 40
 
-    # Map a step output to a job output
     outputs:
       branch: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
     steps:
@@ -33,8 +32,6 @@ jobs:
     needs: branch
     runs-on: macos-11
     timeout-minutes: 15
-    outputs:
-      browserstack_id: ${{ steps.build_and_deploy.outputs.browserstack_id }}
 
     steps:
       - name: Cancel previous jobs
@@ -108,15 +105,13 @@ jobs:
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ needs.branch.outputs.branch }}
 
-      - name: Set Browserstack ID
-        id: set_browserstack_id_step
-        run: |
-          echo ::set-output name=browserstack_id::${BROWSERSTACK_ID}
-      - name: Show output
-        run: |
-          echo $BROWSERSTACK_ID
-        env:
-          BROWSERSTACK_ID: ${{ steps.outputs.browserstack_id }}
+      - name: Save Browserstack ID
+        uses: actions/upload-artifact@v3
+        id: save_browserstack_id_step
+        with:
+          name: browserstack_id
+          path: /var/tmp/browserstack_id.txt
+          if-no-files-found: error
 
   test-via-browserstack:
       runs-on: ubuntu-latest
@@ -133,17 +128,17 @@ jobs:
           with:
             node-version: 18.3.0
 
-        - name: Install
-          run: npm install
-
         - name: Run Appium Test
+          uses: actions/download-artifact@v3
+          with:
+            name: browserstack_id
+          run: |
+            export BROWSERSTACK_ID=$(cat /var/tmp/browserstack_id.txt)
+            npm install
+            npx wdio config/wdio.ios.bs.conf.js
           env:
             BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
             BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
-            BROWSERSTACK_ID: ${{ needs.build-test.steps.outputs.browserstack_id }}
-          run: |
-            echo $BROWSERSTACK_ID
-            npx wdio config/wdio.ios.bs.conf.js
 
         - name: Upload logs if needed
           uses: actions/upload-artifact@v1

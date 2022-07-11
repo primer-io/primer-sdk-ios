@@ -97,6 +97,8 @@ platform :ios do
       file_path: ENV["IPA_OUTPUT_PATH"]
     )
 
+    save_browserstack_id(browserstack_id: ENV['BROWSERSTACK_ID'])
+
     # Build for appetize
     build_app(
       scheme: "PrimerSDK-Example",
@@ -355,6 +357,18 @@ platform :ios do
     #   groups: "primer-internal",
     #   release_notes: "QA release: " + sdk_version_name + " [" + str_time + "]"
     # )
+
+  end
+
+  desc 'Store the Browserstack ID into a file'
+  lane :save_browserstack_id do |options|
+
+    browserstack_id_to_save = options[:browserstack_id]
+    browserstack_id_file = "/var/tmp/browserstack_id.txt"
+
+    UI.message("Saving #{browserstack_id_to_save} into #{browserstack_id_file}")
+
+    File.open(browserstack_id_file, 'w') { |file| file.write(options[:browserstack_id]) }
 
   end
 
