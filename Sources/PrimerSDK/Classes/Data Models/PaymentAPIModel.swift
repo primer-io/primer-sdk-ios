@@ -279,8 +279,8 @@ internal struct JWTToken: Decodable {
     var accessToken: String?
     var exp: Int?
     var expDate: Date? {
-        guard let _exp = exp else { return nil }
-        return Date(timeIntervalSince1970: TimeInterval(_exp))
+        guard let exp = exp else { return nil }
+        return Date(timeIntervalSince1970: TimeInterval(exp))
     }
     var configurationUrl: String?
     var paymentFlow: String?

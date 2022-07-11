@@ -137,7 +137,7 @@ internal class URLSessionStack: NetworkService {
                 return
             }
 
-            guard let _data = data else {
+            guard let data = data else {
                 if resEvent != nil {
                     resEventProperties?.errorBody = "No data received"
                     resEvent!.properties = resEventProperties
@@ -170,7 +170,7 @@ internal class URLSessionStack: NetworkService {
                 
                 if endpoint.shouldParseResponseBody {
                     
-                    let jsonObject = try? JSONSerialization.jsonObject(with: _data, options: .allowFragments)
+                    let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
                     let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
                     var jsonStr: String?
                     if jsonData != nil {
@@ -192,11 +192,11 @@ internal class URLSessionStack: NetworkService {
                     let dummyRes: T = DummySuccess(success: true) as! T
                     DispatchQueue.main.async { completion(.success(dummyRes)) }
                 } else {
-                    let result = try self.parser.parse(T.self, from: _data)
+                    let result = try self.parser.parse(T.self, from: data)
                     DispatchQueue.main.async { completion(.success(result)) }
                 }
             } catch {
-                if let json = try? JSONSerialization.jsonObject(with: _data, options: .allowFragments), let jsonDic = json as? [String: Any?],
+                if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments), let jsonDic = json as? [String: Any?],
                    let primerErrorJSON = jsonDic["error"] as? [String: Any] {
                     let statusCode = (response as! HTTPURLResponse).statusCode
 

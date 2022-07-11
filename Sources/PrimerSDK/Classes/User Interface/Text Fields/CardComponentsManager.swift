@@ -96,7 +96,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     private func fetchClientToken() -> Promise<DecodedClientToken> {
         return Promise { seal in
             
-            guard let _delegate = delegate else {
+            guard let delegate = delegate else {
                 print("Warning: Delegate has not been set")
                 let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -104,7 +104,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 return
             }
             
-            _delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
+            delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
                 
                 guard error == nil, let clientToken = clientToken else {
                     seal.reject(error!)
@@ -169,7 +169,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             if let paymentMethodsConfig = paymentMethodsConfig {
                 seal.fulfill(paymentMethodsConfig)
             } else {
-                guard let _decodedClientToken = decodedClientToken else {
+                guard let decodedClientToken = decodedClientToken else {
                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -177,14 +177,14 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 }
                 
                 do {
-                    try _decodedClientToken.validate()
+                    try decodedClientToken.validate()
                 } catch {
                     seal.reject(error)
                     return
                 }
                 
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-                apiClient.fetchConfiguration(clientToken: _decodedClientToken) { result in
+                apiClient.fetchConfiguration(clientToken: decodedClientToken) { result in
                     switch result {
                     case .success(let paymentMethodsConfig):
                         seal.fulfill(paymentMethodsConfig)

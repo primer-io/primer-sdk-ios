@@ -140,17 +140,17 @@ extension PrimerButton {
     
     private func setupStyleBasedOnCustomThemeIfNeeded() {
         
-        guard let _theme = theme else {
+        guard let theme = theme else {
             return
         }
         
 
-        setTitleColor(_theme.color(for: .enabled), for: .normal)
-        backgroundNormalStateColor = _theme.colorStates.color(for: .enabled)
-        backgroundHighlightedStateColor = _theme.colorStates.color(for: .selected)
-        borderColor = _theme.border.color(for: .enabled)
-        cornerRadius = _theme.cornerRadius
-        borderWidth = _theme.border.width
+        setTitleColor(theme.color(for: .enabled), for: .normal)
+        backgroundNormalStateColor = theme.colorStates.color(for: .enabled)
+        backgroundHighlightedStateColor = theme.colorStates.color(for: .selected)
+        borderColor = theme.border.color(for: .enabled)
+        cornerRadius = theme.cornerRadius
+        borderWidth = theme.border.width
     }
 }
 

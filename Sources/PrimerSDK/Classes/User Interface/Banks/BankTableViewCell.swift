@@ -75,8 +75,8 @@ class BankTableViewCell: UITableViewCell {
 
 fileprivate extension UIImageView {
     func load(url: URL?, placeholder: UIImage? = nil) {
-        guard let _url = url else { return }
-            let request = URLRequest(url: _url)
+        guard let url = url else { return }
+            let request = URLRequest(url: url)
             if let data = URLCache.shared.cachedResponse(for: request)?.data, let image = UIImage(data: data) {
                 self.image = image
             } else {

@@ -292,13 +292,13 @@ extension PaymentMethodTokenizationViewModel {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
                 .done { paymentResponse -> Void in
-                    guard let _paymentResponse = paymentResponse else {
+                    guard let paymentResponse = paymentResponse else {
                         let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
                         throw err
                     }
                     
-                    self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: _paymentResponse))
+                    self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
                 .catch { err in

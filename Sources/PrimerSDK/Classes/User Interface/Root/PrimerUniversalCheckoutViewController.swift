@@ -262,8 +262,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     
     @objc
     func payButtonTapped() {
-        guard let _selectedPaymentMethod = selectedPaymentMethod else { return }
-        guard let config = PrimerAPIConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == _selectedPaymentMethod.paymentInstrumentType.rawValue }).first else {
+        guard let selectedPaymentMethod = selectedPaymentMethod else { return }
+        guard let config = PrimerAPIConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == selectedPaymentMethod.paymentInstrumentType.rawValue }).first else {
             return
         }
         
@@ -285,14 +285,13 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         enableView(false)
         payButton.startAnimating()
         
-        let checkoutWithVaultedPaymentMethodViewModel = CheckoutWithVaultedPaymentMethodViewModel(configuration: config, selectedPaymentMethodTokenData: _selectedPaymentMethod)
+        let checkoutWithVaultedPaymentMethodViewModel = CheckoutWithVaultedPaymentMethodViewModel(configuration: config, selectedPaymentMethodTokenData: selectedPaymentMethod)
         firstly {
             checkoutWithVaultedPaymentMethodViewModel.start()
         }
-        .done {
+        .ensure {
             self.enableView(true)
         }
-        .catch { _ in}
     }
     
 }

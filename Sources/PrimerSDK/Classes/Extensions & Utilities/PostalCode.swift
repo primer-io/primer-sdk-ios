@@ -3,8 +3,8 @@
 class PostalCode {
     
     static func sample(for countryCode: CountryCode?) -> String {
-        guard let _countryCode = countryCode else { return "90210" }
-        switch (_countryCode) {
+        guard let countryCode = countryCode else { return "90210" }
+        switch (countryCode) {
         case CountryCode.gb:
             return "EC1A 1BB"
         case CountryCode.us:
