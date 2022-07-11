@@ -9,21 +9,16 @@ on:
 
 jobs:
   danger:
-    needs: branch
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     name: "Run Danger"
     steps:
-      - name: Git - Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v1
+      - name: Danger
+        uses: docker://ghcr.io/danger/danger-swift:3.13.0
         with:
-          ref: ${{ github.ref }}
-
-      - name: Execute Danger checks
-        run: |
-          brew install danger/tap/danger-swift
-          danger-swift ci
+            args: --failOnErrors --no-publish-check --remove-previous-comments
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # - uses: actions/checkout@v1
       # - name: Danger
