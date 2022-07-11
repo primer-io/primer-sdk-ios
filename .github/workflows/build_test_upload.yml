@@ -10,6 +10,7 @@ on:
 jobs:
   danger:
     runs-on: ubuntu-latest
+    permissions: write-all
     name: "Run Danger"
     steps:
       - uses: actions/checkout@v1
@@ -18,7 +19,7 @@ jobs:
         with:
             args: --failOnErrors --no-publish-check --remove-previous-comments
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
 
       # - uses: actions/checkout@v1
       # - name: Danger
