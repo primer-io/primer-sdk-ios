@@ -103,8 +103,44 @@ jobs:
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
           BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          GITHUB_TEMP_PATH: ${{ secrets.DARIO_TOKEN_TEMP }}
           SOURCE_BRANCH: ${{ needs.branch.outputs.branch }}
+
+      - name: Set Browserstack ID
+        id: set_browserstack_id_step
+        run: echo "::set-output name=browserstack_id::$BROWSERSTACK_ID"
+
+  test-via-browserstack:
+      runs-on: ubuntu-latest
+      needs: build-test
+      steps:
+        - name: Clone and launch Browserstack tests via Appium 🧪
+          run: |
+            git clone https://d4r1091:$GITHUB_TEMP_PATH@github.com/Tino-Primer/primer-mobile-appium.git .
+          env:
+            GITHUB_TEMP_PATH: ${{ secrets.DARIO_TOKEN_TEMP }}
+
+        - name: Setup node
+          uses: actions/setup-node@v1
+          with:
+            node-version: 18.3.0
+
+        - name: Install
+          run: npm install
+
+        - name: Test
+          env:
+            BROWSERSTACK_ID: ${{secrets.BROWSERSTACK_ID}}
+            BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
+            BROWSERSTACK_ACCESS_KEY: ${{ jobs.build-test.steps.set_browserstack_id_step.outputs.browserstack_id }}
+          run: |
+            npx wdio config/wdio.ios.bs.conf.js
+
+        - name: Upload logs if needed
+          uses: actions/upload-artifact@v1
+          if: failure()
+          with:
+            name: logs
+            path: logs
 
   pod-lint:
     needs: build-test

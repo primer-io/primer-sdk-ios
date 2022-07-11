@@ -104,6 +104,7 @@ platform :ios do
       workspace: "./Example/PrimerSDK.xcworkspace",
       configuration: "Debug",
       export_method: "development",
+      archive_path: "/var/tmp/PrimerSDK_Example.xcarchive",
       # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
@@ -111,9 +112,8 @@ platform :ios do
     )
 
     # Appetize needs the .app to be zipped
-    built_archive_path = ENV["XCODEBUILD_ARCHIVE"]
     zip(
-      path: "#{built_archive_path}/Products/Applications/PrimerSDK_Example.app",
+      path: "/var/tmp/PrimerSDK_Example.xcarchive/Products/Applications/PrimerSDK_Example.app",
       output_path: "./PrimerSDK_Example.zip",
       symlinks: true
     )
@@ -195,6 +195,7 @@ platform :ios do
       workspace: "./Example/PrimerSDK.xcworkspace",
       configuration: "Debug",
       export_method: "development",
+      archive_path: "/var/tmp/PrimerSDK_Example.xcarchive",
       # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
@@ -202,9 +203,8 @@ platform :ios do
     )
 
     # Appetize needs the .app to be zipped
-    built_archive_path = ENV["XCODEBUILD_ARCHIVE"]
     zip(
-      path: "#{built_archive_path}/Products/Applications/PrimerSDK_Example.app",
+      path: "/var/tmp/PrimerSDK_Example.xcarchive/Products/Applications/PrimerSDK_Example.app",
       output_path: "./PrimerSDK_Example.zip",
       symlinks: true
     )
@@ -317,6 +317,7 @@ platform :ios do
       workspace: "./Example/PrimerSDK.xcworkspace",
       configuration: "Debug",
       export_method: "development",
+      archive_path: "/var/tmp/PrimerSDK_Example.xcarchive",
       # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
@@ -324,9 +325,8 @@ platform :ios do
     )
 
     # Appetize needs the .app to be zipped
-    built_archive_path = ENV["XCODEBUILD_ARCHIVE"]
     zip(
-      path: "#{built_archive_path}/Products/Applications/PrimerSDK_Example.app",
+      path: "/var/tmp/PrimerSDK_Example.xcarchive/Products/Applications/PrimerSDK_Example.app",
       output_path: "./PrimerSDK_Example.zip",
       symlinks: true
     )
