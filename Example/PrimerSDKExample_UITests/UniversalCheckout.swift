@@ -192,23 +192,15 @@ class UniversalCheckout: XCTestCase {
         try base.resultScreenExpectations(for: payment)
     }
 
-    func testAdyenIDeal() throws {
-        let app = XCUIApplication()
-        app/*@START_MENU_TOKEN@*/.staticTexts["Initialize Primer SDK"]/*[[".buttons[\"Initialize Primer SDK\"].staticTexts[\"Initialize Primer SDK\"]",".buttons[\"initialize_primer_sdk\"].staticTexts[\"Initialize Primer SDK\"]",".staticTexts[\"Initialize Primer SDK\"]"],[[[-1,2],[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
-        app/*@START_MENU_TOKEN@*/.staticTexts["Universal Checkout"]/*[[".buttons[\"Universal Checkout\"].staticTexts[\"Universal Checkout\"]",".buttons[\"universal_checkout_button\"].staticTexts[\"Universal Checkout\"]",".staticTexts[\"Universal Checkout\"]"],[[[-1,2],[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
-        
+    func testPresentAdyenIDeal() throws {
+        let payment = Base.paymentMethods.filter({ $0.alias == "ADYEN_IDEAL" }).first!
+        try base.testPayment(payment, cancelPayment: false)
+
         let scrollView = app.scrollViews["primer_container_scroll_view"]
-        let amountTextExists = expectation(for: Expectation.exists, evaluatedWith: scrollView, handler: nil)
-        var expectations = [amountTextExists]
-        wait(for: expectations, timeout: 15)
-        expectations = []
-        
-        let adyenIDealButton = scrollView.otherElements.buttons["ADYEN_IDEAL"]
-        adyenIDealButton.tap()
-        
         let elementsQuery = scrollView.otherElements
         elementsQuery.tables/*@START_MENU_TOKEN@*/.staticTexts["Test Issuer"]/*[[".cells.staticTexts[\"Test Issuer\"]",".staticTexts[\"Test Issuer\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
-        
+
+        var expectations: [XCTestExpectation] = []
         let paymentLabel = app/*@START_MENU_TOKEN@*/.webViews.webViews.webViews.staticTexts["Payment: EUR 101.00"]/*[[".otherElements[\"BrowserView?WebViewProcessID=19242\"].webViews.webViews.webViews",".otherElements[\"Online transfer\"].staticTexts[\"Payment: EUR 101.00\"]",".staticTexts[\"Payment: EUR 101.00\"]",".webViews.webViews.webViews"],[[[-1,3,1],[-1,0,1]],[[-1,2],[-1,1]]],[0,0]]@END_MENU_TOKEN@*/
         let paymentLabelExists = expectation(for: Expectation.exists, evaluatedWith: paymentLabel, handler: nil)
         let continueButton = app/*@START_MENU_TOKEN@*/.webViews.webViews.webViews.buttons["Continue"]/*[[".otherElements[\"BrowserView?WebViewProcessID=19242\"].webViews.webViews.webViews",".otherElements[\"Online transfer\"].buttons[\"Continue\"]",".buttons[\"Continue\"]",".webViews.webViews.webViews"],[[[-1,3,1],[-1,0,1]],[[-1,2],[-1,1]]],[0,0]]@END_MENU_TOKEN@*/
@@ -216,7 +208,6 @@ class UniversalCheckout: XCTestCase {
         expectations = [paymentLabelExists, continueButtonExists]
         wait(for: expectations, timeout: 15)
         expectations = []
-        continueButton.tap()
     }
     
     func testAdyenMobilePay() throws {
