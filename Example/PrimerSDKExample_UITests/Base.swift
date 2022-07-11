@@ -143,6 +143,23 @@ class Base: XCTestCase {
             )
         ),
         Payment(
+            id: "ADYEN_IDEAL",
+            environment: .sandbox,
+            currency: "EUR",
+            countryCode: "NL",
+            amount: "10100",
+            expectations: Payment.Expectations(
+                amount: "€101.00",
+                surcharge: "+€0.69",
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "SUCCESS"
+                ]
+            )
+        ),
+        Payment(
             id: "ADYEN_MOBILEPAY",
             environment: .sandbox,
             currency: "DKK",
@@ -239,14 +256,13 @@ class Base: XCTestCase {
             countryCode: "GB",
             amount: "100",
             expectations: Payment.Expectations(
-                amount: "+£1.00",
+                amount: "£1.00",
                 surcharge: "Additional fee may apply",
                 webviewImage: nil,
                 webviewTexts: nil,
                 buttonTexts: ["Pay £1.00"],
                 resultScreenTexts: [
-                    "status": "SETTLED",
-                    "amount": "GBP 2.09"
+                    "status": "SUCCESS"
                 ]
             )
         ),
@@ -330,8 +346,7 @@ class Base: XCTestCase {
                 webviewTexts: nil,
                 buttonTexts: ["Pay £100.11"],
                 resultScreenTexts: [
-                    "status": "SETTLED",
-                    "amount": "GBP 100.11"
+                    "status": "SUCCESS"
                 ]
             )
         ),
@@ -349,8 +364,7 @@ class Base: XCTestCase {
                 webviewTexts: nil,
                 buttonTexts: ["Pay £100.11"],
                 resultScreenTexts: [
-                    "status": "DECLINED",
-                    "amount": "GBP 100.11"
+                    "status": "FAILED"
                 ]
             )
         )
@@ -438,8 +452,25 @@ class Base: XCTestCase {
             performPaymentSwitch.tap()
         }
         
+        let appSettingsBackgroundView = app.otherElements["app_settings_background_view"]
+        appSettingsBackgroundView.tap()
+        
         let initSDKButton = app.buttons["initialize_primer_sdk"]
-        initSDKButton.tap()
+        
+        if initSDKButton.waitForExistence(timeout: 5) {
+            initSDKButton.tap()
+        } else {
+            XCTAssert(true, "Failed")
+        }
+    }
+    
+    func testViewTap() {
+        
+        let app = XCUIApplication()
+        app.windows.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element(boundBy: 1).tap()
+        app/*@START_MENU_TOKEN@*/.textFields["amount_txt_field"]/*[[".textFields[\"In minor units (type 100 for 1.00)\"]",".textFields[\"amount_txt_field\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.children(matching: .other).element.tap()
+                        
     }
     
     func openUniversalCheckout() throws {
@@ -524,6 +555,7 @@ class Base: XCTestCase {
     }
 
     func testPayment(_ payment: Payment, cancelPayment: Bool = true) throws {
+        
         try testInitialize(
             env: payment.environment.rawValue,
             customerId: nil,
@@ -540,7 +572,6 @@ class Base: XCTestCase {
         let checkoutTitle = app.staticTexts["Choose payment method"]
         let vaultTitle = app.staticTexts["Add payment method"]
 
-        
         expectation(for: Expectation.exists, evaluatedWith: checkoutTitle, handler: nil)
         expectation(for: Expectation.doesNotExist, evaluatedWith: vaultTitle, handler: nil)
         waitForExpectations(timeout: 30, handler: nil)
@@ -556,18 +587,10 @@ class Base: XCTestCase {
         }
         
         let paymentMethodButton = app.buttons[payment.id]
-        
-        if !paymentMethodButton.exists {
-            var isHittable: Bool = false
-            while !isHittable {
-                scrollView.swipeUp()
-                isHittable = paymentMethodButton.isHittable
-            }
+        if scrollView.scrollRevealingElement(paymentMethodButton) {
+            paymentMethodButton.tap()
         }
-        
-        let paymentButton = scrollView.otherElements.buttons[payment.id]
-        paymentButton.tap()
-        
+
         let webViews = app.webViews
         if let webViewImageExpectation = payment.expectations?.webviewImage {
             let webViewPaymentImage = webViews.images[webViewImageExpectation]
