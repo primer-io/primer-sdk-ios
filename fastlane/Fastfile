@@ -173,11 +173,16 @@ platform :ios do
   desc 'This action sets the version and build number'
   private_lane :set_version_and_build_number do
 
+    # We don't really need the version number
+    # at this moment.
+    # The Build number is the unique identifier of the package
+    # matching the Github Workflow run ID and number
+    
     # Set version number
-    increment_version_number(
-      version_number: sdk_version_name_source_branch,
-      xcodeproj: app_xcode_proj
-    )
+    # increment_version_number(
+    #   version_number: sdk_version_name_source_branch,
+    #   xcodeproj: app_xcode_proj
+    # )
 
     # Set build number
     increment_build_number(
