@@ -58,6 +58,7 @@ platform :ios do
 
     github_run_id = ENV["GITHUB_RUN_ID"]
     github_run_number = ENV["GITHUB_RUN_NUMBER"]
+
     increment_build_number(
       build_number: "#{github_run_id}.#{github_run_number}",
       xcodeproj: "./Example/PrimerSDK.xcodeproj"
@@ -79,13 +80,32 @@ platform :ios do
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
     )
 
-    # Build for appetize and browserstack
+    # Build for browserstack
+    build_app(
+      scheme: "PrimerSDK-Example",
+      workspace: "./Example/PrimerSDK.xcworkspace",
+      configuration: "Debug",
+      include_bitcode: false,
+      export_method: "development"
+    )
+
+    # Upload to Browserstack
+    upload_to_browserstack_app_automate(
+      browserstack_username: ENV["BROWSERSTACK_USERNAME"],
+      browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"],
+      file_path: ENV["IPA_OUTPUT_PATH"]
+    )
+
+    # Build for appetize
     build_app(
       scheme: "PrimerSDK-Example",
       sdk: "iphonesimulator", # Appetize needs a simulator app
       workspace: "./Example/PrimerSDK.xcworkspace",
       configuration: "Debug",
-      export_method: "development"
+      export_method: "development",
+      # Build speed optimisation
+      skip_package_ipa: true,
+      skip_package_pkg: true,
     )
 
     # Appetize needs the .app to be zipped
@@ -108,14 +128,6 @@ platform :ios do
       api_token: appetize_api_token,
       public_key: public_key,
       note: sdk_version_name
-    )
-
-
-    # Upload to Browserstack
-    upload_to_browserstack_app_automate(
-      browserstack_username: ENV["BROWSERSTACK_USERNAME"],
-      browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"],
-      file_path: ENV["IPA_OUTPUT_PATH"]
     )
 
     # Utilize the firebase client token to store in CI
@@ -277,13 +289,32 @@ platform :ios do
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
     )
 
-    # Build for appetize and browserstack
+    # Build for browserstack
+    build_app(
+      scheme: "PrimerSDK-Example",
+      workspace: "./Example/PrimerSDK.xcworkspace",
+      configuration: "Debug",
+      include_bitcode: false,
+      export_method: "development"
+    )
+
+    # Upload to Browserstack
+    upload_to_browserstack_app_automate(
+      browserstack_username: ENV["BROWSERSTACK_USERNAME"],
+      browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"],
+      file_path: ENV["IPA_OUTPUT_PATH"]
+    )
+
+    # Build for appetize
     build_app(
       scheme: "PrimerSDK-Example",
       sdk: "iphonesimulator", # Appetize needs a simulator app
       workspace: "./Example/PrimerSDK.xcworkspace",
       configuration: "Debug",
-      export_method: "development"
+      export_method: "development",
+      # Build speed optimisation
+      skip_package_ipa: true,
+      skip_package_pkg: true,
     )
 
     # Appetize needs the .app to be zipped
@@ -306,14 +337,6 @@ platform :ios do
       api_token: appetize_api_token,
       public_key: public_key,
       note: sdk_version_name
-    )
-
-
-    # Upload to Browserstack
-    upload_to_browserstack_app_automate(
-      browserstack_username: ENV["BROWSERSTACK_USERNAME"],
-      browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"],
-      file_path: ENV["IPA_OUTPUT_PATH"]
     )
 
     # Utilize the firebase client token to store in CI
