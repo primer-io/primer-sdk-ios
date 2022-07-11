@@ -33,6 +33,8 @@ jobs:
     needs: branch
     runs-on: macos-11
     timeout-minutes: 15
+    outputs:
+      browserstack_id: ${{ steps.build_and_deploy.outputs.browserstack_id }}
 
     steps:
       - name: Cancel previous jobs
@@ -90,6 +92,7 @@ jobs:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
 
       - name: Distribute internally on Firebase & Appetize 🚀
+        id: build_and_deploy
         run: |
           bundle exec fastlane qa_release
         env:
@@ -108,7 +111,7 @@ jobs:
       - name: Set Browserstack ID
         id: set_browserstack_id_step
         run: |
-          echo "::set-output name=browserstack_id::$BROWSERSTACK_ID"
+          echo "::set-output name=browserstack_id::${BROWSERSTACK_ID}"
 
   test-via-browserstack:
       runs-on: ubuntu-latest
@@ -132,7 +135,7 @@ jobs:
           env:
             BROWSERSTACK_ID: ${{secrets.BROWSERSTACK_ID}}
             BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
-            # BROWSERSTACK_ACCESS_KEY: ${{ jobs.build-test.steps.set_browserstack_id_step.outputs.browserstack_id }}
+            BROWSERSTACK_ACCESS_KEY: ${{ needs.build-test.steps.outputs.browserstack_id }}
           run: |
             npx wdio config/wdio.ios.bs.conf.js
 
