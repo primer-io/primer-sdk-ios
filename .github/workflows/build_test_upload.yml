@@ -10,7 +10,6 @@ on:
 jobs:
   danger:
     runs-on: ubuntu-latest
-    permissions: write-all
     name: "Run Danger"
     steps:
       - uses: actions/checkout@v1
