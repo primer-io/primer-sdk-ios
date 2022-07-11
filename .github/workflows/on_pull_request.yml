@@ -41,18 +41,10 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: actions/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "2.6"
-
-      - name: Install Bundler
-        run: |
-          gem install bundler
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
-          bundle update fastlane
-          bundle exec fastlane update_plugins
-          sudo xcode-select -r
+          bundler-cache: true
 
       - name: Create Firebase Service Credentials file
         run: |
