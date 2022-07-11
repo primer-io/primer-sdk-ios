@@ -37,7 +37,7 @@ let swiftFilesContainsUIKitImport = editedFiles.filter {
 
 if swiftFilesContainsUIKitImport.count > 0 {
     let files = swiftFilesContainsUIKitImport.joined(separator: ", ")
-    fail("Please check your 'canImport(UIKit)` in the following files: \(files)")
+    warn("Please check your 'canImport(UIKit)` in the following files: \(files)")
 }
 
 // MARK: - PR Contains Tests
