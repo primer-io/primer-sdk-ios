@@ -811,8 +811,10 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 }
             }
 
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+            
             firstly {
-                ClientSessionAPIResponse.Action.dispatchMultipleActions(actions)
+                clientSessionActionsModule.dispatch(actions: actions)
             }.done {
                 seal.fulfill()
             }
@@ -962,23 +964,18 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
         self.cardNetwork = cardNetwork
         
+        var network = self.cardNetwork?.rawValue.uppercased()
+        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        
         if let cardNetwork = cardNetwork, cardNetwork != .unknown, cardNumberContainerView.rightImage2 == nil && cardNetwork.icon != nil {
-            var network = self.cardNetwork?.rawValue.uppercased()
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
             }
             
-            let params: [String: Any] = [
-                "paymentMethodType": "PAYMENT_CARD",
-                "binData": [
-                    "network": network,
-                ]
-            ]
-            
             cardNumberContainerView.rightImage2 = cardNetwork.icon
             
             firstly {
-                ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(params)
+                clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: network)
             }
             .done {
                 self.updateButtonUI()
@@ -986,9 +983,9 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             .catch { _ in }
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
             cardNumberContainerView.rightImage2 = nil
-            
+                        
             firstly {
-                ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
+                clientSessionActionsModule.unselectPaymentMethodIfNeeded()
             }
             .done {
                 self.updateButtonUI()

@@ -50,8 +50,10 @@ extension PaymentMethodTokenizationViewModel {
                     self.didFinishPayment?(err)
                     self.nullifyEventCallbacks()
                     
+                    let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                    
                     firstly {
-                        ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
+                        clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                     }
                     .then { () -> Promise<String?> in
                         var primerErr: PrimerError!
@@ -79,13 +81,15 @@ extension PaymentMethodTokenizationViewModel {
             self.didStartTokenization = nil
             self.didFinishTokenization = nil
             
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+            
             if let primerErr = err as? PrimerError,
                case .cancelled = primerErr,
                self.config.type == .applePay,
                PrimerHeadlessUniversalCheckout.current.delegate == nil
             {
                 firstly {
-                    ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
+                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                 }
                 .done { merchantErrorMessage in
                     Primer.shared.primerRootVC?.popToMainScreen(completion: nil)
@@ -95,7 +99,7 @@ extension PaymentMethodTokenizationViewModel {
                 
             } else {
                 firstly {
-                    ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
+                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                 }
                 .then { () -> Promise<String?> in
                     var primerErr: PrimerError!
