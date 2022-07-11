@@ -10,8 +10,8 @@ github_run_id = ENV["GITHUB_RUN_ID"]
 github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
-app_workspace = "Example/PrimerSDK.xcworkspace"
-app_xcode_proj = "Example/PrimerSDK.xcodeproj"
+app_workspace = "./Example/PrimerSDK.xcworkspace"
+app_xcode_proj = "./Example/PrimerSDK.xcodeproj"
 app_scheme = "PrimerSDK-Example"
 app_test_scheme = "PrimerSDK_Tests"
 app_ui_test_scheme = "PrimerSDKExample_UITests"
@@ -178,7 +178,6 @@ platform :ios do
       version_number: sdk_version_name_source_branch,
       xcodeproj: app_xcode_proj
     )
-
 
     # Set build number
     increment_build_number(
