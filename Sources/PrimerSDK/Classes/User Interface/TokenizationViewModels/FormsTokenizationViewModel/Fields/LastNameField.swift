@@ -13,9 +13,9 @@ class PrimerLastNameField: PrimerCardFormFieldProtocol {
     
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    static func lastNameFieldContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
+    static func lastNameFieldContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let lastNameFieldContainerView = PrimerCustomFieldView()
-        lastNameFieldContainerView.fieldView = view
+        lastNameFieldContainerView.fieldView = primerTextFieldView
         lastNameFieldContainerView.placeholderText = Strings.CardFormView.LastName.label
         lastNameFieldContainerView.setup()
         lastNameFieldContainerView.tintColor = theme.input.border.color(for: .selected)

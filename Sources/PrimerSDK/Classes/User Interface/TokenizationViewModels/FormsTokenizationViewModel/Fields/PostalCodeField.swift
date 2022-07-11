@@ -13,9 +13,9 @@ class PrimerPostalCodeField: PrimerCardFormFieldProtocol {
     
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    static func postalCodeContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
+    static func postalCodeContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let postalCodeContainerView = PrimerCustomFieldView()
-        postalCodeContainerView.fieldView = view
+        postalCodeContainerView.fieldView = primerTextFieldView
         postalCodeContainerView.placeholderText = Strings.CardFormView.PostalCode.label
         postalCodeContainerView.setup()
         postalCodeContainerView.tintColor = theme.input.border.color(for: .selected)
