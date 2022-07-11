@@ -86,7 +86,8 @@ platform :ios do
       workspace: "./Example/PrimerSDK.xcworkspace",
       configuration: "Debug",
       include_bitcode: false,
-      export_method: "development"
+      export_method: "development",
+      skip_package_dependencies_resolution: true
     )
 
     # Upload to Browserstack
@@ -106,6 +107,7 @@ platform :ios do
       # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
+      skip_package_dependencies_resolution: true
     )
 
     # Appetize needs the .app to be zipped
@@ -196,6 +198,7 @@ platform :ios do
       # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
+      skip_package_dependencies_resolution: true
     )
 
     # Appetize needs the .app to be zipped
@@ -228,6 +231,7 @@ platform :ios do
       export_method: "development",
       # Build speed optimisation
       skip_package_pkg: true,
+      skip_package_dependencies_resolution: true
     )
 
     # Firebase
@@ -295,7 +299,8 @@ platform :ios do
       workspace: "./Example/PrimerSDK.xcworkspace",
       configuration: "Debug",
       include_bitcode: false,
-      export_method: "development"
+      export_method: "development",
+      skip_package_dependencies_resolution: true
     )
 
     # Upload to Browserstack
@@ -315,6 +320,7 @@ platform :ios do
       # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
+      skip_package_dependencies_resolution: true
     )
 
     # Appetize needs the .app to be zipped
@@ -364,6 +370,7 @@ platform :ios do
         export_method: "development",
         # Build speed optimisation
         skip_package_pkg: true,
+        skip_package_dependencies_resolution: true
       )
 
       build_ios_app(
@@ -375,7 +382,8 @@ platform :ios do
         sdk: "iphonesimulator",
         xcargs: "SYMROOT=#{dir}",
         skip_package_ipa: true,
-        skip_archive: true
+        skip_archive: true,
+        skip_package_dependencies_resolution: true
       )
 
     end
