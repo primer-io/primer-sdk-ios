@@ -22,6 +22,7 @@ app_output_archive_path = "/var/tmp/PrimerSDK_Example.xcarchive"
 
 # Utils
 sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
+pr_number = ENV['PR_NUMBER']
 
 #--------------------- END CONSTANTS -----------------------#
 
@@ -120,7 +121,7 @@ platform :ios do
     )
 
     # Find public key of appetize
-    uri = URI('https://livedemostore.primer.io/appetize/ios/preview_' + sdk_version_name_source_branch)
+    uri = URI('https://livedemostore.primer.io/appetize/ios/preview_' + "#{pr_number}_#{github_run_id}_#{github_run_number}")
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
 
