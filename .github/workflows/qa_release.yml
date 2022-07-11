@@ -111,7 +111,12 @@ jobs:
       - name: Set Browserstack ID
         id: set_browserstack_id_step
         run: |
-          echo "::set-output name=browserstack_id::${BROWSERSTACK_ID}"
+          echo ::set-output name=browserstack_id::${BROWSERSTACK_ID}
+      - name: Show output
+        run: |
+          echo $BROWSERSTACK_ID
+        env:
+          BROWSERSTACK_ID: ${{ steps.outputs.browserstack_id }}
 
   test-via-browserstack:
       runs-on: ubuntu-latest
@@ -119,7 +124,7 @@ jobs:
       steps:
         - name: Clone and launch Browserstack tests via Appium 🧪
           run: |
-            git clone https://d4r1091:$GITHUB_TEMP_PATH@github.com/Tino-Primer/primer-mobile-appium.git .
+            git clone -b origin/feature/browserstack-via-ci https://d4r1091:$GITHUB_TEMP_PATH@github.com/Tino-Primer/primer-mobile-appium.git .
           env:
             GITHUB_TEMP_PATH: ${{ secrets.DARIO_TOKEN_TEMP }}
 
