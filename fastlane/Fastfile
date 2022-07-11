@@ -51,10 +51,10 @@ platform :ios do
     # )
 
     # Set version number
-    increment_version_number(
-      version_number: sdk_version_name,
-      xcodeproj: "./Example/PrimerSDK.xcodeproj"
-    )
+    # increment_version_number(
+    #   version_number: sdk_version_name,
+    #   xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    # )
 
     github_run_id = ENV["GITHUB_RUN_ID"]
     github_run_number = ENV["GITHUB_RUN_NUMBER"]
@@ -262,11 +262,11 @@ platform :ios do
     #   podfile: "./Example/Podfile"
     # )
 
-    # Set version number
-    increment_version_number(
-      version_number: version_name,
-      xcodeproj: "./Example/PrimerSDK.xcodeproj"
-    )
+    # # Set version number
+    # increment_version_number(
+    #   version_number: version_name,
+    #   xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    # )
 
     increment_build_number(
       build_number: build_number,
