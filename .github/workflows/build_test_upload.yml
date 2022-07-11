@@ -27,7 +27,7 @@ jobs:
 
   danger:
     needs: branch
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     name: "Run Danger"
     steps:
       - name: Execute Danger checks
