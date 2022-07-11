@@ -1,4 +1,4 @@
-name: Preview Pull Request
+name: Build app
 
 on:
   pull_request:
@@ -6,13 +6,29 @@ on:
       - opened
       - edited
       - synchronize
-    branches:
-      - preview/**
 
 jobs:
-  build-test:
+  branch:
     runs-on: macos-latest
     timeout-minutes: 30
+
+    outputs:
+      branch: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
+    steps:
+      - name: Branch name
+        id: branch_name
+        run: |
+          echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF##*/}
+      - name: Build base image
+        run: |
+          echo $SOURCE_BRANCH
+        env:
+          SOURCE_BRANCH: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
+
+  build-and-upload:
+    needs: branch
+    runs-on: macos-latest
+    timeout-minutes: 15
 
     steps:
       - name: Cancel previous jobs
@@ -55,7 +71,7 @@ jobs:
 
       - name: Distribute internally on Firebase, Browserstack and Appetize 🚀
         run: |
-          bundle exec fastlane preview
+          bundle exec fastlane qa_release
         env:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
@@ -64,24 +80,63 @@ jobs:
           FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
-          ACCESS_TOKEN: ${{ secrets.PRIMER_PODSPEC_ACCESS_TOKEN }}
           BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          GITHUB_TEMP_PAT: ${{ secrets.DARIO_TOKEN_TEMP }}
           SOURCE_BRANCH: ${{ needs.branch.outputs.branch }}
 
+      - name: Save Browserstack ID
+        uses: actions/upload-artifact@v3
+        id: save_browserstack_id_step
+        with:
+          name: browserstack_id
+          path: /var/tmp/browserstack_id.txt
+          if-no-files-found: error
+
+  test-via-browserstack:
+      runs-on: ubuntu-latest
+      needs: build-and-upload
+      steps:
+        - name: Clone and launch Browserstack tests via Appium 🧪
+          run: |
+            git clone -b feature/browserstack-via-ci https://d4r1091:$GITHUB_TEMP_PATH@github.com/Tino-Primer/primer-mobile-appium.git .
+          env:
+            GITHUB_TEMP_PATH: ${{ secrets.DARIO_TOKEN_TEMP }}
+
+        - name: Retrieve Browserstack ID
+          uses: actions/download-artifact@v3
+          with:
+            name: browserstack_id
+            path: /var/tmp
+
+        - name: Setup node
+          uses: actions/setup-node@v1
+          with:
+            node-version: 18.3.0
+
+        - name: npm Install
+          run: npm install
+
+        - name: Run Appium Test
+          env:
+            BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
+            BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
+          run: |
+            export BROWSERSTACK_APP_ID=$(cat /var/tmp/browserstack_id.txt)
+            echo $BROWSERSTACK_APP_ID
+            npx wdio config/wdio.ios.bs.conf.js
 
   pod-lint:
-    needs: build-test
-    runs-on: macOS-latest
+    needs: test-via-browserstack
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v1
 
-      - name: Install Cocoapods
-        run: gem install cocoapods
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.6"
+          bundler-cache: true
 
       - name: Lint pod
         run: |
