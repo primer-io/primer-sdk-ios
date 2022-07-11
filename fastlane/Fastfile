@@ -28,6 +28,18 @@ platform :ios do
               scheme: "PrimerSDKExample_UITests")
   end
 
+  lane :danger_check do
+
+    danger(
+      danger_id: "check_on_all_prs",
+      dangerfile: "Dangerfile",
+      github_api_token: ENV["GITHUB_TOKEN"],
+      verbose: true,
+      remove_previous_comments: true
+    )
+
+  end
+
   lane :qa_release do
     time = Time.new
     str_time = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -110,7 +122,7 @@ platform :ios do
     #   configuration: "Debug",
     #   export_method: "development",
     #   # Build speed optimisation
-    #   skip_package_pkg: true, 
+    #   skip_package_pkg: true,
     # )
 
     # # Firebase
@@ -164,7 +176,7 @@ platform :ios do
       keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
     )
-  
+
 
 
     # Build for appetize
@@ -208,7 +220,7 @@ platform :ios do
       configuration: "Debug",
       export_method: "development",
       # Build speed optimisation
-      skip_package_pkg: true, 
+      skip_package_pkg: true,
     )
 
     # Firebase
@@ -229,7 +241,7 @@ platform :ios do
 
     appetize_api_token = ENV['APPETIZE_API_TOKEN']
     pr_number = ENV["PR_NUMBER"]
-    if(!pr_number) then 
+    if(!pr_number) then
         puts "NO PR NUMBER"
         next
     end
@@ -310,7 +322,7 @@ platform :ios do
       configuration: "Debug",
       export_method: "development",
       # Build speed optimisation
-      skip_package_pkg: true, 
+      skip_package_pkg: true,
     )
 
     # # Firebase
