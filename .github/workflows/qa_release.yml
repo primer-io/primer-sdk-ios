@@ -129,10 +129,6 @@ jobs:
             name: browserstack_id
             path: /var/tmp
 
-        - name: Display structure of downloaded files
-          run: ls -R
-          working-directory: /var/tmp
-
         - name: Setup node
           uses: actions/setup-node@v1
           with:
