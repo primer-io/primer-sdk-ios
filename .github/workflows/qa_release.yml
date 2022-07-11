@@ -6,9 +6,8 @@ on:
       - opened
       - edited
       - synchronize
-      - closed
     branches:
-      - master
+      - release/**
 
 jobs:
   branch:
@@ -79,8 +78,7 @@ jobs:
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
 
-      - name: Distribute internally on Firebase & Appetize 🚀
-        id: build_and_deploy
+      - name: Distribute internally on Firebase, Browserstack and Appetize 🚀
         run: |
           bundle exec fastlane qa_release
         env:

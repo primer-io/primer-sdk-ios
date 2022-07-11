@@ -7,7 +7,7 @@ on:
       - edited
       - synchronize
     branches:
-      - "**"
+      - preview/**
 
 jobs:
   build-test:
@@ -61,7 +61,7 @@ jobs:
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
 
-      - name: Distribute internally on Firebase & Appetize 🚀
+      - name: Distribute internally on Firebase, Browserstack and Appetize 🚀
         run: |
           bundle exec fastlane preview
         env:
