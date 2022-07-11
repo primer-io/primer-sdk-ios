@@ -53,6 +53,13 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     func handleFailureFlow(errorMessage: String?)
 }
 
+internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
+    func cancel()
+    var tableView: UITableView { get set }
+    var searchCountryTextField: PrimerSearchTextField { get set }
+    var config: PaymentMethodConfig { get set }
+}
+
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
 
     var config: PaymentMethodConfig
@@ -155,11 +162,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     lazy var surcharge: String? = {
         switch config.type {
         case .paymentCard:
-            return NSLocalizedString("surcharge-additional-fee",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Additional fee may apply",
-                                     comment: "Additional fee may apply - Surcharge (Label)")
+            return Strings.CardFormView.additionalFeesTitle
         default:
             guard let currency = AppState.current.currency else { return nil }
             guard let availablePaymentMethods = AppState.current.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
@@ -205,25 +208,11 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return nil
             
         case .apaya:
-            return NSLocalizedString("payment-method-type-pay-by-mobile",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Pay by mobile",
-                                     comment: "Pay by mobile - Payment By Mobile (Apaya)")
+            return Strings.PaymentButton.payByMobile
             
         case .paymentCard:
             return Primer.shared.intent == .vault
-            ? NSLocalizedString("payment-method-type-card-vaulted",
-                                tableName: nil,
-                                bundle: Bundle.primerResources,
-                                value: "Add new card",
-                                comment: "Add new card - Payment Method Type (Card Vaulted)")
-            
-            : NSLocalizedString("payment-method-type-card-not-vaulted",
-                                tableName: nil,
-                                bundle: Bundle.primerResources,
-                                value: "Pay with card",
-                                comment: "Pay with card - Payment Method Type (Card Not vaulted)")
+            ? Strings.PrimerCardFormView.addCardButtonTitle : Strings.VaultPaymentMethodViewContent.payWithCard
             
         default:
             assert(true, "Shouldn't end up in here")

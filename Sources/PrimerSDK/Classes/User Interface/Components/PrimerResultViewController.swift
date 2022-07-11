@@ -51,22 +51,7 @@ internal class PrimerResultViewController: PrimerViewController {
         imgView.translatesAutoresizingMaskIntoConstraints = false
         imgView.heightAnchor.constraint(equalToConstant: 20.0).isActive = true
         imgView.widthAnchor.constraint(equalToConstant: 20.0).isActive = true
-        
-//        if screenType == .success {
-//            self.message = Primer.shared.flow.internalSessionFlow.vaulted ?
-//            NSLocalizedString("primer-success-screen-vault-setup-success",
-//                              tableName: nil,
-//                              bundle: Bundle.primerResources,
-//                              value: "A new payment method\nhas been successfully added!",
-//                              comment: "A new payment method\nhas been successfully added! - Success Screen Message")
-//            : NSLocalizedString("primer-success-screen-setup-success",
-//                                tableName: nil,
-//                                bundle: Bundle.primerResources,
-//                                value: "Success!",
-//                                comment: "Success! - Success Screen Title")
-//            
-//        }
-        
+                
         resultView = PrimerResultComponentView(frame: .zero, imageView: imgView, message: message, loadingIndicator: nil)
         view.addSubview(resultView)
         resultView.translatesAutoresizingMaskIntoConstraints = false

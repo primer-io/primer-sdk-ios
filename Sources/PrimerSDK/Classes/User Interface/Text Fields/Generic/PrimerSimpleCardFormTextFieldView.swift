@@ -1,0 +1,68 @@
+#if canImport(UIKit)
+
+import UIKit
+
+public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
+    
+    internal var validationError: PrimerValidationError?
+    
+    override func xibSetup() {
+        super.xibSetup()
+        keyboardType = .namePhonePad
+    }
+    
+    public override func textFieldDidBeginEditing(_ textField: UITextField) {
+        super.textFieldDidBeginEditing(textField)
+        if let objectId = editingAnalyticsObjectId {
+            let event = cardFormFieldDidBeginEditingEventWithObjectId(objectId)
+            sendTextFieldDidEndEditingAnalyticsEventIfNeeded(event)
+        }
+    }
+    
+    public override func textFieldDidEndEditing(_ textField: UITextField) {
+        super.textFieldDidEndEditing(textField)
+        if let objectId = editingAnalyticsObjectId {
+            let event = cardFormFieldDidEndEditingEventWithObjectId(objectId)
+            sendTextFieldDidEndEditingAnalyticsEventIfNeeded(event)
+        }
+    }
+    
+    public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let positionOriginal = textField.beginningOfDocument
+        let cursorLocation = textField.position(from: positionOriginal, offset: (range.location + NSString(string: string).length))
+        
+        guard let primerTextField = textField as? PrimerTextField else { return true }
+        let currentText = primerTextField._text ?? ""
+        let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
+        
+        switch self.isValid?(newText) {
+        case true:
+            validation = .valid
+        case false:
+            if let validationError = validationError {
+                ErrorHandler.handle(error: validationError)
+                validation = .invalid(validationError)
+            }
+        default:
+            validation = .notAvailable
+        }
+        
+        switch validation {
+        case .valid:
+            delegate?.primerTextFieldView(self, isValid: true)
+        default:
+            delegate?.primerTextFieldView(self, isValid: nil)
+        }
+        
+        primerTextField._text = newText
+        primerTextField.text = newText
+        
+        if let cursorLoc = cursorLocation {
+            textField.selectedTextRange = textField.textRange(from: cursorLoc, to: cursorLoc)
+        }
+        
+        return false
+    }
+}
+
+#endif

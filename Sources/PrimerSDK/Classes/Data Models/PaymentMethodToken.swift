@@ -59,12 +59,7 @@ internal extension PaymentMethodToken {
                 network: ntwrk,
                 cardholder: self.paymentInstrumentData?.cardholderName ?? "",
                 last4: "•••• \(last4)",
-                expiry: NSLocalizedString("primer-saved-card",
-                                          tableName: nil,
-                                          bundle: Bundle.primerResources,
-                                          value: "Expires",
-                                          comment: "Expires - Saved card")
-                    + " \(expMonth) / \(expYear.suffix(2))",
+                expiry: Strings.PrimerCardFormView.savedCardTitle + " \(expMonth) / \(expYear.suffix(2))",
                 imageName: self.icon,
                 paymentMethodType: self.paymentInstrumentType)
         case .payPalBillingAgreement:
