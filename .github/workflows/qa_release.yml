@@ -134,7 +134,6 @@ jobs:
             BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
             # BROWSERSTACK_ACCESS_KEY: ${{ jobs.build-test.steps.set_browserstack_id_step.outputs.browserstack_id }}
           run: |
-            echo "${{ jobs.build-test.steps.set_browserstack_id_step.outputs.browserstack_id }}"
             npx wdio config/wdio.ios.bs.conf.js
 
         - name: Upload logs if needed
