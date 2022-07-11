@@ -304,14 +304,14 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return
             }
             
-            guard let externalPayerInfo = externalPayerInfo else {
+            guard let _externalPayerInfo = externalPayerInfo else {
                 let err = PrimerError.invalidValue(key: "externalPayerInfo", value: _orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 completion(.failure(err))
                 return
             }
             
-            let paymentInstrument = PaymentInstrument(paypalOrderId: _orderId, externalPayerInfo: externalPayerInfo)
+            let paymentInstrument = PaymentInstrument(paypalOrderId: _orderId, externalPayerInfo: _externalPayerInfo)
             completion(.success(paymentInstrument))
             
         case .vault:
