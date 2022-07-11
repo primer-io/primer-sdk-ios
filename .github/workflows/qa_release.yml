@@ -142,8 +142,8 @@ jobs:
             BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
             BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
           run: |
-            export BROWSERSTACK_ID=$(cat /var/tmp/browserstack_id.txt)
-            echo $BROWSERSTACK_ID
+            export BROWSERSTACK_APP_ID=$(cat /var/tmp/browserstack_id.txt)
+            echo $BROWSERSTACK_APP_ID
             npx wdio config/wdio.ios.bs.conf.js
 
         - name: Upload logs if needed

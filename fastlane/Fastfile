@@ -97,7 +97,7 @@ platform :ios do
       file_path: ENV["IPA_OUTPUT_PATH"]
     )
 
-    save_browserstack_id(browserstack_id: ENV['BROWSERSTACK_ID'])
+    save_browserstack_id(browserstack_id: ENV['BROWSERSTACK_APP_ID'])
 
     # Build for appetize
     build_app(
