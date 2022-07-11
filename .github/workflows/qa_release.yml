@@ -137,13 +137,6 @@ jobs:
             echo $BROWSERSTACK_APP_ID
             npx wdio config/wdio.ios.bs.conf.js
 
-        - name: Upload logs if needed
-          uses: actions/upload-artifact@v1
-          if: failure()
-          with:
-            name: logs
-            path: logs
-
   pod-lint:
     needs: test-via-browserstack
     runs-on: macOS-latest
