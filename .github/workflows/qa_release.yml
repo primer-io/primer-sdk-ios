@@ -123,22 +123,27 @@ jobs:
           env:
             GITHUB_TEMP_PATH: ${{ secrets.DARIO_TOKEN_TEMP }}
 
+        - name: Retrieve Browserstack ID
+          uses: actions/download-artifact@v3
+          with:
+            name: browserstack_id
+
         - name: Setup node
           uses: actions/setup-node@v1
           with:
             node-version: 18.3.0
 
+        - name: npm Install
+          run: npm install
+
         - name: Run Appium Test
-          uses: actions/download-artifact@v3
-          with:
-            name: browserstack_id
-          run: |
-            export BROWSERSTACK_ID=$(cat /var/tmp/browserstack_id.txt)
-            npm install
-            npx wdio config/wdio.ios.bs.conf.js
           env:
             BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
             BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
+          run: |
+            export BROWSERSTACK_ID=$(cat /var/tmp/browserstack_id.txt)
+            echo $BROWSERSTACK_ID
+            npx wdio config/wdio.ios.bs.conf.js
 
         - name: Upload logs if needed
           uses: actions/upload-artifact@v1
