@@ -589,3 +589,9 @@ extension UniversalCheckout {
         
     }
 }
+
+extension XCUIElement {
+    func forceTap() {
+        coordinate(withNormalizedOffset: CGVector(dx:0.5, dy:0.5)).tap()
+    }
+}
