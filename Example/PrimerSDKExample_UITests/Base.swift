@@ -150,8 +150,8 @@ class Base: XCTestCase {
             amount: "10100",
             expectations: Payment.Expectations(
                 amount: "€101.00",
-                surcharge: "+€0.79",
-                webviewImage: "giropay",
+                surcharge: "+€0.69",
+                webviewImage: nil,
                 webviewTexts: nil,
                 buttonTexts: nil,
                 resultScreenTexts: [
@@ -572,7 +572,6 @@ class Base: XCTestCase {
         let checkoutTitle = app.staticTexts["Choose payment method"]
         let vaultTitle = app.staticTexts["Add payment method"]
 
-        
         expectation(for: Expectation.exists, evaluatedWith: checkoutTitle, handler: nil)
         expectation(for: Expectation.doesNotExist, evaluatedWith: vaultTitle, handler: nil)
         waitForExpectations(timeout: 30, handler: nil)
