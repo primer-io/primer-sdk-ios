@@ -107,7 +107,8 @@ jobs:
 
       - name: Set Browserstack ID
         id: set_browserstack_id_step
-        run: echo "::set-output name=browserstack_id::$BROWSERSTACK_ID"
+        run: |
+          echo "::set-output name=browserstack_id::$BROWSERSTACK_ID"
 
   test-via-browserstack:
       runs-on: ubuntu-latest
@@ -131,8 +132,9 @@ jobs:
           env:
             BROWSERSTACK_ID: ${{secrets.BROWSERSTACK_ID}}
             BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
-            BROWSERSTACK_ACCESS_KEY: ${{ jobs.build-test.steps.set_browserstack_id_step.outputs.browserstack_id }}
+            # BROWSERSTACK_ACCESS_KEY: ${{ jobs.build-test.steps.set_browserstack_id_step.outputs.browserstack_id }}
           run: |
+            echo "${{ jobs.build-test.steps.set_browserstack_id_step.outputs.browserstack_id }}"
             npx wdio config/wdio.ios.bs.conf.js
 
         - name: Upload logs if needed
@@ -143,7 +145,7 @@ jobs:
             path: logs
 
   pod-lint:
-    needs: build-test
+    needs: test-via-browserstack
     runs-on: macOS-latest
 
     steps:
