@@ -24,7 +24,7 @@ let swiftFilesWithCopyright = editedFiles.filter {
 
 if swiftFilesWithCopyright.count > 0 {
     let files = swiftFilesWithCopyright.joined(separator: ", ")
-    fail("In Danger we don't include copyright headers, found them in: \(files)")
+    warn("In Danger we don't include copyright headers, found them in: \(files)")
 }
 
 // MARK: - Check UIKit import
