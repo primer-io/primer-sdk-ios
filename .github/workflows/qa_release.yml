@@ -13,7 +13,7 @@ on:
 jobs:
   branch:
     runs-on: macos-latest
-    timeout-minutes: 40
+    timeout-minutes: 30
 
     outputs:
       branch: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
@@ -30,7 +30,7 @@ jobs:
 
   build-test:
     needs: branch
-    runs-on: macos-11
+    runs-on: macos-latest
     timeout-minutes: 15
 
     steps:
@@ -71,15 +71,6 @@ jobs:
           bundle install --jobs 4 --retry 3
           bundle update fastlane
           bundle exec fastlane update_plugins
-
-      # - name: Install Cocoapods
-      #   run: gem install cocoapods
-
-      # - name: Run Unit Tests
-      #   run: bundle exec fastlane tests
-
-      # - name: Run UI Tests
-      #   run: bundle exec fastlane ui_tests
 
       - name: Create Firebase Service Credentials file
         run: |
