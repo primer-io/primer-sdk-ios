@@ -131,12 +131,13 @@ jobs:
         - name: Install
           run: npm install
 
-        - name: Test
+        - name: Run Appium Test
           env:
-            BROWSERSTACK_ID: ${{secrets.BROWSERSTACK_ID}}
             BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
-            BROWSERSTACK_ACCESS_KEY: ${{ needs.build-test.steps.outputs.browserstack_id }}
+            BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
+            BROWSERSTACK_ID: ${{ needs.build-test.steps.outputs.browserstack_id }}
           run: |
+            echo $BROWSERSTACK_ID
             npx wdio config/wdio.ios.bs.conf.js
 
         - name: Upload logs if needed
