@@ -30,6 +30,12 @@ jobs:
     runs-on: macos-latest
     name: "Run Danger"
     steps:
+
+      - name: Git - Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+
       - name: Execute Danger checks
         run: |
           brew install danger/tap/danger-swift
