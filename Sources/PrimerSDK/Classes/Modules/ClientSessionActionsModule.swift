@@ -13,7 +13,7 @@ protocol ClientSessionActionsProtocol {
     
     func selectPaymentMethodIfNeeded(_ paymentMethod: PrimerPaymentMethodType, cardNetwork: String?) -> Promise<Void>
     func unselectPaymentMethodIfNeeded() -> Promise<Void>
-    func dispatch(actions: [ClientSessionAPIResponse.Action]) -> Promise<Void>
+    func dispatch(actions: [ClientSession.Action]) -> Promise<Void>
 }
 
 class ClientSessionActionsModule: ClientSessionActionsProtocol {
@@ -32,7 +32,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                     "network": cardNetwork
                 ]
             }
-            let actions = [ClientSessionAPIResponse.Action.selectPaymentMethodActionWithParameters(params)]
+            let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
             
             let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
@@ -60,7 +60,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 return
             }
             
-            let unselectPaymentMethodAction = ClientSessionAPIResponse.Action(type: .unselectPaymentMethod, params: nil)
+            let unselectPaymentMethodAction = ClientSession.Action(type: .unselectPaymentMethod, params: nil)
             let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: [unselectPaymentMethodAction]))
             
@@ -80,7 +80,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
         }
     }
     
-    func dispatch(actions: [ClientSessionAPIResponse.Action]) -> Promise<Void> {
+    func dispatch(actions: [ClientSession.Action]) -> Promise<Void> {
         return Promise { seal in
             let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))

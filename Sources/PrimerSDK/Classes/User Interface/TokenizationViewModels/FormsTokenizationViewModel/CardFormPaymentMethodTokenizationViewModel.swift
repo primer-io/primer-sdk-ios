@@ -793,10 +793,10 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 ]
             ]
             
-            var actions = [ClientSessionAPIResponse.Action.selectPaymentMethodActionWithParameters(params)]
+            var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
             
             if (isShowingBillingAddressFieldsRequired) {
-                let updatedBillingAddress = ClientSessionAPIResponse.Address(firstName: firstNameFieldView.firstName,
+                let updatedBillingAddress = ClientSession.Address(firstName: firstNameFieldView.firstName,
                                                                   lastName: lastNameFieldView.lastName,
                                                                   addressLine1: addressLine1FieldView.addressLine1,
                                                                   addressLine2: addressLine2FieldView.addressLine2,
@@ -806,7 +806,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
                                                                   countryCode: countryFieldView.countryCode)
                 
                 if let billingAddress = try? updatedBillingAddress.asDictionary() {
-                    let billingAddressAction: ClientSessionAPIResponse.Action = .setBillingAddressActionWithParameters(billingAddress)
+                    let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
                     actions.append(billingAddressAction)
                 }
             }
