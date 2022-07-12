@@ -25,10 +25,9 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
     
     override func xibSetup() {
         super.xibSetup()
-        
-        textField.keyboardType = .namePhonePad
-        textField.isAccessibilityElement = true
-        textField.accessibilityIdentifier = "generic_txt_fld"
+        keyboardType = .namePhonePad
+        isTextFieldAccessibilityElement = true
+        textFieldaccessibilityIdentifier = "generic_txt_fld"
         textField.delegate = self
     }
     

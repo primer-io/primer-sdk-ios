@@ -17,7 +17,7 @@ class PaymentMethodsGroupView: PrimerView {
     
     internal private(set) var title: String?
     internal private(set) var paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]!
-    private var stackView: UIStackView = UIStackView()
+    private var verticalStackView: UIStackView = UIStackView()
     internal var delegate: PaymentMethodsGroupViewDelegate?
     internal var titleLabel: UILabel?
     
@@ -43,13 +43,13 @@ class PaymentMethodsGroupView: PrimerView {
         layer.cornerRadius = 4.0
         clipsToBounds = true
         
-        addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.distribution = .fill
-        stackView.spacing = 7.0
-        stackView.pin(view: self, leading: 10, top: 10, trailing: -10, bottom: -10)
+        addSubview(verticalStackView)
+        verticalStackView.translatesAutoresizingMaskIntoConstraints = false
+        verticalStackView.axis = .vertical
+        verticalStackView.alignment = .fill
+        verticalStackView.distribution = .fill
+        verticalStackView.spacing = 7.0
+        verticalStackView.pin(view: self, leading: 10, top: 10, trailing: -10, bottom: -10)
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
@@ -63,11 +63,11 @@ class PaymentMethodsGroupView: PrimerView {
             titleLabel!.textAlignment = .right
             
             titleLabel!.textColor = theme.text.title.color
-            stackView.addArrangedSubview(titleLabel!)
+            verticalStackView.addArrangedSubview(titleLabel!)
         }
         
         for viewModel in paymentMethodTokenizationViewModels {
-            stackView.addArrangedSubview(viewModel.uiModule.paymentMethodButton)
+            verticalStackView.addArrangedSubview(viewModel.uiModule.paymentMethodButton)
         }
     }
     
