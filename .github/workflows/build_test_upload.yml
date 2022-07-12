@@ -104,7 +104,7 @@ jobs:
       steps:
         - name: Clone and launch Browserstack tests via Appium 🧪
           run: |
-            git clone -b feature/browserstack-via-ci https://d4r1091:$GITHUB_TEMP_PATH@github.com/Tino-Primer/primer-mobile-appium.git .
+            git clone -b develop https://d4r1091:$GITHUB_TEMP_PATH@github.com/Tino-Primer/primer-mobile-appium.git .
           env:
             GITHUB_TEMP_PATH: ${{ secrets.DARIO_TOKEN_TEMP }}
 
