@@ -57,7 +57,7 @@ struct PrimerAPIConfiguration: Codable {
     let checkoutModules: [CheckoutModule]?
     
     var isSetByClientSession: Bool {
-        return clientSession != nil4
+        return clientSession != nil
     }
     
     public init(from decoder: Decoder) throws {
