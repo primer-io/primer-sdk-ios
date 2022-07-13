@@ -3,7 +3,7 @@
 import Foundation
 
 public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
-    
+        
     case adyenAlipay
     case adyenBlik
     case adyenDotPay
