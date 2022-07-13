@@ -150,6 +150,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "PayPal"
         case .rapydGCash:
             return "GCash"
+        case .rapydGrabPay:
+            return "Grab Pay"
+        case .rapydPoli:
+            return "Poli"
         case .xfers:
             return "XFers"
         case .other:
@@ -207,6 +211,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .primerTestSofort,
                 .primerTestKlarna,
                 .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli,
                 .xfers:
             return nil
             

@@ -1,5 +1,5 @@
 //
-//  Strings.swift
+//  UIDeviceExtension.swift
 //  PrimerSDK
 //
 //  Copyright © 2022 Primer API ltd. All rights reserved.
