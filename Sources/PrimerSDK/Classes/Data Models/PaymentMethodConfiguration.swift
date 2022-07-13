@@ -26,6 +26,7 @@ class PaymentMethodConfig: Codable {
             .adyenGiropay,
             .adyenInterac,
             .adyenPayTrail,
+            .adyenPayshop,
             .adyenSofort,
             .adyenTrustly,
             .adyenTwint,
@@ -43,7 +44,9 @@ class PaymentMethodConfig: Codable {
             .payNLPayconiq,
             .opennode,
             .twoCtwoP,
-            .adyenPayshop
+            .rapydGCash,
+            .rapydGrabPay,
+            .rapydPoli
         ]
         
         let testPaymentMethodTypes: [PrimerPaymentMethodType] = [
