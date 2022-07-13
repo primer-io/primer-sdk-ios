@@ -11,7 +11,7 @@ import UIKit
 
 class PrimerResultComponentView: PrimerView {
     
-    private(set) internal var stackView = UIStackView()
+    private(set) internal var verticalStackView = UIStackView()
     private(set) internal var imageView: UIImageView?
     private(set) internal var message: String?
     private(set) internal var loadingIndicator: UIActivityIndicatorView?
@@ -27,21 +27,21 @@ class PrimerResultComponentView: PrimerView {
     }
     
     fileprivate func initialize() {
-        addSubview(stackView)
+        addSubview(verticalStackView)
         
-        stackView.axis = .vertical
-        stackView.spacing = 20.0
-        stackView.alignment = .center
+        verticalStackView.axis = .vertical
+        verticalStackView.spacing = 20.0
+        verticalStackView.alignment = .center
         
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        stackView.topAnchor.constraint(greaterThanOrEqualTo: topAnchor).isActive = true
-        stackView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        stackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor).isActive = true
-        stackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        verticalStackView.translatesAutoresizingMaskIntoConstraints = false
+        verticalStackView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        verticalStackView.topAnchor.constraint(greaterThanOrEqualTo: topAnchor).isActive = true
+        verticalStackView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        verticalStackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor).isActive = true
+        verticalStackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         
         if let imageView = imageView {
-            stackView.addArrangedSubview(imageView)
+            verticalStackView.addArrangedSubview(imageView)
         }
         
         if let message = message {
@@ -52,11 +52,11 @@ class PrimerResultComponentView: PrimerView {
             messageLabel.font = .systemFont(ofSize: 16)
             messageLabel.textColor = UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0)
             messageLabel.textAlignment = .center
-            stackView.addArrangedSubview(messageLabel)
+            verticalStackView.addArrangedSubview(messageLabel)
         }
         
         if let loadingIndicator = loadingIndicator {
-            stackView.addArrangedSubview(loadingIndicator)
+            verticalStackView.addArrangedSubview(loadingIndicator)
         }
     }
     

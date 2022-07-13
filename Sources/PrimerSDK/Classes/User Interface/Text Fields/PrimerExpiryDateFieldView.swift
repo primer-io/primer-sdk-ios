@@ -16,51 +16,18 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             
     override func xibSetup() {
         super.xibSetup()
-        
-        textField.keyboardType = .numberPad
-        textField.isAccessibilityElement = true
-        textField.accessibilityIdentifier = "expiry_txt_fld"
+        keyboardType = .numberPad
+        isTextFieldAccessibilityElement = true
+        textFieldaccessibilityIdentifier = "expiry_txt_fld"
         textField.delegate = self
+        isEditingAnalyticsEnabled = true
+        editingAnalyticsObjectId = .expiry
         isValid = { text in
             let isValid = text.isValidExpiryDate
             return isValid
         }
     }
-    
-    public override func textFieldDidBeginEditing(_ textField: UITextField) {
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .focus,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
-                    url: nil),
-                extra: nil,
-                objectType: .input,
-                objectId: .expiry,
-                objectClass: "\(Self.self)",
-                place: .cardForm))
-        Analytics.Service.record(event: viewEvent)
-    }
-    
-    public override func textFieldDidEndEditing(_ textField: UITextField) {
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .blur,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
-                    url: nil),
-                extra: nil,
-                objectType: .input,
-                objectId: .expiry,
-                objectClass: "\(Self.self)",
-                place: .cardForm))
-        Analytics.Service.record(event: viewEvent)
-    }
-    
+        
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField._text ?? ""
@@ -113,10 +80,8 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
                 delegate?.primerTextFieldView(self, isValid: nil)
             }
         }
-        
         return false
-    }
-    
+    }    
 }
 
 #endif

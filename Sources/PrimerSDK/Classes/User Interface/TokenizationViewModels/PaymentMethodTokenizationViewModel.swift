@@ -53,6 +53,13 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     func handleFailureFlow(errorMessage: String?)
 }
 
+internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
+    func cancel()
+    var tableView: UITableView { get set }
+    var searchCountryTextField: PrimerSearchTextField { get set }
+    var config: PaymentMethodConfig { get set }
+}
+
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
 
     var config: PaymentMethodConfig
@@ -141,6 +148,12 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .payPal,
                 .primerTestPayPal:
             return "PayPal"
+        case .rapydGCash:
+            return "GCash"
+        case .rapydGrabPay:
+            return "Grab Pay"
+        case .rapydPoli:
+            return "Poli"
         case .xfers:
             return "XFers"
         case .other:
@@ -155,11 +168,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     lazy var surcharge: String? = {
         switch config.type {
         case .paymentCard:
-            return NSLocalizedString("surcharge-additional-fee",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Additional fee may apply",
-                                     comment: "Additional fee may apply - Surcharge (Label)")
+            return Strings.CardFormView.additionalFeesTitle
         default:
             guard let currency = AppState.current.currency else { return nil }
             guard let availablePaymentMethods = AppState.current.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
@@ -201,29 +210,18 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .primerTestPayPal,
                 .primerTestSofort,
                 .primerTestKlarna,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli,
                 .xfers:
             return nil
             
         case .apaya:
-            return NSLocalizedString("payment-method-type-pay-by-mobile",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Pay by mobile",
-                                     comment: "Pay by mobile - Payment By Mobile (Apaya)")
+            return Strings.PaymentButton.payByMobile
             
         case .paymentCard:
             return Primer.shared.intent == .vault
-            ? NSLocalizedString("payment-method-type-card-vaulted",
-                                tableName: nil,
-                                bundle: Bundle.primerResources,
-                                value: "Add new card",
-                                comment: "Add new card - Payment Method Type (Card Vaulted)")
-            
-            : NSLocalizedString("payment-method-type-card-not-vaulted",
-                                tableName: nil,
-                                bundle: Bundle.primerResources,
-                                value: "Pay with card",
-                                comment: "Pay with card - Payment Method Type (Card Not vaulted)")
+            ? Strings.PrimerCardFormView.addCardButtonTitle : Strings.VaultPaymentMethodViewContent.payWithCard
             
         default:
             assert(true, "Shouldn't end up in here")
@@ -294,6 +292,12 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .payPal,
                 .primerTestPayPal:
             return UIImage(named: "paypal-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydGCash:
+            return UIImage(named: "gcash-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydGrabPay:
+            return UIImage(named: "grab-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydPoli:
+            return UIImage(named: "poli-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .xfers:
             return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
@@ -361,6 +365,12 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .payPal,
                 .primerTestPayPal:
             return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
+        case .rapydGCash:
+            return UIColor(red: 0.161, green: 0.482, blue: 0.98, alpha: 1)
+        case .rapydGrabPay:
+            return UIColor(red: 0.004, green: 0.694, blue: 0.306, alpha: 1)
+        case .rapydPoli:
+            return UIColor(red: 0.184, green: 0.263, blue: 0.596, alpha: 1)
         case .xfers:
             return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
         default:
@@ -398,6 +408,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .primerTestPayPal,
                 .primerTestKlarna,
                 .primerTestSofort,
+                .rapydGCash,
+                .rapydPoli,
+                .rapydGrabPay,
                 .xfers:
             return nil
         case .apaya,
@@ -434,7 +447,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .payPal,
                 .primerTestPayPal,
                 .primerTestKlarna,
-                .primerTestSofort:
+                .primerTestSofort,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli:
             return 0.0
         case .adyenDotPay,
                 .apaya,
@@ -477,6 +493,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .primerTestPayPal,
                 .primerTestKlarna,
                 .primerTestSofort,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli,
                 .xfers:
             return nil
         case .apaya,
@@ -524,7 +543,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .adyenGiropay,
                 .adyenTwint,
                 .payPal,
-                .primerTestPayPal:
+                .primerTestPayPal,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli:
             return nil
         case .apaya,
                 .paymentCard:
@@ -615,8 +637,14 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "xfers"
         case .opennode:
             return "opennode"
+        case .rapydGrabPay:
+            return "grab-pay"
+        case .rapydGCash:
+            return "gcash"
         case .twoCtwoP:
             return "2c2p"
+        case .rapydPoli:
+            return "poli"
         case .other(rawValue: let rawValue):
             return rawValue
         }

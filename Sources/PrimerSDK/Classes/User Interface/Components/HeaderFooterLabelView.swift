@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  PrimerSDK
-//
-//  Created by Dario Carlomagno on 31/05/22.
-//
-
 #if canImport(UIKit)
 
 import UIKit

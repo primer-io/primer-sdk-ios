@@ -13,6 +13,15 @@ public enum PrimerLogLevel: Int {
     case verbose = 0, debug, info, warning, error
 }
 
+internal func primerLogAnalytics(title: String? = nil, message: String? = nil, prefix: String? = nil, suffix: String? = nil, bundle: String? = nil, file: String? = nil, className: String? = nil, function: String? = nil, line: Int? = nil) {
+    
+    if !ProcessInfo.processInfo.arguments.contains("-PrimerAnalyticsDebugEnabled") {
+        return
+    }
+    
+    log(logLevel: .verbose, title: title, message: message, prefix: prefix, suffix: suffix, bundle: bundle, file: file, className: className, function: function, line: line)
+}
+
 // swiftlint:disable cyclomatic_complexity
 internal func log(logLevel: PrimerLogLevel = .info, title: String? = nil, message: String? = nil, prefix: String? = nil, suffix: String? = nil, bundle: String? = nil, file: String? = nil, className: String? = nil, function: String? = nil, line: Int? = nil) {
     

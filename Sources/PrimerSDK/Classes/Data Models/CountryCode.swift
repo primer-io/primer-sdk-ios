@@ -1,5 +1,8 @@
 #if canImport(UIKit)
 
+import Foundation
+import UIKit
+
 // inspired by https://gist.github.com/proxpero/f7ddfd721a0d0d6159589916185d9dc9
 
 public enum CountryCode: String, Codable, CaseIterable {
@@ -256,260 +259,10 @@ public enum CountryCode: String, Codable, CaseIterable {
 
 internal extension CountryCode {
 
-    static var all: [CountryCode] = [.af, .ax, .al, .dz, .`as`, .ad, .ao, .ai, .aq, .ag, .ar, .am, .aw, .au, .at, .az, .bs, .bh, .bd, .bb, .by, .be, .bz, .bj, .bm, .bt, .bo, .bq, .ba, .bw, .bv, .br, .io, .bn, .bg, .bf, .bi, .cv, .kh, .cm, .ca, .ky, .cf, .td, .cl, .cn, .cx, .cc, .co, .km, .cg, .cd, .ck, .cr, .ci, .hr, .cu, .cw, .cy, .cz, .dk, .dj, .dm, .`do`, .ec, .eg, .sv, .gq, .er, .ee, .et, .fk, .fo, .fj, .fi, .fr, .gf, .pf, .tf, .ga, .gm, .ge, .de, .gh, .gi, .gr, .gl, .gd, .gp, .gu, .gt, .gg, .gn, .gw, .gy, .ht, .hm, .va, .hn, .hk, .hu, .`is`, .`in`, .id, .ir, .iq, .ie, .im, .il, .it, .jm, .jp, .je, .jo, .kz, .ke, .ki, .kp, .kr, .kw, .kg, .la, .lv, .lb, .ls, .lr, .ly, .li, .lt, .lu, .mo, .mk, .mg, .mw, .my, .mv, .ml, .mt, .mh, .mq, .mr, .mu, .yt, .mx, .fm, .md, .mc, .mn, .me, .ms, .ma, .mz, .mm, .na, .nr, .np, .nl, .nc, .nz, .ni, .ne, .ng, .nu, .nf, .mp, .no, .om, .pk, .pw, .ps, .pa, .pg, .py, .pe, .ph, .pn, .pl, .pt, .pr, .qa, .re, .ro, .ru, .rw, .bl, .sh, .kn, .lc, .mf, .pm, .vc, .ws, .sm, .st, .sa, .sn, .rs, .sc, .sl, .sg, .sx, .sk, .si, .sb, .so, .za, .gs, .ss, .es, .lk, .sd, .sr, .sj, .sz, .se, .ch, .sy, .tw, .tj, .tz, .th, .tl, .tg, .tk, .to, .tt, .tn, .tr, .tm, .tc, .tv, .ug, .ua, .ae, .gb, .us, .um, .uy, .uz, .vu, .ve, .vn, .vg, .vi, .wf, .eh, .ye, .zm, .zw]
+    static var all = CountryCode.allCases
 
     var country: String {
-        switch self {
-        case .af: return "Afghanistan"
-        case .ax: return "Åland Islands"
-        case .al: return "Albania"
-        case .dz: return "Algeria"
-        case .as: return "American Samoa"
-        case .ad: return "Andorra"
-        case .ao: return "Angola"
-        case .ai: return "Anguilla"
-        case .aq: return "Antarctica"
-        case .ag: return "Antigua and Barbuda"
-        case .ar: return "Argentina"
-        case .am: return "Armenia"
-        case .aw: return "Aruba"
-        case .au: return "Australia"
-        case .at: return "Austria"
-        case .az: return "Azerbaijan"
-        case .bs: return "Bahamas"
-        case .bh: return "Bahrain"
-        case .bd: return "Bangladesh"
-        case .bb: return "Barbados"
-        case .by: return "Belarus"
-        case .be: return "Belgium"
-        case .bz: return "Belize"
-        case .bj: return "Benin"
-        case .bm: return "Bermuda"
-        case .bt: return "Bhutan"
-        case .bo: return "Bolivia (Plurinational State of)"
-        case .bq: return "Bonaire, Sint Eustatius and Saba"
-        case .ba: return "Bosnia and Herzegovina"
-        case .bw: return "Botswana"
-        case .bv: return "Bouvet Island"
-        case .br: return "Brazil"
-        case .io: return "British Indian Ocean Territory"
-        case .bn: return "Brunei Darussalam"
-        case .bg: return "Bulgaria"
-        case .bf: return "Burkina Faso"
-        case .bi: return "Burundi"
-        case .cv: return "Cabo Verde"
-        case .kh: return "Cambodia"
-        case .cm: return "Cameroon"
-        case .ca: return "Canada"
-        case .ky: return "Cayman Islands"
-        case .cf: return "Central African Republic"
-        case .td: return "Chad"
-        case .cl: return "Chile"
-        case .cn: return "China"
-        case .cx: return "Christmas Island"
-        case .cc: return "Cocos (Keeling) Islands"
-        case .co: return "Colombia"
-        case .km: return "Comoros"
-        case .cg: return "Congo"
-        case .cd: return "Congo (Democratic Republic of the)"
-        case .ck: return "Cook Islands"
-        case .cr: return "Costa Rica"
-        case .ci: return "Côte d'Ivoire"
-        case .hr: return "Croatia"
-        case .cu: return "Cuba"
-        case .cw: return "Curaçao"
-        case .cy: return "Cyprus"
-        case .cz: return "Czechia"
-        case .dk: return "Denmark"
-        case .dj: return "Djibouti"
-        case .dm: return "Dominica"
-        case .do: return "Dominican Republic"
-        case .ec: return "Ecuador"
-        case .eg: return "Egypt"
-        case .sv: return "El Salvador"
-        case .gq: return "Equatorial Guinea"
-        case .er: return "Eritrea"
-        case .ee: return "Estonia"
-        case .et: return "Ethiopia"
-        case .fk: return "Falkland Islands (Malvinas)"
-        case .fo: return "Faroe Islands"
-        case .fj: return "Fiji"
-        case .fi: return "Finland"
-        case .fr: return "France"
-        case .gf: return "French Guiana"
-        case .pf: return "French Polynesia"
-        case .tf: return "French Southern Territories"
-        case .ga: return "Gabon"
-        case .gm: return "Gambia"
-        case .ge: return "Georgia"
-        case .de: return "Germany"
-        case .gh: return "Ghana"
-        case .gi: return "Gibraltar"
-        case .gr: return "Greece"
-        case .gl: return "Greenland"
-        case .gd: return "Grenada"
-        case .gp: return "Guadeloupe"
-        case .gu: return "Guam"
-        case .gt: return "Guatemala"
-        case .gg: return "Guernsey"
-        case .gn: return "Guinea"
-        case .gw: return "Guinea-Bissau"
-        case .gy: return "Guyana"
-        case .ht: return "Haiti"
-        case .hm: return "Heard Island and McDonald Islands"
-        case .va: return "Holy See"
-        case .hn: return "Honduras"
-        case .hk: return "Hong Kong"
-        case .hu: return "Hungary"
-        case .is: return "Iceland"
-        case .in: return "India"
-        case .id: return "Indonesia"
-        case .ir: return "Iran (Islamic Republic of)"
-        case .iq: return "Iraq"
-        case .ie: return "Ireland"
-        case .im: return "Isle of Man"
-        case .il: return "Israel"
-        case .it: return "Italy"
-        case .jm: return "Jamaica"
-        case .jp: return "Japan"
-        case .je: return "Jersey"
-        case .jo: return "Jordan"
-        case .kz: return "Kazakhstan"
-        case .ke: return "Kenya"
-        case .ki: return "Kiribati"
-        case .kp: return "Korea (Democratic People's Republic of)"
-        case .kr: return "Korea (Republic of)"
-        case .kw: return "Kuwait"
-        case .kg: return "Kyrgyzstan"
-        case .la: return "Lao People's Democratic Republic"
-        case .lv: return "Latvia"
-        case .lb: return "Lebanon"
-        case .ls: return "Lesotho"
-        case .lr: return "Liberia"
-        case .ly: return "Libya"
-        case .li: return "Liechtenstein"
-        case .lt: return "Lithuania"
-        case .lu: return "Luxembourg"
-        case .mo: return "Macao"
-        case .mk: return "Macedonia (the former Yugoslav Republic of)"
-        case .mg: return "Madagascar"
-        case .mw: return "Malawi"
-        case .my: return "Malaysia"
-        case .mv: return "Maldives"
-        case .ml: return "Mali"
-        case .mt: return "Malta"
-        case .mh: return "Marshall Islands"
-        case .mq: return "Martinique"
-        case .mr: return "Mauritania"
-        case .mu: return "Mauritius"
-        case .yt: return "Mayotte"
-        case .mx: return "Mexico"
-        case .fm: return "Micronesia (Federated States of)"
-        case .md: return "Moldova (Republic of)"
-        case .mc: return "Monaco"
-        case .mn: return "Mongolia"
-        case .me: return "Montenegro"
-        case .ms: return "Montserrat"
-        case .ma: return "Morocco"
-        case .mz: return "Mozambique"
-        case .mm: return "Myanmar"
-        case .na: return "Namibia"
-        case .nr: return "Nauru"
-        case .np: return "Nepal"
-        case .nl: return "Netherlands"
-        case .nc: return "New Caledonia"
-        case .nz: return "New Zealand"
-        case .ni: return "Nicaragua"
-        case .ne: return "Niger"
-        case .ng: return "Nigeria"
-        case .nu: return "Niue"
-        case .nf: return "Norfolk Island"
-        case .mp: return "Northern Mariana Islands"
-        case .no: return "Norway"
-        case .om: return "Oman"
-        case .pk: return "Pakistan"
-        case .pw: return "Palau"
-        case .ps: return "Palestine, State of"
-        case .pa: return "Panama"
-        case .pg: return "Papua New Guinea"
-        case .py: return "Paraguay"
-        case .pe: return "Peru"
-        case .ph: return "Philippines"
-        case .pn: return "Pitcairn"
-        case .pl: return "Poland"
-        case .pt: return "Portugal"
-        case .pr: return "Puerto Rico"
-        case .qa: return "Qatar"
-        case .re: return "Réunion"
-        case .ro: return "Romania"
-        case .ru: return "Russian Federation"
-        case .rw: return "Rwanda"
-        case .bl: return "Saint Barthélemy"
-        case .sh: return "Saint Helena, Ascension and Tristan da Cunha"
-        case .kn: return "Saint Kitts and Nevis"
-        case .lc: return "Saint Lucia"
-        case .mf: return "Saint Martin (French part)"
-        case .pm: return "Saint Pierre and Miquelon"
-        case .vc: return "Saint Vincent and the Grenadines"
-        case .ws: return "Samoa"
-        case .sm: return "San Marino"
-        case .st: return "Sao Tome and Principe"
-        case .sa: return "Saudi Arabia"
-        case .sn: return "Senegal"
-        case .rs: return "Serbia"
-        case .sc: return "Seychelles"
-        case .sl: return "Sierra Leone"
-        case .sg: return "Singapore"
-        case .sx: return "Sint Maarten (Dutch part)"
-        case .sk: return "Slovakia"
-        case .si: return "Slovenia"
-        case .sb: return "Solomon Islands"
-        case .so: return "Somalia"
-        case .za: return "South Africa"
-        case .gs: return "South Georgia and the South Sandwich Islands"
-        case .ss: return "South Sudan"
-        case .es: return "Spain"
-        case .lk: return "Sri Lanka"
-        case .sd: return "Sudan"
-        case .sr: return "Suriname"
-        case .sj: return "Svalbard and Jan Mayen"
-        case .sz: return "Swaziland"
-        case .se: return "Sweden"
-        case .ch: return "Switzerland"
-        case .sy: return "Syrian Arab Republic"
-        case .tw: return "Taiwan, Province of China[a]"
-        case .tj: return "Tajikistan"
-        case .tz: return "Tanzania, United Republic of"
-        case .th: return "Thailand"
-        case .tl: return "Timor-Leste"
-        case .tg: return "Togo"
-        case .tk: return "Tokelau"
-        case .to: return "Tonga"
-        case .tt: return "Trinidad and Tobago"
-        case .tn: return "Tunisia"
-        case .tr: return "Turkey"
-        case .tm: return "Turkmenistan"
-        case .tc: return "Turks and Caicos Islands"
-        case .tv: return "Tuvalu"
-        case .ug: return "Uganda"
-        case .ua: return "Ukraine"
-        case .ae: return "United Arab Emirates"
-        case .gb: return "United Kingdom of Great Britain and Northern Ireland"
-        case .us: return "United States of America"
-        case .um: return "United States Minor Outlying Islands"
-        case .uy: return "Uruguay"
-        case .uz: return "Uzbekistan"
-        case .vu: return "Vanuatu"
-        case .ve: return "Venezuela (Bolivarian Republic of)"
-        case .vn: return "Viet Nam"
-        case .vg: return "Virgin Islands (British)"
-        case .vi: return "Virgin Islands (U.S.)"
-        case .wf: return "Wallis and Futuna"
-        case .eh: return "Western Sahara"
-        case .ye: return "Yemen"
-        case .zm: return "Zambia"
-        case .zw: return "Zimbabwe"
-        }
+        return localizedCountryName
     }
 
     var flag: String {
@@ -525,24 +278,49 @@ internal extension CountryCode {
 }
 
 extension CountryCode {
-
-    // todo: enable locale for local languages too.
-    // reference: https://developers.klarna.com/documentation/klarna-payments/in-depth-knowledge/puchase-countries-currencies-locales/
-    var klarnaLocaleCode: String {
-        switch self {
-        case .at, .dk, .fi, .de, .nl, .no, .se, .ch, .us, .au, .gb:
-            return "en-\(self.rawValue)"
-        case .be:
-            return "fr-BE"
-        case .es:
-            return "es-ES"
-        case .it:
-            return "it-IT"
-        default:
-            return "n/a"
+    
+    private static var languageCode: String {
+        Locale.current.languageCode ?? "en"
+    }
+    
+    private struct LocalizedCountries: Decodable {
+        let locale: String
+        var countries: [CountryCode.RawValue: String]
+        
+        enum CodingKeys: String, CodingKey {
+            case locale
+            case countries
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.locale = try container.decode(String.self, forKey: .locale)
+            self.countries = [:]
+            if let countriesWithMultipleOptionNames = (try? container.decode([CountryCode.RawValue: AnyCodable]?.self, forKey: .countries)) {
+                var updatedCountries: [CountryCode.RawValue: String] = [:]
+                countriesWithMultipleOptionNames?.forEach {
+                    if let countryNames = $0.value.value as? [String] {
+                        updatedCountries[$0.key] = countryNames.first
+                    } else if let countryName = $0.value.value as? String {
+                        updatedCountries[$0.key] = countryName
+                    }
+                }
+                self.countries = updatedCountries
+            }
         }
     }
-
+    
+    private var loadedCountriesBasedOnLocale: LocalizedCountries? {
+        let jsonParser = JSONParser()
+        guard let localizedCountriesData = jsonParser.loadJsonData(fileName: CountryCode.languageCode) else {
+            return nil
+        }
+        return try? jsonParser.parse(LocalizedCountries.self, from: localizedCountriesData)
+    }
+    
+    private var localizedCountryName: String {
+        return loadedCountriesBasedOnLocale?.countries.first { $0.key == self.rawValue }?.value ?? "N/A"
+    }
 }
 
 #endif
