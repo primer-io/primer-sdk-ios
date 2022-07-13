@@ -879,6 +879,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
 extension PrimerHeadlessUniversalCheckout.CardFormUIManager: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        
         if let webViewCompletion = webViewCompletion {
             // Cancelled
             let err = PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.paymentCard, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)

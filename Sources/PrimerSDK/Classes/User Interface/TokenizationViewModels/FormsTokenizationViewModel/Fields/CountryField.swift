@@ -13,13 +13,13 @@ class PrimerCountryField: PrimerCardFormFieldProtocol {
     
     internal static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    static func countryContainerViewFieldView(_ view: PrimerTextFieldView, openCountriesListPressed: @escaping PrimerAction) -> PrimerCustomFieldView {
+    static func countryContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView, openCountriesListPressed: @escaping PrimerAction) -> PrimerCustomFieldView {
         let countryFieldContainerView = PrimerCustomFieldView()
-        countryFieldContainerView.fieldView = view
+        countryFieldContainerView.fieldView = primerTextFieldView
         countryFieldContainerView.placeholderText = Strings.CardFormView.CountryCode.label
         countryFieldContainerView.setup()
         countryFieldContainerView.tintColor = theme.input.border.color(for: .selected)
-        if let countryView = view as? PrimerCountryFieldView {
+        if let countryView = primerTextFieldView as? PrimerCountryFieldView {
             countryView.onOpenCountriesListPressed = openCountriesListPressed
         }
         return countryFieldContainerView

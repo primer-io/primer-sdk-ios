@@ -13,9 +13,9 @@ class PrimerCardNumberField: PrimerCardFormFieldProtocol {
     
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    static func cardNumberContainerViewWithFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
+    static func cardNumberContainerViewWithFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let cardNumberContainerView = PrimerCustomFieldView()
-        cardNumberContainerView.fieldView = view
+        cardNumberContainerView.fieldView = primerTextFieldView
         cardNumberContainerView.placeholderText = Strings.CardFormView.CardNumber.label
         cardNumberContainerView.setup()
         cardNumberContainerView.tintColor = theme.input.border.color(for: .selected)

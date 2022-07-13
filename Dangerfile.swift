@@ -24,7 +24,7 @@ let swiftFilesWithCopyright = editedFiles.filter {
 
 if swiftFilesWithCopyright.count > 0 {
     let files = swiftFilesWithCopyright.joined(separator: ", ")
-    fail("In Danger we don't include copyright headers, found them in: \(files)")
+    warn("In Danger we don't include copyright headers, found them in: \(files)")
 }
 
 // MARK: - Check UIKit import
@@ -37,7 +37,7 @@ let swiftFilesContainsUIKitImport = editedFiles.filter {
 
 if swiftFilesContainsUIKitImport.count > 0 {
     let files = swiftFilesContainsUIKitImport.joined(separator: ", ")
-    fail("Please check your 'canImport(UIKit)` in the following files: \(files)")
+    warn("Please check your 'canImport(UIKit)` in the following files: \(files)")
 }
 
 // MARK: - PR Contains Tests
