@@ -30,6 +30,7 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
     case invalidAddress(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidState(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidCountry(userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidRawData(userInfo: [String: String]?, diagnosticsId: String?)
     
     var diagnosticsId: String {
         switch self {
@@ -52,6 +53,8 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
         case .invalidState(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .invalidCountry(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .invalidRawData(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         }
     }
@@ -78,6 +81,8 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
             return "invalid-state"
         case .invalidCountry:
             return "invalid-country"
+        case .invalidRawData:
+            return "invalid-raw-data"
         }
     }
     
@@ -103,6 +108,8 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
             return "[\(errorId)] Invalid state"
         case .invalidCountry:
             return "[\(errorId)] Invalid country"
+        case .invalidRawData:
+            return "[\(errorId)] Invalid raw data"
         }
     }
     
@@ -119,7 +126,8 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
                 .invalidLastName(let userInfo, _),
                 .invalidAddress(let userInfo, _),
                 .invalidState(let userInfo, _),
-                .invalidCountry(let userInfo, _):
+                .invalidCountry(let userInfo, _),
+                .invalidRawData(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -315,6 +323,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String?)
     case unableToPresentPaymentMethod(paymentMethodType: PrimerPaymentMethodType, userInfo: [String: String]?, diagnosticsId: String?)
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String?)
+    case unsupportedPaymentMethod(paymentMethodType: PrimerPaymentMethodType, userInfo: [String: String]?, diagnosticsId: String?)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
     case missingCustomUI(paymentMethod: PrimerPaymentMethodType, userInfo: [String: String]?, diagnosticsId: String?)
     case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String?)
@@ -373,6 +382,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "unable-to-present-payment-method"
         case .unsupportedIntent:
             return "unsupported-session-intent"
+        case .unsupportedPaymentMethod:
+            return "unsupported-payment-method-type"
         case .underlyingErrors:
             return "generic-underlying-errors"
         case .missingCustomUI:
@@ -435,6 +446,8 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .unableToPresentPaymentMethod(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .unsupportedIntent(_, _, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .unsupportedPaymentMethod(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .underlyingErrors(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
@@ -512,6 +525,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Unsupported session intent \(intent.rawValue) (diagnosticsId: \(self.diagnosticsId)"
         case .underlyingErrors(let errors, _, _):
             return "[\(errorId)] Multiple errors occured: \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId)"
+        case .unsupportedPaymentMethod(let paymentMethodType, _, _):
+            return "[\(errorId)] Unsupported payment method type \(paymentMethodType.rawValue) (diagnosticsId: \(self.diagnosticsId)"
         case .missingCustomUI(let paymentMethod, _, _):
             return "[\(errorId)] Missing custom user interface for \(paymentMethod.rawValue) (diagnosticsId: \(self.diagnosticsId)"
         case .merchantError(let message, _, _):
@@ -552,6 +567,7 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .unableToMakePaymentsOnProvidedNetworks(let userInfo, _),
                 .unableToPresentPaymentMethod(_, let userInfo, _),
                 .unsupportedIntent(_, let userInfo, _),
+                .unsupportedPaymentMethod(_, let userInfo, _),
                 .underlyingErrors(_, let userInfo, _),
                 .missingCustomUI(_, let userInfo, _),
                 .merchantError(_, let userInfo, _),
@@ -628,6 +644,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             } else {
                 return "Change the intent to .checkout"
             }
+        case .unsupportedPaymentMethod(let paymentMethodType, _, _):
+            return "Change the payment method type"
         case .underlyingErrors:
             return "Check underlying errors for more information."
         case .missingCustomUI(let paymentMethod, _, _):
