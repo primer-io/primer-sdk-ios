@@ -24,7 +24,7 @@ class PaymentMethodConfigServiceTests: XCTestCase {
             checkoutModules: nil
         )
 
-        let state = MockAppState(decodedClientToken: nil, apiConfiguration: config)
+        let state = MockAppState(apiConfiguration: config)
 
         MockLocator.registerDependencies()
         DependencyContainer.register(state as AppStateProtocol)
