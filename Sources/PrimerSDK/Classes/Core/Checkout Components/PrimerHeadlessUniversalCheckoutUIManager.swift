@@ -878,7 +878,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
 
 extension PrimerHeadlessUniversalCheckout.CardFormUIManager: SFSafariViewControllerDelegate {
     
-    public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         
         if let webViewCompletion = webViewCompletion {
             // Cancelled
