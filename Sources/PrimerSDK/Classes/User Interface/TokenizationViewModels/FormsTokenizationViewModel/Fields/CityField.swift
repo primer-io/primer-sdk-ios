@@ -13,9 +13,9 @@ class PrimerCityField: PrimerCardFormFieldProtocol {
     
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    static func cityFieldContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
+    static func cityFieldContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let cityFieldContainerView = PrimerCustomFieldView()
-        cityFieldContainerView.fieldView = view
+        cityFieldContainerView.fieldView = primerTextFieldView
         cityFieldContainerView.placeholderText = Strings.CardFormView.City.label
         cityFieldContainerView.setup()
         cityFieldContainerView.tintColor = theme.input.border.color(for: .selected)

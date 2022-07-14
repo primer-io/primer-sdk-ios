@@ -11,6 +11,7 @@ import UIKit
 
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
+var metadataTestCase: String?
 var paymentHandling: PrimerPaymentHandling = .auto
 
 class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
@@ -18,6 +19,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     @IBOutlet weak var environmentControl: UISegmentedControl!
     @IBOutlet weak var checkoutHandlingControl: UISegmentedControl!
     @IBOutlet weak var apiKeyTextField: UITextField!
+    @IBOutlet weak var metadataTestCaseTextField: UITextField!
     @IBOutlet weak var customerIdTextField: UITextField!
     @IBOutlet weak var phoneNumberTextField: UITextField!
     @IBOutlet weak var countryCodeTextField: UITextField!
@@ -33,17 +35,19 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         checkoutHandlingControl.accessibilityIdentifier = "payment_control"
         apiKeyTextField.accessibilityIdentifier = "api_key_txt_field"
         apiKeyTextField.text = nil
+        metadataTestCaseTextField.accessibilityIdentifier = "metadata_test_case_txt_field"
+        metadataTestCaseTextField.text = nil
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
         customerIdTextField.text = "ios-customer-\(String.randomString(length: 8))"
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.de.rawValue
+        countryCodeTextField.text = CountryCode.nl.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
         currencyTextField.text = Currency.EUR.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.placeholder = "In minor units (type 100 for 1.00)"
-        amountTextField.text = "1010"
+        amountTextField.text = "10100"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
         performPaymentSwitch.isOn = true
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
@@ -86,6 +90,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         }
         
         self.evaluateCustomDefinedApiKey()
+        self.evaluateMetadataTestCase()
         
         if paymentHandling == .manual {
             let mpmcvc = ManualPaymentMerchantCheckoutViewController.instantiate(
@@ -126,7 +131,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         mcfvc.view.widthAnchor.constraint(equalToConstant: self.view.bounds.width).isActive = true
         
         self.evaluateCustomDefinedApiKey()
-        
+        self.evaluateMetadataTestCase()
         self.navigationController?.pushViewController(mcfvc, animated: true)
     }
     
@@ -163,5 +168,9 @@ extension AppViewController {
     
     func evaluateCustomDefinedApiKey() {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
+    }
+    
+    func evaluateMetadataTestCase() {
+        metadataTestCase = (metadataTestCaseTextField.text ?? "").isEmpty ? nil : metadataTestCaseTextField.text
     }
 }
