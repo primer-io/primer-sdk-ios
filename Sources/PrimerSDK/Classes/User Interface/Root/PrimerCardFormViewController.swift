@@ -51,7 +51,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
     }
     
     private func setupView() {
-        
         title = Strings.PrimerCardFormView.title
         view.backgroundColor = theme.view.backgroundColor
         verticalStackView.spacing = 6
@@ -74,7 +73,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
     }
     
     private func renderSubmitButton() {
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
+        guard let submitButton = formPaymentMethodTokenizationViewModel.uiModule.submitButton else { return }
+        verticalStackView.addArrangedSubview(submitButton)
     }
 }
 

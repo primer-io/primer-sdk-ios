@@ -28,7 +28,7 @@ extension PaymentMethodTokenizationViewModel {
                 self.didStartPayment?()
                 self.didStartPayment = nil
                 
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
+                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
                 
                 firstly {
                     self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
