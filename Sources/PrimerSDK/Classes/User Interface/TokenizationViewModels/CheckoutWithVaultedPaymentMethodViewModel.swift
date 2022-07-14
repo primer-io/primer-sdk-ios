@@ -94,26 +94,19 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     }
     
     private func dispatchActions(config: PaymentMethodConfig, selectedPaymentMethod: PaymentMethodToken) -> Promise<Void> {
-        
         return Promise { seal in
-            
-            var params: [String: Any] = ["paymentMethodType": config.type.rawValue]
+            var network: String?
             if config.type == .paymentCard {
-                var network = selectedPaymentMethod.paymentInstrumentData?.network?.uppercased()
+                network = selectedPaymentMethod.paymentInstrumentData?.network?.uppercased()
                 if network == nil || network == "UNKNOWN" {
                     network = "OTHER"
                 }
-                
-                params = [
-                    "paymentMethodType": "PAYMENT_CARD",
-                    "binData": [
-                        "network": network,
-                    ]
-                ]
             }
             
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+            
             firstly {
-                ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(params)
+                clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: network)
             }.done {
                 seal.fulfill()
             }

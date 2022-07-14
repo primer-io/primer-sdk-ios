@@ -108,7 +108,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                return ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
+                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))

@@ -637,10 +637,10 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 ]
             ]
             
-            var actions = [ClientSessionAPIResponse.Action.selectPaymentMethodActionWithParameters(params)]
+            var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
             
             if (isShowingBillingAddressFieldsRequired) {
-                let updatedBillingAddress = ClientSessionAPIResponse.Address(firstName: firstNameFieldView.firstName,
+                let updatedBillingAddress = ClientSession.Address(firstName: firstNameFieldView.firstName,
                                                                   lastName: lastNameFieldView.lastName,
                                                                   addressLine1: addressLine1FieldView.addressLine1,
                                                                   addressLine2: addressLine2FieldView.addressLine2,
@@ -650,13 +650,15 @@ extension CardFormPaymentMethodTokenizationViewModel {
                                                                   countryCode: countryFieldView.countryCode)
                 
                 if let billingAddress = try? updatedBillingAddress.asDictionary() {
-                    let billingAddressAction: ClientSessionAPIResponse.Action = .setBillingAddressActionWithParameters(billingAddress)
+                    let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
                     actions.append(billingAddressAction)
                 }
             }
 
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+            
             firstly {
-                ClientSessionAPIResponse.Action.dispatchMultipleActions(actions)
+                clientSessionActionsModule.dispatch(actions: actions)
             }.done {
                 seal.fulfill()
             }
@@ -805,23 +807,18 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
         self.cardNetwork = cardNetwork
         
+        var network = self.cardNetwork?.rawValue.uppercased()
+        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        
         if let cardNetwork = cardNetwork, cardNetwork != .unknown, cardNumberContainerView.rightImage2 == nil && cardNetwork.icon != nil {
-            var network = self.cardNetwork?.rawValue.uppercased()
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
             }
             
-            let params: [String: Any] = [
-                "paymentMethodType": "PAYMENT_CARD",
-                "binData": [
-                    "network": network,
-                ]
-            ]
-            
             cardNumberContainerView.rightImage2 = cardNetwork.icon
             
             firstly {
-                ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(params)
+                clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: network)
             }
             .done {
                 self.updateButtonUI()
@@ -829,9 +826,9 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             .catch { _ in }
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
             cardNumberContainerView.rightImage2 = nil
-            
+                        
             firstly {
-                ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
+                clientSessionActionsModule.unselectPaymentMethodIfNeeded()
             }
             .done {
                 self.updateButtonUI()

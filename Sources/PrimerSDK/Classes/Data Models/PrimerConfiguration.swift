@@ -51,7 +51,7 @@ struct PrimerAPIConfiguration: Codable {
     
     let coreUrl: String?
     let pciUrl: String?
-    let clientSession: ClientSessionAPIResponse?
+    let clientSession: ClientSession.APIResponse?
     let paymentMethods: [PaymentMethodConfig]?
     let keys: ThreeDS.Keys?
     let checkoutModules: [CheckoutModule]?
@@ -64,7 +64,7 @@ struct PrimerAPIConfiguration: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
         self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
-        self.clientSession = (try? container.decode(ClientSessionAPIResponse?.self, forKey: .clientSession)) ?? nil
+        self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
         let throwables = try container.decode([Throwable<PaymentMethodConfig>].self, forKey: .paymentMethods)
         self.paymentMethods = throwables.compactMap({ $0.value })
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
@@ -103,7 +103,7 @@ struct PrimerAPIConfiguration: Codable {
     init(
         coreUrl: String?,
         pciUrl: String?,
-        clientSession: ClientSessionAPIResponse?,
+        clientSession: ClientSession.APIResponse?,
         paymentMethods: [PaymentMethodConfig]?,
         keys: ThreeDS.Keys?,
         checkoutModules: [PrimerAPIConfiguration.CheckoutModule]?
