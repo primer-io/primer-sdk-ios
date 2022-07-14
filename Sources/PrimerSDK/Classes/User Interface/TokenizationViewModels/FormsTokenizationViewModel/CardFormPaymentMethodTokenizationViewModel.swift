@@ -16,6 +16,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     // MARK: - Properties
     
     private var cardComponentsManager: CardComponentsManager!
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     // This is used just in case we get a client session action response
     // while we've already started the payment. In this case we don't
@@ -69,163 +70,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             cvvField.cardNetwork = cardNetwork ?? .unknown
         }
     }
-        
-    lazy var submitButton: PrimerButton = {
-        var buttonTitle: String = ""
-        
-        switch Primer.shared.intent {
-        case .checkout:
-            let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-            buttonTitle = Strings.PaymentButton.pay + " " + (viewModel.amountStringed ?? "")
-        case .vault:
-            buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle
-        case .none:
-            assert(true, "Intent should have been set")
-        }
-
-        let submitButton = PrimerButton()
-        submitButton.translatesAutoresizingMaskIntoConstraints = false
-        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        submitButton.isAccessibilityElement = true
-        submitButton.accessibilityIdentifier = "submit_btn"
-        submitButton.isEnabled = false
-        submitButton.setTitle(buttonTitle, for: .normal)
-        submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-        submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
-        submitButton.layer.cornerRadius = 4
-        submitButton.clipsToBounds = true
-        submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
-        return submitButton
-    }()
-    
-    // MARK: - Overrides
-    
-    private lazy var _title: String = {
-        return Strings.PrimerCardFormView.navBarTitle
-    }()
-    
-    override var title: String {
-        get { return _title }
-        set { _title = newValue }
-    }
-        
-    private lazy var _buttonImage: UIImage? = {
-        switch config.type {
-        case .paymentCard:
-            return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .adyenBlik:
-            return UIImage(named: "blik-logo", in: Bundle.primerResources, compatibleWith: nil)
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override var buttonImage: UIImage? {
-        get { return _buttonImage }
-        set { _buttonImage = newValue }
-    }
-    
-    private lazy var _buttonColor: UIColor? = {
-        switch config.type {
-        case .paymentCard,
-                .adyenBlik:
-            return theme.paymentMethodButton.color(for: .enabled)
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override var buttonColor: UIColor? {
-        get { return _buttonColor }
-        set { _buttonColor = newValue }
-    }
-    
-    private lazy var _buttonTitleColor: UIColor? = {
-        switch config.type {
-        case .paymentCard:
-            return theme.paymentMethodButton.text.color
-        case .adyenBlik:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override var buttonTitleColor: UIColor? {
-        get { return _buttonTitleColor }
-        set { _buttonTitleColor = newValue }
-    }
-    
-    private lazy var _buttonBorderWidth: CGFloat = {
-        switch config.type {
-        case .paymentCard,
-                .adyenBlik:
-            return theme.paymentMethodButton.border.width
-        default:
-            assert(true, "Shouldn't end up in here")
-            return 0.0
-        }
-    }()
-    
-    override var buttonBorderWidth: CGFloat {
-        get { return _buttonBorderWidth }
-        set { _buttonBorderWidth = newValue }
-    }
-    
-    private lazy var _buttonBorderColor: UIColor? = {
-        switch config.type {
-        case .paymentCard,
-                .adyenBlik:
-            return theme.paymentMethodButton.border.color(for: .enabled)
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override var buttonBorderColor: UIColor? {
-        get { return _buttonBorderColor }
-        set { _buttonBorderColor = newValue }
-    }
-    
-    private lazy var _buttonTintColor: UIColor? = {
-        switch config.type {
-        case .paymentCard:
-            return theme.paymentMethodButton.iconColor
-        case .adyenBlik:
-            return nil
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    override var buttonTintColor: UIColor? {
-        get { return _buttonTintColor }
-        set { _buttonTintColor = newValue }
-    }
-    
-    private lazy var _buttonFont: UIFont? = {
-        return UIFont.systemFont(ofSize: 17.0, weight: .medium)
-    }()
-    
-    override var buttonFont: UIFont? {
-        get { return _buttonFont }
-        set { _buttonFont = newValue }
-    }
-    
-    private lazy var _buttonCornerRadius: CGFloat? = {
-        return 4.0
-    }()
-    
-    override var buttonCornerRadius: CGFloat? {
-        get { return _buttonCornerRadius }
-        set { _buttonCornerRadius = newValue }
-    }
-        
+            
     var isShowingBillingAddressFieldsRequired: Bool {
         guard let billingAddressModule = AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
         return (billingAddressModule.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode == true
@@ -450,22 +295,22 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func start() {
         self.didStartTokenization = {
             self.isTokenizing = true
-            self.submitButton.startAnimating()
+            self.uiModule.submitButton?.startAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         }
         
         self.didFinishTokenization = { err in
-            self.submitButton.stopAnimating()
+            self.uiModule.submitButton?.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
         
         self.didStartPayment = {
-            self.submitButton.startAnimating()
+            self.uiModule.submitButton?.startAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         }
         
         self.didFinishPayment = { err in
-            self.submitButton.stopAnimating()
+            self.uiModule.submitButton?.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
             
             self.willDismissPaymentMethodUI?()
@@ -752,12 +597,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             
             var title = Strings.PaymentButton.pay
             title += " \(amount.toCurrencyString(currency: currency))"
-            self.submitButton.setTitle(title, for: .normal)
+            self.uiModule.submitButton?.setTitle(title, for: .normal)
         }
     }
     
-    @objc
-    func payButtonTapped(_ sender: UIButton) {
+    override func submitButtonTapped() {
         let viewEvent = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -793,10 +637,10 @@ extension CardFormPaymentMethodTokenizationViewModel {
                 ]
             ]
             
-            var actions = [ClientSessionAPIResponse.Action.selectPaymentMethodActionWithParameters(params)]
+            var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
             
             if (isShowingBillingAddressFieldsRequired) {
-                let updatedBillingAddress = ClientSessionAPIResponse.Address(firstName: firstNameFieldView.firstName,
+                let updatedBillingAddress = ClientSession.Address(firstName: firstNameFieldView.firstName,
                                                                   lastName: lastNameFieldView.lastName,
                                                                   addressLine1: addressLine1FieldView.addressLine1,
                                                                   addressLine2: addressLine2FieldView.addressLine2,
@@ -806,13 +650,15 @@ extension CardFormPaymentMethodTokenizationViewModel {
                                                                   countryCode: countryFieldView.countryCode)
                 
                 if let billingAddress = try? updatedBillingAddress.asDictionary() {
-                    let billingAddressAction: ClientSessionAPIResponse.Action = .setBillingAddressActionWithParameters(billingAddress)
+                    let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
                     actions.append(billingAddressAction)
                 }
             }
 
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+            
             firstly {
-                ClientSessionAPIResponse.Action.dispatchMultipleActions(actions)
+                clientSessionActionsModule.dispatch(actions: actions)
             }.done {
                 seal.fulfill()
             }
@@ -848,7 +694,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
-        isLoading ? submitButton.startAnimating() : submitButton.stopAnimating()
+        isLoading ? self.uiModule.submitButton?.startAnimating() : self.uiModule.submitButton?.stopAnimating()
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = !isLoading
     }
     
@@ -924,7 +770,6 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
 
     fileprivate func enableSubmitButtonIfNeeded() {
-        
         var validations = [
             cardNumberField.isTextValid,
             expiryDateField.isTextValid,
@@ -938,11 +783,11 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
         
         if validations.allSatisfy({ $0 == true }) {
-            submitButton.isEnabled = true
-            submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
+            self.uiModule.submitButton?.isEnabled = true
+            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
         } else {
-            submitButton.isEnabled = false
-            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
+            self.uiModule.submitButton?.isEnabled = false
+            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
         }
     }
 }
@@ -962,23 +807,18 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
         self.cardNetwork = cardNetwork
         
+        var network = self.cardNetwork?.rawValue.uppercased()
+        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        
         if let cardNetwork = cardNetwork, cardNetwork != .unknown, cardNumberContainerView.rightImage2 == nil && cardNetwork.icon != nil {
-            var network = self.cardNetwork?.rawValue.uppercased()
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
             }
             
-            let params: [String: Any] = [
-                "paymentMethodType": "PAYMENT_CARD",
-                "binData": [
-                    "network": network,
-                ]
-            ]
-            
             cardNumberContainerView.rightImage2 = cardNetwork.icon
             
             firstly {
-                ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(params)
+                clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: network)
             }
             .done {
                 self.updateButtonUI()
@@ -986,9 +826,9 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             .catch { _ in }
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
             cardNumberContainerView.rightImage2 = nil
-            
+                        
             firstly {
-                ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
+                clientSessionActionsModule.unselectPaymentMethodIfNeeded()
             }
             .done {
                 self.updateButtonUI()

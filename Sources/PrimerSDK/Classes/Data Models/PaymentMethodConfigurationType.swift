@@ -293,6 +293,90 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
     }
     // swiftlint:enable cyclomatic_complexity
     
+    var title: String {
+        switch self {
+        case .adyenAlipay:
+            return "Adyen Ali Pay"
+        case .adyenDotPay:
+            return "Dot Pay"
+        case .adyenGiropay:
+            return "Giropay"
+        case .adyenIDeal:
+            return "iDeal"
+        case .apaya:
+            return "Apaya"
+        case .applePay:
+            return "Apple Pay"
+        case .atome:
+            return "Atome"
+        case .buckarooBancontact:
+            return "Buckaroo Bancontact"
+        case .buckarooEps:
+            return "Buckaroo EPS"
+        case .buckarooGiropay:
+            return "Buckaroo Giropay"
+        case .buckarooIdeal:
+            return "Buckaroo iDeal"
+        case .buckarooSofort:
+            return "Buckaroo Sofort"
+        case .goCardlessMandate:
+            return "Go Cardless"
+        case .googlePay:
+            return "Google Pay"
+        case .hoolah:
+            return "Hoolah"
+        case .adyenInterac:
+            return "Interac"
+        case .klarna,
+                .primerTestKlarna:
+            return "Klarna"
+        case .mollieBankcontact:
+            return "Mollie Bancontact"
+        case .mollieIdeal:
+            return "Mollie iDeal"
+        case .paymentCard:
+            return "Payment Card"
+        case .payNLBancontact:
+            return "Pay NL Bancontact"
+        case .payNLGiropay:
+            return "Pay NL Giropay"
+        case .payNLIdeal:
+            return "Pay NL Ideal"
+        case .payNLPayconiq:
+            return "Pay NL Payconiq"
+        case .adyenSofort,
+                .primerTestSofort:
+            return "Sofort"
+        case .adyenTwint:
+            return "Twint"
+        case .adyenTrustly:
+            return "Trustly"
+        case .adyenMobilePay:
+            return "Mobile Pay"
+        case .adyenVipps:
+            return "Vipps"
+        case .adyenPayTrail:
+            return "Pay Trail"
+        case .payPal,
+                .primerTestPayPal:
+            return "PayPal"
+        case .rapydGCash:
+            return "GCash"
+        case .rapydGrabPay:
+            return "Grab Pay"
+        case .rapydPoli:
+            return "Poli"
+        case .xfers:
+            return "XFers"
+        case .other:
+            return "Other"
+            
+        default:
+            assert(true, "Shouldn't end up in here")
+            return ""
+        }
+    }
+    
     private enum CodingKeys: String, CodingKey {
         case adyenAlipay
         case adyenBlik
