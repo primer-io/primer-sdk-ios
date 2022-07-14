@@ -1,31 +1,46 @@
-# This file contains the fastlane.tools configuration
-# You can find the documentation at https://docs.fastlane.tools
-#
-# For a list of all available actions, check out
-#
-#     https://docs.fastlane.tools/actions
-#
-# For a list of all available plugins, check out
-#
-#     https://docs.fastlane.tools/plugins/available-plugins
-#
-
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
-
 default_platform(:ios)
+
+#----------------------- CONSTANTS -------------------------#
+
+# Appetize
+appetize_api_token = ENV['APPETIZE_API_TOKEN']
+
+# Github
+github_run_id = ENV["GITHUB_RUN_ID"]
+github_run_number = ENV["GITHUB_RUN_NUMBER"]
+
+# Xcode
+app_workspace = "Example/PrimerSDK.xcworkspace"
+app_xcode_proj = "Example/PrimerSDK.xcodeproj"
+app_scheme = "PrimerSDK-Example"
+app_test_scheme = "PrimerSDK_Tests"
+app_ui_test_scheme = "PrimerSDKExample_UITests"
+
+# Packages
+app_output_path = "/var/tmp/PrimerSDK_Example.xcarchive/Products/Applications/PrimerSDK_Example.app"
+app_output_archive_path = "/var/tmp/PrimerSDK_Example.xcarchive"
+
+# Utils
+sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
+pr_number = ENV['PR_NUMBER']
+
+#--------------------- END CONSTANTS -----------------------#
+
+#----------------------- FASTLANE -------------------------#
 
 platform :ios do
 
+###################### PUBLIC LANES #######################
+
   lane :tests do
-    run_tests(workspace: "Example/PrimerSDK.xcworkspace",
-              scheme: "PrimerSDK_Tests")
+    run_tests(workspace: app_workspace,
+              scheme: app_test_scheme)
   end
 
   lane :ui_tests do
-    run_tests(workspace: "Example/PrimerSDK.xcworkspace",
+    run_tests(workspace: app_workspace,
               devices: ["iPhone SE", "iPhone 8"],
-              scheme: "PrimerSDKExample_UITests")
+              scheme: app_ui_test_scheme)
   end
 
   lane :danger_check do
@@ -41,229 +56,101 @@ platform :ios do
   end
 
   lane :qa_release do
-    time = Time.new
-    str_time = time.strftime("%Y-%m-%d %H:%M:%S")
-    # Set timestamp as version_code to differentiate builds in firebase
-    build_number = time.to_i
 
-    appetize_api_token = ENV['APPETIZE_API_TOKEN']
-    sdk_version_name = ENV['SOURCE_BRANCH']
+    set_version_and_build_number
 
-    # cocoapods(
-    #   clean_install: true,
-    #   podfile: "./Example/Podfile"
-    # )
-
-    # Set version number
-    increment_version_number(
-      version_number: sdk_version_name,
-      xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    setup_signing(
+      match_type: "development"
     )
 
-    increment_build_number(
-      build_number: build_number,
-      xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    # Build for browserstack
+    build_app(
+      scheme: app_scheme,
+      workspace: app_workspace,
+      configuration: "Debug",
+      include_bitcode: false,
+      export_method: "development",
+      skip_package_dependencies_resolution: true
     )
 
-    create_keychain(
-      name: ENV["MATCH_KEYCHAIN_NAME"],
-      password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-      default_keychain: true,
-      unlock: true,
-      timeout: 3600,
-      lock_when_sleeps: true
-    )
-
-    match(
-      type: "development",
-      readonly: true,
-      keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
-      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+    # Upload to Browserstack
+    upload_to_browserstack_and_save_id(
+      file_path: ENV["IPA_OUTPUT_PATH"]
     )
 
     # Build for appetize
-    build_app(
-      scheme: "PrimerSDK-Example",
-      sdk: "iphonesimulator", # Appetize needs a simulator app
-      workspace: "./Example/PrimerSDK.xcworkspace",
-      configuration: "Debug",
-      export_method: "development",
-      archive_path: "/var/tmp/PrimerSDK_Example.xcarchive",
-      # Build speed optimisation
-      skip_package_ipa: true,
-      skip_package_pkg: true,
-    )
+    appetize_build_and_upload
 
-    # Appetize needs the .app to be zipped
-    zip(
-      path: "/var/tmp/PrimerSDK_Example.xcarchive/Products/Applications/PrimerSDK_Example.app",
-      output_path: "./PrimerSDK_Example.zip",
-      symlinks: true
-    )
-
-    # Find public key of appetize
-    uri = URI('https://livedemostore.primer.io/appetize/ios/preview_' + sdk_version_name)
-    public_key = Net::HTTP.get(uri)
-    puts "public_key: " + public_key
-
-    # Upload to Appetize
-    appetize(
-      path: "./PrimerSDK_Example.zip",
-      platform: "ios",
-      api_token: appetize_api_token,
-      public_key: public_key,
-      note: sdk_version_name
-    )
-
-    # # Build for firebase
-    # build_app(
-    #   scheme: "PrimerSDK-Example",
-    #   workspace: "./Example/PrimerSDK.xcworkspace",
-    #   configuration: "Debug",
-    #   export_method: "development",
-    #   # Build speed optimisation
-    #   skip_package_pkg: true,
-    # )
-
-    # # Firebase
+    # Utilize the firebase client token to store in CI
+    # Upload to Firebase
     # firebase_app_distribution(
     #   service_credentials_file: "firebase_credentials.json",
     #   app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
     #   groups: "primer-internal",
-    #   release_notes: "Preview release: " + sdk_version_name + " [" + str_time + "]"
+    #   release_notes: "QA release: " + sdk_version_name_source_branch + " [" + str_time + "]"
     # )
+
   end
 
-  lane :release do
-    puts "Testing"
-    puts "SOURCE_TAG: #{ENV['SOURCE_TAG']}"
-    time = Time.new
-    str_time = time.strftime("%Y-%m-%d %H:%M:%S")
-    # Set timestamp as version_code to differentiate builds in firebase
-    build_number = time.to_i
+  ######################### PRIVATE LANES #########################
 
-    appetize_api_token = ENV['APPETIZE_API_TOKEN']
-    sdk_version_name = ENV['SOURCE_TAG']
+  desc 'This action builds the app and uplads it to Appetize'
+  private_lane :appetize_build_and_upload do
 
-    # cocoapods(
-    #   clean_install: true,
-    #   podfile: "./Example/Podfile"
-    # )
-
-    # Set version number
-    increment_version_number(
-      version_number: sdk_version_name,
-      xcodeproj: "./Example/PrimerSDK.xcodeproj"
-    )
-
-    increment_build_number(
-      build_number: build_number,
-      xcodeproj: "./Example/PrimerSDK.xcodeproj"
-    )
-
-    create_keychain(
-      name: ENV["MATCH_KEYCHAIN_NAME"],
-      password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-      default_keychain: true,
-      unlock: true,
-      timeout: 3600,
-      lock_when_sleeps: true
-    )
-
-    match(
-      type: "development",
-      readonly: true,
-      keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
-      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-    )
-
-
-
-    # Build for appetize
     build_app(
-      scheme: "PrimerSDK-Example",
+      scheme: app_scheme,
       sdk: "iphonesimulator", # Appetize needs a simulator app
-      workspace: "./Example/PrimerSDK.xcworkspace",
+      workspace: app_workspace,
       configuration: "Debug",
       export_method: "development",
-      archive_path: "/var/tmp/PrimerSDK_Example.xcarchive",
+      archive_path: app_output_archive_path,
       # Build speed optimisation
       skip_package_ipa: true,
       skip_package_pkg: true,
+      skip_package_dependencies_resolution: true
     )
 
     # Appetize needs the .app to be zipped
+
+    zip_path = "./PrimerSDK_Example.zip"
+
     zip(
-      path: "/var/tmp/PrimerSDK_Example.xcarchive/Products/Applications/PrimerSDK_Example.app",
-      output_path: "./PrimerSDK_Example.zip",
+      path: app_output_path,
+      output_path: zip_path,
       symlinks: true
     )
 
     # Find public key of appetize
-    uri = URI('https://livedemostore.primer.io/appetize/ios/' + sdk_version_name)
+    uri = URI('https://livedemostore.primer.io/appetize/ios/preview_' + "#{pr_number}_#{github_run_id}_#{github_run_number}")
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
 
     # Upload to Appetize
     appetize(
-      path: "./PrimerSDK_Example.zip",
+      path: zip_path,
       platform: "ios",
       api_token: appetize_api_token,
       public_key: public_key,
-      note: sdk_version_name
+      note: sdk_version_name_source_branch
     )
 
-    # Build for firebase
-    build_app(
-      scheme: "PrimerSDK-Example",
-      workspace: "./Example/PrimerSDK.xcworkspace",
-      configuration: "Debug",
-      export_method: "development",
-      # Build speed optimisation
-      skip_package_pkg: true,
-    )
-
-    # Firebase
-    firebase_app_distribution(
-      service_credentials_file: "firebase_credentials.json",
-      app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
-      groups: "primer-internal",
-      release_notes: "PR: " + sdk_version_name + " [" + str_time + "]"
-    )
   end
 
-  lane :preview do
-    time = Time.new
-    str_time = time.strftime("%Y-%m-%d %H:%M:%S")
+  desc 'This action uploads the .ipa to Browserstack and save its ID into a file'
+  private_lane :upload_to_browserstack_and_save_id do |options|
 
-    # Set timestamp as version_code to differentiate builds in firebase
-    build_number = time.to_i
-
-    appetize_api_token = ENV['APPETIZE_API_TOKEN']
-    pr_number = ENV["PR_NUMBER"]
-    if(!pr_number) then
-        puts "NO PR NUMBER"
-        next
-    end
-
-    puts "PR_NUMBER: " + pr_number
-    version_name = "preview-" + pr_number
-
-    # cocoapods(
-    #   clean_install: true,
-    #   podfile: "./Example/Podfile"
-    # )
-
-    # Set version number
-    increment_version_number(
-      version_number: version_name,
-      xcodeproj: "./Example/PrimerSDK.xcodeproj"
+    upload_to_browserstack_app_automate(
+      browserstack_username: ENV["BROWSERSTACK_USERNAME"],
+      browserstack_access_key: ENV["BROWSERSTACK_ACCESS_KEY"],
+      file_path: options[:file_path]
     )
 
-    increment_build_number(
-      build_number: build_number,
-      xcodeproj: "./Example/PrimerSDK.xcodeproj"
-    )
+    save_browserstack_id(browserstack_id: ENV['BROWSERSTACK_APP_ID'])
+
+  end
+
+  desc 'This action creates a temporary keychain and installs certificates and provisioning profiles'
+  private_lane :setup_signing do |options|
 
     create_keychain(
       name: ENV["MATCH_KEYCHAIN_NAME"],
@@ -275,63 +162,50 @@ platform :ios do
     )
 
     match(
-      type: "development",
+      type: options[:match_type],
       readonly: true,
       keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
     )
 
-    # Build for appetize
-    build_app(
-      scheme: "PrimerSDK-Example",
-      sdk: "iphonesimulator", # Appetize needs a simulator app
-      workspace: "./Example/PrimerSDK.xcworkspace",
-      configuration: "Debug",
-      export_method: "development",
-      archive_path: "/var/tmp/PrimerSDK_Example.xcarchive",
-      # Build speed optimisation
-      skip_package_ipa: true,
-      skip_package_pkg: true,
-    )
-
-    # Appetize needs the .app to be zipped
-    zip(
-      path: "/var/tmp/PrimerSDK_Example.xcarchive/Products/Applications/PrimerSDK_Example.app",
-      output_path: "./PrimerSDK_Example.zip",
-      symlinks: true
-    )
-
-    # Find public key of appetize
-    uri = URI('https://livedemostore.primer.io/appetize/ios/' + version_name)
-    public_key = Net::HTTP.get(uri)
-    puts "public_key: " + public_key
-
-    # Upload to Appetize as it's version number
-    appetize(
-      path: "./PrimerSDK_Example.zip",
-      platform: "ios",
-      api_token: appetize_api_token,
-      public_key: public_key,
-      note: version_name
-    )
-
-    # Build for firebase
-    build_app(
-      scheme: "PrimerSDK-Example",
-      workspace: "./Example/PrimerSDK.xcworkspace",
-      configuration: "Debug",
-      export_method: "development",
-      # Build speed optimisation
-      skip_package_pkg: true,
-    )
-
-    # # Firebase
-    # firebase_app_distribution(
-    #     service_credentials_file: "firebase_credentials.json",
-    #     app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
-    #     groups: "internal-qa-team",
-    #     release_notes: "PR: " + version_name + " | " + str_time,
-    #   )
   end
 
+  desc 'This action sets the version and build number'
+  private_lane :set_version_and_build_number do
+
+    # We don't really need the version number
+    # at this moment.
+    # The Build number is the unique identifier of the package
+    # matching the Github Workflow run ID and number
+    
+    # Set version number
+    # increment_version_number(
+    #   version_number: sdk_version_name_source_branch,
+    #   xcodeproj: app_xcode_proj
+    # )
+
+    # Set build number
+    increment_build_number(
+      build_number: "#{github_run_id}.#{github_run_number}",
+      xcodeproj: app_xcode_proj
+    )
+
+  end
+
+  desc 'Store the Browserstack ID into a file'
+  private_lane :save_browserstack_id do |options|
+
+    browserstack_id_to_save = options[:browserstack_id]
+    browserstack_id_file = "/var/tmp/browserstack_id.txt"
+
+    UI.message("Saving #{browserstack_id_to_save} into #{browserstack_id_file}")
+
+    File.open(browserstack_id_file, 'w') { |file| file.write(options[:browserstack_id]) }
+
+  end
+
+  ################## END PRIVATE LANES ######################
+
 end
+
+#--------------------- END FASTLANE ------------------------#

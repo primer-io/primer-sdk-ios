@@ -16,9 +16,9 @@ class PrimerAddressField: PrimerCardFormFieldProtocol {
 
 class PrimerAddressLine1Field: PrimerAddressField {
         
-    static func addressLine1ContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
+    static func addressLine1ContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let addressLine1FieldContainerView = PrimerCustomFieldView()
-        addressLine1FieldContainerView.fieldView = view
+        addressLine1FieldContainerView.fieldView = primerTextFieldView
         addressLine1FieldContainerView.placeholderText = Strings.CardFormView.AddressLine1.label
         addressLine1FieldContainerView.setup()
         addressLine1FieldContainerView.tintColor = theme.input.border.color(for: .selected)
@@ -37,9 +37,9 @@ class PrimerAddressLine1Field: PrimerAddressField {
 
 class PrimerAddressLine2Field: PrimerAddressField {
         
-    static func addressLine2ContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
+    static func addressLine2ContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let addressLine2FieldContainerView = PrimerCustomFieldView()
-        addressLine2FieldContainerView.fieldView = view
+        addressLine2FieldContainerView.fieldView = primerTextFieldView
         addressLine2FieldContainerView.placeholderText = Strings.CardFormView.AddressLine2.label
         addressLine2FieldContainerView.setup()
         addressLine2FieldContainerView.tintColor = theme.input.border.color(for: .selected)

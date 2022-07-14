@@ -2,7 +2,7 @@
 //  UIDeviceExtension.swift
 //  PrimerSDK
 //
-//  Created by Evangelos on 12/11/21.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
 #if canImport(UIKit)

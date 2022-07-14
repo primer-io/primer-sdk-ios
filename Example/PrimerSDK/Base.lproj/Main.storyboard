@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="KuL-hw-zDD">
-                                <rect key="frame" x="16" y="96" width="382" height="693"/>
+                                <rect key="frame" x="16" y="96" width="382" height="684"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="kfQ-ex-CD1" userLabel="Settings">
                                         <rect key="frame" x="0.0" y="0.0" width="382" height="120"/>
@@ -62,30 +62,35 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Ojo-uf-w50" userLabel="Form Stack View">
-                                        <rect key="frame" x="0.0" y="144" width="382" height="250"/>
+                                        <rect key="frame" x="0.0" y="144" width="382" height="304"/>
                                         <subviews>
                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Custom defined API-KEY" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wzb-Mm-C6G">
                                                 <rect key="frame" x="0.0" y="0.0" width="382" height="34"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
                                             </textField>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Customer ID" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Q8f-7x-ncT">
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Metadata (QA - TEST_CASE value e.g. OPENNODE)" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Boj-IL-5Pz">
                                                 <rect key="frame" x="0.0" y="54" width="382" height="34"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
+                                            </textField>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Customer ID" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Q8f-7x-ncT">
+                                                <rect key="frame" x="0.0" y="108" width="382" height="34"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits"/>
                                             </textField>
                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Phone number" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="qPf-Sa-EQI">
-                                                <rect key="frame" x="0.0" y="108" width="382" height="34"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
-                                            </textField>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Country" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="LRA-Ro-g2N">
                                                 <rect key="frame" x="0.0" y="162" width="382" height="34"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
                                             </textField>
-                                            <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="To4-vd-EsZ" userLabel="Currenty Amount Stack View">
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Country" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="LRA-Ro-g2N">
                                                 <rect key="frame" x="0.0" y="216" width="382" height="34"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
+                                            </textField>
+                                            <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="To4-vd-EsZ" userLabel="Currenty Amount Stack View">
+                                                <rect key="frame" x="0.0" y="270" width="382" height="34"/>
                                                 <subviews>
                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="EUR" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uht-tM-QtC">
                                                         <rect key="frame" x="0.0" y="0.0" width="60" height="34"/>
@@ -105,7 +110,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Lpg-yS-48o" userLabel="Perform Payment Stack View">
-                                        <rect key="frame" x="0.0" y="418" width="382" height="31"/>
+                                        <rect key="frame" x="0.0" y="472" width="382" height="31"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Perform payment" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cFw-qi-n9P">
                                                 <rect key="frame" x="0.0" y="0.0" width="325" height="31"/>
@@ -119,7 +124,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" spacing="32" translatesAutoresizingMaskIntoConstraints="NO" id="KAf-TR-l1d" userLabel="Buttons List Stack View">
-                                        <rect key="frame" x="0.0" y="473" width="382" height="220"/>
+                                        <rect key="frame" x="0.0" y="527" width="382" height="157"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
                                                 <rect key="frame" x="122" y="0.0" width="138" height="31"/>
@@ -143,14 +148,6 @@
                                                 <buttonConfiguration key="configuration" style="plain" title="List Asssets"/>
                                                 <connections>
                                                     <segue destination="2Gj-2M-9Uh" kind="show" id="dNw-eK-xEJ"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tDR-8v-lcu">
-                                                <rect key="frame" x="114" y="189" width="154" height="31"/>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="HUC Raw Card Data"/>
-                                                <connections>
-                                                    <action selector="hucRawCardDataButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="RxM-Gb-Rqm"/>
                                                 </connections>
                                             </button>
                                         </subviews>
@@ -189,6 +186,7 @@
                         <outlet property="currencyTextField" destination="uht-tM-QtC" id="N7Y-8W-14p"/>
                         <outlet property="customerIdTextField" destination="Q8f-7x-ncT" id="IUu-6E-jOm"/>
                         <outlet property="environmentControl" destination="HhM-iV-pMY" id="gBe-aA-vZJ"/>
+                        <outlet property="metadataTestCaseTextField" destination="Boj-IL-5Pz" id="hjm-zr-3DW"/>
                         <outlet property="performPaymentSwitch" destination="Ink-cM-1O4" id="lD8-Ge-IJ8"/>
                         <outlet property="phoneNumberTextField" destination="qPf-Sa-EQI" id="Tlr-os-MLG"/>
                     </connections>
@@ -630,21 +628,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uJz-IG-g3T" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3433" y="1647"/>
-        </scene>
-        <!--MerchantHUC Raw Card Data View Controller-->
-        <scene sceneID="E4X-A2-u2S">
-            <objects>
-                <viewController storyboardIdentifier="MerchantHUCRawCardDataViewController" id="fOT-0p-HAF" customClass="MerchantHUCRawCardDataViewController" customModule="PrimerSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="tUi-yT-EMv">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="eNp-Gv-ajx"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Dft-XH-VRM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2688" y="2338"/>
         </scene>
     </scenes>
     <resources>

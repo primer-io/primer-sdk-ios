@@ -148,6 +148,12 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .payPal,
                 .primerTestPayPal:
             return "PayPal"
+        case .rapydGCash:
+            return "GCash"
+        case .rapydGrabPay:
+            return "Grab Pay"
+        case .rapydPoli:
+            return "Poli"
         case .xfers:
             return "XFers"
         case .other:
@@ -204,6 +210,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .primerTestPayPal,
                 .primerTestSofort,
                 .primerTestKlarna,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli,
                 .xfers:
             return nil
             
@@ -283,6 +292,12 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .payPal,
                 .primerTestPayPal:
             return UIImage(named: "paypal-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydGCash:
+            return UIImage(named: "gcash-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydGrabPay:
+            return UIImage(named: "grab-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydPoli:
+            return UIImage(named: "poli-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .xfers:
             return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
@@ -350,6 +365,12 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .payPal,
                 .primerTestPayPal:
             return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
+        case .rapydGCash:
+            return UIColor(red: 0.161, green: 0.482, blue: 0.98, alpha: 1)
+        case .rapydGrabPay:
+            return UIColor(red: 0.004, green: 0.694, blue: 0.306, alpha: 1)
+        case .rapydPoli:
+            return UIColor(red: 0.184, green: 0.263, blue: 0.596, alpha: 1)
         case .xfers:
             return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
         default:
@@ -387,6 +408,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .primerTestPayPal,
                 .primerTestKlarna,
                 .primerTestSofort,
+                .rapydGCash,
+                .rapydPoli,
+                .rapydGrabPay,
                 .xfers:
             return nil
         case .apaya,
@@ -423,7 +447,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .payPal,
                 .primerTestPayPal,
                 .primerTestKlarna,
-                .primerTestSofort:
+                .primerTestSofort,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli:
             return 0.0
         case .adyenDotPay,
                 .apaya,
@@ -466,6 +493,9 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 .primerTestPayPal,
                 .primerTestKlarna,
                 .primerTestSofort,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli,
                 .xfers:
             return nil
         case .apaya,
@@ -513,7 +543,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         case .adyenGiropay,
                 .adyenTwint,
                 .payPal,
-                .primerTestPayPal:
+                .primerTestPayPal,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli:
             return nil
         case .apaya,
                 .paymentCard:
@@ -604,8 +637,14 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             return "xfers"
         case .opennode:
             return "opennode"
+        case .rapydGrabPay:
+            return "grab-pay"
+        case .rapydGCash:
+            return "gcash"
         case .twoCtwoP:
             return "2c2p"
+        case .rapydPoli:
+            return "poli"
         case .other(rawValue: let rawValue):
             return rawValue
         }
