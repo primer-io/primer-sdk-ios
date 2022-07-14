@@ -29,14 +29,14 @@ if swiftFilesWithCopyright.count > 0 {
 
 // MARK: - Check UIKit import
 
-let swiftFilesContainsUIKitImport = editedFiles.filter {
+let swiftFilesNotContainingUIKitImport = editedFiles.filter {
     $0.fileType == .swift &&
-    danger.utils.readFile($0).contains("#if canImport(UIKit)") &&
+    danger.utils.readFile($0).contains("#if canImport(UIKit)") == false &&
     $0.name != "Dangerfile.swift"
 }
 
-if swiftFilesContainsUIKitImport.count > 0 {
-    let files = swiftFilesContainsUIKitImport.joined(separator: ", ")
+if swiftFilesNotContainingUIKitImport.count > 0 {
+    let files = swiftFilesNotContainingUIKitImport.joined(separator: ", ")
     warn("Please check your 'canImport(UIKit)` in the following files: \(files)")
 }
 
