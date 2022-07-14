@@ -13,9 +13,9 @@ class PrimerEpiryDateField: PrimerCardFormFieldProtocol {
     
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    static func expiryDateContainerViewWithFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
+    static func expiryDateContainerViewWithFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let expiryDateContainerView = PrimerCustomFieldView()
-        expiryDateContainerView.fieldView = view
+        expiryDateContainerView.fieldView = primerTextFieldView
         expiryDateContainerView.placeholderText = Strings.CardFormView.ExpiryDate.label
         expiryDateContainerView.setup()
         expiryDateContainerView.tintColor = theme.input.border.color(for: .selected)

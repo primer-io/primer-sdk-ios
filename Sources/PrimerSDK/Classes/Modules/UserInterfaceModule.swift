@@ -31,6 +31,90 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
+    lazy var title: String = {
+        switch self.paymentMethodTokenizationViewModel.config.type {
+        case .adyenAlipay:
+            return "Adyen Ali Pay"
+        case .adyenDotPay:
+            return "Dot Pay"
+        case .adyenGiropay:
+            return "Giropay"
+        case .adyenIDeal:
+            return "iDeal"
+        case .apaya:
+            return "Apaya"
+        case .applePay:
+            return "Apple Pay"
+        case .atome:
+            return "Atome"
+        case .buckarooBancontact:
+            return "Buckaroo Bancontact"
+        case .buckarooEps:
+            return "Buckaroo EPS"
+        case .buckarooGiropay:
+            return "Buckaroo Giropay"
+        case .buckarooIdeal:
+            return "Buckaroo iDeal"
+        case .buckarooSofort:
+            return "Buckaroo Sofort"
+        case .goCardlessMandate:
+            return "Go Cardless"
+        case .googlePay:
+            return "Google Pay"
+        case .hoolah:
+            return "Hoolah"
+        case .adyenInterac:
+            return "Interac"
+        case .klarna,
+                .primerTestKlarna:
+            return "Klarna"
+        case .mollieBankcontact:
+            return "Mollie Bancontact"
+        case .mollieIdeal:
+            return "Mollie iDeal"
+        case .paymentCard:
+            return "Payment Card"
+        case .payNLBancontact:
+            return "Pay NL Bancontact"
+        case .payNLGiropay:
+            return "Pay NL Giropay"
+        case .payNLIdeal:
+            return "Pay NL Ideal"
+        case .payNLPayconiq:
+            return "Pay NL Payconiq"
+        case .adyenSofort,
+                .primerTestSofort:
+            return "Sofort"
+        case .adyenTwint:
+            return "Twint"
+        case .adyenTrustly:
+            return "Trustly"
+        case .adyenMobilePay:
+            return "Mobile Pay"
+        case .adyenVipps:
+            return "Vipps"
+        case .adyenPayTrail:
+            return "Pay Trail"
+        case .payPal,
+                .primerTestPayPal:
+            return "PayPal"
+        case .rapydGCash:
+            return "GCash"
+        case .rapydGrabPay:
+            return "Grab Pay"
+        case .rapydPoli:
+            return "Poli"
+        case .xfers:
+            return "XFers"
+        case .other:
+            return "Other"
+            
+        default:
+            assert(true, "Shouldn't end up in here")
+            return ""
+        }
+    }()
+    
     lazy var imageName: String? = {
         switch paymentMethodTokenizationViewModel.config.type {
         case .adyenAlipay:
@@ -96,6 +180,12 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         case .payPal,
                 .primerTestPayPal:
             return "paypal"
+        case .rapydGCash:
+            return "gcash"
+        case .rapydGrabPay:
+            return "grab-pay"
+        case .rapydPoli:
+            return "poli"
         case .xfers:
             return "xfers"
         case .opennode:
@@ -178,6 +268,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .primerTestPayPal,
                 .primerTestSofort,
                 .primerTestKlarna,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli,
                 .xfers:
             return nil
             
@@ -266,6 +359,12 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         case .payPal,
                 .primerTestPayPal:
             return UIImage(named: "paypal-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydGCash:
+            return UIImage(named: "gcash-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydGrabPay:
+            return UIImage(named: "grab-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydPoli:
+            return UIImage(named: "poli-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .xfers:
             return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
@@ -341,6 +440,12 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         case .payPal,
                 .primerTestPayPal:
             return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
+        case .rapydGCash:
+            return UIColor(red: 0.161, green: 0.482, blue: 0.98, alpha: 1)
+        case .rapydGrabPay:
+            return UIColor(red: 0.004, green: 0.694, blue: 0.306, alpha: 1)
+        case .rapydPoli:
+            return UIColor(red: 0.184, green: 0.263, blue: 0.596, alpha: 1)
         case .xfers:
             return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
         default:
@@ -378,6 +483,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .primerTestPayPal,
                 .primerTestKlarna,
                 .primerTestSofort,
+                .rapydGCash,
+                .rapydPoli,
+                .rapydGrabPay,
                 .xfers:
             return nil
         case .apaya,
@@ -414,7 +522,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .payPal,
                 .primerTestPayPal,
                 .primerTestKlarna,
-                .primerTestSofort:
+                .primerTestSofort,
+                .rapydGCash,
+                .rapydPoli,
+                .rapydGrabPay:
             return 0.0
         case .adyenDotPay,
                 .apaya,
@@ -457,6 +568,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .primerTestPayPal,
                 .primerTestKlarna,
                 .primerTestSofort,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli,
                 .xfers:
             return nil
         case .apaya,
@@ -504,7 +618,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         case .adyenGiropay,
                 .adyenTwint,
                 .payPal,
-                .primerTestPayPal:
+                .primerTestPayPal,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli:
             return nil
         case .apaya,
                 .paymentCard:

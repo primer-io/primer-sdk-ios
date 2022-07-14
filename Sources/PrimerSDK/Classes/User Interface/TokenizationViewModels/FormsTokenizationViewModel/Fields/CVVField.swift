@@ -13,9 +13,9 @@ class PrimerCVVField: PrimerCardFormFieldProtocol {
     
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    static func cvvContainerViewFieldView(_ view: PrimerTextFieldView) -> PrimerCustomFieldView {
+    static func cvvContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let cvvContainerView = PrimerCustomFieldView()
-        cvvContainerView.fieldView = view
+        cvvContainerView.fieldView = primerTextFieldView
         cvvContainerView.placeholderText = Strings.CardFormView.CVV.label
         cvvContainerView.setup()
         cvvContainerView.tintColor = theme.input.border.color(for: .selected)

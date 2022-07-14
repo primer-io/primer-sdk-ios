@@ -15,7 +15,13 @@ extension Analytics {
         
         static var filepath: URL = {
             let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
-            log(logLevel: .info, title: "Analytics URL", message: "Analytics URL:\n\(url)\n", file: #file, className: "Analytics.Service", function: #function, line: #line)
+            primerLogAnalytics(
+                title: "Analytics URL",
+                message: "Analytics URL:\n\(url)\n",
+                file: #file,
+                className: "Analytics.Service",
+                function: #function,
+                line: #line)
             return url
         }()
         
@@ -33,7 +39,7 @@ extension Analytics {
         }
         
         private static func loadEvents() -> [Event] {
-            log(logLevel: .debug,
+            primerLogAnalytics(
                 title: "ANALYTICS",
                 message: "📚 Loading events",
                 prefix: "📚",
@@ -52,7 +58,7 @@ extension Analytics {
         }
         
         internal static func record(events: [Analytics.Event]) {
-            log(logLevel: .debug,
+            primerLogAnalytics(
                 title: "ANALYTICS",
                 message: "📚 Recording \(events.count) events",
                 prefix: "📚",
@@ -70,7 +76,7 @@ extension Analytics {
         }
         
         private static func save(events: [Analytics.Event]) throws {
-            log(logLevel: .debug,
+            primerLogAnalytics(
                 title: "ANALYTICS",
                 message: "📚 Saving \(events.count) events",
                 prefix: "📚",
@@ -84,7 +90,7 @@ extension Analytics {
         }
         
         internal static func deleteEvents(_ events: [Analytics.Event]? = nil) throws {
-            log(logLevel: .debug,
+            primerLogAnalytics(
                 title: "ANALYTICS",
                 message: "📚 Deleting \(events == nil ? "all" : "\(events!.count)") events",
                 prefix: "📚",
@@ -107,7 +113,7 @@ extension Analytics {
             let analyticsUrlStr = ClientTokenService.decodedClientToken?.analyticsUrlV2 ?? "https://analytics.production.data.primer.io/sdk-logs"
             guard let analyticsUrl = URL(string: analyticsUrlStr) else { return }
             
-            log(logLevel: .debug,
+            primerLogAnalytics(
                 title: "ANALYTICS",
                 message: "📚 Analytics URL: \(analyticsUrlStr)",
                 prefix: "📚",
@@ -117,7 +123,7 @@ extension Analytics {
                 line: #line)
             
             Analytics.queue.async {
-                log(logLevel: .debug,
+                primerLogAnalytics(
                     title: "ANALYTICS",
                     message: "📚 Syncing...",
                     prefix: "📚",
@@ -133,7 +139,7 @@ extension Analytics {
                 
                 let requestBody = Analytics.Service.Request(data: storedEvents)
                 
-                log(logLevel: .debug,
+                primerLogAnalytics(
                     title: "ANALYTICS",
                     message: "📚 Syncing \(storedEvents.count) events on URL: \(analyticsUrlStr)",
                     prefix: "📚",
@@ -146,7 +152,7 @@ extension Analytics {
                 client.sendAnalyticsEvents(url: analyticsUrl, body: requestBody) { result in
                     switch result {
                     case .success:
-                        log(logLevel: .debug,
+                        primerLogAnalytics(
                             title: "ANALYTICS",
                             message: "📚 Finished syncing \(storedEvents.count) events on URL: \(analyticsUrlStr)",
                             prefix: "📚",
@@ -167,7 +173,7 @@ extension Analytics {
                         let remainingEvents = Analytics.Service.loadEvents()
                             .filter({ $0.eventType != Analytics.Event.EventType.networkCall && $0.eventType != Analytics.Event.EventType.networkConnectivity })
                         if !remainingEvents.isEmpty {
-                            log(logLevel: .debug,
+                            primerLogAnalytics(
                                 title: "ANALYTICS",
                                 message: "📚 \(remainingEvents.count) events remain for URL: \(analyticsUrlStr)",
                                 prefix: "📚",
@@ -180,7 +186,7 @@ extension Analytics {
                         }
                         
                     case .failure(let err):
-                        log(logLevel: .debug,
+                        primerLogAnalytics(
                             title: "ANALYTICS",
                             message: "📚 Failed to sync \(storedEvents.count) events on URL \(analyticsUrlStr) with error \(err)",
                             prefix: "📚",
@@ -203,7 +209,6 @@ extension Analytics {
         }
         
     }
-    
 }
 
 #endif
