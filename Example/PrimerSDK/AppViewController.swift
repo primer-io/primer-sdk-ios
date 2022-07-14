@@ -42,12 +42,12 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
         phoneNumberTextField.text = nil
         phoneNumberTextField.accessibilityIdentifier = "phone_number_txt_field"
-        countryCodeTextField.text = CountryCode.nl.rawValue
+        countryCodeTextField.text = CountryCode.gb.rawValue
         countryCodeTextField.accessibilityIdentifier = "country_code_txt_field"
-        currencyTextField.text = Currency.EUR.rawValue
+        currencyTextField.text = Currency.GBP.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.placeholder = "In minor units (type 100 for 1.00)"
-        amountTextField.text = "10100"
+        amountTextField.text = "101000"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
         performPaymentSwitch.isOn = true
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
@@ -133,6 +133,22 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         self.evaluateCustomDefinedApiKey()
         self.evaluateMetadataTestCase()
         self.navigationController?.pushViewController(mcfvc, animated: true)
+    }
+    
+    @IBAction func hucRawCardDataButtonTapped(_ sender: Any) {
+        var amount: Int?
+        if let amountStr = amountTextField.text {
+            amount = Int(amountStr)
+        }
+        
+        let rcdvc = MerchantHUCRawCardDataViewController.instantiate(
+            amount: amount ?? 1000,
+            currency: Currency(rawValue: currencyTextField.text ?? "")!,
+            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? "")!,
+            customerId: customerIdTextField.text,
+            phoneNumber: phoneNumberTextField.text)
+        
+        self.navigationController?.pushViewController(rcdvc, animated: true)
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {

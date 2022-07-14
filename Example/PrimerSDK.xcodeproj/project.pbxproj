@@ -62,6 +62,7 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		849383B62880416B0093FD14 /* PrimerRawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849383B52880416B0093FD14 /* PrimerRawDataManagerTests.swift */; };
+		849383B8288045910093FD14 /* MerchantHUCRawCardDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849383B7288045910093FD14 /* MerchantHUCRawCardDataViewController.swift */; };
 		849A28EB275614070037C2D1 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EA275614070037C2D1 /* Networking.swift */; };
 		849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */; };
 /* End PBXBuildFile section */
@@ -173,6 +174,7 @@
 		846BE6D0280FEE740052E4DB /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main.strings; sourceTree = "<group>"; };
 		846BE6D2280FEE760052E4DB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		849383B52880416B0093FD14 /* PrimerRawDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerRawDataManagerTests.swift; sourceTree = "<group>"; };
+		849383B7288045910093FD14 /* MerchantHUCRawCardDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHUCRawCardDataViewController.swift; sourceTree = "<group>"; };
 		849A28EA275614070037C2D1 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalPaymentMethods.swift; sourceTree = "<group>"; };
 		DB23565438E31642C10D7B48 /* Pods-PrimerSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -392,6 +394,7 @@
 				2C10D10E2840C1A60059B9E1 /* MerchantCheckoutViewController.swift */,
 				2C10D10F2840C1A60059B9E1 /* MerchantPaymentMethodsViewController.swift */,
 				2C10D1132840C1A60059B9E1 /* ResultViewController.swift */,
+				849383B7288045910093FD14 /* MerchantHUCRawCardDataViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -733,6 +736,7 @@
 				2C10D1292840C1C90059B9E1 /* MerchantAssetsViewController.swift in Sources */,
 				1DE0355C2716E4D1007BADAB /* CheckoutTheme.swift in Sources */,
 				2C10D1222840C1B00059B9E1 /* Networking+Models.swift in Sources */,
+				849383B8288045910093FD14 /* MerchantHUCRawCardDataViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				2C10D1152840C1A60059B9E1 /* MerchantCheckoutViewController.swift in Sources */,
 				1DC7EE14261FA3D400BCBFFC /* CreateClientToken.swift in Sources */,
