@@ -31,6 +31,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     var inputs: [Input] = []
     private var cardComponentsManager: CardComponentsManager!
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     // FIXME: Is this the fix for the button's indicator?
     private var isTokenizing = false
@@ -74,39 +75,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         
         return stackViews
     }
-    
-    lazy var submitButton: PrimerButton = {
-        let btn = PrimerButton()
-        btn.isEnabled = false
-        btn.clipsToBounds = true
-        btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        btn.layer.cornerRadius = 4
-        btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
-        btn.setTitleColor(.white, for: .normal)
-        btn.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
-        
-        switch config.type {
-        case .paymentCard:
-            var buttonTitle: String = ""
-            switch Primer.shared.intent {
-            case .checkout:
-                let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-                buttonTitle = Strings.PaymentButton.pay + " " + (viewModel.amountStringed ?? "")
-            case .vault:
-                buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle
-            case .none:
-                assert(true, "Intent should have been set")
-            }
-
-            btn.setTitle(buttonTitle, for: .normal)
-            
-        default:
-            btn.setTitle("Confirm", for: .normal)
-        }
-
-        return btn
-    }()
     
     var dataSource = CountryCode.allCases {
         didSet {
@@ -434,7 +402,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 place: .cardForm))
         Analytics.Service.record(event: event)
         
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
@@ -524,13 +492,12 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     fileprivate func enableSubmitButton(_ flag: Bool) {
-        self.submitButton.isEnabled = flag
+        self.uiModule.submitButton?.isEnabled = flag
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        self.submitButton.backgroundColor = flag ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
+        self.uiModule.submitButton?.backgroundColor = flag ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
     }
     
-    @objc
-    func payButtonTapped(_ sender: UIButton) {
+    override func submitButtonTapped() {
         let viewEvent = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -550,7 +517,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
         switch config.type {
         case .adyenBlik:
-            self.submitButton.startAnimating()
+            self.uiModule.submitButton?.startAnimating()
             self.userInputCompletion?()
             
         default:

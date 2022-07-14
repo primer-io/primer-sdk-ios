@@ -67,7 +67,7 @@ class PaymentMethodsGroupView: PrimerView {
         }
         
         for viewModel in paymentMethodTokenizationViewModels {
-            verticalStackView.addArrangedSubview(viewModel.paymentMethodButton)
+            verticalStackView.addArrangedSubview(viewModel.uiModule.paymentMethodButton)
         }
     }
     

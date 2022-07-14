@@ -51,7 +51,7 @@ class PrimerFormViewController: PrimerViewController {
         
         if Primer.shared.intent == .vault {
             for viewModel in paymentMethodTokenizationViewModels {
-                availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.paymentMethodButton)
+                availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.uiModule.paymentMethodButton)
             }
             stackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
             
@@ -67,7 +67,7 @@ class PrimerFormViewController: PrimerViewController {
                 additionalFeePaymentMethodsViewModels.isEmpty,
                 unknownFeePaymentMethodsViewModels.isEmpty {
                 for viewModel in noAdditionalFeePaymentMethodsViewModels {
-                    availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.paymentMethodButton)
+                    availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.uiModule.paymentMethodButton)
                 }
                 stackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
                 return
@@ -91,7 +91,7 @@ class PrimerFormViewController: PrimerViewController {
             
             if !additionalFeePaymentMethodsViewModels.isEmpty {
                 for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
-                    let title = additionalFeePaymentMethodsViewModel.surcharge
+                    let title = additionalFeePaymentMethodsViewModel.uiModule.surchargeSectionText
                     let additionalFeesContainerView = PaymentMethodsGroupView(title: title, paymentMethodTokenizationViewModels: [additionalFeePaymentMethodsViewModel])
                     additionalFeesContainerView.accessibilityIdentifier = "\(additionalFeePaymentMethodsViewModel.config.type.rawValue.lowercased())_surcharge_group_view"
                     additionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
