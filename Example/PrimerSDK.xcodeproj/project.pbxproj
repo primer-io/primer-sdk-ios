@@ -61,6 +61,7 @@
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
+		849383B62880416B0093FD14 /* PrimerRawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849383B52880416B0093FD14 /* PrimerRawDataManagerTests.swift */; };
 		849A28EB275614070037C2D1 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EA275614070037C2D1 /* Networking.swift */; };
 		849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */; };
 /* End PBXBuildFile section */
@@ -171,6 +172,7 @@
 		846BE6CF280FEE720052E4DB /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Main.strings; sourceTree = "<group>"; };
 		846BE6D0280FEE740052E4DB /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main.strings; sourceTree = "<group>"; };
 		846BE6D2280FEE760052E4DB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
+		849383B52880416B0093FD14 /* PrimerRawDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerRawDataManagerTests.swift; sourceTree = "<group>"; };
 		849A28EA275614070037C2D1 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalPaymentMethods.swift; sourceTree = "<group>"; };
 		DB23565438E31642C10D7B48 /* Pods-PrimerSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 		1582B958260A3F2900C80BD7 /* PrimerSDK_Tests */ = {
 			isa = PBXGroup;
 			children = (
+				849383B42880414B0093FD14 /* PrimerHeadlessUniversalCheckout */,
 				15F32E1B26FDA8CF004B3903 /* Primer */,
 				1DEBE0DD26B6FC92004E3064 /* Data Models */,
 				1582B959260A3F2900C80BD7 /* Mocks */,
@@ -449,6 +452,14 @@
 				3B55FBF1D40BE6B25F29A5D9 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
+			sourceTree = "<group>";
+		};
+		849383B42880414B0093FD14 /* PrimerHeadlessUniversalCheckout */ = {
+			isa = PBXGroup;
+			children = (
+				849383B52880416B0093FD14 /* PrimerRawDataManagerTests.swift */,
+			);
+			path = PrimerHeadlessUniversalCheckout;
 			sourceTree = "<group>";
 		};
 		CAECC3F22E94EA70F1F01CFC /* Pods */ = {
@@ -744,6 +755,7 @@
 				1582B98B260A3F2900C80BD7 /* MaskTests.swift in Sources */,
 				1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */,
 				1582B980260A3F2900C80BD7 /* PaymentMethodConfigService.swift in Sources */,
+				849383B62880416B0093FD14 /* PrimerRawDataManagerTests.swift in Sources */,
 				15F32E1D26FDA8E4004B3903 /* PrimerTests.swift in Sources */,
 				1582B988260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift in Sources */,
 				2C10D12E2840C42F0059B9E1 /* CreateResumePaymentService.swift in Sources */,
