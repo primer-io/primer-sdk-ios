@@ -360,6 +360,12 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
         case .payPal,
                 .primerTestPayPal:
             return "PayPal"
+        case .rapydGCash:
+            return "GCash"
+        case .rapydGrabPay:
+            return "Grab Pay"
+        case .rapydPoli:
+            return "Poli"
         case .xfers:
             return "XFers"
         case .other:
