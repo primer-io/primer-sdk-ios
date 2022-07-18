@@ -26,7 +26,7 @@ internal class QRCodeViewController: PrimerFormViewController {
     init(viewModel: QRCodeTokenizationViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.originalImage
+        self.titleImage = viewModel.uiModule.originalImage
     }
     
     required init?(coder: NSCoder) {

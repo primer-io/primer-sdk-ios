@@ -9,35 +9,27 @@
 
 import Foundation
 
-internal class ClientSessionAPIResponse: Codable {
-    
-    let clientSessionId: String?
-    let paymentMethod: ClientSessionAPIResponse.PaymentMethod?
-    let order: ClientSessionAPIResponse.Order?
-    let customer: ClientSessionAPIResponse.Customer?
-    
-    enum CodingKeys: String, CodingKey {
-        case clientSessionId, paymentMethod, order, customer // metadata
-    }
-    
-    required internal init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.clientSessionId = (try? container.decode(String?.self, forKey: .clientSessionId)) ?? nil
-        self.paymentMethod = (try? container.decode(ClientSessionAPIResponse.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
-        self.order = (try? container.decode(ClientSessionAPIResponse.Order?.self, forKey: .order)) ?? nil
-        self.customer = (try? container.decode(ClientSessionAPIResponse.Customer?.self, forKey: .customer)) ?? nil
-    }
-    
-    internal func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(paymentMethod, forKey: .paymentMethod)
-        try container.encode(order, forKey: .order)
-        try container.encode(customer, forKey: .customer)
-    }
+internal class ClientSession {
     
     // MARK: - ClientSession.Action
     
     internal class Action: NSObject, Encodable {
+        
+        static func makeBillingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
+            return ["billingAddress": parameters]
+        }
+            
+        static func selectPaymentMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
+            ClientSession.Action(type: .selectPaymentMethod, params: parameters)
+        }
+
+        static func unselectPaymentMethodAction() -> ClientSession.Action {
+            ClientSession.Action(type: .unselectPaymentMethod, params: nil)
+        }
+        
+        static func setBillingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
+            ClientSession.Action(type: .setBillingAddress, params: makeBillingAddressDictionaryRequestFromParameters(parameters))
+        }
         
         internal enum ActionType: String {
             case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
@@ -96,42 +88,54 @@ internal class ClientSessionAPIResponse: Codable {
                 .compactMap({ $0 })
                 .joined(separator: ", ")
         }
-        
     }
     
-    // MARK: - ClientSession.PaymentMethod
+    // MARK: ClientSession.Customer
     
-    internal class PaymentMethod: Codable {
-        let vaultOnSuccess: Bool
-        let options: [[String: Any]]?
+    internal struct Customer: Codable {
+        let id: String?
+        let firstName: String?
+        let lastName: String?
+        let emailAddress: String?
+        let mobileNumber: String?
+        let billingAddress: ClientSession.Address?
+        let shippingAddress: ClientSession.Address?
+        let taxId: String?
         
         enum CodingKeys: String, CodingKey {
-            case vaultOnSuccess, options
+            case id = "customerId", firstName, lastName, emailAddress, mobileNumber, billingAddress, shippingAddress, taxId
         }
         
-        required internal init(from decoder: Decoder) throws {
+        internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.vaultOnSuccess = (try? container.decode(Bool.self, forKey: .vaultOnSuccess)) ?? false
-            
-            if let tmpOptions = (try? container.decode([[String: AnyCodable]]?.self, forKey: .options)),
-               let optionsData = try? JSONEncoder().encode(tmpOptions),
-               let optionsJson = (try? JSONSerialization.jsonObject(with: optionsData, options: .allowFragments)) as? [[String: Any]]
-            {
-                self.options = optionsJson
-            } else {
-                self.options = nil
-            }
+            self.id = (try? container.decode(String?.self, forKey: .id)) ?? nil
+            self.firstName = (try? container.decode(String?.self, forKey: .firstName)) ?? nil
+            self.lastName = (try? container.decode(String?.self, forKey: .lastName)) ?? nil
+            self.emailAddress = (try? container.decode(String?.self, forKey: .emailAddress)) ?? nil
+            self.mobileNumber = (try? container.decode(String?.self, forKey: .mobileNumber)) ?? nil
+            self.billingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .billingAddress)) ?? nil
+            self.shippingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .shippingAddress)) ?? nil
+            self.taxId = (try? container.decode(String?.self, forKey: .taxId)) ?? nil
         }
         
-        internal func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(vaultOnSuccess, forKey: .vaultOnSuccess)
-            
-            if let options = options,
-               let optionsData = try? JSONSerialization.data(withJSONObject: options, options: .fragmentsAllowed),
-               let optionsCodable = try? JSONDecoder().decode([String: AnyCodable]?.self, from: optionsData) {
-                try container.encode(optionsCodable, forKey: .options)
-            }
+        internal init(
+            id: String? = nil,
+            firstName: String? = nil,
+            lastName: String? = nil,
+            emailAddress: String? = nil,
+            mobileNumber: String? = nil,
+            billingAddress: Address? = nil,
+            shippingAddress: Address? = nil,
+            taxId: String? = nil
+        ) {
+            self.id = id
+            self.firstName = firstName
+            self.lastName = lastName
+            self.emailAddress = emailAddress
+            self.mobileNumber = mobileNumber
+            self.billingAddress = billingAddress
+            self.shippingAddress = shippingAddress
+            self.taxId = taxId
         }
     }
     
@@ -144,8 +148,8 @@ internal class ClientSessionAPIResponse: Codable {
         let totalTaxAmount: Int?
         let countryCode: CountryCode?
         let currencyCode: Currency?
-        let fees: [Fee]?
-        let lineItems: [LineItem]?
+        let fees: [ClientSession.Order.Fee]?
+        let lineItems: [ClientSession.Order.LineItem]?
         let shippingAmount: Int?
         
         enum CodingKeys: String, CodingKey {
@@ -160,8 +164,8 @@ internal class ClientSessionAPIResponse: Codable {
             totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
             countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
             currencyCode = (try? container.decode(Currency?.self, forKey: .currencyCode)) ?? nil
-            fees = (try? container.decode([ClientSessionAPIResponse.Order.Fee]?.self, forKey: .fees)) ?? nil
-            lineItems = (try? container.decode([LineItem]?.self, forKey: .lineItems)) ?? nil
+            fees = (try? container.decode([ClientSession.Order.Fee]?.self, forKey: .fees)) ?? nil
+            lineItems = (try? container.decode([ClientSession.Order.LineItem]?.self, forKey: .lineItems)) ?? nil
             shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
         }
         
@@ -221,54 +225,67 @@ internal class ClientSessionAPIResponse: Codable {
         }
     }
     
-    // MARK: ClientSession.Customer
+    // MARK: - ClientSession.PaymentMethod
     
-    internal struct Customer: Codable {
-        let id: String?
-        let firstName: String?
-        let lastName: String?
-        let emailAddress: String?
-        let mobileNumber: String?
-        let billingAddress: ClientSessionAPIResponse.Address?
-        let shippingAddress: ClientSessionAPIResponse.Address?
-        let taxId: String?
+    internal class PaymentMethod: Codable {
+        let vaultOnSuccess: Bool
+        let options: [[String: Any]]?
         
         enum CodingKeys: String, CodingKey {
-            case id = "customerId", firstName, lastName, emailAddress, mobileNumber, billingAddress, shippingAddress, taxId
+            case vaultOnSuccess, options
         }
         
-        internal init(from decoder: Decoder) throws {
+        required internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.id = (try? container.decode(String?.self, forKey: .id)) ?? nil
-            self.firstName = (try? container.decode(String?.self, forKey: .firstName)) ?? nil
-            self.lastName = (try? container.decode(String?.self, forKey: .lastName)) ?? nil
-            self.emailAddress = (try? container.decode(String?.self, forKey: .emailAddress)) ?? nil
-            self.mobileNumber = (try? container.decode(String?.self, forKey: .mobileNumber)) ?? nil
-            self.billingAddress = (try? container.decode(ClientSessionAPIResponse.Address?.self, forKey: .billingAddress)) ?? nil
-            self.shippingAddress = (try? container.decode(ClientSessionAPIResponse.Address?.self, forKey: .shippingAddress)) ?? nil
-            self.taxId = (try? container.decode(String?.self, forKey: .taxId)) ?? nil
+            self.vaultOnSuccess = (try? container.decode(Bool.self, forKey: .vaultOnSuccess)) ?? false
+            
+            if let tmpOptions = (try? container.decode([[String: AnyCodable]]?.self, forKey: .options)),
+               let optionsData = try? JSONEncoder().encode(tmpOptions),
+               let optionsJson = (try? JSONSerialization.jsonObject(with: optionsData, options: .allowFragments)) as? [[String: Any]]
+            {
+                self.options = optionsJson
+            } else {
+                self.options = nil
+            }
         }
         
-        internal init(
-            id: String? = nil,
-            firstName: String? = nil,
-            lastName: String? = nil,
-            emailAddress: String? = nil,
-            mobileNumber: String? = nil,
-            billingAddress: Address? = nil,
-            shippingAddress: Address? = nil,
-            taxId: String? = nil
-        ) {
-            self.id = id
-            self.firstName = firstName
-            self.lastName = lastName
-            self.emailAddress = emailAddress
-            self.mobileNumber = mobileNumber
-            self.billingAddress = billingAddress
-            self.shippingAddress = shippingAddress
-            self.taxId = taxId
+        internal func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(vaultOnSuccess, forKey: .vaultOnSuccess)
+            
+            if let options = options,
+               let optionsData = try? JSONSerialization.data(withJSONObject: options, options: .fragmentsAllowed),
+               let optionsCodable = try? JSONDecoder().decode([String: AnyCodable]?.self, from: optionsData) {
+                try container.encode(optionsCodable, forKey: .options)
+            }
+        }
+    }
+    
+    internal class APIResponse: Codable {
+        
+        let clientSessionId: String?
+        let paymentMethod: ClientSession.PaymentMethod?
+        let order: ClientSession.Order?
+        let customer: ClientSession.Customer?
+        
+        enum CodingKeys: String, CodingKey {
+            case clientSessionId, paymentMethod, order, customer // metadata
         }
         
+        required internal init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.clientSessionId = (try? container.decode(String?.self, forKey: .clientSessionId)) ?? nil
+            self.paymentMethod = (try? container.decode(ClientSession.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
+            self.order = (try? container.decode(ClientSession.Order?.self, forKey: .order)) ?? nil
+            self.customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
+        }
+        
+        internal func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(paymentMethod, forKey: .paymentMethod)
+            try container.encode(order, forKey: .order)
+            try container.encode(customer, forKey: .customer)
+        }
     }
 }
 
@@ -279,130 +296,6 @@ internal extension Encodable {
             throw NSError()
         }
         return dictionary
-    }
-}
-
-extension ClientSessionAPIResponse.Action {
-    
-    private static func requestPrimerConfigurationWithActions(_ actions: [ClientSessionAPIResponse.Action]) -> Promise<Void> {
-        return Promise { seal in
-            firstly {
-                ClientSessionAPIResponse.Action.raiseClientSessionUpdateWillStartEventForActions()
-            }
-            .then { () -> Promise<PrimerAPIConfiguration> in
-                let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
-                let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
-                return clientSessionService.requestPrimerConfigurationWithActions(actionsRequest: clientSessionActionsRequest)
-            }
-            .then { apiConfiguration -> Promise<PrimerAPIConfiguration> in
-                ClientSessionAPIResponse.Action.setPrimerConfiguration(apiConfiguration)
-            }
-            .then { apiConfiguration -> Promise<Void> in
-                ClientSessionAPIResponse.Action.raiseClientSessionUpdateDidFinishEvent(apiConfiguration: apiConfiguration)
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-    
-    private static func raiseClientSessionUpdateDidFinishEvent(apiConfiguration: PrimerAPIConfiguration) -> Promise<Void> {
-        return Promise { seal in
-            PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: apiConfiguration))
-            seal.fulfill()
-        }
-    }
-    
-    private static func raiseClientSessionUpdateWillStartEventForActions() -> Promise<Void> {
-        return Promise { seal in
-            PrimerDelegateProxy.primerClientSessionWillUpdate()
-            seal.fulfill()
-        }
-    }
-    
-    private static func setPrimerConfiguration(_ apiConfiguration: PrimerAPIConfiguration) -> Promise<PrimerAPIConfiguration> {
-        return Promise { seal in
-            AppState.current.apiConfiguration = apiConfiguration
-            seal.fulfill(apiConfiguration)
-        }
-    }
-}
-
-extension ClientSessionAPIResponse.Action {
-    
-    static func unselectPaymentMethodIfNeeded() -> Promise<Void> {
-        return Promise { seal in
-            
-            guard Primer.shared.intent == .checkout else {
-                seal.fulfill()
-                return
-            }
-            
-            firstly {
-                requestPrimerConfigurationWithActions([ClientSessionAPIResponse.Action.unselectPaymentMethodAction()])
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { error in
-                // Do not raise error, we want to finalize the flow.
-                seal.fulfill()
-            }
-        }
-    }
-    
-    static func selectPaymentMethodWithParametersIfNeeded(_ parameters: [String: Any]) -> Promise<Void> {
-        return Promise { seal in
-            
-            guard Primer.shared.intent == .checkout else {
-                seal.fulfill()
-                return
-            }
-            
-            firstly {
-                requestPrimerConfigurationWithActions([ClientSessionAPIResponse.Action.selectPaymentMethodActionWithParameters(parameters)])
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { error in
-                seal.reject(error)
-            }
-        }
-    }
-    
-    static func setPostalCodeWithParameters(_ parameters: [String: Any]) -> Promise<Void> {
-        let actions: [ClientSessionAPIResponse.Action] = [ClientSessionAPIResponse.Action(type: .setBillingAddress, params: parameters)]
-        return requestPrimerConfigurationWithActions(actions)
-    }
-    
-    static func dispatchMultipleActions(_ actions: [ClientSessionAPIResponse.Action]) -> Promise<Void> {
-        return requestPrimerConfigurationWithActions(actions)
-    }
-}
-
-extension ClientSessionAPIResponse.Action {
-    
-    static func makeBillingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
-        return ["billingAddress": parameters]
-    }
-}
-
-extension ClientSessionAPIResponse.Action {
-        
-    static func selectPaymentMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSessionAPIResponse.Action {
-        ClientSessionAPIResponse.Action(type: .selectPaymentMethod, params: parameters)
-    }
-
-    static func unselectPaymentMethodAction() -> ClientSessionAPIResponse.Action {
-        ClientSessionAPIResponse.Action(type: .unselectPaymentMethod, params: nil)
-    }
-    
-    static func setBillingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSessionAPIResponse.Action {
-        ClientSessionAPIResponse.Action(type: .setBillingAddress, params: makeBillingAddressDictionaryRequestFromParameters(parameters))
     }
 }
 
