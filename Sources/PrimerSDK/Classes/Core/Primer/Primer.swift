@@ -148,71 +148,40 @@ public class Primer {
     }
     
     // swiftlint:disable cyclomatic_complexity
-    public func showPaymentMethod(_ paymentMethod: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
+    public func showPaymentMethod(_ paymentMethodType: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         self.intent = intent
         checkoutSessionId = UUID().uuidString
         
-        if case .checkout = intent {
-            switch paymentMethod {
-            case "ADYEN_ALIPAY",
-                "ADYEN_BLIK",
-                "ADYEN_DOTPAY",
-                "ADYEN_GIROPAY",
-                "ADYEN_IDEAL",
-                "ADYEN_INTERAC",
-                "ADYEN_MOBILEPAY",
-                "ADYEN_PAYTRAIL",
-                "ADYEN_SOFORT",
-                "ADYEN_PAYSHOP",
-                "ADYEN_TRUSTLY",
-                "ADYEN_TWINT",
-                "ADYEN_VIPPS",
-                "APPLE_PAY",
-                "ATOME",
-                "BUCKAROO_BANCONTACT",
-                "BUCKAROO_EPS",
-                "BUCKAROO_GIROPAY",
-                "BUCKAROO_IDEAL",
-                "BUCKAROO_SOFORT",
-                "COINBASE",
-                "HOOLAH",
-                "KLARNA",
-                "MOLLIE_BANCONTACT",
-                "MOLLIE_IDEAL",
-                "OPENNODE",
-                "PAYMENT_CARD",
-                "PAY_NL_BANCONTACT",
-                "PAY_NL_GIROPAY",
-                "PAY_NL_IDEAL",
-                "PAY_NL_PAYCONIQ",
-                "PAYPAL",
-                "TWOC2P",
-                "RAPYD_GCASH",
-                "RAPYD_GRABPAY",
-                "RAPYD_POLI",
-                "XFERS_PAYNOW":
-                break
-                
-            default:
-                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-                return
-            }
+        guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
+            let err = PrimerError.unableToPresentPaymentMethod(
+                paymentMethodType: paymentMethodType,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
+            completion?(err)
+            return
+        }
+        
+        if case .checkout = intent, paymentMethod.isCheckoutEnabled == false  {
+            let err = PrimerError.unsupportedIntent(
+                intent: intent,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
+            completion?(err)
+            return
             
-        } else {
-            switch paymentMethod {
-            case "APAYA",
-                "KLARNA",
-                "PAYMENT_CARD",
-                "PAYPAL":
-                break
-            default:
-                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-                return
-            }
+        } else if case .vault = intent, paymentMethod.isVaultingEnabled == false {
+            let err = PrimerError.unsupportedIntent(
+                intent: intent,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
+            completion?(err)
+            return
         }
         
         let sdkEvent = Analytics.Event(
@@ -236,7 +205,7 @@ public class Primer {
                 id: self.timingEventId!))
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
-        self.show(paymentMethodType: paymentMethod, withClientToken: clientToken, completion: completion)
+        self.show(paymentMethodType: paymentMethodType, withClientToken: clientToken, completion: completion)
     }
     
     // swiftlint:enable cyclomatic_complexity

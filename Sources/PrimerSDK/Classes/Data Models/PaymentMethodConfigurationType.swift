@@ -44,11 +44,11 @@ public class BaseColoredURLs: Codable {
 //    
 //    
 //    class Data: Codable {
-//        
+//
 //        var button: PrimerPaymentMethod.Data.Button
-//        
+//
 //        class Button: Codable {
-//            
+//
 //            var iconUrl: BaseColoredURLs
 //            var backgroundColor: BaseColors
 //            var cornerRadius: Int?
@@ -58,15 +58,37 @@ public class BaseColoredURLs: Codable {
 //    }
 //}
 
-public enum PrimerPaymentMethodImplementationType: String, Codable, CaseIterable, Equatable, Hashable {
-    
-    case nativeSdk = "NATIVE_SDK"
-    case webRedirect = "WEB_REDIRECT"
 
-    var isEnabled: Bool {
-        return true
+extension PrimerPaymentMethod {
+    
+    public enum ImplementationType: String, Codable, CaseIterable, Equatable, Hashable {
+        
+        case nativeSdk = "NATIVE_SDK"
+        case webRedirect = "WEB_REDIRECT"
+
+        var isEnabled: Bool {
+            return true
+        }
     }
 }
+
+extension PrimerPaymentMethod {
+    
+    class Data: Codable {
+        
+        var button: PrimerPaymentMethod.Data.Button
+        
+        class Button: Codable {
+            
+            var iconUrl: BaseColoredURLs
+            var backgroundColor: BaseColors
+            var cornerRadius: Int?
+            var borderWidth: Int?
+            var borderColor: BaseColors?
+        }
+    }
+}
+
 //
 //public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
 //

@@ -14,10 +14,10 @@ typealias TokenizationCompletion = ((PrimerPaymentMethodTokenData?, Error?) -> V
 typealias PaymentCompletion = ((PrimerCheckoutData?, Error?) -> Void)
 
 internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
-    init(config: PaymentMethodConfig)
+    init(config: PrimerPaymentMethod)
     
     // UI
-    var config: PaymentMethodConfig { get set }
+    var config: PrimerPaymentMethod { get set }
     var uiModule: UserInterfaceModule! { get }
     var position: Int { get set }
     
@@ -50,12 +50,12 @@ internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     func cancel()
     var tableView: UITableView { get set }
     var searchCountryTextField: PrimerSearchTextField { get set }
-    var config: PaymentMethodConfig { get set }
+    var config: PrimerPaymentMethod { get set }
 }
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
 
-    var config: PaymentMethodConfig
+    var config: PrimerPaymentMethod
     
     // Events
     var didStartTokenization: (() -> Void)?
@@ -80,7 +80,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    required init(config: PaymentMethodConfig) {
+    required init(config: PrimerPaymentMethod) {
         self.config = config
         super.init()
         self.uiModule = UserInterfaceModule(paymentMethodTokenizationViewModel: self)

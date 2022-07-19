@@ -95,9 +95,9 @@ let mockPaymentMethodConfig = PrimerAPIConfiguration(
     pciUrl: "url",
     clientSession: nil,
     paymentMethods: [
-        PaymentMethodConfig(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil),
-        PaymentMethodConfig(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil),
-        PaymentMethodConfig(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: ApayaOptions(merchantAccountId: "merchant_account_id"))
+        PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, data: nil),
+        PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, data: nil),
+        PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: ApayaOptions(merchantAccountId: "merchant_account_id"), data: nil)
     ],
     keys: nil,
     checkoutModules: nil
@@ -131,9 +131,9 @@ class MockAppState: AppStateProtocol {
             pciUrl: "url",
             clientSession: nil,
             paymentMethods: [
-                PaymentMethodConfig(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil),
-                PaymentMethodConfig(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil),
-                PaymentMethodConfig(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: ApayaOptions(merchantAccountId: "merchant_account_id"))
+                PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, data: nil),
+                PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, data: nil),
+                PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: ApayaOptions(merchantAccountId: "merchant_account_id"), data: nil)
             ],
             keys: nil,
             checkoutModules: nil

@@ -131,6 +131,7 @@ internal class PrimerDelegateProxy {
     
     // This function will raise the error to the merchants, and the merchants will
     // return the error message they want to present.
+    @discardableResult
     static func raisePrimerDidFailWithError(_ primerError: PrimerError, data: PrimerCheckoutData?) -> Promise<String?> {
         return Promise { seal in
             DispatchQueue.main.async {

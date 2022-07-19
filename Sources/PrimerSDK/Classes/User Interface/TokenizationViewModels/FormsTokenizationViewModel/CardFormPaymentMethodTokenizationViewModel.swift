@@ -279,7 +279,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     // MARK: - Init
     
-    required init(config: PaymentMethodConfig) {
+    required init(config: PrimerPaymentMethod) {
         super.init(config: config)
                         
         self.cardComponentsManager = CardComponentsManager(
