@@ -93,14 +93,14 @@ class PaymentMethodConfigTests: XCTestCase {
         var payPalStr: String
         var unknownPaymentConfigStr: String
         
-        applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PrimerPaymentMethodType.applePay.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
-        apayaStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PrimerPaymentMethodType.apaya.rawValue, processorConfigId: String.randomString(length: 8), options: "{\"merchantAccountId\": \"apaya_account_id\"}")
-        goCardlessStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PrimerPaymentMethodType.goCardlessMandate.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
-        googlePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PrimerPaymentMethodType.googlePay.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
-        klarnaStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PrimerPaymentMethodType.klarna.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
-        paymentCardStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PrimerPaymentMethodType.paymentCard.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
-        payNLIdealStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PrimerPaymentMethodType.payNLIdeal.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
-        payPalStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: PrimerPaymentMethodType.payPal.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
+        applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "APPLE_PAY", processorConfigId: String.randomString(length: 8), options: nil)
+        apayaStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "APAYA", processorConfigId: String.randomString(length: 8), options: "{\"merchantAccountId\": \"apaya_account_id\"}")
+        goCardlessStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "GOCARDLESS", processorConfigId: String.randomString(length: 8), options: nil)
+        googlePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "GOOGLE_PAY", processorConfigId: String.randomString(length: 8), options: nil)
+        klarnaStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "KLARNA", processorConfigId: String.randomString(length: 8), options: nil)
+        paymentCardStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "PAYMENT_CARD", processorConfigId: String.randomString(length: 8), options: nil)
+        payNLIdealStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "PAY_NL_IDEAL", processorConfigId: String.randomString(length: 8), options: nil)
+        payPalStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "PAYPAL", processorConfigId: String.randomString(length: 8), options: nil)
         unknownPaymentConfigStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "test", processorConfigId: String.randomString(length: 8), options: nil)
         
         
@@ -133,40 +133,40 @@ class PaymentMethodConfigTests: XCTestCase {
             
             for paymentMethodStr in paymentMethods {
                 if String(paymentMethodStr) == applePayStr {
-                    if config.paymentMethods?.contains(where: { $0.type == .applePay }) != true {
+                    if config.paymentMethods?.contains(where: { $0.type == "APPLE_PAY" }) != true {
                         XCTFail("Failed to parse Apple Pay")
                     }
                 } else if String(paymentMethodStr) == apayaStr {
-                    if config.paymentMethods?.contains(where: { $0.type == .apaya }) != true {
+                    if config.paymentMethods?.contains(where: { $0.type == "APAYA" }) != true {
                         XCTFail("Failed to parse Apaya")
                     } else {
-                        let apayaConfig = config.paymentMethods!.filter({ $0.type == .apaya }).first!
+                        let apayaConfig = config.paymentMethods!.filter({ $0.type == "APAYA" }).first!
                         if (apayaConfig.options as? ApayaOptions)?.merchantAccountId != "apaya_account_id" {
                             XCTFail("Failed to parse merchant account id for Apaya")
                         }
                     }
                 } else if String(paymentMethodStr) == goCardlessStr {
-                    if config.paymentMethods?.contains(where: { $0.type == .goCardlessMandate }) != true {
+                    if config.paymentMethods?.contains(where: { $0.type == "GOCARDLESS" }) != true {
                         XCTFail("Failed to parse Go Cardless")
                     }
                 } else if String(paymentMethodStr) == googlePayStr {
-                    if config.paymentMethods?.contains(where: { $0.type == .googlePay }) != true {
+                    if config.paymentMethods?.contains(where: { $0.type == "GOOGLE_PAY" }) != true {
                         XCTFail("Failed to parse Google Pay")
                     }
                 } else if String(paymentMethodStr) == klarnaStr {
-                    if config.paymentMethods?.contains(where: { $0.type == .klarna }) != true {
+                    if config.paymentMethods?.contains(where: { $0.type == "KLARNA" }) != true {
                         XCTFail("Failed to parse Klarna")
                     }
                 } else if String(paymentMethodStr) == paymentCardStr {
-                    if config.paymentMethods?.contains(where: { $0.type == .paymentCard }) != true {
+                    if config.paymentMethods?.contains(where: { $0.type == "PAYMENT_CARD" }) != true {
                         XCTFail("Failed to parse payment card")
                     }
                 } else if String(paymentMethodStr) == payNLIdealStr {
-                    if config.paymentMethods?.contains(where: { $0.type == .payNLIdeal }) != true {
+                    if config.paymentMethods?.contains(where: { $0.type == "PAY_NL_IDEAL" }) != true {
                         XCTFail("Failed to parse Pay NL Ideal")
                     }
                 } else if String(paymentMethodStr) == payPalStr {
-                    if config.paymentMethods?.contains(where: { $0.type == .payPal }) != true {
+                    if config.paymentMethods?.contains(where: { $0.type == "PAYPAL" }) != true {
                         XCTFail("Failed to parse PayPal")
                     }
                 }
@@ -176,7 +176,7 @@ class PaymentMethodConfigTests: XCTestCase {
             XCTFail("\(error)")
         }
         
-        applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: 1, type: PrimerPaymentMethodType.applePay.rawValue, processorConfigId: String.randomString(length: 8), options: nil)
+        applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: 1, type: "APPLE_PAY", processorConfigId: String.randomString(length: 8), options: nil)
         
         paymentMethodsArr = [
             applePayStr,
@@ -200,10 +200,10 @@ class PaymentMethodConfigTests: XCTestCase {
             
             for paymentMethodStr in paymentMethods {
                 if String(paymentMethodStr) == applePayStr {
-                    if config.paymentMethods?.contains(where: { $0.type == .applePay }) != true {
+                    if config.paymentMethods?.contains(where: { $0.type == "APPLE_PAY" }) != true {
                         XCTFail("Failed to parse Apple Pay")
                     } else {
-                        let applePayConfig = config.paymentMethods!.filter({ $0.type == .applePay }).first!
+                        let applePayConfig = config.paymentMethods!.filter({ $0.type == "APPLE_PAY" }).first!
                         if applePayConfig.id != nil {
                             XCTFail("Shouldn't be able to parse an Int on id")
                         }

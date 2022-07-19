@@ -357,7 +357,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -385,7 +385,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type.rawValue)
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
                 return self.tokenize()
             }
             .done { paymentMethodTokenData in
@@ -401,7 +401,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return Promise { seal in
             DispatchQueue.main.async {
                 switch self.config.type {
-                case .paymentCard:
+                case "PAYMENT_CARD":
                     let pcfvc = PrimerCardFormViewController(viewModel: self)
                     Primer.shared.primerRootVC?.show(viewController: pcfvc)
                     seal.fulfill()
@@ -608,7 +608,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,

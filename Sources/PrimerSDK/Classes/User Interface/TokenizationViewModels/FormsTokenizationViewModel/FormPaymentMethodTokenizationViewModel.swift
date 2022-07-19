@@ -391,7 +391,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -420,7 +420,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type.rawValue)
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
                 return self.tokenize()
             }
             .done { paymentMethodTokenData in
@@ -504,7 +504,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -516,7 +516,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
 
         switch config.type {
-        case .adyenBlik:
+        case "ADYEN_BLIK":
             self.uiModule.submitButton?.startAnimating()
             self.userInputCompletion?()
             
@@ -527,7 +527,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     private func tokenize() -> Promise<PaymentMethodToken> {
         switch config.type {
-        case .adyenBlik:
+        case "ADYEN_BLIK":
             return Promise { seal in
                 guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)

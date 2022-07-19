@@ -40,7 +40,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
                 
                 
-        guard configuration.getProductId(for: .apaya) != nil else {
+        guard configuration.getProductId(for: "APAYA") != nil else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
@@ -60,7 +60,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -115,7 +115,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken,
-              let merchantAccountId = AppState.current.apiConfiguration?.getProductId(for: .apaya)
+              let merchantAccountId = AppState.current.apiConfiguration?.getProductId(for: "APAYA")
         else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)

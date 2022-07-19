@@ -59,7 +59,7 @@ public struct Apaya {
                 ErrorHandler.handle(error: err)
                 throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             } else if status == "SETUP_ABANDONED" {
-                let err = PrimerError.cancelled(paymentMethodType: .apaya, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.cancelled(paymentMethodType: "APAYA", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -82,7 +82,7 @@ public struct Apaya {
                 throw err
             }
             
-            guard let merchantAccountId = AppState.current.apiConfiguration?.getProductId(for: .apaya) else {
+            guard let merchantAccountId = AppState.current.apiConfiguration?.getProductId(for: "APAYA") else {
                 let err = PrimerError.invalidValue(key: "apaya-merchantAccountId", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 throw err

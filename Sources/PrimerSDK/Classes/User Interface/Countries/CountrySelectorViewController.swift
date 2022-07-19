@@ -34,7 +34,7 @@ internal class CountrySelectorViewController: PrimerFormViewController {
                 action: .view,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.viewModel.config.type.rawValue,
+                    paymentMethodType: self.viewModel.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .view,

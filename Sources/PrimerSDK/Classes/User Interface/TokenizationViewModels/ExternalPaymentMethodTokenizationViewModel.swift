@@ -55,7 +55,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -78,7 +78,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type.rawValue)
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
                 return self.tokenize()
             }
             .done { paymentMethodTokenData in
@@ -136,7 +136,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.willDismissPaymentMethodUI?()
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
-                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.config.type.rawValue)
+                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.config.type)
                         self.didDismissPaymentMethodUI?()
                         seal.fulfill(())
                     }

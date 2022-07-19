@@ -20,9 +20,9 @@ public class Primer {
     internal let sdkSessionId = UUID().uuidString
     internal var checkoutSessionId: String?
     private var timingEventId: String?
-
+    
     // MARK: - INITIALIZATION
-
+    
     public static var shared: Primer {
         return _Primer
     }
@@ -30,41 +30,41 @@ public class Primer {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-
+    
     fileprivate init() {
-        #if canImport(Primer3DS)
+#if canImport(Primer3DS)
         print("Can import Primer3DS")
-        #else
+#else
         print("Failed to import Primer3DS")
-        #endif
+#endif
         
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
         
-        #if DEBUG
+#if DEBUG
         do {
             try Analytics.Service.deleteEvents()
         } catch {
             fatalError(error.localizedDescription)
         }
-        #endif
+#endif
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        #if canImport(Primer3DS)
+#if canImport(Primer3DS)
         return Primer3DS.application(app, open: url, options: options)
-        #endif
+#endif
         
         return false
     }
-
+    
     public func application(_ application: UIApplication,
-                     continue userActivity: NSUserActivity,
-                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        #if canImport(Primer3DS)
+                            continue userActivity: NSUserActivity,
+                            restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+#if canImport(Primer3DS)
         return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
-        #endif
+#endif
         
         return false
     }
@@ -73,24 +73,24 @@ public class Primer {
     private func onAppStateChange() {
         Analytics.Service.sync()
     }
-
+    
     // MARK: - CONFIGURATION
-
+    
     /**
      Configure SDK's settings
      */
-
+    
     public func configure(settings: PrimerSettings? = nil, delegate: PrimerDelegate? = nil) {
         DependencyContainer.register((settings ?? PrimerSettings()) as PrimerSettingsProtocol)
         self.delegate = delegate
     }
     
     // MARK: - SHOW
-
+    
     /**
      Show Primer Checkout
      */
-
+    
     public func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
         intent = .checkout
         checkoutSessionId = UUID().uuidString
@@ -148,52 +148,51 @@ public class Primer {
     }
     
     // swiftlint:disable cyclomatic_complexity
-    public func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
+    public func showPaymentMethod(_ paymentMethod: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         self.intent = intent
         checkoutSessionId = UUID().uuidString
-                
+        
         if case .checkout = intent {
             switch paymentMethod {
-            case .adyenAlipay,
-                    .adyenDotPay,
-                    .adyenGiropay,
-                    .adyenIDeal,
-                    .adyenInterac,
-                    .adyenMobilePay,
-                    .adyenPayTrail,
-                    .adyenSofort,
-                    .adyenTrustly,
-                    .adyenTwint,
-                    .adyenVipps,
-                    .adyenPayshop,
-                    .applePay,
-                    .atome,
-                    .adyenBlik,
-                    .buckarooBancontact,
-                    .buckarooEps,
-                    .buckarooGiropay,
-                    .buckarooIdeal,
-                    .buckarooSofort,
-                    .coinbase,
-                    .hoolah,
-                    .klarna,
-                    .mollieBankcontact,
-                    .mollieIdeal,
-                    .opennode,
-                    .paymentCard,
-                    .payNLBancontact,
-                    .payNLGiropay,
-                    .payNLPayconiq,
-                    .payPal,
-                    .twoCtwoP,
-                    .rapydGCash,
-                    .rapydGrabPay,
-                    .rapydPoli,
-                    .rapydFast,
-                    .rapydPromptPay,
-                    .xfers:
+            case "ADYEN_ALIPAY",
+                "ADYEN_BLIK",
+                "ADYEN_DOTPAY",
+                "ADYEN_GIROPAY",
+                "ADYEN_IDEAL",
+                "ADYEN_INTERAC",
+                "ADYEN_MOBILEPAY",
+                "ADYEN_PAYTRAIL",
+                "ADYEN_SOFORT",
+                "ADYEN_PAYSHOP",
+                "ADYEN_TRUSTLY",
+                "ADYEN_TWINT",
+                "ADYEN_VIPPS",
+                "APPLE_PAY",
+                "ATOME",
+                "BUCKAROO_BANCONTACT",
+                "BUCKAROO_EPS",
+                "BUCKAROO_GIROPAY",
+                "BUCKAROO_IDEAL",
+                "BUCKAROO_SOFORT",
+                "COINBASE",
+                "HOOLAH",
+                "KLARNA",
+                "MOLLIE_BANCONTACT",
+                "MOLLIE_IDEAL",
+                "OPENNODE",
+                "PAYMENT_CARD",
+                "PAY_NL_BANCONTACT",
+                "PAY_NL_GIROPAY",
+                "PAY_NL_IDEAL",
+                "PAY_NL_PAYCONIQ",
+                "PAYPAL",
+                "TWOC2P",
+                "RAPYD_GCASH",
+                "RAPYD_GRABPAY",
+                "RAPYD_POLI",
+                "XFERS_PAYNOW":
                 break
-
+                
             default:
                 let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -203,10 +202,10 @@ public class Primer {
             
         } else {
             switch paymentMethod {
-            case .apaya,
-                    .klarna,
-                    .paymentCard,
-                    .payPal:
+            case "APAYA",
+                "KLARNA",
+                "PAYMENT_CARD",
+                "PAYPAL":
                 break
             default:
                 let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -241,7 +240,7 @@ public class Primer {
     }
     
     // swiftlint:enable cyclomatic_complexity
-
+    
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
         let sdkEvent = Analytics.Event(
@@ -278,14 +277,14 @@ public class Primer {
         }
     }
     
-    private func show(paymentMethodType: PrimerPaymentMethodType?, withClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
+    private func show(paymentMethodType: String?, withClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         ClientTokenService.storeClientToken(clientToken) { [weak self] error in
             self?.show(paymentMethodType: paymentMethodType)
             completion?(error)
         }
     }
     
-    private func show(paymentMethodType: PrimerPaymentMethodType?) {
+    private func show(paymentMethodType: String?) {
         let event = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(

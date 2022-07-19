@@ -108,7 +108,7 @@ extension PaymentMethodTokenizationViewModel {
             
             if let primerErr = err as? PrimerError,
                case .cancelled = primerErr,
-               self.config.type == .applePay,
+               self.config.type == "APPLE_PAY",
                PrimerHeadlessUniversalCheckout.current.delegate == nil
             {
                 firstly {
@@ -348,7 +348,7 @@ extension PaymentMethodTokenizationViewModel {
             if Primer.shared.intent == .vault {
                 seal.fulfill()
             } else {
-                let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)
+                let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
                 let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
                 
                 PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in

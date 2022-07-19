@@ -12,14 +12,13 @@ import UIKit
 extension PrimerTextFieldView {
     
     internal func cardFormFieldDidBeginEditingEventWithObjectId(_ objectId: Analytics.Event.Property.ObjectId) -> Analytics.Event {
-        
         Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
                 action: .focus,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
+                    paymentMethodType: "PAYMENT_CARD",
                     url: nil),
                 extra: nil,
                 objectType: .input,
@@ -36,7 +35,7 @@ extension PrimerTextFieldView {
                 action: .blur,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
+                    paymentMethodType: "PAYMENT_CARD",
                     url: nil),
                 extra: nil,
                 objectType: .input,
