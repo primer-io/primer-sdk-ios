@@ -12,16 +12,16 @@ import Foundation
 internal class URLSessionStack: NetworkService {
     private let session: URLSession
     private let parser: Parser
-
+    
     // MARK: - Object lifecycle
-
+    
     init(session: URLSession = .shared, parser: Parser = JSONParser()) {
         self.session = session
         self.parser = parser
     }
-
+    
     // MARK: - Network Stack logic
-
+    
     // swiftlint:disable function_body_length
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) {
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
@@ -52,38 +52,38 @@ internal class URLSessionStack: NetworkService {
             completion(.failure(err))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
-
+        
         if let headers = endpoint.headers {
             request.allHTTPHeaderFields = headers
         }
-
-        #if DEBUG
+        
+#if DEBUG
         var msg = "\nHeaders: \(request.allHTTPHeaderFields ?? [:])"
-        #endif
-
+#endif
+        
         if let data = endpoint.body {
             request.httpBody = data
             let jsonStr = data.prettyPrintedJSONString
-            #if DEBUG
+#if DEBUG
             msg += "\nBody:\n\(jsonStr ?? "Empty body")"
-            #endif
+#endif
         }
-
-        #if DEBUG
+        
+#if DEBUG
         if let queryParams = endpoint.queryParameters {
             msg += "\nQuery parameters: \(queryParams)"
         }
-
+        
         if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
             primerLogAnalytics(title: "NETWORK REQUEST [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
         } else {
             log(logLevel: .debug, title: "NETWORK REQUEST [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
         }
-        #endif
-
+#endif
+        
         let dataTask = session.dataTask(with: request) { data, response, error in
             let httpResponse = response as? HTTPURLResponse
             
@@ -106,14 +106,14 @@ internal class URLSessionStack: NetworkService {
                 resEvent!.properties = resEventProperties
             }
             
-            #if DEBUG
+#if DEBUG
             msg = ""
-
+            
             if let httpResponse = response as? HTTPURLResponse {
                 msg += "\nStatus: \(httpResponse.statusCode)\nHeaders: \(httpResponse.allHeaderFields as! [String: String])"
             }
-            #endif
-
+#endif
+            
             if let error = error {
                 if resEvent != nil {
                     resEventProperties!.errorBody = "\(error)"
@@ -121,54 +121,98 @@ internal class URLSessionStack: NetworkService {
                     Analytics.Service.record(event: resEvent!)
                 }
                 
-                #if DEBUG
+#if DEBUG
                 msg += "\nError: \(error)"
-
+                
                 if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
                     primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                 } else {
                     log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                 }
-                #endif
-
+#endif
+                
                 let err = InternalError.underlyingErrors(errors: [error], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: error)
                 DispatchQueue.main.async { completion(.failure(err)) }
                 return
             }
-
-            guard let data = data else {
+            
+            guard var data = data else {
                 if resEvent != nil {
                     resEventProperties?.errorBody = "No data received"
                     resEvent!.properties = resEventProperties
                     Analytics.Service.record(event: resEvent!)
                 }
                 
-                #if DEBUG
+#if DEBUG
                 msg += "\nNo data received."
-
+                
                 if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
                     primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                 } else {
                     log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                 }
-                #endif
-
+#endif
+                
                 let err = InternalError.noData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 DispatchQueue.main.async { completion(.failure(err)) }
                 return
             }
-
+            
             do {
                 if resEvent != nil {
                     resEvent?.properties = resEventProperties
                     Analytics.Service.record(event: resEvent!)
                 }
                 
-                #if DEBUG
+#if DEBUG
                 
                 if endpoint.shouldParseResponseBody {
+                    if let primerEndpoint = endpoint as? PrimerAPI, case .fetchConfiguration = primerEndpoint {
+                        var json = (try! JSONSerialization.jsonObject(with: data, options: .allowFragments)) as! [String: Any]
+                        var paymentMethods: [[String: Any]] = json["paymentMethods"] as! [[String: Any]]
+                        var mockedPaymentMethods: [[String: Any]] = []
+                        
+                        for var pm in paymentMethods {
+                            if (pm["type"] as! String).starts(with: "BUCKAROO") ||
+                                (pm["type"] as! String).starts(with: "ADYEN") {
+                                pm["implementationType"] = "WEB_REDIRECT"
+                            } else {
+                                pm["implementationType"] = "NATIVE_SDK"
+                            }
+                            
+                            pm["data"] = [
+                                "button": [
+                                    // Mobile only
+                                    "iconUrl": [
+                                        "colored": "https://cdn.searchenginejournal.com/wp-content/uploads/2016/03/googletestsimagesinsnippets.jpg",
+                                        "dark": "https://cdn.searchenginejournal.com/wp-content/uploads/2016/03/googletestsimagesinsnippets.jpg",
+                                        "light": "https://cdn.searchenginejournal.com/wp-content/uploads/2016/03/googletestsimagesinsnippets.jpg",
+                                    ],
+                                    "backgroundColor": [
+                                        "colored": "#CC0066",
+                                        "dark": "#CC0066",
+                                        "light": "#CC0066",
+                                    ],
+                                    // Maybe for the future
+                                    "cornerRadius": 14,
+                                    "borderWidth": 1,
+                                    "borderColor": [
+                                        "colored": "#CC0066",
+                                        "dark": "#CC0066",
+                                        "light": "#CC0066",
+                                    ],
+                                ]
+                            ]
+                            
+                            mockedPaymentMethods.append(pm)
+                        }
+                        
+                        json["paymentMethods"] = mockedPaymentMethods
+                        print(json)
+                        data = try! JSONSerialization.data(withJSONObject: json as Any, options: .prettyPrinted)
+                    }
                     
                     let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
                     let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
@@ -186,8 +230,8 @@ internal class URLSessionStack: NetworkService {
                     }
                 }
                 
-                #endif
-
+#endif
+                
                 if endpoint.shouldParseResponseBody == false, httpResponse?.statusCode == 200 {
                     let dummyRes: T = DummySuccess(success: true) as! T
                     DispatchQueue.main.async { completion(.success(dummyRes)) }
@@ -199,7 +243,7 @@ internal class URLSessionStack: NetworkService {
                 if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments), let jsonDic = json as? [String: Any?],
                    let primerErrorJSON = jsonDic["error"] as? [String: Any] {
                     let statusCode = (response as! HTTPURLResponse).statusCode
-
+                    
                     let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: try! JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed))
                     
                     if resEvent != nil {
@@ -207,12 +251,12 @@ internal class URLSessionStack: NetworkService {
                         resEvent!.properties = resEventProperties
                         Analytics.Service.record(event: resEvent!)
                     }
-
+                    
                     if statusCode == 401 {
                         let err = InternalError.unauthorized(url: urlStr, method: endpoint.method, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
                         
-                        #if DEBUG
+#if DEBUG
                         msg += "\nError: Status code \(statusCode)\n\(err)"
                         
                         if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
@@ -220,15 +264,15 @@ internal class URLSessionStack: NetworkService {
                         } else {
                             log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                         }
-                        #endif
-
+#endif
+                        
                         DispatchQueue.main.async { completion(.failure(err)) }
-
+                        
                     } else if (400...499).contains(statusCode) {
                         let err = InternalError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
-
-                        #if DEBUG
+                        
+#if DEBUG
                         msg += "\nError: Status code \(statusCode)\n\(err)"
                         
                         if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
@@ -236,15 +280,15 @@ internal class URLSessionStack: NetworkService {
                         } else {
                             log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                         }
-                        #endif
-
+#endif
+                        
                         DispatchQueue.main.async { completion(.failure(err)) }
-
+                        
                     } else if (500...599).contains(statusCode) {
                         let err = InternalError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
-
-                        #if DEBUG
+                        
+#if DEBUG
                         msg += "\nError: Status code \(statusCode)\n\(err)"
                         
                         if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
@@ -252,10 +296,10 @@ internal class URLSessionStack: NetworkService {
                         } else {
                             log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                         }
-                        #endif
-
+#endif
+                        
                         DispatchQueue.main.async { completion(.failure(err)) }
-
+                        
                     } else {
                         let err = InternalError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
@@ -265,8 +309,8 @@ internal class URLSessionStack: NetworkService {
                             resEvent!.properties = resEventProperties
                             Analytics.Service.record(event: resEvent!)
                         }
-
-                        #if DEBUG
+                        
+#if DEBUG
                         msg += "\nError: Status code \(statusCode)\n\(err.localizedDescription)"
                         
                         if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
@@ -274,11 +318,11 @@ internal class URLSessionStack: NetworkService {
                         } else {
                             log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                         }
-                        #endif
-
+#endif
+                        
                         DispatchQueue.main.async { completion(.failure(err)) }
                     }
-
+                    
                 } else {
                     let err = InternalError.failedToDecode(message: "Failed to decode response from URL: \(urlStr)", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
@@ -289,7 +333,7 @@ internal class URLSessionStack: NetworkService {
                         Analytics.Service.record(event: resEvent!)
                     }
                     
-                    #if DEBUG
+#if DEBUG
                     msg += "\nError: Failed to parse."
                     
                     if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
@@ -297,11 +341,11 @@ internal class URLSessionStack: NetworkService {
                     } else {
                         log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                     }
-                    #endif
-
+#endif
+                    
                     DispatchQueue.main.async { completion(.failure(InternalError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))) }
                 }
-
+                
             }
         }
         dataTask.resume()
@@ -317,3 +361,181 @@ internal extension URLSessionStack {
 }
 
 #endif
+
+
+let mockedConfigResponse = """
+{
+  "pciUrl" : "https://sdk.api.sandbox.primer.io",
+  "paymentMethods2" : [
+{
+            
+    ],
+  "paymentMethods" : [
+    {
+      "id" : "527ee4ff-2c66-4234-829f-d20480f3aa09",
+      "type" : "GOOGLE_PAY",
+      "options" : {
+        "merchantId" : "06134396481468734566",
+        "merchantName" : "Primer",
+        "type" : "GOOGLE_PAY"
+      }
+    },
+    {
+      "id" : "a1ed81d7-5ee8-4039-a1a2-317cda6606d2",
+      "options" : {
+        "merchantId" : "PrimerJbTestECOM",
+        "merchantAccountId" : "4ad980f3-ccc7-5e8e-9a9c-81cd6f5214d4"
+      },
+      "type" : "ADYEN_IDEAL",
+      "processorConfigId" : "9319ad4e-cd51-4517-9d46-bc7be244752a"
+    },
+    {
+      "id" : "c657ae04-c230-4be4-9615-9b822743e5e4",
+      "type" : "APPLE_PAY",
+      "options" : {
+        "certificates" : [
+          {
+            "certificateId" : "e09fc38c-f06e-4477-818c-e9e7dc81c31d",
+            "status" : "ACTIVE",
+            "validFromTimestamp" : "2021-12-06T10:14:14",
+            "expirationTimestamp" : "2024-01-05T10:14:13",
+            "merchantId" : "merchant.dx.team",
+            "createdAt" : "2021-12-06T10:24:34.659452"
+          }
+        ]
+      }
+    },
+    {
+      "id" : "ba022c70-8f18-447d-a214-a55f71bc35be",
+      "options" : {
+        "merchantId" : "dx@primer.io",
+        "clientId" : "dx@primer.io",
+        "merchantAccountId" : "6a126321-5306-53f5-8574-8506a095c90d"
+      },
+      "type" : "GOCARDLESS",
+      "processorConfigId" : "8df71a6c-4946-47e3-8057-7bcafb5221a4"
+    },
+    {
+      "id" : "36e2eb9b-2d67-4f66-a358-b98f739667c6",
+      "options" : {
+        "merchantId" : "SL-1893-2911",
+        "merchantAccountId" : "9e72a6de-70b8-580d-b63d-1ee6f32f7761"
+      },
+      "type" : "PAY_NL_PAYCONIQ",
+      "processorConfigId" : "c16003a6-40ac-49b4-a0dd-e68e837f9bf9"
+    },
+    {
+      "type" : "PAYMENT_CARD",
+      "options" : {
+        "threeDSecureEnabled" : true,
+        "threeDSecureProvider" : "3DSECUREIO"
+      }
+    }
+  ],
+  "clientSession" : {
+    "order" : {
+      "countryCode" : "NL",
+      "orderId" : "ios_order_id_gvbVjRyR",
+      "currencyCode" : "EUR",
+      "totalOrderAmount" : 10100,
+      "lineItems" : [
+        {
+          "amount" : 10100,
+          "quantity" : 1,
+          "itemId" : "shoes-382190",
+          "description" : "Fancy Shoes"
+        }
+      ]
+    },
+    "clientSessionId" : "fbd53677-abcd-4178-b4c1-ba17bfb277ad",
+    "customer" : {
+      "firstName" : "John",
+      "shippingAddress" : {
+        "firstName" : "John",
+        "lastName" : "Smith",
+        "addressLine1" : "9446 Richmond Road",
+        "countryCode" : "NL",
+        "city" : "London",
+        "postalCode" : "EC53 8BT"
+      },
+      "emailAddress" : "john@primer.io",
+      "customerId" : "ios-customer-vOPsjZLZ",
+      "mobileNumber" : "+4478888888888",
+      "billingAddress" : {
+        "firstName" : "John",
+        "lastName" : "Smith",
+        "addressLine1" : "65 York Road",
+        "countryCode" : "NL",
+        "city" : "London",
+        "postalCode" : "NW06 4OM"
+      },
+      "lastName" : "Smith"
+    },
+    "paymentMethod" : {
+      "options" : [
+        {
+          "type" : "PAYMENT_CARD",
+          "networks" : [
+            {
+              "type" : "VISA",
+              "surcharge" : 109
+            },
+            {
+              "type" : "MASTERCARD",
+              "surcharge" : 129
+            }
+          ]
+        },
+        {
+          "type" : "PAYPAL",
+          "surcharge" : 49
+        },
+        {
+          "type" : "ADYEN_IDEAL",
+          "surcharge" : 69
+        },
+        {
+          "type" : "PAY_NL_IDEAL",
+          "surcharge" : 39
+        },
+        {
+          "type" : "ADYEN_TWINT",
+          "surcharge" : 59
+        },
+        {
+          "type" : "BUCKAROO_BANCONTACT",
+          "surcharge" : 89
+        },
+        {
+          "type" : "ADYEN_GIROPAY",
+          "surcharge" : 79
+        },
+        {
+          "type" : "APPLE_PAY",
+          "surcharge" : 19
+        }
+      ],
+      "vaultOnSuccess" : false
+    }
+  },
+  "primerAccountId" : "84100a01-523f-4347-ac44-e8a3e7083d9a",
+  "keys" : {
+    "threeDSecureIoCertificates" : [
+      {
+        "encryptionKey" : "MIIBxTCCAWugAwIBAgIIOHin61BZd20wCgYIKoZIzj0EAwIwSTELMAkGA1UEBhMCREsxFDASBgNVBAoTCzNkc2VjdXJlLmlvMSQwIgYDVQQDExszZHNlY3VyZS5pbyBzdGFuZGluIGlzc3VpbmcwHhcNMjEwNDI2MTIwNDE5WhcNMjYwNTI2MTIwNDE5WjBFMQswCQYDVQQGEwJESzEUMBIGA1UEChMLM2RzZWN1cmUuaW8xIDAeBgNVBAMTFzNkc2VjdXJlLmlvIHN0YW5kaW4gQUNTMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEczsq/UTsSeRYLFByvgbcrRiJvwZnQmostNJgl6i4/0rr9xGMD+gcqrYcbvFTEJIVHs1i557PGw2ozHQmZr/R1qNBMD8wDgYDVR0PAQH/BAQDAgOoMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUoejawWDkUr1FVwxacK10626mkYswCgYIKoZIzj0EAwIDSAAwRQIgGvK44bXL6QD1cP322avHRjmD4T1a1el3vf2ttssXoecCIQCtlnwv5tXddJJphIgcxjG7DA8Hpp0zwqROeF3DezMvrA==",
+        "cardNetwork" : "VISA",
+        "rootCertificate" : "MIIByjCCAXCgAwIBAgIIWm3lYnRpg/kwCgYIKoZIzj0EAwIwSTELMAkGA1UEBhMCREsxFDASBgNVBAoTCzNkc2VjdXJlLmlvMSQwIgYDVQQDExszZHNlY3VyZS5pbyBzdGFuZGluIHJvb3QgQ0EwHhcNMjEwNDI2MTIwNDE5WhcNMjYwNTI2MTIwNDE5WjBJMQswCQYDVQQGEwJESzEUMBIGA1UEChMLM2RzZWN1cmUuaW8xJDAiBgNVBAMTGzNkc2VjdXJlLmlvIHN0YW5kaW4gcm9vdCBDQTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABDiki3Z74HsR4G5ejqwk31STA0JZyWdBbzfkpLhxlNepJmzW/lKvgpJ5w1abWymNv+kQ1evdoCZ3xPrWDH3Ov+ajQjBAMA4GA1UdDwEB/wQEAwIBhjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBS1xdoF1e7Ej4pQiLB/n1TSw00iITAKBggqhkjOPQQDAgNIADBFAiAxeIZD+gfFVsQnbbOH7l04v8euq0N82gG8umBaFl+AVwIhAIVDiG4nLkL187clHn5Mw2AALHh1xSSfSBGbdUmuCd7b"
+      }
+    ],
+    "netceteraLicenseKey" : "eyJhbGciOiJSUzI1NiJ9.eyJ2ZXJzaW9uIjoyLCJ2YWxpZC11bnRpbCI6IjIwMjItMTItMDkiLCJuYW1lIjoiUHJpbWVyYXBpIiwibW9kdWxlIjoiM0RTIn0.T_EP89dFkXvLhOiW0kfX--_GoDwtxTuSxl7dku6-if0hjQb8zIupOMY56TDnsFO96T3-YB34RRLQJ4daxwAuLYaprKN39lDgLpGPvFAYcSk8PPNAOxaIM_xNFuzHYAiRmEEPONuxWq6kse1AgjTJaBbZN80qmOTlKHFZ1BmVVT3M-cyvhdh-5gvlEsNYFD3ufRF6Y79MpySwqr2p94BcXRk2GMgkKYwA6jnw6B6iYOnFj4SuQqjzFneJHlvmF7zwvm-mDvJ82ZoPWzM0uS5YouovzZIdJMqZrZThiSdQYvFh4nIQBBFxE02FvGWJ7Ae9Oq0YrQoLGZrV1l17TW3AZw"
+  },
+  "env" : "SANDBOX",
+  "checkoutModules" : [
+    {
+      "type" : "TAX_CALCULATION",
+      "requestUrl" : "/sales-tax/calculate"
+    }
+  ],
+  "coreUrl" : "https://api.sandbox.primer.io"
+}
+"""
