@@ -18,7 +18,7 @@ class PaymentMethodConfigServiceTests: XCTestCase {
             pciUrl: "pciUrl",
             clientSession: nil,
             paymentMethods: [
-                PaymentMethodConfig(id: "payment-card-id", implementationType: .nativeSdk, type: "PAYMENT_CARD", name: "Payment Card", processorConfigId: "payment-card-processor_config-id", surcharge: nil, options: nil)
+                PrimerPaymentMethod(id: "payment-card-id", implementationType: .nativeSdk, type: "PAYMENT_CARD", name: "Payment Card", processorConfigId: "payment-card-processor_config-id", surcharge: nil, options: nil, data: nil)
             ],
             keys: nil,
             checkoutModules: nil

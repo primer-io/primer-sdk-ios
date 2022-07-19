@@ -335,7 +335,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    required init(config: PaymentMethodConfig) {
+    required init(config: PrimerPaymentMethod) {
         super.init(config: config)
         
         switch config.type {

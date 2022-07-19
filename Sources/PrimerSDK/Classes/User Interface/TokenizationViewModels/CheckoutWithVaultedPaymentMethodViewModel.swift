@@ -11,7 +11,7 @@ import Foundation
 
 class CheckoutWithVaultedPaymentMethodViewModel {
     
-    var config: PaymentMethodConfig
+    var config: PrimerPaymentMethod
     var selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
     var singleUsePaymentMethodTokenData: PrimerPaymentMethodTokenData?
     var paymentCheckoutData: PrimerCheckoutData?
@@ -29,7 +29,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
     
-    init(configuration: PaymentMethodConfig, selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData) {
+    init(configuration: PrimerPaymentMethod, selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData) {
         self.config = configuration
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
     }
@@ -93,7 +93,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    private func dispatchActions(config: PaymentMethodConfig, selectedPaymentMethod: PaymentMethodToken) -> Promise<Void> {
+    private func dispatchActions(config: PrimerPaymentMethod, selectedPaymentMethod: PaymentMethodToken) -> Promise<Void> {
         return Promise { seal in
             var network: String?
             if config.type == "PAYMENT_CARD" {

@@ -9,15 +9,20 @@
 
 import Foundation
 
-class PaymentMethodConfig: Codable {
+class PrimerPaymentMethod: Codable {
+    
+    static func getPaymentMethod(withType type: String) -> PrimerPaymentMethod? {
+        return AppState.current.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
+    }
     
     let id: String? // Will be nil for cards
-    let implementationType: PrimerPaymentMethodImplementationType
+    let implementationType: PrimerPaymentMethod.ImplementationType
     let type: String
     var name: String?
     let processorConfigId: String?
     var surcharge: Int?
     let options: PaymentMethodOptions?
+    var data: PrimerPaymentMethod.Data?
     
     var hasUnknownSurcharge: Bool = false
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
@@ -80,9 +85,9 @@ class PaymentMethodConfig: Codable {
             return "giropay"
             
         case "ADYEN_IDEAL",
-                "BUCKAROO_IDEAL",
-                "MOLLIE_IDEAL",
-                "PAY_NL_IDEAL":
+            "BUCKAROO_IDEAL",
+            "MOLLIE_IDEAL",
+            "PAY_NL_IDEAL":
             return "ideal"
             
         case "ADYEN_INTERAC":
@@ -98,8 +103,8 @@ class PaymentMethodConfig: Codable {
             return "paytrail"
             
         case "ADYEN_SOFORT",
-                "BUCKAROO_SOFORT",
-                "PRIMER_TEST_SOFORT":
+            "BUCKAROO_SOFORT",
+            "PRIMER_TEST_SOFORT":
             return "sofort"
             
         case "ADYEN_TRUSTLY":
@@ -121,8 +126,8 @@ class PaymentMethodConfig: Codable {
             return "atome"
             
         case "BUCKAROO_BANCONTACT",
-                "MOLLIE_BANCONTACT",
-                "PAY_NL_BANCONTACT":
+            "MOLLIE_BANCONTACT",
+            "PAY_NL_BANCONTACT":
             return "bancontact"
             
         case "BUCKAROO_EPS":
@@ -141,7 +146,7 @@ class PaymentMethodConfig: Codable {
             return "hoolah"
             
         case "KLARNA",
-                "PRIMER_TEST_KLARNA":
+            "PRIMER_TEST_KLARNA":
             return "klarna"
             
         case "OPENNODE":
@@ -154,7 +159,7 @@ class PaymentMethodConfig: Codable {
             return "card"
             
         case "PAYPAL",
-                "PRIMER_TEST_PAYPAL":
+            "PRIMER_TEST_PAYPAL":
             return "paypal"
             
         case "RAPYD_GCASH":
@@ -177,6 +182,44 @@ class PaymentMethodConfig: Codable {
         }
     }()
     
+    lazy var isCheckoutEnabled: Bool = {
+        switch self.type {
+        case "APAYA",
+            "GOCARDLESS",
+            "GOOGLE_PAY":
+            return false
+        default:
+            return true
+        }
+    }()
+    
+    lazy var isVaultingEnabled: Bool = {
+        if self.implementationType == .webRedirect {
+            return false
+        }
+        
+        switch self.type {
+        case "APPLE_PAY",
+            "GOCARDLESS",
+            "GOOGLE_PAY":
+            return false
+        default:
+            return true
+        }
+    }()
+    
+    lazy var isEnabled: Bool = {
+        switch Primer.shared.intent {
+        case .checkout:
+            return self.isCheckoutEnabled
+        case .vault:
+            return self.isVaultingEnabled
+        case .none:
+            precondition(true, "Should never get in here")
+            return false
+        }
+    }()
+    
     private enum CodingKeys : String, CodingKey {
         case id,
              implementationType,
@@ -184,17 +227,19 @@ class PaymentMethodConfig: Codable {
              name,
              processorConfigId,
              surcharge,
-             options
+             options,
+             data
     }
     
     init(
         id: String?,
-        implementationType: PrimerPaymentMethodImplementationType,
+        implementationType: PrimerPaymentMethod.ImplementationType,
         type: String,
         name: String?,
         processorConfigId: String?,
         surcharge: Int?,
-        options: PaymentMethodOptions?
+        options: PaymentMethodOptions?,
+        data: PrimerPaymentMethod.Data?
     ) {
         self.id = id
         self.implementationType = implementationType
@@ -203,17 +248,19 @@ class PaymentMethodConfig: Codable {
         self.processorConfigId = processorConfigId
         self.surcharge = surcharge
         self.options = options
+        self.data = data
     }
     
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         id = (try? container.decode(String?.self, forKey: .id)) ?? nil
-        implementationType = try container.decode(PrimerPaymentMethodImplementationType.self, forKey: .implementationType)
+        implementationType = try container.decode(PrimerPaymentMethod.ImplementationType.self, forKey: .implementationType)
         type = try container.decode(String.self, forKey: .type)
         name = (try? container.decode(String?.self, forKey: .name)) ?? nil
         processorConfigId = (try? container.decode(String?.self, forKey: .processorConfigId)) ?? nil
         surcharge = (try? container.decode(Int?.self, forKey: .surcharge)) ?? nil
+        data = (try? container.decode(PrimerPaymentMethod.Data?.self, forKey: .data)) ?? nil
         
         if let cardOptions = try? container.decode(CardOptions.self, forKey: .options) {
             options = cardOptions
@@ -235,6 +282,7 @@ class PaymentMethodConfig: Codable {
         try container.encode(name, forKey: .name)
         try container.encode(processorConfigId, forKey: .processorConfigId)
         try container.encode(surcharge, forKey: .surcharge)
+        try container.encode(data, forKey: .data)
         
         if let cardOptions = options as? CardOptions {
             try container.encode(cardOptions, forKey: .options)

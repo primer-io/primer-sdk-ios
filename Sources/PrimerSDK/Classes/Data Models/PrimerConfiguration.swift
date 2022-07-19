@@ -18,7 +18,7 @@ struct PrimerAPIConfiguration: Codable {
         return AppState.current.apiConfiguration
     }
     
-    static var paymentMethodConfigs: [PaymentMethodConfig]? {
+    static var paymentMethodConfigs: [PrimerPaymentMethod]? {
         return AppState.current.apiConfiguration?.paymentMethods
     }
     
@@ -52,7 +52,7 @@ struct PrimerAPIConfiguration: Codable {
     let coreUrl: String?
     let pciUrl: String?
     let clientSession: ClientSession.APIResponse?
-    let paymentMethods: [PaymentMethodConfig]?
+    let paymentMethods: [PrimerPaymentMethod]?
     let keys: ThreeDS.Keys?
     let checkoutModules: [CheckoutModule]?
     
@@ -65,7 +65,7 @@ struct PrimerAPIConfiguration: Codable {
         self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
         self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
         self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
-        let throwables = try container.decode([Throwable<PaymentMethodConfig>].self, forKey: .paymentMethods)
+        let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
         self.paymentMethods = throwables.compactMap({ $0.value })
         self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
         let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
@@ -104,7 +104,7 @@ struct PrimerAPIConfiguration: Codable {
         coreUrl: String?,
         pciUrl: String?,
         clientSession: ClientSession.APIResponse?,
-        paymentMethods: [PaymentMethodConfig]?,
+        paymentMethods: [PrimerPaymentMethod]?,
         keys: ThreeDS.Keys?,
         checkoutModules: [PrimerAPIConfiguration.CheckoutModule]?
     ) {
