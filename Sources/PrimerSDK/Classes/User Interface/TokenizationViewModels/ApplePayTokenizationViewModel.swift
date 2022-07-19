@@ -92,7 +92,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -115,7 +115,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type.rawValue)
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
                 return self.tokenize()
             }
             .done { paymentMethodTokenData in
@@ -189,7 +189,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
                 
                 guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
-                    let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: "APPLE_PAY", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -236,7 +236,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     self.isCancelled = true
                     Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
                         DispatchQueue.main.async {
-                            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type.rawValue)
+                            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type)
                             self.didPresentPaymentMethodUI?()
                         }
                     })
@@ -258,7 +258,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
         if self.isCancelled {
             controller.dismiss(animated: true, completion: nil)
-            let err = PrimerError.cancelled(paymentMethodType: .applePay, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.cancelled(paymentMethodType: "APPLE_PAY", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             applePayReceiveDataCompletion?(.failure(err))
             applePayReceiveDataCompletion = nil

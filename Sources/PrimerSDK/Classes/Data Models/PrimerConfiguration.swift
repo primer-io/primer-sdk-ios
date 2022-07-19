@@ -24,20 +24,20 @@ struct PrimerAPIConfiguration: Codable {
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
         var viewModels = PrimerAPIConfiguration.paymentMethodConfigs?
-            .filter({ $0.type.isEnabled })
+            .filter({ $0.implementationType.isEnabled })
             .compactMap({ $0.tokenizationViewModel })
         ?? []
         
         let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
         if !PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
-            if let applePayViewModel = viewModels.filter({ $0.config.type == .applePay }).first,
+            if let applePayViewModel = viewModels.filter({ $0.config.type == "APPLE_PAY" }).first,
                let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
                 viewModels.remove(at: applePayViewModelIndex)
             }
         }
         
         for (index, viewModel) in viewModels.enumerated() {
-            if viewModel.config.type == .applePay {
+            if viewModel.config.type == "APPLE_PAY" {
                 viewModels.swapAt(0, index)
             }
         }
@@ -74,7 +74,7 @@ struct PrimerAPIConfiguration: Codable {
         if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
             for paymentMethodOption in options {
                 if let type = paymentMethodOption["type"] as? String {
-                    if type == PrimerPaymentMethodType.paymentCard.rawValue,
+                    if type == "PAYMENT_CARD",
                         let networks = paymentMethodOption["networks"] as? [[String: Any]],
                        !networks.isEmpty
                     {
@@ -85,7 +85,7 @@ struct PrimerAPIConfiguration: Codable {
                             
                         }
                     } else if let surcharge = paymentMethodOption["surcharge"] as? Int,
-                              let paymentMethod = self.paymentMethods?.filter({ $0.type.rawValue == type }).first
+                              let paymentMethod = self.paymentMethods?.filter({ $0.type == type }).first
                     {
                         paymentMethod.hasUnknownSurcharge = false
                         paymentMethod.surcharge = surcharge
@@ -94,7 +94,7 @@ struct PrimerAPIConfiguration: Codable {
             }
         }
         
-        if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard }).first {
+        if let paymentMethod = self.paymentMethods?.filter({ $0.type == "PAYMENT_CARD" }).first {
             paymentMethod.hasUnknownSurcharge = true
             paymentMethod.surcharge = nil
         }
@@ -116,12 +116,12 @@ struct PrimerAPIConfiguration: Codable {
         self.checkoutModules = checkoutModules
     }
     
-    func getConfigId(for type: PrimerPaymentMethodType) -> String? {
+    func getConfigId(for type: String) -> String? {
         guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
         return method.id
     }
     
-    func getProductId(for type: PrimerPaymentMethodType) -> String? {
+    func getProductId(for type: String) -> String? {
         guard let method = self.paymentMethods?
                 .first(where: { method in return method.type == type }) else { return nil }
         

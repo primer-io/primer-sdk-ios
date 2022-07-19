@@ -44,7 +44,7 @@ class PollingModule: Module {
     
     private func startPolling(completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
         if isCancelled {
-            let err = PrimerError.cancelled(paymentMethodType: .apaya, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.cancelled(paymentMethodType: "APAYA", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return

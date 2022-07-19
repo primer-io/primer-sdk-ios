@@ -10,7 +10,6 @@
 protocol UserInterfaceModuleProtocol {
     
     var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol { get }
-    var originalImage: UIImage? { get }
     var logo: UIImage? { get }
     var icon: UIImage? { get }
     var surchargeSectionText: String? { get }
@@ -31,106 +30,14 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    lazy var imageName: String? = {
-        switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay:
-            return "alipay"
-        case .adyenDotPay:
-            return "dot-pay"
-        case .adyenGiropay,
-                .buckarooGiropay,
-                .payNLGiropay:
-            return "giropay"
-        case .adyenIDeal,
-                .buckarooIdeal,
-                .mollieIdeal,
-                .payNLIdeal:
-            return "ideal"
-        case .adyenInterac:
-            return "interac"
-        case .adyenMobilePay:
-            return "mobile-pay"
-        case .adyenPayshop:
-            return "payshop"
-        case .adyenPayTrail:
-            return "paytrail"
-        case .adyenSofort,
-                .buckarooSofort,
-                .primerTestSofort:
-            return "sofort"
-        case .adyenTrustly:
-            return "trustly"
-        case .adyenTwint:
-            return "twint"
-        case .adyenVipps:
-            return "vipps"
-        case .apaya:
-            return "apaya"
-        case .applePay:
-            return "apple-pay"
-        case .atome:
-            return "atome"
-        case .adyenBlik:
-            return "blik"
-        case .buckarooBancontact,
-                .mollieBankcontact,
-                .payNLBancontact:
-            return "bancontact"
-        case .buckarooEps:
-            return "eps"
-        case .coinbase:
-            return "coinbase"
-        case .goCardlessMandate:
-            return "go-cardless"
-        case .googlePay:
-            return "google-pay"
-        case .hoolah:
-            return "hoolah"
-        case .klarna,
-                .primerTestKlarna:
-            return "klarna"
-        case .payNLPayconiq:
-            return "payconiq"
-        case .paymentCard:
-            return "card"
-        case .payPal,
-                .primerTestPayPal:
-            return "paypal"
-        case .rapydGCash:
-            return "gcash"
-        case .rapydGrabPay:
-            return "grab-pay"
-        case .rapydPoli:
-            return "poli"
-        case .xfers:
-            return "xfers"
-        case .opennode:
-            return "opennode"
-        case .twoCtwoP:
-            return "2c2p"
-        case .other(rawValue: let rawValue):
-            return rawValue
-        }
-    }()
-    
-    lazy var originalImage: UIImage? = {
-        switch self.paymentMethodTokenizationViewModel.config.type {
-        case .primerTestPayPal:
-            return UIImage(named: "paypal-logo-1", in: Bundle.primerResources, compatibleWith: nil)
-        case .primerTestSofort:
-            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)
-        default:
-            return buttonImage
-        }
-    }()
-    
     lazy var logo: UIImage? = {
-        guard let imageName = imageName else { return nil }
+        guard let imageName = paymentMethodTokenizationViewModel.config.imageName else { return nil }
         return UIImage(named: "\(imageName)-logo", in: Bundle.primerResources, compatibleWith: nil)
     }()
     
     lazy var icon: UIImage? = {
-        guard let imageName = imageName else { return nil }
+        guard let imageName = paymentMethodTokenizationViewModel.config.imageName else { return nil }
+        
         // In case we don't have a square icon, we show the icon image
         let imageLogoSquare = UIImage(named: "\(imageName)-logo-square", in: Bundle.primerResources, compatibleWith: nil)
         let imageIcon = UIImage(named: "\(imageName)-icon", in: Bundle.primerResources, compatibleWith: nil)
@@ -139,7 +46,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     
     lazy var surchargeSectionText: String? = {
         switch paymentMethodTokenizationViewModel.config.type {
-        case .paymentCard:
+        case "PAYMENT_CARD":
             return NSLocalizedString("surcharge-additional-fee",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
@@ -155,49 +62,14 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     
     lazy var buttonTitle: String? = {
         switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay,
-                .adyenBlik,
-                .adyenGiropay,
-                .applePay,
-                .atome,
-                .buckarooBancontact,
-                .buckarooEps,
-                .buckarooGiropay,
-                .buckarooIdeal,
-                .buckarooSofort,
-                .hoolah,
-                .klarna,
-                .mollieBankcontact,
-                .mollieIdeal,
-                .payNLBancontact,
-                .payNLGiropay,
-                .payNLIdeal,
-                .payNLPayconiq,
-                .adyenSofort,
-                .adyenTwint,
-                .adyenTrustly,
-                .adyenMobilePay,
-                .adyenVipps,
-                .adyenInterac,
-                .adyenPayTrail,
-                .payPal,
-                .primerTestPayPal,
-                .primerTestSofort,
-                .primerTestKlarna,
-                .rapydGCash,
-                .rapydGrabPay,
-                .rapydPoli,
-                .xfers:
-            return nil
-            
-        case .apaya:
+        case "APAYA":
             return NSLocalizedString("payment-method-type-pay-by-mobile",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "Pay by mobile",
                                      comment: "Pay by mobile - Payment By Mobile (Apaya)")
             
-        case .paymentCard:
+        case "PAYMENT_CARD":
             return Primer.shared.intent == .vault
             ? NSLocalizedString("payment-method-type-card-vaulted",
                                 tableName: nil,
@@ -218,75 +90,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }()
     
     lazy var buttonImage: UIImage? = {
-        switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay:
-            return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .adyenBlik:
-            return UIImage(named: "blik-logo-white", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenDotPay:
-            return UIImage(named: "dot-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenIDeal:
-            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .apaya:
-            return UIImage(named: "mobile", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .applePay:
-            return UIImage(named: "apple-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .atome:
-            return UIImage(named: "atome-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .buckarooBancontact,
-                .mollieBankcontact,
-                .payNLBancontact:
-            return UIImage(named: "bancontact-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .buckarooEps:
-            return UIImage(named: "eps-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenGiropay,
-                .buckarooGiropay,
-                .payNLGiropay:
-            return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenInterac:
-            return UIImage(named: "interac-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .hoolah:
-            return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .klarna,
-                .primerTestKlarna:
-            return UIImage(named: "klarna-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .payNLIdeal,
-                .buckarooIdeal,
-                .mollieIdeal:
-            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenMobilePay:
-            return UIImage(named: "mobile-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .adyenPayTrail:
-            return UIImage(named: "paytrail-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .payNLPayconiq:
-            return UIImage(named: "payconiq-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .buckarooSofort,
-                .adyenSofort,
-                .primerTestSofort:
-            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .adyenTrustly:
-            return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenTwint:
-            return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenVipps:
-            return UIImage(named: "vipps-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .paymentCard:
-            return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .payPal,
-                .primerTestPayPal:
-            return UIImage(named: "paypal-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .rapydGCash:
-            return UIImage(named: "gcash-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .rapydGrabPay:
-            return UIImage(named: "grab-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .rapydPoli:
-            return UIImage(named: "poli-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .xfers:
-            return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
+        guard let imageName = paymentMethodTokenizationViewModel.config.imageName else { return nil }
+        return UIImage(named: "\(imageName)-logo", in: Bundle.primerResources, compatibleWith: nil)
     }()
     
     lazy var buttonFont: UIFont? = {
@@ -298,205 +103,47 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }()
     
     lazy var buttonColor: UIColor? = {
-        switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay:
-            return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
-        case .adyenBlik:
-            return .black
-        case .adyenDotPay:
-            return .white
-        case .adyenGiropay,
-                .buckarooGiropay:
-            return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
-        case .adyenIDeal:
-            return UIColor(red: 204.0/255, green: 0.0/255, blue: 102.0/255, alpha: 1.0)
-        case .adyenInterac:
-            return UIColor(red: 254.0/255, green: 185.0/255, blue: 43.0/255, alpha: 1.0)
-        case .adyenSofort,
-                .buckarooSofort,
-                .primerTestSofort:
-            return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
-        case .adyenMobilePay:
-            return UIColor(red: 90.0/255, green: 120.0/255, blue: 255.0/255, alpha: 1.0)
-        case .adyenPayTrail:
-            return UIColor(red: 229.0/255, green: 11.0/255, blue: 150.0/255, alpha: 1.0)
-        case .adyenTrustly:
-            return UIColor(red: 14.0/255, green: 224.0/255, blue: 110.0/255, alpha: 1.0)
-        case .adyenTwint:
-            return .black
-        case .adyenVipps:
-            return UIColor(red: 255.0/255, green: 91.0/255, blue: 36.0/255, alpha: 1.0)
-        case .apaya:
-            return theme.paymentMethodButton.color(for: .enabled)
-        case .applePay:
-            return .black
-        case .atome:
-            return UIColor(red: 240.0/255, green: 255.0/255, blue: 95.0/255, alpha: 1.0)
-        case .buckarooEps:
-            return .white
-        case .hoolah:
-            return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
-        case .klarna,
-                .primerTestKlarna:
-            return UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1.0)
-        case .buckarooBancontact,
-                .mollieBankcontact,
-                .payNLBancontact:
-            return .white
-        case .payNLIdeal,
-                .buckarooIdeal,
-                .mollieIdeal:
-            return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
-        case .payNLGiropay:
-            return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
-        case .payNLPayconiq:
-            return UIColor(red: 255.0/255, green: 71.0/255, blue: 133.0/255, alpha: 1.0)
-        case .paymentCard:
-            return theme.paymentMethodButton.color(for: .enabled)
-        case .payPal,
-                .primerTestPayPal:
-            return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
-        case .rapydGCash:
-            return UIColor(red: 0.161, green: 0.482, blue: 0.98, alpha: 1)
-        case .rapydGrabPay:
-            return UIColor(red: 0.004, green: 0.694, blue: 0.306, alpha: 1)
-        case .rapydPoli:
-            return UIColor(red: 0.184, green: 0.263, blue: 0.596, alpha: 1)
-        case .xfers:
-            return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
+        return .black
     }()
     
     lazy var buttonTitleColor: UIColor? = {
         switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay,
-                .adyenBlik,
-                .adyenGiropay,
-                .adyenInterac,
-                .adyenMobilePay,
-                .adyenPayTrail,
-                .adyenTrustly,
-                .adyenTwint,
-                .adyenVipps,
-                .atome,
-                .buckarooBancontact,
-                .buckarooEps,
-                .buckarooIdeal,
-                .buckarooGiropay,
-                .buckarooSofort,
-                .hoolah,
-                .klarna,
-                .mollieBankcontact,
-                .mollieIdeal,
-                .payNLBancontact,
-                .payNLGiropay,
-                .payNLIdeal,
-                .payNLPayconiq,
-                .payPal,
-                .primerTestPayPal,
-                .primerTestKlarna,
-                .primerTestSofort,
-                .rapydGCash,
-                .rapydPoli,
-                .rapydGrabPay,
-                .xfers:
-            return nil
-        case .apaya,
-                .paymentCard:
+        case "APAYA",
+                "PAYMENT CARD":
             return theme.paymentMethodButton.text.color
+            
         default:
-            assert(true, "Shouldn't end up in here")
             return nil
         }
     }()
     
     lazy var buttonBorderWidth: CGFloat = {
         switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay,
-                .adyenBlik,
-                .adyenGiropay,
-                .adyenIDeal,
-                .adyenInterac,
-                .adyenMobilePay,
-                .adyenPayTrail,
-                .adyenTrustly,
-                .adyenTwint,
-                .adyenVipps,
-                .atome,
-                .buckarooIdeal,
-                .buckarooGiropay,
-                .buckarooSofort,
-                .hoolah,
-                .klarna,
-                .mollieIdeal,
-                .payNLGiropay,
-                .payNLIdeal,
-                .payNLPayconiq,
-                .payPal,
-                .primerTestPayPal,
-                .primerTestKlarna,
-                .primerTestSofort,
-                .rapydGCash,
-                .rapydPoli,
-                .rapydGrabPay:
-            return 0.0
-        case .adyenDotPay,
-                .apaya,
-                .buckarooBancontact,
-                .buckarooEps,
-                .mollieBankcontact,
-                .payNLBancontact,
-                .paymentCard:
+        case "ADYEN_DOTPAY",
+                "APAYA",
+                "BUCKAROO_BANCONTACT",
+                "BUCKAROO_EPS",
+                "MOLLIE_BANCONTACT",
+                "PAY_NL_BANCONTACT",
+                "PAYMENT_CARD":
             return 1.0
         default:
-            assert(true, "Shouldn't end up in here")
             return 0.0
         }
     }()
     
     lazy var buttonBorderColor: UIColor? = {
         switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay,
-                .adyenBlik,
-                .adyenDotPay,
-                .adyenGiropay,
-                .adyenMobilePay,
-                .adyenIDeal,
-                .adyenInterac,
-                .adyenPayTrail,
-                .adyenTrustly,
-                .adyenTwint,
-                .adyenVipps,
-                .atome,
-                .buckarooIdeal,
-                .buckarooGiropay,
-                .buckarooSofort,
-                .hoolah,
-                .klarna,
-                .mollieIdeal,
-                .payNLGiropay,
-                .payNLIdeal,
-                .payNLPayconiq,
-                .payPal,
-                .primerTestPayPal,
-                .primerTestKlarna,
-                .primerTestSofort,
-                .rapydGCash,
-                .rapydGrabPay,
-                .rapydPoli,
-                .xfers:
-            return nil
-        case .apaya,
-                .paymentCard:
+        case "APAYA",
+            "PAYMENT CARD":
             return theme.paymentMethodButton.text.color
-        case .buckarooBancontact,
-                .buckarooEps,
-                .mollieBankcontact,
-                .payNLBancontact:
+            
+        case "BUCKAROO_BANCONTACT",
+            "BUCKAROO_EPS",
+            "MOLLIE_BANCONTACT",
+            "PAY_NL_BANCONTACT":
             return .black
+            
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -504,58 +151,14 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }()
     
     var buttonTintColor: UIColor? {
-        switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay,
-                .adyenBlik,
-                .adyenDotPay,
-                .atome,
-                .buckarooBancontact,
-                .buckarooEps,
-                .buckarooIdeal,
-                .buckarooGiropay,
-                .buckarooSofort,
-                .hoolah,
-                .mollieIdeal,
-                .payNLGiropay,
-                .payNLIdeal,
-                .payNLPayconiq,
-                .adyenSofort,
-                .adyenMobilePay,
-                .adyenVipps,
-                .adyenInterac,
-                .adyenPayTrail,
-                .primerTestSofort:
-            return .white
-        case .adyenIDeal,
-                .adyenTrustly,
-                .klarna,
-                .primerTestKlarna:
-            return .black
-        case .adyenGiropay,
-                .adyenTwint,
-                .payPal,
-                .primerTestPayPal,
-                .rapydGCash,
-                .rapydGrabPay,
-                .rapydPoli:
-            return nil
-        case .apaya,
-                .paymentCard:
-            return theme.paymentMethodButton.text.color
-        case .applePay,
-                .xfers:
-            return .white
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
+        return nil
     }
     
     var paymentMethodButton: PrimerButton {
-        let customPaddingSettingsCard: [PrimerPaymentMethodType] = [.paymentCard, .coinbase]
+        let customPaddingSettingsCard: [String] = ["COINBASE", "PAYMENT_CARD"]
         
         let paymentMethodButton = PrimerButton()
-        paymentMethodButton.accessibilityIdentifier = paymentMethodTokenizationViewModel.config.type.rawValue
+        paymentMethodButton.accessibilityIdentifier = paymentMethodTokenizationViewModel.config.type
         paymentMethodButton.clipsToBounds = true
         paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
         let imagePadding: CGFloat = 20
@@ -585,7 +188,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         var buttonTitle: String = ""
         
         switch self.paymentMethodTokenizationViewModel.config.type {
-        case .paymentCard:
+        case "PAYMENT_CARD":
             switch Primer.shared.intent {
             case .checkout:
                 let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
@@ -620,9 +223,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
             return submitButton
             
-        case .primerTestSofort,
-                .primerTestKlarna,
-                .primerTestPayPal:
+        case "PRIMER_TEST_KLARNA",
+                "PRIMER_TEST_PAYPAL",
+                "PRIMER_TEST_SOFORT":
             let submitButton = PrimerButton()
             submitButton.translatesAutoresizingMaskIntoConstraints = false
             submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
@@ -636,8 +239,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
             return submitButton
             
-        case .adyenBlik,
-                .xfers:
+        case "ADYEN_BLIK",
+                "XFERS_PAYNOW":
             let btn = PrimerButton()
             btn.isEnabled = false
             btn.clipsToBounds = true

@@ -42,17 +42,6 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         return tableView
     }()
     
-    private lazy var _originalImage: UIImage? = {
-        switch config.type {
-        case .primerTestPayPal:
-            return UIImage(named: "paypal-logo-1", in: Bundle.primerResources, compatibleWith: nil)
-        case .primerTestSofort:
-            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)
-        default:
-            return uiModule.buttonImage
-        }
-    }()
-    
     // MARK: - Deinit
     
     deinit {
@@ -94,7 +83,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: config.type.rawValue,
+                    paymentMethodType: config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -161,7 +150,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: config.type.rawValue,
+                    paymentMethodType: config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,

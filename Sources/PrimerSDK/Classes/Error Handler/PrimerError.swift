@@ -299,7 +299,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case missingPrimerCheckoutComponentsDelegate(userInfo: [String: String]?, diagnosticsId: String?)
     case misconfiguredPaymentMethods(userInfo: [String: String]?, diagnosticsId: String?)
     case missingPrimerInputElement(inputElementType: PrimerInputElementType, userInfo: [String: String]?, diagnosticsId: String?)
-    case cancelled(paymentMethodType: PrimerPaymentMethodType, userInfo: [String: String]?, diagnosticsId: String?)
+    case cancelled(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String?)
     case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
     case failedOnWebViewFlow(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
     case failedToPerform3DS(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
@@ -313,10 +313,10 @@ internal enum PrimerError: PrimerErrorProtocol {
     case invalidSupportedPaymentNetworks(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String?)
     case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String?)
-    case unableToPresentPaymentMethod(paymentMethodType: PrimerPaymentMethodType, userInfo: [String: String]?, diagnosticsId: String?)
+    case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String?)
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String?)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
-    case missingCustomUI(paymentMethod: PrimerPaymentMethodType, userInfo: [String: String]?, diagnosticsId: String?)
+    case missingCustomUI(paymentMethod: String, userInfo: [String: String]?, diagnosticsId: String?)
     case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String?)
     case cancelledByCustomer(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case paymentFailed(userInfo: [String: String]?, diagnosticsId: String?)
@@ -476,7 +476,7 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .misconfiguredPaymentMethods:
             return "[\(errorId)] Payment methods haven't been set up correctly (diagnosticsId: \(self.diagnosticsId)"
         case .cancelled(let paymentMethodType, _, _):
-            return "[\(errorId)] Payment method \(paymentMethodType.rawValue) cancelled (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Payment method \(paymentMethodType) cancelled (diagnosticsId: \(self.diagnosticsId)"
         case .cancelledByCustomer(let message, _, _):
             let messageToShow = message != nil ? " with message \(message!)" : ""
             return "[\(errorId)] Payment cancelled\(messageToShow) (diagnosticsId: \(self.diagnosticsId)"
@@ -507,13 +507,13 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .unableToMakePaymentsOnProvidedNetworks:
             return "[\(errorId)] Unable to make payments on provided networks (diagnosticsId: \(self.diagnosticsId)"
         case .unableToPresentPaymentMethod(let paymentMethodType, _, _):
-            return "[\(errorId)] Unable to present payment method \(paymentMethodType.rawValue) (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Unable to present payment method \(paymentMethodType) (diagnosticsId: \(self.diagnosticsId)"
         case .unsupportedIntent(let intent, _, _):
             return "[\(errorId)] Unsupported session intent \(intent.rawValue) (diagnosticsId: \(self.diagnosticsId)"
         case .underlyingErrors(let errors, _, _):
             return "[\(errorId)] Multiple errors occured: \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId)"
         case .missingCustomUI(let paymentMethod, _, _):
-            return "[\(errorId)] Missing custom user interface for \(paymentMethod.rawValue) (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Missing custom user interface for \(paymentMethod) (diagnosticsId: \(self.diagnosticsId)"
         case .merchantError(let message, _, _):
             return message
         case .paymentFailed(_, _):
@@ -631,7 +631,7 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .underlyingErrors:
             return "Check underlying errors for more information."
         case .missingCustomUI(let paymentMethod, _, _):
-            return "You have to built your UI for \(paymentMethod.rawValue) and utilize PrimerCheckoutComponents.UIManager's functionality."
+            return "You have to built your UI for \(paymentMethod) and utilize PrimerCheckoutComponents.UIManager's functionality."
         case .merchantError:
             return nil
         case .paymentFailed:

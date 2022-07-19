@@ -22,7 +22,7 @@ extension PrimerHeadlessUniversalCheckout {
 }
 
 public protocol PrimerHeadlessUniversalCheckoutUIManager {
-    init(paymentMethodType: PrimerPaymentMethodType) throws
+    init(paymentMethodType: String) throws
     func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData?)
 }
 
@@ -34,10 +34,10 @@ extension PrimerHeadlessUniversalCheckout {
     
     public class UIManager: PrimerHeadlessUniversalCheckoutUIManager {
         
-        private(set) public var paymentMethodType: PrimerPaymentMethodType
+        private(set) public var paymentMethodType: String
         private let appState: AppStateProtocol = AppState.current
         
-        required public init(paymentMethodType: PrimerPaymentMethodType) throws {
+        required public init(paymentMethodType: String) throws {
             guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() else {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -70,7 +70,7 @@ extension PrimerHeadlessUniversalCheckout {
     
     public final class CardFormUIManager: NSObject, PrimerInputElementDelegate {
         
-        private(set) public var paymentMethodType: PrimerPaymentMethodType
+        private(set) public var paymentMethodType: String
         private let appState: AppStateProtocol = AppState.current
         private(set) public var requiredInputElementTypes: [PrimerInputElementType] = []
         public var inputElements: [PrimerInputElement] = [] {
@@ -108,13 +108,13 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public override init() {
-            self.paymentMethodType = .paymentCard
+            self.paymentMethodType = "PAYMENT_CARD"
             super.init()
             self.requiredInputElementTypes = PrimerHeadlessUniversalCheckout.current.listRequiredInputElementTypes(for: paymentMethodType) ?? []
         }
         
         public func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationDidStart(for: PrimerPaymentMethodType.paymentCard.rawValue)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationDidStart(for: "PAYMENT_CARD")
             
             firstly {
                 PrimerHeadlessUniversalCheckout.current.validateSession()
@@ -123,13 +123,13 @@ extension PrimerHeadlessUniversalCheckout {
                 self.validateInputData()
             }
             .then { () -> Promise<Void> in
-                self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: PrimerPaymentMethodType.paymentCard))
+                self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: "PAYMENT_CARD"))
             }
             .then { () -> Promise<PaymentMethodTokenizationRequest> in
                 self.buildRequestBody()
             }
             .then { requestbody -> Promise<PaymentMethodToken> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: PrimerPaymentMethodType.paymentCard.rawValue)
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: "PAYMENT_CARD")
                 return self.tokenize(request: requestbody)
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
@@ -183,7 +183,7 @@ extension PrimerHeadlessUniversalCheckout {
         private func buildRequestBody() -> Promise<PaymentMethodTokenizationRequest> {
             return Promise { seal in
                 switch self.paymentMethodType {
-                case .paymentCard:
+                case "PAYMENT_CARD":
                     guard let cardnumberField = inputElements.filter({ $0.type == .cardNumber }).first as? PrimerInputTextField,
                           let expiryDateField = inputElements.filter({ $0.type == .expiryDate }).first as? PrimerInputTextField,
                           let cvvField = inputElements.filter({ $0.type == .cvv }).first as? PrimerInputTextField
@@ -318,7 +318,7 @@ extension PrimerHeadlessUniversalCheckout {
                 if Primer.shared.intent == .vault {
                     seal.fulfill()
                 } else {
-                    let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)
+                    let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
                     let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
                     
                     PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
@@ -553,7 +553,7 @@ extension PrimerHeadlessUniversalCheckout {
             let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
             client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
                 if self.webViewCompletion == nil {
-                    let err = PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.paymentCard, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.cancelled(paymentMethodType: "PAYMENT_CARD", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     completion(nil, err)
                     return
@@ -882,7 +882,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager: SFSafariViewControl
         
         if let webViewCompletion = webViewCompletion {
             // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.paymentCard, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.cancelled(paymentMethodType: "PAYMENT_CARD", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)
         }

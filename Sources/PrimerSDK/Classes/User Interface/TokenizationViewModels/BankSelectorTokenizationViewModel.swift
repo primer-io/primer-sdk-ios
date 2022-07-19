@@ -104,7 +104,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -184,9 +184,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             
             var paymentMethodRequestValue: String = ""
             switch self.config.type {
-            case .adyenDotPay:
+            case "ADYEN_DOTPAY":
                 paymentMethodRequestValue = "dotpay"
-            case .adyenIDeal:
+            case "ADYEN_IDEAL":
                 paymentMethodRequestValue = "ideal"
             default:
                 break
@@ -243,7 +243,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
                 paymentMethodConfigId: self.config.id!,
                 sessionInfo: BankSelectorSessionInfo(issuer: bank.id),
                 type: "OFF_SESSION_PAYMENT",
-                paymentMethodType: config.type.rawValue))
+                paymentMethodType: config.type))
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)

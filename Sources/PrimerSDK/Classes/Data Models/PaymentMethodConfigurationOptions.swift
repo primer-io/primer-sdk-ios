@@ -31,7 +31,7 @@ struct CardOptions: PaymentMethodOptions {
 
 struct PrimerTestPaymentMethodOptions: PaymentMethodOptions {
     
-    let paymentMethodType: PrimerPaymentMethodType
+    let paymentMethodType: String
     let paymentMethodConfigId: String
     let type: String = "OFF_SESSION_PAYMENT"
     let sessionInfo: SessionInfo?
@@ -39,7 +39,7 @@ struct PrimerTestPaymentMethodOptions: PaymentMethodOptions {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(type, forKey: .type)
-        try container.encode(paymentMethodType.rawValue, forKey: .paymentMethodType)
+        try container.encode(paymentMethodType, forKey: .paymentMethodType)
         try container.encode(paymentMethodConfigId, forKey: .paymentMethodConfigId)
         try? container.encode(sessionInfo, forKey: .sessionInfo)
     }
@@ -74,7 +74,7 @@ extension PrimerTestPaymentMethodOptions.FlowDecision {
 
 struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     
-    let paymentMethodType: PrimerPaymentMethodType
+    let paymentMethodType: String
     let paymentMethodConfigId: String
     let type: String = "OFF_SESSION_PAYMENT"
     let sessionInfo: SessionInfo?
@@ -84,7 +84,7 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     }
     
     init(
-        paymentMethodType: PrimerPaymentMethodType,
+        paymentMethodType: String,
         paymentMethodConfigId: String,
         sessionInfo: SessionInfo?
     ) {
@@ -96,7 +96,7 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(type, forKey: .type)
-        try container.encode(paymentMethodType.rawValue, forKey: .paymentMethodType)
+        try container.encode(paymentMethodType, forKey: .paymentMethodType)
         try container.encode(paymentMethodConfigId, forKey: .paymentMethodConfigId)
         try? container.encode(sessionInfo, forKey: .sessionInfo)
     }
@@ -111,7 +111,7 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
 
 struct BlikPaymentMethodOptions: PaymentMethodOptions {
     
-    let paymentMethodType: PrimerPaymentMethodType
+    let paymentMethodType: String
     let paymentMethodConfigId: String
     let type: String = "OFF_SESSION_PAYMENT"
     let sessionInfo: SessionInfo?
@@ -121,7 +121,7 @@ struct BlikPaymentMethodOptions: PaymentMethodOptions {
     }
     
     init(
-        paymentMethodType: PrimerPaymentMethodType,
+        paymentMethodType: String,
         paymentMethodConfigId: String,
         sessionInfo: SessionInfo?
     ) {
@@ -133,7 +133,7 @@ struct BlikPaymentMethodOptions: PaymentMethodOptions {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(type, forKey: .type)
-        try container.encode(paymentMethodType.rawValue, forKey: .paymentMethodType)
+        try container.encode(paymentMethodType, forKey: .paymentMethodType)
         try container.encode(paymentMethodConfigId, forKey: .paymentMethodConfigId)
         try? container.encode(sessionInfo, forKey: .sessionInfo)
     }

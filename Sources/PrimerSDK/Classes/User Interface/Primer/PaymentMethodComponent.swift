@@ -22,7 +22,7 @@ internal class PaymentMethodComponent: PrimerView {
         layer.cornerRadius = theme.paymentMethodButton.cornerRadius
 
         switch method.config.type {
-        case .applePay:
+        case "APPLE_PAY":
             backgroundColor = .black
             label.textColor = .white
             addSubview(label)
@@ -31,7 +31,7 @@ internal class PaymentMethodComponent: PrimerView {
             configureIconView(icon: method.uiModule.buttonImage, color: .white, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
-        case .paymentCard:
+        case "PAYMENT_CARD":
             layer.borderWidth = 1
             layer.borderColor = theme.paymentMethodButton.border.color(for: .enabled).cgColor
             backgroundColor = theme.paymentMethodButton.color(for: .enabled)
@@ -42,14 +42,14 @@ internal class PaymentMethodComponent: PrimerView {
             configureIconView(icon: method.uiModule.buttonImage, color: theme.paymentMethodButton.text.color, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
-        case .payPal:
+        case "PAYPAL":
 //            layer.borderWidth = 1
             backgroundColor = UIColor(red: 190/255, green: 228/255, blue: 254/255, alpha: 1)
             //            layer.borderColor = theme.colorTheme.disabled1.cgColor
             addSubview(iconView)
             configureIconView(icon: method.uiModule.buttonImage, color: theme.paymentMethodButton.text.color)
             anchorIconView(inRelationToLabel: false)
-        case .goCardlessMandate:
+        case "GO_CARDLESS":
             layer.borderWidth = 1
             layer.borderColor = theme.paymentMethodButton.border.color(for: .enabled).cgColor
             backgroundColor = theme.paymentMethodButton.color(for: .enabled)
@@ -60,13 +60,13 @@ internal class PaymentMethodComponent: PrimerView {
             configureIconView(icon: method.uiModule.buttonImage, color: theme.paymentMethodButton.text.color, isMonoColor: true)
             anchorLabel()
             anchorIconView(inRelationToLabel: true)
-        case .klarna:
+        case "KLARNA":
             // TODO: move Klarna color to constant or similar, should maybe be dynamic from backend?
             backgroundColor = UIColor(red: 255/255, green: 179/255, blue: 199/255, alpha: 1)
             addSubview(iconView)
             configureIconView(icon: method.uiModule.buttonImage, color: theme.paymentMethodButton.text.color)
             anchorIconView(inRelationToLabel: false)
-        case .apaya:
+        case "APAYA":
             layer.borderWidth = 1
             layer.borderColor = theme.paymentMethodButton.border.color(for: .enabled).cgColor
             backgroundColor = theme.paymentMethodButton.color(for: .enabled)

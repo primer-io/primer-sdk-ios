@@ -83,7 +83,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -339,7 +339,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return
         }
                 
-        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: .klarna),
+        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: "KLARNA"),
               let sessionId = self.sessionId else {
                   let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                   ErrorHandler.handle(error: err)
@@ -388,7 +388,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return
         }
         
-        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: .klarna),
+        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: "KLARNA"),
               let sessionId = self.sessionId else {
                   let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                   ErrorHandler.handle(error: err)
