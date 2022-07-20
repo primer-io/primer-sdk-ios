@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - sonar_integration_ios
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
