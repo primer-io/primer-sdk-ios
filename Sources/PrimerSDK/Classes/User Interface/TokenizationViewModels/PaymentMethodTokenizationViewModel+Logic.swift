@@ -22,13 +22,13 @@ extension PaymentMethodTokenizationViewModel {
             self.didFinishTokenization?(nil)
             self.didFinishTokenization = nil
 
-            if Primer.shared.flow.internalSessionFlow.vaulted {
+            if Primer.shared.intent == .vault {
                 self.handleSuccessfulFlow()
             } else {
                 self.didStartPayment?()
                 self.didStartPayment = nil
                 
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
+                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
                 
                 firstly {
                     self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
@@ -50,8 +50,10 @@ extension PaymentMethodTokenizationViewModel {
                     self.didFinishPayment?(err)
                     self.nullifyEventCallbacks()
                     
+                    let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                    
                     firstly {
-                        ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
+                        clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                     }
                     .then { () -> Promise<String?> in
                         var primerErr: PrimerError!
@@ -79,18 +81,25 @@ extension PaymentMethodTokenizationViewModel {
             self.didStartTokenization = nil
             self.didFinishTokenization = nil
             
-            if self.config.type == .applePay, let primerErr = err as? PrimerError, case .cancelled = primerErr {
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+            
+            if let primerErr = err as? PrimerError,
+               case .cancelled = primerErr,
+               self.config.type == .applePay,
+               PrimerHeadlessUniversalCheckout.current.delegate == nil
+            {
                 firstly {
-                    ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
+                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                 }
                 .done { merchantErrorMessage in
                     Primer.shared.primerRootVC?.popToMainScreen(completion: nil)
                 }
                 // The above promises will never end up on error.
                 .catch { _ in }
+                
             } else {
                 firstly {
-                    ClientSessionAPIResponse.Action.unselectPaymentMethodIfNeeded()
+                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                 }
                 .then { () -> Promise<String?> in
                     var primerErr: PrimerError!
@@ -313,7 +322,7 @@ extension PaymentMethodTokenizationViewModel {
         
     internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
-            if Primer.shared.flow.internalSessionFlow.vaulted {
+            if Primer.shared.intent == .vault {
                 seal.fulfill()
             } else {
                 let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)

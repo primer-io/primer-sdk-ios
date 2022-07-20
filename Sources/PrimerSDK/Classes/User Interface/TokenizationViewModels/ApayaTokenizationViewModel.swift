@@ -69,14 +69,15 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
+                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
                 self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))

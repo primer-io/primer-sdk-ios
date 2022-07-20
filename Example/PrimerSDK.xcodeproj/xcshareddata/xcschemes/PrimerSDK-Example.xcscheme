@@ -81,7 +81,16 @@
                   Identifier = "UniversalCheckout/testAdyenMobilePay()">
                </Test>
                <Test
+                  Identifier = "UniversalCheckout/testDeclinePayPalPaymentMethod()">
+               </Test>
+               <Test
+                  Identifier = "UniversalCheckout/testFailedSofortPaymentMethod()">
+               </Test>
+               <Test
                   Identifier = "UniversalCheckout/testPayNLBancontact()">
+               </Test>
+               <Test
+                  Identifier = "UniversalCheckout/testSuccessKlarnaPaymentMethod()">
                </Test>
             </SkippedTests>
          </TestableReference>
@@ -111,6 +120,10 @@
          <CommandLineArgument
             argument = "-PrimerDebugEnabled"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-PrimerAnalyticsDebugEnabled"
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

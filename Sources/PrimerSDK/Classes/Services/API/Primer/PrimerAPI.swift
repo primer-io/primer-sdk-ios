@@ -140,6 +140,8 @@ internal extension PrimerAPI {
                 .deleteVaultedPaymentMethod,
                 .exchangePaymentMethodToken:
             tmpHeaders["X-Api-Version"] = "2021-12-10"
+        case .createPayment:
+            tmpHeaders["X-Api-Version"] = "2021-09-27"
         default:
             break
         }

@@ -19,6 +19,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
      must be set before presenting the webview and nullified once polling returns a result. At the same time the webview should be dismissed.
      */
     var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+    var didCancel: (() -> Void)?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -63,19 +64,21 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
+                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type.rawValue)
                 return self.tokenize()
             }
             .done { paymentMethodTokenData in
@@ -133,57 +136,11 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.willDismissPaymentMethodUI?()
                 Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
-                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodPresented()
+                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.config.type.rawValue)
                         self.didDismissPaymentMethodUI?()
                         seal.fulfill(())
                     }
                 })
-            }
-        }
-    }
-    
-    internal func startPolling(on url: URL) -> Promise<String> {
-        return Promise { seal in
-            self.startPolling(on: url) { (id, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let id = id {
-                    seal.fulfill(id)
-                } else {
-                    assert(true, "Should have received one parameter")
-                }
-            }
-        }
-    }
-    
-    fileprivate func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
-        let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
-            if self.webViewCompletion == nil {
-                let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                completion(nil, err)
-                return
-            }
-            
-            switch result {
-            case .success(let res):
-                if res.status == .pending {
-                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                        self.startPolling(on: url, completion: completion)
-                    }
-                } else if res.status == .complete {
-                    completion(res.id, nil)
-                } else {
-                    let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                }
-            case .failure(let err):
-                ErrorHandler.handle(error: err)
-                // Retry
-                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
-                    self.startPolling(on: url, completion: completion)
-                }
             }
         }
     }
@@ -205,7 +162,12 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                         self.presentAsyncPaymentMethod(with: redirectUrl)
                     }
                     .then { () -> Promise<String> in
-                        return self.startPolling(on: statusUrl)
+                        let pollingModule = PollingModule(url: statusUrl)
+                        self.didCancel = {
+                            pollingModule.cancel()
+                        }
+                        
+                        return pollingModule.start()
                     }
                     .done { resumeToken in
                         seal.fulfill(resumeToken)
@@ -228,14 +190,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        if let webViewCompletion = webViewCompletion {
-            // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            webViewCompletion(nil, err)
-        }
-        
-        webViewCompletion = nil
+        self.didCancel?()
+        self.didCancel = nil
     }
     
     func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {

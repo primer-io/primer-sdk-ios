@@ -25,8 +25,8 @@ internal class BankSelectorViewController: PrimerFormViewController {
     init(viewModel: BankSelectorTokenizationViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.buttonImage!
-        self.titleImageTintColor = viewModel.buttonTintColor
+        self.titleImage = viewModel.uiModule.buttonImage!
+        self.titleImageTintColor = viewModel.uiModule.buttonTintColor
     }
     
     required init?(coder: NSCoder) {
@@ -61,11 +61,7 @@ internal class BankSelectorViewController: PrimerFormViewController {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         let bankTitleLabel = UILabel()
-        bankTitleLabel.text = NSLocalizedString("choose-your-bank-title-label",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Choose your bank",
-                                                comment: "Choose your bank - Choose your bank title label")
+        bankTitleLabel.text = Strings.BankSelector.chooseBankTitle
         bankTitleLabel.font = UIFont.systemFont(ofSize: 20)
         bankTitleLabel.textColor = theme.text.title.color
         verticalStackView.addArrangedSubview(bankTitleLabel)

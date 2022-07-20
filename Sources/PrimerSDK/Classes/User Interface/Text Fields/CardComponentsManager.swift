@@ -7,7 +7,7 @@
 
 #if canImport(UIKit)
 
-import Foundation
+import UIKit
 
 @objc
 public protocol CardComponentsManagerDelegate {
@@ -30,7 +30,6 @@ protocol CardComponentsManagerProtocol {
     var expiryDateField: PrimerExpiryDateFieldView { get }
     var cvvField: PrimerCVVFieldView { get }
     var cardholderField: PrimerCardholderNameFieldView? { get }
-    var flow: PaymentFlow { get }
     var delegate: CardComponentsManagerDelegate? { get }
     var customerId: String? { get }
     var merchantIdentifier: String? { get }
@@ -42,6 +41,10 @@ protocol CardComponentsManagerProtocol {
     func tokenize()
 }
 
+typealias BillingAddressField = (fieldView: PrimerTextFieldView,
+                                 containerFieldView: PrimerCustomFieldView,
+                                 isFieldHidden: Bool)
+
 @objc
 public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     
@@ -49,9 +52,8 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var expiryDateField: PrimerExpiryDateFieldView
     public var cvvField: PrimerCVVFieldView
     public var cardholderField: PrimerCardholderNameFieldView?
-    public var postalCodeField: PrimerPostalCodeFieldView?
+    public var billingAddressFieldViews: [PrimerTextFieldView]?
     
-    private(set) public var flow: PaymentFlow
     public var delegate: CardComponentsManagerDelegate?
     public var customerId: String?
     public var merchantIdentifier: String?
@@ -68,25 +70,21 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         setIsLoading(false)
     }
     
-    /// The CardComponentsManager can be initialized with/out an access token. In the case that is initialized without an access token, the delegate function cardComponentsManager(_:clientTokenCallback:) will be called. You can initialize an instance (representing a session) by providing the flow (checkout or vault) and registering the necessary PrimerTextFieldViews
+    /// The CardComponentsManager can be initialized with/out an access token. In the case that is initialized without an access token, the delegate function cardComponentsManager(_:clientTokenCallback:) will be called. You can initialize an instance (representing a session) by registering the necessary PrimerTextFieldViews
     public init(
-        flow: PaymentFlow,
         cardnumberField: PrimerCardNumberFieldView,
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,
         cardholderNameField: PrimerCardholderNameFieldView?,
-        postalCodeField: PrimerPostalCodeFieldView?
+        billingAddressFieldViews: [PrimerTextFieldView]?
     ) {
-        self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
-        self.postalCodeField = postalCodeField
-        
+        self.cardholderField = cardholderNameField
+        self.billingAddressFieldViews = billingAddressFieldViews
         super.init()
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
-        
-        self.cardholderField = cardholderNameField
     }
     
     internal func setIsLoading(_ isLoading: Bool) {
@@ -107,7 +105,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             }
             
             delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
-                                
+                
                 guard error == nil, let clientToken = clientToken else {
                     seal.reject(error!)
                     return
@@ -119,7 +117,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         seal.reject(error!)
                         return
                     }
-
+                    
                     if let decodedClientToken = self.decodedClientToken {
                         seal.fulfill(decodedClientToken)
                     }
@@ -199,7 +197,9 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     }
     
     private func validateCardComponents() throws {
+        
         var errors: [Error] = []
+        
         if !cardnumberField.cardnumber.isValidCardNumber {
             errors.append(PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
         }
@@ -212,17 +212,11 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             errors.append(PrimerValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
         }
         
-        if let cardholderField  = cardholderField {
-            if !cardholderField.cardholderName.isValidCardholderName {
-                errors.append(PrimerValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
-            }
-        }
-        
-        if let postalCodeField = postalCodeField {
-            if !postalCodeField.postalCode.isValidPostalCode {
-                let err = PrimerValidationError.invalidPostalCode(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                errors.append(err)
+        billingAddressFieldViews?.filter { $0.isTextValid == false }.forEach {
+            if let simpleCardFormTextFieldView = $0 as? PrimerSimpleCardFormTextFieldView,
+               let validationError = simpleCardFormTextFieldView.validationError {
+                ErrorHandler.handle(error: validationError)
+                errors.append(validationError)
             }
         }
         
@@ -266,29 +260,29 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     klarnaCustomerToken: nil,
                     sessionData: nil)
                 
-                let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: Primer.shared.flow.internalSessionFlow.vaulted ? .vault : .checkout)
+                let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: Primer.shared.intent == .vault ? .vault : .checkout)
                 
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                 apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest) { result in
                     switch result {
                     case .success(let paymentMethodToken):
-                                                
+                        
                         var isThreeDSEnabled: Bool = false
                         if AppState.current.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                             isThreeDSEnabled = true
                         }
-
+                        
                         /// 3DS requirements on tokenization are:
                         ///     - The payment method has to be a card
                         ///     - It has to be a vault flow
                         ///     - is3DSOnVaultingEnabled has to be enabled by the developer
                         ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
                         if paymentMethodToken.paymentInstrumentType == .paymentCard,
-                           Primer.shared.flow.internalSessionFlow.vaulted,
+                           Primer.shared.intent == .vault,
                            PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.is3DSOnVaultingEnabled,
                            paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
                            isThreeDSEnabled {
-                            #if canImport(Primer3DS)
+#if canImport(Primer3DS)
                             let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
                             DependencyContainer.register(threeDSService)
                             
@@ -307,35 +301,35 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                                 self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                                 return
                             }
-
+                            
                             threeDSService.perform3DS(
-                                    paymentMethodToken: paymentMethodToken,
+                                paymentMethodToken: paymentMethodToken,
                                 protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2,
                                 beginAuthExtraData: beginAuthExtraData,
-                                    sdkDismissed: { () in
-
-                                    }, completion: { result in
-                                        switch result {
-                                        case .success(let res):
-                                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: res.0)
-                                            
-                                        case .failure(let err):
-                                            // Even if 3DS fails, continue...
-                                            log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
-                                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
-                                            
-                                        }
-                                    })
+                                sdkDismissed: { () in
+                                    
+                                }, completion: { result in
+                                    switch result {
+                                    case .success(let res):
+                                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: res.0)
+                                        
+                                    case .failure(let err):
+                                        // Even if 3DS fails, continue...
+                                        log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
+                                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                                        
+                                    }
+                                })
                             
-                            #else
+#else
                             print("\nWARNING!\nCannot perform 3DS, Primer3DS SDK is missing. Continue without 3DS\n")
                             self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
-                            #endif
+#endif
                             
                         } else {
                             self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
                         }
-                
+                        
                     case .failure(let err):
                         let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: containerErr)
@@ -358,7 +352,6 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     
 }
 
-
 internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var cardnumberField: PrimerCardNumberFieldView
@@ -370,8 +363,6 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     var cardholderField: PrimerCardholderNameFieldView?
     
     var postalCodeField: PrimerPostalCodeFieldView?
-    
-    var flow: PaymentFlow
     
     var delegate: CardComponentsManagerDelegate?
     
@@ -390,7 +381,6 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     var paymentMethodsConfig: PrimerAPIConfiguration?
     
     public init(
-        flow: PaymentFlow,
         cardnumberField: PrimerCardNumberFieldView,
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,
@@ -398,7 +388,6 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         postalCodeField: PrimerPostalCodeFieldView
     ) {
         DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
-        self.flow = flow
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
@@ -412,7 +401,6 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         let cardnumberFieldView = PrimerCardNumberFieldView()
         cardnumberFieldView.textField._text = cardnumber
         self.init(
-            flow: .checkout,
             cardnumberField: cardnumberFieldView,
             expiryDateField: PrimerExpiryDateFieldView(),
             cvvField: PrimerCVVFieldView(),
@@ -424,7 +412,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     func tokenize() {
         
     }
-
+    
 }
 
 #endif

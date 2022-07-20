@@ -45,6 +45,14 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
+    override func start() {
+        self.didPresentExternalView = {
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type.rawValue)
+        }
+        
+        super.start()
+    }
+    
     override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         let event = Analytics.Event(
             eventType: .ui,
@@ -61,20 +69,22 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.makeSquareLogoImageView(withDimension: 24.0), message: nil)
+        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                ClientSessionAPIResponse.Action.selectPaymentMethodWithParametersIfNeeded(["paymentMethodType": self.config.type.rawValue])
+                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then {
-                self.tokenize()
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type.rawValue)
+                return self.tokenize()
             }
             .done { paymentMethodTokenData in
                 seal.fulfill(paymentMethodTokenData)
@@ -95,6 +105,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return self.createOAuthSession(url)
             }
             .then { url -> Promise<PaymentInstrument> in
+                self.didPresentExternalView?()
                 return self.createPaypalPaymentInstrument()
             }
             .then { instrument -> Promise<PaymentMethodToken> in
@@ -113,8 +124,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
             let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
             
-            switch Primer.shared.flow.internalSessionFlow.uxMode {
-            case .CHECKOUT:
+            switch Primer.shared.intent {
+            case .checkout:
                 paypalService.startOrderSession { result in
                     switch result {
                     case .success(let res):
@@ -132,7 +143,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         seal.reject(err)
                     }
                 }
-            case .VAULT:
+            case .vault:
                 paypalService.startBillingAgreementSession { result in
                     switch result {
                     case .success(let urlStr):
@@ -149,6 +160,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         seal.reject(err)
                     }
                 }
+            case .none:
+                assert(true, "Intent should already be set")
             }
         }
     }
@@ -223,7 +236,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private func createPaypalPaymentInstrument() -> Promise<PaymentInstrument> {
         return Promise { seal in
-            if Primer.shared.flow.internalSessionFlow.vaulted {
+            if Primer.shared.intent == .vault {
                 firstly {
                     self.generateBillingAgreementConfirmation()
                 }
@@ -283,8 +296,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func generatePaypalPaymentInstrument(externalPayerInfo: ExternalPayerInfo?, completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
-        switch Primer.shared.flow.internalSessionFlow.uxMode {
-        case .CHECKOUT:
+        switch Primer.shared.intent {
+        case .checkout:
             guard let orderId = orderId else {
                 let err = PrimerError.invalidValue(key: "orderId", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -302,7 +315,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             let paymentInstrument = PaymentInstrument(paypalOrderId: orderId, externalPayerInfo: externalPayerInfo)
             completion(.success(paymentInstrument))
             
-        case .VAULT:
+        case .vault:
             guard let confirmedBillingAgreement = self.confirmBillingAgreementResponse else {
                 let err = PrimerError.invalidValue(key: "confirmedBillingAgreement", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -316,6 +329,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             )
             
             completion(.success(paymentInstrument))
+            
+        case .none:
+            assert(true, "Intent should have been set.")
         }
     }
     

@@ -26,7 +26,7 @@ internal class QRCodeViewController: PrimerFormViewController {
     init(viewModel: QRCodeTokenizationViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.originalImage
+        self.titleImage = viewModel.uiModule.originalImage
     }
     
     required init?(coder: NSCoder) {
@@ -82,21 +82,13 @@ internal class QRCodeViewController: PrimerFormViewController {
         separatorView.heightAnchor.constraint(equalToConstant: 10).isActive = true
         
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("scanToPay",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Scan to pay or take a screenshot",
-                                                comment: "Scan to pay or take a screenshot - QR code screen title label")
+        titleLabel.text = Strings.QRCodeView.scanToCodeTitle
         titleLabel.font = UIFont.systemFont(ofSize: 20)
         titleLabel.textColor = theme.text.title.color
         verticalStackView.addArrangedSubview(titleLabel)
         
         let subtitleLabel = UILabel()
-        subtitleLabel.text = NSLocalizedString("uploadScreenshot",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Upload the screenshot in your banking app.",
-                                                comment: "Upload the screenshot in your banking app. - QR code screen subtitle label")
+        subtitleLabel.text = Strings.QRCodeView.uploadScreenshotTitle
         subtitleLabel.numberOfLines = 2
         subtitleLabel.font = UIFont.systemFont(ofSize: 15)
         subtitleLabel.textColor = theme.text.title.color
@@ -114,11 +106,7 @@ internal class QRCodeViewController: PrimerFormViewController {
         
         let qrCodeImageView = UIImageView(image: qrImg)
         qrCodeImageView.accessibilityIdentifier = "qrCode"
-        qrCodeImageView.accessibilityHint = NSLocalizedString("qrCode",
-                                                              tableName: nil,
-                                                              bundle: Bundle.primerResources,
-                                                              value: "QR Code",
-                                                              comment: "QR Code - QR code screen subtitle label")
+        qrCodeImageView.accessibilityHint = Strings.QRCodeView.qrCodeImageSubtitle
         qrCodeImageView.translatesAutoresizingMaskIntoConstraints = false
         qrCodeImageView.widthAnchor.constraint(equalToConstant: 270).isActive = true
         qrCodeImageView.heightAnchor.constraint(equalToConstant: 270).isActive = true

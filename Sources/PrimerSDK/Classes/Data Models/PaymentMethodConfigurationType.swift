@@ -41,8 +41,11 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
     case primerTestPayPal
     case primerTestKlarna
     case primerTestSofort
+    case rapydGCash
     case twoCtwoP
+    case rapydGrabPay
     case xfers
+    case rapydPoli
     case opennode
     case other(rawValue: String)
     
@@ -123,10 +126,16 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
             self = .primerTestKlarna
         case "PRIMER_TEST_SOFORT":
             self = .primerTestSofort
+        case "RAPYD_GCASH":
+            self = .rapydGCash
         case "TWOC2P":
             self = .twoCtwoP
+        case "RAPYD_GRABPAY":
+            self = .rapydGrabPay
         case "XFERS_PAYNOW":
             self = .xfers
+        case "RAPYD_POLI":
+            self = .rapydPoli
         case "OPENNODE":
             self = .opennode
         default:
@@ -210,12 +219,18 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
             return "PRIMER_TEST_KLARNA"
         case .primerTestSofort:
             return "PRIMER_TEST_SOFORT"
+        case .rapydGCash:
+            return "RAPYD_GCASH"
         case .twoCtwoP:
             return "TWOC2P"
+        case .rapydGrabPay:
+            return "RAPYD_GRABPAY"
         case .xfers:
             return "XFERS_PAYNOW"
         case .opennode:
             return "OPENNODE"
+        case .rapydPoli:
+            return "RAPYD_POLI"
         case .other(let rawValue):
             return rawValue
         }
@@ -251,33 +266,116 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq,
+                .primerTestKlarna,
+                .primerTestPayPal,
                 .primerTestSofort,
                 .opennode,
                 .twoCtwoP,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli,
                 .xfers:
-            guard let flow = Primer.shared.flow else { return false }
-            return !flow.internalSessionFlow.vaulted
+            return Primer.shared.intent == .checkout
             
         case .apaya:
-            guard let flow = Primer.shared.flow else { return false }
-            return flow.internalSessionFlow.vaulted
+            return Primer.shared.intent == .vault
             
         case .goCardlessMandate,
-                .googlePay:
+                .googlePay,
+                .other:
             return false
             
         case .klarna,
-				.paymentCard,
-                .payPal,
-                .primerTestPayPal,
-                .primerTestKlarna:
+                .paymentCard,
+                .payPal:
             return true
-        
-        case .other:
-            return false
         }
     }
     // swiftlint:enable cyclomatic_complexity
+    
+    var title: String {
+        switch self {
+        case .adyenAlipay:
+            return "Adyen Ali Pay"
+        case .adyenDotPay:
+            return "Dot Pay"
+        case .adyenGiropay:
+            return "Giropay"
+        case .adyenIDeal:
+            return "iDeal"
+        case .apaya:
+            return "Apaya"
+        case .applePay:
+            return "Apple Pay"
+        case .atome:
+            return "Atome"
+        case .buckarooBancontact:
+            return "Buckaroo Bancontact"
+        case .buckarooEps:
+            return "Buckaroo EPS"
+        case .buckarooGiropay:
+            return "Buckaroo Giropay"
+        case .buckarooIdeal:
+            return "Buckaroo iDeal"
+        case .buckarooSofort:
+            return "Buckaroo Sofort"
+        case .goCardlessMandate:
+            return "Go Cardless"
+        case .googlePay:
+            return "Google Pay"
+        case .hoolah:
+            return "Hoolah"
+        case .adyenInterac:
+            return "Interac"
+        case .klarna,
+                .primerTestKlarna:
+            return "Klarna"
+        case .mollieBankcontact:
+            return "Mollie Bancontact"
+        case .mollieIdeal:
+            return "Mollie iDeal"
+        case .paymentCard:
+            return "Payment Card"
+        case .payNLBancontact:
+            return "Pay NL Bancontact"
+        case .payNLGiropay:
+            return "Pay NL Giropay"
+        case .payNLIdeal:
+            return "Pay NL Ideal"
+        case .payNLPayconiq:
+            return "Pay NL Payconiq"
+        case .adyenSofort,
+                .primerTestSofort:
+            return "Sofort"
+        case .adyenTwint:
+            return "Twint"
+        case .adyenTrustly:
+            return "Trustly"
+        case .adyenMobilePay:
+            return "Mobile Pay"
+        case .adyenVipps:
+            return "Vipps"
+        case .adyenPayTrail:
+            return "Pay Trail"
+        case .payPal,
+                .primerTestPayPal:
+            return "PayPal"
+        case .rapydGCash:
+            return "GCash"
+        case .rapydGrabPay:
+            return "Grab Pay"
+        case .rapydPoli:
+            return "Poli"
+        case .xfers:
+            return "XFers"
+        case .other:
+            return "Other"
+            
+        default:
+            assert(true, "Shouldn't end up in here")
+            return ""
+        }
+    }
     
     private enum CodingKeys: String, CodingKey {
         case adyenAlipay
@@ -316,8 +414,11 @@ public enum PrimerPaymentMethodType: Codable, Equatable, Hashable {
         case paymentCard
         case payPal
         case twoCtwoP
+        case rapydGCash
         case xfers
+        case rapydGrabPay
         case opennode
+        case rapydPoli
         case other
     }
     

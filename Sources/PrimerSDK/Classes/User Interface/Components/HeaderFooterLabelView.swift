@@ -1,9 +1,6 @@
-//
-//  File.swift
-//  PrimerSDK
-//
-//  Created by Dario Carlomagno on 31/05/22.
-//
+#if canImport(UIKit)
+
+import UIKit
 
 class HeaderFooterLabelView: UITableViewHeaderFooterView {
 
@@ -42,3 +39,5 @@ extension HeaderFooterLabelView {
         label.text = text
     }
 }
+
+#endif

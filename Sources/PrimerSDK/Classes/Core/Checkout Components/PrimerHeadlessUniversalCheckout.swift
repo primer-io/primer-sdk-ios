@@ -14,23 +14,20 @@ public class PrimerHeadlessUniversalCheckout {
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate?
     private(set) public var clientToken: String?
     public static let current = PrimerHeadlessUniversalCheckout()
+    private let unsupportedPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenIDeal, .adyenDotPay, .adyenBlik, .goCardlessMandate, .primerTestKlarna, .primerTestSofort, .primerTestPayPal, .xfers]
     
     fileprivate init() {}
     
     public func start(withClientToken clientToken: String, settings: PrimerSettings? = nil, delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil, completion: @escaping (_ paymentMethodTypes: [PrimerPaymentMethodType]?, _ err: Error?) -> Void) {
+        Primer.shared.intent = .checkout
         
         if delegate != nil {
             PrimerHeadlessUniversalCheckout.current.delegate = delegate
         }
         
-        guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
-            let err = PrimerError.missingPrimerCheckoutComponentsDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            DispatchQueue.main.async {
-                completion(nil, err)
-            }
-            return
-        }
+        if PrimerHeadlessUniversalCheckout.current.delegate == nil {
+                    print("WARNING: PrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
+                }
                         
         if let settings = settings {
             DependencyContainer.register(settings as PrimerSettingsProtocol)
@@ -40,7 +37,7 @@ public class PrimerHeadlessUniversalCheckout {
             return ClientTokenService.storeClientToken(clientToken)
         }
         .then { () -> Promise<Void> in
-            PrimerHeadlessUniversalCheckout.current.clientToken = clientToken
+            self.clientToken = clientToken
             let primerConfigurationService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
             return primerConfigurationService.fetchConfig()
         }
@@ -129,7 +126,7 @@ public class PrimerHeadlessUniversalCheckout {
     }
 
     internal func listAvailablePaymentMethodsTypes() -> [PrimerPaymentMethodType]? {
-        return PrimerAPIConfiguration.paymentMethodConfigs?.compactMap({ $0.type })
+        return PrimerAPIConfiguration.paymentMethodConfigs?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
     
     public func listRequiredInputElementTypes(for paymentMethodType: PrimerPaymentMethodType) -> [PrimerInputElementType]? {
@@ -217,7 +214,13 @@ public class PrimerHeadlessUniversalCheckout {
             return []
         case .opennode:
             return []
+        case .rapydGCash:
+            return []
         case .twoCtwoP:
+            return []
+        case .rapydPoli:
+            return []
+        case .rapydGrabPay:
             return []
         case .other(_):
             return []
@@ -227,7 +230,7 @@ public class PrimerHeadlessUniversalCheckout {
     public static func makeButton(for paymentMethodType: PrimerPaymentMethodType) -> UIButton? {
         guard let paymentMethodConfigs = PrimerAPIConfiguration.paymentMethodConfigs else { return nil }
         guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
-        return paymentMethodConfig.tokenizationViewModel?.paymentMethodButton
+        return paymentMethodConfig.tokenizationViewModel?.uiModule.paymentMethodButton
     }
 
     public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType) -> UIImage? {
@@ -242,8 +245,23 @@ public class PrimerHeadlessUniversalCheckout {
         return PrimerAsset.getAsset(for: cardNetwork, assetType: assetType)
     }
     
-    public func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType) {
+    public func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType, completion: ((_ viewController: UIViewController) -> Void)? = nil) {
         DispatchQueue.main.async {
+            let appState: AppStateProtocol = DependencyContainer.resolve()
+            guard let clientToken = appState.clientToken else {
+                print("WARNING: Make sure you have called 'start(withClientToken:settings:delegate:completion:' with a valid client token prior to showing a payment method.")
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
+                return
+            }
+            
+            if self.unsupportedPaymentMethodTypes.contains(paymentMethod) || paymentMethod == .paymentCard {
+                let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
+                return
+            }
             
             PrimerSettings.current.uiOptions.isInitScreenEnabled = false
             PrimerSettings.current.uiOptions.isSuccessScreenEnabled = false
@@ -255,29 +273,29 @@ public class PrimerHeadlessUniversalCheckout {
                     .other:
                 let err = PrimerError.missingCustomUI(paymentMethod: paymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
                 return
             case .applePay:
                 if PrimerSettings.current.paymentMethodOptions.applePayOptions == nil {
-                    let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "settings.paymentMethodOptions.applePayOptions", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
-                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
+                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
                     return
                 }
+                
             case .payPal:
                 if PrimerSettings.current.paymentMethodOptions.urlScheme == nil {
                     let err = PrimerError.invalidUrlScheme(urlScheme: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
-                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutUniversalCheckoutDidFail(withError: err)
+                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
                     return
                 }
             default:
                 break
             }
             
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationStarted()
-            
-//            Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationDidStart?(for: paymentMethod.rawValue)
+            Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout, andClientToken: clientToken)
         }
     }
 }
@@ -357,10 +375,16 @@ public struct PrimerAsset {
             brand = .payPal
         case .twoCtwoP:
             brand = .twoCtwoP
+        case .rapydGCash:
+            brand = .gCash
         case .xfers:
             brand = .xfers
+        case .rapydGrabPay:
+            brand = .grabPay
         case .opennode:
             brand = .opennode
+        case .rapydPoli:
+            brand = .poli
         case .other:
             return nil
         }
@@ -420,6 +444,7 @@ public struct PrimerAsset {
         case wordline, worldPay = "worldpay"
         case twoCtwoP = "2c2p"
         case xfers
+        case poli
         case opennode
         
         public func getImage(assetType: PrimerAsset.ImageType) -> UIImage? {
@@ -447,6 +472,7 @@ public struct PrimerAsset {
 }
 
 extension PrimerHeadlessUniversalCheckout {
+    
     internal class Delegate: NSObject, UITextFieldDelegate {
         
         private var inputElement: PrimerInputElement
@@ -498,9 +524,6 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
             
-//            DispatchQueue.global(qos: .userInitiated).async {
-//            DispatchQueue.main.async {
-            
             if self.inputElement.type == .cardNumber {
                 if let cardNetwork = self.inputElement.type.detectType(for: newText) as? CardNetwork {
                     if self.detectedType == nil, cardNetwork != .unknown {
@@ -543,7 +566,6 @@ extension PrimerHeadlessUniversalCheckout {
             return false
         }
     }
-    
 }
 
 #endif

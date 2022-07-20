@@ -37,7 +37,8 @@ internal class PrimerInputViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(stackView)
         }
         
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.submitButton)
+        guard let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton else { return }
+        verticalStackView.addArrangedSubview(submitButton)
     }
 
 }

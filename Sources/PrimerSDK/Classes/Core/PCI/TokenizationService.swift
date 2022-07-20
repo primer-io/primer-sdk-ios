@@ -71,7 +71,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 ///     - is3DSOnVaultingEnabled has to be enabled by the developer
                 ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
                 if paymentMethodToken.paymentInstrumentType == .paymentCard,
-                   Primer.shared.flow.internalSessionFlow.vaulted,
+                   Primer.shared.intent == .vault,
                    PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.is3DSOnVaultingEnabled,
                    paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
                    isThreeDSEnabled {

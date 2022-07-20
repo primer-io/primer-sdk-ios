@@ -102,14 +102,14 @@ extension ManualPaymentMerchantCheckoutViewController: PrimerDelegate {
     // Required
     
     func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Success: \(data)\n")
+        print("\n\n🤯🤯🤯 \(#function)\ndata: \(data)")
         self.checkoutData = data
     }
     
     // Optional
     
     func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPayment Method: \(paymentMethodTokenData)\n")
+        print("\n\n🤯🤯🤯 \(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
 
         if paymentMethodTokenData.paymentInstrumentType == .paymentCard,
            let threeDSecureAuthentication = paymentMethodTokenData.threeDSecureAuthentication,
@@ -174,7 +174,7 @@ extension ManualPaymentMerchantCheckoutViewController: PrimerDelegate {
     }
 
     func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
-        print("MERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nResume payment for clientToken:\n\(resumeToken as String)")
+        print("\n\n🤯🤯🤯 \(#function)\nresumeToken: \(resumeToken)")
         
         guard let transactionResponse = transactionResponse,
               let url = URL(string: "\(endpoint)/api/payments/\(transactionResponse.id)/resume")
@@ -226,7 +226,7 @@ extension ManualPaymentMerchantCheckoutViewController: PrimerDelegate {
     }
     
     func primerDidDismiss() {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nPrimer view dismissed\n")
+        print("\n\n🤯🤯🤯 \(#function)")
         
         DispatchQueue.main.async { [weak self] in
             self?.fetchPaymentMethodsForCustomerId(self?.customerId)
@@ -244,7 +244,7 @@ extension ManualPaymentMerchantCheckoutViewController: PrimerDelegate {
     }
     
     func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
-        print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nError: \(error)")
+        print("\n\n🤯🤯🤯 \(#function)\nerror: \(error)\ndata: \(data)")
         let message = "Merchant App | ERROR"
         decisionHandler(.fail(withErrorMessage: message))
     }

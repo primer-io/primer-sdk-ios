@@ -26,8 +26,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     }
 
     var amountStringed: String? {
-        if Primer.shared.flow == nil { return nil }
-        if Primer.shared.flow.internalSessionFlow.vaulted { return nil }
+        if (Primer.shared.intent ?? .vault) == .vault { return nil }
         
         guard let amount = AppState.current.amount else { return nil }
         guard let currency = AppState.current.currency else { return nil }

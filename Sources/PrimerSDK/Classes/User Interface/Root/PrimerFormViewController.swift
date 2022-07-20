@@ -43,19 +43,15 @@ class PrimerFormViewController: PrimerViewController {
         let otherPaymentMethodsTitleLabel = UILabel()
         otherPaymentMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         otherPaymentMethodsTitleLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
-        otherPaymentMethodsTitleLabel.text = NSLocalizedString("primer-vault-payment-method-available-payment-methods",
-                                                               tableName: nil,
-                                                               bundle: Bundle.primerResources,
-                                                               value: "Available payment methods",
-                                                               comment: "Available payment methods - Vault Checkout 'Available payment methods' Title").localizedUppercase
+        otherPaymentMethodsTitleLabel.text = Strings.VaultPaymentMethodViewContent.mainTitleText.localizedUppercase
         
         otherPaymentMethodsTitleLabel.textColor = theme.text.subtitle.color
         otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         availablePaymentMethodsContainerStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
         
-        if Primer.shared.flow.internalSessionFlow.vaulted {
+        if Primer.shared.intent == .vault {
             for viewModel in paymentMethodTokenizationViewModels {
-                availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.paymentMethodButton)
+                availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.uiModule.paymentMethodButton)
             }
             stackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
             
@@ -71,7 +67,7 @@ class PrimerFormViewController: PrimerViewController {
                 additionalFeePaymentMethodsViewModels.isEmpty,
                 unknownFeePaymentMethodsViewModels.isEmpty {
                 for viewModel in noAdditionalFeePaymentMethodsViewModels {
-                    availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.paymentMethodButton)
+                    availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.uiModule.paymentMethodButton)
                 }
                 stackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
                 return
@@ -86,11 +82,7 @@ class PrimerFormViewController: PrimerViewController {
             
             if !noAdditionalFeePaymentMethodsViewModels.isEmpty {
                 let noAdditionalFeesContainerView = PaymentMethodsGroupView(
-                    title: NSLocalizedString("no_additional_fee",
-                                             tableName: nil,
-                                             bundle: Bundle.primerResources,
-                                             value: "No additional fee",
-                                             comment: "No additional fee - Universal Checkout section text"),
+                    title: Strings.CardFormView.noAdditionalFeesTitle,
                     paymentMethodTokenizationViewModels: noAdditionalFeePaymentMethodsViewModels)
                 noAdditionalFeesContainerView.accessibilityIdentifier = "no_additional_fees_surcharge_group_view"
                 noAdditionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
@@ -99,7 +91,7 @@ class PrimerFormViewController: PrimerViewController {
             
             if !additionalFeePaymentMethodsViewModels.isEmpty {
                 for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
-                    let title = additionalFeePaymentMethodsViewModel.surcharge
+                    let title = additionalFeePaymentMethodsViewModel.uiModule.surchargeSectionText
                     let additionalFeesContainerView = PaymentMethodsGroupView(title: title, paymentMethodTokenizationViewModels: [additionalFeePaymentMethodsViewModel])
                     additionalFeesContainerView.accessibilityIdentifier = "\(additionalFeePaymentMethodsViewModel.config.type.rawValue.lowercased())_surcharge_group_view"
                     additionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
@@ -109,11 +101,7 @@ class PrimerFormViewController: PrimerViewController {
             
             if !unknownFeePaymentMethodsViewModels.isEmpty {
                 let unknownFeesContainerView = PaymentMethodsGroupView(
-                    title: NSLocalizedString("surcharge-additional-fee",
-                                             tableName: nil,
-                                             bundle: Bundle.primerResources,
-                                             value: "Additional fee may apply",
-                                             comment: "Additional fee may apply - Surcharge (Label)"),
+                    title: Strings.CardFormView.additionalFeesTitle,
                     paymentMethodTokenizationViewModels: unknownFeePaymentMethodsViewModels)
                 unknownFeesContainerView.accessibilityIdentifier = "additional_fees_surcharge_group_view"
                 

@@ -18,6 +18,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     private var decisionSelectionCompletion: ((PrimerTestPaymentMethodOptions.FlowDecision) -> Void)?
     private var payButtonTappedCompletion: (() -> Void)?
     private var lastSelectedIndexPath: IndexPath?
+    let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     var viewHeight: CGFloat {
         180+(CGFloat(decisions.count)*tableView.rowHeight)
@@ -48,23 +49,8 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         case .primerTestSofort:
             return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
-            return buttonImage
+            return uiModule.buttonImage
         }
-    }()
-    
-    lazy var submitButton: PrimerButton = {
-        let submitButton = PrimerButton()
-        submitButton.translatesAutoresizingMaskIntoConstraints = false
-        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        submitButton.isAccessibilityElement = true
-        submitButton.accessibilityIdentifier = "submit_btn"
-        submitButton.isEnabled = false
-        submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-        submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
-        submitButton.layer.cornerRadius = 4
-        submitButton.clipsToBounds = true
-        submitButton.addTarget(self, action: #selector(payButtonTapped(_:)), for: .touchUpInside)
-        return submitButton
     }()
     
     // MARK: - Deinit
@@ -75,42 +61,25 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     
     // MARK: - Overrides
     
-    override var originalImage: UIImage? {
-        get {
-            _originalImage
-        }
-        set {
-            _originalImage = newValue
-        }
-    }
-    
-    override func validate() throws {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-    }
-    
     override func start() {
         
         self.didStartTokenization = {
-            self.submitButton.startAnimating()
+            self.uiModule.submitButton?.startAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         }
         
         self.didFinishTokenization = { err in
-            self.submitButton.stopAnimating()
+            self.uiModule.submitButton?.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
         
         self.didStartPayment = {
-            self.submitButton.startAnimating()
+            self.uiModule.submitButton?.startAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         }
         
         self.didFinishPayment = { err in
-            self.submitButton.stopAnimating()
+            self.uiModule.submitButton?.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
         
@@ -178,47 +147,14 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
             }
         }
     }
-}
-
-extension PrimerTestPaymentMethodTokenizationViewModel {
     
-    // MARK: - UI Helpers
-    
-    func updateButtonUI() {
-        if let amount = AppState.current.amount {
-            self.configurePayButton(amount: amount)
-        }
-    }
-    
-    private func configurePayButton(amount: Int) {
-        var title = Strings.PrimerButton.pay
-        if !Primer.shared.flow.internalSessionFlow.vaulted {
-            if let currency = AppState.current.currency {
-                title += " \(amount.toCurrencyString(currency: currency))"
-            }
-            self.submitButton.setTitle(title, for: .normal)
-        }
-    }
-    
-    private func enableSubmitButtonIfNeeded() {
+    override func validate() throws {
         
-        if lastSelectedIndexPath != nil {
-            submitButton.isEnabled = true
-            submitButton.backgroundColor = theme.mainButton.color(for: .enabled)
-        } else {
-            submitButton.isEnabled = false
-            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
-        }
     }
-}
-
-extension PrimerTestPaymentMethodTokenizationViewModel {
     
     // MARK: - Pay Action
     
-    @objc
-    private func payButtonTapped(_ sender: UIButton) {
-        
+    override func submitButtonTapped() {
         let viewEvent = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -235,6 +171,37 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
         Analytics.Service.record(event: viewEvent)
         
         payButtonTappedCompletion?()
+    }
+}
+
+extension PrimerTestPaymentMethodTokenizationViewModel {
+    
+    // MARK: - UI Helpers
+    
+    func updateButtonUI() {
+        if let amount = AppState.current.amount {
+            self.configurePayButton(amount: amount)
+        }
+    }
+    
+    private func configurePayButton(amount: Int) {
+        var title = Strings.PaymentButton.pay
+        if Primer.shared.intent == .checkout {
+            if let currency = AppState.current.currency {
+                title += " \(amount.toCurrencyString(currency: currency))"
+            }
+            self.uiModule.submitButton?.setTitle(title, for: .normal)
+        }
+    }
+    
+    private func enableSubmitButtonIfNeeded() {
+        if lastSelectedIndexPath != nil {
+            self.uiModule.submitButton?.isEnabled = true
+            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
+        } else {
+            self.uiModule.submitButton?.isEnabled = false
+            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
+        }
     }
 }
 
@@ -344,7 +311,7 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         updateButtonUI()
-        let stackView = UIStackView(arrangedSubviews: [submitButton])
+        let stackView = UIStackView(arrangedSubviews: [uiModule.submitButton!])
         stackView.alignment = .center
         stackView.spacing = 16
         return stackView

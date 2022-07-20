@@ -268,7 +268,7 @@ public struct ClientSessionRequestBody {
 }
 
 public struct ClientSessionAction: Encodable {
-    let actions: [ClientSessionAPIResponse.Action]
+    let actions: [ClientSession.Action]
 }
 
 public struct ClientSessionUpdateRequest: Encodable {
@@ -417,6 +417,7 @@ public struct Payment {
         public enum Status: String, Codable {
             case authorized = "AUTHORIZED"
             case settled = "SETTLED"
+            case settling = "SETTLING"
             case declined = "DECLINED"
             case failed = "FAILED"
             case pending = "PENDING"
