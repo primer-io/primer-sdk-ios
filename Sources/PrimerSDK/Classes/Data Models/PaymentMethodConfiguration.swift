@@ -15,6 +15,31 @@ class PrimerPaymentMethod: Codable {
         return AppState.current.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
     }
     
+    static func getBundledImageFileName(for paymentMethodType: String, assetType: PrimerAsset.ImageType) -> String? {
+        var tmpPaymentMethodFileNameFirstComponent: String?
+        
+        guard let supportedPaymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) else { return nil }
+        
+        if supportedPaymentMethodType == .xfersPayNow {
+            tmpPaymentMethodFileNameFirstComponent = supportedPaymentMethodType.provider
+        } else if supportedPaymentMethodType.provider == paymentMethodType {
+            tmpPaymentMethodFileNameFirstComponent = paymentMethodType
+        } else if paymentMethodType.starts(with: "\(supportedPaymentMethodType.provider)_") {
+            tmpPaymentMethodFileNameFirstComponent = paymentMethodType.replacingOccurrences(of: "\(supportedPaymentMethodType.provider)_", with: "")
+        } else {
+            return nil
+        }
+        
+        tmpPaymentMethodFileNameFirstComponent = tmpPaymentMethodFileNameFirstComponent!.lowercased().replacingOccurrences(of: "_", with: "-")
+        
+        switch assetType {
+        case .logo:
+            return "\(tmpPaymentMethodFileNameFirstComponent!)-logo-colored"
+        case .icon:
+            return "\(tmpPaymentMethodFileNameFirstComponent!)-icon-colored"
+        }
+    }
+    
     let id: String? // Will be nil for cards
     let implementationType: PrimerPaymentMethod.ImplementationType
     let type: String
