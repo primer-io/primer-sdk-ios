@@ -18,6 +18,7 @@ internal class File {
     var fileExtension: FileExtension
     var localUrl: URL?
     var remoteUrl: URL?
+    var base64Data: Data?
     
     var data: Data? {
         guard let localUrl = localUrl else { return nil }
@@ -28,12 +29,14 @@ internal class File {
         fileName: FileName,
         fileExtension: FileExtension,
         localUrl: URL? = nil,
-        remoteUrl: URL? = nil
+        remoteUrl: URL? = nil,
+        base64Data: Data?
     ) {
         self.fileName = fileName
         self.fileExtension = fileExtension
         self.localUrl = localUrl
         self.remoteUrl = remoteUrl
+        self.base64Data = base64Data
     }
 }
 
@@ -54,6 +57,8 @@ internal class Downloader: NSObject, DownloaderModule {
                 return
             }
             
+            let primerDirectoryUrl = documentDirectoryUrl.appendingPathComponent("primer", isDirectory: true)
+            
             var promises: [Promise<Void>] = []
             
             for file in files {
@@ -64,7 +69,7 @@ internal class Downloader: NSObject, DownloaderModule {
                     tmpFilename = directory + "/" + tmpFilename
                 }
                 
-                let fileLocalUrl = documentDirectoryUrl.appendingPathComponent(tmpFilename)
+                let fileLocalUrl = primerDirectoryUrl.appendingPathComponent(tmpFilename)
                 file.localUrl = fileLocalUrl
                 let p = self.downloadData(from: fileRemoteUrl, to: fileLocalUrl)
                 promises.append(p)
@@ -128,6 +133,19 @@ internal class Downloader: NSObject, DownloaderModule {
                 seal.fulfill(file)
             }
             .catch { err in
+                if let primerErr = err as? PrimerError {
+                    switch primerErr {
+                    
+                    case .underlyingErrors(let errors, _, _):
+                        if errors.filter({ ($0 as NSError).code == 516 }).first != nil {
+                            seal.fulfill(file)
+                            return
+                        }
+                    default:
+                        break
+                    }
+                }
+                
                 seal.reject(err)
             }
         }
@@ -137,7 +155,7 @@ internal class Downloader: NSObject, DownloaderModule {
         return Promise { seal in
             let sessionConfig = URLSessionConfiguration.default
             let session = URLSession(configuration: sessionConfig)
-            let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 30)
+            let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 30)
             
             let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
                 if let error = error {
@@ -179,12 +197,6 @@ internal class Downloader: NSObject, DownloaderModule {
             
             task.resume()
         }
-    }
-}
-
-extension Downloader: FileManagerDelegate {
-    func fileManager(_ fileManager: FileManager, shouldProceedAfterError error: Error, copyingItemAt srcURL: URL, to dstURL: URL) -> Bool {
-        return true
     }
 }
 
