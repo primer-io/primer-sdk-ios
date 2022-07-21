@@ -47,8 +47,8 @@ public class PrimerHeadlessUniversalCheckout {
         }
         .then { () -> Promise<Void> in
             self.clientToken = clientToken
-            let primerConfigurationService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            return primerConfigurationService.fetchConfig()
+            let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+            return configurationService.fetchConfiguration()
         }
         .done {
             let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()

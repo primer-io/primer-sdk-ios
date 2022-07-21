@@ -29,15 +29,17 @@ class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
         if MockClientTokenService.decodedClientToken.exists {
-            let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            paymentMethodConfigService.fetchConfig({ err in
-                if let err = err {
-                    completion(err)
-                } else {
-                    let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-                    vaultService.loadVaultedPaymentMethods(completion)
-                }
-            })
+            let configurationService: PrimerAPIConfigurationServiceProtocol = DependencyContainer.resolve()
+            firstly {
+                configurationService.fetchConfiguration()
+            }
+            .done {
+                let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                vaultService.loadVaultedPaymentMethods(completion)
+            }
+            .catch { err in
+                completion(err)
+            }
         } else {
             let clientTokenService: ClientTokenServiceProtocol = DependencyContainer.resolve()
             if clientTokenService is MockClientTokenService {

@@ -60,15 +60,17 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
 
     func loadConfig(_ completion: @escaping (Error?) -> Void) {
         if ClientTokenService.decodedClientToken != nil {
-            let paymentMethodConfigService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            paymentMethodConfigService.fetchConfig({ err in
-                if let err = err {
-                    completion(err)
-                } else {
-                    let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-                    vaultService.loadVaultedPaymentMethods(completion)
-                }
-            })
+            let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+            firstly {
+                configurationService.fetchConfiguration()
+            }
+            .done {
+                let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+                vaultService.loadVaultedPaymentMethods(completion)
+            }
+            .catch { err in
+                completion(err)
+            }
         } else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
