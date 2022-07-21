@@ -31,12 +31,12 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     lazy var logo: UIImage? = {
-        guard let imageName = paymentMethodTokenizationViewModel.config.imageName else { return nil }
+        guard let imageName = paymentMethodTokenizationViewModel.config.imageFiles?.colored.image else { return nil }
         return UIImage(named: "\(imageName)-logo", in: Bundle.primerResources, compatibleWith: nil)
     }()
     
     lazy var icon: UIImage? = {
-        guard let imageName = paymentMethodTokenizationViewModel.config.imageName else { return nil }
+        guard let imageName = paymentMethodTokenizationViewModel.config.imageFiles?.colored.image else { return nil }
         
         // In case we don't have a square icon, we show the icon image
         let imageLogoSquare = UIImage(named: "\(imageName)-logo-square", in: Bundle.primerResources, compatibleWith: nil)
@@ -62,22 +62,28 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     
     lazy var buttonTitle: String? = {
         switch paymentMethodTokenizationViewModel.config.type {
-            return NSLocalizedString("payment-method-type-pay-by-mobile",
         case PrimerPaymentMethodType.apaya.rawValue:
+            return NSLocalizedString(paymentMethodTokenizationViewModel.config.data?.button.text ?? "payment-method-type-pay-by-mobile",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: "Pay by mobile",
+                                     value: paymentMethodTokenizationViewModel.config.data?.button.text ?? "Pay by mobile",
                                      comment: "Pay by mobile - Payment By Mobile (Apaya)")
             
         case PrimerPaymentMethodType.paymentCard.rawValue:
             return Primer.shared.intent == .vault
-            ? NSLocalizedString("payment-method-type-card-vaulted",
+            ? NSLocalizedString(paymentMethodTokenizationViewModel.config.data?.button.text ?? "payment-method-type-card-vaulted",
                                 tableName: nil,
                                 bundle: Bundle.primerResources,
-                                value: "Add new card",
+                                value: paymentMethodTokenizationViewModel.config.data?.button.text ?? "Add new card",
                                 comment: "Add new card - Payment Method Type (Card Vaulted)")
             
-        case .twoCtwoP:
+            : NSLocalizedString(paymentMethodTokenizationViewModel.config.data?.button.text ?? "payment-method-type-card-not-vaulted",
+                                tableName: nil,
+                                bundle: Bundle.primerResources,
+                                value: paymentMethodTokenizationViewModel.config.data?.button.text ?? "Pay with card",
+                                comment: "Pay with card - Payment Method Type (Card Not vaulted)")
+
+		case .twoCtwoP:
             return Strings.PaymentButton.payInInstallments
             
         default:
@@ -87,8 +93,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }()
     
     lazy var buttonImage: UIImage? = {
-        guard let imageName = paymentMethodTokenizationViewModel.config.imageName else { return nil }
-        return UIImage(named: "\(imageName)-logo", in: Bundle.primerResources, compatibleWith: nil)
+        return paymentMethodTokenizationViewModel.config.imageFiles?.colored.image
     }()
     
     lazy var buttonFont: UIFont? = {
@@ -96,14 +101,21 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }()
     
     lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
+        guard let cornerRadius = paymentMethodTokenizationViewModel.config.data?.button.cornerRadius else { return 4.0 }
+        return CGFloat(cornerRadius)
     }()
     
     lazy var buttonColor: UIColor? = {
-        return .black
+        guard let hexColor = paymentMethodTokenizationViewModel.config.data?.button.backgroundColor?.colored else { return nil }
+        return PrimerColor(hex: hexColor)
     }()
     
     lazy var buttonTitleColor: UIColor? = {
+        var titleColor: UIColor?
+        if let coloredVal = paymentMethodTokenizationViewModel.config.data?.button.textColor?.colored {
+            return PrimerColor(hex: coloredVal)
+        }
+        
         switch paymentMethodTokenizationViewModel.config.type {
         case PrimerPaymentMethodType.apaya.rawValue,
             PrimerPaymentMethodType.paymentCard.rawValue:
@@ -115,36 +127,13 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }()
     
     lazy var buttonBorderWidth: CGFloat = {
-        switch paymentMethodTokenizationViewModel.config.type {
-        case "ADYEN_DOTPAY",
-                "APAYA",
-                "BUCKAROO_BANCONTACT",
-                "BUCKAROO_EPS",
-                "MOLLIE_BANCONTACT",
-                "PAY_NL_BANCONTACT",
-                "PAYMENT_CARD":
-            return 1.0
-        default:
-            return 0.0
-        }
+        guard let borderWidth = paymentMethodTokenizationViewModel.config.data?.button.borderWidth else { return 0.0 }
+        return CGFloat(borderWidth)
     }()
     
     lazy var buttonBorderColor: UIColor? = {
-        switch paymentMethodTokenizationViewModel.config.type {
-        case "APAYA",
-            "PAYMENT CARD":
-            return theme.paymentMethodButton.text.color
-            
-        case "BUCKAROO_BANCONTACT",
-            "BUCKAROO_EPS",
-            "MOLLIE_BANCONTACT",
-            "PAY_NL_BANCONTACT":
-            return .black
-            
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
+        guard let borderHexColor = paymentMethodTokenizationViewModel.config.data?.button.borderColor?.colored else { return nil }
+        return PrimerColor(hex: borderHexColor)
     }()
     
     var buttonTintColor: UIColor? {
@@ -165,10 +154,12 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         let leftPadding = UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0
         let defaultRightPadding = customPaddingSettingsCard.contains(paymentMethodTokenizationViewModel.config.type) ? imagePadding : 0
         let rightPadding = UILocalizableUtil.isRightToLeftLocale ? 0 : defaultRightPadding
-        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 0,
+        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 5,
                                                            left: leftPadding,
-                                                           bottom: 0,
+                                                           bottom: 5,
                                                            right: rightPadding)
+        paymentMethodButton.contentMode = .scaleAspectFit
+        paymentMethodButton.imageView?.contentMode = .scaleAspectFit
         paymentMethodButton.titleLabel?.font = buttonFont
         if let buttonCornerRadius = buttonCornerRadius {
             paymentMethodButton.layer.cornerRadius = buttonCornerRadius
