@@ -97,7 +97,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         return Promise { seal in
             
             guard let delegate = delegate else {
-                print("Warning: Delegate has not been set")
+                print("WARNING!\nDelegate has not been set")
                 let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)

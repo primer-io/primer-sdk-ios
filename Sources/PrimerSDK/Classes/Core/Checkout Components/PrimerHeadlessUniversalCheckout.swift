@@ -35,7 +35,7 @@ public class PrimerHeadlessUniversalCheckout {
         }
         
         if PrimerHeadlessUniversalCheckout.current.delegate == nil {
-                    print("WARNING: PrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
+                    print("WARNING!\nPrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
                 }
                         
         if let settings = settings {
@@ -176,7 +176,7 @@ public class PrimerHeadlessUniversalCheckout {
         DispatchQueue.main.async {
             let appState: AppStateProtocol = DependencyContainer.resolve()
             guard let clientToken = appState.clientToken else {
-                print("WARNING: Make sure you have called 'start(withClientToken:settings:delegate:completion:' with a valid client token prior to showing a payment method.")
+                print("WARNING!\nMake sure you have called 'start(withClientToken:settings:delegate:completion:' with a valid client token prior to showing a payment method.")
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)

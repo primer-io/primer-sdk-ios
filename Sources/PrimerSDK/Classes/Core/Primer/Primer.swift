@@ -35,7 +35,7 @@ public class Primer {
 #if canImport(Primer3DS)
         print("Can import Primer3DS")
 #else
-        print("Failed to import Primer3DS")
+        print("WARNING!\nFailed to import Primer3DS")
 #endif
         
         NotificationCenter.default.removeObserver(self)

@@ -106,7 +106,7 @@ internal class PrimerDelegateProxy {
             if Primer.shared.delegate?.primerDidFailWithError == nil,
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail == nil
             {
-                print("WARNING: Delegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
+                print("WARNING!\nDelegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
                 decisionHandler(.fail(withErrorMessage: nil))
                 return
             }
