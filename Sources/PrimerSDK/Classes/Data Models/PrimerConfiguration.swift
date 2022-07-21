@@ -30,14 +30,14 @@ struct PrimerAPIConfiguration: Codable {
         
         let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
         if !PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
-            if let applePayViewModel = viewModels.filter({ $0.config.type == "APPLE_PAY" }).first,
+            if let applePayViewModel = viewModels.filter({ $0.config.type == PrimerPaymentMethodType.applePay.rawValue }).first,
                let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
                 viewModels.remove(at: applePayViewModelIndex)
             }
         }
         
         for (index, viewModel) in viewModels.enumerated() {
-            if viewModel.config.type == "APPLE_PAY" {
+            if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
                 viewModels.swapAt(0, index)
             }
         }
@@ -60,6 +60,8 @@ struct PrimerAPIConfiguration: Codable {
         return clientSession != nil
     }
     
+    internal let sdkSupportedPaymentMethodTypes: [PrimerPaymentMethodType] = PrimerPaymentMethodType.allCases
+    
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
@@ -74,7 +76,7 @@ struct PrimerAPIConfiguration: Codable {
         if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
             for paymentMethodOption in options {
                 if let type = paymentMethodOption["type"] as? String {
-                    if type == "PAYMENT_CARD",
+                    if type == PrimerPaymentMethodType.paymentCard.rawValue,
                         let networks = paymentMethodOption["networks"] as? [[String: Any]],
                        !networks.isEmpty
                     {
@@ -94,7 +96,7 @@ struct PrimerAPIConfiguration: Codable {
             }
         }
         
-        if let paymentMethod = self.paymentMethods?.filter({ $0.type == "PAYMENT_CARD" }).first {
+        if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
             paymentMethod.hasUnknownSurcharge = true
             paymentMethod.surcharge = nil
         }

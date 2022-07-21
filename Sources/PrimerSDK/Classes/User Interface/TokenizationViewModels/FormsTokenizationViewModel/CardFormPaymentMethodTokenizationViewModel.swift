@@ -401,7 +401,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return Promise { seal in
             DispatchQueue.main.async {
                 switch self.config.type {
-                case "PAYMENT_CARD":
+                case PrimerPaymentMethodType.paymentCard.rawValue:
                     let pcfvc = PrimerCardFormViewController(viewModel: self)
                     Primer.shared.primerRootVC?.show(viewController: pcfvc)
                     seal.fulfill()
@@ -631,7 +631,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             }
             
             let params: [String: Any] = [
-                "paymentMethodType": "PAYMENT_CARD",
+                "paymentMethodType": PrimerPaymentMethodType.paymentCard.rawValue,
                 "binData": [
                     "network": network,
                 ]

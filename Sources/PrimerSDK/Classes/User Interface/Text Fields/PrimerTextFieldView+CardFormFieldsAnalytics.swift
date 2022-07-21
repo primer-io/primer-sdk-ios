@@ -18,7 +18,7 @@ extension PrimerTextFieldView {
                 action: .focus,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: "PAYMENT_CARD",
+                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
                     url: nil),
                 extra: nil,
                 objectType: .input,
@@ -35,7 +35,7 @@ extension PrimerTextFieldView {
                 action: .blur,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: "PAYMENT_CARD",
+                    paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
                     url: nil),
                 extra: nil,
                 objectType: .input,

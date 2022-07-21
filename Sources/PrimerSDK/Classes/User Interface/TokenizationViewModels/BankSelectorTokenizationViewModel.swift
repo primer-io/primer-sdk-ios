@@ -184,9 +184,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             
             var paymentMethodRequestValue: String = ""
             switch self.config.type {
-            case "ADYEN_DOTPAY":
+            case PrimerPaymentMethodType.adyenDotPay.rawValue:
                 paymentMethodRequestValue = "dotpay"
-            case "ADYEN_IDEAL":
+            case PrimerPaymentMethodType.adyenIDeal.rawValue:
                 paymentMethodRequestValue = "ideal"
             default:
                 break

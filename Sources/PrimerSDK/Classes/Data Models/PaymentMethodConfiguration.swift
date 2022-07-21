@@ -46,16 +46,16 @@ class PrimerPaymentMethod: Codable {
                     return ApplePayTokenizationViewModel(config: self)
                 }
                 
-            case "KLARNA":
+            case PrimerPaymentMethodType.klarna.rawValue:
                 return KlarnaTokenizationViewModel(config: self)
                 
-            case "PAYMENT_CARD":
+            case PrimerPaymentMethodType.paymentCard.rawValue:
                 return CardFormPaymentMethodTokenizationViewModel(config: self)
                 
-            case "PAYPAL":
+            case PrimerPaymentMethodType.payPal.rawValue:
                 return PayPalTokenizationViewModel(config: self)
                 
-            case "XFERS":
+            case PrimerPaymentMethodType.xfersPayNow.rawValue:
                 return QRCodeTokenizationViewModel(config: self)
                 
             default:
@@ -184,9 +184,9 @@ class PrimerPaymentMethod: Codable {
     
     lazy var isCheckoutEnabled: Bool = {
         switch self.type {
-        case "APAYA",
-            "GOCARDLESS",
-            "GOOGLE_PAY":
+        case PrimerPaymentMethodType.apaya.rawValue,
+            PrimerPaymentMethodType.goCardless.rawValue,
+            PrimerPaymentMethodType.googlePay.rawValue:
             return false
         default:
             return true
@@ -199,9 +199,9 @@ class PrimerPaymentMethod: Codable {
         }
         
         switch self.type {
-        case "APPLE_PAY",
-            "GOCARDLESS",
-            "GOOGLE_PAY":
+        case PrimerPaymentMethodType.applePay.rawValue,
+            PrimerPaymentMethodType.goCardless.rawValue,
+            PrimerPaymentMethodType.googlePay.rawValue:
             return false
         default:
             return true

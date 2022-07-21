@@ -40,7 +40,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
                 
                 
-        guard configuration.getProductId(for: "APAYA") != nil else {
+        guard configuration.getProductId(for: PrimerPaymentMethodType.apaya.rawValue) != nil else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
@@ -115,7 +115,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken,
-              let merchantAccountId = AppState.current.apiConfiguration?.getProductId(for: "APAYA")
+              let merchantAccountId = AppState.current.apiConfiguration?.getProductId(for: PrimerPaymentMethodType.apaya.rawValue)
         else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)

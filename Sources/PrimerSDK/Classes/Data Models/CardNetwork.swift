@@ -296,7 +296,7 @@ public enum CardNetwork: String, CaseIterable {
         guard let options = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options, !options.isEmpty else { return nil }
         
         for paymentMethodOption in options {
-            guard let type = paymentMethodOption["type"] as? String, type == "PAYMENT_CARD" else { continue }
+            guard let type = paymentMethodOption["type"] as? String, type == PrimerPaymentMethodType.paymentCard.rawValue else { continue }
             guard let networks = paymentMethodOption["networks"] as? [[String: Any]] else { continue }
             guard let tmpNetwork = networks.filter({ $0["type"] as? String == self.rawValue.uppercased() }).first else { continue }
             guard let surcharge = tmpNetwork["surcharge"] as? Int else { continue }

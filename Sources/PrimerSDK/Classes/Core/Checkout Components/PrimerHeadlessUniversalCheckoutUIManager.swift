@@ -108,13 +108,13 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public override init() {
-            self.paymentMethodType = "PAYMENT_CARD"
+            self.paymentMethodType = PrimerPaymentMethodType.paymentCard.rawValue
             super.init()
             self.requiredInputElementTypes = PrimerHeadlessUniversalCheckout.current.listRequiredInputElementTypes(for: paymentMethodType) ?? []
         }
         
         public func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationDidStart(for: "PAYMENT_CARD")
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationDidStart(for: PrimerPaymentMethodType.paymentCard.rawValue)
             
             firstly {
                 PrimerHeadlessUniversalCheckout.current.validateSession()
@@ -123,13 +123,13 @@ extension PrimerHeadlessUniversalCheckout {
                 self.validateInputData()
             }
             .then { () -> Promise<Void> in
-                self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: "PAYMENT_CARD"))
+                self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: PrimerPaymentMethodType.paymentCard.rawValue))
             }
             .then { () -> Promise<PaymentMethodTokenizationRequest> in
                 self.buildRequestBody()
             }
             .then { requestbody -> Promise<PaymentMethodToken> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: "PAYMENT_CARD")
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: PrimerPaymentMethodType.paymentCard.rawValue)
                 return self.tokenize(request: requestbody)
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
@@ -183,7 +183,7 @@ extension PrimerHeadlessUniversalCheckout {
         private func buildRequestBody() -> Promise<PaymentMethodTokenizationRequest> {
             return Promise { seal in
                 switch self.paymentMethodType {
-                case "PAYMENT_CARD":
+                case PrimerPaymentMethodType.paymentCard.rawValue:
                     guard let cardnumberField = inputElements.filter({ $0.type == .cardNumber }).first as? PrimerInputTextField,
                           let expiryDateField = inputElements.filter({ $0.type == .expiryDate }).first as? PrimerInputTextField,
                           let cvvField = inputElements.filter({ $0.type == .cvv }).first as? PrimerInputTextField
@@ -553,7 +553,11 @@ extension PrimerHeadlessUniversalCheckout {
             let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
             client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
                 if self.webViewCompletion == nil {
-                    let err = PrimerError.cancelled(paymentMethodType: "PAYMENT_CARD", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.cancelled(
+                        paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: nil)
+                    
                     ErrorHandler.handle(error: err)
                     completion(nil, err)
                     return
@@ -882,7 +886,11 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager: SFSafariViewControl
         
         if let webViewCompletion = webViewCompletion {
             // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: "PAYMENT_CARD", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.cancelled(
+                paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
+            
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)
         }

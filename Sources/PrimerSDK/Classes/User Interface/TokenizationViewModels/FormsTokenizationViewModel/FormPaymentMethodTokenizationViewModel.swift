@@ -339,7 +339,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         super.init(config: config)
         
         switch config.type {
-        case "ADYEN_BLIK":
+        case PrimerPaymentMethodType.adyenBlik.rawValue:
             let input1 = Input()
             input1.name = "OTP"
             input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
