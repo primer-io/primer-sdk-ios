@@ -56,17 +56,17 @@ class PrimerPaymentMethod: Codable {
             
         } else {
             switch self.type {
-            case "ADYEN_DOTPAY",
-                "ADYEN_IDEAL":
-                return BankSelectorTokenizationViewModel(config: self)
-                
-            case "ADYEN_BLIK":
+            case PrimerPaymentMethodType.adyenBlik.rawValue:
                 return FormPaymentMethodTokenizationViewModel(config: self)
                 
-            case "APAYA":
+            case PrimerPaymentMethodType.adyenDotPay.rawValue,
+                PrimerPaymentMethodType.adyenIDeal.rawValue:
+                return BankSelectorTokenizationViewModel(config: self)
+                
+            case PrimerPaymentMethodType.apaya.rawValue:
                 return ApayaTokenizationViewModel(config: self)
                 
-            case "APPLE_PAY":
+            case PrimerPaymentMethodType.applePay.rawValue:
                 if #available(iOS 11.0, *) {
                     return ApplePayTokenizationViewModel(config: self)
                 }
