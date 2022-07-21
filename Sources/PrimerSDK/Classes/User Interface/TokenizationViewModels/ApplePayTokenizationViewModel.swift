@@ -189,7 +189,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
                 
                 guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
-                    let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: "APPLE_PAY", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.unableToPresentPaymentMethod(
+                        paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -258,13 +261,19 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
         if self.isCancelled {
             controller.dismiss(animated: true, completion: nil)
-            let err = PrimerError.cancelled(paymentMethodType: "APPLE_PAY", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.cancelled(
+                paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             applePayReceiveDataCompletion?(.failure(err))
             applePayReceiveDataCompletion = nil
+            
         } else if self.didTimeout {
             controller.dismiss(animated: true, completion: nil)
-            let err = PrimerError.applePayTimedOut(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.applePayTimedOut(
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             applePayReceiveDataCompletion?(.failure(err))
             applePayReceiveDataCompletion = nil

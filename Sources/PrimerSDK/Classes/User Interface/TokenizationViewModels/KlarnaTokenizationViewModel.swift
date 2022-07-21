@@ -339,9 +339,11 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return
         }
                 
-        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: "KLARNA"),
+        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.klarna.rawValue),
               let sessionId = self.sessionId else {
-                  let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                  let err = PrimerError.missingPrimerConfiguration(
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
                   ErrorHandler.handle(error: err)
                   completion(.failure(err))
                   return
@@ -388,9 +390,11 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return
         }
         
-        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: "KLARNA"),
+        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.klarna.rawValue),
               let sessionId = self.sessionId else {
-                  let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                  let err = PrimerError.missingPrimerConfiguration(
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
                   ErrorHandler.handle(error: err)
                   completion(.failure(err))
                   return
@@ -398,6 +402,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         
         let body = KlarnaFinalizePaymentSessionRequest(paymentMethodConfigId: configId, sessionId: sessionId)
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession")
+        
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.finalizeKlarnaPaymentSession(clientToken: decodedClientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {

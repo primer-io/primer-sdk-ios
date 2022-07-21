@@ -14,7 +14,16 @@ public class PrimerHeadlessUniversalCheckout {
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate?
     private(set) public var clientToken: String?
     public static let current = PrimerHeadlessUniversalCheckout()
-    private let unsupportedPaymentMethodTypes: [String] = ["ADYEN_BLIK", "ADYEN_DOTPAY", "ADYEN_IDEAL", "GOCARDLESS", "PRIMER_TEST_KLARNA", "PRIMER_TEST_PAYPAL", "PRIMER_TEST_SOFORT", "XFERS_PAYNOW"]
+    private let unsupportedPaymentMethodTypes: [String] = [
+        PrimerPaymentMethodType.adyenBlik.rawValue,
+        PrimerPaymentMethodType.adyenDotPay.rawValue,
+        PrimerPaymentMethodType.adyenIDeal.rawValue,
+        PrimerPaymentMethodType.goCardless.rawValue,
+        PrimerPaymentMethodType.primerTestKlarna.rawValue,
+        PrimerPaymentMethodType.primerTestPayPal.rawValue,
+        PrimerPaymentMethodType.primerTestSofort.rawValue,
+        PrimerPaymentMethodType.xfersPayNow.rawValue,
+    ]
     
     fileprivate init() {}
     
@@ -131,7 +140,7 @@ public class PrimerHeadlessUniversalCheckout {
     
     public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType]? {
         switch paymentMethodType {
-        case "PAYMENT_CARD":
+        case PrimerPaymentMethodType.paymentCard.rawValue:
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
             if let checkoutModule = AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
                let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
@@ -174,7 +183,7 @@ public class PrimerHeadlessUniversalCheckout {
                 return
             }
             
-            if self.unsupportedPaymentMethodTypes.contains(paymentMethod) || paymentMethod == "PAYMENT_CARD" {
+            if self.unsupportedPaymentMethodTypes.contains(paymentMethod) || paymentMethod == PrimerPaymentMethodType.paymentCard.rawValue {
                 let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
@@ -186,14 +195,14 @@ public class PrimerHeadlessUniversalCheckout {
             PrimerSettings.current.uiOptions.isErrorScreenEnabled = false
             
             switch paymentMethod {
-            case "GOCARDLESS",
-                    "PAYMENT_CARD":
+            case PrimerPaymentMethodType.goCardless.rawValue,
+                PrimerPaymentMethodType.paymentCard.rawValue:
                 let err = PrimerError.missingCustomUI(paymentMethod: paymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
                 return
                 
-            case "APPLE_PAY":
+            case PrimerPaymentMethodType.applePay.rawValue:
                 if PrimerSettings.current.paymentMethodOptions.applePayOptions == nil {
                     let err = PrimerError.invalidValue(key: "settings.paymentMethodOptions.applePayOptions", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
@@ -201,7 +210,7 @@ public class PrimerHeadlessUniversalCheckout {
                     return
                 }
                 
-            case "PAYPAL":
+            case PrimerPaymentMethodType.payPal.rawValue:
                 if PrimerSettings.current.paymentMethodOptions.urlScheme == nil {
                     let err = PrimerError.invalidUrlScheme(urlScheme: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)

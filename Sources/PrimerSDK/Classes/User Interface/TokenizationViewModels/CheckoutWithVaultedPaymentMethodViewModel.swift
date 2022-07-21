@@ -96,7 +96,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     private func dispatchActions(config: PrimerPaymentMethod, selectedPaymentMethod: PaymentMethodToken) -> Promise<Void> {
         return Promise { seal in
             var network: String?
-            if config.type == "PAYMENT_CARD" {
+            if config.type == PrimerPaymentMethodType.paymentCard.rawValue {
                 network = selectedPaymentMethod.paymentInstrumentData?.network?.uppercased()
                 if network == nil || network == "UNKNOWN" {
                     network = "OTHER"

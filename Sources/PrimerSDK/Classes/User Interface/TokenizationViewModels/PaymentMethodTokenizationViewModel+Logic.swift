@@ -108,7 +108,7 @@ extension PaymentMethodTokenizationViewModel {
             
             if let primerErr = err as? PrimerError,
                case .cancelled = primerErr,
-               self.config.type == "APPLE_PAY",
+               self.config.type == PrimerPaymentMethodType.applePay.rawValue,
                PrimerHeadlessUniversalCheckout.current.delegate == nil
             {
                 firstly {
@@ -196,6 +196,7 @@ extension PaymentMethodTokenizationViewModel {
     //     - A decoded client token
     //     - nil for success
     //     - Reject with an error
+    
     func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedClientToken?> {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {

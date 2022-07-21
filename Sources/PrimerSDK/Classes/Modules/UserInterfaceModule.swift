@@ -46,7 +46,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     
     lazy var surchargeSectionText: String? = {
         switch paymentMethodTokenizationViewModel.config.type {
-        case "PAYMENT_CARD":
+        case PrimerPaymentMethodType.paymentCard.rawValue:
             return NSLocalizedString("surcharge-additional-fee",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
@@ -62,14 +62,14 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     
     lazy var buttonTitle: String? = {
         switch paymentMethodTokenizationViewModel.config.type {
-        case "APAYA":
             return NSLocalizedString("payment-method-type-pay-by-mobile",
+        case PrimerPaymentMethodType.apaya.rawValue:
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
                                      value: "Pay by mobile",
                                      comment: "Pay by mobile - Payment By Mobile (Apaya)")
             
-        case "PAYMENT_CARD":
+        case PrimerPaymentMethodType.paymentCard.rawValue:
             return Primer.shared.intent == .vault
             ? NSLocalizedString("payment-method-type-card-vaulted",
                                 tableName: nil,
@@ -105,8 +105,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     
     lazy var buttonTitleColor: UIColor? = {
         switch paymentMethodTokenizationViewModel.config.type {
-        case "APAYA",
-                "PAYMENT CARD":
+        case PrimerPaymentMethodType.apaya.rawValue,
+            PrimerPaymentMethodType.paymentCard.rawValue:
             return theme.paymentMethodButton.text.color
             
         default:
@@ -152,7 +152,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var paymentMethodButton: PrimerButton {
-        let customPaddingSettingsCard: [String] = ["COINBASE", "PAYMENT_CARD"]
+        let customPaddingSettingsCard: [String] = [
+            PrimerPaymentMethodType.coinbase.rawValue,
+            PrimerPaymentMethodType.paymentCard.rawValue
+        ]
         
         let paymentMethodButton = PrimerButton()
         paymentMethodButton.accessibilityIdentifier = paymentMethodTokenizationViewModel.config.type
@@ -185,7 +188,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         var buttonTitle: String = ""
         
         switch self.paymentMethodTokenizationViewModel.config.type {
-        case "PAYMENT_CARD":
+        case PrimerPaymentMethodType.paymentCard.rawValue:
             switch Primer.shared.intent {
             case .checkout:
                 let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
@@ -212,9 +215,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
             return submitButton
             
-        case "PRIMER_TEST_KLARNA",
-                "PRIMER_TEST_PAYPAL",
-                "PRIMER_TEST_SOFORT":
+        case PrimerPaymentMethodType.primerTestKlarna.rawValue,
+            PrimerPaymentMethodType.primerTestPayPal.rawValue,
+            PrimerPaymentMethodType.primerTestSofort.rawValue:
             let submitButton = PrimerButton()
             submitButton.translatesAutoresizingMaskIntoConstraints = false
             submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
@@ -228,8 +231,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
             return submitButton
             
-        case "ADYEN_BLIK",
-                "XFERS_PAYNOW":
+        case PrimerPaymentMethodType.adyenBlik.rawValue,
+            PrimerPaymentMethodType.xfersPayNow.rawValue:
             let btn = PrimerButton()
             btn.isEnabled = false
             btn.clipsToBounds = true
