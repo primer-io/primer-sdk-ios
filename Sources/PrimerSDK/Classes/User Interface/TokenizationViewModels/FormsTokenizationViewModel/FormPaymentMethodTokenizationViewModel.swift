@@ -31,7 +31,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     var inputs: [Input] = []
     private var cardComponentsManager: CardComponentsManager!
-    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     // FIXME: Is this the fix for the button's indicator?
     private var isTokenizing = false
@@ -326,36 +326,32 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         formViews.append(contentsOf: allVisibleBillingAddressFieldContainerViews)
         return PrimerFormView(frame: .zero, formViews: formViews)
     }
+    
+    // MARK: Input Payment Methods Array
+    
+    /// Array containing the payment method types expecting some input step to be performed
+    let inputPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenBlik]
+    
+    // MARK: Account Info Payment Methods Array
+    
+    /// Array containing the payment method types expecting some account info
+    /// to transfer the founds to
+    let accountInfoPaymentMethodTypes: [PrimerPaymentMethodType] = [.rapydFast]
+    
+    // MARK: Account Info Payment
+    
+    /// Generic info view
+    var accountInfoView: PrimerFormView?
+    
+    // MARK: Input completion block
+    
+    /// Input completion block callback
+    var userInputCompletion: (() -> Void)?
 
     // MARK: - Init
-
-    var userInputCompletion: (() -> Void)?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
-    required init(config: PaymentMethodConfig) {
-        super.init(config: config)
-        
-        switch config.type {
-        case .adyenBlik:
-            let input1 = Input()
-            input1.name = "OTP"
-            input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
-            input1.textFieldPlaceholder = Strings.Blik.inputTextFieldPlaceholder
-            input1.keyboardType = .numberPad
-            input1.descriptor = Strings.Blik.inputDescriptor
-            input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
-            input1.maxCharactersAllowed = 6
-            input1.isValid = { text in
-                return text.isNumeric && text.count >= 6
-            }
-            inputs.append(input1)
-            
-        default:
-            break
-        }
     }
     
     override func validate() throws {
@@ -413,10 +409,20 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
-                return self.presentInputViewController()
+                switch self.config.type {
+                case .adyenBlik:
+                    return self.presentPaymentMethodAppropriateViewController()
+                default:
+                    return Promise()
+                }
             }
             .then { () -> Promise<Void> in
-                return self.awaitUserInput()
+                switch self.config.type {
+                case .adyenBlik:
+                    return self.awaitUserInput()
+                default:
+                    return Promise()
+                }
             }
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
@@ -447,6 +453,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     }
                     
                     firstly {
+                        self.presentPaymentMethodAppropriateViewController()
+                    }
+                    .then { () -> Promise<String> in
                         self.startPolling(on: statusUrl)
                     }
                     .done { resumeToken in
@@ -462,24 +471,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 }
             } else {
                 seal.fulfill(nil)
-            }
-        }
-    }
-    
-    private func presentInputViewController() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async {
-                switch self.config.type {
-                case .adyenBlik:
-                    let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil), formPaymentMethodTokenizationViewModel: self)
-                    Primer.shared.primerRootVC?.show(viewController: pcfvc)
-                    seal.fulfill()
-                    
-                default:
-                    let err = PrimerError.invalidValue(key: "PrimerInputViewController for \(self.config.type)", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                }
             }
         }
     }
@@ -569,7 +560,36 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     }
                 }
             }
-            
+        case .rapydFast:
+            return Promise { seal in
+                guard let configId = config.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                var sessionInfo: AsyncPaymentMethodOptions.SessionInfo?
+                sessionInfo = AsyncPaymentMethodOptions.SessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+                
+                
+                let request = AsyncPaymentMethodTokenizationRequest(
+                    paymentInstrument: AsyncPaymentMethodOptions(
+                        paymentMethodType: config.type,
+                        paymentMethodConfigId: configId,
+                        sessionInfo: sessionInfo))
+                
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                firstly {
+                    tokenizationService.tokenize(request: request)
+                }
+                .done{ paymentMethod in
+                    seal.fulfill(paymentMethod)
+                }
+                .catch { err in
+                    seal.reject(err)
+                }
+            }
         default:
             fatalError("Payment method card should never end here.")
         }

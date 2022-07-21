@@ -189,6 +189,7 @@ public class Primer {
                     .rapydGCash,
                     .rapydGrabPay,
                     .rapydPoli,
+                    .rapydFast,
                     .xfers:
                 break
 

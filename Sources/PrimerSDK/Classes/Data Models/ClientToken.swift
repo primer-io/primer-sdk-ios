@@ -26,7 +26,9 @@ struct DecodedClientToken: Codable {
     var threeDSecureInitUrl: String?
     var threeDSecureToken: String?
     var qrCode: String?
-
+    
+    var accountNumber: String?
+    
     var isValid: Bool {
         do {
             try validate()
@@ -49,7 +51,9 @@ struct DecodedClientToken: Codable {
         intent: String?,
         statusUrl: String?,
         redirectUrl: String?,
-        qrCode: String?
+        qrCode: String?,
+        accountNumber: String?,
+        expiration: Int?
     ) {
         self.accessToken = accessToken
         self.exp = exp
@@ -64,6 +68,7 @@ struct DecodedClientToken: Codable {
         self.statusUrl = statusUrl
         self.redirectUrl = redirectUrl
         self.qrCode = qrCode
+        self.accountNumber = accountNumber
     }
     
     func validate() throws {

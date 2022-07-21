@@ -18,13 +18,14 @@ public struct PrimerDimensions {
     }
 
     public struct Font {
-        public static let title = 20
-        public static let subtitle = 10
-        public static let amountLabel = 24
-        public static let body = 14
-        public static let system = 12
-        public static let error = 10
-        public static let buttonLabel = 14
+        public static let title: CGFloat = 20
+        public static let subtitle: CGFloat = 10
+        public static let amountLabel: CGFloat = 24
+        public static let label: CGFloat = 16
+        public static let body: CGFloat = 14
+        public static let system: CGFloat = 12
+        public static let error: CGFloat = 10
+        public static let buttonLabel: CGFloat = 14
     }
 }
 
