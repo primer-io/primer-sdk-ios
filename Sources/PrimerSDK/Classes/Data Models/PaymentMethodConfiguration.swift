@@ -48,6 +48,7 @@ class PrimerPaymentMethod: Codable {
     var surcharge: Int?
     let options: PaymentMethodOptions?
     var data: PrimerPaymentMethod.Data?
+    var imageFiles: PrimerTheme.BaseImageFiles?
     
     var hasUnknownSurcharge: Bool = false
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
@@ -93,121 +94,11 @@ class PrimerPaymentMethod: Codable {
         return nil
     }
     
-    lazy var imageName: String? = {
-        switch self.type {
-        case "ADYEN_ALIPAY":
-            return "alipay"
-            
-        case "ADYEN_BLIK":
-            return "blik"
-            
-        case "ADYEN_DOTPAY":
-            return "dot-pay"
-            
-        case "ADYEN_GIROPAY",
-            "BUCKAROO_GIROPAY",
-            "PAY_NL_GIROPAY":
-            return "giropay"
-            
-        case "ADYEN_IDEAL",
-            "BUCKAROO_IDEAL",
-            "MOLLIE_IDEAL",
-            "PAY_NL_IDEAL":
-            return "ideal"
-            
-        case "ADYEN_INTERAC":
-            return "interac"
-            
-        case "ADYEN_MOBILEPAY":
-            return "mobile-pay"
-            
-        case "ADYEN_PAYSHOP":
-            return "payshop"
-            
-        case "ADYEN_PAYTRAIL":
-            return "paytrail"
-            
-        case "ADYEN_SOFORT",
-            "BUCKAROO_SOFORT",
-            "PRIMER_TEST_SOFORT":
-            return "sofort"
-            
-        case "ADYEN_TRUSTLY":
-            return "trustly"
-            
-        case "ADYEN_TWINT":
-            return "twint"
-            
-        case "ADYEN_VIPPS":
-            return "vipps"
-            
-        case "APAYA":
-            return "apaya"
-            
-        case "APPLE_PAY":
-            return "apple-pay"
-            
-        case "ATOME":
-            return "atome"
-            
-        case "BUCKAROO_BANCONTACT",
-            "MOLLIE_BANCONTACT",
-            "PAY_NL_BANCONTACT":
-            return "bancontact"
-            
-        case "BUCKAROO_EPS":
-            return "eps"
-            
-        case "COINBASE":
-            return "coinbase"
-            
-        case "GOCARDLESS":
-            return "go-cardless"
-            
-        case "GOOGLE_PAY":
-            return "google-pay"
-            
-        case "HOOLAH":
-            return "hoolah"
-            
-        case "KLARNA",
-            "PRIMER_TEST_KLARNA":
-            return "klarna"
-            
-        case "OPENNODE":
-            return "opennode"
-            
-        case "PAY_NL_PAYCONIQ":
-            return "payconiq"
-            
-        case "PAYMENT_CARD":
-            return "card"
-            
-        case "PAYPAL",
-            "PRIMER_TEST_PAYPAL":
-            return "paypal"
-            
-        case "RAPYD_GCASH":
-            return "gcash"
-            
-        case "RAPYD_GRABPAY":
-            return "grab-pay"
-            
-        case "RAPYD_POLI":
-            return "poli"
-            
-        case "TWOC2P":
-            return "2c2p"
-            
-        case "XFERS_PAYNOW":
-            return "xfers"
-            
-        default:
-            return nil
+    var isCheckoutEnabled: Bool {
+        if self.imageFiles?.colored.image == nil {
+            return false
         }
-    }()
-    
-    lazy var isCheckoutEnabled: Bool = {
+        
         switch self.type {
         case PrimerPaymentMethodType.apaya.rawValue,
             PrimerPaymentMethodType.goCardless.rawValue,
@@ -216,9 +107,13 @@ class PrimerPaymentMethod: Codable {
         default:
             return true
         }
-    }()
+    }
     
-    lazy var isVaultingEnabled: Bool = {
+    var isVaultingEnabled: Bool {
+        if self.imageFiles?.colored.image == nil {
+            return false
+        }
+        
         if self.implementationType == .webRedirect {
             return false
         }
@@ -231,7 +126,7 @@ class PrimerPaymentMethod: Codable {
         default:
             return true
         }
-    }()
+    }
     
     lazy var isEnabled: Bool = {
         switch Primer.shared.intent {
@@ -317,7 +212,78 @@ class PrimerPaymentMethod: Codable {
             try container.encode(apayaOptions, forKey: .options)
         }
     }
+}
+
+extension PrimerPaymentMethod {
     
+    public enum ImplementationType: String, Codable, CaseIterable, Equatable, Hashable {
+        
+        case nativeSdk = "NATIVE_SDK"
+        case webRedirect = "WEB_REDIRECT"
+
+        var isEnabled: Bool {
+            return true
+        }
+    }
+}
+
+extension PrimerTheme {
+    
+    class BaseImageFiles {
+        
+        var colored: ImageFile
+        var light: ImageFile?
+        var dark: ImageFile?
+        
+        init(colored: ImageFile, light: ImageFile?, dark: ImageFile?) {
+            self.colored = colored
+            self.light = light
+            self.dark = dark
+        }
+    }
+    
+    public class BaseColoredURLs: Codable {
+        
+        var colored: String
+        var dark: String?
+        var light: String?
+    }
+    
+    public class BaseColors: Codable {
+        
+        var colored: String
+        var dark: String?
+        var light: String?
+    }
+}
+
+extension PrimerPaymentMethod {
+    
+    class Data: Codable {
+        
+        var button: PrimerPaymentMethod.Data.Button
+        
+        class Button: Codable {
+            
+            var iconUrl: PrimerTheme.BaseColoredURLs
+            var backgroundColor: PrimerTheme.BaseColors?
+            var cornerRadius: Int?
+            var borderWidth: Int?
+            var borderColor: PrimerTheme.BaseColors?
+            var text: String?
+            var textColor: PrimerTheme.BaseColors?
+            
+            private enum CodingKeys : String, CodingKey {
+                case iconUrl,
+                     backgroundColor,
+                     cornerRadius,
+                     borderWidth,
+                     borderColor,
+                     text,
+                     textColor
+            }
+        }
+    }
 }
 
 #endif
