@@ -51,28 +51,28 @@ internal class ImageManager {
     
     func getImage(file: ImageFile) -> Promise<ImageFile> {
         return Promise { seal in
-            let imageName = file.fileName.lowercased()
-            
-            if let image = UIImage(named: imageName, in: Bundle.primerResources, compatibleWith: nil) {
+            if let imageName = PrimerPaymentMethod.getBundledImageFileName(for: file.fileName, assetType: .logo),
+               let image = UIImage(named: imageName, in: Bundle.primerResources, compatibleWith: nil)
+            {
                 file.localUrl = Bundle.primerResources.url(forResource: imageName, withExtension: "png")
                 file.image = image
                 seal.fulfill(file)
+                
             } else {
                 let downloader = Downloader()
-                
                 firstly {
                     downloader.download(file: file)
                 }
                 .done { file in
                     if let imageFile = file as? ImageFile,
                        let imageData = imageFile.data,
-                        let image = UIImage(data: imageData) {
+                       let image = UIImage(data: imageData) {
                         imageFile.image = image
                         seal.fulfill(imageFile)
                     } else {
                         let err = InternalError.failedToDecode(message: "image", userInfo: nil, diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
-                        seal.reject(err)
+                        throw err
                     }
                 }
                 .catch { err in
