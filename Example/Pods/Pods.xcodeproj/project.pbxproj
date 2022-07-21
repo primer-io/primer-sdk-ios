@@ -227,7 +227,6 @@
 		AB9C54921ECB3BBE2F9470C0E7195267 /* WrapperProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491ABD3E0B1F5A2619F0DE81679C3328 /* WrapperProtocols.swift */; };
 		B0AC3FE049941F2A79B7AA77DD0AE502 /* NSErrorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E314D8C865CF52D28260834B7F9F5433 /* NSErrorExtension.swift */; };
 		B1207366090B37B14F609B953478ACFD /* NSObject+ClassName.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B883EF5C391C39CB2EC2F64ADCDB06 /* NSObject+ClassName.swift */; };
-		B32BE302FF890D6A6CD1854352029E35 /* PaymentMethodComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFFDB2F4B319447743ACD815B04B1ED9 /* PaymentMethodComponent.swift */; };
 		B4D038D5ABFFF5E111327B9D7C918860 /* ResumeHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECC99F457F490F04EDA36B7EBA09CDEB /* ResumeHandlerProtocol.swift */; };
 		B69D740CCD61706F791B7D8052125B1C /* CoreDataDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7686D1DF4DC0BCD22434B88B8082D8FE /* CoreDataDispatcher.swift */; };
 		B7EF0B4903974893F2BFB2E23666976F /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40D61838A167401D59603DC616CFF951 /* UIColorExtension.swift */; };
@@ -716,7 +715,6 @@
 		FDBFB84956EC0172B397AFA5341BAC67 /* UserInterfaceModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserInterfaceModule.swift; sourceTree = "<group>"; };
 		FDCB089C7C4B5C7FF4DF6ECB2888DF94 /* Colors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		FE0BEB5385B9D9923DDBB7ECD4F9A2DE /* ThenableWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThenableWrappers.swift; sourceTree = "<group>"; };
-		FFFDB2F4B319447743ACD815B04B1ED9 /* PaymentMethodComponent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodComponent.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1126,7 +1124,6 @@
 			children = (
 				D8F37B917B98D6CA4DB3FAC9FFEFD34F /* CardButton.swift */,
 				D85E314E6CA628402DB1077361660A7A /* ExternalViewModel.swift */,
-				FFFDB2F4B319447743ACD815B04B1ED9 /* PaymentMethodComponent.swift */,
 			);
 			path = Primer;
 			sourceTree = "<group>";
@@ -2038,7 +2035,6 @@
 				D009B6384B5EF2108E6A42D9032F3F45 /* OrderItem.swift in Sources */,
 				9A8A577132482E4B9090914286EA565F /* Parser.swift in Sources */,
 				2D8ABA2FD76542C1225B04DB33BC39CB /* PaymentAPIModel.swift in Sources */,
-				B32BE302FF890D6A6CD1854352029E35 /* PaymentMethodComponent.swift in Sources */,
 				02437E390D85E9F609D1B29C25892DC9 /* PaymentMethodConfigService.swift in Sources */,
 				7D7E565702AFB0C389CCA61AEE9646D7 /* PaymentMethodConfiguration.swift in Sources */,
 				E45392049F1F6A8AAE8648CB84C65828 /* PaymentMethodConfigurationOptions.swift in Sources */,
