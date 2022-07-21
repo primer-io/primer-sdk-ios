@@ -212,9 +212,6 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                                 bundle: Bundle.primerResources,
                                 value: "Pay with card",
                                 comment: "Pay with card - Payment Method Type (Card Not vaulted)")
-
-        case .twoCtwoP:
-            return Strings.PaymentButton.payInInstallments
             
         default:
             assert(true, "Shouldn't end up in here")
@@ -286,10 +283,6 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return UIImage(named: "grab-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .rapydPoli:
             return UIImage(named: "poli-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .opennode:
-            return UIImage(named: "opennode-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .twoCtwoP:
-            return UIImage(named: "2c2p-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .rapydFast:
             return UIImage(named: "fast-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .xfers:
@@ -375,8 +368,6 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return UIColor(red: 0.184, green: 0.263, blue: 0.596, alpha: 1)
         case .rapydFast:
             return .white
-        case .opennode, .twoCtwoP:
-            return .white
         case .xfers:
             return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
         default:
@@ -418,14 +409,11 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .rapydPoli,
                 .rapydGrabPay,
                 .rapydFast,
-                .opennode,
                 .xfers:
             return nil
         case .apaya,
                 .paymentCard:
             return theme.paymentMethodButton.text.color
-        case .twoCtwoP:
-            return UIColor(red: 0, green: 79.0/255, blue: 92.0/255, alpha: 1.0)
         default:
             assert(true, "Shouldn't end up in here")
             return nil
@@ -469,8 +457,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .mollieBankcontact,
                 .payNLBancontact,
                 .paymentCard,
-                .rapydFast,
-                .twoCtwoP:
+                .rapydFast:
             return 1.0
         default:
             assert(true, "Shouldn't end up in here")

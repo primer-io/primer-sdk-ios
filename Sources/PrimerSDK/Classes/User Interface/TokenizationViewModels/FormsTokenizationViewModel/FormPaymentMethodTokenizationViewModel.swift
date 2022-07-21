@@ -33,8 +33,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     private var cardComponentsManager: CardComponentsManager!
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    var didCancel: (() -> Void)?
-    
     // FIXME: Is this the fix for the button's indicator?
     private var isTokenizing = false
             
@@ -442,36 +440,37 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    
     override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
         return Promise { seal in
             if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-                   if let statusUrlStr = decodedClientToken.statusUrl,
-                      let statusUrl = URL(string: statusUrlStr),
-                      decodedClientToken.intent != nil {
-                       
-                       firstly {
-                           self.presentPaymentMethodAppropriateViewController()
-                       }
-                       .then { () -> Promise<String> in
-                           let pollingModule = PollingModule(url: statusUrl)
-                           self.didCancel = {
-                               pollingModule.cancel()
-                               return
-                           }
-                           
-                           return pollingModule.start()
-                       }
-                       .done { resumeToken in
-                           seal.fulfill(resumeToken)
-                       }
-                       .catch { err in
-                           seal.reject(err)
-                       }
-                   } else {
-                       let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                       seal.reject(error)
-                   }
+                if let decodedClientToken = ClientTokenService.decodedClientToken,
+                   let statusUrlStr = decodedClientToken.statusUrl,
+                   let statusUrl = URL(string: statusUrlStr),
+                   decodedClientToken.intent != nil {
+                    
+                    DispatchQueue.main.async {
+                        UIApplication.shared.endIgnoringInteractionEvents()
+                    }
+                    
+                    firstly {
+                        self.presentPaymentMethodAppropriateViewController()
+                    }
+                    .then { () -> Promise<String> in
+                        self.startPolling(on: statusUrl)
+                    }
+                    .done { resumeToken in
+                        seal.fulfill(resumeToken)
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                } else {
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                }
+            } else {
+                seal.fulfill(nil)
             }
         }
     }
@@ -594,7 +593,46 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         default:
             fatalError("Payment method card should never end here.")
         }
-    }    
+    }
+    
+    private func startPolling(on url: URL) -> Promise<String> {
+        return Promise { seal in
+            self.startPolling(on: url) { (id, err) in
+                if let err = err {
+                    seal.reject(err)
+                } else if let id = id {
+                    seal.fulfill(id)
+                } else {
+                    assert(true, "Should have received one parameter")
+                }
+            }
+        }
+    }
+    
+    private func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
+        let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
+            switch result {
+            case .success(let res):
+                if res.status == .pending {
+                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                        self.startPolling(on: url, completion: completion)
+                    }
+                } else if res.status == .complete {
+                    completion(res.id, nil)
+                } else {
+                    let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                }
+            case .failure(let err):
+                ErrorHandler.handle(error: err)
+                // Retry
+                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
+                    self.startPolling(on: url, completion: completion)
+                }
+            }
+        }
+    }
 }
 
 extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
@@ -646,8 +684,6 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
 extension FormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     
     func cancel() {
-        didCancel?()
-        
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         
         let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
