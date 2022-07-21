@@ -83,7 +83,7 @@ struct DecodedClientToken: Codable {
         self.intent = intent
         self.statusUrl = statusUrl
         self.redirectUrl = redirectUrl
-        self.qrCode = qrCode
+        self.qrCodeUrl = qrCodeUrl
         self.accountNumber = accountNumber
     }
     

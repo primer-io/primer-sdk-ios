@@ -107,6 +107,8 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                let statusUrl = URL(string: statusUrlStr),
                decodedClientToken.intent != nil {
                 
+                qrCode = decodedClientToken.qrCodeUrl
+                
                 firstly {
                     self.presentQRCodePaymentMethod()
                 }

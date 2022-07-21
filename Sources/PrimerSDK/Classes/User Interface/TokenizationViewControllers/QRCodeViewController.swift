@@ -97,14 +97,15 @@ internal class QRCodeViewController: PrimerFormViewController {
     
     private func renderQRCode() {
         guard let qrCodeStr = viewModel.qrCode else { return }
-        guard let qrImg = convertBase64StringToImage(qrCodeStr) else { return }
+//        guard let qrImg = convertBase64StringToImage(qrCodeStr) else { return }
         
         let separatorView = PrimerView()
         verticalStackView.addArrangedSubview(separatorView)
         separatorView.translatesAutoresizingMaskIntoConstraints = false
         separatorView.heightAnchor.constraint(equalToConstant: 10).isActive = true
         
-        let qrCodeImageView = UIImageView(image: qrImg)
+        let qrCodeImageView = UIImageView()
+        qrCodeImageView.downloaded(from: URL(string: qrCodeStr)!)
         qrCodeImageView.accessibilityIdentifier = "qrCode"
         qrCodeImageView.accessibilityHint = Strings.QRCodeView.qrCodeImageSubtitle
         qrCodeImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -154,6 +155,27 @@ internal class QRCodeViewController: PrimerFormViewController {
     func convertBase64StringToImage(_ imageBase64String: String) -> UIImage? {
         guard let imageData = Data(base64Encoded: imageBase64String, options: .init(rawValue: 0)) else { return nil }
         return UIImage(data: imageData)
+    }
+}
+
+extension UIImageView {
+    func downloaded(from url: URL, contentMode mode: ContentMode = .scaleAspectFit) {
+        contentMode = mode
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard
+                let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
+                let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
+                let data = data, error == nil,
+                let image = UIImage(data: data)
+                else { return }
+            DispatchQueue.main.async() { [weak self] in
+                self?.image = image
+            }
+        }.resume()
+    }
+    func downloaded(from link: String, contentMode mode: ContentMode = .scaleAspectFit) {
+        guard let url = URL(string: link) else { return }
+        downloaded(from: url, contentMode: mode)
     }
 }
 

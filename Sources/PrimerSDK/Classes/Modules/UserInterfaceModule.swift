@@ -104,6 +104,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return "poli"
         case .rapydFast:
             return "fast"
+        case .rapydPromptPay:
+            return "prompt-pay"
         case .xfers:
             return "xfers"
         case .twoCtwoP:
@@ -121,6 +123,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return UIImage(named: "paypal-logo-1", in: Bundle.primerResources, compatibleWith: nil)
         case .primerTestSofort:
             return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydPromptPay:
+            return UIImage(named: "prompt-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             return buttonImage
         }
@@ -292,6 +296,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return UIImage(named: "2c2p-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .rapydFast:
             return UIImage(named: "fast-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydPromptPay:
+            return UIImage(named: "prompt-pay-logo-white", in: Bundle.primerResources, compatibleWith: nil)
         case .xfers:
             return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
@@ -375,6 +381,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return UIColor(red: 0.184, green: 0.263, blue: 0.596, alpha: 1)
         case .rapydFast:
             return .white
+        case .rapydPromptPay:
+            return UIColor(red: 0.008, green: 0.235, blue: 0.408, alpha: 1)
         case .opennode, .twoCtwoP:
             return .white
         case .xfers:
@@ -418,6 +426,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .rapydPoli,
                 .rapydGrabPay,
                 .rapydFast,
+                .rapydPromptPay,
                 .opennode,
                 .xfers:
             return nil
@@ -460,7 +469,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .primerTestSofort,
                 .rapydGCash,
                 .rapydPoli,
-                .rapydGrabPay:
+                .rapydGrabPay,
+                .rapydPromptPay:
             return 0.0
         case .adyenDotPay,
                 .apaya,
@@ -508,6 +518,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .rapydGCash,
                 .rapydGrabPay,
                 .rapydPoli,
+                .rapydPromptPay,
                 .xfers:
             return nil
         case .apaya,
@@ -560,7 +571,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .rapydGCash,
                 .rapydGrabPay,
                 .rapydPoli,
-                .rapydFast:
+                .rapydFast,
+                .rapydPromptPay:
             return nil
         case .apaya,
                 .paymentCard:

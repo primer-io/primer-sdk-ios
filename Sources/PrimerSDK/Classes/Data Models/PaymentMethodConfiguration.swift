@@ -77,7 +77,7 @@ class PaymentMethodConfig: Codable {
             return BankSelectorTokenizationViewModel(config: self)
         } else if type == .adyenBlik || type == .rapydFast {
             return FormPaymentMethodTokenizationViewModel(config: self)
-        } else if type == .xfers {
+        } else if type == .xfers || type == .rapydPromptPay {
             return QRCodeTokenizationViewModel(config: self)
         }
         
