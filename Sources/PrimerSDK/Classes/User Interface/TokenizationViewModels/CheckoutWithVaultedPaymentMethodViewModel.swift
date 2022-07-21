@@ -292,8 +292,8 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                             ClientTokenService.storeClientToken(newClientToken)
                         }
                         .then { () -> Promise<Void> in
-                            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                            return configService.fetchConfig()
+                            let configService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                            return configService.fetchConfiguration()
                         }
                         .done {
                             guard let decodedClientToken = ClientTokenService.decodedClientToken else {

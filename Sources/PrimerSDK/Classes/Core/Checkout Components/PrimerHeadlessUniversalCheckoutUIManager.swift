@@ -362,8 +362,8 @@ extension PrimerHeadlessUniversalCheckout {
                                 ClientTokenService.storeClientToken(newClientToken)
                             }
                             .then { () -> Promise<Void> in
-                                let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                                return configService.fetchConfig()
+                                let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                                return configurationService.fetchConfiguration()
                             }
                             .done {
                                 guard let decodedClientToken = ClientTokenService.decodedClientToken else {

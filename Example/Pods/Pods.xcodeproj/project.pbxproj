@@ -11,7 +11,7 @@
 		00C1E219884D7376AC2F99050BC54DD9 /* CancelContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 226A6C1441684979F562EA72156347A2 /* CancelContext.swift */; };
 		0101B35678F77B291B9073E00F962AEC /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDCB089C7C4B5C7FF4DF6ECB2888DF94 /* Colors.swift */; };
 		0110105AD8734A87B3196F6A90F7D47C /* currencies.json in Resources */ = {isa = PBXBuildFile; fileRef = 40D58A62D8B189C7C1CBC6557AED0205 /* currencies.json */; };
-		02437E390D85E9F609D1B29C25892DC9 /* PaymentMethodConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2FE43047758E379A349026CB4812F4 /* PaymentMethodConfigService.swift */; };
+		02437E390D85E9F609D1B29C25892DC9 /* PrimerAPIConfigurationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2FE43047758E379A349026CB4812F4 /* PrimerAPIConfigurationService.swift */; };
 		033CB6B7CC26FD992588EB83CD1791F0 /* PrimerTextFieldView+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719CBCA3A9E43728A9A425C49876853C /* PrimerTextFieldView+Analytics.swift */; };
 		0360999DB2893C942687096DAA118445 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6074F32C546C45BB41BB9D6CC8E5D4F /* Logger.swift */; };
 		041B80021903265B7E0E5D03DD348DFE /* PrimerNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037E442008BEEF6A3A6D79AA65DED143 /* PrimerNavigationBar.swift */; };
@@ -541,7 +541,7 @@
 		895D7A27D28B7846B871439D08C7DD7B /* PrimerTheme+Views.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PrimerTheme+Views.swift"; sourceTree = "<group>"; };
 		8A76E4D6B576DFFA7B4A45FD9D5EAD45 /* CountryField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CountryField.swift; sourceTree = "<group>"; };
 		8B178DA8FF25CCBC96E99C4528AA371C /* Optional+Extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Optional+Extensions.swift"; sourceTree = "<group>"; };
-		8D2FE43047758E379A349026CB4812F4 /* PaymentMethodConfigService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigService.swift; sourceTree = "<group>"; };
+		8D2FE43047758E379A349026CB4812F4 /* PrimerAPIConfigurationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerAPIConfigurationService.swift; sourceTree = "<group>"; };
 		8FF7E48ACE4E8A8DE76EA74B91A0F948 /* ExternalPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExternalPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		90576D2CBECDE9999647792097D7EBAA /* CancellableCatchable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CancellableCatchable.swift; sourceTree = "<group>"; };
 		90E50D2736BD8259AAD370D70A72380C /* NetworkService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
@@ -777,7 +777,7 @@
 				FAD1C5DE6E2300BAFC7E0B13FE34C2D0 /* ClientSessionService.swift */,
 				AB92750F5444EAC41C616CDAB25A080A /* ClientTokenService.swift */,
 				409983D2E6EC30917E2BD12EA6C6C69D /* CreateResumePaymentService.swift */,
-				8D2FE43047758E379A349026CB4812F4 /* PaymentMethodConfigService.swift */,
+				8D2FE43047758E379A349026CB4812F4 /* PrimerAPIConfigurationService.swift */,
 				EFDD15D10DF7816B320AC500FF9CC651 /* PayPalService.swift */,
 				DBBF7940091F551C2C2F936E9D8B9C50 /* VaultService.swift */,
 			);
@@ -2035,7 +2035,7 @@
 				D009B6384B5EF2108E6A42D9032F3F45 /* OrderItem.swift in Sources */,
 				9A8A577132482E4B9090914286EA565F /* Parser.swift in Sources */,
 				2D8ABA2FD76542C1225B04DB33BC39CB /* PaymentAPIModel.swift in Sources */,
-				02437E390D85E9F609D1B29C25892DC9 /* PaymentMethodConfigService.swift in Sources */,
+				02437E390D85E9F609D1B29C25892DC9 /* PrimerAPIConfigurationService.swift in Sources */,
 				7D7E565702AFB0C389CCA61AEE9646D7 /* PaymentMethodConfiguration.swift in Sources */,
 				E45392049F1F6A8AAE8648CB84C65828 /* PaymentMethodConfigurationOptions.swift in Sources */,
 				A3A9C69FC9A5B5301613539F8BAEA66B /* PrimerPaymentMethodType.swift in Sources */,
