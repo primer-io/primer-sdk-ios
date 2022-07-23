@@ -52,7 +52,6 @@
 		2C10D1272840C1B00059B9E1 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C10D1212840C1B00059B9E1 /* String+Extensions.swift */; };
 		2C10D1292840C1C90059B9E1 /* MerchantAssetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C10D1282840C1C90059B9E1 /* MerchantAssetsViewController.swift */; };
 		2C10D12B2840C1D70059B9E1 /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C10D12A2840C1D70059B9E1 /* SpinnerViewController.swift */; };
-		2C10D12E2840C42F0059B9E1 /* CreateResumePaymentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C10D12C2840C41B0059B9E1 /* CreateResumePaymentService.swift */; };
 		2C98001728746CC50045A4DE /* UniversalCheckout+PrimerTestPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C98001628746CC50045A4DE /* UniversalCheckout+PrimerTestPaymentMethods.swift */; };
 		2C980019287471A80045A4DE /* XCUIElement+Scrolling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C980018287471A80045A4DE /* XCUIElement+Scrolling.swift */; };
 		3D11C89390976FD4353F77EF /* Pods_PrimerSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E9F23C8CDC99158C041D67E /* Pods_PrimerSDK_Tests.framework */; };
@@ -147,7 +146,6 @@
 		2C10D1212840C1B00059B9E1 /* String+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		2C10D1282840C1C90059B9E1 /* MerchantAssetsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantAssetsViewController.swift; sourceTree = "<group>"; };
 		2C10D12A2840C1D70059B9E1 /* SpinnerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
-		2C10D12C2840C41B0059B9E1 /* CreateResumePaymentService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateResumePaymentService.swift; sourceTree = "<group>"; };
 		2C98001628746CC50045A4DE /* UniversalCheckout+PrimerTestPaymentMethods.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UniversalCheckout+PrimerTestPaymentMethods.swift"; sourceTree = "<group>"; };
 		2C980018287471A80045A4DE /* XCUIElement+Scrolling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCUIElement+Scrolling.swift"; sourceTree = "<group>"; };
 		3B55FBF1D40BE6B25F29A5D9 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
@@ -250,7 +248,6 @@
 		1582B962260A3F2900C80BD7 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				2C10D12C2840C41B0059B9E1 /* CreateResumePaymentService.swift */,
 				1582B963260A3F2900C80BD7 /* MockPrimerAPIConfigurationService.swift */,
 				1582B964260A3F2900C80BD7 /* PayPalService.swift */,
 				1582B965260A3F2900C80BD7 /* VaultService.swift */,
@@ -746,7 +743,6 @@
 				1582B980260A3F2900C80BD7 /* MockPrimerAPIConfigurationService.swift in Sources */,
 				15F32E1D26FDA8E4004B3903 /* PrimerTests.swift in Sources */,
 				1582B988260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift in Sources */,
-				2C10D12E2840C42F0059B9E1 /* CreateResumePaymentService.swift in Sources */,
 				1582B97F260A3F2900C80BD7 /* Mocks.swift in Sources */,
 				1582B992260A3F2900C80BD7 /* PayPalServiceTests.swift in Sources */,
 				156F97092706DDE6004503C0 /* PaymentMethodConfigTests.swift in Sources */,
