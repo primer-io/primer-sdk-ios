@@ -38,9 +38,9 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     func validate() throws
     func start()
     func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData>
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?>
+//    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?>
     func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?>
-    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
+//    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
     func handleSuccessfulFlow()
     func handleFailureFlow(errorMessage: String?)
     func submitButtonTapped()

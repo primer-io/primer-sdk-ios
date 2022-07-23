@@ -162,7 +162,6 @@ class MockLocator {
         DependencyContainer.register(MockVaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(MockExternalViewModel() as ExternalViewModelProtocol)
         DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
-        DependencyContainer.register(MockCreateResumePaymentService() as CreateResumePaymentServiceProtocol)
     }
 }
 

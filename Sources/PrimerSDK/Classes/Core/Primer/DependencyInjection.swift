@@ -59,11 +59,6 @@ final internal class DependencyContainer {
                 DependencyContainer.register(clientTokenService)
                 return self.resolve()
                 
-            } else if key == String(describing: CreateResumePaymentServiceProtocol.self) {
-                let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-                DependencyContainer.register(createResumePaymentService)
-                return self.resolve()
-                
             } else if key == String(describing: AppStateProtocol.self) {
                 let appState: AppStateProtocol = AppState()
                 DependencyContainer.register(appState)
