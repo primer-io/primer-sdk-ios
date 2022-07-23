@@ -15,7 +15,7 @@ protocol PrimerAPIClientProtocol {
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse>
     func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
     func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Void, Error>) -> Void)
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
+    func fetchConfiguration(clientToken: DecodedClientToken, requestBody: PrimerAPIConfiguration.API.RequestBody?, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
 //    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void)
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void)
     func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalCreateBillingAgreementResponse, Error>) -> Void)
@@ -95,12 +95,49 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
-        let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken)
+    func fetchConfiguration(clientToken: DecodedClientToken, requestBody: PrimerAPIConfiguration.API.RequestBody?, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
+        let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken, requestBody: requestBody)
         networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>) in
             switch result {
             case .success(let apiConfiguration):
-                completion(.success(apiConfiguration))
+                var imageFiles: [ImageFile] = []
+                for pm in (apiConfiguration.paymentMethods ?? []) {
+                    var remoteUrl: URL?
+                    var base64Data: Data?
+                    
+                    if let coloredVal = pm.displayMetadata?.button.iconUrl?.coloredUrlStr {
+                        if let data = Data(base64Encoded: coloredVal) {
+                            base64Data = data
+                        } else if let url = URL(string: coloredVal) {
+                            remoteUrl = url
+                        }
+                    }
+                    
+                    let imageFile = ImageFile(
+                        fileName: pm.type,
+                        fileExtension: "png",
+                        remoteUrl: remoteUrl,
+                        base64Data: base64Data)
+                    imageFiles.append(imageFile)
+                }
+                
+                let imageManager = ImageManager()
+                
+                firstly {
+                    imageManager.getImages(for: imageFiles)
+                }
+                .done { imageFiles in
+                    for (i, pm) in (apiConfiguration.paymentMethods ?? []).enumerated() {
+                        if let imageFile = imageFiles.filter({ $0.fileName == pm.type }).first {
+                            apiConfiguration.paymentMethods?[i].imageFiles = PrimerTheme.BaseImageFiles(colored: imageFile, light: nil, dark: nil)
+                        }                        
+                    }
+
+                    completion(.success(apiConfiguration))
+                }
+                .catch { err in
+                    completion(.success(apiConfiguration))
+                }
             case .failure(let err):
                 completion(.failure(err))
             }

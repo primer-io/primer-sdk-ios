@@ -137,7 +137,53 @@ struct PrimerAPIConfiguration: Codable {
 
 extension PrimerAPIConfiguration {
     
+    class API {
+        
+        struct RequestBody: Codable {
+            
+            let supportedPaymentMethods: [String]?
+            let sendDisplayMetadata: Bool?
+            
+            private enum CodingKeys: String, CodingKey {
+                case supportedPaymentMethods
+                case sendDisplayMetadata
+            }
+            
+            init(supportedPaymentMethods: [String]?, sendDisplayMetadata: Bool?) {
+                self.supportedPaymentMethods = supportedPaymentMethods
+                self.sendDisplayMetadata = sendDisplayMetadata
+            }
+            
+            init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                self.supportedPaymentMethods = (try? container.decode([String]?.self, forKey: .supportedPaymentMethods)) ?? nil
+                self.sendDisplayMetadata = (try? container.decode(Bool?.self, forKey: .sendDisplayMetadata)) ?? nil
+                
+                if supportedPaymentMethods == nil && sendDisplayMetadata == nil {
+                    throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
+                }
+            }
+            
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                
+                if supportedPaymentMethods == nil && sendDisplayMetadata == nil {
+                    throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
+                }
+                
+                if let supportedPaymentMethods = supportedPaymentMethods {
+                    try container.encode(supportedPaymentMethods, forKey: .supportedPaymentMethods)
+                }
+                
+                if let sendDisplayMetadata = sendDisplayMetadata {
+                    try container.encode(sendDisplayMetadata, forKey: .sendDisplayMetadata)
+                }
+            }
+        }
+    }
+    
     struct CheckoutModule: Codable {
+        
         let type: String
         let requestUrlStr: String?
         let options: CheckoutModuleOptions?

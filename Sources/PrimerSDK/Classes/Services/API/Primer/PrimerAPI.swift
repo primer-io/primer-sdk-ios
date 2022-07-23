@@ -40,7 +40,7 @@ enum PrimerAPI: Endpoint, Equatable {
     
 
     case exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String)
-    case fetchConfiguration(clientToken: DecodedClientToken)
+    case fetchConfiguration(clientToken: DecodedClientToken, requestBody: PrimerAPIConfiguration.API.RequestBody?)
     case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
     case deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String)
     
@@ -119,7 +119,7 @@ internal extension PrimerAPI {
                 tmpHeaders["Primer-Client-Token"] = token
             }
 
-        case .fetchConfiguration(let clientToken):
+        case .fetchConfiguration(let clientToken, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -175,7 +175,7 @@ internal extension PrimerAPI {
                 .requestPrimerConfigurationWithActions(let clientToken, _):
             guard let urlStr = clientToken.pciUrl else { return nil }
             return urlStr
-        case .fetchConfiguration(let clientToken):
+        case .fetchConfiguration(let clientToken, _):
             guard let urlStr = clientToken.configurationUrl else { return nil }
             return urlStr
         case .poll(_, let url):
@@ -293,8 +293,6 @@ internal extension PrimerAPI {
     
     var body: Data? {
         switch self {
-//        case .createDirectDebitMandate(_, let mandateRequest):
-//            return try? JSONEncoder().encode(mandateRequest)
         case .createPayPalOrderSession(_, let payPalCreateOrderRequest):
             return try? JSONEncoder().encode(payPalCreateOrderRequest)
         case .createPayPalSBillingAgreementSession(_, let payPalCreateBillingAgreementRequest):
@@ -305,6 +303,8 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(klarnaCreatePaymentSessionAPIRequest)
         case .createKlarnaCustomerToken(_, let klarnaCreateCustomerTokenAPIRequest):
             return try? JSONEncoder().encode(klarnaCreateCustomerTokenAPIRequest)
+        case .fetchConfiguration(_, let requestBody):
+            return nil //try? JSONEncoder().encode(requestBody)
         case .finalizeKlarnaPaymentSession(_, let klarnaFinalizePaymentSessionRequest):
             return try? JSONEncoder().encode(klarnaFinalizePaymentSessionRequest)
         case .createApayaSession(_, let request):
@@ -331,7 +331,6 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(request.actions)
         case .deleteVaultedPaymentMethod,
                 .exchangePaymentMethodToken,
-                .fetchConfiguration,
                 .fetchVaultedPaymentMethods,
                 .continue3DSRemoteAuth,
                 .poll:

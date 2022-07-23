@@ -30,21 +30,42 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    lazy var logo: UIImage? = {
-        guard let imageName = paymentMethodTokenizationViewModel.config.imageFiles?.colored.image else { return nil }
-        return UIImage(named: "\(imageName)-logo", in: Bundle.primerResources, compatibleWith: nil)
-    }()
+    var logo: UIImage? {
+        guard let baseImageFiles = paymentMethodTokenizationViewModel.config.imageFiles else { return nil }
+        
+        if UIScreen.isDarkModeEnabled {
+            if let darkImage = baseImageFiles.dark?.image {
+                return darkImage
+            } else if let coloredImage = baseImageFiles.colored?.image {
+                return coloredImage
+            } else if let lightImage = baseImageFiles.light?.image {
+                return lightImage
+            } else {
+                return nil
+            }
+        } else {
+            if let lightImage = baseImageFiles.light?.image {
+                return lightImage
+            } else if let coloredImage = baseImageFiles.colored?.image {
+                return coloredImage
+            } else if let darkImage = baseImageFiles.dark?.image {
+                return darkImage
+            } else {
+                return nil
+            }
+        }
+    }
     
     lazy var icon: UIImage? = {
-        guard let imageName = paymentMethodTokenizationViewModel.config.imageFiles?.colored.image else { return nil }
+        guard let imageName = paymentMethodTokenizationViewModel.config.imageFiles?.colored?.image else { return nil }
         
         // In case we don't have a square icon, we show the icon image
-        let imageLogoSquare = UIImage(named: "\(imageName)-logo-square", in: Bundle.primerResources, compatibleWith: nil)
+        let imageLogoSquare = UIImage(named: "\(imageName)-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
         let imageIcon = UIImage(named: "\(imageName)-icon", in: Bundle.primerResources, compatibleWith: nil)
         return imageLogoSquare ?? imageIcon
     }()
     
-    lazy var surchargeSectionText: String? = {
+    var surchargeSectionText: String? {
         switch paymentMethodTokenizationViewModel.config.type {
         case PrimerPaymentMethodType.paymentCard.rawValue:
             return NSLocalizedString("surcharge-additional-fee",
@@ -58,80 +79,141 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             guard let str = availablePaymentMethods.filter({ $0.type == paymentMethodTokenizationViewModel.config.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
             return "+\(str)"
         }
-    }()
+    }
     
-    lazy var buttonTitle: String? = {
+    var buttonTitle: String? {
         switch paymentMethodTokenizationViewModel.config.type {
         case PrimerPaymentMethodType.apaya.rawValue:
-            return NSLocalizedString(paymentMethodTokenizationViewModel.config.data?.button.text ?? "payment-method-type-pay-by-mobile",
+            return NSLocalizedString(paymentMethodTokenizationViewModel.config.displayMetadata?.button.text ?? "payment-method-type-pay-by-mobile",
                                      tableName: nil,
                                      bundle: Bundle.primerResources,
-                                     value: paymentMethodTokenizationViewModel.config.data?.button.text ?? "Pay by mobile",
+                                     value: paymentMethodTokenizationViewModel.config.displayMetadata?.button.text ?? "Pay by mobile",
                                      comment: "Pay by mobile - Payment By Mobile (Apaya)")
             
         case PrimerPaymentMethodType.paymentCard.rawValue:
             return Primer.shared.intent == .vault
-            ? NSLocalizedString(paymentMethodTokenizationViewModel.config.data?.button.text ?? "payment-method-type-card-vaulted",
+            ? NSLocalizedString(paymentMethodTokenizationViewModel.config.displayMetadata?.button.text ?? "payment-method-type-card-vaulted",
                                 tableName: nil,
                                 bundle: Bundle.primerResources,
-                                value: paymentMethodTokenizationViewModel.config.data?.button.text ?? "Add new card",
+                                value: paymentMethodTokenizationViewModel.config.displayMetadata?.button.text ?? "Add new card",
                                 comment: "Add new card - Payment Method Type (Card Vaulted)")
             
-            : NSLocalizedString(paymentMethodTokenizationViewModel.config.data?.button.text ?? "payment-method-type-card-not-vaulted",
+            : NSLocalizedString(paymentMethodTokenizationViewModel.config.displayMetadata?.button.text ?? "payment-method-type-card-not-vaulted",
                                 tableName: nil,
                                 bundle: Bundle.primerResources,
-                                value: paymentMethodTokenizationViewModel.config.data?.button.text ?? "Pay with card",
+                                value: paymentMethodTokenizationViewModel.config.displayMetadata?.button.text ?? "Pay with card",
                                 comment: "Pay with card - Payment Method Type (Card Not vaulted)")
             
         default:
             assert(true, "Shouldn't end up in here")
             return nil
         }
-    }()
+    }
     
-    lazy var buttonImage: UIImage? = {
-        return paymentMethodTokenizationViewModel.config.imageFiles?.colored.image
-    }()
+    var buttonImage: UIImage? {
+        return self.logo
+    }
     
     lazy var buttonFont: UIFont? = {
         return UIFont.systemFont(ofSize: 17.0, weight: .medium)
     }()
     
-    lazy var buttonCornerRadius: CGFloat? = {
-        guard let cornerRadius = paymentMethodTokenizationViewModel.config.data?.button.cornerRadius else { return 4.0 }
+    var buttonCornerRadius: CGFloat? {
+        guard let cornerRadius = paymentMethodTokenizationViewModel.config.displayMetadata?.button.cornerRadius else { return 4.0 }
         return CGFloat(cornerRadius)
-    }()
+    }
     
-    lazy var buttonColor: UIColor? = {
-        guard let hexColor = paymentMethodTokenizationViewModel.config.data?.button.backgroundColor?.colored else { return nil }
-        return PrimerColor(hex: hexColor)
-    }()
+    var buttonColor: UIColor? {
+        guard let baseBackgroundColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.backgroundColor else { return nil }
+        
+        if UIScreen.isDarkModeEnabled {
+            if let darkBorderColorHex = baseBackgroundColor.darkHex {
+                return PrimerColor(hex: darkBorderColorHex)
+            } else if let coloredBorderColorHex = baseBackgroundColor.coloredHex {
+                return PrimerColor(hex: coloredBorderColorHex)
+            } else if let lightBorderColorHex = baseBackgroundColor.lightHex {
+                return PrimerColor(hex: lightBorderColorHex)
+            } else {
+                return nil
+            }
+        } else {
+            if let lightBorderColorHex = baseBackgroundColor.lightHex {
+                return PrimerColor(hex: lightBorderColorHex)
+            } else if let coloredBorderColorHex = baseBackgroundColor.coloredHex {
+                return PrimerColor(hex: coloredBorderColorHex)
+            } else if let darkBorderColorHex = baseBackgroundColor.darkHex {
+                return PrimerColor(hex: darkBorderColorHex)
+            } else {
+                return nil
+            }
+        }
+    }
     
-    lazy var buttonTitleColor: UIColor? = {
-        var titleColor: UIColor?
-        if let coloredVal = paymentMethodTokenizationViewModel.config.data?.button.textColor?.colored {
-            return PrimerColor(hex: coloredVal)
+    var buttonTitleColor: UIColor? {
+        guard let baseTextColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.textColor else {
+            switch paymentMethodTokenizationViewModel.config.type {
+            case PrimerPaymentMethodType.apaya.rawValue,
+                PrimerPaymentMethodType.paymentCard.rawValue:
+                return theme.paymentMethodButton.text.color
+                
+            default:
+                return nil
+            }
         }
         
-        switch paymentMethodTokenizationViewModel.config.type {
-        case PrimerPaymentMethodType.apaya.rawValue,
-            PrimerPaymentMethodType.paymentCard.rawValue:
-            return theme.paymentMethodButton.text.color
-            
-        default:
-            return nil
+        if UIScreen.isDarkModeEnabled {
+            if let darkBorderColorHex = baseTextColor.darkHex {
+                return PrimerColor(hex: darkBorderColorHex)
+            } else if let coloredBorderColorHex = baseTextColor.coloredHex {
+                return PrimerColor(hex: coloredBorderColorHex)
+            } else if let lightBorderColorHex = baseTextColor.lightHex {
+                return PrimerColor(hex: lightBorderColorHex)
+            } else {
+                return nil
+            }
+        } else {
+            if let lightBorderColorHex = baseTextColor.lightHex {
+                return PrimerColor(hex: lightBorderColorHex)
+            } else if let coloredBorderColorHex = baseTextColor.coloredHex {
+                return PrimerColor(hex: coloredBorderColorHex)
+            } else if let darkBorderColorHex = baseTextColor.darkHex {
+                return PrimerColor(hex: darkBorderColorHex)
+            } else {
+                return nil
+            }
         }
-    }()
+    }
     
-    lazy var buttonBorderWidth: CGFloat = {
-        guard let borderWidth = paymentMethodTokenizationViewModel.config.data?.button.borderWidth else { return 0.0 }
+    var buttonBorderWidth: CGFloat {
+        guard let borderWidth = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderWidth else { return 0.0 }
         return CGFloat(borderWidth)
-    }()
+    }
     
-    lazy var buttonBorderColor: UIColor? = {
-        guard let borderHexColor = paymentMethodTokenizationViewModel.config.data?.button.borderColor?.colored else { return nil }
-        return PrimerColor(hex: borderHexColor)
-    }()
+    var buttonBorderColor: UIColor? {
+        guard let baseBorderColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderColor else { return nil }
+        
+        if UIScreen.isDarkModeEnabled {
+            if let darkBorderColorHex = baseBorderColor.darkHex {
+                return PrimerColor(hex: darkBorderColorHex)
+            } else if let coloredBorderColorHex = baseBorderColor.coloredHex {
+                return PrimerColor(hex: coloredBorderColorHex)
+            } else if let lightBorderColorHex = baseBorderColor.lightHex {
+                return PrimerColor(hex: lightBorderColorHex)
+            } else {
+                return nil
+            }
+        } else {
+            if let lightBorderColorHex = baseBorderColor.lightHex {
+                return PrimerColor(hex: lightBorderColorHex)
+            } else if let coloredBorderColorHex = baseBorderColor.coloredHex {
+                return PrimerColor(hex: coloredBorderColorHex)
+            } else if let darkBorderColorHex = baseBorderColor.darkHex {
+                return PrimerColor(hex: darkBorderColorHex)
+            } else {
+                return nil
+            }
+        }
+    }
     
     var buttonTintColor: UIColor? {
         return nil
