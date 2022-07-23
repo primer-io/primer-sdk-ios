@@ -55,7 +55,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     }
     
     init() {
-//        resumeHandler = self
+
     }
 
     func loadConfig(_ completion: @escaping (Error?) -> Void) {

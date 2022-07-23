@@ -10,7 +10,22 @@
 import UIKit
 
 internal class ImageFile: File {
-    var image: UIImage?
+    
+    var image: UIImage? {
+        if let data = self.data,
+           let image = UIImage(data: data, scale: 1.0) {
+            return image
+        }
+        
+        if let paymentMethodLogoFileName = PrimerPaymentMethod.getBundledImageFileName(for: self.fileName, assetType: .logo),
+           let image = UIImage(named: paymentMethodLogoFileName, in: Bundle.primerResources, compatibleWith: nil) {
+            return image
+        } else if let image = UIImage(named: self.fileName, in: Bundle.primerResources, compatibleWith: nil) {
+            return image
+        }
+        
+        return nil
+    }
 }
 
 internal class ImageManager {
@@ -51,11 +66,7 @@ internal class ImageManager {
     
     func getImage(file: ImageFile) -> Promise<ImageFile> {
         return Promise { seal in
-            if let imageName = PrimerPaymentMethod.getBundledImageFileName(for: file.fileName, assetType: .logo),
-               let image = UIImage(named: imageName, in: Bundle.primerResources, compatibleWith: nil)
-            {
-                file.localUrl = Bundle.primerResources.url(forResource: imageName, withExtension: "png")
-                file.image = image
+            if file.image != nil {
                 seal.fulfill(file)
                 
             } else {
@@ -67,7 +78,6 @@ internal class ImageManager {
                     if let imageFile = file as? ImageFile,
                        let imageData = imageFile.data,
                        let image = UIImage(data: imageData) {
-                        imageFile.image = image
                         seal.fulfill(imageFile)
                     } else {
                         let err = InternalError.failedToDecode(message: "image", userInfo: nil, diagnosticsId: nil)

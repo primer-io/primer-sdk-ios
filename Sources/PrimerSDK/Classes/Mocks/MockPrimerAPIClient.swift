@@ -10,7 +10,7 @@
 import Foundation
 
 internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
-    
+
     var response: Data?
     var throwsError: Bool
     var isCalled: Bool = false
@@ -59,7 +59,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 //        }
     }
 
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (Result<PrimerAPIConfiguration, Error>) -> Void) {
+    func fetchConfiguration(clientToken: DecodedClientToken, requestBody: PrimerAPIConfiguration.API.RequestBody?, completion: @escaping (Result<PrimerAPIConfiguration, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 

@@ -15,33 +15,65 @@ internal typealias FileExtension = String
 internal class File {
     
     var fileName: FileName
-    var fileExtension: FileExtension
-    var localUrl: URL?
-    var remoteUrl: URL?
-    var base64Data: Data?
+    var fileExtension: FileExtension?
+    var localUrl: URL? {
+        guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
+        
+        var tmpFilename: String = self.fileName
+        if let fileExtension = self.fileExtension {
+            tmpFilename = tmpFilename + "." + fileExtension
+        }
+        
+        let fileLocalUrl = documentDirectoryUrl.appendingPathComponent(tmpFilename)
+        return fileLocalUrl
+    }
+    private(set) var remoteUrl: URL?
+    private var base64Data: Data?
     
     var data: Data? {
-        guard let localUrl = localUrl else { return nil }
-        return try? Data(contentsOf: localUrl)
+        if let localUrl = localUrl {
+            if let tmpData = try? Data(contentsOf: localUrl) {
+                return tmpData
+            }
+        }
+        
+        return nil
     }
     
     init(
         fileName: FileName,
-        fileExtension: FileExtension,
-        localUrl: URL? = nil,
+        fileExtension: FileExtension?,
         remoteUrl: URL? = nil,
-        base64Data: Data?
+        base64Data: Data? = nil
     ) {
         self.fileName = fileName
         self.fileExtension = fileExtension
-        self.localUrl = localUrl
         self.remoteUrl = remoteUrl
         self.base64Data = base64Data
+        
+        if let base64Data = self.base64Data,
+            let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        {
+            do {
+                var tmpFilename: String = self.fileName
+                if let fileExtension = self.fileExtension {
+                    tmpFilename = tmpFilename + "." + fileExtension
+                }
+                
+                let fileLocalUrl = documentDirectoryUrl
+                    .appendingPathComponent("primer", isDirectory: true)
+                    .appendingPathComponent(tmpFilename)
+                try base64Data.write(to: fileLocalUrl)
+                
+            } catch {
+                log(logLevel: .error, title: "Write failed", message: nil, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
+            }
+        }
     }
 }
 
 internal protocol DownloaderModule {
-    func download(files: [File], storeInDirectory directory: String?) -> Promise<[File]>
+    func download(files: [File]) -> Promise<[File]>
 }
 
 internal class Downloader: NSObject, DownloaderModule {
@@ -50,28 +82,12 @@ internal class Downloader: NSObject, DownloaderModule {
         return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     }
     
-    func download(files: [File], storeInDirectory directory: String? = nil) -> Promise<[File]> {
+    func download(files: [File]) -> Promise<[File]> {
         return Promise { seal in
-            guard let documentDirectoryUrl = documentDirectoryUrl else {
-                seal.reject(PrimerError.invalidValue(key: "documentsDirectory", value: nil, userInfo: nil, diagnosticsId: nil))
-                return
-            }
-            
-            let primerDirectoryUrl = documentDirectoryUrl.appendingPathComponent("primer", isDirectory: true)
-            
-            var promises: [Promise<Void>] = []
+            var promises: [Promise<File>] = []
             
             for file in files {
-                guard let fileRemoteUrl = file.remoteUrl else { continue }
-                var tmpFilename: String = file.fileName + "." + file.fileExtension
-                
-                if let directory = directory {
-                    tmpFilename = directory + "/" + tmpFilename
-                }
-                
-                let fileLocalUrl = primerDirectoryUrl.appendingPathComponent(tmpFilename)
-                file.localUrl = fileLocalUrl
-                let p = self.downloadData(from: fileRemoteUrl, to: fileLocalUrl)
+                let p = self.download(file: file)
                 promises.append(p)
             }
             
@@ -103,13 +119,8 @@ internal class Downloader: NSObject, DownloaderModule {
         }
     }
     
-    func download(file: File, storeInDirectory directory: String? = nil) -> Promise<File> {
+    func download(file: File) -> Promise<File> {
         return Promise { seal in
-            guard let documentDirectoryUrl = documentDirectoryUrl else {
-                seal.reject(PrimerError.invalidValue(key: "documentsDirectory", value: nil, userInfo: nil, diagnosticsId: nil))
-                return
-            }
-            
             guard let fileRemoteUrl = file.remoteUrl else {
                 let err = InternalError.invalidValue(key: "remoteUrl", value: nil, userInfo: nil, diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -117,14 +128,12 @@ internal class Downloader: NSObject, DownloaderModule {
                 return
             }
             
-            var tmpFilename: String = file.fileName + "." + file.fileExtension
-            
-            if let directory = directory {
-                tmpFilename = directory + "/" + tmpFilename
+            guard let fileLocalUrl = file.localUrl else {
+                let err = InternalError.invalidValue(key: "localUrl", value: nil, userInfo: nil, diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
             }
-            
-            let fileLocalUrl = documentDirectoryUrl.appendingPathComponent(tmpFilename)
-            file.localUrl = fileLocalUrl
             
             firstly {
                 self.downloadData(from: fileRemoteUrl, to: fileLocalUrl)
@@ -173,7 +182,6 @@ internal class Downloader: NSObject, DownloaderModule {
                     let validStatusCodeRange = 200..<300
                     if validStatusCodeRange.contains(statusCode) {
                         do {
-                            FileManager.default.delegate = self
                             try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
                             seal.fulfill(())
                             

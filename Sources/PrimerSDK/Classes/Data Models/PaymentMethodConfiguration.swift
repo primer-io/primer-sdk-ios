@@ -47,7 +47,7 @@ class PrimerPaymentMethod: Codable {
     let processorConfigId: String?
     var surcharge: Int?
     let options: PaymentMethodOptions?
-    var data: PrimerPaymentMethod.Data?
+    var displayMetadata: PrimerPaymentMethod.DisplayMetadata?
     var imageFiles: PrimerTheme.BaseImageFiles?
     
     var hasUnknownSurcharge: Bool = false
@@ -95,7 +95,7 @@ class PrimerPaymentMethod: Codable {
     }
     
     var isCheckoutEnabled: Bool {
-        if self.imageFiles?.colored.image == nil {
+        if self.imageFiles?.colored?.image == nil {
             return false
         }
         
@@ -110,7 +110,7 @@ class PrimerPaymentMethod: Codable {
     }
     
     var isVaultingEnabled: Bool {
-        if self.imageFiles?.colored.image == nil {
+        if self.imageFiles?.colored?.image == nil {
             return false
         }
         
@@ -148,7 +148,7 @@ class PrimerPaymentMethod: Codable {
              processorConfigId,
              surcharge,
              options,
-             data
+             displayMetadata
     }
     
     init(
@@ -159,7 +159,7 @@ class PrimerPaymentMethod: Codable {
         processorConfigId: String?,
         surcharge: Int?,
         options: PaymentMethodOptions?,
-        data: PrimerPaymentMethod.Data?
+        displayMetadata: PrimerPaymentMethod.DisplayMetadata?
     ) {
         self.id = id
         self.implementationType = implementationType
@@ -168,7 +168,7 @@ class PrimerPaymentMethod: Codable {
         self.processorConfigId = processorConfigId
         self.surcharge = surcharge
         self.options = options
-        self.data = data
+        self.displayMetadata = displayMetadata
     }
     
     required init(from decoder: Decoder) throws {
@@ -180,7 +180,7 @@ class PrimerPaymentMethod: Codable {
         name = (try? container.decode(String?.self, forKey: .name)) ?? nil
         processorConfigId = (try? container.decode(String?.self, forKey: .processorConfigId)) ?? nil
         surcharge = (try? container.decode(Int?.self, forKey: .surcharge)) ?? nil
-        data = (try? container.decode(PrimerPaymentMethod.Data?.self, forKey: .data)) ?? nil
+        displayMetadata = (try? container.decode(PrimerPaymentMethod.DisplayMetadata?.self, forKey: .displayMetadata)) ?? nil
         
         if let cardOptions = try? container.decode(CardOptions.self, forKey: .options) {
             options = cardOptions
@@ -202,7 +202,7 @@ class PrimerPaymentMethod: Codable {
         try container.encode(name, forKey: .name)
         try container.encode(processorConfigId, forKey: .processorConfigId)
         try container.encode(surcharge, forKey: .surcharge)
-        try container.encode(data, forKey: .data)
+        try container.encode(displayMetadata, forKey: .displayMetadata)
         
         if let cardOptions = options as? CardOptions {
             try container.encode(cardOptions, forKey: .options)
@@ -227,45 +227,15 @@ extension PrimerPaymentMethod {
     }
 }
 
-extension PrimerTheme {
-    
-    class BaseImageFiles {
-        
-        var colored: ImageFile
-        var light: ImageFile?
-        var dark: ImageFile?
-        
-        init(colored: ImageFile, light: ImageFile?, dark: ImageFile?) {
-            self.colored = colored
-            self.light = light
-            self.dark = dark
-        }
-    }
-    
-    public class BaseColoredURLs: Codable {
-        
-        var colored: String
-        var dark: String?
-        var light: String?
-    }
-    
-    public class BaseColors: Codable {
-        
-        var colored: String
-        var dark: String?
-        var light: String?
-    }
-}
-
 extension PrimerPaymentMethod {
     
-    class Data: Codable {
+    class DisplayMetadata: Codable {
         
-        var button: PrimerPaymentMethod.Data.Button
+        var button: PrimerPaymentMethod.DisplayMetadata.Button
         
         class Button: Codable {
             
-            var iconUrl: PrimerTheme.BaseColoredURLs
+            var iconUrl: PrimerTheme.BaseColoredURLs?
             var backgroundColor: PrimerTheme.BaseColors?
             var cornerRadius: Int?
             var borderWidth: Int?
@@ -282,6 +252,135 @@ extension PrimerPaymentMethod {
                      text,
                      textColor
             }
+            
+            required init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                
+                iconUrl = (try? container.decode(PrimerTheme.BaseColoredURLs?.self, forKey: .iconUrl)) ?? nil
+                backgroundColor = (try? container.decode(PrimerTheme.BaseColors?.self, forKey: .backgroundColor)) ?? nil
+                cornerRadius = (try? container.decode(Int?.self, forKey: .cornerRadius)) ?? nil
+                borderWidth = (try? container.decode(Int?.self, forKey: .borderWidth)) ?? nil
+                borderColor = (try? container.decode(PrimerTheme.BaseColors?.self, forKey: .borderColor)) ?? nil
+                text = (try? container.decode(String?.self, forKey: .text)) ?? nil
+                textColor = (try? container.decode(PrimerTheme.BaseColors?.self, forKey: .textColor)) ?? nil
+                
+                if iconUrl == nil,
+                   backgroundColor == nil,
+                   cornerRadius == nil,
+                   borderWidth == nil,
+                   borderColor == nil,
+                   text == nil,
+                   textColor == nil
+                {
+                    let err = InternalError.failedToDecode(message: "BaseColors", userInfo: nil, diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    throw err
+                }
+            }
+        }
+    }
+}
+
+extension PrimerTheme {
+    
+    class BaseImageFiles {
+        
+        var colored: ImageFile?
+        var light: ImageFile?
+        var dark: ImageFile?
+        
+        init(colored: ImageFile, light: ImageFile?, dark: ImageFile?) {
+            self.colored = colored
+            self.light = light
+            self.dark = dark
+        }
+    }
+    
+    public class BaseColoredURLs: Codable {
+        
+        var coloredUrlStr: String?
+        var darkUrlStr: String?
+        var lightUrlStr: String?
+        
+        private enum CodingKeys: String, CodingKey {
+            case coloredUrlStr = "colored"
+            case darkUrlStr = "dark"
+            case lightUrlStr = "light"
+        }
+        
+        init?(
+            coloredUrlStr: String?,
+            lightUrlStr: String?,
+            darkUrlStr: String?
+        ) {
+            self.coloredUrlStr = coloredUrlStr
+            self.lightUrlStr = lightUrlStr
+            self.darkUrlStr = darkUrlStr
+        }
+        
+        public required init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            
+            coloredUrlStr = (try? container.decode(String?.self, forKey: .coloredUrlStr)) ?? nil
+            lightUrlStr = (try? container.decode(String?.self, forKey: .lightUrlStr)) ?? nil
+            darkUrlStr = (try? container.decode(String?.self, forKey: .darkUrlStr)) ?? nil
+            
+            if (coloredUrlStr == nil && lightUrlStr == nil && darkUrlStr == nil) {
+                let err = InternalError.failedToDecode(message: "BaseColoredURLs", userInfo: nil, diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try? container.encode(coloredUrlStr, forKey: .coloredUrlStr)
+            try? container.encode(lightUrlStr, forKey: .lightUrlStr)
+            try? container.encode(darkUrlStr, forKey: .darkUrlStr)
+        }
+    }
+    
+    public class BaseColors: Codable {
+        
+        var coloredHex: String?
+        var darkHex: String?
+        var lightHex: String?
+        
+        private enum CodingKeys: String, CodingKey {
+            case coloredHex = "colored"
+            case darkHex = "dark"
+            case lightHex = "light"
+        }
+        
+        init?(
+            coloredHex: String?,
+            lightHex: String?,
+            darkHex: String?
+        ) {
+            self.coloredHex = coloredHex
+            self.lightHex = lightHex
+            self.darkHex = darkHex
+        }
+        
+        public required init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            
+            coloredHex = (try? container.decode(String?.self, forKey: .coloredHex)) ?? nil
+            darkHex = (try? container.decode(String?.self, forKey: .darkHex)) ?? nil
+            lightHex = (try? container.decode(String?.self, forKey: .lightHex)) ?? nil
+            
+            if (coloredHex == nil && lightHex == nil && darkHex == nil) {
+                let err = InternalError.failedToDecode(message: "BaseColors", userInfo: nil, diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try? container.encode(coloredHex, forKey: .coloredHex)
+            try? container.encode(darkHex, forKey: .darkHex)
+            try? container.encode(lightHex, forKey: .lightHex)
         }
     }
 }
