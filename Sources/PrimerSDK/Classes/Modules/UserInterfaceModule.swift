@@ -283,6 +283,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return UIImage(named: "grab-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .rapydPoli:
             return UIImage(named: "poli-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .twoCtwoP:
+            return UIImage(named: "2c2p-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .rapydFast:
             return UIImage(named: "fast-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .xfers:
