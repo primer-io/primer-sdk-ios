@@ -97,7 +97,7 @@ internal class QRCodeViewController: PrimerFormViewController {
     
     private func renderQRCode() {
         guard let qrCodeStr = viewModel.qrCode else { return }
-//        guard let qrImg = convertBase64StringToImage(qrCodeStr) else { return }
+        guard let qrImg = convertBase64StringToImage(qrCodeStr) else { return }
         
         let separatorView = PrimerView()
         verticalStackView.addArrangedSubview(separatorView)

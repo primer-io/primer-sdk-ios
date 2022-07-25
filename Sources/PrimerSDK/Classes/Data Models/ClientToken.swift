@@ -83,7 +83,7 @@ struct DecodedClientToken: Codable {
         self.intent = intent
         self.statusUrl = statusUrl
         self.redirectUrl = redirectUrl
-        self.qrCodeUrl = qrCodeUrl
+        self.qrCode = qrCode
         self.accountNumber = accountNumber
     }
     
@@ -146,17 +146,15 @@ extension DecodedClientToken {
             ErrorHandler.handle(error: err)
             throw err
         }
-        
-        guard let expDate = expDate else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Expiry date missing"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
         
-        if expDate < Date() {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Expiry datetime has passed."], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            throw err
+        token = try container.decode(PaymentMethodToken.self, forKey: .token)
+        if let token = try? container.decode(String?.self, forKey: .resumeToken) {
+            resumeToken = token
+        } else {
+            resumeToken = nil
         }
     }
 }
