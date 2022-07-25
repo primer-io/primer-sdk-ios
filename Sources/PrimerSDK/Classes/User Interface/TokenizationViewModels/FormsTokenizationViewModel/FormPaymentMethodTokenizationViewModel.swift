@@ -411,20 +411,10 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
-                switch self.config.type {
-                case .adyenBlik:
-                    return self.presentPaymentMethodAppropriateViewController()
-                default:
-                    return Promise()
-                }
+                return self.evaluateStepAfterSelectedPaymentMethodSessionActionFire()
             }
             .then { () -> Promise<Void> in
-                switch self.config.type {
-                case .adyenBlik:
-                    return self.awaitUserInput()
-                default:
-                    return Promise()
-                }
+                return self.evaluatePaymentMethodNeedingFurtherUserActions()
             }
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
@@ -441,7 +431,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             }
         }
     }
-    
     
     override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
         return Promise { seal in
@@ -473,6 +462,24 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                        seal.reject(error)
                    }
             }
+        }
+    }
+    
+    private func evaluateStepAfterSelectedPaymentMethodSessionActionFire() -> Promise<Void> {
+        switch self.config.type {
+        case .adyenBlik:
+            return self.presentPaymentMethodAppropriateViewController()
+        default:
+            return Promise()
+        }
+    }
+    
+    private func evaluatePaymentMethodNeedingFurtherUserActions() -> Promise<Void> {
+        switch self.config.type {
+        case .adyenBlik:
+            return self.awaitUserInput()
+        default:
+            return Promise()
         }
     }
     
