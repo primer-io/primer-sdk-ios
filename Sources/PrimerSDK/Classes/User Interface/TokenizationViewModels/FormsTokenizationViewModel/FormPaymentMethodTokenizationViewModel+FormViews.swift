@@ -73,8 +73,9 @@ extension FormPaymentMethodTokenizationViewModel {
         dueAtContainerStackView.axis = .horizontal
         dueAtContainerStackView.spacing = 8.0
         
-        let calendarImage = UIImage(named: "calendar", in: Bundle.primerResources, compatibleWith: nil)
+        let calendarImage = UIImage(named: "calendar", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         let calendarImageView = UIImageView(image: calendarImage)
+        calendarImageView.tintColor = .gray600
         calendarImageView.clipsToBounds = true
         calendarImageView.contentMode = .scaleAspectFit
         dueAtContainerStackView.addArrangedSubview(calendarImageView)
@@ -96,7 +97,6 @@ extension FormPaymentMethodTokenizationViewModel {
             dueAtPrefixLabel.attributedText = dueDateAttributedString
             dueAtPrefixLabel.numberOfLines = 0
             dueAtPrefixLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.body)
-            dueAtPrefixLabel.textColor = theme.text.title.color
             dueAtContainerStackView.addArrangedSubview(dueAtPrefixLabel)
         }
                 
