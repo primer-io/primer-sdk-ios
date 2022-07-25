@@ -48,11 +48,13 @@ struct DecodedClientToken: Codable {
         case statusUrl
         case threeDSecureInitUrl
         case threeDSecureToken
-        case qrCode
         case accountNumber
         // Expiration
         case exp
         case expiration
+        // QR Code
+        case qrCode
+        case qrCodeUrl
     }
     
     init(
@@ -116,6 +118,19 @@ struct DecodedClientToken: Codable {
         if let expirationDateInt = try? container.decode(Int.self, forKey: .expiration) {
             self.expDate = Date(timeIntervalSince1970: TimeInterval(expirationDateInt))
         }
+        
+        // For some APMs we receive one more value out of the client token `qrCode`
+        // They may have different values.
+        // Either a URL or a Base64 string.
+        // In case of `qrCode`, we get the Base64 String
+        // In case of `qrCodeUrl`, we get the Image URL
+        // We understand this should be changed in the future.
+        // However, for now, we evaluate the `qrCode` variable with either URL or Base64
+        if let qrCode = try? container.decode(String.self, forKey: .qrCode) {
+            self.qrCode = qrCode
+        } else if let qrCode = try? container.decode(String.self, forKey: .qrCodeUrl) {
+            self.qrCode = qrCode
+        }
     }
     
     func encode(to encoder: Encoder) throws {
@@ -131,10 +146,14 @@ struct DecodedClientToken: Codable {
         try? container.encode(intent, forKey: .intent)
         try? container.encode(statusUrl, forKey: .statusUrl)
         try? container.encode(redirectUrl, forKey: .redirectUrl)
-        try? container.encode(qrCode, forKey: .qrCode)
         try? container.encode(accountNumber, forKey: .accountNumber)
         try? container.encode(expDate?.timeIntervalSince1970, forKey: .expiration)
         try? container.encode(expDate?.timeIntervalSince1970, forKey: .exp)
+        if qrCode?.isURL == true {
+            try? container.encode(qrCode, forKey: .qrCodeUrl)
+        } else {
+            try? container.encode(qrCode, forKey: .qrCode)
+        }
     }
 }
 
@@ -146,15 +165,17 @@ extension DecodedClientToken {
             ErrorHandler.handle(error: err)
             throw err
         }
+        
+        guard let expDate = expDate else {
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Expiry date missing"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
         
-        token = try container.decode(PaymentMethodToken.self, forKey: .token)
-        if let token = try? container.decode(String?.self, forKey: .resumeToken) {
-            resumeToken = token
-        } else {
-            resumeToken = nil
+        if expDate < Date() {
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Expiry datetime has passed."], diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            throw err
         }
     }
 }

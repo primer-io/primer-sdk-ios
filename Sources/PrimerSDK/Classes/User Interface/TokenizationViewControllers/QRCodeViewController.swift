@@ -97,7 +97,6 @@ internal class QRCodeViewController: PrimerFormViewController {
     
     private func renderQRCode() {
         guard let qrCodeStr = viewModel.qrCode else { return }
-        guard let qrImg = convertBase64StringToImage(qrCodeStr) else { return }
         
         let separatorView = PrimerView()
         verticalStackView.addArrangedSubview(separatorView)
@@ -105,7 +104,11 @@ internal class QRCodeViewController: PrimerFormViewController {
         separatorView.heightAnchor.constraint(equalToConstant: 10).isActive = true
         
         let qrCodeImageView = UIImageView()
-        qrCodeImageView.downloaded(from: URL(string: qrCodeStr)!)
+        if qrCodeStr.isURL == true, let qrCodeURL = URL(string: qrCodeStr) {
+            qrCodeImageView.downloaded(from: qrCodeURL)
+        } else if let qrCodeImg = convertBase64StringToImage(qrCodeStr) {
+            qrCodeImageView.image = qrCodeImg
+        }
         qrCodeImageView.accessibilityIdentifier = "qrCode"
         qrCodeImageView.accessibilityHint = Strings.QRCodeView.qrCodeImageSubtitle
         qrCodeImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -159,6 +162,7 @@ internal class QRCodeViewController: PrimerFormViewController {
 }
 
 extension UIImageView {
+    
     func downloaded(from url: URL, contentMode mode: ContentMode = .scaleAspectFit) {
         contentMode = mode
         URLSession.shared.dataTask(with: url) { data, response, error in
@@ -173,6 +177,7 @@ extension UIImageView {
             }
         }.resume()
     }
+    
     func downloaded(from link: String, contentMode mode: ContentMode = .scaleAspectFit) {
         guard let url = URL(string: link) else { return }
         downloaded(from: url, contentMode: mode)
