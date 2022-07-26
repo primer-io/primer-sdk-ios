@@ -32,6 +32,11 @@ internal class ImageManager {
     
     func getImages(for imageFiles: [ImageFile]) -> Promise<[ImageFile]> {
         return Promise { seal in
+            guard !imageFiles.isEmpty else {
+                seal.fulfill([])
+                return
+            }
+            
             let promises = imageFiles.compactMap({ self.getImage(file: $0) })
             
             firstly {
