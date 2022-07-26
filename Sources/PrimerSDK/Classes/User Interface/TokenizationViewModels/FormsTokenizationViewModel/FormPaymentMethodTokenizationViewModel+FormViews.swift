@@ -5,6 +5,8 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 
@@ -214,3 +216,4 @@ extension FormPaymentMethodTokenizationViewModel {
     }
 }
 
+#endif
