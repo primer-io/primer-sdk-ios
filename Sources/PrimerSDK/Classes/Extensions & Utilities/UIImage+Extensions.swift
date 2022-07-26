@@ -5,6 +5,7 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+#if canImport(UIKit)
 
 extension UIImage {
     
@@ -24,3 +25,5 @@ extension UIImage {
         }
     }
 }
+
+#endif
