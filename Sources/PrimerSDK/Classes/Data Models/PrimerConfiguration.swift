@@ -139,27 +139,27 @@ extension PrimerAPIConfiguration {
     
     class API {
         
-        struct RequestBody: Codable {
+        struct RequestParameters: Codable {
             
-            let supportedPaymentMethods: [String]?
-            let sendDisplayMetadata: Bool?
+            let skipPaymentMethodTypes: [String]?
+            let requestDisplayMetadata: Bool?
             
             private enum CodingKeys: String, CodingKey {
-                case supportedPaymentMethods
-                case sendDisplayMetadata
+                case skipPaymentMethodTypes = "skipPaymentMethods"
+                case requestDisplayMetadata = "withDisplayMetadata"
             }
             
-            init(supportedPaymentMethods: [String]?, sendDisplayMetadata: Bool?) {
-                self.supportedPaymentMethods = supportedPaymentMethods
-                self.sendDisplayMetadata = sendDisplayMetadata
+            init(skipPaymentMethodTypes: [String]?, requestDisplayMetadata: Bool?) {
+                self.skipPaymentMethodTypes = skipPaymentMethodTypes
+                self.requestDisplayMetadata = requestDisplayMetadata
             }
             
             init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
-                self.supportedPaymentMethods = (try? container.decode([String]?.self, forKey: .supportedPaymentMethods)) ?? nil
-                self.sendDisplayMetadata = (try? container.decode(Bool?.self, forKey: .sendDisplayMetadata)) ?? nil
+                self.skipPaymentMethodTypes = (try? container.decode([String]?.self, forKey: .skipPaymentMethodTypes)) ?? nil
+                self.requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
                 
-                if supportedPaymentMethods == nil && sendDisplayMetadata == nil {
+                if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
                     throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
                 }
             }
@@ -167,17 +167,33 @@ extension PrimerAPIConfiguration {
             func encode(to encoder: Encoder) throws {
                 var container = encoder.container(keyedBy: CodingKeys.self)
                 
-                if supportedPaymentMethods == nil && sendDisplayMetadata == nil {
+                if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
                     throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
                 }
                 
-                if let supportedPaymentMethods = supportedPaymentMethods {
-                    try container.encode(supportedPaymentMethods, forKey: .supportedPaymentMethods)
+                if let skipPaymentMethodTypes = skipPaymentMethodTypes {
+                    try container.encode(skipPaymentMethodTypes, forKey: .skipPaymentMethodTypes)
                 }
                 
-                if let sendDisplayMetadata = sendDisplayMetadata {
-                    try container.encode(sendDisplayMetadata, forKey: .sendDisplayMetadata)
+                if let requestDisplayMetadata = requestDisplayMetadata {
+                    try container.encode(requestDisplayMetadata, forKey: .requestDisplayMetadata)
                 }
+            }
+            
+            func toDictionary() -> [String: String]? {
+                var dict: [String: String] = [:]
+                
+                if let skipPaymentMethodTypes = skipPaymentMethodTypes, !skipPaymentMethodTypes.isEmpty {
+                    dict[CodingKeys.skipPaymentMethodTypes.rawValue] = skipPaymentMethodTypes.joined(separator: ",")
+                    
+                    if let requestDisplayMetadata = requestDisplayMetadata {
+                        dict[CodingKeys.requestDisplayMetadata.rawValue] = requestDisplayMetadata ? "true" : "false"
+                    }
+                } else {
+                    dict[CodingKeys.requestDisplayMetadata.rawValue] = "true"
+                }
+                
+                return dict.keys.isEmpty ? nil : dict
             }
         }
     }
