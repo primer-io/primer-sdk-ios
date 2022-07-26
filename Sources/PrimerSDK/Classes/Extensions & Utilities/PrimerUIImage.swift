@@ -1,5 +1,5 @@
 //
-//  UIImage+Extensions.swift
+//  PrimerUIImage.swift
 //  PrimerSDK
 //
 //  Copyright © 2022 Primer API ltd. All rights reserved.
@@ -7,7 +7,9 @@
 
 #if canImport(UIKit)
 
-extension UIImage {
+internal class PrimerUIImage: UIImage {}
+
+extension PrimerUIImage {
     
     func withColor(_ color: UIColor) -> UIImage? {
         

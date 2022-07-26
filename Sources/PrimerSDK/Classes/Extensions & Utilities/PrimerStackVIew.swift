@@ -1,13 +1,18 @@
 //
-//  UIStackView+Background.swift
+//  PrimerStackView.swift
 //  PrimerSDK
 //
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-import Foundation
 
-extension UIStackView {
+#if canImport(UIKit)
+
+import UIKit
+
+internal class PrimerStackView: UIStackView {}
+
+extension PrimerStackView {
     
     func addBackground(color: UIColor) {
         
@@ -27,3 +32,6 @@ extension UIStackView {
         }
     }
 }
+
+#endif
+

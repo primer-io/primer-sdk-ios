@@ -4,7 +4,7 @@ import UIKit
 
 public struct PrimerDimensions {
     
-    public static let cornerRadius: CGFloat = 0.0
+    public static let cornerRadius: CGFloat = 8.0
     public static let safeArea: CGFloat = 10.0
     public static let zero: CGFloat = CGFloat.zero
     
