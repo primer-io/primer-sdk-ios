@@ -15,7 +15,7 @@ protocol PrimerAPIClientProtocol {
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse>
     func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
     func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Void, Error>) -> Void)
-    func fetchConfiguration(clientToken: DecodedClientToken, requestBody: PrimerAPIConfiguration.API.RequestBody?, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
+    func fetchConfiguration(clientToken: DecodedClientToken, requestParameters: PrimerAPIConfiguration.API.RequestParameters?, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
 //    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void)
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void)
     func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalCreateBillingAgreementResponse, Error>) -> Void)
@@ -95,8 +95,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func fetchConfiguration(clientToken: DecodedClientToken, requestBody: PrimerAPIConfiguration.API.RequestBody?, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
-        let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken, requestBody: requestBody)
+    func fetchConfiguration(clientToken: DecodedClientToken, requestParameters: PrimerAPIConfiguration.API.RequestParameters?, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
+        let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters)
         networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>) in
             switch result {
             case .success(let apiConfiguration):

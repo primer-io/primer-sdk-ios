@@ -40,7 +40,7 @@ enum PrimerAPI: Endpoint, Equatable {
     
 
     case exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String)
-    case fetchConfiguration(clientToken: DecodedClientToken, requestBody: PrimerAPIConfiguration.API.RequestBody?)
+    case fetchConfiguration(clientToken: DecodedClientToken, requestParameters: PrimerAPIConfiguration.API.RequestParameters?)
     case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
     case deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String)
     
@@ -92,7 +92,6 @@ internal extension PrimerAPI {
         
         switch self {
         case .deleteVaultedPaymentMethod(let clientToken, _),
-//                .createDirectDebitMandate(let clientToken, _),
                 .exchangePaymentMethodToken(let clientToken, _),
                 .fetchVaultedPaymentMethods(let clientToken),
                 .createPayPalOrderSession(let clientToken, _),
@@ -134,7 +133,7 @@ internal extension PrimerAPI {
         
         switch self {
         case .fetchConfiguration:
-            tmpHeaders["X-Api-Version"] = "2021-10-19"
+            tmpHeaders["X-Api-Version"] = "2.1"
         case .tokenizePaymentMethod,
                 .fetchVaultedPaymentMethods,
                 .deleteVaultedPaymentMethod,
@@ -284,6 +283,8 @@ internal extension PrimerAPI {
     
     var queryParameters: [String: String]? {
         switch self {
+        case .fetchConfiguration(_, let requestParameters):
+            return requestParameters?.toDictionary()
         default:
             return nil
         }
@@ -303,8 +304,8 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(klarnaCreatePaymentSessionAPIRequest)
         case .createKlarnaCustomerToken(_, let klarnaCreateCustomerTokenAPIRequest):
             return try? JSONEncoder().encode(klarnaCreateCustomerTokenAPIRequest)
-        case .fetchConfiguration(_, let requestBody):
-            return nil //try? JSONEncoder().encode(requestBody)
+        case .fetchConfiguration:
+            return nil
         case .finalizeKlarnaPaymentSession(_, let klarnaFinalizePaymentSessionRequest):
             return try? JSONEncoder().encode(klarnaFinalizePaymentSessionRequest)
         case .createApayaSession(_, let request):

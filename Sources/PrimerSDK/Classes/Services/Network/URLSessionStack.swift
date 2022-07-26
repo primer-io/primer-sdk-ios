@@ -75,6 +75,18 @@ internal class URLSessionStack: NetworkService {
 #if DEBUG
         if let queryParams = endpoint.queryParameters {
             msg += "\nQuery parameters: \(queryParams)"
+            
+            var urlQueryItems: [URLQueryItem] = []
+            
+            for (key, val) in queryParams {
+                let urlQueryItem = URLQueryItem(name: key, value: val)
+                urlQueryItems.append(urlQueryItem)
+            }
+            
+            if !urlQueryItems.isEmpty {
+                var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+                urlComponents.queryItems = urlQueryItems
+            }
         }
         
         if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
@@ -169,51 +181,6 @@ internal class URLSessionStack: NetworkService {
 #if DEBUG
                 
                 if endpoint.shouldParseResponseBody {
-                    if let primerEndpoint = endpoint as? PrimerAPI, case .fetchConfiguration = primerEndpoint {
-                        var json = (try! JSONSerialization.jsonObject(with: data, options: .allowFragments)) as! [String: Any]
-                        var paymentMethods: [[String: Any]] = json["paymentMethods"] as! [[String: Any]]
-                        var mockedPaymentMethods: [[String: Any]] = []
-                        
-                        for var pm in paymentMethods {
-                            if (pm["type"] as! String).starts(with: "BUCKAROO") ||
-                                (pm["type"] as! String).starts(with: "ADYEN") {
-                                pm["implementationType"] = "WEB_REDIRECT"
-                            } else {
-                                pm["implementationType"] = "NATIVE_SDK"
-                            }
-                            
-                            pm["data"] = [
-                                "button": [
-                                    // Mobile only
-                                    "iconUrl": [
-                                        "colored": "https://cdn.searchenginejournal.com/wp-content/uploads/2016/03/googletestsimagesinsnippets.jpg",
-                                        "dark": "https://cdn.searchenginejournal.com/wp-content/uploads/2016/03/googletestsimagesinsnippets.jpg",
-                                        "light": "https://cdn.searchenginejournal.com/wp-content/uploads/2016/03/googletestsimagesinsnippets.jpg",
-                                    ],
-                                    "backgroundColor": [
-                                        "colored": "#CC0066",
-                                        "dark": "#CC0066",
-                                        "light": "#CC0066",
-                                    ],
-                                    // Maybe for the future
-                                    "cornerRadius": 14,
-                                    "borderWidth": 1,
-                                    "borderColor": [
-                                        "colored": "#CC0066",
-                                        "dark": "#CC0066",
-                                        "light": "#CC0066",
-                                    ],
-                                ]
-                            ]
-                            
-                            mockedPaymentMethods.append(pm)
-                        }
-                        
-                        json["paymentMethods"] = mockedPaymentMethods
-                        print(json)
-                        data = try! JSONSerialization.data(withJSONObject: json as Any, options: .prettyPrinted)
-                    }
-                    
                     let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
                     let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
                     var jsonStr: String?
@@ -353,10 +320,30 @@ internal class URLSessionStack: NetworkService {
 }
 
 internal extension URLSessionStack {
+    
     private func url(for endpoint: Endpoint) -> URL? {
         guard let urlStr = endpoint.baseURL else { return nil }
         guard let baseUrl = URL(string: urlStr) else { return nil }
-        return baseUrl.appendingPathComponent(endpoint.path)
+        let url = baseUrl.appendingPathComponent(endpoint.path)
+        
+        if let queryParameters = endpoint.queryParameters, !queryParameters.keys.isEmpty {
+            var urlComponents = URLComponents(string: url.absoluteString)!
+            var urlQueryItems: [URLQueryItem] = []
+            
+            for (key, val) in queryParameters {
+                let urlQueryItem = URLQueryItem(name: key, value: val)
+                urlQueryItems.append(urlQueryItem)
+            }
+            
+            if !urlQueryItems.isEmpty {
+                urlComponents.queryItems = urlQueryItems
+            }
+            
+            let tmpUrl = urlComponents.url ?? url
+            return tmpUrl
+        }
+        
+        return url
     }
 }
 

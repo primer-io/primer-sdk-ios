@@ -59,7 +59,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 //        }
     }
 
-    func fetchConfiguration(clientToken: DecodedClientToken, requestBody: PrimerAPIConfiguration.API.RequestBody?, completion: @escaping (Result<PrimerAPIConfiguration, Error>) -> Void) {
+    func fetchConfiguration(clientToken: DecodedClientToken, requestParameters: PrimerAPIConfiguration.API.RequestParameters?, completion: @escaping (Result<PrimerAPIConfiguration, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
