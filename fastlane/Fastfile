@@ -81,14 +81,13 @@ platform :ios do
     # Build for appetize
     appetize_build_and_upload
 
-    # Utilize the firebase client token to store in CI
     # Upload to Firebase
-    # firebase_app_distribution(
-    #   service_credentials_file: "firebase_credentials.json",
-    #   app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
-    #   groups: "primer-internal",
-    #   release_notes: "QA release: " + sdk_version_name_source_branch + " [" + str_time + "]"
-    # )
+    firebase_app_distribution(
+      service_credentials_file: "firebase_credentials.json",
+      app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
+      groups: "primer-internal",
+      release_notes: "QA release: " + sdk_version_name_source_branch
+    )
 
   end
 
@@ -177,7 +176,7 @@ platform :ios do
     # at this moment.
     # The Build number is the unique identifier of the package
     # matching the Github Workflow run ID and number
-    
+
     # Set version number
     # increment_version_number(
     #   version_number: sdk_version_name_source_branch,
