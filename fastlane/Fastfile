@@ -84,8 +84,8 @@ platform :ios do
     # Upload to Firebase
     firebase_app_distribution(
       service_credentials_file: "firebase_credentials.json",
-      app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
-      groups: "primer-internal",
+      app: ENV["FIREBASE_APP_ID"],
+      groups: ENV["FIREBASE_COMMA_SEPARATED_TEST_GROUPS"],
       release_notes: "QA release: " + sdk_version_name_source_branch
     )
 
