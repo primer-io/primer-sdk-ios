@@ -34,6 +34,7 @@ extension PaymentMethodTokenizationViewModel {
                     self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
                 }
                 .done { checkoutData in
+                    
                     self.didFinishPayment?(nil)
                     self.nullifyEventCallbacks()
                     
@@ -47,29 +48,45 @@ extension PaymentMethodTokenizationViewModel {
                     UIApplication.shared.endIgnoringInteractionEvents()
                 }
                 .catch { err in
+                    
                     self.didFinishPayment?(err)
                     self.nullifyEventCallbacks()
                     
                     let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
                     
-                    firstly {
-                        clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                    }
-                    .then { () -> Promise<String?> in
-                        var primerErr: PrimerError!
-                        if let error = err as? PrimerError {
-                            primerErr = error
-                        } else {
-                            primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: nil)
-                        }
+                    if let primerErr = err as? PrimerError,
+                       case .cancelledByCustomer = primerErr,
+                       PrimerHeadlessUniversalCheckout.current.delegate == nil {
                         
-                        return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
+                        firstly {
+                            clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                        }
+                        .done { merchantErrorMessage in
+                            Primer.shared.primerRootVC?.popToMainScreen(completion: nil)
+                        }
+                        // The above promises will never end up on error.
+                        .catch { _ in }
+                        
+                    } else {
+                        firstly {
+                            clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                        }
+                        .then { () -> Promise<String?> in
+                            var primerErr: PrimerError!
+                            if let error = err as? PrimerError {
+                                primerErr = error
+                            } else {
+                                primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: nil)
+                            }
+                            
+                            return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
+                        }
+                        .done { merchantErrorMessage in
+                            self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                        }
+                        // The above promises will never end up on error.
+                        .catch { _ in }
                     }
-                    .done { merchantErrorMessage in
-                        self.handleFailureFlow(errorMessage: merchantErrorMessage)
-                    }
-                    // The above promises will never end up on error.
-                    .catch { _ in }
                 }
             }
         }

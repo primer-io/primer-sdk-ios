@@ -162,7 +162,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                         self.presentAsyncPaymentMethod(with: redirectUrl)
                     }
                     .then { () -> Promise<String> in
-                        let pollingModule = PollingModule(url: statusUrl)
+                        let pollingModule = PollingModule(url: statusUrl, paymentMethodType: self.config.type)
                         self.didCancel = {
                             pollingModule.cancel()
                         }
