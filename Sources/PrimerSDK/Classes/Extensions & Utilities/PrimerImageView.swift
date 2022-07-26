@@ -9,7 +9,9 @@
 
 import UIKit
 
-extension UIImageView {
+internal class PrimerImageView: UIImageView {}
+
+extension PrimerImageView {
     
     func downloaded(from url: URL, contentMode mode: ContentMode = .scaleAspectFit) {
         contentMode = mode
