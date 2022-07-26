@@ -89,7 +89,8 @@ extension FormPaymentMethodTokenizationViewModel {
                 string: Strings.AccountInfoPaymentView.dueAt,
                 attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray600])
             let formatter = DateFormatter()
-            formatter.dateFormat = "HH:MM MMM d yyyy"
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .short
             let dueAtDate = NSAttributedString(
                 string: formatter.string(from: expDate),
                 attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
@@ -104,7 +105,7 @@ extension FormPaymentMethodTokenizationViewModel {
                 
         // Account number
         
-        let accountNumberInfoContainerStackView = UIStackView()
+        let accountNumberInfoContainerStackView = PrimerStackView()
         accountNumberInfoContainerStackView.axis = .vertical
         accountNumberInfoContainerStackView.spacing = 12.0
         accountNumberInfoContainerStackView.addBackground(color: .gray100)
@@ -113,6 +114,7 @@ extension FormPaymentMethodTokenizationViewModel {
                                                                          bottom: PrimerDimensions.StackViewSpacing.default,
                                                                          right: PrimerDimensions.StackViewSpacing.default)
         accountNumberInfoContainerStackView.isLayoutMarginsRelativeArrangement = true
+        accountNumberInfoContainerStackView.layer.cornerRadius = PrimerDimensions.cornerRadius
 
         let transferFundsLabel = UILabel()
         transferFundsLabel.text = Strings.AccountInfoPaymentView.pleaseTransferFunds
@@ -121,7 +123,7 @@ extension FormPaymentMethodTokenizationViewModel {
         transferFundsLabel.textColor = theme.text.title.color
         accountNumberInfoContainerStackView.addArrangedSubview(transferFundsLabel)
         
-        let accountNumberStackView = UIStackView()
+        let accountNumberStackView = PrimerStackView()
         accountNumberStackView.axis = .horizontal
         accountNumberStackView.spacing = 12.0
         accountNumberStackView.heightAnchor.constraint(equalToConstant: 56.0).isActive = true
@@ -130,6 +132,9 @@ extension FormPaymentMethodTokenizationViewModel {
                                                                          left: PrimerDimensions.StackViewSpacing.default,
                                                                          bottom: PrimerDimensions.StackViewSpacing.default,
                                                                          right: PrimerDimensions.StackViewSpacing.default)
+        accountNumberStackView.layer.cornerRadius = PrimerDimensions.cornerRadius / 2
+        accountNumberStackView.layer.borderColor = UIColor.gray200.cgColor
+        accountNumberStackView.layer.borderWidth = 2.0
         accountNumberStackView.isLayoutMarginsRelativeArrangement = true
 
         if let accountNumber = ClientTokenService.decodedClientToken?.accountNumber {
@@ -166,7 +171,7 @@ extension FormPaymentMethodTokenizationViewModel {
         
         UIPasteboard.general.string = ClientTokenService.decodedClientToken?.accountNumber
         
-        print("📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
+        log(logLevel: .debug, message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
         
         DispatchQueue.main.async {
             sender.isSelected = true
