@@ -196,7 +196,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return Strings.PaymentButton.payByMobile
             
         case .paymentCard:
-            return Primer.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.PaymentButton.payWithCard
+            return Primer.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.VaultPaymentMethodViewContent.payWithCard
             
         case .twoCtwoP:
             return Strings.PaymentButton.payInInstallments
