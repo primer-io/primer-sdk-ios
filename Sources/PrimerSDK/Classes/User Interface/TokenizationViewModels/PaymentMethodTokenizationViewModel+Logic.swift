@@ -49,12 +49,18 @@ extension PaymentMethodTokenizationViewModel {
                 }
                 .catch { err in
                     
-                    self.didFinishPayment?(err)
+                    var error: Error?
+                    
+                    if let primerErr = err as? PrimerError {
+                        error = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: primerErr.errorUserInfo as? [String: String], diagnosticsId: primerErr.diagnosticsId)
+                    }
+                    
+                    self.didFinishPayment?(error)
                     self.nullifyEventCallbacks()
                     
                     let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
                     
-                    if let primerErr = err as? PrimerError,
+                    if let primerErr = error as? PrimerError,
                        case .cancelledByCustomer = primerErr,
                        PrimerHeadlessUniversalCheckout.current.delegate == nil {
                         
