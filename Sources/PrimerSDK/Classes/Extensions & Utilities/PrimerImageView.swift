@@ -13,8 +13,9 @@ internal class PrimerImageView: UIImageView {}
 
 extension PrimerImageView {
     
-    func downloaded(from url: URL, contentMode mode: ContentMode = .scaleAspectFit) {
-        contentMode = mode
+    convenience init(from url: URL, contentMode mode: ContentMode = .scaleAspectFit) {
+        self.init()
+        self.contentMode = mode
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard
                 let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
@@ -28,10 +29,11 @@ extension PrimerImageView {
         }.resume()
     }
     
-    func downloaded(from link: String, contentMode mode: ContentMode = .scaleAspectFit) {
-        guard let url = URL(string: link) else { return }
-        downloaded(from: url, contentMode: mode)
+    convenience init?(from link: String, contentMode mode: ContentMode = .scaleAspectFit) {
+        guard let url = URL(string: link) else { return nil }
+        self.init(from: url, contentMode: mode)
     }
+    
 }
 
 #endif

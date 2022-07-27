@@ -103,9 +103,9 @@ internal class QRCodeViewController: PrimerFormViewController {
         separatorView.translatesAutoresizingMaskIntoConstraints = false
         separatorView.heightAnchor.constraint(equalToConstant: 10).isActive = true
         
-        let qrCodeImageView = PrimerImageView()
+        var qrCodeImageView = PrimerImageView()
         if qrCodeStr.isURL == true, let qrCodeURL = URL(string: qrCodeStr) {
-            qrCodeImageView.downloaded(from: qrCodeURL)
+            qrCodeImageView = PrimerImageView(from: qrCodeURL)
         } else if let qrCodeImg = convertBase64StringToImage(qrCodeStr) {
             qrCodeImageView.image = qrCodeImg
         }
