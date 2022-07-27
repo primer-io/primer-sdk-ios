@@ -97,14 +97,18 @@ internal class QRCodeViewController: PrimerFormViewController {
     
     private func renderQRCode() {
         guard let qrCodeStr = viewModel.qrCode else { return }
-        guard let qrImg = convertBase64StringToImage(qrCodeStr) else { return }
         
         let separatorView = PrimerView()
         verticalStackView.addArrangedSubview(separatorView)
         separatorView.translatesAutoresizingMaskIntoConstraints = false
         separatorView.heightAnchor.constraint(equalToConstant: 10).isActive = true
         
-        let qrCodeImageView = UIImageView(image: qrImg)
+        var qrCodeImageView = PrimerImageView()
+        if qrCodeStr.isURL == true, let qrCodeURL = URL(string: qrCodeStr) {
+            qrCodeImageView = PrimerImageView(from: qrCodeURL)
+        } else if let qrCodeImg = convertBase64StringToImage(qrCodeStr) {
+            qrCodeImageView.image = qrCodeImg
+        }
         qrCodeImageView.accessibilityIdentifier = "qrCode"
         qrCodeImageView.accessibilityHint = Strings.QRCodeView.qrCodeImageSubtitle
         qrCodeImageView.translatesAutoresizingMaskIntoConstraints = false

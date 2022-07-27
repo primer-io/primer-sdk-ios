@@ -74,6 +74,10 @@ internal extension String {
         return isValid
     }
     
+    var isURL: Bool {
+        return URL(string: self) != nil
+    }
+    
     var withoutNonNumericCharacters: String {
         return withoutWhiteSpace.filter("0123456789".contains)
     }
