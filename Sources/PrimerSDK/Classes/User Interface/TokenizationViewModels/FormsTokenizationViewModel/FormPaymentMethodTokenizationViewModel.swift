@@ -31,7 +31,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     var inputs: [Input] = []
     private var cardComponentsManager: CardComponentsManager!
-    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    
+    var didCancel: (() -> Void)?
     
     // FIXME: Is this the fix for the button's indicator?
     private var isTokenizing = false
@@ -326,36 +328,32 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         formViews.append(contentsOf: allVisibleBillingAddressFieldContainerViews)
         return PrimerFormView(frame: .zero, formViews: formViews)
     }
+    
+    // MARK: Input Payment Methods Array
+    
+    /// Array containing the payment method types expecting some input step to be performed
+    let inputPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenBlik]
+    
+    // MARK: Account Info Payment Methods Array
+    
+    /// Array containing the payment method types expecting some account info
+    /// to transfer the founds to
+    let accountInfoPaymentMethodTypes: [PrimerPaymentMethodType] = [.rapydFast]
+    
+    // MARK: Account Info Payment
+    
+    /// Generic info view
+    var accountInfoView: PrimerFormView?
+    
+    // MARK: Input completion block
+    
+    /// Input completion block callback
+    var userInputCompletion: (() -> Void)?
 
     // MARK: - Init
-
-    var userInputCompletion: (() -> Void)?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
-    required init(config: PaymentMethodConfig) {
-        super.init(config: config)
-        
-        switch config.type {
-        case .adyenBlik:
-            let input1 = Input()
-            input1.name = "OTP"
-            input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
-            input1.textFieldPlaceholder = Strings.Blik.inputTextFieldPlaceholder
-            input1.keyboardType = .numberPad
-            input1.descriptor = Strings.Blik.inputDescriptor
-            input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
-            input1.maxCharactersAllowed = 6
-            input1.isValid = { text in
-                return text.isNumeric && text.count >= 6
-            }
-            inputs.append(input1)
-            
-        default:
-            break
-        }
     }
     
     override func validate() throws {
@@ -413,10 +411,20 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
-                return self.presentInputViewController()
+                switch self.config.type {
+                case .adyenBlik:
+                    return self.presentPaymentMethodAppropriateViewController()
+                default:
+                    return Promise()
+                }
             }
             .then { () -> Promise<Void> in
-                return self.awaitUserInput()
+                switch self.config.type {
+                case .adyenBlik:
+                    return self.awaitUserInput()
+                default:
+                    return Promise()
+                }
             }
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
@@ -434,52 +442,36 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
+    
     override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
         return Promise { seal in
             if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-                if let decodedClientToken = ClientTokenService.decodedClientToken,
-                   let statusUrlStr = decodedClientToken.statusUrl,
-                   let statusUrl = URL(string: statusUrlStr),
-                   decodedClientToken.intent != nil {
-                    
-                    DispatchQueue.main.async {
-                        UIApplication.shared.endIgnoringInteractionEvents()
-                    }
-                    
-                    firstly {
-                        self.startPolling(on: statusUrl)
-                    }
-                    .done { resumeToken in
-                        seal.fulfill(resumeToken)
-                    }
-                    .catch { err in
-                        seal.reject(err)
-                    }
-                } else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                }
-            } else {
-                seal.fulfill(nil)
-            }
-        }
-    }
-    
-    private func presentInputViewController() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async {
-                switch self.config.type {
-                case .adyenBlik:
-                    let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil), formPaymentMethodTokenizationViewModel: self)
-                    Primer.shared.primerRootVC?.show(viewController: pcfvc)
-                    seal.fulfill()
-                    
-                default:
-                    let err = PrimerError.invalidValue(key: "PrimerInputViewController for \(self.config.type)", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                }
+                   if let statusUrlStr = decodedClientToken.statusUrl,
+                      let statusUrl = URL(string: statusUrlStr),
+                      decodedClientToken.intent != nil {
+                       
+                       firstly {
+                           self.presentPaymentMethodAppropriateViewController()
+                       }
+                       .then { () -> Promise<String> in
+                           let pollingModule = PollingModule(url: statusUrl)
+                           self.didCancel = {
+                               pollingModule.cancel()
+                               return
+                           }
+                           
+                           return pollingModule.start()
+                       }
+                       .done { resumeToken in
+                           seal.fulfill(resumeToken)
+                       }
+                       .catch { err in
+                           seal.reject(err)
+                       }
+                   } else {
+                       let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                       seal.reject(error)
+                   }
             }
         }
     }
@@ -569,50 +561,40 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     }
                 }
             }
-            
+        case .rapydFast:
+            return Promise { seal in
+                guard let configId = config.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                var sessionInfo: AsyncPaymentMethodOptions.SessionInfo?
+                sessionInfo = AsyncPaymentMethodOptions.SessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+                
+                
+                let request = AsyncPaymentMethodTokenizationRequest(
+                    paymentInstrument: AsyncPaymentMethodOptions(
+                        paymentMethodType: config.type,
+                        paymentMethodConfigId: configId,
+                        sessionInfo: sessionInfo))
+                
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                firstly {
+                    tokenizationService.tokenize(request: request)
+                }
+                .done{ paymentMethod in
+                    seal.fulfill(paymentMethod)
+                }
+                .catch { err in
+                    seal.reject(err)
+                }
+            }
         default:
             fatalError("Payment method card should never end here.")
         }
-    }
-    
-    private func startPolling(on url: URL) -> Promise<String> {
-        return Promise { seal in
-            self.startPolling(on: url) { (id, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let id = id {
-                    seal.fulfill(id)
-                } else {
-                    assert(true, "Should have received one parameter")
-                }
-            }
-        }
-    }
-    
-    private func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
-        let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
-            switch result {
-            case .success(let res):
-                if res.status == .pending {
-                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                        self.startPolling(on: url, completion: completion)
-                    }
-                } else if res.status == .complete {
-                    completion(res.id, nil)
-                } else {
-                    let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                }
-            case .failure(let err):
-                ErrorHandler.handle(error: err)
-                // Retry
-                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
-                    self.startPolling(on: url, completion: completion)
-                }
-            }
-        }
-    }
+    }    
 }
 
 extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
@@ -664,6 +646,8 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
 extension FormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     
     func cancel() {
+        didCancel?()
+        
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         
         let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
