@@ -61,7 +61,7 @@ extension PaymentMethodTokenizationViewModel {
                     let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
                     
                     if let primerErr = error as? PrimerError,
-                       case .cancelledByCustomer = primerErr,
+                       case .cancelled = primerErr,
                        PrimerHeadlessUniversalCheckout.current.delegate == nil {
                         
                         firstly {
