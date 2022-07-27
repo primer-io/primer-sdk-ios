@@ -29,12 +29,12 @@ internal class PrimerAPIConfigurationService: PrimerAPIConfigurationServiceProto
                 return
             }
             
-            let requestBody = PrimerAPIConfiguration.API.RequestBody(
-                supportedPaymentMethods: PrimerPaymentMethodType.allCases.compactMap({ $0.rawValue }),
-                sendDisplayMetadata: self.requestDisplayMetadata)
+            let requestParameters = PrimerAPIConfiguration.API.RequestParameters(
+                skipPaymentMethodTypes: [],
+                requestDisplayMetadata: true)
             
             let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-            api.fetchConfiguration(clientToken: clientToken, requestBody: requestBody) { (result) in
+            api.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result) in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
