@@ -146,11 +146,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     lazy var surchargeSectionText: String? = {
         switch paymentMethodTokenizationViewModel.config.type {
         case .paymentCard:
-            return NSLocalizedString("surcharge-additional-fee",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Additional fee may apply",
-                                     comment: "Additional fee may apply - Surcharge (Label)")
+            return Strings.CardFormView.additionalFeesTitle
         default:
             guard let currency = AppState.current.currency else { return nil }
             guard let availablePaymentMethods = AppState.current.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
@@ -197,26 +193,11 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return nil
             
         case .apaya:
-            return NSLocalizedString("payment-method-type-pay-by-mobile",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Pay by mobile",
-                                     comment: "Pay by mobile - Payment By Mobile (Apaya)")
+            return Strings.PaymentButton.payByMobile
             
         case .paymentCard:
-            return Primer.shared.intent == .vault
-            ? NSLocalizedString("payment-method-type-card-vaulted",
-                                tableName: nil,
-                                bundle: Bundle.primerResources,
-                                value: "Add new card",
-                                comment: "Add new card - Payment Method Type (Card Vaulted)")
+            return Primer.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.PaymentButton.payWithCard
             
-            : NSLocalizedString("payment-method-type-card-not-vaulted",
-                                tableName: nil,
-                                bundle: Bundle.primerResources,
-                                value: "Pay with card",
-                                comment: "Pay with card - Payment Method Type (Card Not vaulted)")
-
         case .twoCtwoP:
             return Strings.PaymentButton.payInInstallments
             
@@ -624,18 +605,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             switch Primer.shared.intent {
             case .checkout:
                 let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-                buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Pay",
-                                                comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
+                buttonTitle = Strings.PaymentButton.pay
                 
             case .vault:
-                buttonTitle = NSLocalizedString("primer-card-form-add-card",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Add card",
-                                                comment: "Add card - Card Form (Vault title text)")
+                buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle
                 
             case .none:
                 assert(true, "Intent should have been set")
