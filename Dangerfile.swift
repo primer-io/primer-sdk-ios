@@ -14,7 +14,7 @@ let isReleasePr = pr.head.ref.hasPrefix("release")
 
 // MARK: - Copyright
 
-// Checks whether new files have "Copyright / Created by" mentions
+// Checks whether new files have "Created by" mentions
 
 let swiftFilesWithCopyright = editedFiles.filter {
     $0.fileType == .swift &&
@@ -24,15 +24,17 @@ let swiftFilesWithCopyright = editedFiles.filter {
 
 if swiftFilesWithCopyright.count > 0 {
     let files = swiftFilesWithCopyright.joined(separator: ", ")
-    warn("In Danger we don't include copyright headers, found them in: \(files)")
+    warn("In Danger we don't include // Created by headers, Check whether you have correctly getting the template IDETemplateMacros in PrimerSDK's workspace's xcshareddata folder. Found them in: \(files)")
 }
 
 // MARK: - Check UIKit import
 
+let uiKitCheckExcludedFiles = ["Dangerfile.swift", "Strings.swift"]
+
 let swiftFilesNotContainingUIKitImport = editedFiles.filter {
     $0.fileType == .swift &&
     danger.utils.readFile($0).contains("#if canImport(UIKit)") == false &&
-    $0.name != "Dangerfile.swift"
+    uiKitCheckExcludedFiles.contains($0.name) == false
 }
 
 if swiftFilesNotContainingUIKitImport.count > 0 {
