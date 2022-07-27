@@ -9,7 +9,7 @@
 import PrimerSDK
 import UIKit
 
-var environment: Environment = .sandbox
+var environment: Environment = .dev
 var customDefinedApiKey: String?
 var metadataTestCase: String?
 var paymentHandling: PrimerPaymentHandling = .auto
@@ -34,7 +34,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         checkoutHandlingControl.selectedSegmentIndex = paymentHandling == .auto ? 0 : 1
         checkoutHandlingControl.accessibilityIdentifier = "payment_control"
         apiKeyTextField.accessibilityIdentifier = "api_key_txt_field"
-        apiKeyTextField.text = nil
+        apiKeyTextField.text = "eaf8bb50-d84a-49d2-ad28-f419e13d8d72"
         metadataTestCaseTextField.accessibilityIdentifier = "metadata_test_case_txt_field"
         metadataTestCaseTextField.text = nil
         customerIdTextField.accessibilityIdentifier = "customer_id_txt_field"
