@@ -104,6 +104,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return "poli"
         case .rapydFast:
             return "fast"
+        case .rapydPromptPay:
+            return "prompt-pay"
         case .xfers:
             return "xfers"
         case .twoCtwoP:
@@ -121,6 +123,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return UIImage(named: "paypal-logo-1", in: Bundle.primerResources, compatibleWith: nil)
         case .primerTestSofort:
             return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydPromptPay:
+            return UIImage(named: "prompt-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
         default:
             return buttonImage
         }
@@ -142,11 +146,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     lazy var surchargeSectionText: String? = {
         switch paymentMethodTokenizationViewModel.config.type {
         case .paymentCard:
-            return NSLocalizedString("surcharge-additional-fee",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Additional fee may apply",
-                                     comment: "Additional fee may apply - Surcharge (Label)")
+            return Strings.CardFormView.additionalFeesTitle
         default:
             guard let currency = AppState.current.currency else { return nil }
             guard let availablePaymentMethods = AppState.current.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
@@ -193,26 +193,11 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return nil
             
         case .apaya:
-            return NSLocalizedString("payment-method-type-pay-by-mobile",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Pay by mobile",
-                                     comment: "Pay by mobile - Payment By Mobile (Apaya)")
+            return Strings.PaymentButton.payByMobile
             
         case .paymentCard:
-            return Primer.shared.intent == .vault
-            ? NSLocalizedString("payment-method-type-card-vaulted",
-                                tableName: nil,
-                                bundle: Bundle.primerResources,
-                                value: "Add new card",
-                                comment: "Add new card - Payment Method Type (Card Vaulted)")
+            return Primer.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.VaultPaymentMethodViewContent.payWithCard
             
-            : NSLocalizedString("payment-method-type-card-not-vaulted",
-                                tableName: nil,
-                                bundle: Bundle.primerResources,
-                                value: "Pay with card",
-                                comment: "Pay with card - Payment Method Type (Card Not vaulted)")
-
         case .twoCtwoP:
             return Strings.PaymentButton.payInInstallments
             
@@ -292,6 +277,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return UIImage(named: "2c2p-logo", in: Bundle.primerResources, compatibleWith: nil)
         case .rapydFast:
             return UIImage(named: "fast-logo", in: Bundle.primerResources, compatibleWith: nil)
+        case .rapydPromptPay:
+            return UIImage(named: "prompt-pay-logo-white", in: Bundle.primerResources, compatibleWith: nil)
         case .xfers:
             return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         default:
@@ -375,6 +362,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return UIColor(red: 0.184, green: 0.263, blue: 0.596, alpha: 1)
         case .rapydFast:
             return .white
+        case .rapydPromptPay:
+            return UIColor(red: 0.008, green: 0.235, blue: 0.408, alpha: 1)
         case .opennode, .twoCtwoP:
             return .white
         case .xfers:
@@ -418,6 +407,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .rapydPoli,
                 .rapydGrabPay,
                 .rapydFast,
+                .rapydPromptPay,
                 .opennode,
                 .xfers:
             return nil
@@ -460,7 +450,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .primerTestSofort,
                 .rapydGCash,
                 .rapydPoli,
-                .rapydGrabPay:
+                .rapydGrabPay,
+                .rapydPromptPay:
             return 0.0
         case .adyenDotPay,
                 .apaya,
@@ -508,6 +499,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .rapydGCash,
                 .rapydGrabPay,
                 .rapydPoli,
+                .rapydPromptPay,
                 .xfers:
             return nil
         case .apaya,
@@ -560,7 +552,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 .rapydGCash,
                 .rapydGrabPay,
                 .rapydPoli,
-                .rapydFast:
+                .rapydFast,
+                .rapydPromptPay:
             return nil
         case .apaya,
                 .paymentCard:
@@ -612,18 +605,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             switch Primer.shared.intent {
             case .checkout:
                 let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-                buttonTitle = NSLocalizedString("primer-form-view-card-submit-button-text-checkout",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Pay",
-                                                comment: "Pay - Card Form View (Sumbit button text)") + " " + (viewModel.amountStringed ?? "")
+                buttonTitle = Strings.PaymentButton.pay
                 
             case .vault:
-                buttonTitle = NSLocalizedString("primer-card-form-add-card",
-                                                tableName: nil,
-                                                bundle: Bundle.primerResources,
-                                                value: "Add card",
-                                                comment: "Add card - Card Form (Vault title text)")
+                buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle
                 
             case .none:
                 assert(true, "Intent should have been set")
