@@ -105,7 +105,6 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                                 comment: "Pay with card - Payment Method Type (Card Not vaulted)")
             
         default:
-            assert(true, "Shouldn't end up in here")
             return nil
         }
     }
@@ -124,28 +123,99 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var buttonColor: UIColor? {
-        guard let baseBackgroundColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.backgroundColor else { return nil }
+        if let baseBackgroundColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.backgroundColor {
+            if UIScreen.isDarkModeEnabled {
+                if let darkBorderColorHex = baseBackgroundColor.darkHex {
+                    return PrimerColor(hex: darkBorderColorHex)
+                } else if let coloredBorderColorHex = baseBackgroundColor.coloredHex {
+                    return PrimerColor(hex: coloredBorderColorHex)
+                } else if let lightBorderColorHex = baseBackgroundColor.lightHex {
+                    return PrimerColor(hex: lightBorderColorHex)
+                }
+            } else {
+                if let lightBorderColorHex = baseBackgroundColor.lightHex {
+                    return PrimerColor(hex: lightBorderColorHex)
+                } else if let coloredBorderColorHex = baseBackgroundColor.coloredHex {
+                    return PrimerColor(hex: coloredBorderColorHex)
+                } else if let darkBorderColorHex = baseBackgroundColor.darkHex {
+                    return PrimerColor(hex: darkBorderColorHex)
+                }
+            }
+        }
         
-        if UIScreen.isDarkModeEnabled {
-            if let darkBorderColorHex = baseBackgroundColor.darkHex {
-                return PrimerColor(hex: darkBorderColorHex)
-            } else if let coloredBorderColorHex = baseBackgroundColor.coloredHex {
-                return PrimerColor(hex: coloredBorderColorHex)
-            } else if let lightBorderColorHex = baseBackgroundColor.lightHex {
-                return PrimerColor(hex: lightBorderColorHex)
-            } else {
-                return nil
-            }
-        } else {
-            if let lightBorderColorHex = baseBackgroundColor.lightHex {
-                return PrimerColor(hex: lightBorderColorHex)
-            } else if let coloredBorderColorHex = baseBackgroundColor.coloredHex {
-                return PrimerColor(hex: coloredBorderColorHex)
-            } else if let darkBorderColorHex = baseBackgroundColor.darkHex {
-                return PrimerColor(hex: darkBorderColorHex)
-            } else {
-                return nil
-            }
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodTokenizationViewModel.config.type) else {
+            return nil
+        }
+        
+        switch paymentMethodType {
+        case .adyenAlipay:
+            return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
+        case .adyenBlik:
+            return .black
+        case .adyenDotPay:
+            return .white
+        case .adyenGiropay,
+                .buckarooGiropay:
+            return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
+        case .adyenIDeal:
+            return UIColor(red: 204.0/255, green: 0.0/255, blue: 102.0/255, alpha: 1.0)
+        case .adyenInterac:
+            return UIColor(red: 254.0/255, green: 185.0/255, blue: 43.0/255, alpha: 1.0)
+        case .adyenSofort,
+                .buckarooSofort,
+                .primerTestSofort:
+            return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
+        case .adyenMobilePay:
+            return UIColor(red: 90.0/255, green: 120.0/255, blue: 255.0/255, alpha: 1.0)
+        case .adyenPayTrail:
+            return UIColor(red: 229.0/255, green: 11.0/255, blue: 150.0/255, alpha: 1.0)
+        case .adyenTrustly:
+            return UIColor(red: 14.0/255, green: 224.0/255, blue: 110.0/255, alpha: 1.0)
+        case .adyenTwint:
+            return .black
+        case .adyenVipps:
+            return UIColor(red: 255.0/255, green: 91.0/255, blue: 36.0/255, alpha: 1.0)
+        case .apaya:
+            return theme.paymentMethodButton.color(for: .enabled)
+        case .applePay:
+            return .black
+        case .atome:
+            return UIColor(red: 240.0/255, green: 255.0/255, blue: 95.0/255, alpha: 1.0)
+        case .buckarooEps:
+            return .white
+        case .hoolah:
+            return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
+        case .klarna,
+                .primerTestKlarna:
+            return UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1.0)
+        case .buckarooBancontact,
+                .mollieBankcontact,
+                .payNLBancontact:
+            return .white
+        case .payNLIdeal,
+                .buckarooIdeal,
+                .mollieIdeal:
+            return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
+        case .payNLGiropay:
+            return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
+        case .payNLPayconiq:
+            return UIColor(red: 255.0/255, green: 71.0/255, blue: 133.0/255, alpha: 1.0)
+        case .paymentCard:
+            return theme.paymentMethodButton.color(for: .enabled)
+        case .payPal,
+                .primerTestPayPal:
+            return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
+        case .rapydGCash:
+            return UIColor(red: 0.161, green: 0.482, blue: 0.98, alpha: 1)
+        case .rapydGrabPay:
+            return UIColor(red: 0.004, green: 0.694, blue: 0.306, alpha: 1)
+        case .rapydPoli:
+            return UIColor(red: 0.184, green: 0.263, blue: 0.596, alpha: 1)
+        case .xfersPayNow:
+            return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
+        default:
+            precondition(false, "Shouldn't end up in here")
+            return nil
         }
     }
     
@@ -185,33 +255,129 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var buttonBorderWidth: CGFloat {
-        guard let borderWidth = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderWidth else { return 0.0 }
-        return CGFloat(borderWidth)
+        if let borderWidth = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderWidth {
+            return CGFloat(borderWidth)
+        }
+        
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodTokenizationViewModel.config.type) else {
+            return 0.0
+        }
+        
+        switch paymentMethodType {
+        case .adyenAlipay,
+                .adyenBlik,
+                .adyenGiropay,
+                .adyenIDeal,
+                .adyenInterac,
+                .adyenMobilePay,
+                .adyenPayTrail,
+                .adyenTrustly,
+                .adyenTwint,
+                .adyenVipps,
+                .atome,
+                .buckarooIdeal,
+                .buckarooGiropay,
+                .buckarooSofort,
+                .hoolah,
+                .klarna,
+                .mollieIdeal,
+                .payNLGiropay,
+                .payNLIdeal,
+                .payNLPayconiq,
+                .payPal,
+                .primerTestPayPal,
+                .primerTestKlarna,
+                .primerTestSofort,
+                .rapydGCash,
+                .rapydPoli,
+                .rapydGrabPay:
+            return 0.0
+            
+        case .adyenDotPay,
+                .apaya,
+                .buckarooBancontact,
+                .buckarooEps,
+                .mollieBankcontact,
+                .payNLBancontact,
+                .paymentCard:
+            return 1.0
+            
+        default:
+            assert(true, "Shouldn't end up in here")
+            return 0.0
+        }
     }
     
     var buttonBorderColor: UIColor? {
-        guard let baseBorderColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderColor else { return nil }
+        if let baseBorderColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderColor {
+            if UIScreen.isDarkModeEnabled {
+                if let darkBorderColorHex = baseBorderColor.darkHex {
+                    return PrimerColor(hex: darkBorderColorHex)
+                } else if let coloredBorderColorHex = baseBorderColor.coloredHex {
+                    return PrimerColor(hex: coloredBorderColorHex)
+                } else if let lightBorderColorHex = baseBorderColor.lightHex {
+                    return PrimerColor(hex: lightBorderColorHex)
+                }
+            } else {
+                if let lightBorderColorHex = baseBorderColor.lightHex {
+                    return PrimerColor(hex: lightBorderColorHex)
+                } else if let coloredBorderColorHex = baseBorderColor.coloredHex {
+                    return PrimerColor(hex: coloredBorderColorHex)
+                } else if let darkBorderColorHex = baseBorderColor.darkHex {
+                    return PrimerColor(hex: darkBorderColorHex)
+                }
+            }
+        }
         
-        if UIScreen.isDarkModeEnabled {
-            if let darkBorderColorHex = baseBorderColor.darkHex {
-                return PrimerColor(hex: darkBorderColorHex)
-            } else if let coloredBorderColorHex = baseBorderColor.coloredHex {
-                return PrimerColor(hex: coloredBorderColorHex)
-            } else if let lightBorderColorHex = baseBorderColor.lightHex {
-                return PrimerColor(hex: lightBorderColorHex)
-            } else {
-                return nil
-            }
-        } else {
-            if let lightBorderColorHex = baseBorderColor.lightHex {
-                return PrimerColor(hex: lightBorderColorHex)
-            } else if let coloredBorderColorHex = baseBorderColor.coloredHex {
-                return PrimerColor(hex: coloredBorderColorHex)
-            } else if let darkBorderColorHex = baseBorderColor.darkHex {
-                return PrimerColor(hex: darkBorderColorHex)
-            } else {
-                return nil
-            }
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodTokenizationViewModel.config.type) else {
+            return nil
+        }
+        
+        switch paymentMethodType {
+        case .adyenAlipay,
+                .adyenBlik,
+                .adyenDotPay,
+                .adyenGiropay,
+                .adyenMobilePay,
+                .adyenIDeal,
+                .adyenInterac,
+                .adyenPayTrail,
+                .adyenTrustly,
+                .adyenTwint,
+                .adyenVipps,
+                .atome,
+                .buckarooIdeal,
+                .buckarooGiropay,
+                .buckarooSofort,
+                .hoolah,
+                .klarna,
+                .mollieIdeal,
+                .payNLGiropay,
+                .payNLIdeal,
+                .payNLPayconiq,
+                .payPal,
+                .primerTestPayPal,
+                .primerTestKlarna,
+                .primerTestSofort,
+                .rapydGCash,
+                .rapydGrabPay,
+                .rapydPoli,
+                .xfersPayNow:
+            return nil
+            
+        case .apaya,
+                .paymentCard:
+            return theme.paymentMethodButton.text.color
+            
+        case .buckarooBancontact,
+                .buckarooEps,
+                .mollieBankcontact,
+                .payNLBancontact:
+            return .black
+            
+        default:
+            precondition(false, "Shouldn't end up in here")
+            return nil
         }
     }
     
