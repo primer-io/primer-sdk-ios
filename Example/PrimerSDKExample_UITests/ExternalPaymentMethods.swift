@@ -1,9 +1,10 @@
 //
-//  ExternalPaymentMethods.swift
-//  PrimerSDKExample_UITests
+// Copyright (c) 2022 Primer API ltd
 //
-//  Created by Evangelos on 1/12/21.
-//  Copyright © 2021 CocoaPods. All rights reserved.
+// Licensed under the MIT License 
+//
+// You may obtain a copy of the License at
+// https://mit-license.org
 //
 
 import XCTest
@@ -61,11 +62,12 @@ class ExternalPaymentMethods: XCTestCase {
 //                return nil
 //        }
 //
-//        let frameStr = String(descr[rangeOpen.lowerBound..<rangeClose.upperBound])
-//        let rect = NSCoder.cgRect(for: frameStr)
+// Copyright (c) 2022 Primer API ltd
 //
-//        // get the center of rect
-//        let center = CGVector(dx: rect.midX, dy: rect.midY)
+// Licensed under the MIT License 
+//
+// You may obtain a copy of the License at
+// https://mit-license.org
 //        let coordinate = XCUIApplication().coordinate(withNormalizedOffset: .zero).withOffset(center)
 //        return coordinate
 //    }

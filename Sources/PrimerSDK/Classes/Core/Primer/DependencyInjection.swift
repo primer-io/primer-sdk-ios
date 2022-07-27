@@ -1,8 +1,10 @@
 //
-//  DependencyInjection.swift
-//  PrimerSDK
+// Copyright (c) 2022 Primer API ltd
 //
-//  Created by Carl Eriksson on 10/02/2021.
+// Licensed under the MIT License 
+//
+// You may obtain a copy of the License at
+// https://mit-license.org
 //
 
 #if canImport(UIKit)

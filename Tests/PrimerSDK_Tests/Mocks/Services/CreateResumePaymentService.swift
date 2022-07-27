@@ -1,9 +1,10 @@
 //
-//  CreateResumePaymentService.swift
-//  PrimerSDK_Tests
+// Copyright (c) 2022 Primer API ltd
 //
-//  Created by Dario Carlomagno on 27/04/22.
-//  Copyright © 2022 CocoaPods. All rights reserved.
+// Licensed under the MIT License 
+//
+// You may obtain a copy of the License at
+// https://mit-license.org
 //
 
 @testable import PrimerSDK

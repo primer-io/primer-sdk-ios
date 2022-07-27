@@ -1,9 +1,10 @@
 //
-//  MerchantPaymentMethodsViewController.swift
-//  PrimerSDK_Example
+// Copyright (c) 2022 Primer API ltd
 //
-//  Created by Evangelos on 2/2/22.
-//  Copyright © 2022 CocoaPods. All rights reserved.
+// Licensed under the MIT License 
+//
+// You may obtain a copy of the License at
+// https://mit-license.org
 //
 
 import PrimerSDK

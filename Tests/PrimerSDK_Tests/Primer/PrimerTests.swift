@@ -1,9 +1,10 @@
 //
-//  PrimerTests.swift
-//  PrimerSDK_Tests
+// Copyright (c) 2022 Primer API ltd
 //
-//  Created by Evangelos Pittas on 24/9/21.
-//  Copyright © 2021 CocoaPods. All rights reserved.
+// Licensed under the MIT License 
+//
+// You may obtain a copy of the License at
+// https://mit-license.org
 //
 
 #if canImport(UIKit)

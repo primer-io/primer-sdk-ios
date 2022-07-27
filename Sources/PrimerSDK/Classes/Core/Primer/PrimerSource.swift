@@ -1,8 +1,10 @@
 //
-//  PrimerSource.swift
-//  PrimerSDK
+// Copyright (c) 2022 Primer API ltd
 //
-//  Created by Dario Carlomagno on 25/04/22.
+// Licensed under the MIT License 
+//
+// You may obtain a copy of the License at
+// https://mit-license.org
 //
 
 import Foundation

@@ -1,8 +1,10 @@
 //
-//  PaymentMethodTokenizationViewModel+Logic.swift
-//  PrimerSDK
+// Copyright (c) 2022 Primer API ltd
 //
-//  Created by Evangelos on 6/5/22.
+// Licensed under the MIT License 
+//
+// You may obtain a copy of the License at
+// https://mit-license.org
 //
 
 #if canImport(UIKit)

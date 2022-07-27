@@ -1,9 +1,10 @@
 //
-//  AnyEncodable.swift
+// Copyright (c) 2022 Primer API ltd
 //
-//  Created Flight-School
+// Licensed under the MIT License 
 //
-//  License: https://github.com/Flight-School/AnyCodable/blob/master/LICENSE.md
+// You may obtain a copy of the License at
+// https://mit-license.org
 //
 
 #if canImport(Foundation)

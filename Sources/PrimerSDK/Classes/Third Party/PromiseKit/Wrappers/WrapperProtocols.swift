@@ -9,10 +9,12 @@ import Dispatch
 // of overlapping conformances. See https://goo.gl/rViwWS. The workaround is to declare conformance on each
 // underlying object separately.
 //
-// Associated types within protocols may not be generic, so there are many functions that can't be genericized
-// in this way. For example, anything of the form `func foo<U>(_ body: () -> U) -> Promise<U>` is unrepresentable.
+// Copyright (c) 2022 Primer API ltd
 //
-// These protocols have to be internal to make their contents accessible to users, but the protocols themselves
+// Licensed under the MIT License 
+//
+// You may obtain a copy of the License at
+// https://mit-license.org
 // should never appear in Xcode or in the documentation.
 
 internal protocol _PMKSharedWrappers {

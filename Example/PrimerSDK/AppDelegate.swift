@@ -1,9 +1,10 @@
 //
-//  AppDelegate.swift
-//  PrimerSDK
+// Copyright (c) 2022 Primer API ltd
 //
-//  Created by Evangelos Pittas on 03/12/2021.
-//  Copyright (c) 2021 Evangelos Pittas. All rights reserved.
+// Licensed under the MIT License 
+//
+// You may obtain a copy of the License at
+// https://mit-license.org
 //
 
 import PrimerSDK
