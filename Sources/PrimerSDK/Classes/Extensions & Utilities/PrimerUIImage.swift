@@ -7,6 +7,8 @@
 
 #if canImport(UIKit)
 
+import UIKit
+
 internal class PrimerUIImage: UIImage {}
 
 extension PrimerUIImage {
