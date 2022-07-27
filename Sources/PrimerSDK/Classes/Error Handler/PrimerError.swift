@@ -318,7 +318,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
     case missingCustomUI(paymentMethod: PrimerPaymentMethodType, userInfo: [String: String]?, diagnosticsId: String?)
     case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case cancelledByCustomer(paymentMethodType: PrimerPaymentMethodType?, message: String?, userInfo: [String: String]?, diagnosticsId: String?)
+    case cancelledByCustomer(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case paymentFailed(userInfo: [String: String]?, diagnosticsId: String?)
     case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String?)
     case unknown(userInfo: [String: String]?, diagnosticsId: String?)
@@ -442,7 +442,7 @@ internal enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId ?? UUID().uuidString
         case .merchantError(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
-        case .cancelledByCustomer(_, _, _, let diagnosticsId):
+        case .cancelledByCustomer(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .paymentFailed(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
@@ -477,7 +477,7 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Payment methods haven't been set up correctly (diagnosticsId: \(self.diagnosticsId)"
         case .cancelled(let paymentMethodType, _, _):
             return "[\(errorId)] Payment method \(paymentMethodType.rawValue) cancelled (diagnosticsId: \(self.diagnosticsId)"
-        case .cancelledByCustomer(_, let message, _, _):
+        case .cancelledByCustomer(let message, _, _):
             let messageToShow = message != nil ? " with message \(message!)" : ""
             return "[\(errorId)] Payment cancelled\(messageToShow) (diagnosticsId: \(self.diagnosticsId)"
         case .failedToCreateSession(error: let error, _, _):
@@ -555,7 +555,7 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .underlyingErrors(_, let userInfo, _),
                 .missingCustomUI(_, let userInfo, _),
                 .merchantError(_, let userInfo, _),
-                .cancelledByCustomer(_, _, let userInfo, _),
+                .cancelledByCustomer(_, let userInfo, _),
                 .paymentFailed(let userInfo, _),
                 .applePayTimedOut(let userInfo, _),
                 .unknown(let userInfo, _):
@@ -657,7 +657,7 @@ extension PrimerError {
         case .failed:
             return PrimerError.paymentFailed(userInfo: userInfo, diagnosticsId: nil)
         case .cancelledByCustomer:
-            return PrimerError.cancelledByCustomer(paymentMethodType: nil,  message: message, userInfo: userInfo, diagnosticsId: nil)
+            return PrimerError.cancelledByCustomer(message: message, userInfo: userInfo, diagnosticsId: nil)
         default:
             return nil
         }

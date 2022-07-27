@@ -113,7 +113,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                     self.presentQRCodePaymentMethod()
                 }
                 .then { () -> Promise<String> in
-                    let pollingModule = PollingModule(url: statusUrl, paymentMethodType: self.config.type)
+                    let pollingModule = PollingModule(url: statusUrl)
                     self.didCancel = {
                         pollingModule.cancel()
                         return
