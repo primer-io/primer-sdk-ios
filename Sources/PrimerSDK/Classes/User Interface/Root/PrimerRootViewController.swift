@@ -524,19 +524,21 @@ extension PrimerRootViewController {
 
 extension PrimerRootViewController {
     
+    private func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
+        let resultViewController = PrimerResultViewController(screenType: .success, message: message)
+        resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+        Primer.shared.primerRootVC?.show(viewController: resultViewController)
+    }
+    
     func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, withMessage message: String? = nil) {
-        let isResultScreenEnabled = PrimerSettings.current.uiOptions.isSuccessScreenEnabled ?
-        PrimerSettings.current.uiOptions.isSuccessScreenEnabled :
-        PrimerSettings.current.uiOptions.isErrorScreenEnabled
-        
-        if !isResultScreenEnabled {
-            Primer.shared.dismiss()
+                
+        if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
+            showResultScreenForResultType(type: .success, message: message)
+        } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
+            showResultScreenForResultType(type: .failure, message: message)
         } else {
-            let status: PrimerResultViewController.ScreenType = (type != .failure) ? .success : .failure
-            let resultViewController = PrimerResultViewController(screenType: status, message: message)
-            resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
-            resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-            Primer.shared.primerRootVC?.show(viewController: resultViewController)
+            Primer.shared.dismiss()
         }
     }
 }

@@ -64,37 +64,37 @@ class PrimerThemeTests: XCTestCase {
     func test_body_text_theme_defaults_correctly() throws {
         let theme = data.text.theme(for: .body, with: data)
         XCTAssert(theme.color == data.colors.dark)
-        XCTAssert(theme.fontSize == PrimerDimensions.Font.body)
+        XCTAssert(theme.fontSize == Int(PrimerDimensions.Font.body))
     }
     
     func test_title_text_theme_defaults_correctly() throws {
         let theme = data.text.theme(for: .title, with: data)
         XCTAssert(theme.color == data.colors.dark)
-        XCTAssert(theme.fontSize == PrimerDimensions.Font.title)
+        XCTAssert(theme.fontSize == Int(PrimerDimensions.Font.title))
     }
     
     func test_subtitle_text_theme_defaults_correctly() throws {
         let theme = data.text.theme(for: .subtitle, with: data)
         XCTAssert(theme.color == data.colors.gray)
-        XCTAssert(theme.fontSize == PrimerDimensions.Font.subtitle)
+        XCTAssert(theme.fontSize == Int(PrimerDimensions.Font.subtitle))
     }
     
     func test_amount_label_text_theme_defaults_correctly() throws {
         let theme = data.text.theme(for: .amountLabel, with: data)
         XCTAssert(theme.color == data.colors.dark)
-        XCTAssert(theme.fontSize == PrimerDimensions.Font.amountLabel)
+        XCTAssert(theme.fontSize == Int(PrimerDimensions.Font.amountLabel))
     }
     
     func test_system_text_theme_defaults_correctly() throws {
         let theme = data.text.theme(for: .system, with: data)
         XCTAssert(theme.color == data.colors.primary)
-        XCTAssert(theme.fontSize == PrimerDimensions.Font.system)
+        XCTAssert(theme.fontSize == Int(PrimerDimensions.Font.system))
     }
     
     func test_error_text_theme_defaults_correctly() throws {
         let theme = data.text.theme(for: .error, with: data)
         XCTAssert(theme.color == data.colors.error)
-        XCTAssert(theme.fontSize == PrimerDimensions.Font.error)
+        XCTAssert(theme.fontSize == Int(PrimerDimensions.Font.error))
     }
 }
 

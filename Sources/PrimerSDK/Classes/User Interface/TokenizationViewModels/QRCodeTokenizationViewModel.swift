@@ -107,6 +107,8 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                let statusUrl = URL(string: statusUrlStr),
                decodedClientToken.intent != nil {
                 
+                qrCode = decodedClientToken.qrCode
+                
                 firstly {
                     self.presentQRCodePaymentMethod()
                 }
@@ -139,41 +141,6 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             Primer.shared.primerRootVC?.show(viewController: qrcvc)
             self.didPresentPaymentMethodUI?()
             seal.fulfill(())
-        }
-    }
-    
-    var pollingRetryTimer: Timer?
-    
-    fileprivate func startPolling(on url: URL, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
-        let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
-            switch result {
-            case .success(let res):
-                if res.status == .pending {
-                    self.pollingRetryTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
-                        self.startPolling(on: url, completion: completion)
-                        self.pollingRetryTimer?.invalidate()
-                        self.pollingRetryTimer = nil
-                    }
-                } else if res.status == .complete {
-                    completion(res.id, nil)
-                } else {
-                    // Do what here?
-                    fatalError()
-                }
-            case .failure(let err):
-                let nsErr = err as NSError
-                if nsErr.domain == NSURLErrorDomain && nsErr.code == -1001 {
-                    // Retry
-                    self.pollingRetryTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
-                        self.startPolling(on: url, completion: completion)
-                        self.pollingRetryTimer?.invalidate()
-                        self.pollingRetryTimer = nil
-                    }
-                } else {
-                    completion(nil, err)
-                }
-            }
         }
     }
 }

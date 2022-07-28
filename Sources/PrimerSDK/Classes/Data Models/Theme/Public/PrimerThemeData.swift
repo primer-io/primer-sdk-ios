@@ -61,7 +61,7 @@ public class PrimerThemeData {
                     ),
                     text: TextTheme(
                         color: button.text.defaultColor ?? data.colors.light,
-                        fontSize: button.text.fontSize ?? PrimerDimensions.Font.body
+                        fontSize: button.text.fontSize ?? Int(PrimerDimensions.Font.body)
                     ),
                     iconColor: button.iconColor ?? data.colors.light
                 )
@@ -83,7 +83,7 @@ public class PrimerThemeData {
                     ),
                     text: TextTheme(
                         color: button.text.defaultColor ?? data.colors.dark,
-                        fontSize: button.text.fontSize ?? PrimerDimensions.Font.body
+                        fontSize: button.text.fontSize ?? Int(PrimerDimensions.Font.body)
                     ),
                     iconColor: button.iconColor ?? data.colors.dark
                 )
@@ -184,32 +184,32 @@ public class PrimerThemeData {
             case .body:
                 return TextTheme(
                     color: body.defaultColor ?? data.colors.dark,
-                    fontSize: body.fontSize ?? PrimerDimensions.Font.body
+                    fontSize: body.fontSize ?? Int(PrimerDimensions.Font.body)
                 )
             case .subtitle:
                 return TextTheme(
                     color: subtitle.defaultColor ?? data.colors.gray,
-                    fontSize: subtitle.fontSize ?? PrimerDimensions.Font.subtitle
+                    fontSize: subtitle.fontSize ?? Int(PrimerDimensions.Font.subtitle)
                 )
             case .title:
                 return TextTheme(
                     color: title.defaultColor ?? data.colors.dark,
-                    fontSize: title.fontSize ?? PrimerDimensions.Font.title
+                    fontSize: title.fontSize ?? Int(PrimerDimensions.Font.title)
                 )
             case .amountLabel:
                 return TextTheme(
                     color: amountLabel.defaultColor ?? data.colors.dark,
-                    fontSize: amountLabel.fontSize ?? PrimerDimensions.Font.amountLabel
+                    fontSize: amountLabel.fontSize ?? Int(PrimerDimensions.Font.amountLabel)
                 )
             case .system:
                 return TextTheme(
                     color: system.defaultColor ?? data.colors.primary,
-                    fontSize: system.fontSize ?? PrimerDimensions.Font.system
+                    fontSize: system.fontSize ?? Int(PrimerDimensions.Font.system)
                 )
             case .error:
                 return TextTheme(
                     color: error.defaultColor ?? data.colors.error,
-                    fontSize: error.fontSize ?? PrimerDimensions.Font.error
+                    fontSize: error.fontSize ?? Int(PrimerDimensions.Font.error)
                 )
             }
         }
@@ -276,15 +276,15 @@ public class PrimerThemeData {
                 ),
                 text: TextTheme(
                     color: text.defaultColor ?? data.colors.dark,
-                    fontSize: text.fontSize ?? PrimerDimensions.Font.body
+                    fontSize: text.fontSize ?? Int(PrimerDimensions.Font.body)
                 ),
                 hintText: TextTheme(
                     color: text.defaultColor ?? data.colors.gray,
-                    fontSize: text.fontSize ?? PrimerDimensions.Font.body
+                    fontSize: text.fontSize ?? Int(PrimerDimensions.Font.body)
                 ),
                 errortext: TextTheme(
                     color: text.defaultColor ?? data.colors.error,
-                    fontSize: text.fontSize ?? PrimerDimensions.Font.error
+                    fontSize: text.fontSize ?? Int(PrimerDimensions.Font.body)
                 ),
                 inputType: .underlined
             )

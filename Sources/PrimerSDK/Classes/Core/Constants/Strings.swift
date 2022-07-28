@@ -130,6 +130,32 @@ extension Strings {
         )
     }
     
+    // MARK: Account Info Payment View
+    
+    enum AccountInfoPaymentView {
+        
+        static let completeYourPayment = NSLocalizedString(
+            "completeYourPayment",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Complete your payment",
+            comment: "Complete your payment - Account info payment title label")
+
+        static let dueAt = NSLocalizedString(
+            "dueAt",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Due at",
+            comment: "The prefix copy we put before the expiration date.")
+        
+        static let pleaseTransferFunds = NSLocalizedString(
+            "pleaseTransferFunds",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Please Transfer funds to the provided DBS bank account using your Singapore based bank account via FAST (preferred), MEPS or GIRO.",
+            comment: "The message copy that tells the user how to transfer funds given a displayed account code.")
+    }
+    
     // MARK: QR Code
     
     enum QRCodeView {
@@ -147,6 +173,7 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Upload the screenshot in your banking app.",
             comment: "Upload the screenshot in your banking app. - QR code screen subtitle label")
+        
         static let qrCodeImageSubtitle = NSLocalizedString(
             "qrCode",
             tableName: nil,

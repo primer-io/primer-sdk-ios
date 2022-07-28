@@ -10,6 +10,7 @@
 import UIKit
 
 internal enum PrimerImage {
+    
     case amexCardIcon, appleIcon, backIcon, bankcontactCardIcon, bankIcon, backIconRTL, cameraIcon,
          checkmarkIcon, creditCardIcon, deleteIcon, discoverCardIcon, errorIcon,
          forwardArrowIcon, genericCardIcon, jcbCardIcon, klarnaLogo, lockIcon,
