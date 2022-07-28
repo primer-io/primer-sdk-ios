@@ -263,7 +263,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     @objc
     func payButtonTapped() {
         guard let selectedPaymentMethod = selectedPaymentMethod else { return }
-        guard let config = PrimerAPIConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == selectedPaymentMethod.paymentInstrumentType.rawValue }).first else {
+        guard let selectedPaymentMethodType = selectedPaymentMethod.paymentMethodType else { return }
+        guard let config = PrimerAPIConfiguration.paymentMethodConfigs?.filter({ $0.type.rawValue == selectedPaymentMethodType }).first else {
             return
         }
         

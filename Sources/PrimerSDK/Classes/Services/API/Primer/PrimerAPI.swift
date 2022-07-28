@@ -135,8 +135,9 @@ internal extension PrimerAPI {
         switch self {
         case .fetchConfiguration:
             tmpHeaders["X-Api-Version"] = "2021-10-19"
+        case .fetchVaultedPaymentMethods:
+            tmpHeaders["X-Api-Version"] = "2.1"
         case .tokenizePaymentMethod,
-                .fetchVaultedPaymentMethods,
                 .deleteVaultedPaymentMethod,
                 .exchangePaymentMethodToken:
             tmpHeaders["X-Api-Version"] = "2021-12-10"
