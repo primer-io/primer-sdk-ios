@@ -332,13 +332,13 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     // MARK: Input Payment Methods Array
     
     /// Array containing the payment method types expecting some input step to be performed
-    let inputPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenBlik]
+    let inputPaymentMethodTypes: [String] = [PrimerPaymentMethodType.adyenBlik.rawValue]
     
     // MARK: Account Info Payment Methods Array
     
     /// Array containing the payment method types expecting some account info
     /// to transfer the founds to
-    let accountInfoPaymentMethodTypes: [PrimerPaymentMethodType] = [.rapydFast]
+    let accountInfoPaymentMethodTypes: [String] = [PrimerPaymentMethodType.rapydFast.rawValue]
     
     // MARK: Account Info Payment
     
@@ -467,7 +467,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     private func evaluateStepAfterSelectedPaymentMethodSessionActionFire() -> Promise<Void> {
         switch self.config.type {
-        case .adyenBlik:
+        case PrimerPaymentMethodType.adyenBlik.rawValue:
             return self.presentPaymentMethodAppropriateViewController()
         default:
             return Promise()
@@ -476,7 +476,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     private func evaluatePaymentMethodNeedingFurtherUserActions() -> Promise<Void> {
         switch self.config.type {
-        case .adyenBlik:
+        case PrimerPaymentMethodType.adyenBlik.rawValue:
             return self.awaitUserInput()
         default:
             return Promise()
@@ -516,7 +516,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
 
         switch config.type {
-        case "ADYEN_BLIK":
+        case PrimerPaymentMethodType.adyenBlik.rawValue:
             self.uiModule.submitButton?.startAnimating()
             self.userInputCompletion?()
             
@@ -527,7 +527,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     private func tokenize() -> Promise<PaymentMethodToken> {
         switch config.type {
-        case "ADYEN_BLIK":
+        case PrimerPaymentMethodType.adyenBlik.rawValue:
             return Promise { seal in
                 guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -568,7 +568,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     }
                 }
             }
-        case .rapydFast:
+            
+        case PrimerPaymentMethodType.rapydFast.rawValue:
             return Promise { seal in
                 guard let configId = config.id else {
                     let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)

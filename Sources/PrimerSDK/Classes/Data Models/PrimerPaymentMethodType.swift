@@ -46,6 +46,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case primerTestKlarna   = "PRIMER_TEST_KLARNA"
     case primerTestPayPal   = "PRIMER_TEST_PAYPAL"
     case primerTestSofort   = "PRIMER_TEST_SOFORT"
+    case rapydFast          = "RAPYD_FAST"
     case rapydGCash         = "RAPYD_GCASH"
     case rapydGrabPay       = "RAPYD_GRABPAY"
     case rapydPoli          = "RAPYD_POLI"
@@ -115,7 +116,8 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
                 .primerTestSofort:
             return "PRIMER_TEST"
             
-        case .rapydGCash,
+        case .rapydFast,
+                .rapydGCash,
                 .rapydGrabPay,
                 .rapydPoli:
             return "RAPYD"

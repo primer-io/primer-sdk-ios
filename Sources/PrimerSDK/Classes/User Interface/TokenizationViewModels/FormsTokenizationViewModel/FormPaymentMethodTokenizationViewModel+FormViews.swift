@@ -14,11 +14,10 @@ extension FormPaymentMethodTokenizationViewModel {
     // MARK: Input view
     
     func makeInputViews() -> [Input] {
-        
         guard inputPaymentMethodTypes.contains(self.config.type) else { return [] }
         
         switch self.config.type {
-        case .adyenBlik:
+        case PrimerPaymentMethodType.adyenBlik.rawValue:
             return [adyenBlikInputView]
         default:
             return []
@@ -50,7 +49,7 @@ extension FormPaymentMethodTokenizationViewModel {
     func makeAccountInfoPaymentView() -> PrimerFormView? {
         
         switch self.config.type {
-        case .rapydFast:
+        case PrimerPaymentMethodType.rapydFast.rawValue:
             return rapydFastAccountInfoView
         default:
             return nil

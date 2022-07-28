@@ -92,19 +92,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             
         case PrimerPaymentMethodType.paymentCard.rawValue:
             return Primer.shared.intent == .vault
-            ? NSLocalizedString(paymentMethodTokenizationViewModel.config.displayMetadata?.button.text ?? "payment-method-type-card-vaulted",
-                                tableName: nil,
-                                bundle: Bundle.primerResources,
-                                value: paymentMethodTokenizationViewModel.config.displayMetadata?.button.text ?? "Add new card",
-                                comment: "Add new card - Payment Method Type (Card Vaulted)")
+                ? Strings.VaultPaymentMethodViewContent.addCard
+                : Strings.VaultPaymentMethodViewContent.payWithCard
             
-            : NSLocalizedString(paymentMethodTokenizationViewModel.config.displayMetadata?.button.text ?? "payment-method-type-card-not-vaulted",
-                                tableName: nil,
-                                bundle: Bundle.primerResources,
-                                value: paymentMethodTokenizationViewModel.config.displayMetadata?.button.text ?? "Pay with card",
-                                comment: "Pay with card - Payment Method Type (Card Not vaulted)")
-
-		case .twoCtwoP:
+        case PrimerPaymentMethodType.twoCtwoP.rawValue:
             return Strings.PaymentButton.payInInstallments
             
         default:
