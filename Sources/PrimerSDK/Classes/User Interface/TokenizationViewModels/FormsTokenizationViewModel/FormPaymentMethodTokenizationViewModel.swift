@@ -329,7 +329,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     // MARK: Input Payment Methods Array
     
     /// Array containing the payment method types expecting some input step to be performed
-    let inputPaymentMethodTypes: [String] = [PrimerPaymentMethodType.adyenBlik.rawValue]
+    let inputPaymentMethodTypes: [String] = [PrimerPaymentMethodType.adyenBlik.rawValue, PrimerPaymentMethodType.mbway.rawValue]
     
     // MARK: Account Info Payment Methods Array
     

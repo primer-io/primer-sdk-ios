@@ -845,6 +845,25 @@ extension Strings {
             comment: "Get the code from your banking app - Blik descriptor")
         
     }
+    
+    enum MBWay {
+        
+        static let inputTopPlaceholder = NSLocalizedString(
+            "input_hint_form_mbway_phone_number",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Phone Number",
+            comment: "Phone Number - Text field top placeholder")
+                
+        static let inputDescriptor = NSLocalizedString(
+            "input_description_otp",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Type your phone number",
+            comment: "Phone number helper message - MBWay descriptor")
+        
+    }
+
 }
 
 // MARK: - Primer Test (DummyAPMs)// MARK: - Blik

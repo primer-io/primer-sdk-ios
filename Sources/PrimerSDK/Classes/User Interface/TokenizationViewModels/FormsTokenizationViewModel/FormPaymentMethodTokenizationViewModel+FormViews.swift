@@ -19,6 +19,8 @@ extension FormPaymentMethodTokenizationViewModel {
         switch self.config.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             return [adyenBlikInputView]
+        case .mbway:
+            return [mbwayInputView]
         default:
             return []
         }
@@ -26,7 +28,7 @@ extension FormPaymentMethodTokenizationViewModel {
     
     // MARK: Adyen Blik Input View
     
-    var adyenBlikInputView: Input {
+    private var adyenBlikInputView: Input {
         let input1 = Input()
         input1.name = "OTP"
         input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
@@ -37,6 +39,19 @@ extension FormPaymentMethodTokenizationViewModel {
         input1.maxCharactersAllowed = 6
         input1.isValid = { text in
             return text.isNumeric && text.count >= 6
+        }
+        return input1
+    }
+    
+    private var mbwayInputView: Input {
+        let input1 = Input()
+        input1.name = "Phone Number"
+        input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
+        input1.keyboardType = .numberPad
+        input1.descriptor = Strings.Blik.inputDescriptor
+        input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
+        input1.isValid = { text in
+            return text.isNumeric
         }
         return input1
     }
@@ -134,6 +149,7 @@ extension FormPaymentMethodTokenizationViewModel {
         accountNumberStackView.layer.borderColor = UIColor.gray200.cgColor
         accountNumberStackView.layer.borderWidth = 2.0
         accountNumberStackView.isLayoutMarginsRelativeArrangement = true
+        accountNumberStackView.layer.cornerRadius = 8.0
 
         if let accountNumber = ClientTokenService.decodedClientToken?.accountNumber {
             let accountNumberLabel = UILabel()
