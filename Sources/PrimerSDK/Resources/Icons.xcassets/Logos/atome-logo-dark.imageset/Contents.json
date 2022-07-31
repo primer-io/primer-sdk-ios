@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "trustly-logo-colored.png",
+      "filename" : "atome-logo-dark.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "trustly-logo-colored@2x.png",
+      "filename" : "atome-logo-dark@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "trustly-logo-colored@3x.png",
+      "filename" : "atome-logo-dark@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
