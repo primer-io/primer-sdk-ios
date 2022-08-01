@@ -37,6 +37,9 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     
     func validate() throws
     func start()
+    func performPreTokenizationSteps() -> Promise<Void>
+    func performTokenizationStep() -> Promise<Void>
+    func performPostTokenizationSteps() -> Promise<Void>
     func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData>
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?>
     func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?>
@@ -88,6 +91,18 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     @objc
     func validate() throws {
+        fatalError("\(#function) must be overriden")
+    }
+    
+    func performPreTokenizationSteps() -> Promise<Void> {
+        fatalError("\(#function) must be overriden")
+    }
+    
+    func performTokenizationStep() -> Promise<Void> {
+        fatalError("\(#function) must be overriden")
+    }
+    
+    func performPostTokenizationSteps() -> Promise<Void> {
         fatalError("\(#function) must be overriden")
     }
     
