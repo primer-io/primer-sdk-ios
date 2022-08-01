@@ -77,23 +77,10 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     func cancel() {
         self.webViewController = nil
         self.webViewCompletion = nil
-        
-//        if tokenizationCompletion != nil {
-//            DispatchQueue.main.async {
-//                firstly {
-//                    ClientSession.Action.unselectPaymentMethodIfNeeded()
-//                }
-//                .done {
-//                    self.tokenizationCompletion = nil
-//                }
-//                .catch { _ in }
-//            }
-//        }
-        
-        tmpTokenizationCallback = nil
+        self.tmpTokenizationCallback = nil
     }
-        
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    
+    override func performPreTokenizationSteps() -> Promise<Void> {
         DispatchQueue.main.async {
             UIApplication.shared.endIgnoringInteractionEvents()
         }
@@ -132,11 +119,8 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
                 self.selectedBank = bank
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.tokenize(bank: self.selectedBank!)
-            }
-            .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
+            .done {
+                seal.fulfill()
             }
             .ensure { [unowned self] in
                 DispatchQueue.main.async {
@@ -152,6 +136,38 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             .catch { err in
                 seal.reject(err)
             }
+        }
+    }
+    
+    override func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            firstly {
+                self.tokenize(bank: self.selectedBank!)
+            }
+            .done { paymentMethodTokenData in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                seal.fulfill()
+            }
+            .ensure { [unowned self] in
+                DispatchQueue.main.async {
+                    self.willDismissPaymentMethodUI?()
+                    self.webViewController?.dismiss(animated: true, completion: {
+                        self.didDismissPaymentMethodUI?()
+                    })
+                }
+
+                self.webViewController = nil
+                self.webViewCompletion = nil
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
         }
     }
     
