@@ -113,6 +113,13 @@ internal class ImageManager {
                 return
             }
             
+            let timingEventId = UUID().uuidString
+            let timingEventStart = Analytics.Event(
+                eventType: .paymentMethodImageLoading,
+                properties: TimerEventProperties(
+                    momentType: .start,
+                    id: timingEventId))
+                        
             let promises = imageFiles.compactMap({ self.getImage(file: $0) })
             
             firstly {
@@ -139,6 +146,15 @@ internal class ImageManager {
                     seal.fulfill(imageFiles)
                 }
             }
+            .ensure {
+                let timingEventEnd = Analytics.Event(
+                    eventType: .paymentMethodImageLoading,
+                    properties: TimerEventProperties(
+                        momentType: .end,
+                        id: timingEventId))
+                
+                Analytics.Service.record(events: [timingEventStart, timingEventEnd])
+            }
             .catch { err in
                 seal.reject(err)
             }
@@ -153,6 +169,15 @@ internal class ImageManager {
             } else {
                 let downloader = Downloader()
                 
+                let timingEventId = UUID().uuidString
+                let timingEventStart = Analytics.Event(
+                    eventType: .paymentMethodImageLoading,
+                    properties: TimerEventProperties(
+                        momentType: .start,
+                        id: timingEventId))
+                
+                Analytics.Service.record(events: [timingEventStart])
+                
                 firstly {
                     downloader.download(file: file)
                 }
@@ -161,20 +186,46 @@ internal class ImageManager {
                        imageFile.cachedImage != nil
                     {
                         seal.fulfill(imageFile)
+                        
                     } else {
                         let err = InternalError.failedToDecode(message: "image", userInfo: nil, diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
                         throw err
                     }
                 }
+                .ensure {
+                    let timingEventEnd = Analytics.Event(
+                        eventType: .timerEvent,
+                        properties: TimerEventProperties(
+                            momentType: .end,
+                            id: timingEventId))
+                    Analytics.Service.record(events: [timingEventEnd])
+                }
                 .catch { err in
                     if file.bundledImage != nil {
+                        let bundledImageEvent = Analytics.Event(
+                            eventType: .sdkEvent,
+                            properties: MessageEventProperties(
+                                message: "Failed to load image (\(file.fileName) with URL \(file.remoteUrl?.absoluteString ?? "null"), but found image locally",
+                                messageType: .paymentMethodImageLoadingFailed,
+                                severity: .info))
+                        Analytics.Service.record(events: [bundledImageEvent])
+                        
                         log(logLevel: .warning,
                             title: "\n\nFAILED TO DOWNLOAD LOGO BUT FOUND LOGO LOCALLY",
                             message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl)",
                             prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                         seal.fulfill(file)
+                        
                     } else {
+                        let failedToLoadEvent = Analytics.Event(
+                            eventType: .sdkEvent,
+                            properties: MessageEventProperties(
+                                message: "Failed to load image (\(file.fileName) with URL \(file.remoteUrl?.absoluteString ?? "null")",
+                                messageType: .paymentMethodImageLoadingFailed,
+                                severity: .warning))
+                        Analytics.Service.record(events: [failedToLoadEvent])
+                        
                         log(logLevel: .warning,
                             title: "\n\nFAILED TO DOWNLOAD LOGO",
                             message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl)",
