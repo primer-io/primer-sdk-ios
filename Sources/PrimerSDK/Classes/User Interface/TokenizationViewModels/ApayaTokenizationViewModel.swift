@@ -15,6 +15,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ res: Apaya.WebViewResponse?, _ error: Error?) -> Void)?
+    private var apayaWebViewResponse: Apaya.WebViewResponse!
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -53,7 +54,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -88,11 +89,50 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { url -> Promise<Apaya.WebViewResponse> in
                 self.presentApayaController(with: url)
             }
-            .then { apayaWebViewResponse -> Promise<PaymentMethodToken> in
-                self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
+            .done { apayaWebViewResponse in
+                self.apayaWebViewResponse = apayaWebViewResponse
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            firstly {
+                self.tokenize(apayaWebViewResponse: self.apayaWebViewResponse)
             }
             .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
+                self.paymentMethodTokenData = paymentMethodTokenData
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
+    
+    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            firstly {
+                self.performPreTokenizationSteps()
+            }
+            .then { () -> Promise<Void> in
+                return self.performTokenizationStep()
+            }
+            .then { () -> Promise<Void> in
+                return self.performPostTokenizationSteps()
+            }
+            .done {
+                seal.fulfill(self.paymentMethodTokenData!)
             }
             .catch { err in
                 seal.reject(err)
