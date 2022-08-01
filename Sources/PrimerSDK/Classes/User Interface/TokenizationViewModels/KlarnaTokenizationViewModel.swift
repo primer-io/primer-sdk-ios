@@ -16,6 +16,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
+    private var klarnaCustomerTokenAPIResponse: KlarnaCustomerTokenAPIResponse!
     
     
     deinit {
@@ -76,7 +77,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -115,50 +116,69 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.authorizationToken = authorizationToken
                 return self.createKlarnaCustomerToken(authorizationToken: authorizationToken)
             }
-            .then { res -> Promise<PaymentMethodToken> in
+            .done { klarnaCustomerTokenAPIResponse in
+                self.klarnaCustomerTokenAPIResponse = klarnaCustomerTokenAPIResponse
                 DispatchQueue.main.async {
                     self.willDismissExternalView?()
                 }
+                
                 self.webViewController?.presentingViewController?.dismiss(animated: true, completion: {
                     DispatchQueue.main.async {
                         self.didDismissExternalView?()
                     }
                 })
                 
-                var instrument: PaymentInstrument
-                var request: PaymentMethodTokenizationRequest
                 
-                if Primer.shared.intent == .vault {
-                    instrument = PaymentInstrument(
-                        klarnaAuthorizationToken: self.authorizationToken!,
-                        sessionData: res.sessionData)
-                    
-                    request = PaymentMethodTokenizationRequest(
-                        paymentInstrument: instrument,
-                        paymentFlow: .vault)
-                    
-                } else {
-                    instrument = PaymentInstrument(
-                        klarnaCustomerToken: res.customerTokenId,
-                        sessionData: res.sessionData)
-                    
-                    request = PaymentMethodTokenizationRequest(
-                        paymentInstrument: instrument,
-                        paymentFlow: .checkout)
-                }
-                
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-                return tokenizationService.tokenize(request: request)
-            }
-            .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
-            }
-            .ensure {
-                
+                seal.fulfill()
             }
             .catch { err in
                 seal.reject(err)
             }
+        }
+    }
+    
+    override func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            var instrument: PaymentInstrument
+            var request: PaymentMethodTokenizationRequest
+            
+            if Primer.shared.intent == .vault {
+                instrument = PaymentInstrument(
+                    klarnaAuthorizationToken: self.authorizationToken!,
+                    sessionData: self.klarnaCustomerTokenAPIResponse.sessionData)
+                
+                request = PaymentMethodTokenizationRequest(
+                    paymentInstrument: instrument,
+                    paymentFlow: .vault)
+                
+            } else {
+                instrument = PaymentInstrument(
+                    klarnaCustomerToken: self.klarnaCustomerTokenAPIResponse.customerTokenId,
+                    sessionData: self.klarnaCustomerTokenAPIResponse.sessionData)
+                
+                request = PaymentMethodTokenizationRequest(
+                    paymentInstrument: instrument,
+                    paymentFlow: .checkout)
+            }
+            
+            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+            
+            firstly {
+                tokenizationService.tokenize(request: request)
+            }
+            .done { paymentMethodTokenData in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
         }
     }
     
