@@ -371,7 +371,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                return self.presentCardFormViewController()
+                return self.presentPaymentMethodUserInterface()
             }
             .then { () -> Promise<Void> in
                 return self.awaitUserInput()
@@ -419,7 +419,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    private func presentCardFormViewController() -> Promise<Void> {
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
                 switch self.config.type {
@@ -428,13 +428,13 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     Primer.shared.primerRootVC?.show(viewController: pcfvc)
                     seal.fulfill()
                 default:
-                    fatalError()
+                    precondition(false, "Should never end up here")
                 }
             }
         }
     }
     
-    private func awaitUserInput() -> Promise<Void> {
+    override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.userInputCompletion = {
                 seal.fulfill()

@@ -502,7 +502,15 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    private func awaitUserInput() -> Promise<Void> {
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async {
+                
+            }
+        }
+    }
+    
+    override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.userInputCompletion = {
                 seal.fulfill()
