@@ -115,7 +115,7 @@ internal class ImageManager {
             
             let timingEventId = UUID().uuidString
             let timingEventStart = Analytics.Event(
-                eventType: .paymentMethodImageLoading,
+                eventType: .paymentMethodAllImagesLoading,
                 properties: TimerEventProperties(
                     momentType: .start,
                     id: timingEventId))
@@ -148,7 +148,7 @@ internal class ImageManager {
             }
             .ensure {
                 let timingEventEnd = Analytics.Event(
-                    eventType: .paymentMethodImageLoading,
+                    eventType: .paymentMethodAllImagesLoading,
                     properties: TimerEventProperties(
                         momentType: .end,
                         id: timingEventId))
@@ -176,7 +176,6 @@ internal class ImageManager {
                         momentType: .start,
                         id: timingEventId))
                 
-                Analytics.Service.record(events: [timingEventStart])
                 
                 firstly {
                     downloader.download(file: file)
@@ -199,7 +198,7 @@ internal class ImageManager {
                         properties: TimerEventProperties(
                             momentType: .end,
                             id: timingEventId))
-                    Analytics.Service.record(events: [timingEventEnd])
+                    Analytics.Service.record(events: [timingEventStart, timingEventEnd])
                 }
                 .catch { err in
                     if file.bundledImage != nil {
@@ -213,13 +212,13 @@ internal class ImageManager {
                         
                         log(logLevel: .warning,
                             title: "\n\nFAILED TO DOWNLOAD LOGO BUT FOUND LOGO LOCALLY",
-                            message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl)",
+                            message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")",
                             prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                         seal.fulfill(file)
                         
                     } else {
                         let failedToLoadEvent = Analytics.Event(
-                            eventType: .sdkEvent,
+                            eventType: .paymentMethodImageLoading,
                             properties: MessageEventProperties(
                                 message: "Failed to load image (\(file.fileName) with URL \(file.remoteUrl?.absoluteString ?? "null")",
                                 messageType: .paymentMethodImageLoadingFailed,
@@ -228,7 +227,7 @@ internal class ImageManager {
                         
                         log(logLevel: .warning,
                             title: "\n\nFAILED TO DOWNLOAD LOGO",
-                            message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl)",
+                            message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")",
                             prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                         seal.reject(err)
                     }
@@ -243,20 +242,16 @@ internal class ImageManager {
         
         do {
             let fileNames = try FileManager.default.contentsOfDirectory(atPath: "\(documentsPath)")
-            print("all files in cache: \(fileNames)")
+
             for fileName in fileNames {
-                
                 if (fileName.hasSuffix(".png")) {
                     let filePathName = "\(documentsPath)/\(fileName)"
                     try FileManager.default.removeItem(atPath: filePathName)
                 }
             }
-            
-            let files = try FileManager.default.contentsOfDirectory(atPath: "\(documentsPath)")
-            print("all files in cache after deleting images: \(files)")
-            
+                        
         } catch {
-            print("Could not clear temp folder: \(error)")
+            log(logLevel: .error, title: "IMAGE MANAGER", message: "Clean failed with error: \(error)", prefix: nil, suffix: nil, bundle: Bundle.primerFrameworkIdentifier, file: #file, className: String(describing: self), function: #function, line: #line)
         }
     }
 }

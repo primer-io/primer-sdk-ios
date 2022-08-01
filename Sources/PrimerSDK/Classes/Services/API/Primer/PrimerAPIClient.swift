@@ -101,18 +101,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let apiConfiguration):
                 var imageFiles: [ImageFile] = []
-//                ImageManager.clean()
                 
                 for pm in (apiConfiguration.paymentMethods ?? []) {
-                    
-                    // FIXME: TEST
-//                    pm.displayMetadata?.button.backgroundColor = nil
-//                    pm.displayMetadata?.button.text = nil
-//                    pm.displayMetadata?.button.textColor = nil
-//                    pm.displayMetadata?.button.borderColor = nil
-//                    pm.displayMetadata?.button.borderWidth = nil
-//                    pm.displayMetadata?.button.cornerRadius = nil
-//                    pm.displayMetadata = nil
                     
                     var coloredImageFile: ImageFile
                     if let coloredVal = pm.displayMetadata?.button.iconUrl?.coloredUrlStr {

@@ -20,6 +20,7 @@ extension Analytics.Event {
         case sdkEvent = "SDK_FUNCTION_EVENT"
         case timerEvent = "TIMER_EVENT"
         case paymentMethodImageLoading = "PM_IMAGE_LOADING_DURATION"
+        case paymentMethodAllImagesLoading = "PM_ALL_IMAGES_LOADING_DURATION"
     }
     
     struct Property {
