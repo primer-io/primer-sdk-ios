@@ -13,9 +13,10 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
     
+    private var klarnaUrl: URL!
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-    private var authorizationToken: String?
+    private var authorizationToken: String!
     private var klarnaCustomerTokenAPIResponse: KlarnaCustomerTokenAPIResponse!
     
     
@@ -104,17 +105,20 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
-                self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then {
-                self.generateWebViewUrl()
+                return self.generateWebViewUrl()
             }
-            .then { url -> Promise<String> in
-                self.presentKlarnaController(with: url)
+            .then { url -> Promise<Void> in
+                self.klarnaUrl = url
+                return self.presentPaymentMethodUserInterface()
             }
-            .then { authorizationToken -> Promise<KlarnaCustomerTokenAPIResponse> in
-                self.authorizationToken = authorizationToken
-                return self.createKlarnaCustomerToken(authorizationToken: authorizationToken)
+            .then { () -> Promise<Void> in
+                return self.awaitUserInput()
+            }
+            .then { () -> Promise<KlarnaCustomerTokenAPIResponse> in
+                return self.createKlarnaCustomerToken(authorizationToken: self.authorizationToken)
             }
             .done { klarnaCustomerTokenAPIResponse in
                 self.klarnaCustomerTokenAPIResponse = klarnaCustomerTokenAPIResponse
@@ -127,7 +131,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         self.didDismissExternalView?()
                     }
                 })
-                
                 
                 seal.fulfill()
             }
@@ -179,6 +182,39 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
+        }
+    }
+    
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async {
+                self.webViewController = PrimerWebViewController(with: self.klarnaUrl)
+                self.webViewController!.navigationDelegate = self
+                self.webViewController!.modalPresentationStyle = .fullScreen
+                                
+                self.willPresentExternalView?()
+                Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                    DispatchQueue.main.async {
+                        self.didPresentExternalView?()
+                        seal.fulfill()
+                    }
+                })
+            }
+        }
+    }
+    
+    override func awaitUserInput() -> Promise<Void> {
+        return Promise { seal in
+            self.webViewCompletion = { authorizationToken, err in
+                if let err = err {
+                    seal.reject(err)
+                } else if let authorizationToken = authorizationToken {
+                    self.authorizationToken = authorizationToken
+                    seal.fulfill()
+                } else {
+                    precondition(false, "Should never end up in here")
+                }
+            }
         }
     }
     
@@ -306,35 +342,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 
                 completion(.success(url))
             }
-        }
-    }
-    
-    private func presentKlarnaController(with url: URL) -> Promise<String> {
-        return Promise { seal in
-            self.presentKlarnaController(with: url) { (token, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let token = token {
-                    seal.fulfill(token)
-                }
-            }
-        }
-    }
-    
-    private func presentKlarnaController(with url: URL, completion: @escaping (_ authorizationToken: String?, _ err: Error?) -> Void) {
-        DispatchQueue.main.async {
-            self.webViewController = PrimerWebViewController(with: url)
-            self.webViewController!.navigationDelegate = self
-            self.webViewController!.modalPresentationStyle = .fullScreen
-            
-            self.webViewCompletion = completion
-            
-            self.willPresentExternalView?()
-            Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
-                DispatchQueue.main.async {
-                    self.didPresentExternalView?()
-                }
-            })
         }
     }
     
@@ -467,8 +474,6 @@ extension KlarnaTokenizationViewModel: WKNavigationDelegate {
         let allowedHosts: [String] = [
             "primer.io",
             "livedemostore.primer.io"
-            //            "api.playground.klarna.com",
-            //            "api.sandbox.primer.io"
         ]
         
         if let url = navigationAction.request.url, let host = url.host, allowedHosts.contains(host) {

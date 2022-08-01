@@ -97,14 +97,13 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
             }
             .then { () -> Promise<Void> in
                 self.willPresentPaymentMethodUI?()
-                return self.presentDecisionsViewController()
+                return self.presentPaymentMethodUserInterface()
             }
-            .then { () -> Promise<PrimerTestPaymentMethodOptions.FlowDecision> in
+            .then { () -> Promise<Void> in
                 self.didPresentPaymentMethodUI?()
-                return self.awaitDecisionSelection()
+                return self.awaitUserInput()
             }
-            .then { decision -> Promise<Void> in
-                self.selectedDecision = decision
+            .then { () -> Promise<Void> in
                 return self.awaitPayButtonTappedUponDecisionSelection()
             }
             .then { () -> Promise<Void> in
@@ -150,6 +149,28 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
+        }
+    }
+    
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async {
+                let testPaymentMethodsVC = PrimerTestPaymentMethodViewController(viewModel: self)
+                
+                self.willPresentPaymentMethodUI?()
+                Primer.shared.primerRootVC?.show(viewController: testPaymentMethodsVC)
+                self.didPresentPaymentMethodUI?()
+                seal.fulfill()
+            }
+        }
+    }
+    
+    override func awaitUserInput() -> Promise<Void> {
+        return Promise { seal in
+            self.decisionSelectionCompletion = { decision in
+                self.selectedDecision = decision
+                seal.fulfill()
+            }
         }
     }
     
@@ -213,24 +234,6 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
 extension PrimerTestPaymentMethodTokenizationViewModel {
     
     // MARK: - Flow Promises
-    
-    private func presentDecisionsViewController() -> Promise<Void> {
-        return Promise { seal in
-            let testPaymentMethodsVC = PrimerTestPaymentMethodViewController(viewModel: self)
-            DispatchQueue.main.async {
-                Primer.shared.primerRootVC?.show(viewController: testPaymentMethodsVC)
-                seal.fulfill()
-            }
-        }
-    }
-    
-    private func awaitDecisionSelection() -> Promise<PrimerTestPaymentMethodOptions.FlowDecision> {
-        return Promise { seal in
-            self.decisionSelectionCompletion = { decision in
-                seal.fulfill(decision)
-            }
-        }
-    }
     
     private func awaitPayButtonTappedUponDecisionSelection() -> Promise<Void> {
         return Promise { seal in

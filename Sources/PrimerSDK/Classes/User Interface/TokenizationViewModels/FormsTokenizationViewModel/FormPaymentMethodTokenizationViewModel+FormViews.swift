@@ -188,7 +188,6 @@ extension FormPaymentMethodTokenizationViewModel {
     // MARK: Present appropriate View Controller
     
     func presentPaymentMethodAppropriateViewController() -> Promise<Void> {
-                
         if inputPaymentMethodTypes.contains(self.config.type) {
             return presentInputViewController()
         }

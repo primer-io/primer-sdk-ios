@@ -13,6 +13,9 @@ import UIKit
 
 class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
+    private var redirectUrl: URL!
+    private var statusUrl: URL!
+    private var resumeToken: String!
     var webViewController: SFSafariViewController?
     /**
      This completion handler will return an authorization token, which must be returned to the merchant to resume the payment. **webViewCompletion**
@@ -109,6 +112,44 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async { [unowned self] in
+                self.webViewController = SFSafariViewController(url: self.redirectUrl)
+                self.webViewController?.delegate = self
+                
+                self.willPresentPaymentMethodUI?()
+                Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                    DispatchQueue.main.async {
+                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.config.type)
+                        self.didPresentPaymentMethodUI?()
+                        seal.fulfill(())
+                    }
+                })
+            }
+        }
+    }
+    
+    override func awaitUserInput() -> Promise<Void> {
+        return Promise { seal in
+            let pollingModule = PollingModule(url: self.statusUrl)
+            self.didCancel = {
+                pollingModule.cancel()
+            }
+            
+            firstly {
+                pollingModule.start()
+            }
+            .done { resumeToken in
+                self.resumeToken = resumeToken
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
     fileprivate func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             guard let configId = config.id else {
@@ -140,30 +181,6 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    internal func presentAsyncPaymentMethod(with url: URL) -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async { [unowned self] in
-                self.webViewCompletion = { (id, err) in
-                    if let err = err {
-                        seal.reject(err)
-                    }
-                }
-                
-                self.webViewController = SFSafariViewController(url: url)
-                self.webViewController?.delegate = self
-                
-                self.willDismissPaymentMethodUI?()
-                Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
-                    DispatchQueue.main.async {
-                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.config.type)
-                        self.didDismissPaymentMethodUI?()
-                        seal.fulfill(())
-                    }
-                })
-            }
-        }
-    }
-    
     override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
         return Promise { seal in
             if decodedClientToken.intent?.contains("_REDIRECTION") == true {
@@ -177,19 +194,17 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                         UIApplication.shared.endIgnoringInteractionEvents()
                     }
                     
+                    self.redirectUrl = redirectUrl
+                    self.statusUrl = statusUrl
+                    
                     firstly {
-                        self.presentAsyncPaymentMethod(with: redirectUrl)
+                        self.presentPaymentMethodUserInterface()
                     }
-                    .then { () -> Promise<String> in
-                        let pollingModule = PollingModule(url: statusUrl)
-                        self.didCancel = {
-                            pollingModule.cancel()
-                        }
-                        
-                        return pollingModule.start()
+                    .then { () -> Promise<Void> in
+                        return self.awaitUserInput()
                     }
-                    .done { resumeToken in
-                        seal.fulfill(resumeToken)
+                    .done {
+                        seal.fulfill(self.resumeToken)
                     }
                     .catch { err in
                         seal.reject(err)

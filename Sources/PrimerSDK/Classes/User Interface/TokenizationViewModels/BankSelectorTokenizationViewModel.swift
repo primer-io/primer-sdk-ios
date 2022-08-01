@@ -110,13 +110,12 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             .then { banks -> Promise<Void> in
                 self.banks = banks
                 self.dataSource = banks
-                return self.presentBanksViewController()
+                return self.presentPaymentMethodUserInterface()
             }
-            .then { () -> Promise<Bank> in
-                return self.awaitBankSelection()
+            .then { () -> Promise<Void> in
+                return self.awaitUserInput()
             }
-            .then { bank -> Promise<Void> in
-                self.selectedBank = bank
+            .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .done {
@@ -171,20 +170,23 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
     
-    private func presentBanksViewController() -> Promise<Void> {
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
-            let bsvc = BankSelectorViewController(viewModel: self)
             DispatchQueue.main.async {
-                Primer.shared.primerRootVC?.show(viewController: bsvc)
-                seal.fulfill()
+                let bsvc = BankSelectorViewController(viewModel: self)
+                DispatchQueue.main.async {
+                    Primer.shared.primerRootVC?.show(viewController: bsvc)
+                    seal.fulfill()
+                }
             }
         }
     }
     
-    private func awaitBankSelection() -> Promise<Bank> {
+    override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.bankSelectionCompletion = { bank in
-                seal.fulfill(bank)
+                self.selectedBank = bank
+                seal.fulfill()
             }
         }
     }
