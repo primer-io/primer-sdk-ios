@@ -25,6 +25,7 @@ struct PrimerAPIConfiguration: Codable {
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
         var viewModels = PrimerAPIConfiguration.paymentMethodConfigs?
             .filter({ $0.implementationType.isEnabled })
+            .filter({ $0.baseLogoImage != nil })
             .compactMap({ $0.tokenizationViewModel })
         ?? []
         
@@ -190,7 +191,9 @@ extension PrimerAPIConfiguration {
                         dict[CodingKeys.requestDisplayMetadata.rawValue] = requestDisplayMetadata ? "true" : "false"
                     }
                 } else {
-                    dict[CodingKeys.requestDisplayMetadata.rawValue] = "true"
+                    if let requestDisplayMetadata = requestDisplayMetadata {
+                        dict[CodingKeys.requestDisplayMetadata.rawValue] = requestDisplayMetadata ? "true" : "false"
+                    }
                 }
                 
                 return dict.keys.isEmpty ? nil : dict

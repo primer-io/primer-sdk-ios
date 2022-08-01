@@ -8,36 +8,18 @@
 #if canImport(UIKit)
 
 import Foundation
+import UIKit
+
+extension PrimerTheme {
+    enum Mode: String {
+        case colored, dark, light
+    }
+}
 
 class PrimerPaymentMethod: Codable {
     
     static func getPaymentMethod(withType type: String) -> PrimerPaymentMethod? {
         return AppState.current.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
-    }
-    
-    static func getBundledImageFileName(for paymentMethodType: String, assetType: PrimerAsset.ImageType) -> String? {
-        var tmpPaymentMethodFileNameFirstComponent: String?
-        
-        guard let supportedPaymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) else { return nil }
-        
-        if supportedPaymentMethodType == .xfersPayNow {
-            tmpPaymentMethodFileNameFirstComponent = supportedPaymentMethodType.provider
-        } else if supportedPaymentMethodType.provider == paymentMethodType {
-            tmpPaymentMethodFileNameFirstComponent = paymentMethodType
-        } else if paymentMethodType.starts(with: "\(supportedPaymentMethodType.provider)_") {
-            tmpPaymentMethodFileNameFirstComponent = paymentMethodType.replacingOccurrences(of: "\(supportedPaymentMethodType.provider)_", with: "")
-        } else {
-            return nil
-        }
-        
-        tmpPaymentMethodFileNameFirstComponent = tmpPaymentMethodFileNameFirstComponent!.lowercased().replacingOccurrences(of: "_", with: "-")
-        
-        switch assetType {
-        case .logo:
-            return "\(tmpPaymentMethodFileNameFirstComponent!)-logo-colored"
-        case .icon:
-            return "\(tmpPaymentMethodFileNameFirstComponent!)-icon-colored"
-        }
     }
     
     let id: String? // Will be nil for cards
@@ -48,7 +30,33 @@ class PrimerPaymentMethod: Codable {
     var surcharge: Int?
     let options: PaymentMethodOptions?
     var displayMetadata: PrimerPaymentMethod.DisplayMetadata?
-    var imageFiles: PrimerTheme.BaseImageFiles?
+    var baseLogoImage: PrimerTheme.BaseImage?
+    
+    var logo: UIImage? {
+        guard let baseLogoImage = baseLogoImage else { return nil }
+        
+        if UIScreen.isDarkModeEnabled {
+            if let darkImage = baseLogoImage.dark {
+                return darkImage
+            } else if let coloredImage = baseLogoImage.colored {
+                return coloredImage
+            } else if let lightImage = baseLogoImage.light {
+                return lightImage
+            } else {
+                return nil
+            }
+        } else {
+            if let coloredImage = baseLogoImage.colored {
+                return coloredImage
+            } else if let lightImage = baseLogoImage.light {
+                return lightImage
+            } else if let darkImage = baseLogoImage.dark {
+                return darkImage
+            } else {
+                return nil
+            }
+        }
+    }
     
     var hasUnknownSurcharge: Bool = false
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
@@ -95,7 +103,7 @@ class PrimerPaymentMethod: Codable {
     }
     
     var isCheckoutEnabled: Bool {
-        if self.imageFiles?.colored?.image == nil {
+        if self.baseLogoImage == nil {
             return false
         }
         
@@ -110,7 +118,7 @@ class PrimerPaymentMethod: Codable {
     }
     
     var isVaultingEnabled: Bool {
-        if self.imageFiles?.colored?.image == nil {
+        if self.baseLogoImage == nil {
             return false
         }
         
@@ -233,12 +241,16 @@ extension PrimerPaymentMethod {
         
         var button: PrimerPaymentMethod.DisplayMetadata.Button
         
+        init(button: PrimerPaymentMethod.DisplayMetadata.Button) {
+            self.button = button
+        }
+        
         class Button: Codable {
             
             var iconUrl: PrimerTheme.BaseColoredURLs?
             var backgroundColor: PrimerTheme.BaseColors?
             var cornerRadius: Int?
-            var borderWidth: Int?
+            var borderWidth: PrimerTheme.BaseBorderWidth?
             var borderColor: PrimerTheme.BaseColors?
             var text: String?
             var textColor: PrimerTheme.BaseColors?
@@ -253,13 +265,31 @@ extension PrimerPaymentMethod {
                      textColor
             }
             
+            init(
+                iconUrl: PrimerTheme.BaseColoredURLs?,
+                backgroundColor: PrimerTheme.BaseColors?,
+                cornerRadius: Int?,
+                borderWidth: PrimerTheme.BaseBorderWidth?,
+                borderColor: PrimerTheme.BaseColors?,
+                text: String?,
+                textColor: PrimerTheme.BaseColors?
+            ) {
+                self.iconUrl = iconUrl
+                self.backgroundColor = backgroundColor
+                self.cornerRadius = cornerRadius
+                self.borderWidth = borderWidth
+                self.borderColor = borderColor
+                self.text = text
+                self.textColor = textColor
+            }
+            
             required init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
                 
                 iconUrl = (try? container.decode(PrimerTheme.BaseColoredURLs?.self, forKey: .iconUrl)) ?? nil
                 backgroundColor = (try? container.decode(PrimerTheme.BaseColors?.self, forKey: .backgroundColor)) ?? nil
                 cornerRadius = (try? container.decode(Int?.self, forKey: .cornerRadius)) ?? nil
-                borderWidth = (try? container.decode(Int?.self, forKey: .borderWidth)) ?? nil
+                borderWidth = (try? container.decode(PrimerTheme.BaseBorderWidth?.self, forKey: .borderWidth)) ?? nil
                 borderColor = (try? container.decode(PrimerTheme.BaseColors?.self, forKey: .borderColor)) ?? nil
                 text = (try? container.decode(String?.self, forKey: .text)) ?? nil
                 textColor = (try? container.decode(PrimerTheme.BaseColors?.self, forKey: .textColor)) ?? nil
@@ -283,16 +313,20 @@ extension PrimerPaymentMethod {
 
 extension PrimerTheme {
     
-    class BaseImageFiles {
+    class BaseImage {
         
-        var colored: ImageFile?
-        var light: ImageFile?
-        var dark: ImageFile?
+        var colored: UIImage?
+        var light: UIImage?
+        var dark: UIImage?
         
-        init(colored: ImageFile, light: ImageFile?, dark: ImageFile?) {
+        init?(colored: UIImage?, light: UIImage?, dark: UIImage?) {
             self.colored = colored
             self.light = light
             self.dark = dark
+            
+            if self.colored == nil, self.light == nil, self.dark == nil {
+                return nil
+            }
         }
     }
     
@@ -381,6 +415,43 @@ extension PrimerTheme {
             try? container.encode(coloredHex, forKey: .coloredHex)
             try? container.encode(darkHex, forKey: .darkHex)
             try? container.encode(lightHex, forKey: .lightHex)
+        }
+    }
+    
+    public class BaseBorderWidth: Codable {
+        
+        var colored: CGFloat?
+        var dark: CGFloat?
+        var light: CGFloat?
+        
+        private enum CodingKeys: String, CodingKey {
+            case colored
+            case dark
+            case light
+        }
+        
+        init?(
+            colored: CGFloat? = 0,
+            light: CGFloat? = 0,
+            dark: CGFloat? = 0
+        ) {
+            self.colored = colored
+            self.light = light
+            self.dark = dark
+        }
+        
+        public required init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            colored = (try? container.decode(CGFloat?.self, forKey: .colored)) ?? nil
+            light = (try? container.decode(CGFloat?.self, forKey: .light)) ?? nil
+            dark = (try? container.decode(CGFloat?.self, forKey: .dark)) ?? nil
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try? container.encode(colored, forKey: .colored)
+            try? container.encode(light, forKey: .light)
+            try? container.encode(dark, forKey: .dark)
         }
     }
 }

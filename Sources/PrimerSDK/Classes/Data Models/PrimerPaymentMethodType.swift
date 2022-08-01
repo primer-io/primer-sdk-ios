@@ -16,8 +16,8 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case adyenInterac       = "ADYEN_INTERAC"
     case adyenMobilePay     = "ADYEN_MOBILEPAY"
     case adyenPayTrail      = "ADYEN_PAYTRAIL"
-    case adyenSofort        = "ADYEN_SOFORT"
     case adyenPayshop       = "ADYEN_PAYSHOP"
+    case adyenSofort        = "ADYEN_SOFORT"
     case adyenTrustly       = "ADYEN_TRUSTLY"
     case adyenTwint         = "ADYEN_TWINT"
     case adyenVipps         = "ADYEN_VIPPS"
@@ -49,6 +49,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case rapydFast          = "RAPYD_FAST"
     case rapydGCash         = "RAPYD_GCASH"
     case rapydGrabPay       = "RAPYD_GRABPAY"
+    case rapydPromptPay     = "RAPYD_PROMPTPAY"
     case rapydPoli          = "RAPYD_POLI"
     case twoCtwoP           = "TWOC2P"
     case xfersPayNow        = "XFERS_PAYNOW"
@@ -119,12 +120,17 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
         case .rapydFast,
                 .rapydGCash,
                 .rapydGrabPay,
-                .rapydPoli:
+                .rapydPoli,
+                .rapydPromptPay:
             return "RAPYD"
             
         case .xfersPayNow:
             return "XFERS"
         }
+    }
+    
+    var paymentMethodIdentifier: String {
+        return self.rawValue.replacingOccurrences(of: "\(self.provider)_", with: "")
     }
 }
 

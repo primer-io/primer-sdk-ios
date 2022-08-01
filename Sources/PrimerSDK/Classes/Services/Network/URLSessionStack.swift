@@ -125,7 +125,7 @@ internal class URLSessionStack: NetworkService {
                 msg += "\nStatus: \(httpResponse.statusCode)\nHeaders: \(httpResponse.allHeaderFields as! [String: String])"
             }
 #endif
-            
+                        
             if let error = error {
                 if resEvent != nil {
                     resEventProperties!.errorBody = "\(error)"

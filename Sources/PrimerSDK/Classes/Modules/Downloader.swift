@@ -31,13 +31,8 @@ internal class File {
     private var base64Data: Data?
     
     var data: Data? {
-        if let localUrl = localUrl {
-            if let tmpData = try? Data(contentsOf: localUrl) {
-                return tmpData
-            }
-        }
-        
-        return nil
+        guard let localUrl = localUrl else { return nil }
+        return try? Data(contentsOf: localUrl)
     }
     
     init(
@@ -164,7 +159,7 @@ internal class Downloader: NSObject, DownloaderModule {
         return Promise { seal in
             let sessionConfig = URLSessionConfiguration.default
             let session = URLSession(configuration: sessionConfig)
-            let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 30)
+            let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 2)
             
             let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
                 if let error = error {
