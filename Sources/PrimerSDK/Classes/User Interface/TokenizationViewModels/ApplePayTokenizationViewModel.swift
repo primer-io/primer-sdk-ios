@@ -146,26 +146,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
-        return Promise { seal in
-            firstly {
-                self.performPreTokenizationSteps()
-            }
-            .then { () -> Promise<Void> in
-                return self.performTokenizationStep()
-            }
-            .then { () -> Promise<Void> in
-                return self.performPostTokenizationSteps()
-            }
-            .done {
-                seal.fulfill(self.paymentMethodTokenData!)
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-    
     func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             if Primer.shared.intent == .vault {
