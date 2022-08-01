@@ -92,10 +92,16 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                self.exchangePaymentMethodToken(self.selectedPaymentMethodTokenData)
+                self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
-            .done { singleUsePaymentMethodTokenData in
-                self.paymentMethodTokenData = singleUsePaymentMethodTokenData
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                return self.exchangePaymentMethodToken(self.selectedPaymentMethodTokenData)
+            }
+            .then { paymentMethodTokenData -> Promise<Void> in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                return self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+            }
+            .done {
                 seal.fulfill()
             }
             .catch { err in

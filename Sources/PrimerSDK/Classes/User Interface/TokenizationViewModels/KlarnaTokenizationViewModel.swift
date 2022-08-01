@@ -167,10 +167,16 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             
             firstly {
-                tokenizationService.tokenize(request: request)
+                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
-            .done { paymentMethodTokenData in
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                return tokenizationService.tokenize(request: request)
+            }
+            .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
+                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+            }
+            .done {
                 seal.fulfill()
             }
             .catch { err in

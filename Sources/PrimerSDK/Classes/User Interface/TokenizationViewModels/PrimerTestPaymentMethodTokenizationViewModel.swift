@@ -134,10 +134,16 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                self.tokenize(decision: self.selectedDecision!)
+                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
-            .done { paymentMethodTokenData in
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                return self.tokenize(decision: self.selectedDecision)
+            }
+            .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
+                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+            }
+            .done {
                 seal.fulfill()
             }
             .catch { err in

@@ -401,10 +401,16 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
 
             firstly {
-                self.tokenize()
+                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
-            .done { paymentMethodTokenData in
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                return self.tokenize()
+            }
+            .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
+                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+            }
+            .done {
                 seal.fulfill()
             }
             .catch { err in
