@@ -75,8 +75,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         super.start()
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
-                
+    override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -93,7 +92,6 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         Analytics.Service.record(event: event)
         
         return Promise { seal in
-            
             firstly {
                 self.validateReturningPromise()
             }
@@ -113,10 +111,10 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                 self.didStartPayment?()
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+            .done {
                 self.willDismissPaymentMethodUI?()
                 self.didStartTokenization?()
-                return self.tokenize(decision: self.selectedDecision!)
+                seal.fulfill()
             }
             .ensure { [unowned self] in
                 DispatchQueue.main.async {
@@ -125,15 +123,33 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                     self.didFinishPayment?(nil)
                 }
             }
-            .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
-            }
             .catch { err in
                 DispatchQueue.main.async {
                     self.didFinishPayment?(err)
                 }
                 seal.reject(err)
             }
+        }
+    }
+    
+    override func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            firstly {
+                self.tokenize(decision: self.selectedDecision!)
+            }
+            .done { paymentMethodTokenData in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
         }
     }
     
