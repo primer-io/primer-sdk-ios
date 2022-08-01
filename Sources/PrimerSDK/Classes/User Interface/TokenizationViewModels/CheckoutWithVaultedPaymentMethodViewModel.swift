@@ -13,7 +13,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     
     var config: PrimerPaymentMethod
     var selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
-    var singleUsePaymentMethodTokenData: PrimerPaymentMethodTokenData?
+    var paymentMethodTokenData: PrimerPaymentMethodTokenData!
     var paymentCheckoutData: PrimerCheckoutData?
     var successMessage: String?
     
@@ -40,8 +40,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 self.startTokenizationFlow()
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
-                self.singleUsePaymentMethodTokenData = paymentMethodTokenData
-                return self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
+                return self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData)
             }
             .done { checkoutData in
                 if let checkoutData = checkoutData {
@@ -73,7 +72,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    func performPreTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             firstly {
                 self.dispatchActions(config: self.config, selectedPaymentMethod: self.selectedPaymentMethodTokenData)
@@ -81,11 +80,49 @@ class CheckoutWithVaultedPaymentMethodViewModel {
             .then { () -> Promise<Void> in
                 self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PaymentMethodToken> in
+            .done {
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            firstly {
                 self.exchangePaymentMethodToken(self.selectedPaymentMethodTokenData)
             }
             .done { singleUsePaymentMethodTokenData in
-                seal.fulfill(singleUsePaymentMethodTokenData)
+                self.paymentMethodTokenData = singleUsePaymentMethodTokenData
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
+    
+    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            firstly {
+                self.performPreTokenizationSteps()
+            }
+            .then { () -> Promise<Void> in
+                self.performTokenizationStep()
+            }
+            .then { () -> Promise<Void> in
+                self.performPostTokenizationSteps()
+            }
+            .done {
+                seal.fulfill(self.paymentMethodTokenData)
             }
             .catch { err in
                 seal.reject(err)
