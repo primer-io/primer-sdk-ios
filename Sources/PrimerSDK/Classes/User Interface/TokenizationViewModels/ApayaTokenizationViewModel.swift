@@ -120,26 +120,6 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
-        return Promise { seal in
-            firstly {
-                self.performPreTokenizationSteps()
-            }
-            .then { () -> Promise<Void> in
-                return self.performTokenizationStep()
-            }
-            .then { () -> Promise<Void> in
-                return self.performPostTokenizationSteps()
-            }
-            .done {
-                seal.fulfill(self.paymentMethodTokenData!)
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-    
     private func generateWebViewUrl() -> Promise<URL> {
         return Promise { seal in
             self.generateWebViewUrl { result in

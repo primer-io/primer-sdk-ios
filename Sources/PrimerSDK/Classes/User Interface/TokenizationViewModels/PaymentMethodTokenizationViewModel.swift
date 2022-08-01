@@ -107,7 +107,23 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }
     
     func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
-        fatalError("\(#function) must be overriden")
+        return Promise { seal in
+            firstly {
+                self.performPreTokenizationSteps()
+            }
+            .then { () -> Promise<Void> in
+                return self.performTokenizationStep()
+            }
+            .then { () -> Promise<Void> in
+                return self.performPostTokenizationSteps()
+            }
+            .done {
+                seal.fulfill(self.paymentMethodTokenData!)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
     }
     
     func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
