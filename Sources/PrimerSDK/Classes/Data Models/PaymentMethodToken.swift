@@ -3,7 +3,7 @@
 import Foundation
 
 struct GetVaultedPaymentMethodsResponse: Decodable {
-    var data: [PaymentMethodToken]
+    var data: [PrimerPaymentMethodTokenData]
 }
 
 /**
@@ -23,6 +23,7 @@ public class PaymentMethodToken: NSObject, Codable {
     public var isVaulted: Bool?
     private var isAlreadyVaulted: Bool?
     public var paymentInstrumentType: PaymentInstrumentType
+    public var paymentMethodType: String?
     public var paymentInstrumentData: PaymentInstrumentData?
     public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
     public var token: String?
@@ -139,6 +140,7 @@ struct CardButtonViewModel {
  */
 
 public enum PaymentInstrumentType: String, Codable {
+    
     case paymentCard = "PAYMENT_CARD"
     case payPalOrder = "PAYPAL_ORDER"
     case payPalBillingAgreement = "PAYPAL_BILLING_AGREEMENT"
