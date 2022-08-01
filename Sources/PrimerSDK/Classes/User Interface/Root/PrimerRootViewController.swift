@@ -476,7 +476,7 @@ extension PrimerRootViewController {
             imgView?.widthAnchor.constraint(equalToConstant: 24.0).isActive = true
         }
         
-        paymentMethodTokenizationViewModel.didStartTokenization = {
+        paymentMethodTokenizationViewModel.checkouEventsNotifierModule.didStartTokenization = {
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         

@@ -52,12 +52,12 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     
     override func start() {
         
-        self.didStartTokenization = {
+        self.checkouEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         }
         
-        self.didFinishTokenization = { err in
+        self.checkouEventsNotifierModule.didFinishTokenization = {
             self.uiModule.submitButton?.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
@@ -112,13 +112,11 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
             }
             .done {
                 self.willDismissPaymentMethodUI?()
-                self.didStartTokenization?()
                 seal.fulfill()
             }
             .ensure { [unowned self] in
                 DispatchQueue.main.async {
                     self.didDismissPaymentMethodUI?()
-                    self.didFinishTokenization?(nil)
                     self.didFinishPayment?(nil)
                 }
             }

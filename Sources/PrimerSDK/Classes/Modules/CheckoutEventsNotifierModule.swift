@@ -18,6 +18,7 @@ class CheckoutEventsNotifierModule {
                 self.didStartTokenization!()
             }
             
+            self.didStartTokenization = nil
             seal.fulfill()
         }
     }
@@ -28,6 +29,7 @@ class CheckoutEventsNotifierModule {
                 self.didFinishTokenization!()
             }
             
+            self.didFinishTokenization = nil
             seal.fulfill()
         }
     }

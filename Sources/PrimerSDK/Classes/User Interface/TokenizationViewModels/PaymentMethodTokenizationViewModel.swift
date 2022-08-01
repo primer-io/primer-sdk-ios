@@ -23,8 +23,6 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     
     // Events
     var checkouEventsNotifierModule: CheckoutEventsNotifierModule { get }
-    var didStartTokenization: (() -> Void)? { get set }
-    var didFinishTokenization: ((Error?) -> Void)? { get set }
     var didStartPayment: (() -> Void)? { get set }
     var didFinishPayment: ((Error?) -> Void)? { get set }
     var willPresentPaymentMethodUI: (() -> Void)? { get set }
@@ -66,8 +64,6 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     // Events
     let checkouEventsNotifierModule = CheckoutEventsNotifierModule()
-    var didStartTokenization: (() -> Void)?
-    var didFinishTokenization: ((Error?) -> Void)?
     var didStartPayment: (() -> Void)?
     var didFinishPayment: ((Error?) -> Void)?
     var willPresentPaymentMethodUI: (() -> Void)?
