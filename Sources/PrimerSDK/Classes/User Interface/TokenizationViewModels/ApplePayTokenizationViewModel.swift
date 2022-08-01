@@ -85,7 +85,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         super.start()
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -114,12 +114,51 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
-                return self.tokenize()
+            .done {
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+
+            firstly {
+                self.tokenize()
             }
             .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
+                self.paymentMethodTokenData = paymentMethodTokenData
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
+    
+    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            firstly {
+                self.performPreTokenizationSteps()
+            }
+            .then { () -> Promise<Void> in
+                return self.performTokenizationStep()
+            }
+            .then { () -> Promise<Void> in
+                return self.performPostTokenizationSteps()
+            }
+            .done {
+                seal.fulfill(self.paymentMethodTokenData!)
             }
             .catch { err in
                 seal.reject(err)
