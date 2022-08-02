@@ -9,18 +9,6 @@
 
 import UIKit
 
-//internal class PrimerPaymentMethodImageFile: ImageFile {
-//
-//    let themeMode: PrimerTheme.Mode
-//    let type: PrimerAsset.ImageType
-//
-//    init(fileName: FileName, fileExtension: FileExtension?, remoteUrl: URL? = nil, base64Data: Data? = nil, themeMode: PrimerTheme.Mode, type: PrimerAsset.ImageType) {
-//        self.themeMode = themeMode
-//        self.type = type
-//        super.init(fileName: fileName, fileExtension: fileExtension, remoteUrl: remoteUrl, base64Data: base64Data)
-//    }
-//}
-
 internal class ImageFile: File {
     
     static func getPaymentMethodType(fromFileName fileName: String) -> String? {
