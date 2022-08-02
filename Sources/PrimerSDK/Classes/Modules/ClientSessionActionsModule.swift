@@ -43,8 +43,12 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 clientSessionService.requestPrimerConfigurationWithActions(actionsRequest: clientSessionActionsRequest)
             }
             .done { primerApiConfiguration in
-                AppState.current.apiConfiguration = primerApiConfiguration
-                PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: primerApiConfiguration))
+                AppState.current.apiConfiguration?.clientSession = primerApiConfiguration.clientSession
+                
+                if AppState.current.apiConfiguration != nil {
+                    PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: AppState.current.apiConfiguration!))
+                }
+               
                 seal.fulfill()
             }
             .catch { error in
@@ -70,8 +74,12 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 clientSessionService.requestPrimerConfigurationWithActions(actionsRequest: clientSessionActionsRequest)
             }
             .done { primerApiConfiguration in
-                AppState.current.apiConfiguration = primerApiConfiguration
-                PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: primerApiConfiguration))
+                AppState.current.apiConfiguration?.clientSession = primerApiConfiguration.clientSession
+                
+                if AppState.current.apiConfiguration != nil {
+                    PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: AppState.current.apiConfiguration!))
+                }
+                
                 seal.fulfill()
             }
             .catch { error in
@@ -91,8 +99,12 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 clientSessionService.requestPrimerConfigurationWithActions(actionsRequest: clientSessionActionsRequest)
             }
             .done { primerApiConfiguration in
-                AppState.current.apiConfiguration = primerApiConfiguration
-                PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: primerApiConfiguration))
+                AppState.current.apiConfiguration?.clientSession = primerApiConfiguration.clientSession
+                
+                if AppState.current.apiConfiguration != nil {
+                    PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: AppState.current.apiConfiguration!))
+                }
+                
                 seal.fulfill()
             }
             .catch { error in
