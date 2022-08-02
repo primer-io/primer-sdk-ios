@@ -76,8 +76,8 @@ class MerchantHUCRawCardDataViewController: UIViewController {
                             expiryYear: "2025",
                             cvv: "123",
                             cardholderName: "John Smith")
-                        
                         primerRawDataManager.submit(data: rawCardData)
+                        
                     } catch {
                         
                     }
@@ -111,11 +111,11 @@ class MerchantHUCRawCardDataViewController: UIViewController {
 extension MerchantHUCRawCardDataViewController: PrimerHeadlessUniversalCheckoutDelegate {
 
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
-        print("\n\n🤯🤯🤯 \(#function)")
+        print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodTypes)")
     }
     
     func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
-        print("\n\n🤯🤯🤯 \(#function)")
+        print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
         self.showLoadingOverlay()
     }
     
@@ -147,8 +147,8 @@ extension MerchantHUCRawCardDataViewController: PrimerHeadlessUniversalCheckoutD
                     
                     if let data = try? JSONEncoder().encode(res) {
                         DispatchQueue.main.async {
-                            let rvc = HUCResultViewController.instantiate(data: [data])
-                            self.navigationController?.pushViewController(rvc, animated: true)
+//                            let rvc = HUCResultViewController.instantiate(data: [data])
+//                            self.navigationController?.pushViewController(rvc, animated: true)
                         }
                     }
                 }

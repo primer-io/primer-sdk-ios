@@ -180,9 +180,11 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
                     .buckarooGiropay,
                     .buckarooIdeal,
                     .buckarooSofort,
+                    .rapydFast,
                     .rapydGCash,
                     .rapydGrabPay,
-                    .rapydPoli:
+                    .rapydPoli,
+                    .rapydPromptPay:
                 let paymentMethodConfigJson: [String: Any] = [
                     "id" : "id-\(paymentMethodType.rawValue)",
                     "options" : [
