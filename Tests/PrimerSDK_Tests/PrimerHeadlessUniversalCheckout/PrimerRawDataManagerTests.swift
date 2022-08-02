@@ -20,15 +20,15 @@ class PrimerRawDataManagerTests: XCTestCase {
         
         do {
             paymentMethodType = .adyenBlik
-            let _ = try PrimerRawDataManager(paymentMethodType: paymentMethodType)
+            let _ = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethodType)
             paymentMethodType = .payPal
-            let _ = try PrimerRawDataManager(paymentMethodType: paymentMethodType)
+            let _ = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethodType)
             paymentMethodType = .applePay
-            let _ = try PrimerRawDataManager(paymentMethodType: paymentMethodType)
+            let _ = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethodType)
             paymentMethodType = .buckarooIdeal
-            let _ = try PrimerRawDataManager(paymentMethodType: paymentMethodType)
+            let _ = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethodType)
             paymentMethodType = .payNLGiropay
-            let _ = try PrimerRawDataManager(paymentMethodType: paymentMethodType)
+            let _ = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethodType)
             
         } catch {
             if !error.localizedDescription.starts(with: "[unsupported-payment-method-type] Unsupported payment method type \(paymentMethodType.rawValue)") {
@@ -38,7 +38,7 @@ class PrimerRawDataManagerTests: XCTestCase {
         
         do {
             paymentMethodType = .paymentCard
-            let _ = try PrimerRawDataManager(paymentMethodType: paymentMethodType)
+            let _ = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethodType)
             
         } catch {
             throw error
@@ -105,7 +105,7 @@ class PrimerRawDataManagerTests: XCTestCase {
     }
     
     func test_validate_invalid_raw_data() throws {
-        let rawDataManager = try! PrimerRawDataManager(paymentMethodType: .paymentCard)
+        let rawDataManager = try! PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: .paymentCard)
         
         var expectation = self.expectation(description: "Validate empty raw card data")
         
@@ -241,7 +241,7 @@ class PrimerRawDataManagerTests: XCTestCase {
     }
     
     func test_validate_valid_raw_data() throws {
-        let rawDataManager = try! PrimerRawDataManager(paymentMethodType: .paymentCard)
+        let rawDataManager = try! PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: .paymentCard)
         
         let testData: PrimerRawData = PrimerCardData(
             number: "4242424242424242",
@@ -331,7 +331,7 @@ class PrimerRawDataManagerTests: XCTestCase {
       
       waitForExpectations(timeout: 5, handler: nil)
       
-      let rawDataManager = try! PrimerRawDataManager(paymentMethodType: .paymentCard)
+      let rawDataManager = try! PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: .paymentCard)
       
       let testData: PrimerRawData = PrimerCardData(
           number: "4242424242424242",

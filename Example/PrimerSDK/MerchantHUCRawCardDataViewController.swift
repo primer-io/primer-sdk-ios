@@ -68,7 +68,7 @@ class MerchantHUCRawCardDataViewController: UIViewController {
                     self.hideLoadingOverlay()
                     
                     do {
-                        let primerRawDataManager = try PrimerRawDataManager(paymentMethodType: .paymentCard)
+                        let primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: .paymentCard)
                         
                         let rawCardData = PrimerCardData(
                             number: "4242424242424242",
