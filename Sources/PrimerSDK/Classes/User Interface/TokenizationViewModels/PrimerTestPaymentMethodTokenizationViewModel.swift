@@ -182,6 +182,22 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         
     }
     
+    // MARK: - Tokenize
+    
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            self.tokenize(decision: self.selectedDecision!) { paymentMethodTokenData, err in
+                if let err = err {
+                    seal.reject(err)
+                } else if let paymentMethodTokenData = paymentMethodTokenData {
+                    seal.fulfill(paymentMethodTokenData)
+                } else {
+                    assert(true, "Should always receive a payment method or an error")
+                }
+            }
+        }
+    }
+    
     // MARK: - Pay Action
     
     override func submitButtonTapped() {
@@ -249,22 +265,6 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
 }
 
 extension PrimerTestPaymentMethodTokenizationViewModel {
-    
-    // MARK: - Tokenize
-    
-    private func tokenize(decision: PrimerTestPaymentMethodOptions.FlowDecision) -> Promise<PrimerPaymentMethodTokenData> {
-        return Promise { seal in
-            self.tokenize(decision: decision) { paymentMethodTokenData, err in
-                if let err = err {
-                    seal.reject(err)
-                } else if let paymentMethodTokenData = paymentMethodTokenData {
-                    seal.fulfill(paymentMethodTokenData)
-                } else {
-                    assert(true, "Should always receive a payment method or an error")
-                }
-            }
-        }
-    }
     
     private func tokenize(decision: PrimerTestPaymentMethodOptions.FlowDecision, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
         let req = TestPaymentMethodTokenizationRequest(

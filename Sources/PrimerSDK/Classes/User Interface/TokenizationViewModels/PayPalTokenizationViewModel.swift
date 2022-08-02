@@ -120,7 +120,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    func tokenize() -> Promise <PaymentMethodToken> {
+    override func tokenize() -> Promise <PaymentMethodToken> {
         return Promise { seal in
             firstly {
                 self.fetchOAuthURL()
