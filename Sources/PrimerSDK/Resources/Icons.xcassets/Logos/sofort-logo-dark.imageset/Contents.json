@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "blik-logo.png",
+      "filename" : "sofort-logo.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "blik-logo@2x.png",
+      "filename" : "sofort-logo@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "blik-logo@3x.png",
+      "filename" : "sofort-logo@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

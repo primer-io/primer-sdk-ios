@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "payconiq-logo.png",
+      "filename" : "payconiq-logo-colored.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "payconiq-logo@2x.png",
+      "filename" : "payconiq-logo-colored@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "payconiq-logo@3x.png",
+      "filename" : "payconiq-logo-colored@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
