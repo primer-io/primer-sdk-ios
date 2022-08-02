@@ -52,7 +52,7 @@ struct PrimerAPIConfiguration: Codable {
     
     let coreUrl: String?
     let pciUrl: String?
-    let clientSession: ClientSession.APIResponse?
+    var clientSession: ClientSession.APIResponse?
     let paymentMethods: [PrimerPaymentMethod]?
     let keys: ThreeDS.Keys?
     let checkoutModules: [CheckoutModule]?
