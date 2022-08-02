@@ -11,6 +11,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
     
+    private var payPalUrl: URL!
+    private var payPalInstrument: PaymentInstrument!
     private var session: Any!
     private var orderId: String?
     private var confirmBillingAgreementResponse: PayPalConfirmBillingAgreementResponse?
@@ -82,6 +84,12 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
+            .then { () -> Promise<Void> in
+                self.presentPaymentMethodUserInterface()
+            }
+            .then { () -> Promise<Void> in
+                return self.awaitUserInput()
+            }
             .done {
                 seal.fulfill()
             }
@@ -114,7 +122,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    override func tokenize() -> Promise <PaymentMethodToken> {
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             firstly {
                 self.fetchOAuthURL()
@@ -123,15 +131,24 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.willPresentExternalView?()
                 return self.createOAuthSession(url)
             }
-            .then { url -> Promise<PaymentInstrument> in
+            .done { url  in
                 self.didPresentExternalView?()
-                return self.createPaypalPaymentInstrument()
+                seal.fulfill()
             }
-            .then { instrument -> Promise<PaymentMethodToken> in
-                return self.tokenize(instrument: instrument)
+            .catch { err in
+                seal.reject(err)
             }
-            .done { token in
-                seal.fulfill(token)
+        }
+    }
+    
+    override func awaitUserInput() -> Promise<Void> {
+        return Promise { seal in
+            firstly {
+                self.createPaypalPaymentInstrument()
+            }
+            .done { instrument in
+                self.payPalInstrument = instrument
+                seal.fulfill()
             }
             .catch { err in
                 seal.reject(err)
@@ -382,9 +399,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         })
     }
     
-    private func tokenize(instrument: PaymentInstrument) -> Promise<PaymentMethodToken> {
+    override func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
-            let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: AppState.current)
+            let request = PaymentMethodTokenizationRequest(paymentInstrument: self.payPalInstrument, state: AppState.current)
 
             let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
             tokenizationService.tokenize(request: request) { result in
