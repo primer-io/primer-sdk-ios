@@ -12,6 +12,7 @@ import UIKit
 
 @objc
 public enum PrimerInputElementType: Int {
+    
     case cardNumber, expiryDate, cvv, cardholderName, otp, postalCode, unknown
     
     internal func validate(value: Any, detectedValueType: Any?) -> Bool {
