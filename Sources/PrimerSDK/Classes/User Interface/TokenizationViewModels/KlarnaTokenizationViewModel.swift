@@ -142,32 +142,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            var instrument: PaymentInstrument
-            var request: PaymentMethodTokenizationRequest
-            
-            if Primer.shared.intent == .vault {
-                instrument = PaymentInstrument(
-                    klarnaAuthorizationToken: self.authorizationToken!,
-                    sessionData: self.klarnaCustomerTokenAPIResponse.sessionData)
-                
-                request = PaymentMethodTokenizationRequest(
-                    paymentInstrument: instrument,
-                    paymentFlow: .vault)
-                
-            } else {
-                instrument = PaymentInstrument(
-                    klarnaCustomerToken: self.klarnaCustomerTokenAPIResponse.customerTokenId,
-                    sessionData: self.klarnaCustomerTokenAPIResponse.sessionData)
-                
-                request = PaymentMethodTokenizationRequest(
-                    paymentInstrument: instrument,
-                    paymentFlow: .checkout)
-            }
-            
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-            
             firstly {
-                tokenizationService.tokenize(request: request)
+                self.tokenize()
             }
             .done { paymentMethodTokenData in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -214,6 +190,44 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 } else {
                     precondition(false, "Should never end up in here")
                 }
+            }
+        }
+    }
+    
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            var instrument: PaymentInstrument
+            var request: PaymentMethodTokenizationRequest
+            
+            if Primer.shared.intent == .vault {
+                instrument = PaymentInstrument(
+                    klarnaAuthorizationToken: self.authorizationToken!,
+                    sessionData: self.klarnaCustomerTokenAPIResponse.sessionData)
+                
+                request = PaymentMethodTokenizationRequest(
+                    paymentInstrument: instrument,
+                    paymentFlow: .vault)
+                
+            } else {
+                instrument = PaymentInstrument(
+                    klarnaCustomerToken: self.klarnaCustomerTokenAPIResponse.customerTokenId,
+                    sessionData: self.klarnaCustomerTokenAPIResponse.sessionData)
+                
+                request = PaymentMethodTokenizationRequest(
+                    paymentInstrument: instrument,
+                    paymentFlow: .checkout)
+            }
+            
+            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+            
+            firstly {
+                tokenizationService.tokenize(request: request)
+            }
+            .done { paymentMethodTokenData in
+                seal.fulfill(paymentMethodTokenData)
+            }
+            .catch { err in
+                seal.reject(err)
             }
         }
     }

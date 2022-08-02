@@ -141,7 +141,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                self.tokenize(bank: self.selectedBank!)
+                self.tokenize()
             }
             .done { paymentMethodTokenData in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -241,9 +241,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
     
-    private func tokenize(bank: Bank) -> Promise<PrimerPaymentMethodTokenData> {
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            self.tokenize(bank: bank) { paymentMethodTokenData, err in
+            self.tokenize(bank: self.selectedBank!) { paymentMethodTokenData, err in
                 if let err = err {
                     seal.reject(err)
                 } else if let paymentMethodTokenData = paymentMethodTokenData {

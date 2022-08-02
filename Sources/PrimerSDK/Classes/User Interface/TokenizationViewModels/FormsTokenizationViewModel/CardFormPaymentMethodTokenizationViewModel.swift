@@ -442,7 +442,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    private func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.cardComponentsManagerTokenizationCompletion = { (paymentMethodTokenData, err) in
                 if let err = err {

@@ -552,7 +552,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    private func tokenize() -> Promise<PaymentMethodToken> {
+    override func tokenize() -> Promise<PaymentMethodToken> {
         switch config.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             return Promise { seal in
