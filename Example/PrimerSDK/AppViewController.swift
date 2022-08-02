@@ -9,7 +9,7 @@
 import PrimerSDK
 import UIKit
 
-var environment: Environment = .staging
+var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var metadataTestCase: String?
 var paymentHandling: PrimerPaymentHandling = .auto
