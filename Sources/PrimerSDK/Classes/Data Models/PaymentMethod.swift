@@ -89,6 +89,11 @@ class PrimerPaymentMethod: Codable {
             case PrimerPaymentMethodType.payPal.rawValue:
                 return PayPalTokenizationViewModel(config: self)
                 
+            case PrimerPaymentMethodType.primerTestKlarna.rawValue,
+                PrimerPaymentMethodType.primerTestPayPal.rawValue,
+                PrimerPaymentMethodType.primerTestSofort.rawValue:
+                return PrimerTestPaymentMethodTokenizationViewModel(config: self)
+                
             case PrimerPaymentMethodType.xfersPayNow.rawValue:
                 return QRCodeTokenizationViewModel(config: self)
                 
