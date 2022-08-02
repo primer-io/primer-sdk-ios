@@ -12,14 +12,19 @@ import UIKit
 internal class ImageFile: File {
     
     static func getPaymentMethodType(fromFileName fileName: String) -> String? {
-        let results = PrimerPaymentMethodType.allCases.compactMap({ $0.rawValue }).filter({ fileName.uppercased().replacingOccurrences(of: "-", with: "_").contains($0) })
+        var tmpFileName = fileName.replacingOccurrences(of: "-logo", with: "")
+        tmpFileName = tmpFileName.replacingOccurrences(of: "-icon", with: "")
+        tmpFileName = tmpFileName.replacingOccurrences(of: "-colored", with: "")
+        tmpFileName = tmpFileName.replacingOccurrences(of: "-dark", with: "")
+        tmpFileName = tmpFileName.replacingOccurrences(of: "-light", with: "")
+        tmpFileName = tmpFileName.uppercased().replacingOccurrences(of: "-", with: "_")
+        
+        let paymentMethodTypeRawValues = PrimerPaymentMethodType.allCases.compactMap({ $0.rawValue })
+        let results = paymentMethodTypeRawValues.filter({ $0 == tmpFileName })
         
         if results.isEmpty {
             return nil
-        } else if results.count == 1 {
-            return results.first
         } else {
-            precondition(false, "Should not have more than 1 payment methods")
             return results.first
         }
     }
