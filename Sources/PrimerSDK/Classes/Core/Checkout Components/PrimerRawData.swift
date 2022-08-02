@@ -9,23 +9,43 @@
 
 import Foundation
 
-public protocol PrimerRawData: Codable {
-    var isValid: Bool { get }
+internal protocol PrimerRawDataProtocol {
+    var onDataDidChange: (() -> Void)? { get set }
+}
+
+public class PrimerRawData: NSObject, PrimerRawDataProtocol {
+    var onDataDidChange: (() -> Void)?
 }
 
 public class PrimerCardData: PrimerRawData {
     
-    var number: String
-    var expiryMonth: String
-    var expiryYear: String
-    var cvv: String
-    var cardholderName: String?
-    
-    public var isValid: Bool {
-        return false
+    public var number: String {
+        didSet {
+            self.onDataDidChange?()
+        }
     }
-    
-    public init(
+    public var expiryMonth: String {
+        didSet {
+            self.onDataDidChange?()
+        }
+    }
+    public var expiryYear: String {
+        didSet {
+            self.onDataDidChange?()
+        }
+    }
+    public var cvv: String {
+        didSet {
+            self.onDataDidChange?()
+        }
+    }
+    public var cardholderName: String? {
+        didSet {
+            self.onDataDidChange?()
+        }
+    }
+        
+    public required init(
         number: String,
         expiryMonth: String,
         expiryYear: String,
@@ -37,6 +57,7 @@ public class PrimerCardData: PrimerRawData {
         self.expiryYear = expiryYear
         self.cvv = cvv
         self.cardholderName = cardholderName
+        super.init()
     }
 }
 

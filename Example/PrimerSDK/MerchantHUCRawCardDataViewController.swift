@@ -36,6 +36,8 @@ class MerchantHUCRawCardDataViewController: UIViewController {
     private var paymentId: String?
     var activityIndicator: UIActivityIndicatorView?
     
+    var rawCardData: PrimerCardData?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -69,14 +71,21 @@ class MerchantHUCRawCardDataViewController: UIViewController {
                     
                     do {
                         let primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: .paymentCard)
+                        primerRawDataManager.delegate = self
                         
-                        let rawCardData = PrimerCardData(
-                            number: "4242424242424242",
-                            expiryMonth: "02",
+                        self.rawCardData = PrimerCardData(
+                            number: "424242424242424",
+                            expiryMonth: "99",
                             expiryYear: "2025",
-                            cvv: "123",
+                            cvv: "1",
                             cardholderName: "John Smith")
-                        primerRawDataManager.submit(data: rawCardData)
+                        primerRawDataManager.rawData = self.rawCardData!
+                        
+                        Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
+                            self.rawCardData!.number = "4242424242424242"
+                            primerRawDataManager.submit()
+                        }
+                        
                         
                     } catch {
                         
@@ -202,5 +211,17 @@ extension MerchantHUCRawCardDataViewController: PrimerHeadlessUniversalCheckoutD
     func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         print("\n\n🤯🤯🤯 \(#function)\ndata: \(data)")
         decisionHandler(.continuePaymentCreation())
+    }
+}
+
+extension MerchantHUCRawCardDataViewController: PrimerRawDataManagerDelegate {
+    
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
+        
+    }
+    
+    
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataDidChange rawData: PrimerRawData?) {
+        
     }
 }

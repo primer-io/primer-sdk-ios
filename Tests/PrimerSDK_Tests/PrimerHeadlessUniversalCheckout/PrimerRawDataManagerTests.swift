@@ -269,86 +269,87 @@ class PrimerRawDataManagerTests: XCTestCase {
     
     
     func test_submit_data() throws {
-      let apiClient = MockPrimerAPIClient()
-      
-      let validateClientTokenData = try! JSONEncoder().encode(SuccessResponse(success: true))
-      apiClient.validateClientTokenResponse = validateClientTokenData
-      
-      let mockPaymentMethodTokenDataJson: [String: Any] = [
-        "paymentInstrumentData" : [
-          "last4Digits" : "4242",
-          "expirationYear" : "2024",
-          "expirationMonth" : "02",
-          "isNetworkTokenized" : false,
-          "binData" : [
-            "accountFundingType" : "UNKNOWN",
-            "accountNumberType" : "UNKNOWN",
-            "productUsageType" : "UNKNOWN",
-            "productCode" : "UNKNOWN",
-            "productName" : "UNKNOWN",
-            "regionalRestriction" : "UNKNOWN",
-            "prepaidReloadableIndicator" : "NOT_APPLICABLE",
-            "network" : "VISA",
-            "issuerCountryCode" : "US"
-          ],
-          "network" : "Visa"
-        ],
-        "isAlreadyVaulted" : false,
-        "threeDSecureAuthentication" : [
-          "responseCode" : "NOT_PERFORMED"
-        ],
-        "tokenType" : "SINGLE_USE",
-        "isVaulted" : false,
-        "token" : "Lgo_qEviS-2PGvlJycW4dnwxNjU3NzA5Njkw",
-        "analyticsId" : "5bnKsoCZV9OG1083OXQIQFRo",
-        "paymentInstrumentType" : "PAYMENT_CARD"
-      ]
-      
-      let tokenizePaymentMethodResponse = try! JSONSerialization.data(withJSONObject: mockPaymentMethodTokenDataJson)
-      apiClient.tokenizePaymentMethodResponse = tokenizePaymentMethodResponse
-      
-      let mockCreatePaymentResponseJson: [String: Any] = [
-          "status" : "SUCCESS",
-          "orderId" : "ios_order_id_jrs21gA4",
-          "amount" : 101109,
-          "id" : "R6NCKw3f",
-          "currencyCode" : "GBP",
-          "date" : "2022-07-13T11:03:05.069245",
-          "customerId" : "ios-customer-K0fMEH0H"
-      ]
-      
-      let createPaymentResponse = try! JSONSerialization.data(withJSONObject: mockCreatePaymentResponseJson)
-      apiClient.createPaymentResponse = createPaymentResponse
-      
-      DependencyContainer.register(apiClient as PrimerAPIClientProtocol)
-      
-      var expectation = self.expectation(description: "Fetch payment method types")
-            
-      PrimerHeadlessUniversalCheckout.current.delegate = self
-      PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { pmts, err in
-          expectation.fulfill()
-      }
-      
-      waitForExpectations(timeout: 5, handler: nil)
-      
-      let rawDataManager = try! PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: .paymentCard)
-      
-      let testData: PrimerRawData = PrimerCardData(
-          number: "4242424242424242",
-          expiryMonth: "02",
-          expiryYear: "2024",
-          cvv: "123",
-          cardholderName: nil)
-      
-      expectation = self.expectation(description: "Validate raw card data")
-      
-      self.didCompleteCheckout = { checkoutData in
-          expectation.fulfill()
-      }
-      
-      rawDataManager.submit(data: testData)
-      
-      waitForExpectations(timeout: 30, handler: nil)
+        let apiClient = MockPrimerAPIClient()
+        
+        let validateClientTokenData = try! JSONEncoder().encode(SuccessResponse(success: true))
+        apiClient.validateClientTokenResponse = validateClientTokenData
+        
+        let mockPaymentMethodTokenDataJson: [String: Any] = [
+            "paymentInstrumentData" : [
+                "last4Digits" : "4242",
+                "expirationYear" : "2024",
+                "expirationMonth" : "02",
+                "isNetworkTokenized" : false,
+                "binData" : [
+                    "accountFundingType" : "UNKNOWN",
+                    "accountNumberType" : "UNKNOWN",
+                    "productUsageType" : "UNKNOWN",
+                    "productCode" : "UNKNOWN",
+                    "productName" : "UNKNOWN",
+                    "regionalRestriction" : "UNKNOWN",
+                    "prepaidReloadableIndicator" : "NOT_APPLICABLE",
+                    "network" : "VISA",
+                    "issuerCountryCode" : "US"
+                ],
+                "network" : "Visa"
+            ],
+            "isAlreadyVaulted" : false,
+            "threeDSecureAuthentication" : [
+                "responseCode" : "NOT_PERFORMED"
+            ],
+            "tokenType" : "SINGLE_USE",
+            "isVaulted" : false,
+            "token" : "Lgo_qEviS-2PGvlJycW4dnwxNjU3NzA5Njkw",
+            "analyticsId" : "5bnKsoCZV9OG1083OXQIQFRo",
+            "paymentInstrumentType" : "PAYMENT_CARD"
+        ]
+        
+        let tokenizePaymentMethodResponse = try! JSONSerialization.data(withJSONObject: mockPaymentMethodTokenDataJson)
+        apiClient.tokenizePaymentMethodResponse = tokenizePaymentMethodResponse
+        
+        let mockCreatePaymentResponseJson: [String: Any] = [
+            "status" : "SUCCESS",
+            "orderId" : "ios_order_id_jrs21gA4",
+            "amount" : 101109,
+            "id" : "R6NCKw3f",
+            "currencyCode" : "GBP",
+            "date" : "2022-07-13T11:03:05.069245",
+            "customerId" : "ios-customer-K0fMEH0H"
+        ]
+        
+        let createPaymentResponse = try! JSONSerialization.data(withJSONObject: mockCreatePaymentResponseJson)
+        apiClient.createPaymentResponse = createPaymentResponse
+        
+        DependencyContainer.register(apiClient as PrimerAPIClientProtocol)
+        
+        var expectation = self.expectation(description: "Fetch payment method types")
+        
+        PrimerHeadlessUniversalCheckout.current.delegate = self
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { pmts, err in
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        let rawDataManager = try! PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: .paymentCard)
+        
+        let testData: PrimerRawData = PrimerCardData(
+            number: "4242424242424242",
+            expiryMonth: "02",
+            expiryYear: "2024",
+            cvv: "123",
+            cardholderName: nil)
+        
+        expectation = self.expectation(description: "Validate raw card data")
+        
+        self.didCompleteCheckout = { checkoutData in
+            expectation.fulfill()
+        }
+        rawDataManager.rawData = testData
+        
+        rawDataManager.submit()
+        
+        waitForExpectations(timeout: 30, handler: nil)
     }
 }
 

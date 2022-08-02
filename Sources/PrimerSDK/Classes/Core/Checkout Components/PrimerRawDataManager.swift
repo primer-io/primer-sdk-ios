@@ -10,43 +10,39 @@
 import Foundation
 import SafariServices
 
-public protocol PrimerRawDataManagerProtocol {
-    
-}
-
+@objc
 public protocol PrimerRawDataManagerDelegate {
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataDidChange data: PrimerRawData?)
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool)
+    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataDidChange data: PrimerRawData?)
+    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?)
 }
 
 extension PrimerHeadlessUniversalCheckout {
     
     public class RawDataManager: NSObject {
         
+        public var delegate: PrimerRawDataManagerDelegate?
         public private(set) var paymentMethodType: PrimerPaymentMethodType
         public private(set) var requiredInputElementTypes: [PrimerInputElementType]
-        public private(set) var rawData: PrimerRawData? {
+        public var rawData: PrimerRawData? {
             didSet {
                 DispatchQueue.main.async {
-                    self.delegate?.primerRawDataManager(self, dataDidChange: self.rawData)
+                    if let cardDawData = self.rawData as? PrimerCardData {
+                        cardDawData.onDataDidChange = {
+                            _ = self.validateRawData(self.rawData!)
+                        }
+                    }
+                    self.delegate?.primerRawDataManager?(self, dataDidChange: self.rawData)
+                    _ = self.validateRawData(self.rawData!)
                 }
             }
         }
         public private(set) var paymentMethodTokenData: PrimerPaymentMethodTokenData?
         private var resumePaymentId: String?
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
-        public private(set) var isDataValid: Bool = false {
-            didSet {
-                DispatchQueue.main.async {
-                    self.delegate?.primerRawDataManager(self, dataIsValid: self.isDataValid)
-                }
-            }
-        }
+        public private(set) var isDataValid: Bool = false
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-        
-        public var delegate: PrimerRawDataManagerDelegate?
-        
+                
         required public init(paymentMethodType: PrimerPaymentMethodType) throws {
             self.paymentMethodType = paymentMethodType
             
@@ -74,17 +70,24 @@ extension PrimerHeadlessUniversalCheckout {
             return self.requiredInputElementTypes
         }
         
-        public func submit(data: PrimerRawData) {
+        public func submit() {
+            guard let rawData = rawData else {
+                let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                self.delegate?.primerRawDataManager?(self, dataIsValid: false, errors: [err])
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
+                return
+            }
+            
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationDidStart(for: self.paymentMethodType.rawValue)
             
             firstly {
                 PrimerHeadlessUniversalCheckout.current.validateSession()
             }
             .then { () -> Promise<Void> in
-                return self.validateRawData(data)
+                return self.validateRawData(rawData)
             }
             .then { () -> Promise<Void> in
-                self.rawData = data
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: PrimerPaymentMethodType.paymentCard))
             }
             .then { () -> Promise<PaymentMethodTokenizationRequest> in
@@ -141,9 +144,11 @@ extension PrimerHeadlessUniversalCheckout {
                 if !errors.isEmpty {
                     let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     self.isDataValid = false
+                    self.delegate?.primerRawDataManager?(self, dataIsValid: false, errors: errors)
                     seal.reject(err)
                 } else {
                     self.isDataValid = true
+                    self.delegate?.primerRawDataManager?(self, dataIsValid: true, errors: nil)
                     seal.fulfill()
                 }
             }
