@@ -531,16 +531,16 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     backgroundColor: PrimerTheme.BaseColors(
                         coloredHex: "#FF4785",
                         lightHex: nil,
-                        darkHex: nil),
+                        darkHex: "#000000"),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
                         colored: 0,
                         light: nil,
-                        dark: nil),
+                        dark: 1),
                     borderColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: nil,
-                        darkHex: nil),
+                        darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
             
