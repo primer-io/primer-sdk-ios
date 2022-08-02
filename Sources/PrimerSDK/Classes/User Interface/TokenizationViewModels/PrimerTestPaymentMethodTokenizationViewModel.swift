@@ -100,11 +100,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                 return self.presentPaymentMethodUserInterface()
             }
             .then { () -> Promise<Void> in
-                self.didPresentPaymentMethodUI?()
                 return self.awaitUserInput()
-            }
-            .then { () -> Promise<Void> in
-                return self.awaitPayButtonTappedUponDecisionSelection()
             }
             .then { () -> Promise<Void> in
                 self.didStartPayment?()
@@ -171,9 +167,19 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
-            self.decisionSelectionCompletion = { decision in
-                self.selectedDecision = decision
+            self.didPresentPaymentMethodUI?()
+            
+            firstly {
+                self.awaitUserSelection()
+            }
+            .then { () -> Promise<Void> in
+                return self.awaitPayButtonTappedUponDecisionSelection()
+            }
+            .done {
                 seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
             }
         }
     }
@@ -254,6 +260,15 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
 extension PrimerTestPaymentMethodTokenizationViewModel {
     
     // MARK: - Flow Promises
+    
+    private func awaitUserSelection() -> Promise<Void> {
+        return Promise { seal in
+            self.decisionSelectionCompletion = { decision in
+                self.selectedDecision = decision
+                seal.fulfill()
+            }
+        }
+    }
     
     private func awaitPayButtonTappedUponDecisionSelection() -> Promise<Void> {
         return Promise { seal in
