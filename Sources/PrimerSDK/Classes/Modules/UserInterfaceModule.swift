@@ -648,11 +648,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     var surchargeSectionText: String? {
         switch paymentMethodTokenizationViewModel.config.type {
         case PrimerPaymentMethodType.paymentCard.rawValue:
-            return NSLocalizedString("surcharge-additional-fee",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: "Additional fee may apply",
-                                     comment: "Additional fee may apply - Surcharge (Label)")
+            return Strings.CardFormView.additionalFeesTitle
         default:
             guard let currency = AppState.current.currency else { return nil }
             guard let availablePaymentMethods = AppState.current.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
@@ -662,31 +658,16 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var buttonTitle: String? {
-        let buttonText = paymentMethodTokenizationViewModel.config.displayMetadata?.button.text
+        let metadataButtonText = paymentMethodTokenizationViewModel.config.displayMetadata?.button.text
             ?? self.localDisplayMetadata?.button.text
         
         switch paymentMethodTokenizationViewModel.config.type {
         case PrimerPaymentMethodType.apaya.rawValue:
-            return NSLocalizedString(buttonText ?? "payment-method-type-pay-by-mobile",
-                                     tableName: nil,
-                                     bundle: Bundle.primerResources,
-                                     value: buttonText ?? "Pay by mobile",
-                                     comment: "Pay by mobile - Payment By Mobile (Apaya)")
+            return metadataButtonText ?? Strings.PaymentButton.payByMobile
             
         case PrimerPaymentMethodType.paymentCard.rawValue:
-            return Primer.shared.intent == .vault
-                ? NSLocalizedString(
-                    buttonText ?? "primer-vault-payment-method-add-new-card",
-                    tableName: nil,
-                    bundle: Bundle.primerResources,
-                    value: buttonText ?? "Add new card",
-                    comment: "Add new card - Vault Payment Method (Button text)")
-                : NSLocalizedString(
-                    buttonText ?? "payment-method-type-card-not-vaulted",
-                    tableName: nil,
-                    bundle: Bundle.primerResources,
-                    value: buttonText ?? "Pay with card",
-                    comment: "Pay with card - Payment Method Type (Card Not vaulted)")
+            if let metadataButtonText = metadataButtonText { return metadataButtonText }
+            return Primer.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.VaultPaymentMethodViewContent.payWithCard
             
         case PrimerPaymentMethodType.twoCtwoP.rawValue:
             return Strings.PaymentButton.payInInstallments
@@ -853,6 +834,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             case .checkout:
                 let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
                 buttonTitle = Strings.PaymentButton.pay
+                if let currency = AppState.current.currency, let amount = AppState.current.amount {
+                    buttonTitle += " \(amount.toCurrencyString(currency: currency))"
+                }
                 
             case .vault:
                 buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle
