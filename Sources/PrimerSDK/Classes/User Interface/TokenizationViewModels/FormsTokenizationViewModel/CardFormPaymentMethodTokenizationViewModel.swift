@@ -371,17 +371,19 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                return self.presentCardFormViewController()
+                self.presentCardFormViewController()
             }
             .then { () -> Promise<Void> in
-                return self.awaitUserInput()
+                self.awaitUserInput()
+            }
+            .then { () -> Promise<Void> in
+                self.updateButtonUI()
             }
             .then { () -> Promise<Void> in
                 self.didStartTokenization?()
                 return self.dispatchActions()
             }
             .then { () -> Promise<Void> in
-                self.updateButtonUI()
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
@@ -820,9 +822,10 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             firstly {
                 clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: network)
             }
-            .done {
+            .then { () -> Promise<Void> in
                 self.updateButtonUI()
             }
+            .done {}
             .catch { _ in }
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
             cardNumberContainerView.rightImage2 = nil
@@ -830,9 +833,10 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             firstly {
                 clientSessionActionsModule.unselectPaymentMethodIfNeeded()
             }
-            .done {
+            .then { () -> Promise<Void> in
                 self.updateButtonUI()
             }
+            .done {}
             .catch { _ in }
         }
     }
@@ -840,9 +844,12 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 
 extension CardFormPaymentMethodTokenizationViewModel {
     
-    private func updateButtonUI() {
-        if let amount = AppState.current.amount, !self.isTokenizing {
-            self.configurePayButton(amount: amount)
+    private func updateButtonUI() -> Promise<Void> {
+        return Promise { seal in
+            if let amount = AppState.current.amount, !self.isTokenizing {
+                self.configurePayButton(amount: amount)
+            }
+            seal.fulfill()
         }
     }
 }
