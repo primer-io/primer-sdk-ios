@@ -77,20 +77,6 @@ public class PrimerCardData: PrimerRawData {
         try container.encode(cvv, forKey: .cvv)
         try container.encode(cardholderName, forKey: .cardholderName)
     }
-    
-    
-    
-//    internal init(from decoder: Decoder) throws {
-//        let container = try decoder.container(keyedBy: CodingKeys.self)
-//        type = try container.decode(String.self, forKey: .type)
-//        amount = try container.decode(Int.self, forKey: .amount)
-//    }
-//
-//    internal func encode(to encoder: Encoder) throws {
-//        var container = encoder.container(keyedBy: CodingKeys.self)
-//        try container.encode(type, forKey: .type)
-//        try container.encode(amount, forKey: .amount)
-//    }
 }
 
 #endif
