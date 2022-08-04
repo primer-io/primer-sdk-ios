@@ -214,7 +214,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    private func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.tokenize(apayaWebViewResponse: self.apayaWebViewResponse) { paymentMethod, err in
                 self.willDismissPaymentMethodUI?()

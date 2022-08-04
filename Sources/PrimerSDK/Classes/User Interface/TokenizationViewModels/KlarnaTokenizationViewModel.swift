@@ -146,7 +146,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return tokenizationService.tokenize(request: request)
+                return self.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
