@@ -377,9 +377,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 return self.awaitUserInput()
             }
             .then { () -> Promise<Void> in
-                return self.updateButtonUI()
-            }
-            .then { () -> Promise<Void> in
                 self.didStartTokenization?()
                 return self.dispatchActions()
             }
@@ -829,10 +826,9 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             firstly {
                 clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: network)
             }
-            .then { () -> Promise<Void> in
+            .done {
                 self.updateButtonUI()
             }
-            .done {}
             .catch { _ in }
         } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
             cardNumberContainerView.rightImage2 = nil
@@ -840,10 +836,9 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             firstly {
                 clientSessionActionsModule.unselectPaymentMethodIfNeeded()
             }
-            .then { () -> Promise<Void> in
+            .done {
                 self.updateButtonUI()
             }
-            .done {}
             .catch { _ in }
         }
     }
@@ -851,12 +846,9 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 
 extension CardFormPaymentMethodTokenizationViewModel {
     
-    private func updateButtonUI() -> Promise<Void> {
-        return Promise { seal in
-            if let amount = AppState.current.amount, !self.isTokenizing {
-                self.configurePayButton(amount: amount)
-            }
-            seal.fulfill()
+    private func updateButtonUI() {
+        if let amount = AppState.current.amount, !self.isTokenizing {
+            self.configurePayButton(amount: amount)
         }
     }
 }
