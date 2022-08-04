@@ -142,6 +142,8 @@ class PrimerPaymentMethod: Codable {
     }
     
     lazy var isEnabled: Bool = {
+        if !implementationType.isEnabled { return false }
+        
         switch Primer.shared.intent {
         case .checkout:
             return self.isCheckoutEnabled

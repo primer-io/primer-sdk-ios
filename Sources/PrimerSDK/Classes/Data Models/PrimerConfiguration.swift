@@ -24,7 +24,7 @@ struct PrimerAPIConfiguration: Codable {
     
     static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
         var viewModels = PrimerAPIConfiguration.paymentMethodConfigs?
-            .filter({ $0.implementationType.isEnabled })
+            .filter({ $0.isEnabled })
             .filter({ $0.baseLogoImage != nil })
             .compactMap({ $0.tokenizationViewModel })
         ?? []
