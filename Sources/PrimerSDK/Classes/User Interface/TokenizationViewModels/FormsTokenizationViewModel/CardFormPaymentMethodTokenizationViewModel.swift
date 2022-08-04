@@ -455,8 +455,15 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                         DispatchQueue.main.async {
                             guard let threeDSPostAuthResponse = paymentMethodToken.1,
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
+                                
                                 let decoderError = InternalError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                                let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                var err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                
+                                if let threeDSecureAuthenticationDetails = (paymentMethodToken.0 as PaymentMethodToken).threeDSecureAuthentication,
+                                   threeDSecureAuthenticationDetails.reasonCode == "PAYMENT_CANCELED" {
+                                    err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                }
+                                
                                 ErrorHandler.handle(error: err)
                                 seal.reject(err)
                                 return

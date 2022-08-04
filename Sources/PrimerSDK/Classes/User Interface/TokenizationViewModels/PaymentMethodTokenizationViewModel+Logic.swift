@@ -48,19 +48,13 @@ extension PaymentMethodTokenizationViewModel {
                     UIApplication.shared.endIgnoringInteractionEvents()
                 }
                 .catch { err in
-                    
-                    var error: Error?
-                    
-                    if let primerErr = err as? PrimerError {
-                        error = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: primerErr.errorUserInfo as? [String: String], diagnosticsId: primerErr.diagnosticsId)
-                    }
-                    
-                    self.didFinishPayment?(error)
+                                        
+                    self.didFinishPayment?(err)
                     self.nullifyEventCallbacks()
                     
                     let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
                     
-                    if let primerErr = error as? PrimerError,
+                    if let primerErr = err as? PrimerError,
                        case .cancelled = primerErr,
                        PrimerHeadlessUniversalCheckout.current.delegate == nil {
                         
