@@ -274,7 +274,11 @@ internal extension CountryCode {
         result.unicodeScalars.append(contentsOf: unicodeScalars)
         return result
     }
+}
 
+extension CountryCode {
+    
+    static var phoneNumberCountryCodes: [PhoneNumberCountryCode] = CountryCode.loadedPhoneNumberCountryCodes ?? []
 }
 
 extension CountryCode {
@@ -321,6 +325,23 @@ extension CountryCode {
     private var localizedCountryName: String {
         return loadedCountriesBasedOnLocale?.countries.first { $0.key == self.rawValue }?.value ?? "N/A"
     }
+}
+
+extension CountryCode {
+
+    internal struct PhoneNumberCountryCode: Codable {
+        let name: String
+        let dialCode: String
+        let code: String
+    }
+
+    private static var loadedPhoneNumberCountryCodes: [PhoneNumberCountryCode]? = {
+        let jsonParser = JSONParser().withSnakeCaseParsing()
+        guard let currenciesData = jsonParser.loadJsonData(fileName: "phone_number_country_codes") else {
+            return nil
+        }
+        return try? jsonParser.parse([PhoneNumberCountryCode].self, from: currenciesData)
+    }()
 }
 
 #endif
