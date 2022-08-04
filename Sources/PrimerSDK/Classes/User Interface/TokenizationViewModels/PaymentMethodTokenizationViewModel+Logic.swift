@@ -19,8 +19,6 @@ extension PaymentMethodTokenizationViewModel {
         }
         .done { paymentMethodTokenData in
             self.paymentMethodTokenData = paymentMethodTokenData
-            self.didFinishTokenization?(nil)
-            self.didFinishTokenization = nil
 
             if Primer.shared.intent == .vault {
                 self.handleSuccessfulFlow()
@@ -100,10 +98,6 @@ extension PaymentMethodTokenizationViewModel {
             UIApplication.shared.endIgnoringInteractionEvents()
         }
         .catch { err in
-            self.didFinishTokenization?(err)
-            self.didStartTokenization = nil
-            self.didFinishTokenization = nil
-            
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
             
             if let primerErr = err as? PrimerError,
@@ -436,8 +430,6 @@ extension PaymentMethodTokenizationViewModel {
     }
     
     func nullifyEventCallbacks() {
-        self.didStartTokenization = nil
-        self.didFinishTokenization = nil
         self.didStartPayment = nil
         self.didFinishPayment = nil
     }

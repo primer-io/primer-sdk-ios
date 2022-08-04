@@ -141,11 +141,28 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                self.tokenize()
+                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
-            .done { paymentMethodTokenData in
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                return self.tokenize()
+            }
+            .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                seal.fulfill()
+                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+            }
+            .ensure { [unowned self] in
+                DispatchQueue.main.async {
+                    self.willDismissPaymentMethodUI?()
+                    self.webViewController?.dismiss(animated: true, completion: {
+                        self.didDismissPaymentMethodUI?()
+                    })
+                }
+
+                self.webViewController = nil
+                self.webViewCompletion = nil
+            }
+            .catch { err in
+                seal.reject(err)
             }
             .ensure { [unowned self] in
                 DispatchQueue.main.async {
