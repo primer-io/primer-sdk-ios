@@ -368,16 +368,16 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         
         return Promise { seal in
             firstly {
-                self.validateReturningPromise()
+                return self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                self.presentCardFormViewController()
+                return self.presentCardFormViewController()
             }
             .then { () -> Promise<Void> in
-                self.awaitUserInput()
+                return self.awaitUserInput()
             }
             .then { () -> Promise<Void> in
-                self.updateButtonUI()
+                return self.updateButtonUI()
             }
             .then { () -> Promise<Void> in
                 self.didStartTokenization?()
