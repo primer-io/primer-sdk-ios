@@ -272,6 +272,25 @@ extension Strings {
             comment: "Search country - Search country textfield placeholder")
     }
     
+    // MARK: Phone number country code Selector
+    
+    enum PhoneNumberCountryCodeSelector {
+        
+        static let selectPhoneNumberPrefixTitle = NSLocalizedString(
+            "selectPhoneNumberPrefixSelectPlaceholder",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Select a phone number prefix",
+            comment: "Select a phone number prefix - Choose your phone number prefix title label")
+        
+        static let searchPhoneNumberPrefixTitle = NSLocalizedString(
+            "select-phone-number-prefix-placeholder",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Search phone number prefix",
+            comment: "Search phone number prefix - Search phone number prefix textfield placeholder")
+    }
+    
     // MARK: Bank Selector
     
     enum BankSelector {
@@ -854,14 +873,6 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Phone Number",
             comment: "Phone Number - Text field top placeholder")
-                
-        static let inputDescriptor = NSLocalizedString(
-            "input_description_otp",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Type your phone number",
-            comment: "Phone number helper message - MBWay descriptor")
-        
     }
 
 }

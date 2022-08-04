@@ -24,37 +24,7 @@ extension FormPaymentMethodTokenizationViewModel {
         default:
             return []
         }
-    }
-    
-    // MARK: Adyen Blik Input View
-    
-    private var adyenBlikInputView: Input {
-        let input1 = Input()
-        input1.name = "OTP"
-        input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
-        input1.textFieldPlaceholder = Strings.Blik.inputTextFieldPlaceholder
-        input1.keyboardType = .numberPad
-        input1.descriptor = Strings.Blik.inputDescriptor
-        input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
-        input1.maxCharactersAllowed = 6
-        input1.isValid = { text in
-            return text.isNumeric && text.count >= 6
-        }
-        return input1
-    }
-    
-    private var mbwayInputView: Input {
-        let input1 = Input()
-        input1.name = "Phone Number"
-        input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
-        input1.keyboardType = .numberPad
-        input1.descriptor = Strings.Blik.inputDescriptor
-        input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
-        input1.isValid = { text in
-            return text.isNumeric
-        }
-        return input1
-    }
+    }    
 }
 
 extension FormPaymentMethodTokenizationViewModel {
@@ -226,7 +196,7 @@ extension FormPaymentMethodTokenizationViewModel {
     
     func presentInputViewController() -> Promise<Void> {
         return Promise { seal in
-            let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil), formPaymentMethodTokenizationViewModel: self)
+            let pcfvc = PrimerInputViewController(navigationBarLogo: uiModule.buttonImage, formPaymentMethodTokenizationViewModel: self, inputsDistribution: .horizontal)
             inputs.append(contentsOf: makeInputViews())
             Primer.shared.primerRootVC?.show(viewController: pcfvc)
             seal.fulfill()
