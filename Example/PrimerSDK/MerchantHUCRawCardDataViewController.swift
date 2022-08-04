@@ -74,7 +74,7 @@ class MerchantHUCRawCardDataViewController: UIViewController {
                         primerRawDataManager.delegate = self
                         
                         self.rawCardData = PrimerCardData(
-                            number: "42",
+                            cardNumber: "42",
                             expiryMonth: "99",
                             expiryYear: "2025",
                             cvv: "1",
@@ -82,7 +82,7 @@ class MerchantHUCRawCardDataViewController: UIViewController {
                         primerRawDataManager.rawData = self.rawCardData!
                         
                         Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                            self.rawCardData!.number = "0"
+                            self.rawCardData!.cardNumber = "0"
                             
                             Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
                                 self.rawCardData!.expiryMonth = "04"
@@ -91,7 +91,7 @@ class MerchantHUCRawCardDataViewController: UIViewController {
                                     self.rawCardData!.cvv = "123"
                                     
                                     Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                                        self.rawCardData!.number = "4242424242424242"
+                                        self.rawCardData!.cardNumber = "4242424242424242"
                                         primerRawDataManager.submit()
                                     }
                                 }

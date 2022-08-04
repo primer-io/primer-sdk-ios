@@ -30,13 +30,13 @@ extension PrimerHeadlessUniversalCheckout {
                         rawCardData.onDataDidChange = {
                             _ = self.validateRawData(self.rawData!)
                             
-                            let newCardNetwork = CardNetwork(cardNumber: rawCardData.number)
+                            let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
                             if newCardNetwork != self.cardNetwork {
                                 self.cardNetwork = newCardNetwork
                             }
                         }
                         
-                        let newCardNetwork = CardNetwork(cardNumber: rawCardData.number)
+                        let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
                         if newCardNetwork != self.cardNetwork {
                             self.cardNetwork = newCardNetwork
                         }
@@ -59,7 +59,7 @@ extension PrimerHeadlessUniversalCheckout {
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
         public private(set) var cardNetwork: CardNetwork = .unknown {
             didSet {
-                self.delegate?.primerRawDataManager?(self, metadataDidChange: ["cardType": self.cardNetwork.rawValue])
+                self.delegate?.primerRawDataManager?(self, metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue])
             }
         }
                 
@@ -137,7 +137,7 @@ extension PrimerHeadlessUniversalCheckout {
                 var errors: [PrimerValidationError] = []
                 
                 if let cardData = data as? PrimerCardData {
-                    if !cardData.number.isValidCardNumber {
+                    if !cardData.cardNumber.isValidCardNumber {
                         errors.append(PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
                     }
                     
@@ -147,7 +147,7 @@ extension PrimerHeadlessUniversalCheckout {
                         errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
                     }
                     
-                    let cardNetwork = CardNetwork(cardNumber: cardData.number)
+                    let cardNetwork = CardNetwork(cardNumber: cardData.cardNumber)
                     if !cardData.cvv.isValidCVV(cardNetwork: cardNetwork) {
                         errors.append(PrimerValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
                     }
@@ -200,7 +200,7 @@ extension PrimerHeadlessUniversalCheckout {
                 switch self.paymentMethodType {
                 case PrimerPaymentMethodType.paymentCard.rawValue:
                     let paymentInstrument = PaymentInstrument(
-                        number: PrimerInputElementType.cardNumber.clearFormatting(value: (self.rawData as? PrimerCardData)?.number ?? "") as? String,
+                        number: PrimerInputElementType.cardNumber.clearFormatting(value: (self.rawData as? PrimerCardData)?.cardNumber ?? "") as? String,
                         cvv: (self.rawData as? PrimerCardData)?.cvv,
                         expirationMonth: (self.rawData as? PrimerCardData)?.expiryMonth,
                         expirationYear: (self.rawData as? PrimerCardData)?.expiryYear,

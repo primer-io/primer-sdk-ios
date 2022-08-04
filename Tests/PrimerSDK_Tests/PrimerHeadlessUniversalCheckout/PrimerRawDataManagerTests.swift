@@ -110,7 +110,7 @@ class PrimerRawDataManagerTests: XCTestCase {
         var expectation = self.expectation(description: "Validate empty raw card data")
         
         var testData: PrimerRawData = PrimerCardData(
-            number: "",
+            cardNumber: "",
             expiryMonth: "",
             expiryYear: "",
             cvv: "",
@@ -143,7 +143,7 @@ class PrimerRawDataManagerTests: XCTestCase {
         expectation = self.expectation(description: "Validate wrong card number")
         
         testData = PrimerCardData(
-            number: "4242424242424241",
+            cardNumber: "4242424242424241",
             expiryMonth: "02",
             expiryYear: "2024",
             cvv: "123",
@@ -176,7 +176,7 @@ class PrimerRawDataManagerTests: XCTestCase {
         expectation = self.expectation(description: "Validate wrong expiry date")
         
         testData = PrimerCardData(
-            number: "4242424242424242",
+            cardNumber: "4242424242424242",
             expiryMonth: "02",
             expiryYear: "2020",
             cvv: "123",
@@ -209,7 +209,7 @@ class PrimerRawDataManagerTests: XCTestCase {
         expectation = self.expectation(description: "Validate wrong CVV")
         
         testData = PrimerCardData(
-            number: "4242424242424242",
+            cardNumber: "4242424242424242",
             expiryMonth: "02",
             expiryYear: "2024",
             cvv: "12",
@@ -244,7 +244,7 @@ class PrimerRawDataManagerTests: XCTestCase {
         let rawDataManager = try! PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue)
         
         let testData: PrimerRawData = PrimerCardData(
-            number: "4242424242424242",
+            cardNumber: "4242424242424242",
             expiryMonth: "02",
             expiryYear: "2024",
             cvv: "123",
@@ -333,8 +333,8 @@ class PrimerRawDataManagerTests: XCTestCase {
         
         let rawDataManager = try! PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue)
         
-        let testData: PrimerRawData = PrimerCardData(
-            number: "4242424242424242",
+        let cardData: PrimerRawData = PrimerCardData(
+            cardNumber: "4242424242424242",
             expiryMonth: "02",
             expiryYear: "2024",
             cvv: "123",
@@ -345,7 +345,7 @@ class PrimerRawDataManagerTests: XCTestCase {
         self.didCompleteCheckout = { checkoutData in
             expectation.fulfill()
         }
-        rawDataManager.rawData = testData
+        rawDataManager.rawData = cardData
         
         rawDataManager.submit()
         

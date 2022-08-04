@@ -24,7 +24,7 @@ public class PrimerRawData: NSObject, PrimerRawDataProtocol {
 
 public class PrimerCardData: PrimerRawData {
     
-    public var number: String {
+    public var cardNumber: String {
         didSet {
             self.onDataDidChange?()
         }
@@ -51,17 +51,17 @@ public class PrimerCardData: PrimerRawData {
     }
     
     private enum CodingKeys: String, CodingKey {
-        case number, expiryMonth, expiryYear, cvv, cardholderName
+        case cardNumber, expiryMonth, expiryYear, cvv, cardholderName
     }
         
     public required init(
-        number: String,
+        cardNumber: String,
         expiryMonth: String,
         expiryYear: String,
         cvv: String,
         cardholderName: String?
     ) {
-        self.number = number
+        self.cardNumber = cardNumber
         self.expiryMonth = expiryMonth
         self.expiryYear = expiryYear
         self.cvv = cvv
@@ -71,7 +71,7 @@ public class PrimerCardData: PrimerRawData {
     
     public override func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(number, forKey: .number)
+        try container.encode(cardNumber, forKey: .cardNumber)
         try container.encode(expiryMonth, forKey: .expiryMonth)
         try container.encode(expiryYear, forKey: .expiryYear)
         try container.encode(cvv, forKey: .cvv)
