@@ -37,8 +37,15 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     
     func validate() throws
     func start()
+    func performPreTokenizationSteps() -> Promise<Void>
+    func performTokenizationStep() -> Promise<Void>
+    func performPostTokenizationSteps() -> Promise<Void>
+    func tokenize() -> Promise<PrimerPaymentMethodTokenData>
     func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData>
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?>
+    func presentPaymentMethodUserInterface() -> Promise<Void>
+    func awaitUserInput() -> Promise<Void>
+    
     func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?>
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
     func handleSuccessfulFlow()
@@ -91,7 +98,47 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         fatalError("\(#function) must be overriden")
     }
     
+    func performPreTokenizationSteps() -> Promise<Void> {
+        fatalError("\(#function) must be overriden")
+    }
+    
+    func performTokenizationStep() -> Promise<Void> {
+        fatalError("\(#function) must be overriden")
+    }
+    
+    func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+        fatalError("\(#function) must be overriden")
+    }
+    
+    func performPostTokenizationSteps() -> Promise<Void> {
+        fatalError("\(#function) must be overriden")
+    }
+    
     func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            firstly {
+                self.performPreTokenizationSteps()
+            }
+            .then { () -> Promise<Void> in
+                return self.performTokenizationStep()
+            }
+            .then { () -> Promise<Void> in
+                return self.performPostTokenizationSteps()
+            }
+            .done {
+                seal.fulfill(self.paymentMethodTokenData!)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    func presentPaymentMethodUserInterface() -> Promise<Void> {
+        fatalError("\(#function) must be overriden")
+    }
+    
+    func awaitUserInput() -> Promise<Void> {
         fatalError("\(#function) must be overriden")
     }
     

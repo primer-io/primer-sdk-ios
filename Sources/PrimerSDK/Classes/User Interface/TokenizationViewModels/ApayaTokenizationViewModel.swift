@@ -13,8 +13,10 @@ import WebKit
 
 class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
+    private var apayaUrl: URL!
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ res: Apaya.WebViewResponse?, _ error: Error?) -> Void)?
+    private var apayaWebViewResponse: Apaya.WebViewResponse!
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -53,7 +55,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -80,23 +82,45 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
-                self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then {
-                self.generateWebViewUrl()
+            .then { () -> Promise<URL> in
+                return self.generateWebViewUrl()
             }
-            .then { url -> Promise<Apaya.WebViewResponse> in
-                self.presentApayaController(with: url)
+            .then { url -> Promise<Void> in
+                self.apayaUrl = url
+                return self.presentPaymentMethodUserInterface()
             }
-            .then { apayaWebViewResponse -> Promise<PaymentMethodToken> in
-                self.tokenize(apayaWebViewResponse: apayaWebViewResponse)
+            .then { () -> Promise<Void> in
+                return self.awaitUserInput()
             }
-            .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
+            .done {
+                seal.fulfill()
             }
             .catch { err in
                 seal.reject(err)
             }
+        }
+    }
+    
+    override func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            firstly {
+                self.tokenize()
+            }
+            .done { paymentMethodTokenData in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
         }
     }
     
@@ -151,42 +175,42 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    private func presentApayaController(with url: URL) -> Promise<Apaya.WebViewResponse> {
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
-            self.presentApayaController(with: url) { (apayaWebViewResponse, err) in
+            DispatchQueue.main.async {
+                self.webViewController = PrimerWebViewController(with: self.apayaUrl)
+                self.webViewController!.navigationDelegate = self
+                self.webViewController!.modalPresentationStyle = .fullScreen
+                
+                self.willPresentPaymentMethodUI?()
+                Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                    DispatchQueue.main.async {
+                        self.didPresentPaymentMethodUI?()
+                        seal.fulfill()
+                    }
+                })
+            }
+        }
+    }
+    
+    override func awaitUserInput() -> Promise<Void> {
+        return Promise { seal in
+            self.webViewCompletion = { (res, err) in
                 if let err = err {
                     seal.reject(err)
-                } else if let apayaWebViewResponse = apayaWebViewResponse {
-                    seal.fulfill(apayaWebViewResponse)
+                } else if let res = res {
+                    self.apayaWebViewResponse = res
+                    seal.fulfill()
                 } else {
-                    assert(true, "Should always return a response or an error.")
+                    precondition(false, "Should always return a response or an error.")
                 }
             }
         }
     }
     
-    private func presentApayaController(with url: URL, completion: @escaping (Apaya.WebViewResponse?, Error?) -> Void) {
-        DispatchQueue.main.async {
-            self.webViewController = PrimerWebViewController(with: url)
-            self.webViewController!.navigationDelegate = self
-            self.webViewController!.modalPresentationStyle = .fullScreen
-            
-            self.webViewCompletion = { (res, err) in
-                completion(res, err)
-            }
-            
-            self.willPresentPaymentMethodUI?()
-            Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
-                DispatchQueue.main.async {
-                    self.didPresentPaymentMethodUI?()
-                }
-            })
-        }
-    }
-    
-    private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse) -> Promise<PaymentMethodToken> {
+    override func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
-            self.tokenize(apayaWebViewResponse: apayaWebViewResponse) { paymentMethod, err in
+            self.tokenize(apayaWebViewResponse: self.apayaWebViewResponse) { paymentMethod, err in
                 self.willDismissPaymentMethodUI?()
                 self.webViewController?.dismiss(animated: true, completion: {
                     self.didDismissPaymentMethodUI?()

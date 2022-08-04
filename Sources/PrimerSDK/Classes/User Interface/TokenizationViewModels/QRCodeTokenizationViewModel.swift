@@ -13,7 +13,9 @@ import UIKit
 class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     
     private var tokenizationService: TokenizationServiceProtocol?
+    private var statusUrl: URL!
     internal var qrCode: String?
+    private var resumeToken: String!
     
     deinit {
         tokenizationService = nil
@@ -29,7 +31,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         }
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -52,12 +54,64 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
-                return self.tokenize()
+            .done {
+                seal.fulfill()
             }
-            .done { tmpPaymentMethodTokenData in
-                seal.fulfill(tmpPaymentMethodTokenData)
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+
+            firstly {
+                self.tokenize()
+            }
+            .done { paymentMethodTokenData in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
+    
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async {
+                let qrcvc = QRCodeViewController(viewModel: self)
+                self.willPresentPaymentMethodUI?()
+                Primer.shared.primerRootVC?.show(viewController: qrcvc)
+                self.didPresentPaymentMethodUI?()
+                seal.fulfill(())
+            }
+        }
+    }
+    
+    override func awaitUserInput() -> Promise<Void> {
+        return Promise { seal in
+            let pollingModule = PollingModule(url: statusUrl)
+            self.didCancel = {
+                pollingModule.cancel()
+                return
+            }
+            
+            firstly {
+                pollingModule.start()
+            }
+            .done { resumeToken in
+                self.resumeToken = resumeToken
+                seal.fulfill()
             }
             .catch { err in
                 seal.reject(err)
@@ -69,7 +123,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         didCancel?()
     }
     
-    fileprivate func tokenize() -> Promise<PaymentMethodToken> {
+    override func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
             guard let configId = config.id else {
                 let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -107,22 +161,17 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                let statusUrl = URL(string: statusUrlStr),
                decodedClientToken.intent != nil {
                 
-                qrCode = decodedClientToken.qrCode
+                self.statusUrl = statusUrl
+                self.qrCode = decodedClientToken.qrCode
                 
                 firstly {
-                    self.presentQRCodePaymentMethod()
+                    self.presentPaymentMethodUserInterface()
                 }
-                .then { () -> Promise<String> in
-                    let pollingModule = PollingModule(url: statusUrl)
-                    self.didCancel = {
-                        pollingModule.cancel()
-                        return
-                    }
-                    
-                    return pollingModule.start()
+                .then { () -> Promise<Void> in
+                    return self.awaitUserInput()
                 }
-                .done { resumeToken in
-                    seal.fulfill(resumeToken)
+                .done { () in
+                    seal.fulfill(self.resumeToken)
                 }
                 .catch { err in
                     seal.reject(err)
@@ -131,16 +180,6 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                 let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 seal.reject(error)
             }
-        }
-    }
-    
-    fileprivate func presentQRCodePaymentMethod() -> Promise<Void> {
-        return Promise { seal in
-            let qrcvc = QRCodeViewController(viewModel: self)
-            self.willPresentPaymentMethodUI?()
-            Primer.shared.primerRootVC?.show(viewController: qrcvc)
-            self.didPresentPaymentMethodUI?()
-            seal.fulfill(())
         }
     }
 }

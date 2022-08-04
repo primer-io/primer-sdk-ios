@@ -11,6 +11,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
     
+    private var payPalUrl: URL!
+    private var payPalInstrument: PaymentInstrument!
     private var session: Any!
     private var orderId: String?
     private var confirmBillingAgreementResponse: PayPalConfirmBillingAgreementResponse?
@@ -53,7 +55,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         super.start()
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -82,12 +84,14 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
-                return self.tokenize()
+            .then { () -> Promise<Void> in
+                self.presentPaymentMethodUserInterface()
             }
-            .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
+            .then { () -> Promise<Void> in
+                return self.awaitUserInput()
+            }
+            .done {
+                seal.fulfill()
             }
             .catch { err in
                 seal.reject(err)
@@ -95,7 +99,30 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    func tokenize() -> Promise <PaymentMethodToken> {
+    override func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+
+            firstly {
+                self.tokenize()
+            }
+            .done { paymentMethodTokenData in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
+    
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             firstly {
                 self.fetchOAuthURL()
@@ -104,15 +131,24 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.willPresentExternalView?()
                 return self.createOAuthSession(url)
             }
-            .then { url -> Promise<PaymentInstrument> in
+            .done { url  in
                 self.didPresentExternalView?()
-                return self.createPaypalPaymentInstrument()
+                seal.fulfill()
             }
-            .then { instrument -> Promise<PaymentMethodToken> in
-                return self.tokenize(instrument: instrument)
+            .catch { err in
+                seal.reject(err)
             }
-            .done { token in
-                seal.fulfill(token)
+        }
+    }
+    
+    override func awaitUserInput() -> Promise<Void> {
+        return Promise { seal in
+            firstly {
+                self.createPaypalPaymentInstrument()
+            }
+            .done { instrument in
+                self.payPalInstrument = instrument
+                seal.fulfill()
             }
             .catch { err in
                 seal.reject(err)
@@ -169,7 +205,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private func createOAuthSession(_ url: URL) -> Promise<URL> {
         return Promise { seal in
             guard var urlScheme = PrimerSettings.current.paymentMethodOptions.urlScheme else {
-                let err = PrimerError.invalidValue(key: "settings.urlScheme", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidValue(key: "settings.paymentMethodOptions.urlScheme", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -363,9 +399,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         })
     }
     
-    private func tokenize(instrument: PaymentInstrument) -> Promise<PaymentMethodToken> {
+    override func tokenize() -> Promise<PaymentMethodToken> {
         return Promise { seal in
-            let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: AppState.current)
+            let request = PaymentMethodTokenizationRequest(paymentInstrument: self.payPalInstrument, state: AppState.current)
 
             let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
             tokenizationService.tokenize(request: request) { result in

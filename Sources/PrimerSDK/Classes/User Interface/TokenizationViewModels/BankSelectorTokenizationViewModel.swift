@@ -77,23 +77,10 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     func cancel() {
         self.webViewController = nil
         self.webViewCompletion = nil
-        
-//        if tokenizationCompletion != nil {
-//            DispatchQueue.main.async {
-//                firstly {
-//                    ClientSession.Action.unselectPaymentMethodIfNeeded()
-//                }
-//                .done {
-//                    self.tokenizationCompletion = nil
-//                }
-//                .catch { _ in }
-//            }
-//        }
-        
-        tmpTokenizationCallback = nil
+        self.tmpTokenizationCallback = nil
     }
-        
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    
+    override func performPreTokenizationSteps() -> Promise<Void> {
         DispatchQueue.main.async {
             UIApplication.shared.endIgnoringInteractionEvents()
         }
@@ -123,20 +110,16 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             .then { banks -> Promise<Void> in
                 self.banks = banks
                 self.dataSource = banks
-                return self.presentBanksViewController()
+                return self.presentPaymentMethodUserInterface()
             }
-            .then { () -> Promise<Bank> in
-                return self.awaitBankSelection()
+            .then { () -> Promise<Void> in
+                return self.awaitUserInput()
             }
-            .then { bank -> Promise<Void> in
-                self.selectedBank = bank
+            .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.tokenize(bank: self.selectedBank!)
-            }
-            .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
+            .done {
+                seal.fulfill()
             }
             .ensure { [unowned self] in
                 DispatchQueue.main.async {
@@ -155,20 +138,55 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
     
-    private func presentBanksViewController() -> Promise<Void> {
+    override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            let bsvc = BankSelectorViewController(viewModel: self)
-            DispatchQueue.main.async {
-                Primer.shared.primerRootVC?.show(viewController: bsvc)
+            firstly {
+                self.tokenize()
+            }
+            .done { paymentMethodTokenData in
+                self.paymentMethodTokenData = paymentMethodTokenData
                 seal.fulfill()
+            }
+            .ensure { [unowned self] in
+                DispatchQueue.main.async {
+                    self.willDismissPaymentMethodUI?()
+                    self.webViewController?.dismiss(animated: true, completion: {
+                        self.didDismissPaymentMethodUI?()
+                    })
+                }
+
+                self.webViewController = nil
+                self.webViewCompletion = nil
+            }
+            .catch { err in
+                seal.reject(err)
             }
         }
     }
     
-    private func awaitBankSelection() -> Promise<Bank> {
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
+    
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async {
+                let bsvc = BankSelectorViewController(viewModel: self)
+                DispatchQueue.main.async {
+                    Primer.shared.primerRootVC?.show(viewController: bsvc)
+                    seal.fulfill()
+                }
+            }
+        }
+    }
+    
+    override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.bankSelectionCompletion = { bank in
-                seal.fulfill(bank)
+                self.selectedBank = bank
+                seal.fulfill()
             }
         }
     }
@@ -223,9 +241,9 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
     
-    private func tokenize(bank: Bank) -> Promise<PrimerPaymentMethodTokenData> {
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            self.tokenize(bank: bank) { paymentMethodTokenData, err in
+            self.tokenize(bank: self.selectedBank!) { paymentMethodTokenData, err in
                 if let err = err {
                     seal.reject(err)
                 } else if let paymentMethodTokenData = paymentMethodTokenData {

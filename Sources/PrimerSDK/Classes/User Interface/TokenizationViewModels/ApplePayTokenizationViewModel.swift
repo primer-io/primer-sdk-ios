@@ -24,6 +24,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private var applePayWindow: UIWindow?
     private var request: PKPaymentRequest!
+    private var applePayPaymentResponse: ApplePayPaymentResponse!
     // This is the completion handler that notifies that the necessary data were received.
     private var applePayReceiveDataCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?
     // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
@@ -85,7 +86,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         super.start()
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -114,12 +115,14 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
-                return self.tokenize()
+            .then { () -> Promise<Void> in
+                return self.presentPaymentMethodUserInterface()
             }
-            .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
+            .then { () -> Promise<Void> in
+                return self.awaitUserInput()
+            }
+            .done {
+                seal.fulfill()
             }
             .catch { err in
                 seal.reject(err)
@@ -127,15 +130,149 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+    override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            if Primer.shared.intent == .vault {
-                let err = PrimerError.unsupportedIntent(intent: .vault, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+
+            firstly {
+                self.tokenize()
+            }
+            .done { paymentMethodTokenData in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
+    
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async {
+                if Primer.shared.intent == .vault {
+                    let err = PrimerError.unsupportedIntent(intent: .vault, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                            
+                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                let countryCode = AppState.current.apiConfiguration!.clientSession!.order!.countryCode!
+                let currency = AppState.current.currency!
+                let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions!.merchantIdentifier
+
+                var orderItems: [OrderItem]
+                
+                if let lineItems = AppState.current.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() }) {
+                    orderItems = lineItems
+                } else {
+                    orderItems = [try! OrderItem(name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "", unitAmount: AppState.current.amount ?? 0, quantity: 1)]
+                }
+                
+                // Add fees, if present
+                if let fees = AppState.current.apiConfiguration?.clientSession?.order?.fees {
+                    for fee in fees {
+                        let feeItem = try! OrderItem(name: fee.type.lowercased().capitalizingFirstLetter(), unitAmount: fee.amount, quantity: 1)
+                        orderItems.append(feeItem)
+                    }
+                }
+                
+                // Create the last object of the orderItems array, which is the order summary
+                var totalAmount = 0
+                for orderItem in orderItems {
+                    totalAmount += (orderItem.unitAmount ?? 0) * orderItem.quantity
+                }
+                let summaryItem = try! OrderItem(name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "", unitAmount: totalAmount, quantity: 1)
+                orderItems.append(summaryItem)
+                
+                let applePayRequest = ApplePayRequest(
+                    currency: currency,
+                    merchantIdentifier: merchantIdentifier,
+                    countryCode: countryCode,
+                    items: orderItems
+                )
+                
+                let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
+                if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
+                    let request = PKPaymentRequest()
+                    request.currencyCode = applePayRequest.currency.rawValue
+                    request.countryCode = applePayRequest.countryCode.rawValue
+                    request.merchantIdentifier = merchantIdentifier
+                    request.merchantCapabilities = [.capability3DS]
+                    request.supportedNetworks = supportedNetworks
+                    request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
+                    
+                    guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
+                        let err = PrimerError.unableToPresentPaymentMethod(
+                            paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
+                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                            diagnosticsId: nil)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                        return
+                    }
+                    
+                    paymentVC.delegate = self
+                    
+                    DispatchQueue.main.async {
+                        self.willPresentPaymentMethodUI?()
+                        self.isCancelled = true
+                        Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
+                            DispatchQueue.main.async {
+                                PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type)
+                                self.didPresentPaymentMethodUI?()
+                                seal.fulfill()
+                            }
+                        })
+                    }
+                    
+                } else {
+                    log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
+                    let err = PrimerError.unableToMakePaymentsOnProvidedNetworks(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                }
+            }
+        }
+    }
+    
+    override func awaitUserInput() -> Promise<Void> {
+        return Promise { seal in
+            self.applePayReceiveDataCompletion = { result in
+                switch result {
+                case .success(let applePayPaymentResponse):
+                    self.applePayPaymentResponse = applePayPaymentResponse
+                    seal.fulfill()
+                    
+                case .failure(let err):
+                    seal.reject(err)
+                }
+            }
+        }
+    }
+    
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            guard let applePayConfigId = self.config.id else {
+                let err = PrimerError.invalidValue(key: "configuration.id", value: self.config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
-                        
+            
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -143,114 +280,31 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return
             }
             
-            let countryCode = AppState.current.apiConfiguration!.clientSession!.order!.countryCode!
-            let currency = AppState.current.currency!
-            let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions!.merchantIdentifier
-
-            var orderItems: [OrderItem]
-            
-            if let lineItems = AppState.current.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() }) {
-                orderItems = lineItems
-            } else {
-                orderItems = [try! OrderItem(name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "", unitAmount: AppState.current.amount ?? 0, quantity: 1)]
+            guard let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantIdentifier else {
+                let err = PrimerError.invalidValue(key: "settings.paymentMethodOptions.applePayOptions?.merchantIdentifier", value: self.config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
             }
             
-            // Add fees, if present
-            if let fees = AppState.current.apiConfiguration?.clientSession?.order?.fees {
-                for fee in fees {
-                    let feeItem = try! OrderItem(name: fee.type.lowercased().capitalizingFirstLetter(), unitAmount: fee.amount, quantity: 1)
-                    orderItems.append(feeItem)
-                }
-            }
-            
-            // Create the last object of the orderItems array, which is the order summary
-            var totalAmount = 0
-            for orderItem in orderItems {
-                totalAmount += (orderItem.unitAmount ?? 0) * orderItem.quantity
-            }
-            let summaryItem = try! OrderItem(name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "", unitAmount: totalAmount, quantity: 1)
-            orderItems.append(summaryItem)
-            
-            let applePayRequest = ApplePayRequest(
-                currency: currency,
-                merchantIdentifier: merchantIdentifier,
-                countryCode: countryCode,
-                items: orderItems
+            let instrument = PaymentInstrument(
+                paymentMethodConfigId: applePayConfigId,
+                token: self.applePayPaymentResponse.token,
+                sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
             )
+            let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: AppState.current)
             
-            let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
-            if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
-                request = PKPaymentRequest()
-                request.currencyCode = applePayRequest.currency.rawValue
-                request.countryCode = applePayRequest.countryCode.rawValue
-                request.merchantIdentifier = merchantIdentifier
-                request.merchantCapabilities = [.capability3DS]
-                request.supportedNetworks = supportedNetworks
-                request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
-                
-                guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
-                    let err = PrimerError.unableToPresentPaymentMethod(
-                        paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                        diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
-                }
-                
-                paymentVC.delegate = self
-                
-                applePayReceiveDataCompletion = { result in
+            let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            apiClient.tokenizePaymentMethod(
+                clientToken: decodedClientToken,
+                paymentMethodTokenizationRequest: request) { result in
                     switch result {
-                    case .success(let applePayPaymentResponse):
-                        guard let applePayConfigId = self.config.id else {
-                            let err = PrimerError.invalidValue(key: "configuration.id", value: self.config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                            return
-                        }
-                        
-                        let instrument = PaymentInstrument(
-                            paymentMethodConfigId: applePayConfigId,
-                            token: applePayPaymentResponse.token,
-                            sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
-                        )
-                        let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: AppState.current)
-                        
-                        let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-                        apiClient.tokenizePaymentMethod(
-                            clientToken: decodedClientToken,
-                            paymentMethodTokenizationRequest: request) { result in
-                                switch result {
-                                case .success(let paymentMethodTokenData):
-                                    seal.fulfill(paymentMethodTokenData)
-                                case .failure(let err):
-                                    seal.reject(err)
-                                }
-                            }
-                        
+                    case .success(let paymentMethodTokenData):
+                        seal.fulfill(paymentMethodTokenData)
                     case .failure(let err):
                         seal.reject(err)
                     }
                 }
-                
-                DispatchQueue.main.async {
-                    self.willPresentPaymentMethodUI?()
-                    self.isCancelled = true
-                    Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
-                        DispatchQueue.main.async {
-                            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type)
-                            self.didPresentPaymentMethodUI?()
-                        }
-                    })
-                }
-                
-            } else {
-                log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
-                let err = PrimerError.unableToMakePaymentsOnProvidedNetworks(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-            }
         }
     }
 }
