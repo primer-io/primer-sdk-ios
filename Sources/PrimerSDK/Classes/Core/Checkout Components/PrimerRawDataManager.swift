@@ -12,7 +12,7 @@ import SafariServices
 
 @objc
 public protocol PrimerRawDataManagerDelegate {
-    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataDidChange data: PrimerRawData?)
+    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?)
     @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?)
 }
 
@@ -26,12 +26,27 @@ extension PrimerHeadlessUniversalCheckout {
         public var rawData: PrimerRawData? {
             didSet {
                 DispatchQueue.main.async {
-                    if let cardDawData = self.rawData as? PrimerCardData {
-                        cardDawData.onDataDidChange = {
+                    if let rawCardData = self.rawData as? PrimerCardData {
+                        rawCardData.onDataDidChange = {
                             _ = self.validateRawData(self.rawData!)
+                            
+                            let newCardNetwork = CardNetwork(cardNumber: rawCardData.number)
+                            if newCardNetwork != self.cardNetwork {
+                                self.cardNetwork = newCardNetwork
+                            }
+                        }
+                        
+                        let newCardNetwork = CardNetwork(cardNumber: rawCardData.number)
+                        if newCardNetwork != self.cardNetwork {
+                            self.cardNetwork = newCardNetwork
+                        }
+                        
+                    } else {
+                        if self.cardNetwork != .unknown {
+                            self.cardNetwork = .unknown
                         }
                     }
-                    self.delegate?.primerRawDataManager?(self, dataDidChange: self.rawData)
+                    
                     _ = self.validateRawData(self.rawData!)
                 }
             }
@@ -42,6 +57,11 @@ extension PrimerHeadlessUniversalCheckout {
         public private(set) var isDataValid: Bool = false
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+        public private(set) var cardNetwork: CardNetwork = .unknown {
+            didSet {
+                self.delegate?.primerRawDataManager?(self, metadataDidChange: ["cardType": self.cardNetwork.rawValue])
+            }
+        }
                 
         required public init(paymentMethodType: PrimerPaymentMethodType) throws {
             self.paymentMethodType = paymentMethodType
