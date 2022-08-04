@@ -74,18 +74,29 @@ class MerchantHUCRawCardDataViewController: UIViewController {
                         primerRawDataManager.delegate = self
                         
                         self.rawCardData = PrimerCardData(
-                            number: "424242424242424",
-                            expiryMonth: "12",
+                            number: "42",
+                            expiryMonth: "99",
                             expiryYear: "2025",
                             cvv: "123",
                             cardholderName: "John Smith")
                         primerRawDataManager.rawData = self.rawCardData!
                         
-                        Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
-                            self.rawCardData!.number = "4242424242424242"
-                            primerRawDataManager.submit()
+                        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                            self.rawCardData!.number = "0"
+                            
+                            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                                self.rawCardData!.expiryMonth = "04"
+
+                                Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                                    self.rawCardData!.cvv = "123"
+                                    
+                                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                                        self.rawCardData!.number = "4242424242424242"
+                                        primerRawDataManager.submit()
+                                    }
+                                }
+                            }
                         }
-                        
                         
                     } catch {
                         
@@ -217,11 +228,11 @@ extension MerchantHUCRawCardDataViewController: PrimerHeadlessUniversalCheckoutD
 extension MerchantHUCRawCardDataViewController: PrimerRawDataManagerDelegate {
     
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
-        
+        print(errors)
     }
     
     
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataDidChange rawData: PrimerRawData?) {
-        
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String : Any]?) {
+        print(metadata)
     }
 }
