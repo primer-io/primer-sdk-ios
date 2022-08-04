@@ -894,6 +894,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         }
     }()
     
+    var isSubmitButtonAnimating: Bool {
+        submitButton?.isAnimating == true
+    }
+    
     // MARK: - INITIALIZATION
     
     required init(paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol) {

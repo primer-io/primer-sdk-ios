@@ -18,10 +18,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private var cardComponentsManager: CardComponentsManager!
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    // This is used just in case we get a client session action response
-    // while we've already started the payment. In this case we don't
-    // want to update the button's UI.
-    private var isTokenizing = false
     private var userInputCompletion: (() -> Void)?
     private var cardComponentsManagerTokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
     private var webViewController: SFSafariViewController?
@@ -294,7 +290,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override func start() {
         self.checkouEventsNotifierModule.didStartTokenization = {
-            self.isTokenizing = true
             self.uiModule.submitButton?.startAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         }
@@ -874,7 +869,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 extension CardFormPaymentMethodTokenizationViewModel {
     
     private func updateButtonUI() {
-        if let amount = AppState.current.amount, !self.isTokenizing {
+        if let amount = AppState.current.amount, self.uiModule.isSubmitButtonAnimating == false {
             self.configurePayButton(amount: amount)
         }
     }
