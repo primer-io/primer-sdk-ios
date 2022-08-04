@@ -132,7 +132,7 @@ internal class ImageManager {
                 }
                 
                 if !errors.isEmpty, errors.count == responses.count {
-                    let err = InternalError.underlyingErrors(errors: errors, userInfo: nil, diagnosticsId: nil)
+                    let err = InternalError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     throw err
                 } else {
@@ -180,7 +180,7 @@ internal class ImageManager {
                         seal.fulfill(imageFile)
                         
                     } else {
-                        let err = InternalError.failedToDecode(message: "image", userInfo: nil, diagnosticsId: nil)
+                        let err = InternalError.failedToDecode(message: "image", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
                         throw err
                     }

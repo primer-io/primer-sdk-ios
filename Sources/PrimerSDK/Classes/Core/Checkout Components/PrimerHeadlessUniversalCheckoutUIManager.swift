@@ -793,7 +793,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                         if let error = error as? PrimerError {
                             primerErr = error
                         } else {
-                            primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: nil, diagnosticsId: nil)
+                            primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         }
                         
                         ErrorHandler.handle(error: error!)

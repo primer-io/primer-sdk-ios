@@ -54,7 +54,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 if let error = error as? PrimerError {
                     primerErr = error
                 } else {
-                    primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: nil, diagnosticsId: nil)
+                    primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 }
                 
                 PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
@@ -155,7 +155,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             guard var amount = AppState.current.amount,
                   let currency = AppState.current.currency
             else {
-                let err = PrimerError.invalidValue(key: "amount or currency", value: nil, userInfo: nil, diagnosticsId: nil)
+                let err = PrimerError.invalidValue(key: "amount or currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 firstly {
                     PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
                 }
