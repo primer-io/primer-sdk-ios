@@ -61,6 +61,7 @@
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
+		843F4FF4289BA43100767EEF /* MerchantHUCRawCardDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843F4FF3289BA43000767EEF /* MerchantHUCRawCardDataViewController.swift */; };
 		849A28EB275614070037C2D1 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EA275614070037C2D1 /* Networking.swift */; };
 		849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */; };
 /* End PBXBuildFile section */
@@ -161,6 +162,7 @@
 		607FACE51AFB9204008FA782 /* PrimerSDK_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimerSDK_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E9F23C8CDC99158C041D67E /* Pods_PrimerSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EA375198BB8A81AB2F6E041 /* Pods_PrimerSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		843F4FF3289BA43000767EEF /* MerchantHUCRawCardDataViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHUCRawCardDataViewController.swift; sourceTree = "<group>"; };
 		846BE6C8280FEE5F0052E4DB /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Main.strings; sourceTree = "<group>"; };
 		846BE6C9280FEE620052E4DB /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Main.strings; sourceTree = "<group>"; };
 		846BE6CA280FEE640052E4DB /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Main.strings; sourceTree = "<group>"; };
@@ -385,6 +387,7 @@
 				2C10D1102840C1A60059B9E1 /* AppViewController.swift */,
 				2C10D1122840C1A60059B9E1 /* HUCResultViewController.swift */,
 				2C10D1142840C1A60059B9E1 /* ManualPaymentMerchantCheckoutViewController.swift */,
+				843F4FF3289BA43000767EEF /* MerchantHUCRawCardDataViewController.swift */,
 				2C10D1112840C1A60059B9E1 /* MerchantCardFormViewController.swift */,
 				2C10D10E2840C1A60059B9E1 /* MerchantCheckoutViewController.swift */,
 				2C10D10F2840C1A60059B9E1 /* MerchantPaymentMethodsViewController.swift */,
@@ -722,6 +725,7 @@
 				2C10D1292840C1C90059B9E1 /* MerchantAssetsViewController.swift in Sources */,
 				1DE0355C2716E4D1007BADAB /* CheckoutTheme.swift in Sources */,
 				2C10D1222840C1B00059B9E1 /* Networking+Models.swift in Sources */,
+				843F4FF4289BA43100767EEF /* MerchantHUCRawCardDataViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				2C10D1152840C1A60059B9E1 /* MerchantCheckoutViewController.swift in Sources */,
 				1DC7EE14261FA3D400BCBFFC /* CreateClientToken.swift in Sources */,

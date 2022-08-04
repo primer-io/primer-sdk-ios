@@ -30,7 +30,7 @@ class MerchantHUCRawCardDataViewController: UIViewController {
     var amount: Int!
     var currency: Currency!
     var countryCode: CountryCode!
-    var availablePaymentMethods: [PrimerPaymentMethodType] = []
+    var availablePaymentMethods: [String] = []
     var customerId: String?
     var phoneNumber: String?
     private var paymentId: String?
@@ -70,14 +70,14 @@ class MerchantHUCRawCardDataViewController: UIViewController {
                     self.hideLoadingOverlay()
                     
                     do {
-                        let primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: .paymentCard)
+                        let primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD")
                         primerRawDataManager.delegate = self
                         
                         self.rawCardData = PrimerCardData(
                             number: "424242424242424",
-                            expiryMonth: "99",
+                            expiryMonth: "12",
                             expiryYear: "2025",
-                            cvv: "1",
+                            cvv: "123",
                             cardholderName: "John Smith")
                         primerRawDataManager.rawData = self.rawCardData!
                         
