@@ -80,7 +80,7 @@ extension PaymentMethodTokenizationViewModel {
                             if let error = err as? PrimerError {
                                 primerErr = error
                             } else {
-                                primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: nil)
+                                primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                             }
                             
                             return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
@@ -123,7 +123,7 @@ extension PaymentMethodTokenizationViewModel {
                     if let error = err as? PrimerError {
                         primerErr = error
                     } else {
-                        primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: nil)
+                        primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     }
                     
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)

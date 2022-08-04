@@ -161,7 +161,7 @@ extension PrimerAPIConfiguration {
                 self.requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
                 
                 if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
-                    throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
+                    throw InternalError.failedToDecode(message: "All values are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 }
             }
             
@@ -169,7 +169,7 @@ extension PrimerAPIConfiguration {
                 var container = encoder.container(keyedBy: CodingKeys.self)
                 
                 if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
-                    throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
+                    throw InternalError.failedToDecode(message: "All values are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 }
                 
                 if let skipPaymentMethodTypes = skipPaymentMethodTypes {

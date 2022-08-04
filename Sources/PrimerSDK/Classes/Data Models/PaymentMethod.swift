@@ -309,7 +309,7 @@ extension PrimerPaymentMethod {
                    text == nil,
                    textColor == nil
                 {
-                    let err = InternalError.failedToDecode(message: "BaseColors", userInfo: nil, diagnosticsId: nil)
+                    let err = InternalError.failedToDecode(message: "BaseColors", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     throw err
                 }
@@ -367,7 +367,7 @@ extension PrimerTheme {
             darkUrlStr = (try? container.decode(String?.self, forKey: .darkUrlStr)) ?? nil
             
             if (coloredUrlStr == nil && lightUrlStr == nil && darkUrlStr == nil) {
-                let err = InternalError.failedToDecode(message: "BaseColoredURLs", userInfo: nil, diagnosticsId: nil)
+                let err = InternalError.failedToDecode(message: "BaseColoredURLs", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -411,7 +411,7 @@ extension PrimerTheme {
             lightHex = (try? container.decode(String?.self, forKey: .lightHex)) ?? nil
             
             if (coloredHex == nil && lightHex == nil && darkHex == nil) {
-                let err = InternalError.failedToDecode(message: "BaseColors", userInfo: nil, diagnosticsId: nil)
+                let err = InternalError.failedToDecode(message: "BaseColors", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 throw err
             }
