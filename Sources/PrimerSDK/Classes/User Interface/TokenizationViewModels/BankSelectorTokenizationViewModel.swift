@@ -150,19 +150,8 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
                 self.paymentMethodTokenData = paymentMethodTokenData
                 return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
-            .ensure { [unowned self] in
-                DispatchQueue.main.async {
-                    self.willDismissPaymentMethodUI?()
-                    self.webViewController?.dismiss(animated: true, completion: {
-                        self.didDismissPaymentMethodUI?()
-                    })
-                }
-
-                self.webViewController = nil
-                self.webViewCompletion = nil
-            }
-            .catch { err in
-                seal.reject(err)
+            .done {
+                seal.fulfill()
             }
             .ensure { [unowned self] in
                 DispatchQueue.main.async {
