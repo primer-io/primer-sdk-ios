@@ -65,7 +65,8 @@ class PrimerPaymentMethod: Codable {
             
         } else {
             switch self.type {
-            case PrimerPaymentMethodType.adyenBlik.rawValue:
+            case PrimerPaymentMethodType.adyenBlik.rawValue,
+                PrimerPaymentMethodType.rapydFast.rawValue:
                 return FormPaymentMethodTokenizationViewModel(config: self)
                 
             case PrimerPaymentMethodType.adyenDotPay.rawValue,
@@ -94,7 +95,8 @@ class PrimerPaymentMethod: Codable {
                 PrimerPaymentMethodType.primerTestSofort.rawValue:
                 return PrimerTestPaymentMethodTokenizationViewModel(config: self)
                 
-            case PrimerPaymentMethodType.xfersPayNow.rawValue:
+            case PrimerPaymentMethodType.xfersPayNow.rawValue,
+                PrimerPaymentMethodType.rapydPromptPay.rawValue:
                 return QRCodeTokenizationViewModel(config: self)
                 
             default:
