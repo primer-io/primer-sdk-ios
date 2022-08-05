@@ -561,7 +561,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         coloredHex: "#000000",
                         lightHex: "#000000",
                         darkHex: "#FFFFFF"),
-                    text: "Pay by card",
+                    text: Strings.PaymentButton.payWithCard,
                     textColor: PrimerTheme.BaseColors(
                         coloredHex: "#000000",
                         lightHex: "#000000",
@@ -667,7 +667,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             
         case PrimerPaymentMethodType.paymentCard.rawValue:
             if let metadataButtonText = metadataButtonText { return metadataButtonText }
-            return Primer.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.VaultPaymentMethodViewContent.payWithCard
+            return Primer.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.PaymentButton.payWithCard
             
         case PrimerPaymentMethodType.twoCtwoP.rawValue:
             return Strings.PaymentButton.payInInstallments
