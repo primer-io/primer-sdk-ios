@@ -663,10 +663,14 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         
         switch paymentMethodTokenizationViewModel.config.type {
         case PrimerPaymentMethodType.apaya.rawValue:
-            return metadataButtonText ?? Strings.PaymentButton.payByMobile
+            // Update with `metadataButtonText ?? Strings.PaymentButton.payByMobile` once we'll get localized strings
+            return Strings.PaymentButton.payByMobile
             
         case PrimerPaymentMethodType.paymentCard.rawValue:
-            if let metadataButtonText = metadataButtonText { return metadataButtonText }
+            // Commenting the below code as we are not getting localized strings in `text` key
+            // for the a Payment Method Instrument object out of `/configuration` API response
+            //
+            // if let metadataButtonText = metadataButtonText { return metadataButtonText }
             return Primer.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.PaymentButton.payWithCard
             
         case PrimerPaymentMethodType.twoCtwoP.rawValue:
