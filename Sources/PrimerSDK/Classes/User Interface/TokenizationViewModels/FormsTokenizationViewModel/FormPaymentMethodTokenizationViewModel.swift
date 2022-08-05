@@ -34,10 +34,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     var didCancel: (() -> Void)?
-    
-    // FIXME: Is this the fix for the button's indicator?
-    private var isTokenizing = false
-            
+                
     var inputTextFieldsStackViews: [UIStackView] {
         var stackViews: [UIStackView] = []
         for input in self.inputs {

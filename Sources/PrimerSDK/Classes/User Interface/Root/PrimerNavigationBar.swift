@@ -19,7 +19,6 @@ class PrimerNavigationBar: PrimerView {
     }
     let horizontalStackView = UIStackView()
     let leftView = PrimerView()
-    let mainView = PrimerView()
     let rightView = PrimerView()
     let backButton = UIButton()
     
@@ -46,16 +45,20 @@ class PrimerNavigationBar: PrimerView {
     
     var titleImage: UIImage? {
         didSet {
-            titleImageView?.image = titleImage
-            renderAvailableCenterSpace()
+            guard titleImage != nil else {
+                return
+            }
+            renderCenterComponents()
         }
     }
     var titleImageView: UIImageView?
-    
+
     var title: String? {
         didSet {
-            titleLabel?.text = title
-            renderAvailableCenterSpace()
+            guard title != nil else {
+                return
+            }
+            renderCenterComponents()
         }
     }
     private var titleLabel: UILabel?
@@ -66,7 +69,7 @@ class PrimerNavigationBar: PrimerView {
     }
 
     override init(frame: CGRect) {
-        super.init(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 44.0))
+        super.init(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: PrimerDimensions.NavigationBar.default))
         setup()
     }
     
@@ -93,7 +96,7 @@ class PrimerNavigationBar: PrimerView {
     
     private func setup() {
         translatesAutoresizingMaskIntoConstraints = false
-        heightAnchor.constraint(equalToConstant: 44.0).isActive = true
+        heightAnchor.constraint(equalToConstant: PrimerDimensions.NavigationBar.default).isActive = true
         backgroundColor = theme.view.backgroundColor
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -122,78 +125,80 @@ class PrimerNavigationBar: PrimerView {
 
         leftView.translatesAutoresizingMaskIntoConstraints = false
         leftView.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        leftView.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        leftView.heightAnchor.constraint(equalToConstant: PrimerDimensions.NavigationBar.default).isActive = true
         leftView.backgroundColor = .clear
         horizontalStackView.addArrangedSubview(leftView)
 
         horizontalStackView.addArrangedSubview(availableCenterSpaceView)
-        renderAvailableCenterSpace()
+        renderCenterComponents()
         
         rightView.translatesAutoresizingMaskIntoConstraints = false
         rightView.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        rightView.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        rightView.heightAnchor.constraint(equalToConstant: PrimerDimensions.NavigationBar.default).isActive = true
         rightView.backgroundColor = .clear
         horizontalStackView.addArrangedSubview(rightView)
     }
     
-    func renderAvailableCenterSpace() {
+    func renderCenterComponents() {
         availableCenterSpaceView.removeSubviews()
-        centerStackView = nil
-        
-        if let titleImage = titleImage {
-            if centerStackView == nil {
-                centerStackView = UIStackView()
-                centerStackView!.axis = .horizontal
-                centerStackView!.alignment = .fill
-                centerStackView!.distribution = .fill
-                centerStackView!.spacing = 6.0
-                centerStackView!.alpha = 0.0
-            }
-            
-            titleImageView = UIImageView()
-            titleImageView!.image = titleImage
-            titleImageView!.contentMode = .scaleAspectFit
-            centerStackView!.addArrangedSubview(titleImageView!)
-        }
-        
-        if let title = title {
-            if centerStackView == nil {
-                centerStackView = UIStackView()
-                centerStackView!.axis = .horizontal
-                centerStackView!.alignment = .fill
-                centerStackView!.distribution = .fill
-                centerStackView!.spacing = 6.0
-                centerStackView!.alpha = 0.0
-            }
-            
-            titleLabel = UILabel()
-            titleLabel!.text = title
-            titleLabel!.backgroundColor = .clear
-            titleLabel!.textAlignment = .center
-            titleLabel!.textColor = theme.text.title.color
-            titleLabel!.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
-            titleLabel!.adjustsFontSizeToFitWidth = true
-            titleLabel!.minimumScaleFactor = 0.65
-            centerStackView!.addArrangedSubview(titleLabel!)
-        }
-        
-        if centerStackView != nil {
-            availableCenterSpaceView.addSubview(centerStackView!)
-            centerStackView!.translatesAutoresizingMaskIntoConstraints = false
-            centerStackView!.leadingAnchor.constraint(greaterThanOrEqualTo: availableCenterSpaceView.leadingAnchor).isActive = true
-            centerStackView!.topAnchor.constraint(equalTo: availableCenterSpaceView.topAnchor, constant: 4).isActive = true
-            centerStackView!.trailingAnchor.constraint(lessThanOrEqualTo: availableCenterSpaceView.trailingAnchor).isActive = true
-            centerStackView!.bottomAnchor.constraint(greaterThanOrEqualTo: availableCenterSpaceView.bottomAnchor, constant: -4).isActive = true
-            centerStackView!.centerXAnchor.constraint(equalTo: availableCenterSpaceView.centerXAnchor).isActive = true
-            UIView.animate(withDuration: 0.3) {
-                self.centerStackView?.alpha = 1.0
-            } completion: { finished in
-                
-            }
+        initializeCenterStackViewIfNeeded()
+        renderTitleLabelIfNeeded()
+        renderImageViewIfNeeded()
+    }
+}
 
+extension PrimerNavigationBar {
+    
+    private func renderImageViewIfNeeded() {
+        
+        guard let titleImage = titleImage else {
+            return
         }
+
+        titleImageView = UIImageView()
+        titleImageView?.image = titleImage
+        titleImageView?.contentMode = .scaleAspectFit
+        titleImageView?.clipsToBounds = true
+        titleImageView?.translatesAutoresizingMaskIntoConstraints = false
+        centerStackView?.addArrangedSubview(titleImageView!)
     }
     
+    private func renderTitleLabelIfNeeded() {
+        
+        guard let title = title else {
+            return
+        }
+        
+        titleLabel = UILabel()
+        titleLabel?.text = title
+        titleLabel?.backgroundColor = .clear
+        titleLabel?.textAlignment = .center
+        titleLabel?.textColor = theme.text.title.color
+        titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        titleLabel?.adjustsFontSizeToFitWidth = true
+        titleLabel?.minimumScaleFactor = 0.65
+        centerStackView?.addArrangedSubview(titleLabel!)
+    }
+    
+    private func initializeCenterStackViewIfNeeded() {
+        
+        if centerStackView == nil {
+            centerStackView = UIStackView()
+            centerStackView!.axis = .horizontal
+            centerStackView!.alignment = .fill
+            centerStackView!.distribution = .fill
+            centerStackView!.spacing = 6.0
+            centerStackView!.alpha = 0.0
+            centerStackView!.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
+        availableCenterSpaceView.addSubview(centerStackView!)
+        centerStackView?.pin(view: availableCenterSpaceView, leading: 0, top: 4, trailing: 0, bottom: -4)
+        centerStackView?.centerXAnchor.constraint(equalTo: availableCenterSpaceView.centerXAnchor).isActive = true
+        UIView.animate(withDuration: 0.3) {
+            self.centerStackView?.alpha = 1.0
+        } completion: { finished in }
+    }
 }
 
 #endif
