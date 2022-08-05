@@ -15,6 +15,25 @@ public enum PrimerInputElementType: Int {
     
     case cardNumber, expiryDate, cvv, cardholderName, otp, postalCode, unknown
     
+    public var stringValue: String {
+        switch self {
+        case .cardNumber:
+            return "CARD_NUMBER"
+        case .expiryDate:
+            return "EXPIRY_DATE"
+        case .cvv:
+            return "CVV"
+        case .cardholderName:
+            return "CARDHOLDER_NAME"
+        case .otp:
+            return "OTP"
+        case .postalCode:
+            return "POSTAL_CODE"
+        case .unknown:
+            return "UNKNOWN"
+        }
+    }
+    
     internal func validate(value: Any, detectedValueType: Any?) -> Bool {
         switch self {
         case .cardNumber:
