@@ -19,7 +19,7 @@ extension FormPaymentMethodTokenizationViewModel {
         switch self.config.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             return [adyenBlikInputView]
-        case .mbway:
+        case PrimerPaymentMethodType.adyenMBWay.rawValue:
             return [mbwayInputView]
         default:
             return []

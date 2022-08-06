@@ -15,6 +15,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case adyenIDeal         = "ADYEN_IDEAL"
     case adyenInterac       = "ADYEN_INTERAC"
     case adyenMobilePay     = "ADYEN_MOBILEPAY"
+    case adyenMBWay         = "ADYEN_MBWAY"
     case adyenPayTrail      = "ADYEN_PAYTRAIL"
     case adyenPayshop       = "ADYEN_PAYSHOP"
     case adyenSofort        = "ADYEN_SOFORT"
@@ -73,6 +74,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
                 .adyenIDeal,
                 .adyenInterac,
                 .adyenMobilePay,
+                .adyenMBWay,
                 .adyenPayTrail,
                 .adyenSofort,
                 .adyenPayshop,

@@ -209,6 +209,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
+
+        case .adyenMBWay:
+            return nil
             
         case .adyenPayTrail:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -833,7 +836,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         var buttonTitle: String = ""
         
         switch self.paymentMethodTokenizationViewModel.config.type {
-        case PrimerPaymentMethodType.paymentCard.rawValue:
+        case PrimerPaymentMethodType.paymentCard.rawValue,
+            PrimerPaymentMethodType.adyenMBWay.rawValue:
             switch Primer.shared.intent {
             case .checkout:
                 let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
@@ -892,28 +896,6 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             btn.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
             btn.setTitle("Confirm", for: .normal)
             return btn
-            
-        case .mbway:
-            
-            var title = Strings.PaymentButton.pay
-            
-            if let amount = AppState.current.amount, let currency = AppState.current.currency {
-                title += " \(amount.toCurrencyString(currency: currency))"
-            }
-            
-            let submitButton = PrimerButton()
-            submitButton.translatesAutoresizingMaskIntoConstraints = false
-            submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-            submitButton.isAccessibilityElement = true
-            submitButton.accessibilityIdentifier = "submit_btn"
-            submitButton.isEnabled = false
-            submitButton.setTitle(title, for: .normal)
-            submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
-            submitButton.layer.cornerRadius = 4
-            submitButton.clipsToBounds = true
-            submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
-            return submitButton
             
         default:
             return nil

@@ -82,7 +82,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 inputStackView.addArrangedSubview(lbl)
             }
             
-            if case .mbway = self.config.type {
+            if self.config.type == PrimerPaymentMethodType.adyenMBWay.rawValue {
                 let phoneNumberLabelStackView = UIStackView()
                 phoneNumberLabelStackView.spacing = 2
                 phoneNumberLabelStackView.axis = .vertical
@@ -419,7 +419,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     // MARK: Input Payment Methods Array
     
     /// Array containing the payment method types expecting some input step to be performed
-    let inputPaymentMethodTypes: [String] = [PrimerPaymentMethodType.adyenBlik.rawValue, PrimerPaymentMethodType.mbway.rawValue]
+    let inputPaymentMethodTypes: [String] = [PrimerPaymentMethodType.adyenBlik.rawValue, PrimerPaymentMethodType.adyenMBWay.rawValue]
     
     // MARK: Account Info Payment Methods Array
     
@@ -498,7 +498,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
-                return self.evaluateStepAfterSelectedPaymentMethodSessionActionFire()
+                return self.presentPaymentMethodUserInterface()
             }
             .then { () -> Promise<Void> in
                 return self.evaluatePaymentMethodNeedingFurtherUserActions()
@@ -577,15 +577,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    private func evaluateStepAfterSelectedPaymentMethodSessionActionFire() -> Promise<Void> {
-        
-        guard inputPaymentMethodTypes.contains(self.config.type) else {
-            return Promise()
-        }
-        
-        return self.presentPaymentMethodAppropriateViewController()
-    }
-    
     private func evaluatePaymentMethodNeedingFurtherUserActions() -> Promise<Void> {
         
         guard inputPaymentMethodTypes.contains(self.config.type) else {
@@ -596,11 +587,11 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async {
-                
-            }
+        guard inputPaymentMethodTypes.contains(self.config.type) else {
+            return Promise()
         }
+        
+        return self.presentPaymentMethodAppropriateViewController()
     }
     
     override func awaitUserInput() -> Promise<Void> {
@@ -639,7 +630,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             self.uiModule.submitButton?.startAnimating()
             self.userInputCompletion?()
-        case .mbway:
+        case PrimerPaymentMethodType.adyenMBWay.rawValue:
             self.uiModule.submitButton?.startAnimating()
             self.userInputCompletion?()
             
