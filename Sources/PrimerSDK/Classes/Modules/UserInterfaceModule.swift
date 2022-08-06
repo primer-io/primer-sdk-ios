@@ -893,6 +893,28 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             btn.setTitle("Confirm", for: .normal)
             return btn
             
+        case .mbway:
+            
+            var title = Strings.PaymentButton.pay
+            
+            if let amount = AppState.current.amount, let currency = AppState.current.currency {
+                title += " \(amount.toCurrencyString(currency: currency))"
+            }
+            
+            let submitButton = PrimerButton()
+            submitButton.translatesAutoresizingMaskIntoConstraints = false
+            submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            submitButton.isAccessibilityElement = true
+            submitButton.accessibilityIdentifier = "submit_btn"
+            submitButton.isEnabled = false
+            submitButton.setTitle(title, for: .normal)
+            submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
+            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
+            submitButton.layer.cornerRadius = 4
+            submitButton.clipsToBounds = true
+            submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
+            return submitButton
+            
         default:
             return nil
         }

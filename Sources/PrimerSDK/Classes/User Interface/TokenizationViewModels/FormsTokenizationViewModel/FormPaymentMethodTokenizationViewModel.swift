@@ -83,6 +83,14 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             }
             
             if case .mbway = self.config.type {
+                let phoneNumberLabelStackView = UIStackView()
+                phoneNumberLabelStackView.spacing = 2
+                phoneNumberLabelStackView.axis = .vertical
+                phoneNumberLabelStackView.alignment = .fill
+                phoneNumberLabelStackView.distribution = .fill
+                phoneNumberLabelStackView.addArrangedSubview(mbwayTopLabelView)
+                inputTextFieldView.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
+                stackViews.insert(phoneNumberLabelStackView, at: 0)
                 stackView.addArrangedSubview(prefixSelectorButton)
             }
 
@@ -99,21 +107,30 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         let prefixSelectorButton = PrimerButton()
         prefixSelectorButton.isAccessibilityElement = true
         prefixSelectorButton.accessibilityIdentifier = "prefix_selector_btn"
+        prefixSelectorButton.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
         prefixSelectorButton.setTitle("\(FormPaymentMethodTokenizationViewModel.countryCodeFlag) \(FormPaymentMethodTokenizationViewModel.countryDialCode)", for: .normal)
         prefixSelectorButton.setTitleColor(.black, for: .normal)
         prefixSelectorButton.clipsToBounds = true
         prefixSelectorButton.isUserInteractionEnabled = false
         prefixSelectorButton.translatesAutoresizingMaskIntoConstraints = false
         prefixSelectorButton.widthAnchor.constraint(equalToConstant: 80.0).isActive = true
+        prefixSelectorButton.contentVerticalAlignment = .top
         return prefixSelectorButton
     }()
     
     // MARK: Adyen MBWay Input View
+    
+    var mbwayTopLabelView: UILabel = {
+        let label = UILabel()
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        label.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
+        label.text = Strings.MBWay.inputTopPlaceholder
+        label.textColor = theme.text.system.color
+        return label
+    }()
 
     var mbwayInputView: Input = {
         let input1 = Input()
-        input1.name = "Phone Number"
-        input1.topPlaceholder = Strings.MBWay.inputTopPlaceholder
         input1.keyboardType = .numberPad
         input1.allowedCharacterSet = CharacterSet.decimalDigits
         input1.isValid = { text in

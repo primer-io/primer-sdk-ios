@@ -58,7 +58,7 @@ internal class CountrySelectorViewController: PrimerFormViewController {
         bankTitleLabel.textColor = theme.text.title.color
         verticalStackView.addArrangedSubview(bankTitleLabel)
         
-        verticalStackView.addArrangedSubview(viewModel.searchCountryTextField)
+        verticalStackView.addArrangedSubview(viewModel.searchableTextField)
                 
         let separator = UIView()
         separator.translatesAutoresizingMaskIntoConstraints = false

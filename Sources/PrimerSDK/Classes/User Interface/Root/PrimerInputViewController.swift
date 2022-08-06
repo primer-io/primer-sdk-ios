@@ -34,14 +34,14 @@ internal class PrimerInputViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
                 
-        stackView.spacing = 16
+        verticalStackView.spacing = 16
         
         for inputStackView in formPaymentMethodTokenizationViewModel.inputTextFieldsStackViews {
-            stackView.addArrangedSubview(inputStackView)
+            verticalStackView.addArrangedSubview(inputStackView)
         }
         
         guard let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton else { return }
-        stackView.addArrangedSubview(submitButton)
+        verticalStackView.addArrangedSubview(submitButton)
     }
 
 }
