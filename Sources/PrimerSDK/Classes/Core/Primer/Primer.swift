@@ -81,7 +81,9 @@ public class Primer {
      */
 
     public func configure(settings: PrimerSettings? = nil, delegate: PrimerDelegate? = nil) {
-        DependencyContainer.register((settings ?? PrimerSettings()) as PrimerSettingsProtocol)
+        let primerSettings: PrimerSettings = settings ?? PrimerSettings()
+        DependencyContainer.register(primerSettings as PrimerSettingsProtocol)
+        DependencyContainer.register(primerSettings.uiOptions.theme as PrimerThemeProtocol)
         self.delegate = delegate
     }
     
