@@ -713,6 +713,50 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     seal.reject(err)
                 }
             }
+            
+            
+        case PrimerPaymentMethodType.adyenMBWay.rawValue:
+            return Promise { seal in
+                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                guard let configId = config.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                guard let phoneNumber = inputs.first?.text else {
+                    let err = PrimerError.invalidValue(key: "phoneNumber", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                let tokenizationRequest = MBWayPaymentMethodTokenizationRequest(
+                    paymentInstrument: MBWayPaymentMethodOptions(
+                        paymentMethodType: config.type,
+                        paymentMethodConfigId: configId,
+                        sessionInfo: MBWayPaymentMethodOptions.SessionInfo(
+                            phoneNumber: "\(FormPaymentMethodTokenizationViewModel.countryDialCode)\(phoneNumber)",
+                            locale: PrimerSettings.current.localeData.localeCode)))
+                
+                let apiClient = PrimerAPIClient()
+                apiClient.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: tokenizationRequest) { result in
+                    switch result {
+                    case .success(let paymentMethodToken):
+                        seal.fulfill(paymentMethodToken)
+                    case .failure(let err):
+                        seal.reject(err)
+                    }
+                }
+            }
+
         default:
             fatalError("Payment method card should never end here.")
         }

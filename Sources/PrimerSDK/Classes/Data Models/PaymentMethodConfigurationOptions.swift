@@ -111,7 +111,7 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
 
 struct MBWayPaymentMethodOptions: PaymentMethodOptions {
     
-    let paymentMethodType: PrimerPaymentMethodType
+    let paymentMethodType: String
     let paymentMethodConfigId: String
     let type: String = "OFF_SESSION_PAYMENT"
     let sessionInfo: SessionInfo?
@@ -121,7 +121,7 @@ struct MBWayPaymentMethodOptions: PaymentMethodOptions {
     }
     
     init(
-        paymentMethodType: PrimerPaymentMethodType,
+        paymentMethodType: String,
         paymentMethodConfigId: String,
         sessionInfo: SessionInfo?
     ) {
@@ -133,7 +133,7 @@ struct MBWayPaymentMethodOptions: PaymentMethodOptions {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(type, forKey: .type)
-        try container.encode(paymentMethodType.rawValue, forKey: .paymentMethodType)
+        try container.encode(paymentMethodType, forKey: .paymentMethodType)
         try container.encode(paymentMethodConfigId, forKey: .paymentMethodConfigId)
         try? container.encode(sessionInfo, forKey: .sessionInfo)
     }

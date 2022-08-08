@@ -211,8 +211,25 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     textColor: nil))
 
         case .adyenMBWay:
-            return nil
-            
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: nil,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+
         case .adyenPayTrail:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
