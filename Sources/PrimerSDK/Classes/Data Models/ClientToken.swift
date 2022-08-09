@@ -149,7 +149,7 @@ struct DecodedClientToken: Codable {
         try? container.encode(accountNumber, forKey: .accountNumber)
         try? container.encode(expDate?.timeIntervalSince1970, forKey: .expiration)
         try? container.encode(expDate?.timeIntervalSince1970, forKey: .exp)
-        if qrCode?.isURL == true {
+        if qrCode?.isHttpOrHttpsURL == true {
             try? container.encode(qrCode, forKey: .qrCodeUrl)
         } else {
             try? container.encode(qrCode, forKey: .qrCode)
