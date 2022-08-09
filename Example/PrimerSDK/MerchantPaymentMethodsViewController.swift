@@ -30,7 +30,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
     var amount: Int!
     var currency: Currency!
     var countryCode: CountryCode!
-    var availablePaymentMethods: [PrimerPaymentMethodType] = []
+    var availablePaymentMethods: [String] = []
     var customerId: String?
     var phoneNumber: String?
     private var paymentId: String?
@@ -116,11 +116,11 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let paymentMethodType = self.availablePaymentMethods[indexPath.row]
-        if paymentMethodType == PrimerPaymentMethodType.paymentCard {
+        if paymentMethodType == "PAYMENT_CARD" {
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            PrimerHeadlessUniversalCheckout.makeButton(for: .payPal)
+            PrimerHeadlessUniversalCheckout.makeButton(for: "PAYPAL")
             PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
         }
     }
@@ -228,8 +228,8 @@ class MerchantPaymentMethodCell: UITableViewCell {
     @IBOutlet weak var paymentMethodLabel: UILabel!
     @IBOutlet weak var buttonContainerView: UIView!
     
-    func configure(paymentMethodType: PrimerPaymentMethodType) {
-        paymentMethodLabel.text = paymentMethodType.rawValue
+    func configure(paymentMethodType: String) {
+        paymentMethodLabel.text = paymentMethodType
         
         if let button = PrimerHeadlessUniversalCheckout.makeButton(for: paymentMethodType) {
             buttonContainerView.addSubview(button)

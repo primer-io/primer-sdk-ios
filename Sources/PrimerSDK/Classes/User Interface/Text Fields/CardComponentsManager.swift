@@ -97,7 +97,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         return Promise { seal in
             
             guard let delegate = delegate else {
-                print("Warning: Delegate has not been set")
+                print("WARNING!\nDelegate has not been set")
                 let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -183,14 +183,17 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     return
                 }
                 
-                let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-                apiClient.fetchConfiguration(clientToken: decodedClientToken) { result in
-                    switch result {
-                    case .success(let paymentMethodsConfig):
-                        seal.fulfill(paymentMethodsConfig)
-                    case .failure(let err):
-                        seal.reject(err)
-                    }
+                let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                
+                firstly {
+                    configurationService.fetchConfiguration()
+                }
+                .done {
+                    let primerAPIConfiguration = AppState.current.apiConfiguration!
+                    seal.fulfill(primerAPIConfiguration)
+                }
+                .catch { err in
+                    seal.reject(err)
                 }
             }
         }

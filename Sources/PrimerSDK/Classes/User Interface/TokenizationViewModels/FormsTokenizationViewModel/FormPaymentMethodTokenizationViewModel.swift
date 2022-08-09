@@ -34,10 +34,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     var didCancel: (() -> Void)?
-    
-    // FIXME: Is this the fix for the button's indicator?
-    private var isTokenizing = false
-            
+                
     var inputTextFieldsStackViews: [UIStackView] {
         var stackViews: [UIStackView] = []
         for input in self.inputs {
@@ -332,13 +329,13 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     // MARK: Input Payment Methods Array
     
     /// Array containing the payment method types expecting some input step to be performed
-    let inputPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenBlik]
+    let inputPaymentMethodTypes: [String] = [PrimerPaymentMethodType.adyenBlik.rawValue]
     
     // MARK: Account Info Payment Methods Array
     
     /// Array containing the payment method types expecting some account info
     /// to transfer the founds to
-    let accountInfoPaymentMethodTypes: [PrimerPaymentMethodType] = [.rapydFast]
+    let accountInfoPaymentMethodTypes: [String] = [PrimerPaymentMethodType.rapydFast.rawValue]
     
     // MARK: Account Info Payment
     
@@ -384,14 +381,14 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -419,16 +416,41 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type.rawValue)
-                return self.tokenize()
-            }
-            .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
+            .done {
+                seal.fulfill()
             }
             .catch { err in
                 seal.reject(err)
             }
+        }
+    }
+    
+    override func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+
+            firstly {
+                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+            }
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                return self.tokenize()
+            }
+            .then { paymentMethodTokenData -> Promise<Void> in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+            }
+            .done {
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
         }
     }
     
@@ -467,7 +489,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     private func evaluateStepAfterSelectedPaymentMethodSessionActionFire() -> Promise<Void> {
         switch self.config.type {
-        case .adyenBlik:
+        case PrimerPaymentMethodType.adyenBlik.rawValue:
             return self.presentPaymentMethodAppropriateViewController()
         default:
             return Promise()
@@ -476,14 +498,22 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     private func evaluatePaymentMethodNeedingFurtherUserActions() -> Promise<Void> {
         switch self.config.type {
-        case .adyenBlik:
+        case PrimerPaymentMethodType.adyenBlik.rawValue:
             return self.awaitUserInput()
         default:
             return Promise()
         }
     }
     
-    private func awaitUserInput() -> Promise<Void> {
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async {
+                
+            }
+        }
+    }
+    
+    override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.userInputCompletion = {
                 seal.fulfill()
@@ -504,7 +534,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -516,7 +546,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
 
         switch config.type {
-        case .adyenBlik:
+        case PrimerPaymentMethodType.adyenBlik.rawValue:
             self.uiModule.submitButton?.startAnimating()
             self.userInputCompletion?()
             
@@ -525,9 +555,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    private func tokenize() -> Promise<PaymentMethodToken> {
+    override func tokenize() -> Promise<PaymentMethodToken> {
         switch config.type {
-        case .adyenBlik:
+        case PrimerPaymentMethodType.adyenBlik.rawValue:
             return Promise { seal in
                 guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -568,7 +598,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     }
                 }
             }
-        case .rapydFast:
+            
+        case PrimerPaymentMethodType.rapydFast.rawValue:
             return Promise { seal in
                 guard let configId = config.id else {
                     let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)

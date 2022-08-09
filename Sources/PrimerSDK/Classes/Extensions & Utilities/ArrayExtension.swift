@@ -9,18 +9,14 @@
 
 import Foundation
 
-internal extension Array {
-    func unique<T:Hashable>(map: ((Element) -> (T)))  -> [Element] {
-        var set = Set<T>()
-        var arrayOrdered = [Element]()
-        for value in self {
-            if !set.contains(map(value)) {
-                set.insert(map(value))
-                arrayOrdered.append(value)
-            }
+internal extension Array where Element: Equatable {
+    var unique: [Element] {
+        var uniqueValues: [Element] = []
+        forEach { item in
+            guard !uniqueValues.contains(item) else { return }
+            uniqueValues.append(item)
         }
-
-        return arrayOrdered
+        return uniqueValues
     }
 }
 

@@ -19,8 +19,6 @@ extension PaymentMethodTokenizationViewModel {
         }
         .done { paymentMethodTokenData in
             self.paymentMethodTokenData = paymentMethodTokenData
-            self.didFinishTokenization?(nil)
-            self.didFinishTokenization = nil
 
             if Primer.shared.intent == .vault {
                 self.handleSuccessfulFlow()
@@ -48,19 +46,13 @@ extension PaymentMethodTokenizationViewModel {
                     UIApplication.shared.endIgnoringInteractionEvents()
                 }
                 .catch { err in
-                    
-                    var error: Error?
-                    
-                    if let primerErr = err as? PrimerError {
-                        error = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: primerErr.errorUserInfo as? [String: String], diagnosticsId: primerErr.diagnosticsId)
-                    }
-                    
-                    self.didFinishPayment?(error)
+                                        
+                    self.didFinishPayment?(err)
                     self.nullifyEventCallbacks()
                     
                     let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
                     
-                    if let primerErr = error as? PrimerError,
+                    if let primerErr = err as? PrimerError,
                        case .cancelled = primerErr,
                        PrimerHeadlessUniversalCheckout.current.delegate == nil {
                         
@@ -100,15 +92,11 @@ extension PaymentMethodTokenizationViewModel {
             UIApplication.shared.endIgnoringInteractionEvents()
         }
         .catch { err in
-            self.didFinishTokenization?(err)
-            self.didStartTokenization = nil
-            self.didFinishTokenization = nil
-            
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
             
             if let primerErr = err as? PrimerError,
                case .cancelled = primerErr,
-               self.config.type == .applePay,
+               self.config.type == PrimerPaymentMethodType.applePay.rawValue,
                PrimerHeadlessUniversalCheckout.current.delegate == nil
             {
                 firstly {
@@ -196,6 +184,7 @@ extension PaymentMethodTokenizationViewModel {
     //     - A decoded client token
     //     - nil for success
     //     - Reject with an error
+    
     func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedClientToken?> {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
@@ -209,8 +198,8 @@ extension PaymentMethodTokenizationViewModel {
                             ClientTokenService.storeClientToken(newClientToken)
                         }
                         .then { () -> Promise<Void> in
-                            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                            return configService.fetchConfig()
+                            let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                            return configurationService.fetchConfiguration()
                         }
                         .done {
                             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -348,7 +337,7 @@ extension PaymentMethodTokenizationViewModel {
             if Primer.shared.intent == .vault {
                 seal.fulfill()
             } else {
-                let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)
+                let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
                 let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
                 
                 PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
@@ -435,8 +424,6 @@ extension PaymentMethodTokenizationViewModel {
     }
     
     func nullifyEventCallbacks() {
-        self.didStartTokenization = nil
-        self.didFinishTokenization = nil
         self.didStartPayment = nil
         self.didFinishPayment = nil
     }

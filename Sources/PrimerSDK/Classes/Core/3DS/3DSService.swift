@@ -370,6 +370,10 @@ class ThreeDSService: ThreeDSServiceProtocol {
             .catch { err in
                 let token = paymentMethodToken
                 token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue, challengeIssued: true)
+                if let primerError = err as? PrimerError,
+                   case .cancelled = primerError {
+                    token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "PAYMENT_CANCELED", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue, challengeIssued: true)
+                }
                 completion(.success((token, nil)))
             }
             
@@ -394,7 +398,13 @@ class ThreeDSService: ThreeDSServiceProtocol {
             
             primer3DS.performChallenge(with: threeDSecureAuthResponse, urlScheme: urlScheme, presentOn: viewController) { (primer3DSCompletion, err) in
                 if let err = err {
-                    let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    var containerErr: PrimerError
+                    let isCanceledError = (err as NSError).code == -4
+                    if isCanceledError {
+                        containerErr = PrimerError.cancelled(paymentMethodType: "3DS", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    } else {
+                        containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    }
                     ErrorHandler.handle(error: containerErr)
                     seal.reject(containerErr)
                 } else if let primer3DSCompletion = primer3DSCompletion {

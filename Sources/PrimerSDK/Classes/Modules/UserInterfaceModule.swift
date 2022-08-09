@@ -10,7 +10,6 @@
 protocol UserInterfaceModuleProtocol {
     
     var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol { get }
-    var originalImage: UIImage? { get }
     var logo: UIImage? { get }
     var icon: UIImage? { get }
     var surchargeSectionText: String? { get }
@@ -31,121 +30,624 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    lazy var imageName: String? = {
-        switch paymentMethodTokenizationViewModel.config.type {
+    var logo: UIImage? {
+        return paymentMethodTokenizationViewModel.config.logo
+    }
+    
+    var icon: UIImage? {
+        var fileName = paymentMethodTokenizationViewModel.config.type.lowercased().replacingOccurrences(of: "_", with: "-")
+        fileName += "-icon"
+        
+        switch self.themeMode {
+        case .colored:
+            fileName += "-colored"
+        case .dark:
+            fileName += "-dark"
+        case .light:
+            fileName += "-colored"
+        }
+        
+        return UIImage(named: fileName, in: Bundle.primerResources, compatibleWith: nil)
+    }
+    
+    var themeMode: PrimerTheme.Mode {
+        if let baseLogoImage = paymentMethodTokenizationViewModel.config.baseLogoImage {
+            if UIScreen.isDarkModeEnabled {
+                if baseLogoImage.dark != nil {
+                    return .dark
+                } else if baseLogoImage.colored != nil {
+                    return .colored
+                } else if baseLogoImage.light != nil {
+                    return .light
+                }
+            } else {
+                if baseLogoImage.colored != nil {
+                    return .colored
+                } else if baseLogoImage.light != nil {
+                    return .light
+                } else if baseLogoImage.dark != nil {
+                    return .dark
+                }
+            }
+        }
+        
+        if UIScreen.isDarkModeEnabled {
+            return .dark
+        } else {
+            return .colored
+        }
+    }
+    
+    var localDisplayMetadata: PrimerPaymentMethod.DisplayMetadata? {
+        guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodTokenizationViewModel.config.type) else { return nil }
+        
+        switch internaPaymentMethodType {
         case .adyenAlipay:
-            return "alipay"
-        case .adyenDotPay:
-            return "dot-pay"
-        case .adyenGiropay,
-                .buckarooGiropay,
-                .payNLGiropay:
-            return "giropay"
-        case .adyenIDeal,
-                .buckarooIdeal,
-                .mollieIdeal,
-                .payNLIdeal:
-            return "ideal"
-        case .adyenInterac:
-            return "interac"
-        case .adyenMobilePay:
-            return "mobile-pay"
-        case .adyenPayshop:
-            return "payshop"
-        case .adyenPayTrail:
-            return "paytrail"
-        case .adyenSofort,
-                .buckarooSofort,
-                .primerTestSofort:
-            return "sofort"
-        case .adyenTrustly:
-            return "trustly"
-        case .adyenTwint:
-            return "twint"
-        case .adyenVipps:
-            return "vipps"
-        case .apaya:
-            return "apaya"
-        case .applePay:
-            return "apple-pay"
-        case .atome:
-            return "atome"
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#31B1F0",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
         case .adyenBlik:
-            return "blik"
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#000000",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case .adyenDotPay:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: nil,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case .adyenGiropay,
+            .buckarooGiropay,
+            .payNLGiropay:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#000268",
+                        lightHex: nil,
+                        darkHex: nil),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: nil,
+                        dark: nil),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: nil,
+                        darkHex: nil),
+                    text: nil,
+                    textColor: nil))
+            
+        case .adyenIDeal,
+            .buckarooIdeal,
+            .mollieIdeal,
+            .payNLIdeal:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#CC0066",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case .adyenInterac:
+            return nil
+            
+        case .adyenMobilePay:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#5A78FF",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case .adyenPayTrail:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case .adyenPayshop:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#EE3424",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case .adyenSofort,
+            .buckarooSofort,
+            .primerTestSofort:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#EF809F",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case .adyenTrustly:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#0EE06E",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case .adyenTwint:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#000000",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case .adyenVipps:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#FF5B24",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case .apaya:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: "Pay by mobile",
+                    textColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF")))
+            
+        case .applePay:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#FFFFFF",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case PrimerPaymentMethodType.atome:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#F0FF5F",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
         case .buckarooBancontact,
-                .mollieBankcontact,
-                .payNLBancontact:
-            return "bancontact"
+            .mollieBankcontact,
+            .payNLBancontact:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#FFFFFF",
+                        darkHex: nil),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: nil,
+                        light: 1,
+                        dark: nil),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: nil),
+                    text: nil,
+                    textColor: nil))
+            
         case .buckarooEps:
-            return "eps"
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#FFFFFF",
+                        darkHex: nil),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: nil,
+                        light: 1,
+                        dark: nil),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: nil),
+                    text: nil,
+                    textColor: nil))
+            
         case .coinbase:
-            return "coinbase"
-        case .goCardlessMandate:
-            return "go-cardless"
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#0052FF",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case .goCardless:
+            return nil
+            
         case .googlePay:
-            return "google-pay"
+            return nil
+            
         case .hoolah:
-            return "hoolah"
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#D63727",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
         case .klarna,
                 .primerTestKlarna:
-            return "klarna"
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#FFB3C7",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
+        case .opennode:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: nil,
+                        light: 1,
+                        dark: nil),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
         case .payNLPayconiq:
-            return "payconiq"
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#FF4785",
+                        lightHex: nil,
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: nil,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: nil,
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
         case .paymentCard:
-            return "card"
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#FFFFFF",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 1,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: "#000000",
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: Strings.PaymentButton.payWithCard,
+                    textColor: PrimerTheme.BaseColors(
+                        coloredHex: "#000000",
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF")))
+            
         case .payPal,
                 .primerTestPayPal:
-            return "paypal"
-        case .rapydGCash:
-            return "gcash"
-        case .rapydGrabPay:
-            return "grab-pay"
-        case .rapydPoli:
-            return "poli"
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#009CDE",
+                        lightHex: nil,
+                        darkHex: nil),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: nil,
+                        dark: nil),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: nil,
+                        darkHex: nil),
+                    text: nil,
+                    textColor: nil))
+            
         case .rapydFast:
-            return "fast"
+            return nil
+            
+        case .rapydGCash:
+            return nil
+            
+        case .rapydGrabPay:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#01B14E",
+                        lightHex: nil,
+                        darkHex: nil),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: nil,
+                        dark: nil),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: nil,
+                        darkHex: nil),
+                    text: nil,
+                    textColor: nil))
+            
         case .rapydPromptPay:
-            return "prompt-pay"
-        case .xfers:
-            return "xfers"
+            return nil
+            
+        case .rapydPoli:
+            return nil
+            
         case .twoCtwoP:
-            return "2c2p"
-        case .opennode:
-            return "opennode"
-        case .other(rawValue: let rawValue):
-            return rawValue
+            return nil
+            
+        case .xfersPayNow:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#028BF4",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
         }
-    }()
+    }
     
-    lazy var originalImage: UIImage? = {
-        switch self.paymentMethodTokenizationViewModel.config.type {
-        case .primerTestPayPal:
-            return UIImage(named: "paypal-logo-1", in: Bundle.primerResources, compatibleWith: nil)
-        case .primerTestSofort:
-            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .rapydPromptPay:
-            return UIImage(named: "prompt-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
-        default:
-            return buttonImage
-        }
-    }()
-    
-    lazy var logo: UIImage? = {
-        guard let imageName = imageName else { return nil }
-        return UIImage(named: "\(imageName)-logo", in: Bundle.primerResources, compatibleWith: nil)
-    }()
-    
-    lazy var icon: UIImage? = {
-        guard let imageName = imageName else { return nil }
-        // In case we don't have a square icon, we show the icon image
-        let imageLogoSquare = UIImage(named: "\(imageName)-logo-square", in: Bundle.primerResources, compatibleWith: nil)
-        let imageIcon = UIImage(named: "\(imageName)-icon", in: Bundle.primerResources, compatibleWith: nil)
-        return imageLogoSquare ?? imageIcon
-    }()
-    
-    lazy var surchargeSectionText: String? = {
+    var surchargeSectionText: String? {
         switch paymentMethodTokenizationViewModel.config.type {
-        case .paymentCard:
+        case PrimerPaymentMethodType.paymentCard.rawValue:
             return Strings.CardFormView.additionalFeesTitle
         default:
             guard let currency = AppState.current.currency else { return nil }
@@ -153,435 +655,165 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             guard let str = availablePaymentMethods.filter({ $0.type == paymentMethodTokenizationViewModel.config.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
             return "+\(str)"
         }
-    }()
+    }
     
-    lazy var buttonTitle: String? = {
+    var buttonTitle: String? {
+        let metadataButtonText = paymentMethodTokenizationViewModel.config.displayMetadata?.button.text
+            ?? self.localDisplayMetadata?.button.text
+        
         switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay,
-                .adyenBlik,
-                .adyenGiropay,
-                .applePay,
-                .atome,
-                .buckarooBancontact,
-                .buckarooEps,
-                .buckarooGiropay,
-                .buckarooIdeal,
-                .buckarooSofort,
-                .hoolah,
-                .klarna,
-                .mollieBankcontact,
-                .mollieIdeal,
-                .payNLBancontact,
-                .payNLGiropay,
-                .payNLIdeal,
-                .payNLPayconiq,
-                .adyenSofort,
-                .adyenTwint,
-                .adyenTrustly,
-                .adyenMobilePay,
-                .adyenVipps,
-                .adyenInterac,
-                .adyenPayTrail,
-                .payPal,
-                .primerTestPayPal,
-                .primerTestSofort,
-                .primerTestKlarna,
-                .rapydGCash,
-                .rapydGrabPay,
-                .rapydPoli,
-                .xfers:
-            return nil
-            
-        case .apaya:
+        case PrimerPaymentMethodType.apaya.rawValue:
+            // Update with `metadataButtonText ?? Strings.PaymentButton.payByMobile` once we'll get localized strings
             return Strings.PaymentButton.payByMobile
             
-        case .paymentCard:
-            return Primer.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.VaultPaymentMethodViewContent.payWithCard
+        case PrimerPaymentMethodType.paymentCard.rawValue:
+            // Commenting the below code as we are not getting localized strings in `text` key
+            // for the a Payment Method Instrument object out of `/configuration` API response
+            //
+            // if let metadataButtonText = metadataButtonText { return metadataButtonText }
+            return Primer.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.PaymentButton.payWithCard
             
-        case .twoCtwoP:
+        case PrimerPaymentMethodType.twoCtwoP.rawValue:
             return Strings.PaymentButton.payInInstallments
             
         default:
-            assert(true, "Shouldn't end up in here")
             return nil
         }
-    }()
+    }
     
-    lazy var buttonImage: UIImage? = {
-        switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay:
-            return UIImage(named: "alipay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .adyenBlik:
-            return UIImage(named: "blik-logo-white", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenDotPay:
-            return UIImage(named: "dot-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenIDeal:
-            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .apaya:
-            return UIImage(named: "mobile", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .applePay:
-            return UIImage(named: "apple-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .atome:
-            return UIImage(named: "atome-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .buckarooBancontact,
-                .mollieBankcontact,
-                .payNLBancontact:
-            return UIImage(named: "bancontact-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .buckarooEps:
-            return UIImage(named: "eps-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenGiropay,
-                .buckarooGiropay,
-                .payNLGiropay:
-            return UIImage(named: "giropay-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenInterac:
-            return UIImage(named: "interac-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .hoolah:
-            return UIImage(named: "hoolah-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .klarna,
-                .primerTestKlarna:
-            return UIImage(named: "klarna-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .payNLIdeal,
-                .buckarooIdeal,
-                .mollieIdeal:
-            return UIImage(named: "iDeal-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenMobilePay:
-            return UIImage(named: "mobile-pay-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .adyenPayTrail:
-            return UIImage(named: "paytrail-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .payNLPayconiq:
-            return UIImage(named: "payconiq-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .buckarooSofort,
-                .adyenSofort,
-                .primerTestSofort:
-            return UIImage(named: "sofort-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .adyenTrustly:
-            return UIImage(named: "trustly-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenTwint:
-            return UIImage(named: "twint-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .adyenVipps:
-            return UIImage(named: "vipps-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .paymentCard:
-            return UIImage(named: "creditCard", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        case .payPal,
-                .primerTestPayPal:
-            return UIImage(named: "paypal-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .rapydGCash:
-            return UIImage(named: "gcash-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .rapydGrabPay:
-            return UIImage(named: "grab-pay-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .rapydPoli:
-            return UIImage(named: "poli-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .opennode:
-            return UIImage(named: "opennode-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .twoCtwoP:
-            return UIImage(named: "2c2p-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .rapydFast:
-            return UIImage(named: "fast-logo", in: Bundle.primerResources, compatibleWith: nil)
-        case .rapydPromptPay:
-            return UIImage(named: "prompt-pay-logo-white", in: Bundle.primerResources, compatibleWith: nil)
-        case .xfers:
-            return UIImage(named: "pay-now-logo", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
+    var buttonImage: UIImage? {
+        return self.logo
+    }
     
     lazy var buttonFont: UIFont? = {
         return UIFont.systemFont(ofSize: 17.0, weight: .medium)
     }()
     
-    lazy var buttonCornerRadius: CGFloat? = {
-        return 4.0
-    }()
+    var buttonCornerRadius: CGFloat? {
+        let cornerRadius = paymentMethodTokenizationViewModel.config.displayMetadata?.button.cornerRadius
+            ?? self.localDisplayMetadata?.button.cornerRadius
+        guard cornerRadius != nil else { return 4.0 }
+        return CGFloat(cornerRadius!)
+    }
     
-    lazy var buttonColor: UIColor? = {
-        switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay:
-            return UIColor(red: 49.0/255, green: 177.0/255, blue: 240.0/255, alpha: 1.0)
-        case .adyenBlik:
-            return .black
-        case .adyenDotPay:
-            return .white
-        case .adyenGiropay,
-                .buckarooGiropay:
-            return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
-        case .adyenIDeal:
-            return UIColor(red: 204.0/255, green: 0.0/255, blue: 102.0/255, alpha: 1.0)
-        case .adyenInterac:
-            return UIColor(red: 254.0/255, green: 185.0/255, blue: 43.0/255, alpha: 1.0)
-        case .adyenSofort,
-                .buckarooSofort,
-                .primerTestSofort:
-            return UIColor(red: 239.0/255, green: 128.0/255, blue: 159.0/255, alpha: 1.0)
-        case .adyenMobilePay:
-            return UIColor(red: 90.0/255, green: 120.0/255, blue: 255.0/255, alpha: 1.0)
-        case .adyenPayTrail:
-            return UIColor(red: 229.0/255, green: 11.0/255, blue: 150.0/255, alpha: 1.0)
-        case .adyenTrustly:
-            return UIColor(red: 14.0/255, green: 224.0/255, blue: 110.0/255, alpha: 1.0)
-        case .adyenTwint:
-            return .black
-        case .adyenVipps:
-            return UIColor(red: 255.0/255, green: 91.0/255, blue: 36.0/255, alpha: 1.0)
-        case .apaya:
-            return theme.paymentMethodButton.color(for: .enabled)
-        case .applePay:
-            return .black
-        case .atome:
-            return UIColor(red: 240.0/255, green: 255.0/255, blue: 95.0/255, alpha: 1.0)
-        case .buckarooEps:
-            return .white
-        case .hoolah:
-            return UIColor(red: 214.0/255, green: 55.0/255, blue: 39.0/255, alpha: 1.0)
-        case .klarna,
-                .primerTestKlarna:
-            return UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1.0)
-        case .buckarooBancontact,
-                .mollieBankcontact,
-                .payNLBancontact:
-            return .white
-        case .payNLIdeal,
-                .buckarooIdeal,
-                .mollieIdeal:
-            return UIColor(red: 204.0/255, green: 0.0, blue: 102.0/255, alpha: 1.0)
-        case .payNLGiropay:
-            return UIColor(red: 0, green: 2.0/255, blue: 104.0/255, alpha: 1.0)
-        case .payNLPayconiq:
-            return UIColor(red: 255.0/255, green: 71.0/255, blue: 133.0/255, alpha: 1.0)
-        case .paymentCard:
-            return theme.paymentMethodButton.color(for: .enabled)
-        case .payPal,
-                .primerTestPayPal:
-            return UIColor(red: 0.0/255, green: 156.0/255, blue: 222.0/255, alpha: 1)
-        case .rapydGCash:
-            return UIColor(red: 0.161, green: 0.482, blue: 0.98, alpha: 1)
-        case .rapydGrabPay:
-            return UIColor(red: 0.004, green: 0.694, blue: 0.306, alpha: 1)
-        case .rapydPoli:
-            return UIColor(red: 0.184, green: 0.263, blue: 0.596, alpha: 1)
-        case .rapydFast:
-            return .white
-        case .rapydPromptPay:
-            return UIColor(red: 0.008, green: 0.235, blue: 0.408, alpha: 1)
-        case .opennode, .twoCtwoP:
-            return .white
-        case .xfers:
-            return UIColor(red: 148.0/255, green: 31.0/255, blue: 127.0/255, alpha: 1.0)
-        default:
-            assert(true, "Shouldn't end up in here")
+    var buttonColor: UIColor? {
+        let baseBackgroundColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.backgroundColor
+            ?? localDisplayMetadata?.button.backgroundColor
+        
+        guard baseBackgroundColor != nil else {
             return nil
         }
-    }()
+        
+        switch self.themeMode {
+        case .colored:
+            if let coloredColorHex = baseBackgroundColor!.coloredHex {
+                return PrimerColor(hex: coloredColorHex)
+            }
+        case .light:
+            if let lightColorHex = baseBackgroundColor!.lightHex {
+                return PrimerColor(hex: lightColorHex)
+            }
+        case .dark:
+            if let darkColorHex = baseBackgroundColor!.darkHex {
+                return PrimerColor(hex: darkColorHex)
+            }
+        }
+        
+        return nil
+    }
     
-    lazy var buttonTitleColor: UIColor? = {
-        switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay,
-                .adyenBlik,
-                .adyenGiropay,
-                .adyenInterac,
-                .adyenMobilePay,
-                .adyenPayTrail,
-                .adyenTrustly,
-                .adyenTwint,
-                .adyenVipps,
-                .atome,
-                .buckarooBancontact,
-                .buckarooEps,
-                .buckarooIdeal,
-                .buckarooGiropay,
-                .buckarooSofort,
-                .hoolah,
-                .klarna,
-                .mollieBankcontact,
-                .mollieIdeal,
-                .payNLBancontact,
-                .payNLGiropay,
-                .payNLIdeal,
-                .payNLPayconiq,
-                .payPal,
-                .primerTestPayPal,
-                .primerTestKlarna,
-                .primerTestSofort,
-                .rapydGCash,
-                .rapydPoli,
-                .rapydGrabPay,
-                .rapydFast,
-                .rapydPromptPay,
-                .opennode,
-                .xfers:
-            return nil
-        case .apaya,
-                .paymentCard:
-            return theme.paymentMethodButton.text.color
-        case .twoCtwoP:
-            return UIColor(red: 0, green: 79.0/255, blue: 92.0/255, alpha: 1.0)
-        default:
-            assert(true, "Shouldn't end up in here")
+    var buttonTitleColor: UIColor? {
+        let baseTextColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.textColor
+            ?? self.localDisplayMetadata?.button.textColor
+        
+        guard baseTextColor != nil else {
             return nil
         }
-    }()
+        
+        switch self.themeMode {
+        case .colored:
+            if let coloredColorHex = baseTextColor!.coloredHex {
+                return PrimerColor(hex: coloredColorHex)
+            }
+        case .light:
+            if let lightColorHex = baseTextColor!.lightHex {
+                return PrimerColor(hex: lightColorHex)
+            }
+        case .dark:
+            if let darkColorHex = baseTextColor!.darkHex {
+                return PrimerColor(hex: darkColorHex)
+            }
+        }
+        
+        return nil
+    }
     
-    lazy var buttonBorderWidth: CGFloat = {
-        switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay,
-                .adyenBlik,
-                .adyenGiropay,
-                .adyenIDeal,
-                .adyenInterac,
-                .adyenMobilePay,
-                .adyenPayTrail,
-                .adyenTrustly,
-                .adyenTwint,
-                .adyenVipps,
-                .atome,
-                .buckarooIdeal,
-                .buckarooGiropay,
-                .buckarooSofort,
-                .hoolah,
-                .klarna,
-                .mollieIdeal,
-                .payNLGiropay,
-                .payNLIdeal,
-                .payNLPayconiq,
-                .payPal,
-                .primerTestPayPal,
-                .primerTestKlarna,
-                .primerTestSofort,
-                .rapydGCash,
-                .rapydPoli,
-                .rapydGrabPay,
-                .rapydPromptPay:
-            return 0.0
-        case .adyenDotPay,
-                .apaya,
-                .buckarooBancontact,
-                .buckarooEps,
-                .mollieBankcontact,
-                .payNLBancontact,
-                .paymentCard,
-                .rapydFast,
-                .twoCtwoP:
-            return 1.0
-        default:
-            assert(true, "Shouldn't end up in here")
+    var buttonBorderWidth: CGFloat {
+        let baseBorderWidth = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderWidth
+            ?? self.localDisplayMetadata?.button.borderWidth
+        guard baseBorderWidth != nil else {
             return 0.0
         }
-    }()
-    
-    lazy var buttonBorderColor: UIColor? = {
-        switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay,
-                .adyenBlik,
-                .adyenDotPay,
-                .adyenGiropay,
-                .adyenMobilePay,
-                .adyenIDeal,
-                .adyenInterac,
-                .adyenPayTrail,
-                .adyenTrustly,
-                .adyenTwint,
-                .adyenVipps,
-                .atome,
-                .buckarooIdeal,
-                .buckarooGiropay,
-                .buckarooSofort,
-                .hoolah,
-                .klarna,
-                .mollieIdeal,
-                .payNLGiropay,
-                .payNLIdeal,
-                .payNLPayconiq,
-                .payPal,
-                .primerTestPayPal,
-                .primerTestKlarna,
-                .primerTestSofort,
-                .rapydGCash,
-                .rapydGrabPay,
-                .rapydPoli,
-                .rapydPromptPay,
-                .xfers:
-            return nil
-        case .apaya,
-                .paymentCard:
-            return theme.paymentMethodButton.text.color
-        case .buckarooBancontact,
-                .buckarooEps,
-                .mollieBankcontact,
-                .payNLBancontact,
-                .rapydFast:
-            return .black
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
-        }
-    }()
-    
-    var buttonTintColor: UIColor? {
-        switch paymentMethodTokenizationViewModel.config.type {
-        case .adyenAlipay,
-                .adyenBlik,
-                .adyenDotPay,
-                .atome,
-                .buckarooBancontact,
-                .buckarooEps,
-                .buckarooIdeal,
-                .buckarooGiropay,
-                .buckarooSofort,
-                .hoolah,
-                .mollieIdeal,
-                .payNLGiropay,
-                .payNLIdeal,
-                .payNLPayconiq,
-                .adyenSofort,
-                .adyenMobilePay,
-                .adyenVipps,
-                .adyenInterac,
-                .adyenPayTrail,
-                .primerTestSofort:
-            return .white
-        case .adyenIDeal,
-                .adyenTrustly,
-                .klarna,
-                .primerTestKlarna:
-            return .black
-        case .adyenGiropay,
-                .adyenTwint,
-                .payPal,
-                .primerTestPayPal,
-                .rapydGCash,
-                .rapydGrabPay,
-                .rapydPoli,
-                .rapydFast,
-                .rapydPromptPay:
-            return nil
-        case .apaya,
-                .paymentCard:
-            return theme.paymentMethodButton.text.color
-        case .applePay,
-                .xfers:
-            return .white
-        default:
-            assert(true, "Shouldn't end up in here")
-            return nil
+        
+        switch self.themeMode {
+        case .colored:
+            return baseBorderWidth!.colored ?? 0.0
+        case .light:
+            return baseBorderWidth!.light ?? 0.0
+        case .dark:
+            return baseBorderWidth!.dark ?? 0.0
         }
     }
     
+    var buttonBorderColor: UIColor? {
+        let baseBorderColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderColor
+            ?? self.localDisplayMetadata?.button.borderColor
+        guard baseBorderColor != nil else {
+            return nil
+        }
+        
+        switch self.themeMode {
+        case .colored:
+            if let coloredColorHex = baseBorderColor!.coloredHex {
+                return PrimerColor(hex: coloredColorHex)
+            }
+        case .light:
+            if let lightColorHex = baseBorderColor!.lightHex {
+                return PrimerColor(hex: lightColorHex)
+            }
+        case .dark:
+            if let darkColorHex = baseBorderColor!.darkHex {
+                return PrimerColor(hex: darkColorHex)
+            }
+        }
+        
+        return nil
+    }
+    
+    var buttonTintColor: UIColor? {
+        return nil
+    }
+    
     var paymentMethodButton: PrimerButton {
-        let customPaddingSettingsCard: [PrimerPaymentMethodType] = [.paymentCard, .coinbase]
+        let customPaddingSettingsCard: [String] = [
+            PrimerPaymentMethodType.coinbase.rawValue,
+            PrimerPaymentMethodType.paymentCard.rawValue
+        ]
         
         let paymentMethodButton = PrimerButton()
-        paymentMethodButton.accessibilityIdentifier = paymentMethodTokenizationViewModel.config.type.rawValue
+        paymentMethodButton.accessibilityIdentifier = paymentMethodTokenizationViewModel.config.type
         paymentMethodButton.clipsToBounds = true
         paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
         let imagePadding: CGFloat = 20
         let leftPadding = UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0
         let defaultRightPadding = customPaddingSettingsCard.contains(paymentMethodTokenizationViewModel.config.type) ? imagePadding : 0
         let rightPadding = UILocalizableUtil.isRightToLeftLocale ? 0 : defaultRightPadding
-        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 0,
+        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 12,
                                                            left: leftPadding,
-                                                           bottom: 0,
+                                                           bottom: 12,
                                                            right: rightPadding)
+        paymentMethodButton.contentMode = .scaleAspectFit
+        paymentMethodButton.imageView?.contentMode = .scaleAspectFit
         paymentMethodButton.titleLabel?.font = buttonFont
         if let buttonCornerRadius = buttonCornerRadius {
             paymentMethodButton.layer.cornerRadius = buttonCornerRadius
@@ -601,17 +833,20 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         var buttonTitle: String = ""
         
         switch self.paymentMethodTokenizationViewModel.config.type {
-        case .paymentCard:
+        case PrimerPaymentMethodType.paymentCard.rawValue:
             switch Primer.shared.intent {
             case .checkout:
                 let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
                 buttonTitle = Strings.PaymentButton.pay
+                if let currency = AppState.current.currency, let amount = AppState.current.amount {
+                    buttonTitle += " \(amount.toCurrencyString(currency: currency))"
+                }
                 
             case .vault:
                 buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle
                 
             case .none:
-                assert(true, "Intent should have been set")
+                precondition(false, "Intent should have been set")
             }
             
             let submitButton = PrimerButton()
@@ -628,9 +863,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
             return submitButton
             
-        case .primerTestSofort,
-                .primerTestKlarna,
-                .primerTestPayPal:
+        case PrimerPaymentMethodType.primerTestKlarna.rawValue,
+            PrimerPaymentMethodType.primerTestPayPal.rawValue,
+            PrimerPaymentMethodType.primerTestSofort.rawValue:
             let submitButton = PrimerButton()
             submitButton.translatesAutoresizingMaskIntoConstraints = false
             submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
@@ -644,8 +879,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
             return submitButton
             
-        case .adyenBlik,
-                .xfers:
+        case PrimerPaymentMethodType.adyenBlik.rawValue,
+            PrimerPaymentMethodType.xfersPayNow.rawValue:
             let btn = PrimerButton()
             btn.isEnabled = false
             btn.clipsToBounds = true
@@ -662,6 +897,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return nil
         }
     }()
+    
+    var isSubmitButtonAnimating: Bool {
+        submitButton?.isAnimating == true
+    }
     
     // MARK: - INITIALIZATION
     

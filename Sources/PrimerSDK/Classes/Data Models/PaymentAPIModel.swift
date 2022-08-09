@@ -427,7 +427,7 @@ public struct Payment {
 }
 
 internal struct PrimerPaymentMethodData {
-    let type: PrimerPaymentMethodType
+    let type: String
 }
 
 //MARK: - Public / User Facing

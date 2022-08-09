@@ -188,11 +188,9 @@ class Base: XCTestCase {
                 amount: "€1.00",
                 surcharge: nil,
                 webviewImage: nil,
-                webviewTexts: ["Primer API Ltd", "€ 1,00"],
+                webviewTexts: ["john@primer.io", "€ 1,00"],
                 buttonTexts: nil,
-                resultScreenTexts: [
-                    "status": "SUCCESS"
-                ]
+                resultScreenTexts: nil
             )
         ),
         Payment(
@@ -285,7 +283,7 @@ class Base: XCTestCase {
         Payment(
             alias: "PRIMER_TEST_KLARNA_AUTHORIZED",
             id: "PRIMER_TEST_KLARNA",
-            environment: .sandbox,
+            environment: .staging,
             currency: "EUR",
             countryCode: "FR",
             amount: "1050",
@@ -303,7 +301,7 @@ class Base: XCTestCase {
         Payment(
             alias: "PRIMER_TEST_PAYPAL_DECLINED",
             id: "PRIMER_TEST_PAYPAL",
-            environment: .sandbox,
+            environment: .staging,
             currency: "EUR",
             countryCode: "DE",
             amount: "1050",
@@ -319,7 +317,7 @@ class Base: XCTestCase {
         Payment(
             alias: "PRIMER_TEST_SOFORT_FAILED",
             id: "PRIMER_TEST_SOFORT",
-            environment: .sandbox,
+            environment: .staging,
             currency: "EUR",
             countryCode: "IT",
             amount: "1050",
@@ -479,7 +477,7 @@ class Base: XCTestCase {
         
         // Test that title is correct
         let checkoutTitle = app.staticTexts["Choose payment method"]
-        let vaultTitle = app.staticTexts["Add payment method"]
+        let vaultTitle = app.staticTexts["AVAILABLE PAYMENT METHODS"]
         let exists = NSPredicate(format: "exists == true")
         let doesNotExist = NSPredicate(format: "exists == false")
         expectation(for: exists, evaluatedWith: checkoutTitle, handler: nil)
@@ -553,6 +551,14 @@ class Base: XCTestCase {
             }
         }
     }
+    
+    func setMetadataTextFieldValue(_ string: String) {
+        let metadataTextField = app.textFields["metadata_test_case_txt_field"]
+        guard metadataTextField.exists else { return }
+        metadataTextField.tap()
+        metadataTextField.clearText()
+        metadataTextField.typeText(string)
+    }
 
     func testPayment(_ payment: Payment, cancelPayment: Bool = true) throws {
         
@@ -613,9 +619,6 @@ class Base: XCTestCase {
         if cancelPayment {
             let safariDoneButton = app.otherElements["TopBrowserBar"].buttons["Done"]
             safariDoneButton.tap()
-            let canceledLabel = app.scrollViews["primer_container_scroll_view"].otherElements.staticTexts["User cancelled"]
-            let canceledLabelExists = expectation(for: Expectation.exists, evaluatedWith: canceledLabel, handler: nil)
-            wait(for: [canceledLabelExists], timeout: 3)
             
             scrollView.swipeDown()
             

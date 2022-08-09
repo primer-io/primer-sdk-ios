@@ -38,7 +38,7 @@ extension Analytics {
             }
         }
         
-        private static func loadEvents() -> [Event] {
+        internal static func loadEvents() -> [Event] {
             primerLogAnalytics(
                 title: "ANALYTICS",
                 message: "📚 Loading events",

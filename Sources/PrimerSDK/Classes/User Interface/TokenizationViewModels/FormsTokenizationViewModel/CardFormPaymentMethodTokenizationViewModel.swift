@@ -18,10 +18,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private var cardComponentsManager: CardComponentsManager!
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    // This is used just in case we get a client session action response
-    // while we've already started the payment. In this case we don't
-    // want to update the button's UI.
-    private var isTokenizing = false
     private var userInputCompletion: (() -> Void)?
     private var cardComponentsManagerTokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
     private var webViewController: SFSafariViewController?
@@ -279,7 +275,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     // MARK: - Init
     
-    required init(config: PaymentMethodConfig) {
+    required init(config: PrimerPaymentMethod) {
         super.init(config: config)
                         
         self.cardComponentsManager = CardComponentsManager(
@@ -293,13 +289,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     override func start() {
-        self.didStartTokenization = {
-            self.isTokenizing = true
+        self.checkouEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
         }
         
-        self.didFinishTokenization = { err in
+        self.checkouEventsNotifierModule.didFinishTokenization = {
             self.uiModule.submitButton?.stopAnimating()
             Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         }
@@ -350,14 +345,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -368,25 +363,22 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         
         return Promise { seal in
             firstly {
-                self.validateReturningPromise()
+                return self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                return self.presentCardFormViewController()
+                return self.presentPaymentMethodUserInterface()
             }
             .then { () -> Promise<Void> in
                 return self.awaitUserInput()
             }
             .then { () -> Promise<Void> in
-                self.didStartTokenization?()
                 return self.dispatchActions()
             }
             .then { () -> Promise<Void> in
-                self.updateButtonUI()
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type.rawValue)
-                return self.tokenize()
+            .done {
+                seal.fulfill()
             }
             .done { paymentMethodTokenData in
                 seal.fulfill(paymentMethodTokenData)
@@ -397,22 +389,51 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    private func presentCardFormViewController() -> Promise<Void> {
+    override func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+
+            firstly {
+                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+            }
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                return self.tokenize()
+            }
+            .then { paymentMethodTokenData -> Promise<Void> in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+            }
+            .done {
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
+    
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
                 switch self.config.type {
-                case .paymentCard:
+                case PrimerPaymentMethodType.paymentCard.rawValue:
                     let pcfvc = PrimerCardFormViewController(viewModel: self)
                     Primer.shared.primerRootVC?.show(viewController: pcfvc)
                     seal.fulfill()
                 default:
-                    fatalError()
+                    precondition(false, "Should never end up here")
                 }
             }
         }
     }
     
-    private func awaitUserInput() -> Promise<Void> {
+    override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.userInputCompletion = {
                 seal.fulfill()
@@ -420,7 +441,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    private func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.cardComponentsManagerTokenizationCompletion = { (paymentMethodTokenData, err) in
                 if let err = err {
@@ -453,8 +474,15 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                         DispatchQueue.main.async {
                             guard let threeDSPostAuthResponse = paymentMethodToken.1,
                                   let resumeToken = threeDSPostAuthResponse.resumeToken else {
+                                
                                 let decoderError = InternalError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                                let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                var err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                
+                                if let threeDSecureAuthenticationDetails = (paymentMethodToken.0 as PaymentMethodToken).threeDSecureAuthentication,
+                                   threeDSecureAuthenticationDetails.reasonCode == "PAYMENT_CANCELED" {
+                                    err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                }
+                                
                                 ErrorHandler.handle(error: err)
                                 seal.reject(err)
                                 return
@@ -608,7 +636,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -631,7 +659,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             }
             
             let params: [String: Any] = [
-                "paymentMethodType": "PAYMENT_CARD",
+                "paymentMethodType": PrimerPaymentMethodType.paymentCard.rawValue,
                 "binData": [
                     "network": network,
                 ]
@@ -841,7 +869,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 extension CardFormPaymentMethodTokenizationViewModel {
     
     private func updateButtonUI() {
-        if let amount = AppState.current.amount, !self.isTokenizing {
+        if let amount = AppState.current.amount, self.uiModule.isSubmitButtonAnimating == false {
             self.configurePayButton(amount: amount)
         }
     }

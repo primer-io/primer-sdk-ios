@@ -40,7 +40,7 @@ enum PrimerAPI: Endpoint, Equatable {
     
 
     case exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String)
-    case fetchConfiguration(clientToken: DecodedClientToken)
+    case fetchConfiguration(clientToken: DecodedClientToken, requestParameters: PrimerAPIConfiguration.API.RequestParameters?)
     case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
     case deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String)
     
@@ -92,7 +92,6 @@ internal extension PrimerAPI {
         
         switch self {
         case .deleteVaultedPaymentMethod(let clientToken, _),
-//                .createDirectDebitMandate(let clientToken, _),
                 .exchangePaymentMethodToken(let clientToken, _),
                 .fetchVaultedPaymentMethods(let clientToken),
                 .createPayPalOrderSession(let clientToken, _),
@@ -119,7 +118,7 @@ internal extension PrimerAPI {
                 tmpHeaders["Primer-Client-Token"] = token
             }
 
-        case .fetchConfiguration(let clientToken):
+        case .fetchConfiguration(let clientToken, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -133,9 +132,8 @@ internal extension PrimerAPI {
         }
         
         switch self {
-        case .fetchConfiguration:
-            tmpHeaders["X-Api-Version"] = "2021-10-19"
-        case .fetchVaultedPaymentMethods:
+        case .fetchConfiguration,
+                .fetchVaultedPaymentMethods:
             tmpHeaders["X-Api-Version"] = "2.1"
         case .tokenizePaymentMethod,
                 .deleteVaultedPaymentMethod,
@@ -176,7 +174,7 @@ internal extension PrimerAPI {
                 .requestPrimerConfigurationWithActions(let clientToken, _):
             guard let urlStr = clientToken.pciUrl else { return nil }
             return urlStr
-        case .fetchConfiguration(let clientToken):
+        case .fetchConfiguration(let clientToken, _):
             guard let urlStr = clientToken.configurationUrl else { return nil }
             return urlStr
         case .poll(_, let url):
@@ -285,6 +283,8 @@ internal extension PrimerAPI {
     
     var queryParameters: [String: String]? {
         switch self {
+        case .fetchConfiguration(_, let requestParameters):
+            return requestParameters?.toDictionary()
         default:
             return nil
         }
@@ -294,8 +294,6 @@ internal extension PrimerAPI {
     
     var body: Data? {
         switch self {
-//        case .createDirectDebitMandate(_, let mandateRequest):
-//            return try? JSONEncoder().encode(mandateRequest)
         case .createPayPalOrderSession(_, let payPalCreateOrderRequest):
             return try? JSONEncoder().encode(payPalCreateOrderRequest)
         case .createPayPalSBillingAgreementSession(_, let payPalCreateBillingAgreementRequest):
@@ -306,6 +304,8 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(klarnaCreatePaymentSessionAPIRequest)
         case .createKlarnaCustomerToken(_, let klarnaCreateCustomerTokenAPIRequest):
             return try? JSONEncoder().encode(klarnaCreateCustomerTokenAPIRequest)
+        case .fetchConfiguration:
+            return nil
         case .finalizeKlarnaPaymentSession(_, let klarnaFinalizePaymentSessionRequest):
             return try? JSONEncoder().encode(klarnaFinalizePaymentSessionRequest)
         case .createApayaSession(_, let request):
@@ -332,7 +332,6 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(request.actions)
         case .deleteVaultedPaymentMethod,
                 .exchangePaymentMethodToken,
-                .fetchConfiguration,
                 .fetchVaultedPaymentMethods,
                 .continue3DSRemoteAuth,
                 .poll:

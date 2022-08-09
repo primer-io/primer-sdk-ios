@@ -11,9 +11,9 @@ import Foundation
 
 class CheckoutWithVaultedPaymentMethodViewModel {
     
-    var config: PaymentMethodConfig
+    var config: PrimerPaymentMethod
     var selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
-    var singleUsePaymentMethodTokenData: PrimerPaymentMethodTokenData?
+    var paymentMethodTokenData: PrimerPaymentMethodTokenData!
     var paymentCheckoutData: PrimerCheckoutData?
     var successMessage: String?
     
@@ -29,7 +29,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
     
-    init(configuration: PaymentMethodConfig, selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData) {
+    init(configuration: PrimerPaymentMethod, selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData) {
         self.config = configuration
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
     }
@@ -40,8 +40,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 self.startTokenizationFlow()
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
-                self.singleUsePaymentMethodTokenData = paymentMethodTokenData
-                return self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
+                return self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData)
             }
             .done { checkoutData in
                 if let checkoutData = checkoutData {
@@ -73,7 +72,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    func performPreTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             firstly {
                 self.dispatchActions(config: self.config, selectedPaymentMethod: self.selectedPaymentMethodTokenData)
@@ -81,11 +80,8 @@ class CheckoutWithVaultedPaymentMethodViewModel {
             .then { () -> Promise<Void> in
                 self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<PaymentMethodToken> in
-                self.exchangePaymentMethodToken(self.selectedPaymentMethodTokenData)
-            }
-            .done { singleUsePaymentMethodTokenData in
-                seal.fulfill(singleUsePaymentMethodTokenData)
+            .done {
+                seal.fulfill()
             }
             .catch { err in
                 seal.reject(err)
@@ -93,10 +89,57 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    private func dispatchActions(config: PaymentMethodConfig, selectedPaymentMethod: PaymentMethodToken) -> Promise<Void> {
+    func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            firstly {
+                self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+            }
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                return self.exchangePaymentMethodToken(self.selectedPaymentMethodTokenData)
+            }
+            .then { paymentMethodTokenData -> Promise<Void> in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                return self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+            }
+            .done {
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
+    
+    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            firstly {
+                self.performPreTokenizationSteps()
+            }
+            .then { () -> Promise<Void> in
+                self.performTokenizationStep()
+            }
+            .then { () -> Promise<Void> in
+                self.performPostTokenizationSteps()
+            }
+            .done {
+                seal.fulfill(self.paymentMethodTokenData)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    private func dispatchActions(config: PrimerPaymentMethod, selectedPaymentMethod: PaymentMethodToken) -> Promise<Void> {
         return Promise { seal in
             var network: String?
-            if config.type == .paymentCard {
+            if config.type == PrimerPaymentMethodType.paymentCard.rawValue {
                 network = selectedPaymentMethod.paymentInstrumentData?.network?.uppercased()
                 if network == nil || network == "UNKNOWN" {
                     network = "OTHER"
@@ -121,7 +164,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
             if Primer.shared.intent == .vault {
                 seal.fulfill()
             } else {
-                let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type.rawValue)
+                let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
                 let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
                 
                 PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
@@ -292,8 +335,8 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                             ClientTokenService.storeClientToken(newClientToken)
                         }
                         .then { () -> Promise<Void> in
-                            let configService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-                            return configService.fetchConfig()
+                            let configService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                            return configService.fetchConfiguration()
                         }
                         .done {
                             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -371,7 +414,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         return Promise { seal in
             if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
     #if canImport(Primer3DS)
-                guard let paymentMethodTokenData = singleUsePaymentMethodTokenData else {
+                guard let paymentMethodTokenData = self.paymentMethodTokenData else {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: containerErr)

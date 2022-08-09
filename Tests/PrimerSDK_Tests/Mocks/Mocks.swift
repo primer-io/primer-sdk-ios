@@ -95,9 +95,9 @@ let mockPaymentMethodConfig = PrimerAPIConfiguration(
     pciUrl: "url",
     clientSession: nil,
     paymentMethods: [
-        PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
-        PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
-        PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+        PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
+        PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
+        PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: ApayaOptions(merchantAccountId: "merchant_account_id"), displayMetadata: nil)
     ],
     keys: nil,
     checkoutModules: nil
@@ -131,9 +131,9 @@ class MockAppState: AppStateProtocol {
             pciUrl: "url",
             clientSession: nil,
             paymentMethods: [
-                PaymentMethodConfig(id: "Klarna", options: nil, processorConfigId: nil, type: .klarna),
-                PaymentMethodConfig(id: "PayPal", options: nil, processorConfigId: nil, type: .payPal),
-                PaymentMethodConfig(id: "Apaya", options: ApayaOptions(merchantAccountId: "merchant_account_id"), processorConfigId: nil, type: .apaya)
+                PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
+                PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
+                PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: ApayaOptions(merchantAccountId: "merchant_account_id"), displayMetadata: nil)
             ],
             keys: nil,
             checkoutModules: nil
@@ -156,9 +156,8 @@ class MockLocator {
         DependencyContainer.register(MockPrimerAPIClient() as PrimerAPIClientProtocol)
         DependencyContainer.register(MockVaultService() as VaultServiceProtocol)
         DependencyContainer.register(MockClientTokenService() as ClientTokenServiceProtocol)
-        DependencyContainer.register(MockPaymentMethodConfigService() as PaymentMethodConfigServiceProtocol)
         DependencyContainer.register(MockPayPalService() as PayPalServiceProtocol)
-        DependencyContainer.register(MockTokenizationService(paymentInstrumentType: PrimerPaymentMethodType.paymentCard.rawValue, tokenType: TokenType.singleUse.rawValue) as TokenizationServiceProtocol)
+        DependencyContainer.register(MockTokenizationService(paymentInstrumentType: "PAYMENT_CARD", tokenType: TokenType.singleUse.rawValue) as TokenizationServiceProtocol)
         DependencyContainer.register(MockVaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(MockVaultCheckoutViewModel() as VaultCheckoutViewModelProtocol)
         DependencyContainer.register(MockExternalViewModel() as ExternalViewModelProtocol)

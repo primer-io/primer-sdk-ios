@@ -13,9 +13,11 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
     
+    private var klarnaUrl: URL!
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-    private var authorizationToken: String?
+    private var authorizationToken: String!
+    private var klarnaCustomerTokenAPIResponse: KlarnaCustomerTokenAPIResponse!
     
     
     deinit {
@@ -76,14 +78,14 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    override func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+    override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type.rawValue,
+                    paymentMethodType: self.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -103,58 +105,132 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
-                self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then {
-                self.generateWebViewUrl()
+                return self.generateWebViewUrl()
             }
-            .then { url -> Promise<String> in
-                self.presentKlarnaController(with: url)
+            .then { url -> Promise<Void> in
+                self.klarnaUrl = url
+                return self.presentPaymentMethodUserInterface()
             }
-            .then { authorizationToken -> Promise<KlarnaCustomerTokenAPIResponse> in
-                self.authorizationToken = authorizationToken
-                return self.createKlarnaCustomerToken(authorizationToken: authorizationToken)
+            .then { () -> Promise<Void> in
+                return self.awaitUserInput()
             }
-            .then { res -> Promise<PaymentMethodToken> in
+            .then { () -> Promise<KlarnaCustomerTokenAPIResponse> in
+                return self.createKlarnaCustomerToken(authorizationToken: self.authorizationToken)
+            }
+            .done { klarnaCustomerTokenAPIResponse in
+                self.klarnaCustomerTokenAPIResponse = klarnaCustomerTokenAPIResponse
                 DispatchQueue.main.async {
                     self.willDismissExternalView?()
                 }
+                
                 self.webViewController?.presentingViewController?.dismiss(animated: true, completion: {
                     DispatchQueue.main.async {
                         self.didDismissExternalView?()
                     }
                 })
                 
-                var instrument: PaymentInstrument
-                var request: PaymentMethodTokenizationRequest
-                
-                if Primer.shared.intent == .vault {
-                    instrument = PaymentInstrument(
-                        klarnaAuthorizationToken: self.authorizationToken!,
-                        sessionData: res.sessionData)
-                    
-                    request = PaymentMethodTokenizationRequest(
-                        paymentInstrument: instrument,
-                        paymentFlow: .vault)
-                    
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performTokenizationStep() -> Promise<Void> {
+        return Promise { seal in
+            firstly {
+                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+            }
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                return self.tokenize()
+            }
+            .then { paymentMethodTokenData -> Promise<Void> in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+            }
+            .done {
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
+    
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async {
+                self.webViewController = PrimerWebViewController(with: self.klarnaUrl)
+                self.webViewController!.navigationDelegate = self
+                self.webViewController!.modalPresentationStyle = .fullScreen
+                                
+                self.willPresentExternalView?()
+                Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                    DispatchQueue.main.async {
+                        self.didPresentExternalView?()
+                        seal.fulfill()
+                    }
+                })
+            }
+        }
+    }
+    
+    override func awaitUserInput() -> Promise<Void> {
+        return Promise { seal in
+            self.webViewCompletion = { authorizationToken, err in
+                if let err = err {
+                    seal.reject(err)
+                } else if let authorizationToken = authorizationToken {
+                    self.authorizationToken = authorizationToken
+                    seal.fulfill()
                 } else {
-                    instrument = PaymentInstrument(
-                        klarnaCustomerToken: res.customerTokenId,
-                        sessionData: res.sessionData)
-                    
-                    request = PaymentMethodTokenizationRequest(
-                        paymentInstrument: instrument,
-                        paymentFlow: .checkout)
+                    precondition(false, "Should never end up in here")
                 }
+            }
+        }
+    }
+    
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            var instrument: PaymentInstrument
+            var request: PaymentMethodTokenizationRequest
+            
+            if Primer.shared.intent == .vault {
+                instrument = PaymentInstrument(
+                    klarnaAuthorizationToken: self.authorizationToken!,
+                    sessionData: self.klarnaCustomerTokenAPIResponse.sessionData)
                 
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-                return tokenizationService.tokenize(request: request)
+                request = PaymentMethodTokenizationRequest(
+                    paymentInstrument: instrument,
+                    paymentFlow: .vault)
+                
+            } else {
+                instrument = PaymentInstrument(
+                    klarnaCustomerToken: self.klarnaCustomerTokenAPIResponse.customerTokenId,
+                    sessionData: self.klarnaCustomerTokenAPIResponse.sessionData)
+                
+                request = PaymentMethodTokenizationRequest(
+                    paymentInstrument: instrument,
+                    paymentFlow: .checkout)
+            }
+            
+            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+            
+            firstly {
+                tokenizationService.tokenize(request: request)
             }
             .done { paymentMethodTokenData in
                 seal.fulfill(paymentMethodTokenData)
-            }
-            .ensure {
-                
             }
             .catch { err in
                 seal.reject(err)
@@ -289,35 +365,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    private func presentKlarnaController(with url: URL) -> Promise<String> {
-        return Promise { seal in
-            self.presentKlarnaController(with: url) { (token, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let token = token {
-                    seal.fulfill(token)
-                }
-            }
-        }
-    }
-    
-    private func presentKlarnaController(with url: URL, completion: @escaping (_ authorizationToken: String?, _ err: Error?) -> Void) {
-        DispatchQueue.main.async {
-            self.webViewController = PrimerWebViewController(with: url)
-            self.webViewController!.navigationDelegate = self
-            self.webViewController!.modalPresentationStyle = .fullScreen
-            
-            self.webViewCompletion = completion
-            
-            self.willPresentExternalView?()
-            Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
-                DispatchQueue.main.async {
-                    self.didPresentExternalView?()
-                }
-            })
-        }
-    }
-    
     private func createKlarnaCustomerToken(authorizationToken: String) -> Promise<KlarnaCustomerTokenAPIResponse> {
         return Promise { seal in
             self.createKlarnaCustomerToken(authorizationToken: authorizationToken) { result in
@@ -339,9 +386,11 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return
         }
                 
-        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: .klarna),
+        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.klarna.rawValue),
               let sessionId = self.sessionId else {
-                  let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                  let err = PrimerError.missingPrimerConfiguration(
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
                   ErrorHandler.handle(error: err)
                   completion(.failure(err))
                   return
@@ -388,9 +437,11 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return
         }
         
-        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: .klarna),
+        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.klarna.rawValue),
               let sessionId = self.sessionId else {
-                  let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                  let err = PrimerError.missingPrimerConfiguration(
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
                   ErrorHandler.handle(error: err)
                   completion(.failure(err))
                   return
@@ -398,6 +449,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         
         let body = KlarnaFinalizePaymentSessionRequest(paymentMethodConfigId: configId, sessionId: sessionId)
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession")
+        
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.finalizeKlarnaPaymentSession(clientToken: decodedClientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {
@@ -442,8 +494,6 @@ extension KlarnaTokenizationViewModel: WKNavigationDelegate {
         let allowedHosts: [String] = [
             "primer.io",
             "livedemostore.primer.io"
-            //            "api.playground.klarna.com",
-            //            "api.sandbox.primer.io"
         ]
         
         if let url = navigationAction.request.url, let host = url.host, allowedHosts.contains(host) {

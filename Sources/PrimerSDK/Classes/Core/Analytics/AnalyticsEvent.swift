@@ -19,6 +19,8 @@ extension Analytics.Event {
         case networkConnectivity = "NETWORK_CONNECTIVITY_EVENT"
         case sdkEvent = "SDK_FUNCTION_EVENT"
         case timerEvent = "TIMER_EVENT"
+        case paymentMethodImageLoading = "PM_IMAGE_LOADING_DURATION"
+        case paymentMethodAllImagesLoading = "PM_ALL_IMAGES_LOADING_DURATION"
     }
     
     struct Property {
@@ -38,6 +40,7 @@ extension Analytics.Event {
         enum MessageType: String, Codable {
             case error = "ERROR"
             case missingValue = "MISSING_VALUE"
+            case paymentMethodImageLoadingFailed = "PM_IMAGE_LOADING_FAILED"
             case validationFailed = "VALIDATION_FAILED"
         }
         
