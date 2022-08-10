@@ -11,7 +11,7 @@ import UIKit
 
 internal class PrimerRootViewController: PrimerViewController {
     
-    private var paymentMethodType: PrimerPaymentMethodType?
+    private var paymentMethodType: String?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     var backgroundView = PrimerView()
     var childView: PrimerView = PrimerView()
@@ -33,7 +33,7 @@ internal class PrimerRootViewController: PrimerViewController {
         NotificationCenter.default.removeObserver(self)
     }
     
-    init(paymentMethodType: PrimerPaymentMethodType?) {
+    init(paymentMethodType: String?) {
         self.paymentMethodType = paymentMethodType
         super.init(nibName: nil, bundle: nil)
     }
@@ -446,7 +446,7 @@ internal class PrimerRootViewController: PrimerViewController {
 
 extension PrimerRootViewController {
     
-    func presentPaymentMethod(type: PrimerPaymentMethodType) {
+    func presentPaymentMethod(type: String) {
         guard let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
             let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -476,7 +476,7 @@ extension PrimerRootViewController {
             imgView?.widthAnchor.constraint(equalToConstant: 24.0).isActive = true
         }
         
-        paymentMethodTokenizationViewModel.didStartTokenization = {
+        paymentMethodTokenizationViewModel.checkouEventsNotifierModule.didStartTokenization = {
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         

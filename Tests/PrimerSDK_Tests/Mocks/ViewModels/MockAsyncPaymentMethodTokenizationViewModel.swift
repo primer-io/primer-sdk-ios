@@ -95,7 +95,7 @@ class AsyncPaymentMethodTokenizationViewModelTests: XCTestCase, PrimerDelegate {
         Primer.shared.delegate = self
         Primer.shared.showUniversalCheckout(on: vc, clientToken: nil)
         
-        let config = PaymentMethodConfig(id: "async_mock", options: nil, processorConfigId: nil, type: .hoolah)
+        let config = PrimerPaymentMethod(id: "async_mock", options: nil, processorConfigId: nil, type: .hoolah)
         let viewModel: MockAsyncPaymentMethodTokenizationViewModel? = MockAsyncPaymentMethodTokenizationViewModel(config: config)
         viewModel?.failValidation = true
         

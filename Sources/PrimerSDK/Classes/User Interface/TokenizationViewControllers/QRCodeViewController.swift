@@ -26,7 +26,7 @@ internal class QRCodeViewController: PrimerFormViewController {
     init(viewModel: QRCodeTokenizationViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.uiModule.originalImage
+        self.titleImage = viewModel.uiModule.logo
     }
     
     required init?(coder: NSCoder) {
@@ -42,7 +42,7 @@ internal class QRCodeViewController: PrimerFormViewController {
                 action: .view,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.viewModel.config.type.rawValue,
+                    paymentMethodType: self.viewModel.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .view,
@@ -104,7 +104,7 @@ internal class QRCodeViewController: PrimerFormViewController {
         separatorView.heightAnchor.constraint(equalToConstant: 10).isActive = true
         
         var qrCodeImageView = PrimerImageView()
-        if qrCodeStr.isURL == true, let qrCodeURL = URL(string: qrCodeStr) {
+        if qrCodeStr.isHttpOrHttpsURL == true, let qrCodeURL = URL(string: qrCodeStr) {
             qrCodeImageView = PrimerImageView(from: qrCodeURL)
         } else if let qrCodeImg = convertBase64StringToImage(qrCodeStr) {
             qrCodeImageView.image = qrCodeImg

@@ -14,11 +14,20 @@ public class PrimerHeadlessUniversalCheckout {
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate?
     private(set) public var clientToken: String?
     public static let current = PrimerHeadlessUniversalCheckout()
-    private let unsupportedPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenIDeal, .adyenDotPay, .adyenBlik, .goCardlessMandate, .primerTestKlarna, .primerTestSofort, .primerTestPayPal, .xfers]
+    private let unsupportedPaymentMethodTypes: [String] = [
+        PrimerPaymentMethodType.adyenBlik.rawValue,
+        PrimerPaymentMethodType.adyenDotPay.rawValue,
+        PrimerPaymentMethodType.adyenIDeal.rawValue,
+        PrimerPaymentMethodType.goCardless.rawValue,
+        PrimerPaymentMethodType.primerTestKlarna.rawValue,
+        PrimerPaymentMethodType.primerTestPayPal.rawValue,
+        PrimerPaymentMethodType.primerTestSofort.rawValue,
+        PrimerPaymentMethodType.xfersPayNow.rawValue,
+    ]
     
     fileprivate init() {}
     
-    public func start(withClientToken clientToken: String, settings: PrimerSettings? = nil, delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil, completion: @escaping (_ paymentMethodTypes: [PrimerPaymentMethodType]?, _ err: Error?) -> Void) {
+    public func start(withClientToken clientToken: String, settings: PrimerSettings? = nil, delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil, completion: @escaping (_ paymentMethodTypes: [String]?, _ err: Error?) -> Void) {
         Primer.shared.intent = .checkout
         
         if delegate != nil {
@@ -26,7 +35,7 @@ public class PrimerHeadlessUniversalCheckout {
         }
         
         if PrimerHeadlessUniversalCheckout.current.delegate == nil {
-                    print("WARNING: PrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
+                    print("WARNING!\nPrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
                 }
                         
         if let settings = settings {
@@ -38,8 +47,8 @@ public class PrimerHeadlessUniversalCheckout {
         }
         .then { () -> Promise<Void> in
             self.clientToken = clientToken
-            let primerConfigurationService: PaymentMethodConfigServiceProtocol = DependencyContainer.resolve()
-            return primerConfigurationService.fetchConfig()
+            let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+            return configurationService.fetchConfiguration()
         }
         .done {
             let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
@@ -125,77 +134,13 @@ public class PrimerHeadlessUniversalCheckout {
         }
     }
 
-    internal func listAvailablePaymentMethodsTypes() -> [PrimerPaymentMethodType]? {
+    internal func listAvailablePaymentMethodsTypes() -> [String]? {
         return PrimerAPIConfiguration.paymentMethodConfigs?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
     
-    public func listRequiredInputElementTypes(for paymentMethodType: PrimerPaymentMethodType) -> [PrimerInputElementType]? {
+    public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType]? {
         switch paymentMethodType {
-        case .adyenAlipay:
-            return []
-        case .adyenBlik:
-            return []
-        case .adyenDotPay:
-            return []
-        case .adyenGiropay:
-            return []
-        case .adyenIDeal:
-            return []
-        case .adyenInterac:
-            return []
-        case .adyenMobilePay:
-            return []
-        case .adyenPayshop:
-			return []
-        case .adyenPayTrail:
-            return []
-        case .adyenSofort:
-            return []
-        case .adyenTrustly:
-            return []
-        case .adyenTwint:
-            return []
-        case .adyenVipps:
-            return []
-        case .apaya:
-            return []
-        case .applePay:
-            return []
-        case .atome:
-            return []
-        case .buckarooBancontact:
-            return []
-        case .buckarooEps:
-            return []
-        case .buckarooGiropay:
-            return []
-        case .buckarooIdeal:
-            return []
-        case .buckarooSofort:
-            return []
-        case .coinbase:
-            return []
-        case .goCardlessMandate:
-            return []
-        case .googlePay:
-            return []
-        case .hoolah:
-            return []
-        case .klarna:
-            return []
-        case .mollieBankcontact:
-            return []
-        case .mollieIdeal:
-            return []
-        case .payNLBancontact:
-            return []
-        case .payNLGiropay:
-            return []
-        case .payNLIdeal:
-            return []
-        case .payNLPayconiq:
-            return []
-        case .paymentCard:
+        case PrimerPaymentMethodType.paymentCard.rawValue:
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
             if let checkoutModule = AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
                let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
@@ -204,34 +149,12 @@ public class PrimerHeadlessUniversalCheckout {
                 }
             }
             return requiredFields
-        case .payPal:
-            return []
-        case .primerTestPayPal,
-                .primerTestKlarna,
-                .primerTestSofort:
-            return []
-        case .xfers:
-            return []
-        case .opennode:
-            return []
-        case .rapydGCash:
-            return []
-        case .twoCtwoP:
-            return []
-        case .rapydPoli:
-            return []
-        case .rapydGrabPay:
-            return []
-        case .rapydFast:
-            return []
-        case .rapydPromptPay:
-            return []
-        case .other(_):
+        default:
             return []
         }
     }
     
-    public static func makeButton(for paymentMethodType: PrimerPaymentMethodType) -> UIButton? {
+    public static func makeButton(for paymentMethodType: String) -> UIButton? {
         guard let paymentMethodConfigs = PrimerAPIConfiguration.paymentMethodConfigs else { return nil }
         guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
         return paymentMethodConfig.tokenizationViewModel?.uiModule.paymentMethodButton
@@ -241,7 +164,7 @@ public class PrimerHeadlessUniversalCheckout {
         return brand.getImage(assetType: assetType)
     }
     
-    public static func getAsset(for paymentMethodType: PrimerPaymentMethodType, assetType: PrimerAsset.ImageType) -> UIImage? {
+    public static func getAsset(for paymentMethodType: String, assetType: PrimerAsset.ImageType) -> UIImage? {
         return PrimerAsset.getAsset(for: paymentMethodType, assetType: assetType)
     }
     
@@ -249,18 +172,18 @@ public class PrimerHeadlessUniversalCheckout {
         return PrimerAsset.getAsset(for: cardNetwork, assetType: assetType)
     }
     
-    public func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType, completion: ((_ viewController: UIViewController) -> Void)? = nil) {
+    public func showPaymentMethod(_ paymentMethod: String, completion: ((_ viewController: UIViewController) -> Void)? = nil) {
         DispatchQueue.main.async {
             let appState: AppStateProtocol = DependencyContainer.resolve()
             guard let clientToken = appState.clientToken else {
-                print("WARNING: Make sure you have called 'start(withClientToken:settings:delegate:completion:' with a valid client token prior to showing a payment method.")
+                print("WARNING!\nMake sure you have called 'start(withClientToken:settings:delegate:completion:' with a valid client token prior to showing a payment method.")
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
                 return
             }
             
-            if self.unsupportedPaymentMethodTypes.contains(paymentMethod) || paymentMethod == .paymentCard {
+            if self.unsupportedPaymentMethodTypes.contains(paymentMethod) || paymentMethod == PrimerPaymentMethodType.paymentCard.rawValue {
                 let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
@@ -272,14 +195,14 @@ public class PrimerHeadlessUniversalCheckout {
             PrimerSettings.current.uiOptions.isErrorScreenEnabled = false
             
             switch paymentMethod {
-            case .goCardlessMandate,
-                    .paymentCard,
-                    .other:
+            case PrimerPaymentMethodType.goCardless.rawValue,
+                PrimerPaymentMethodType.paymentCard.rawValue:
                 let err = PrimerError.missingCustomUI(paymentMethod: paymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
                 return
-            case .applePay:
+                
+            case PrimerPaymentMethodType.applePay.rawValue:
                 if PrimerSettings.current.paymentMethodOptions.applePayOptions == nil {
                     let err = PrimerError.invalidValue(key: "settings.paymentMethodOptions.applePayOptions", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
@@ -287,18 +210,19 @@ public class PrimerHeadlessUniversalCheckout {
                     return
                 }
                 
-            case .payPal:
+            case PrimerPaymentMethodType.payPal.rawValue:
                 if PrimerSettings.current.paymentMethodOptions.urlScheme == nil {
                     let err = PrimerError.invalidUrlScheme(urlScheme: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
                     return
                 }
+                
             default:
                 break
             }
             
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationDidStart?(for: paymentMethod.rawValue)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationDidStart?(for: paymentMethod)
             Primer.shared.showPaymentMethod(paymentMethod, withIntent: .checkout, andClientToken: clientToken)
         }
     }
@@ -310,94 +234,9 @@ public struct PrimerAsset {
         return brand.getImage(assetType: assetType)
     }
     
-    public static func getAsset(for paymentMethodType: PrimerPaymentMethodType, assetType: PrimerAsset.ImageType) -> UIImage? {
+    public static func getAsset(for paymentMethodType: String, assetType: PrimerAsset.ImageType) -> UIImage? {
         var brand: PrimerAsset.Brand?
-        
-        switch paymentMethodType {
-        case .adyenAlipay:
-            brand = .aliPay
-        case .adyenBlik:
-            brand = .blik
-        case .adyenDotPay:
-            brand = .dotPay
-        case .adyenGiropay,
-                .buckarooGiropay,
-                .payNLGiropay:
-            brand = .giroPay
-        case .adyenIDeal,
-                .buckarooIdeal,
-                .mollieIdeal,
-                .payNLIdeal:
-            brand = .iDeal
-        case .adyenInterac:
-            brand = .interac
-        case .adyenMobilePay:
-            brand = .mobilePay
-        case .adyenPayshop:
-            brand = .payshop
-        case .adyenPayTrail:
-            brand = .payTrail
-        case .adyenSofort,
-                .buckarooSofort,
-                .primerTestSofort:
-            brand = .sofort
-        case .adyenTrustly:
-            brand = .trustly
-        case .adyenTwint:
-            brand = .twint
-        case .adyenVipps:
-            brand = .vipps
-        case .apaya:
-            brand = .apaya
-        case .applePay:
-            brand = .applePay
-        case .atome:
-            brand = .atome
-        case .buckarooBancontact,
-                .mollieBankcontact,
-                .payNLBancontact:
-            brand = .bankcontact
-        case .buckarooEps:
-            brand = .eps
-        case .coinbase:
-            brand = .coinBase
-        case .goCardlessMandate:
-            brand = .goCardless
-        case .googlePay:
-            brand = .googlePay
-        case .hoolah:
-            brand = .hoolah
-        case .klarna,
-                .primerTestKlarna:
-            brand = .klarna
-        case .payNLPayconiq:
-            brand = .payconiq
-        case .paymentCard:
-            return nil
-        case .payPal,
-                .primerTestPayPal:
-            brand = .payPal
-        case .twoCtwoP:
-            brand = .twoCtwoP
-        case .rapydGCash:
-            brand = .gCash
-        case .xfers:
-            brand = .xfers
-        case .rapydGrabPay:
-            brand = .grabPay
-        case .opennode:
-            brand = .opennode
-        case .rapydPoli:
-            brand = .poli
-        case .rapydFast:
-            brand = .fast
-        case .rapydPromptPay:
-            brand = .promptPay
-        case .other:
-            return nil
-        }
-        
-        return brand?.getImage(assetType: assetType)
+        return nil
     }
     
     public static func getAsset(for cardNetwork: CardNetwork, assetType: PrimerAsset.ImageType) -> UIImage? {

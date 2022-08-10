@@ -15,7 +15,7 @@ protocol PrimerAPIClientProtocol {
     func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse>
     func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (_ result: Result<PaymentMethodToken, Error>) -> Void)
     func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Void, Error>) -> Void)
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
+    func fetchConfiguration(clientToken: DecodedClientToken, requestParameters: PrimerAPIConfiguration.API.RequestParameters?, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
 //    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void)
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void)
     func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (_ result: Result<PayPalCreateBillingAgreementResponse, Error>) -> Void)
@@ -95,29 +95,130 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func fetchConfiguration(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
-        let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken)
+    func fetchConfiguration(clientToken: DecodedClientToken, requestParameters: PrimerAPIConfiguration.API.RequestParameters?, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
+        let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters)
         networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>) in
             switch result {
             case .success(let apiConfiguration):
-                completion(.success(apiConfiguration))
+                var imageFiles: [ImageFile] = []
+                
+                for pm in (apiConfiguration.paymentMethods ?? []) {
+                    
+                    var coloredImageFile: ImageFile
+                    if let coloredVal = pm.displayMetadata?.button.iconUrl?.coloredUrlStr {
+                        var remoteUrl: URL?
+                        var base64Data: Data?
+                        
+                        if let data = Data(base64Encoded: coloredVal) {
+                            base64Data = data
+                        } else if let url = URL(string: coloredVal) {
+                            remoteUrl = url
+                        }
+                        
+                        coloredImageFile = ImageFile(
+                            fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
+                            fileExtension: "png",
+                            remoteUrl: remoteUrl,
+                            base64Data: base64Data)
+                        
+                    } else {
+                        coloredImageFile = ImageFile(
+                            fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
+                            fileExtension: "png",
+                            remoteUrl: nil,
+                            base64Data: nil)
+                    }
+                    imageFiles.append(coloredImageFile)
+                    
+                    var lightImageFile: ImageFile
+                    if let lightVal = pm.displayMetadata?.button.iconUrl?.lightUrlStr {
+                        var remoteUrl: URL?
+                        var base64Data: Data?
+                        
+                        if let data = Data(base64Encoded: lightVal) {
+                            base64Data = data
+                        } else if let url = URL(string: lightVal) {
+                            remoteUrl = url
+                        }
+                        
+                        lightImageFile = ImageFile(
+                            fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
+                            fileExtension: "png",
+                            remoteUrl: remoteUrl,
+                            base64Data: base64Data)
+                        
+                    } else {
+                        lightImageFile = ImageFile(
+                            fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
+                            fileExtension: "png",
+                            remoteUrl: nil,
+                            base64Data: nil)
+                    }
+                    imageFiles.append(lightImageFile)
+                    
+                    var darkImageFile: ImageFile
+                    if let darkVal = pm.displayMetadata?.button.iconUrl?.darkUrlStr {
+                        var remoteUrl: URL?
+                        var base64Data: Data?
+                        
+                        if let data = Data(base64Encoded: darkVal) {
+                            base64Data = data
+                        } else if let url = URL(string: darkVal) {
+                            remoteUrl = url
+                        }
+                        
+                        darkImageFile = ImageFile(
+                            fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
+                            fileExtension: "png",
+                            remoteUrl: remoteUrl,
+                            base64Data: base64Data)
+                        
+                    } else {
+                        darkImageFile = ImageFile(
+                            fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
+                            fileExtension: "png",
+                            remoteUrl: nil,
+                            base64Data: nil)
+                    }
+                    imageFiles.append(darkImageFile)
+                }
+                
+                let imageManager = ImageManager()
+                
+                firstly {
+                    imageManager.getImages(for: imageFiles)
+                }
+                .done { imageFiles in
+                    for (i, pm) in (apiConfiguration.paymentMethods ?? []).enumerated() {
+                        let paymentMethodImageFiles = imageFiles.filter({ $0.fileName.contains(pm.type.lowercased().replacingOccurrences(of: "_", with: "-")) })
+                        if paymentMethodImageFiles.isEmpty {
+                            continue
+                        }
+                        
+                        let coloredImageFile = paymentMethodImageFiles
+                            .filter({ $0.fileName.contains("dark") == false && $0.fileName.contains("light") == false }).first
+                        let darkImageFile = paymentMethodImageFiles
+                            .filter({ $0.fileName.contains("dark") == true }).first
+                        let lightImageFile = paymentMethodImageFiles
+                            .filter({ $0.fileName.contains("light") == true }).first
+                        
+                        let baseImage = PrimerTheme.BaseImage(
+                            colored: coloredImageFile?.image,
+                            light: lightImageFile?.image,
+                            dark: darkImageFile?.image)
+                        apiConfiguration.paymentMethods?[i].baseLogoImage = baseImage
+                    }
+
+                    completion(.success(apiConfiguration))
+                }
+                .catch { err in
+                    completion(.success(apiConfiguration))
+                }
             case .failure(let err):
                 completion(.failure(err))
             }
         }
     }
-
-//    func createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest, completion: @escaping (_ result: Result<DirectDebitCreateMandateResponse, Error>) -> Void) {
-//        let endpoint = PrimerAPI.createDirectDebitMandate(clientToken: clientToken, mandateRequest: mandateRequest)
-//        networkService.request(endpoint) { (result: Result<DirectDebitCreateMandateResponse, Error>) in
-//            switch result {
-//            case .success(let apiConfiguration):
-//                completion(.success(apiConfiguration))
-//            case .failure(let err):
-//                completion(.failure(err))
-//            }
-//        }
-//    }
 
     func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (_ result: Result<PayPalCreateOrderResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.createPayPalOrderSession(clientToken: clientToken, payPalCreateOrderRequest: payPalCreateOrderRequest)

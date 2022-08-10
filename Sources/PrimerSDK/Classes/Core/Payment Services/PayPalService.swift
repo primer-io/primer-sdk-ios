@@ -22,7 +22,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return nil
         }
 
-        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: .payPal) else {
+        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             return nil
         }
 
@@ -39,35 +39,53 @@ internal class PayPalService: PayPalServiceProtocol {
 
     func startOrderSession(_ completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidClientToken(
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
 
-        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: .payPal) else {
-            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: AppState.current.apiConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+            let err = PrimerError.invalidValue(
+                key: "configuration.paypal.id",
+                value: AppState.current.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
         
         guard let amount = AppState.current.amount else {
-            let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidSetting(
+                name: "amount",
+                value: nil,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
 
         guard let currency = AppState.current.currency else {
-            let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidSetting(
+                name: "currency",
+                value: nil,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
 
         guard var urlScheme = PrimerSettings.current.paymentMethodOptions.urlScheme else {
-            let err = PrimerError.invalidValue(key: "urlScheme", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(
+                key: "urlScheme",
+                value: nil,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -109,15 +127,23 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        guard let configId = state.apiConfiguration?.getConfigId(for: .payPal) else {
-            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.apiConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+        guard let configId = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+            let err = PrimerError.invalidValue(
+                key: "configuration.paypal.id",
+                value: state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
         
         guard var urlScheme = PrimerSettings.current.paymentMethodOptions.urlScheme else {
-            let err = PrimerError.invalidValue(key: "urlScheme", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(
+                key: "urlScheme",
+                value: nil,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -158,15 +184,23 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        guard let configId = state.apiConfiguration?.getConfigId(for: .payPal) else {
-            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.apiConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+        guard let configId = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+            let err = PrimerError.invalidValue(
+                key: "configuration.paypal.id",
+                value: state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
 
         guard let tokenId = self.paypalTokenId else {
-            let err = PrimerError.invalidValue(key: "paypalTokenId", value: self.paypalTokenId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(
+                key: "paypalTokenId",
+                value: self.paypalTokenId,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -198,8 +232,12 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
         
-        guard let configId = state.apiConfiguration?.getConfigId(for: .payPal) else {
-            let err = PrimerError.invalidValue(key: "configuration.paypal.id", value: state.apiConfiguration?.getConfigId(for: .payPal), userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+        guard let configId = state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+            let err = PrimerError.invalidValue(
+                key: "configuration.paypal.id",
+                value: state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return

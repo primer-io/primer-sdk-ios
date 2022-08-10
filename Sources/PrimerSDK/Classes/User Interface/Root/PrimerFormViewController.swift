@@ -93,7 +93,7 @@ class PrimerFormViewController: PrimerViewController {
                 for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
                     let title = additionalFeePaymentMethodsViewModel.uiModule.surchargeSectionText
                     let additionalFeesContainerView = PaymentMethodsGroupView(title: title, paymentMethodTokenizationViewModels: [additionalFeePaymentMethodsViewModel])
-                    additionalFeesContainerView.accessibilityIdentifier = "\(additionalFeePaymentMethodsViewModel.config.type.rawValue.lowercased())_surcharge_group_view"
+                    additionalFeesContainerView.accessibilityIdentifier = "\(additionalFeePaymentMethodsViewModel.config.type.lowercased())_surcharge_group_view"
                     additionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                     availablePaymentMethodsStackView.addArrangedSubview(additionalFeesContainerView)
                 }

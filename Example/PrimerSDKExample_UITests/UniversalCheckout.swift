@@ -218,9 +218,7 @@ class UniversalCheckout: XCTestCase {
     func testAdyenBlik() throws {
         let payment = Base.paymentMethods.filter({ $0.id == "ADYEN_BLIK" }).first!
         try openCardForm(for: payment)
-        
-        XCTAssert(app.images.matching(NSPredicate(format: "identifier CONTAINS 'blik-logo'")).firstMatch.exists, "The Blik logo should be visible")
-        
+                
         let sixDigitsBlikTextField = app.textFields.matching(NSPredicate(format: "identifier == 'generic_txt_fld'")).firstMatch
         sixDigitsBlikTextField.tap()
         sixDigitsBlikTextField.typeText("777")
@@ -465,9 +463,9 @@ class UniversalCheckout: XCTestCase {
         let cancel3DSButton = threeDSNavigationBar.buttons["Cancel"]
         cancel3DSButton.tap()
         
-        let errorImage = app.images["x-circle"]
-        let errorImageExists = expectation(for: Expectation.exists, evaluatedWith: errorImage, handler: nil)
-        wait(for: [errorImageExists], timeout: 15)
+        let choosePaymentMethodText = app.staticTexts["Choose payment method"]
+        let choosePaymentMethodTextExists = expectation(for: Expectation.exists, evaluatedWith: choosePaymentMethodText, handler: nil)
+        wait(for: [choosePaymentMethodTextExists], timeout: 15)
     }
     
     

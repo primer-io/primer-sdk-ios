@@ -12,7 +12,7 @@
 		156F97092706DDE6004503C0 /* PaymentMethodConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156F97082706DDE6004503C0 /* PaymentMethodConfigTests.swift */; };
 		1582B97D260A3F2900C80BD7 /* MockVaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95F260A3F2900C80BD7 /* MockVaultCheckoutViewModel.swift */; };
 		1582B97F260A3F2900C80BD7 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B961260A3F2900C80BD7 /* Mocks.swift */; };
-		1582B980260A3F2900C80BD7 /* PaymentMethodConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B963260A3F2900C80BD7 /* PaymentMethodConfigService.swift */; };
+		1582B980260A3F2900C80BD7 /* MockPrimerAPIConfigurationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B963260A3F2900C80BD7 /* MockPrimerAPIConfigurationService.swift */; };
 		1582B981260A3F2900C80BD7 /* PayPalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B964260A3F2900C80BD7 /* PayPalService.swift */; };
 		1582B982260A3F2900C80BD7 /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B965260A3F2900C80BD7 /* VaultService.swift */; };
 		1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B966260A3F2900C80BD7 /* ClientTokenService.swift */; };
@@ -91,7 +91,7 @@
 		156F97082706DDE6004503C0 /* PaymentMethodConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigTests.swift; sourceTree = "<group>"; };
 		1582B95F260A3F2900C80BD7 /* MockVaultCheckoutViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockVaultCheckoutViewModel.swift; sourceTree = "<group>"; };
 		1582B961260A3F2900C80BD7 /* Mocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
-		1582B963260A3F2900C80BD7 /* PaymentMethodConfigService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigService.swift; sourceTree = "<group>"; };
+		1582B963260A3F2900C80BD7 /* MockPrimerAPIConfigurationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockPrimerAPIConfigurationService.swift; sourceTree = "<group>"; };
 		1582B964260A3F2900C80BD7 /* PayPalService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PayPalService.swift; sourceTree = "<group>"; };
 		1582B965260A3F2900C80BD7 /* VaultService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultService.swift; sourceTree = "<group>"; };
 		1582B966260A3F2900C80BD7 /* ClientTokenService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientTokenService.swift; sourceTree = "<group>"; };
@@ -251,7 +251,7 @@
 			isa = PBXGroup;
 			children = (
 				2C10D12C2840C41B0059B9E1 /* CreateResumePaymentService.swift */,
-				1582B963260A3F2900C80BD7 /* PaymentMethodConfigService.swift */,
+				1582B963260A3F2900C80BD7 /* MockPrimerAPIConfigurationService.swift */,
 				1582B964260A3F2900C80BD7 /* PayPalService.swift */,
 				1582B965260A3F2900C80BD7 /* VaultService.swift */,
 				1582B966260A3F2900C80BD7 /* ClientTokenService.swift */,
@@ -743,7 +743,7 @@
 				15F5E2FF26982B21003AFF8A /* CardComponentManagerTests.swift in Sources */,
 				1582B98B260A3F2900C80BD7 /* MaskTests.swift in Sources */,
 				1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */,
-				1582B980260A3F2900C80BD7 /* PaymentMethodConfigService.swift in Sources */,
+				1582B980260A3F2900C80BD7 /* MockPrimerAPIConfigurationService.swift in Sources */,
 				15F32E1D26FDA8E4004B3903 /* PrimerTests.swift in Sources */,
 				1582B988260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift in Sources */,
 				2C10D12E2840C42F0059B9E1 /* CreateResumePaymentService.swift in Sources */,
@@ -1015,8 +1015,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PrimerSDK_Example.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development: DX Primer (8B5K7AGMS8)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development: DX Primer (8B5K7AGMS8)";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1652387287;
 				DEVELOPMENT_TEAM = N8UN9TR5DY;

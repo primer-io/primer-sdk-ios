@@ -169,6 +169,10 @@ extension PrimerButton {
 
 extension PrimerButton {
     
+    var isAnimating: Bool {
+        activityIndicator.isAnimating
+    }
+    
     func startAnimating() {
         if activityIndicator.isAnimating { return }
         activityIndicator.startAnimating()

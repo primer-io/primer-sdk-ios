@@ -33,7 +33,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
                 action: .view,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.formPaymentMethodTokenizationViewModel.config.type.rawValue,
+                    paymentMethodType: self.formPaymentMethodTokenizationViewModel.config.type,
                     url: nil),
                 extra: nil,
                 objectType: .view,

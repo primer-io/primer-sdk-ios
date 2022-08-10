@@ -49,17 +49,27 @@ public struct Apaya {
                 url.queryParameterValue(for: "success") != nil,
                 let status = url.queryParameterValue(for: "status")
             else {
-                let err = PrimerError.generic(message: "Failed to find query parameters: [status, success]", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.generic(
+                    message: "Failed to find query parameters: [status, success]",
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             }
             
             if status == "SETUP_ERROR" {
-                let err = PrimerError.generic(message: "Apaya status is SETUP_ERROR", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.generic(
+                    message: "Apaya status is SETUP_ERROR",
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                
             } else if status == "SETUP_ABANDONED" {
-                let err = PrimerError.cancelled(paymentMethodType: .apaya, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.cancelled(
+                    paymentMethodType: PrimerPaymentMethodType.apaya.rawValue,
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -71,19 +81,28 @@ public struct Apaya {
                 let mnc = url.queryParameterValue(for: "MNC"),
                 let success = url.queryParameterValue(for: "success")
             else {
-                let err = PrimerError.invalidValue(key: "apaya-params", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidValue(
+                    key: "apaya-params", value: nil,
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 throw err
             }
             
             guard ClientTokenService.decodedClientToken != nil else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidClientToken(
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 throw err
             }
             
-            guard let merchantAccountId = AppState.current.apiConfiguration?.getProductId(for: .apaya) else {
-                let err = PrimerError.invalidValue(key: "apaya-merchantAccountId", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            guard let merchantAccountId = AppState.current.apiConfiguration?.getProductId(for: PrimerPaymentMethodType.apaya.rawValue) else {
+                let err = PrimerError.invalidValue(
+                    key: "apaya-merchantAccountId",
+                    value: nil,
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 throw err
             }

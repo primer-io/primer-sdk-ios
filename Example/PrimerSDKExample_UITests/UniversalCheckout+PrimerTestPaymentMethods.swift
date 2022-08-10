@@ -53,16 +53,19 @@ extension UniversalCheckout {
     
     func testSuccessKlarnaPaymentMethod() throws {
         let payment = Base.paymentMethods.filter({ $0.alias == "PRIMER_TEST_KLARNA_AUTHORIZED" }).first!
+        base.setMetadataTextFieldValue("PRIMER_TEST_KLARNA")
         try performFlowForPayment(payment, decision: .success)
     }
     
     func testDeclinePayPalPaymentMethod() throws {
         let payment = Base.paymentMethods.filter({ $0.alias == "PRIMER_TEST_PAYPAL_DECLINED" }).first!
+        base.setMetadataTextFieldValue("PRIMER_TEST_PAYPAL")
         try performFlowForPayment(payment, decision: .decline)
     }
     
     func testFailedSofortPaymentMethod() throws {
         let payment = Base.paymentMethods.filter({ $0.alias == "PRIMER_TEST_SOFORT_FAILED" }).first!
+        base.setMetadataTextFieldValue("PRIMER_TEST_SOFORT")
         try performFlowForPayment(payment, decision: .fail)
     }
 

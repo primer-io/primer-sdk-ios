@@ -20,9 +20,9 @@ public class Primer {
     internal let sdkSessionId = UUID().uuidString
     internal var checkoutSessionId: String?
     private var timingEventId: String?
-
+    
     // MARK: - INITIALIZATION
-
+    
     public static var shared: Primer {
         return _Primer
     }
@@ -30,41 +30,41 @@ public class Primer {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-
+    
     fileprivate init() {
-        #if canImport(Primer3DS)
+#if canImport(Primer3DS)
         print("Can import Primer3DS")
-        #else
-        print("Failed to import Primer3DS")
-        #endif
+#else
+        print("WARNING!\nFailed to import Primer3DS")
+#endif
         
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
         
-        #if DEBUG
+#if DEBUG
         do {
             try Analytics.Service.deleteEvents()
         } catch {
             fatalError(error.localizedDescription)
         }
-        #endif
+#endif
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        #if canImport(Primer3DS)
+#if canImport(Primer3DS)
         return Primer3DS.application(app, open: url, options: options)
-        #endif
+#endif
         
         return false
     }
-
+    
     public func application(_ application: UIApplication,
-                     continue userActivity: NSUserActivity,
-                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        #if canImport(Primer3DS)
+                            continue userActivity: NSUserActivity,
+                            restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+#if canImport(Primer3DS)
         return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
-        #endif
+#endif
         
         return false
     }
@@ -73,24 +73,24 @@ public class Primer {
     private func onAppStateChange() {
         Analytics.Service.sync()
     }
-
+    
     // MARK: - CONFIGURATION
-
+    
     /**
      Configure SDK's settings
      */
-
+    
     public func configure(settings: PrimerSettings? = nil, delegate: PrimerDelegate? = nil) {
         DependencyContainer.register((settings ?? PrimerSettings()) as PrimerSettingsProtocol)
         self.delegate = delegate
     }
     
     // MARK: - SHOW
-
+    
     /**
      Show Primer Checkout
      */
-
+    
     public func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
         intent = .checkout
         checkoutSessionId = UUID().uuidString
@@ -148,72 +148,40 @@ public class Primer {
     }
     
     // swiftlint:disable cyclomatic_complexity
-    public func showPaymentMethod(_ paymentMethod: PrimerPaymentMethodType, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
+    public func showPaymentMethod(_ paymentMethodType: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         self.intent = intent
         checkoutSessionId = UUID().uuidString
-                
-        if case .checkout = intent {
-            switch paymentMethod {
-            case .adyenAlipay,
-                    .adyenDotPay,
-                    .adyenGiropay,
-                    .adyenIDeal,
-                    .adyenInterac,
-                    .adyenMobilePay,
-                    .adyenPayTrail,
-                    .adyenSofort,
-                    .adyenTrustly,
-                    .adyenTwint,
-                    .adyenVipps,
-                    .adyenPayshop,
-                    .applePay,
-                    .atome,
-                    .adyenBlik,
-                    .buckarooBancontact,
-                    .buckarooEps,
-                    .buckarooGiropay,
-                    .buckarooIdeal,
-                    .buckarooSofort,
-                    .coinbase,
-                    .hoolah,
-                    .klarna,
-                    .mollieBankcontact,
-                    .mollieIdeal,
-                    .opennode,
-                    .paymentCard,
-                    .payNLBancontact,
-                    .payNLGiropay,
-                    .payNLPayconiq,
-                    .payPal,
-                    .twoCtwoP,
-                    .rapydGCash,
-                    .rapydGrabPay,
-                    .rapydPoli,
-                    .rapydFast,
-                    .rapydPromptPay,
-                    .xfers:
-                break
-
-            default:
-                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-                return
-            }
+        
+        guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
+            let err = PrimerError.unableToPresentPaymentMethod(
+                paymentMethodType: paymentMethodType,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
+            completion?(err)
+            return
+        }
+        
+        if case .checkout = intent, paymentMethod.isCheckoutEnabled == false  {
+            let err = PrimerError.unsupportedIntent(
+                intent: intent,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
+            completion?(err)
+            return
             
-        } else {
-            switch paymentMethod {
-            case .apaya,
-                    .klarna,
-                    .paymentCard,
-                    .payPal:
-                break
-            default:
-                let err = PrimerError.unsupportedIntent(intent: intent, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-                return
-            }
+        } else if case .vault = intent, paymentMethod.isVaultingEnabled == false {
+            let err = PrimerError.unsupportedIntent(
+                intent: intent,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
+            completion?(err)
+            return
         }
         
         let sdkEvent = Analytics.Event(
@@ -237,11 +205,11 @@ public class Primer {
                 id: self.timingEventId!))
         Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
-        self.show(paymentMethodType: paymentMethod, withClientToken: clientToken, completion: completion)
+        self.show(paymentMethodType: paymentMethodType, withClientToken: clientToken, completion: completion)
     }
     
     // swiftlint:enable cyclomatic_complexity
-
+    
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
         let sdkEvent = Analytics.Event(
@@ -278,14 +246,14 @@ public class Primer {
         }
     }
     
-    private func show(paymentMethodType: PrimerPaymentMethodType?, withClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
+    private func show(paymentMethodType: String?, withClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         ClientTokenService.storeClientToken(clientToken) { [weak self] error in
             self?.show(paymentMethodType: paymentMethodType)
             completion?(error)
         }
     }
     
-    private func show(paymentMethodType: PrimerPaymentMethodType?) {
+    private func show(paymentMethodType: String?) {
         let event = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(

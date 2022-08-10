@@ -234,7 +234,7 @@ public enum CardNetwork: String, CaseIterable {
     public var icon: UIImage? {
         switch self {
         case .amex:
-            return UIImage(named: "amex", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "amex-card-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
         case .bancontact:
             return UIImage(named: "bancontact-icon", in: Bundle.primerResources, compatibleWith: nil)
         case .diners:
@@ -254,11 +254,11 @@ public enum CardNetwork: String, CaseIterable {
         case .mir:
             return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
         case .masterCard:
-            return UIImage(named: "masterCard", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "mastercard-card-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
         case .unionpay:
             return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
         case .visa:
-            return UIImage(named: "visa", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "visa-card-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
         case .unknown:
             return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
         }
@@ -296,7 +296,7 @@ public enum CardNetwork: String, CaseIterable {
         guard let options = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options, !options.isEmpty else { return nil }
         
         for paymentMethodOption in options {
-            guard let type = paymentMethodOption["type"] as? String, type == "PAYMENT_CARD" else { continue }
+            guard let type = paymentMethodOption["type"] as? String, type == PrimerPaymentMethodType.paymentCard.rawValue else { continue }
             guard let networks = paymentMethodOption["networks"] as? [[String: Any]] else { continue }
             guard let tmpNetwork = networks.filter({ $0["type"] as? String == self.rawValue.uppercased() }).first else { continue }
             guard let surcharge = tmpNetwork["surcharge"] as? Int else { continue }

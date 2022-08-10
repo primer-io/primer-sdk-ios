@@ -94,6 +94,13 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Pay by mobile",
             comment: "Pay by mobile - Payment By Mobile (e.g. Apaya)")
+        
+        static let payWithCard = NSLocalizedString(
+            "payment-method-type-card-not-vaulted",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Pay with card",
+            comment: "Pay with card - Payment Method Type (Card Not vaulted)")
     }
 }
 
@@ -294,14 +301,7 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Choose payment method",
             comment: "Choose payment method - Checkout Navigation Bar Title")
-        
-        static let cardButtonText = NSLocalizedString(
-            "primer-direct-checkout-pay-by-card",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Pay by card",
-            comment: "Pay by card - Direct Checkout (Card button text)")
-        
+                
         static let applePayButtonText = NSLocalizedString(
             "primer-direct-checkout-apple-pay",
             tableName: nil,
@@ -422,13 +422,6 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Add new card",
             comment: "Add new card - Vault Payment Method (Button text)")
-        
-        static let payWithCard = NSLocalizedString(
-            "payment-method-type-card-not-vaulted",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Pay with card",
-            comment: "Pay with card - Payment Method Type (Card Not vaulted)")
     }
     
     // MARK: Card form

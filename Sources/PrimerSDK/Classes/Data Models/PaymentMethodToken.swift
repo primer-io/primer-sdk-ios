@@ -101,7 +101,7 @@ struct CardButtonViewModel {
     let paymentMethodType: PaymentInstrumentType
     var surCharge: Int? {
         guard let options = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options else { return nil }
-        guard let paymentCardOption = options.filter({ $0["type"] as? String == "PAYMENT_CARD" }).first else { return nil }
+        guard let paymentCardOption = options.filter({ $0["type"] as? String == PrimerPaymentMethodType.paymentCard.rawValue }).first else { return nil }
         guard let networks = paymentCardOption["networks"] as? [[String: Any]] else { return nil }
         guard let tmpNetwork = networks.filter({ ($0["type"] as? String)?.lowercased() == network.lowercased() }).first else { return nil }
         return tmpNetwork["surcharge"] as? Int
@@ -156,35 +156,6 @@ public enum PaymentInstrumentType: String, Codable {
 
     public init(from decoder: Decoder) throws {
         self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
-    }
-    
-    var paymentMethodType: PrimerPaymentMethodType {
-        switch self {
-        case .apayaToken:
-            return .apaya
-        case .paymentCard:
-            return .paymentCard
-        case .payPalOrder:
-            return .payPal
-        case .payPalBillingAgreement:
-            return .payPal
-        case .applePay:
-            return .applePay
-        case .googlePay:
-            return .googlePay
-        case .goCardlessMandate:
-            return .goCardlessMandate
-        case .klarna:
-            return .klarna
-        case .klarnaPaymentSession:
-            return .klarna
-        case .klarnaCustomerToken:
-            return .klarna
-        case .hoolah:
-            return .hoolah
-        case .unknown:
-            return .other(rawValue: PaymentInstrumentType.unknown.rawValue)
-        }
     }
 }
 

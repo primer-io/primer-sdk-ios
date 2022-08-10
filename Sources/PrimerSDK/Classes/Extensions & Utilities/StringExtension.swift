@@ -74,8 +74,10 @@ internal extension String {
         return isValid
     }
     
-    var isURL: Bool {
-        return URL(string: self) != nil
+    var isHttpOrHttpsURL: Bool {
+        let canCreateURL = URL(string: self) != nil
+        let startsWithHttpOrHttps = hasPrefix("http") || hasPrefix("https")
+        return canCreateURL && startsWithHttpOrHttps
     }
     
     var withoutNonNumericCharacters: String {
