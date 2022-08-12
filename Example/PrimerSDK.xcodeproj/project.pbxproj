@@ -12,6 +12,7 @@
 		156F97092706DDE6004503C0 /* PaymentMethodConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156F97082706DDE6004503C0 /* PaymentMethodConfigTests.swift */; };
 		1582B97D260A3F2900C80BD7 /* MockVaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B95F260A3F2900C80BD7 /* MockVaultCheckoutViewModel.swift */; };
 		1582B97F260A3F2900C80BD7 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B961260A3F2900C80BD7 /* Mocks.swift */; };
+		1582B980260A3F2900C80BD7 /* MockPrimerAPIConfigurationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B963260A3F2900C80BD7 /* MockPrimerAPIConfigurationService.swift */; };
 		1582B981260A3F2900C80BD7 /* PayPalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B964260A3F2900C80BD7 /* PayPalService.swift */; };
 		1582B982260A3F2900C80BD7 /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B965260A3F2900C80BD7 /* VaultService.swift */; };
 		1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1582B966260A3F2900C80BD7 /* ClientTokenService.swift */; };
@@ -54,14 +55,13 @@
 		2C10D12E2840C42F0059B9E1 /* CreateResumePaymentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C10D12C2840C41B0059B9E1 /* CreateResumePaymentService.swift */; };
 		2C98001728746CC50045A4DE /* UniversalCheckout+PrimerTestPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C98001628746CC50045A4DE /* UniversalCheckout+PrimerTestPaymentMethods.swift */; };
 		2C980019287471A80045A4DE /* XCUIElement+Scrolling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C980018287471A80045A4DE /* XCUIElement+Scrolling.swift */; };
+		2C9DC7B728A641C00020E03F /* MerchantHUCRawCardDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9DC7B628A641C00020E03F /* MerchantHUCRawCardDataViewController.swift */; };
 		3D11C89390976FD4353F77EF /* Pods_PrimerSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E9F23C8CDC99158C041D67E /* Pods_PrimerSDK_Tests.framework */; };
 		5EA57E4ABB02AB0B501CAF0C /* Pods_PrimerSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EA375198BB8A81AB2F6E041 /* Pods_PrimerSDK_Example.framework */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
-		849383B62880416B0093FD14 /* PrimerRawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849383B52880416B0093FD14 /* PrimerRawDataManagerTests.swift */; };
-		849383B8288045910093FD14 /* MerchantHUCRawCardDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849383B7288045910093FD14 /* MerchantHUCRawCardDataViewController.swift */; };
 		849A28EB275614070037C2D1 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EA275614070037C2D1 /* Networking.swift */; };
 		849A28ED275788040037C2D1 /* ExternalPaymentMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */; };
 /* End PBXBuildFile section */
@@ -92,6 +92,7 @@
 		156F97082706DDE6004503C0 /* PaymentMethodConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigTests.swift; sourceTree = "<group>"; };
 		1582B95F260A3F2900C80BD7 /* MockVaultCheckoutViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockVaultCheckoutViewModel.swift; sourceTree = "<group>"; };
 		1582B961260A3F2900C80BD7 /* Mocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
+		1582B963260A3F2900C80BD7 /* MockPrimerAPIConfigurationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockPrimerAPIConfigurationService.swift; sourceTree = "<group>"; };
 		1582B964260A3F2900C80BD7 /* PayPalService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PayPalService.swift; sourceTree = "<group>"; };
 		1582B965260A3F2900C80BD7 /* VaultService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VaultService.swift; sourceTree = "<group>"; };
 		1582B966260A3F2900C80BD7 /* ClientTokenService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientTokenService.swift; sourceTree = "<group>"; };
@@ -150,6 +151,7 @@
 		2C10D12C2840C41B0059B9E1 /* CreateResumePaymentService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateResumePaymentService.swift; sourceTree = "<group>"; };
 		2C98001628746CC50045A4DE /* UniversalCheckout+PrimerTestPaymentMethods.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UniversalCheckout+PrimerTestPaymentMethods.swift"; sourceTree = "<group>"; };
 		2C980018287471A80045A4DE /* XCUIElement+Scrolling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCUIElement+Scrolling.swift"; sourceTree = "<group>"; };
+		2C9DC7B628A641C00020E03F /* MerchantHUCRawCardDataViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHUCRawCardDataViewController.swift; sourceTree = "<group>"; };
 		3B55FBF1D40BE6B25F29A5D9 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		45CA532A34F52954A21835C5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* PrimerSDK_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrimerSDK_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -171,8 +173,6 @@
 		846BE6CF280FEE720052E4DB /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Main.strings; sourceTree = "<group>"; };
 		846BE6D0280FEE740052E4DB /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main.strings; sourceTree = "<group>"; };
 		846BE6D2280FEE760052E4DB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
-		849383B52880416B0093FD14 /* PrimerRawDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerRawDataManagerTests.swift; sourceTree = "<group>"; };
-		849383B7288045910093FD14 /* MerchantHUCRawCardDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHUCRawCardDataViewController.swift; sourceTree = "<group>"; };
 		849A28EA275614070037C2D1 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		849A28EC275788040037C2D1 /* ExternalPaymentMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalPaymentMethods.swift; sourceTree = "<group>"; };
 		DB23565438E31642C10D7B48 /* Pods-PrimerSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrimerSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -218,7 +218,6 @@
 		1582B958260A3F2900C80BD7 /* PrimerSDK_Tests */ = {
 			isa = PBXGroup;
 			children = (
-				849383B42880414B0093FD14 /* PrimerHeadlessUniversalCheckout */,
 				15F32E1B26FDA8CF004B3903 /* Primer */,
 				1DEBE0DD26B6FC92004E3064 /* Data Models */,
 				1582B959260A3F2900C80BD7 /* Mocks */,
@@ -254,6 +253,7 @@
 			isa = PBXGroup;
 			children = (
 				2C10D12C2840C41B0059B9E1 /* CreateResumePaymentService.swift */,
+				1582B963260A3F2900C80BD7 /* MockPrimerAPIConfigurationService.swift */,
 				1582B964260A3F2900C80BD7 /* PayPalService.swift */,
 				1582B965260A3F2900C80BD7 /* VaultService.swift */,
 				1582B966260A3F2900C80BD7 /* ClientTokenService.swift */,
@@ -382,6 +382,7 @@
 		1DC7EE0A261FA37800BCBFFC /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				2C9DC7B628A641C00020E03F /* MerchantHUCRawCardDataViewController.swift */,
 				2C10D12A2840C1D70059B9E1 /* SpinnerViewController.swift */,
 				2C10D1282840C1C90059B9E1 /* MerchantAssetsViewController.swift */,
 				2C10D1102840C1A60059B9E1 /* AppViewController.swift */,
@@ -391,7 +392,6 @@
 				2C10D10E2840C1A60059B9E1 /* MerchantCheckoutViewController.swift */,
 				2C10D10F2840C1A60059B9E1 /* MerchantPaymentMethodsViewController.swift */,
 				2C10D1132840C1A60059B9E1 /* ResultViewController.swift */,
-				849383B7288045910093FD14 /* MerchantHUCRawCardDataViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -452,14 +452,6 @@
 				3B55FBF1D40BE6B25F29A5D9 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
-			sourceTree = "<group>";
-		};
-		849383B42880414B0093FD14 /* PrimerHeadlessUniversalCheckout */ = {
-			isa = PBXGroup;
-			children = (
-				849383B52880416B0093FD14 /* PrimerRawDataManagerTests.swift */,
-			);
-			path = PrimerHeadlessUniversalCheckout;
 			sourceTree = "<group>";
 		};
 		CAECC3F22E94EA70F1F01CFC /* Pods */ = {
@@ -733,7 +725,7 @@
 				2C10D1292840C1C90059B9E1 /* MerchantAssetsViewController.swift in Sources */,
 				1DE0355C2716E4D1007BADAB /* CheckoutTheme.swift in Sources */,
 				2C10D1222840C1B00059B9E1 /* Networking+Models.swift in Sources */,
-				849383B8288045910093FD14 /* MerchantHUCRawCardDataViewController.swift in Sources */,
+				2C9DC7B728A641C00020E03F /* MerchantHUCRawCardDataViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				2C10D1152840C1A60059B9E1 /* MerchantCheckoutViewController.swift in Sources */,
 				1DC7EE14261FA3D400BCBFFC /* CreateClientToken.swift in Sources */,
@@ -755,7 +747,7 @@
 				15F5E2FF26982B21003AFF8A /* CardComponentManagerTests.swift in Sources */,
 				1582B98B260A3F2900C80BD7 /* MaskTests.swift in Sources */,
 				1582B983260A3F2900C80BD7 /* ClientTokenService.swift in Sources */,
-				849383B62880416B0093FD14 /* PrimerRawDataManagerTests.swift in Sources */,
+				1582B980260A3F2900C80BD7 /* MockPrimerAPIConfigurationService.swift in Sources */,
 				15F32E1D26FDA8E4004B3903 /* PrimerTests.swift in Sources */,
 				1582B988260A3F2900C80BD7 /* VaultCheckoutViewModelTests.swift in Sources */,
 				2C10D12E2840C42F0059B9E1 /* CreateResumePaymentService.swift in Sources */,
@@ -1027,8 +1019,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PrimerSDK_Example.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development: DX Primer (8B5K7AGMS8)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development: DX Primer (8B5K7AGMS8)";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1652387287;
 				DEVELOPMENT_TEAM = N8UN9TR5DY;

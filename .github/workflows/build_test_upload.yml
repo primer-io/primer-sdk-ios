@@ -31,7 +31,7 @@ jobs:
   build-and-upload:
     needs: danger
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     name: "Build and upload app"
     steps:
       - name: Cancel previous jobs
