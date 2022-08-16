@@ -525,7 +525,7 @@ extension PrimerRootViewController {
 extension PrimerRootViewController {
     
     private func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
-        let resultViewController = PrimerResultViewController(screenType: .success, message: message)
+        let resultViewController = PrimerResultViewController(screenType: type, message: message)
         resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
         resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
         Primer.shared.primerRootVC?.show(viewController: resultViewController)

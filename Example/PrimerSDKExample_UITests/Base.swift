@@ -559,6 +559,14 @@ class Base: XCTestCase {
         metadataTextField.clearText()
         metadataTextField.typeText(string)
     }
+    
+    func setAPIKeyTextFieldValue(_ string: String) {
+        let apiKeyFieldAccount = app.textFields["api_key_txt_field"]
+        guard apiKeyFieldAccount.exists else { return }
+        apiKeyFieldAccount.tap()
+        apiKeyFieldAccount.clearText()
+        apiKeyFieldAccount.typeText(string)
+    }
 
     func testPayment(_ payment: Payment, cancelPayment: Bool = true) throws {
         

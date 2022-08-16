@@ -177,6 +177,11 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     }
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
+        
+        guard ClientTokenService.decodedClientToken?.intent?.contains("_REDIRECTION") == false else {
+            return super.presentPaymentMethodUserInterface()
+        }
+        
         return Promise { seal in
             DispatchQueue.main.async {
                 let bsvc = BankSelectorViewController(viewModel: self)
@@ -189,6 +194,11 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     }
     
     override func awaitUserInput() -> Promise<Void> {
+        
+        guard ClientTokenService.decodedClientToken?.intent?.contains("_REDIRECTION") == false else {
+            return super.awaitUserInput()
+        }
+        
         return Promise { seal in
             self.bankSelectionCompletion = { bank in
                 self.selectedBank = bank
