@@ -873,6 +873,13 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Phone Number",
             comment: "Phone Number - Text field top placeholder")
+        
+        static let completeYourPayment = NSLocalizedString(
+            "completeYourPaymentInTheApp",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Complete your payment in the MB WAY app",
+            comment: "Info message suggesting the user to open the MB WAY app to complete the payment")
     }
 
 }

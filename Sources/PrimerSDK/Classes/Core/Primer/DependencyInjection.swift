@@ -113,7 +113,10 @@ final internal class DependencyContainer {
                 let primerTheme: PrimerThemeProtocol = PrimerTheme()
                 DependencyContainer.register(primerTheme)
                 return self.resolve()
-                
+            } else if key == String(describing: PrimerAPIConfigurationServiceProtocol.self) {
+                let configuration: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: false)
+                DependencyContainer.register(configuration)
+                return self.resolve()
             }
         }
 

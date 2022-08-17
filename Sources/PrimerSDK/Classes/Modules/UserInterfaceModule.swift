@@ -369,7 +369,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         coloredHex: nil,
                         lightHex: "#000000",
                         darkHex: "#FFFFFF"),
-                    text: "Pay by mobile",
+                    text: Strings.PaymentButton.payByMobile,
                     textColor: PrimerTheme.BaseColors(
                         coloredHex: nil,
                         lightHex: "#000000",

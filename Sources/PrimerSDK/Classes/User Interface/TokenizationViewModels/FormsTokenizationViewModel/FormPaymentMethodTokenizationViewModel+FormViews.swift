@@ -147,6 +147,35 @@ extension FormPaymentMethodTokenizationViewModel {
         return PrimerFormView(formViews: views)
     }
 }
+extension FormPaymentMethodTokenizationViewModel {
+    
+    // MARK: Payment Pending Info View
+    
+    func makePaymentPendingInfoView(logo: UIImage? = nil,
+                                    message: String) -> PrimerFormView {
+        
+        // The top logo
+        
+        let logoImageView = UIImageView(image: logo ?? uiModule.logo)
+        logoImageView.clipsToBounds = true
+        logoImageView.contentMode = .scaleAspectFit
+        
+        // Message string
+        
+        let completeYourPaymentLabel = UILabel()
+        completeYourPaymentLabel.text = message
+        completeYourPaymentLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.title)
+        completeYourPaymentLabel.textColor = theme.text.title.color
+
+        let views = [[logoImageView],
+                     [completeYourPaymentLabel]]
+        
+        return PrimerFormView(formViews: views)
+
+    }
+
+}
+
 
 extension FormPaymentMethodTokenizationViewModel {
     
@@ -174,8 +203,14 @@ extension FormPaymentMethodTokenizationViewModel {
     // MARK: Present appropriate View Controller
     
     func presentPaymentMethodAppropriateViewController() -> Promise<Void> {
+        
         if inputPaymentMethodTypes.contains(self.config.type) {
-            return presentInputViewController()
+            
+            let pcfvc = PrimerFormViewController()
+            pcfvc.verticalStackView.addArrangedSubview(makePaymentPendingInfoView(message: Strings.MBWay.completeYourPayment))
+            Primer.shared.primerRootVC?.show(viewController: pcfvc)
+
+            return Promise() //presentInputViewController()
         }
         
         if accountInfoPaymentMethodTypes.contains(self.config.type) {

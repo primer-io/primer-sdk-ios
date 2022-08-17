@@ -39,7 +39,10 @@ extension PrimerCardholderNameField {
     
     internal static var isCardholderNameFieldEnabled: Bool {
         let cardInfoOptions = AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
-        return cardInfoOptions?.cardHolderName == true
+        if let isCardHolderNameCheckoutModuleOptionEnabled = cardInfoOptions?.cardHolderName {
+            return isCardHolderNameCheckoutModuleOptionEnabled
+        }
+        return true
     }
 }
 
