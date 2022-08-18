@@ -109,7 +109,7 @@ extension PrimerHeadlessUniversalCheckout {
                 return self.makeRequestBody()
             }
             .then { requestbody -> Promise<PaymentMethodToken> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: PrimerPaymentMethodType.paymentCard.rawValue)
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodType)
                 return self.tokenize(request: requestbody)
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
@@ -550,7 +550,7 @@ extension PrimerHeadlessUniversalCheckout {
             let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
             client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
                 if self.webViewCompletion == nil {
-                    let err = PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     completion(nil, err)
                     return
@@ -586,7 +586,7 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager: SFSafariViewController
     private func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion = webViewCompletion {
             // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)
         }

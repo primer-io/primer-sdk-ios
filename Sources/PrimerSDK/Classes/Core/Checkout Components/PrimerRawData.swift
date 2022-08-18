@@ -22,7 +22,7 @@ public class PrimerRawData: NSObject, PrimerRawDataProtocol {
     }
 }
 
-public class PhoneNumberInputRawData: PrimerRawData {
+public class PrimerRawPhoneNumberData: PrimerRawData {
     
     public var phoneNumber: String {
         didSet {
