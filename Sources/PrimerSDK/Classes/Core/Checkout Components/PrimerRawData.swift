@@ -22,6 +22,31 @@ public class PrimerRawData: NSObject, PrimerRawDataProtocol {
     }
 }
 
+public class PhoneNumberInputRawData: PrimerRawData {
+    
+    public var phoneNumber: String {
+        didSet {
+            self.onDataDidChange?()
+        }
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case phoneNumber
+    }
+    
+    public required init(
+        phoneNumber: String
+    ) {
+        self.phoneNumber = phoneNumber
+        super.init()
+    }
+    
+    public override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(phoneNumber, forKey: .phoneNumber)
+    }
+}
+
 public class PrimerCardData: PrimerRawData {
     
     public var cardNumber: String {

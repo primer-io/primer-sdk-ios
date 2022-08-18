@@ -7,7 +7,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     static var allProviders: [String] {
         return PrimerPaymentMethodType.allCases.compactMap({ $0.provider }).unique
     }
-
+    
     case adyenAlipay        = "ADYEN_ALIPAY"
     case adyenBlik          = "ADYEN_BLIK"
     case adyenDotPay        = "ADYEN_DOTPAY"
@@ -52,8 +52,9 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case rapydPromptPay     = "RAPYD_PROMPTPAY"
     case rapydPoli          = "RAPYD_POLI"
     case twoCtwoP           = "TWOC2P"
+    case xenditOvo          = "XENDIT_OVO"
     case xfersPayNow        = "XFERS_PAYNOW"
-
+    
     var isEnabled: Bool {
         switch self {
         case .goCardless,
@@ -94,14 +95,14 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
                 .payPal,
                 .twoCtwoP:
             return rawValue
-
+            
         case .buckarooBancontact,
                 .buckarooEps,
                 .buckarooGiropay,
                 .buckarooIdeal,
                 .buckarooSofort:
             return "BUCKAROO"
-
+            
         case .mollieBankcontact,
                 .mollieIdeal:
             return "MOLLIE"
@@ -123,6 +124,9 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
                 .rapydPoli,
                 .rapydPromptPay:
             return "RAPYD"
+            
+        case .xenditOvo:
+            return "XENDIT"
             
         case .xfersPayNow:
             return "XFERS"

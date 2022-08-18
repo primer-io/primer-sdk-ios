@@ -13,7 +13,14 @@ import UIKit
 @objc
 public enum PrimerInputElementType: Int {
     
-    case cardNumber, expiryDate, cvv, cardholderName, otp, postalCode, unknown
+    case cardNumber
+    case expiryDate
+    case cvv
+    case cardholderName
+    case otp
+    case postalCode
+    case phoneNumber
+    case unknown
     
     public var stringValue: String {
         switch self {
@@ -29,6 +36,8 @@ public enum PrimerInputElementType: Int {
             return "OTP"
         case .postalCode:
             return "POSTAL_CODE"
+        case .phoneNumber:
+            return "PHONE_NUMBER"
         case .unknown:
             return "UNKNOWN"
         }
@@ -63,7 +72,11 @@ public enum PrimerInputElementType: Int {
         case .postalCode:
             guard let text = value as? String else { return false }
             return text.isValidPostalCode
-
+            
+        case .phoneNumber:
+            guard let text = value as? String else { return false }
+            return text.isValidPhoneNumber
+            
         default:
             return true
         }
@@ -136,21 +149,16 @@ public enum PrimerInputElementType: Int {
     
     internal var allowedCharacterSet: CharacterSet? {
         switch self {
-        case .cardNumber:
-            return CharacterSet(charactersIn: "0123456789")
-            
-        case .expiryDate:
-            return CharacterSet(charactersIn: "0123456789")
-            
-        case .cvv:
-            return CharacterSet(charactersIn: "0123456789")
+        case .cardNumber,
+                .expiryDate,
+                .cvv,
+                .otp,
+                .phoneNumber:
+            return CharacterSet.decimalDigits
             
         case .cardholderName:
             return CharacterSet.letters
             
-        case .otp:
-            return CharacterSet(charactersIn: "0123456789")
-
         default:
             return nil
         }
@@ -158,24 +166,18 @@ public enum PrimerInputElementType: Int {
     
     internal var keyboardType: UIKeyboardType {
         switch self {
-        case .cardNumber:
+        case .cardNumber,
+                .expiryDate,
+                .cvv,
+                .otp,
+                .phoneNumber:
             return UIKeyboardType.numberPad
             
-        case .expiryDate:
-            return UIKeyboardType.numberPad
             
-        case .cvv:
-            return UIKeyboardType.numberPad
-            
-        case .cardholderName:
+        case .cardholderName,
+                .postalCode:
             return UIKeyboardType.alphabet
             
-        case .otp:
-            return UIKeyboardType.numberPad
-            
-        case .postalCode:
-            return UIKeyboardType.alphabet
-
         default:
             return UIKeyboardType.default
         }

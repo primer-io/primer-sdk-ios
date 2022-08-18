@@ -209,6 +209,12 @@ internal extension String {
         let emailP = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
         return emailP.evaluate(with: self)
     }
+    
+    var isValidPhoneNumber: Bool {
+        let phoneNumberRegEx = "^(^\\+628|628)(\\d{8,10})"
+        let phoneNumber = NSPredicate(format: "SELF MATCHES %@", phoneNumberRegEx)
+        return phoneNumber.evaluate(with: self)
+    }
 
     var isValidLuhn: Bool {
         var sum = 0
