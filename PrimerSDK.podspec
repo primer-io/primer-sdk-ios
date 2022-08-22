@@ -35,4 +35,8 @@ Pod::Spec.new do |s|
         }
     end
     
+    s.subspec 'PrimerKlarnaSDK' do |ss|
+        ss.ios.source_files = 'PrimerKlarnaSDK/PrimerKlarnaSDK/Classes/**/*.{h,m,swift}'
+    end
+    
 end
