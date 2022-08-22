@@ -31,6 +31,7 @@ Pod::Spec.new do |s|
         ss.ios.pod_target_xcconfig = {
             "FRAMEWORK_SEARCH_PATHS" => [
                 "${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS",
+                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK",
             ]
         }
     end
