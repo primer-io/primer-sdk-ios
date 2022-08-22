@@ -419,13 +419,19 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     // MARK: Input Payment Methods Array
     
     /// Array containing the payment method types expecting some input step to be performed
-    let inputPaymentMethodTypes: [String] = [PrimerPaymentMethodType.adyenBlik.rawValue, PrimerPaymentMethodType.adyenMBWay.rawValue]
+    let inputPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenBlik, .adyenMBWay]
     
     // MARK: Account Info Payment Methods Array
     
     /// Array containing the payment method types expecting some account info
     /// to transfer the founds to
-    let accountInfoPaymentMethodTypes: [String] = [PrimerPaymentMethodType.rapydFast.rawValue]
+    let accountInfoPaymentMethodTypes: [PrimerPaymentMethodType] = [.rapydFast]
+    
+    // MARK: Payment Pending Info Array
+    
+    /// Dictionary containing the payment method types expecting to show a view with the Payment Logo and a message
+    /// informing the user to complete the payment outside of the current Application context
+    let needingExternalCompletionPaymentMethodDictionary: [PrimerPaymentMethodType: String] = [.adyenMBWay: Strings.MBWay.completeYourPayment]
     
     // MARK: Account Info Payment
     
@@ -550,9 +556,12 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                    if let statusUrlStr = decodedClientToken.statusUrl,
                       let statusUrl = URL(string: statusUrlStr),
                       decodedClientToken.intent != nil {
+                                              
+                       let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type)
+                       let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary.first { $0.key == paymentMethodType } != nil) == true
                        
                        firstly {
-                           self.presentPaymentMethodAppropriateViewController()
+                           self.presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: isPaymentMethodNeedingExternalCompletion)
                        }
                        .then { () -> Promise<String> in
                            let pollingModule = PollingModule(url: statusUrl)
@@ -579,7 +588,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     private func evaluatePaymentMethodNeedingFurtherUserActions() -> Promise<Void> {
         
-        guard inputPaymentMethodTypes.contains(self.config.type) else {
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) else {
             return Promise()
         }
         
@@ -587,7 +596,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
-        guard inputPaymentMethodTypes.contains(self.config.type) else {
+        
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) else {
             return Promise()
         }
         
@@ -624,8 +634,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 place: .cardForm))
         Analytics.Service.record(event: viewEvent)
         
-        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
-
         switch config.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             self.uiModule.submitButton?.startAnimating()
@@ -814,7 +822,6 @@ extension FormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTo
     func cancel() {
         didCancel?()
         inputs = []
-        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
         
         let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
         ErrorHandler.handle(error: err)
