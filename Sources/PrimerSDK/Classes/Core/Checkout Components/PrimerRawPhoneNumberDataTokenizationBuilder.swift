@@ -7,11 +7,11 @@
 
 import Foundation
 
-class PrimerRawPhoneNumberDataTokenization: PrimerRawDataTokenizationBuilderProtocol {
+class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
     
     var rawData: PrimerRawData? {
         didSet {
-            if let rawPhoneNumberInput = self.rawData as? PrimerRawPhoneNumberData {
+            if let rawPhoneNumberInput = self.rawData as? PrimerPhoneNumberData {
                 rawPhoneNumberInput.onDataDidChange = {
                     _ = self.validateRawData(rawPhoneNumberInput)
                 }
@@ -54,7 +54,7 @@ class PrimerRawPhoneNumberDataTokenization: PrimerRawDataTokenizationBuilderProt
                 return
             }
             
-            guard let rawData = data as? PrimerRawPhoneNumberData else {
+            guard let rawData = data as? PrimerPhoneNumberData else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -76,7 +76,7 @@ class PrimerRawPhoneNumberDataTokenization: PrimerRawDataTokenizationBuilderProt
             
             var errors: [PrimerValidationError] = []
             
-            guard let rawData = data as? PrimerRawPhoneNumberData, let rawDataManager = rawDataManager else {
+            guard let rawData = data as? PrimerPhoneNumberData, let rawDataManager = rawDataManager else {
                 let err = PrimerValidationError.invalidRawData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 errors.append(err)
                 ErrorHandler.handle(error: err)

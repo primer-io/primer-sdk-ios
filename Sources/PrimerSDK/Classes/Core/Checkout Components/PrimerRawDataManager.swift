@@ -44,6 +44,9 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         public private(set) var paymentMethodTokenData: PrimerPaymentMethodTokenData?
+        public var requiredInputElementTypes: [PrimerInputElementType] {
+            self.rawDataTokenizationBuilder.requiredInputElementTypes
+        }
         private var resumePaymentId: String?
         private var rawDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
@@ -64,10 +67,10 @@ extension PrimerHeadlessUniversalCheckout {
             switch paymentMethodType {
                 
             case PrimerPaymentMethodType.paymentCard.rawValue:
-                self.rawDataTokenizationBuilder = PrimerRawCardDataTokenization(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue)
+                self.rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue)
                 
             case PrimerPaymentMethodType.xenditOvo.rawValue:
-                self.rawDataTokenizationBuilder = PrimerRawPhoneNumberDataTokenization(paymentMethodType: paymentMethodType)
+                self.rawDataTokenizationBuilder = PrimerRawPhoneNumberDataTokenizationBuilder(paymentMethodType: paymentMethodType)
                 
             default:
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: nil)
@@ -80,7 +83,12 @@ extension PrimerHeadlessUniversalCheckout {
             self.rawDataTokenizationBuilder.configureRawDataManager(self)
         }
         
+        @available(*, deprecated, message: "See: `listRequiredInputElementTypes`")
         public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType] {
+            return self.rawDataTokenizationBuilder.requiredInputElementTypes
+        }
+        
+        public func listRequiredInputElementTypes() -> [PrimerInputElementType] {
             return self.rawDataTokenizationBuilder.requiredInputElementTypes
         }
         

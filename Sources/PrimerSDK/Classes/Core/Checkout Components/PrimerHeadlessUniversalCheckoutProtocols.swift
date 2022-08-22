@@ -154,7 +154,7 @@ public enum PrimerInputElementType: Int {
                 .cvv,
                 .otp,
                 .phoneNumber:
-            return CharacterSet.decimalDigits
+            return CharacterSet(charactersIn: "0123456789")
             
         case .cardholderName:
             return CharacterSet.letters

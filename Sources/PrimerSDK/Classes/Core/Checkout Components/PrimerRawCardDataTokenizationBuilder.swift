@@ -7,7 +7,7 @@
 
 import Foundation
 
-class PrimerRawCardDataTokenization: PrimerRawDataTokenizationBuilderProtocol {
+class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
     
     var rawData: PrimerRawData? {
         didSet {
