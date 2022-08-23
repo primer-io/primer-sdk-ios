@@ -83,15 +83,10 @@ extension PrimerHeadlessUniversalCheckout {
             self.rawDataTokenizationBuilder.configureRawDataManager(self)
         }
         
-        @available(*, deprecated, message: "See: `listRequiredInputElementTypes`")
         public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType] {
             return self.rawDataTokenizationBuilder.requiredInputElementTypes
         }
-        
-        public func listRequiredInputElementTypes() -> [PrimerInputElementType] {
-            return self.rawDataTokenizationBuilder.requiredInputElementTypes
-        }
-        
+                
         public func submit() {
             
             guard let rawData = rawData else {
