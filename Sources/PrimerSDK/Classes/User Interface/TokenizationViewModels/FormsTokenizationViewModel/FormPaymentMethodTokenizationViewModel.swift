@@ -746,11 +746,11 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     return
                 }
                 
-                let tokenizationRequest = MBWayPaymentMethodTokenizationRequest(
-                    paymentInstrument: MBWayPaymentMethodOptions(
+                let tokenizationRequest = InputPhoneNumberPaymentMethodTokenizationRequest(
+                    paymentInstrument: InputPhoneNumberPaymentMethodOptions(
                         paymentMethodType: config.type,
                         paymentMethodConfigId: configId,
-                        sessionInfo: MBWayPaymentMethodOptions.SessionInfo(
+                        sessionInfo: InputPhoneNumberPaymentMethodOptions.SessionInfo(
                             phoneNumber: "\(FormPaymentMethodTokenizationViewModel.countryDialCode)\(phoneNumber)",
                             locale: PrimerSettings.current.localeData.localeCode)))
                 

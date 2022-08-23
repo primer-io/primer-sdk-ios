@@ -16,81 +16,84 @@ public protocol PrimerRawDataManagerDelegate {
     @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?)
 }
 
+protocol PrimerRawDataTokenizationBuilderProtocol {
+    
+    var requiredInputElementTypes: [PrimerInputElementType] { get }
+    var paymentMethodType: String { get }
+    var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? { get }
+    var isDataValid: Bool { get set }
+    var rawData: PrimerRawData? { get set }
+    
+    init(paymentMethodType: String)
+    func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager)
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<TokenizationRequest>
+    func validateRawData(_ data: PrimerRawData) -> Promise<Void>
+}
+
 extension PrimerHeadlessUniversalCheckout {
     
     public class RawDataManager: NSObject {
         
         public var delegate: PrimerRawDataManagerDelegate?
         public private(set) var paymentMethodType: String
-        public private(set) var requiredInputElementTypes: [PrimerInputElementType]
         public var rawData: PrimerRawData? {
             didSet {
                 DispatchQueue.main.async {
-                    if let rawCardData = self.rawData as? PrimerCardData {
-                        rawCardData.onDataDidChange = {
-                            _ = self.validateRawData(self.rawData!)
-                            
-                            let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
-                            if newCardNetwork != self.cardNetwork {
-                                self.cardNetwork = newCardNetwork
-                            }
-                        }
-                        
-                        let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
-                        if newCardNetwork != self.cardNetwork {
-                            self.cardNetwork = newCardNetwork
-                        }
-                        
-                    } else {
-                        if self.cardNetwork != .unknown {
-                            self.cardNetwork = .unknown
-                        }
-                    }
-                    
-                    _ = self.validateRawData(self.rawData!)
+                    self.rawDataTokenizationBuilder.rawData = self.rawData
                 }
             }
         }
         public private(set) var paymentMethodTokenData: PrimerPaymentMethodTokenData?
+        public var requiredInputElementTypes: [PrimerInputElementType] {
+            self.rawDataTokenizationBuilder.requiredInputElementTypes
+        }
         private var resumePaymentId: String?
+        private var rawDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
         public private(set) var isDataValid: Bool = false
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-        public private(set) var cardNetwork: CardNetwork = .unknown {
-            didSet {
-                self.delegate?.primerRawDataManager?(self, metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue])
-            }
-        }
-                
+        
         required public init(paymentMethodType: String) throws {
+            
+            guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+            
             self.paymentMethodType = paymentMethodType
             
             switch paymentMethodType {
+                
             case PrimerPaymentMethodType.paymentCard.rawValue:
-                self.requiredInputElementTypes = [.cardNumber, .expiryDate, .cvv]
-                if let checkoutModule = AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
-                   let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
-                    if options.cardHolderName == true {
-                        self.requiredInputElementTypes.append(.cardholderName)
-                    }
-                }
+                self.rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue)
+                
+            case PrimerPaymentMethodType.xenditOvo.rawValue:
+                self.rawDataTokenizationBuilder = PrimerRawPhoneNumberDataTokenizationBuilder(paymentMethodType: paymentMethodType)
                 
             default:
-                self.requiredInputElementTypes = []
-                self.paymentMethodType = paymentMethodType
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: self.paymentMethodType, userInfo: nil, diagnosticsId: nil)
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
                 throw err
             }
             
             super.init()
+            
+            self.rawDataTokenizationBuilder.configureRawDataManager(self)
         }
         
+        @available(*, deprecated, message: "See: `listRequiredInputElementTypes`")
         public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType] {
-            return self.requiredInputElementTypes
+            return self.rawDataTokenizationBuilder.requiredInputElementTypes
+        }
+        
+        public func listRequiredInputElementTypes() -> [PrimerInputElementType] {
+            return self.rawDataTokenizationBuilder.requiredInputElementTypes
         }
         
         public func submit() {
+            
             guard let rawData = rawData else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -108,13 +111,13 @@ extension PrimerHeadlessUniversalCheckout {
                 return self.validateRawData(rawData)
             }
             .then { () -> Promise<Void> in
-                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: PrimerPaymentMethodType.paymentCard.rawValue))
+                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
             }
-            .then { () -> Promise<PaymentMethodTokenizationRequest> in
-                return self.buildRequestBody()
+            .then { () -> Promise<TokenizationRequest> in
+                return self.makeRequestBody()
             }
             .then { requestbody -> Promise<PaymentMethodToken> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: PrimerPaymentMethodType.paymentCard.rawValue)
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodType)
                 return self.tokenize(request: requestbody)
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
@@ -133,45 +136,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         internal func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
-            return Promise { seal in
-                var errors: [PrimerValidationError] = []
-                
-                if let cardData = data as? PrimerCardData {
-                    if !cardData.cardNumber.isValidCardNumber {
-                        errors.append(PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
-                    }
-                    
-                    let expiryDate = cardData.expiryMonth + "/" + cardData.expiryYear.suffix(2)
-                    
-                    if !expiryDate.isValidExpiryDate {
-                        errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
-                    }
-                    
-                    let cardNetwork = CardNetwork(cardNumber: cardData.cardNumber)
-                    if !cardData.cvv.isValidCVV(cardNetwork: cardNetwork) {
-                        errors.append(PrimerValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
-                    }
-                    
-                    if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
-                        if !(cardData.cardholderName ?? "").isValidCardholderName {
-                            errors.append(PrimerValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
-                        }
-                    }
-                } else {
-                    errors.append(PrimerValidationError.invalidRawData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
-                }
-                
-                if !errors.isEmpty {
-                    let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    self.isDataValid = false
-                    self.delegate?.primerRawDataManager?(self, dataIsValid: false, errors: errors)
-                    seal.reject(err)
-                } else {
-                    self.isDataValid = true
-                    self.delegate?.primerRawDataManager?(self, dataIsValid: true, errors: nil)
-                    seal.fulfill()
-                }
-            }
+            return rawDataTokenizationBuilder.validateRawData(data)
         }
         
         private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
@@ -195,38 +160,26 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func buildRequestBody() -> Promise<PaymentMethodTokenizationRequest> {
+        private func makeRequestBody() -> Promise<TokenizationRequest> {
+            
             return Promise { seal in
-                switch self.paymentMethodType {
-                case PrimerPaymentMethodType.paymentCard.rawValue:
-                    let paymentInstrument = PaymentInstrument(
-                        number: PrimerInputElementType.cardNumber.clearFormatting(value: (self.rawData as? PrimerCardData)?.cardNumber ?? "") as? String,
-                        cvv: (self.rawData as? PrimerCardData)?.cvv,
-                        expirationMonth: (self.rawData as? PrimerCardData)?.expiryMonth,
-                        expirationYear: (self.rawData as? PrimerCardData)?.expiryYear,
-                        cardholderName: (self.rawData as? PrimerCardData)?.cardholderName,
-                        paypalOrderId: nil,
-                        paypalBillingAgreementId: nil,
-                        shippingAddress: nil,
-                        externalPayerInfo: nil,
-                        paymentMethodConfigId: nil,
-                        token: nil,
-                        sourceConfig: nil,
-                        gocardlessMandateId: nil,
-                        klarnaAuthorizationToken: nil,
-                        klarnaCustomerToken: nil,
-                        sessionData: nil)
-                    
-                    let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil)
-                    seal.fulfill(request)
-                    
-                default:
-                    fatalError()
+                guard let rawData = self.rawData else {
+                    let err = PrimerValidationError.invalidRawData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    seal.reject(err)
+                    return
+                }
+                
+                firstly {
+                    rawDataTokenizationBuilder.makeRequestBodyWithRawData(rawData)
+                }.done { requestbody in
+                    seal.fulfill(requestbody)
+                }.catch { err in
+                    seal.reject(err)
                 }
             }
         }
         
-        private func tokenize(request: PaymentMethodTokenizationRequest) -> Promise<PrimerPaymentMethodTokenData> {
+        private func tokenize(request: TokenizationRequest) -> Promise<PrimerPaymentMethodTokenData> {
             return Promise { seal in
                 let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
                 apiClient.tokenizePaymentMethod(clientToken: ClientTokenService.decodedClientToken!, paymentMethodTokenizationRequest: request) { result in
@@ -605,7 +558,7 @@ extension PrimerHeadlessUniversalCheckout {
             let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
             client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
                 if self.webViewCompletion == nil {
-                    let err = PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     completion(nil, err)
                     return
@@ -641,7 +594,7 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager: SFSafariViewController
     private func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion = webViewCompletion {
             // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)
         }
