@@ -38,6 +38,11 @@ struct BlikPaymentMethodTokenizationRequest: TokenizationRequest {
     let paymentInstrument: BlikPaymentMethodOptions
 }
 
+struct MBWayPaymentMethodTokenizationRequest: TokenizationRequest {
+    let paymentInstrument: MBWayPaymentMethodOptions
+}
+
+
 // feels like we could polymorph this with a protocol, or at least restrict construcions with a specific factory method for each payment instrument.
 struct PaymentInstrument: Codable {
     // Card

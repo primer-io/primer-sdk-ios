@@ -31,6 +31,12 @@ internal extension String {
         guard let data = utf8EncodedData else { return nil }
         return String(data: data, encoding: .utf8)
     }
+    
+    var isPhoneNumber: Bool {
+        let regex = "^(\\d){9,14}$"
+        let inputP = NSPredicate(format: "SELF MATCHES %@", regex)
+        return inputP.evaluate(with: self)
+    }
 
     var isNumeric: Bool {
         guard !self.isEmpty else { return false }

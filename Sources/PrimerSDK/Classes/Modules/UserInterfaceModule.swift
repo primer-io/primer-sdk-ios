@@ -209,7 +209,27 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
+        case .adyenMBWay:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: nil,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+
         case .adyenPayTrail:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -833,7 +853,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         var buttonTitle: String = ""
         
         switch self.paymentMethodTokenizationViewModel.config.type {
-        case PrimerPaymentMethodType.paymentCard.rawValue:
+        case PrimerPaymentMethodType.paymentCard.rawValue,
+            PrimerPaymentMethodType.adyenMBWay.rawValue:
             switch Primer.shared.intent {
             case .checkout:
                 let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
