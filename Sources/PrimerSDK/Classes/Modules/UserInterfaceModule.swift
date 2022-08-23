@@ -643,6 +643,26 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         case .twoCtwoP:
             return nil
             
+        case .xenditOvo:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#4B2489",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+
         case .xfersPayNow:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(

@@ -109,7 +109,7 @@ struct AsyncPaymentMethodOptions: PaymentMethodOptions {
     
 }
 
-struct MBWayPaymentMethodOptions: PaymentMethodOptions {
+struct InputPhoneNumberPaymentMethodOptions: PaymentMethodOptions {
     
     let paymentMethodType: String
     let paymentMethodConfigId: String
