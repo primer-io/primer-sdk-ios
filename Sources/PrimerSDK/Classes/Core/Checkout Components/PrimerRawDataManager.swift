@@ -402,6 +402,25 @@ extension PrimerHeadlessUniversalCheckout {
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
                     }
+                } else if decodedClientToken.intent?.contains("_REDIRECTION") == true {
+                    if let statusUrlStr = decodedClientToken.statusUrl,
+                       let statusUrl = URL(string: statusUrlStr),
+                       decodedClientToken.intent != nil {
+                                                                       
+                        firstly {
+                            return PollingModule(url: statusUrl).start()
+                        }
+                        .done { resumeToken in
+                            seal.fulfill(resumeToken)
+                        }
+                        .catch { err in
+                            seal.reject(err)
+                        }
+                    } else {
+                        let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                        seal.reject(error)
+                    }
+
                 } else {
                     let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
