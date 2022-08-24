@@ -272,6 +272,25 @@ extension Strings {
             comment: "Search country - Search country textfield placeholder")
     }
     
+    // MARK: Phone number country code Selector
+    
+    enum PhoneNumberCountryCodeSelector {
+        
+        static let selectPhoneNumberPrefixTitle = NSLocalizedString(
+            "selectPhoneNumberPrefixSelectPlaceholder",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Select a phone number prefix",
+            comment: "Select a phone number prefix - Choose your phone number prefix title label")
+        
+        static let searchPhoneNumberPrefixTitle = NSLocalizedString(
+            "select-phone-number-prefix-placeholder",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Search phone number prefix",
+            comment: "Search phone number prefix - Search phone number prefix textfield placeholder")
+    }
+    
     // MARK: Bank Selector
     
     enum BankSelector {
@@ -845,6 +864,24 @@ extension Strings {
             comment: "Get the code from your banking app - Blik descriptor")
         
     }
+    
+    enum MBWay {
+        
+        static let inputTopPlaceholder = NSLocalizedString(
+            "input_hint_form_mbway_phone_number",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Phone Number",
+            comment: "Phone Number - Text field top placeholder")
+        
+        static let completeYourPayment = NSLocalizedString(
+            "completeYourPaymentInTheApp",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Complete your payment in the MB WAY app",
+            comment: "Info message suggesting the user to open the MB WAY app to complete the payment")
+    }
+
 }
 
 // MARK: - Primer Test (DummyAPMs)// MARK: - Blik

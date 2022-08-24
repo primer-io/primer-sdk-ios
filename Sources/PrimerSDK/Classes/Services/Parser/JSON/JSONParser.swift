@@ -10,6 +10,7 @@
 import Foundation
 
 internal class JSONParser: Parser {
+    
     private let jsonDecoder = JSONDecoder()
 
     func parse<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
@@ -26,6 +27,14 @@ extension JSONParser {
         }
         
         return try? Data(contentsOf: url)
+    }
+}
+
+extension JSONParser {
+    
+    func withSnakeCaseParsing() -> JSONParser {
+        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
+        return self
     }
 }
 

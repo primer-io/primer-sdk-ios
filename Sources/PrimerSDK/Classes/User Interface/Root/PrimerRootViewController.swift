@@ -256,7 +256,10 @@ internal class PrimerRootViewController: PrimerViewController {
         cvc.view.backgroundColor = self.theme.view.backgroundColor
         
         // Hide back button on some cases
-        if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
+        
+        if viewController is PrimerPaymentPendingInfoViewController {
+            cvc.mockedNavigationBar.hidesBackButton = true
+        } else if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is PrimerLoadingViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
@@ -294,7 +297,9 @@ internal class PrimerRootViewController: PrimerViewController {
                 }
                 self.nc.viewControllers = viewControllers
                 
-                if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
+                if viewController is PrimerPaymentPendingInfoViewController {
+                    cvc.mockedNavigationBar.hidesBackButton = true
+                } else if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
                     cvc.mockedNavigationBar.hidesBackButton = true
                 } else if viewController is PrimerLoadingViewController {
                     cvc.mockedNavigationBar.hidesBackButton = true

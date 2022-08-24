@@ -55,7 +55,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
 internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     func cancel()
     var tableView: UITableView { get set }
-    var searchCountryTextField: PrimerSearchTextField { get set }
+    var searchableTextField: PrimerSearchTextField { get set }
     var config: PrimerPaymentMethod { get set }
 }
 

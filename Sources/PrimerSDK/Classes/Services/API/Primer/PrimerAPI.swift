@@ -321,6 +321,8 @@ internal extension PrimerAPI {
                 return try? JSONEncoder().encode(request)
             } else if let request = paymentMethodTokenizationRequest as? TestPaymentMethodTokenizationRequest {
                 return try? JSONEncoder().encode(request)
+            } else if let request = paymentMethodTokenizationRequest as? InputPhoneNumberPaymentMethodTokenizationRequest {
+                return try? JSONEncoder().encode(request)
             } else {
                 return nil
             }

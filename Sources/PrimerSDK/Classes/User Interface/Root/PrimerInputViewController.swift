@@ -18,10 +18,13 @@ internal class PrimerInputViewController: PrimerFormViewController {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(navigationBarLogo: UIImage?, formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel) {
+    init(navigationBarLogo: UIImage?,
+         formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel,
+         inputsDistribution: NSLayoutConstraint.Axis = .vertical) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
         super.init(nibName: nil, bundle: nil)
         self.titleImage = navigationBarLogo
+
     }
     
     required init?(coder: NSCoder) {
@@ -33,8 +36,8 @@ internal class PrimerInputViewController: PrimerFormViewController {
                 
         verticalStackView.spacing = 16
         
-        for stackView in formPaymentMethodTokenizationViewModel.inputTextFieldsStackViews {
-            verticalStackView.addArrangedSubview(stackView)
+        for inputStackView in formPaymentMethodTokenizationViewModel.inputTextFieldsStackViews {
+            verticalStackView.addArrangedSubview(inputStackView)
         }
         
         guard let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton else { return }
