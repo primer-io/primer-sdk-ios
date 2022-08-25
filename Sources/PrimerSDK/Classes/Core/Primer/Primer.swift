@@ -49,11 +49,6 @@ public class Primer {
             fatalError(error.localizedDescription)
         }
 #endif
-        
-#if canImport(PrimerKlarnaSDK)
-        print("Imported PrimerKlarnaSDK")
-        PrimerKlarna.shared
-#endif
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
