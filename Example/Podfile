@@ -6,7 +6,7 @@ target 'PrimerSDK_Example' do
   pod 'PrimerSDK', :path => '../'
 #  pod 'Primer3DS'
 #  pod 'PrimerSDK/Klarna'#, :path => '../'
-  pod 'PrimerKlarnaSDK'#, :path => '../../Primer/PrimerKlarnaSDK'
+#  pod 'PrimerKlarnaSDK'#, :path => '../../Primer/PrimerKlarnaSDK'
 
   target 'PrimerSDK_Tests' do
     inherit! :search_paths
