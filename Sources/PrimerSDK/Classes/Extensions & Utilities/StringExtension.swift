@@ -31,6 +31,12 @@ internal extension String {
         guard let data = utf8EncodedData else { return nil }
         return String(data: data, encoding: .utf8)
     }
+    
+    var isPhoneNumber: Bool {
+        let regex = "^(\\d){9,14}$"
+        let inputP = NSPredicate(format: "SELF MATCHES %@", regex)
+        return inputP.evaluate(with: self)
+    }
 
     var isNumeric: Bool {
         guard !self.isEmpty else { return false }
@@ -208,6 +214,12 @@ internal extension String {
             "-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
         let emailP = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
         return emailP.evaluate(with: self)
+    }
+    
+    var isValidPhoneNumber: Bool {
+        let phoneNumberRegEx = "^(^\\+628|628)(\\d{8,10})"
+        let phoneNumber = NSPredicate(format: "SELF MATCHES %@", phoneNumberRegEx)
+        return phoneNumber.evaluate(with: self)
     }
 
     var isValidLuhn: Bool {

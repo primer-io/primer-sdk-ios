@@ -30,6 +30,7 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
     case invalidAddress(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidState(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidCountry(userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidPhoneNumber(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String?)
     
     var diagnosticsId: String {
@@ -53,6 +54,8 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
         case .invalidState(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .invalidCountry(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .invalidPhoneNumber(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .invalidRawData(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
@@ -81,6 +84,8 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
             return "invalid-state"
         case .invalidCountry:
             return "invalid-country"
+        case .invalidPhoneNumber:
+            return "invalid-phone-number"
         case .invalidRawData:
             return "invalid-raw-data"
         }
@@ -108,6 +113,8 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
             return "[\(errorId)] Invalid state"
         case .invalidCountry:
             return "[\(errorId)] Invalid country"
+        case .invalidPhoneNumber:
+            return "[\(errorId)] Invalid phone number"
         case .invalidRawData:
             return "[\(errorId)] Invalid raw data"
         }
@@ -127,6 +134,7 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
                 .invalidAddress(let userInfo, _),
                 .invalidState(let userInfo, _),
                 .invalidCountry(let userInfo, _),
+                .invalidPhoneNumber(let userInfo, _),
                 .invalidRawData(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }

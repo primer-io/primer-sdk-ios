@@ -30,19 +30,31 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     // MARK: - Properties
     
     var inputs: [Input] = []
+    
     private var cardComponentsManager: CardComponentsManager!
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     var didCancel: (() -> Void)?
-                
+                    
+    private static let countryCodeFlag = AppState.current.apiConfiguration?.clientSession?.order?.countryCode?.flag ?? ""
+    private static let countryDialCode = CountryCode.phoneNumberCountryCodes.first(where: { $0.code == AppState.current.apiConfiguration?.clientSession?.order?.countryCode?.rawValue})?.dialCode ?? ""
+
     var inputTextFieldsStackViews: [UIStackView] {
         var stackViews: [UIStackView] = []
+            
         for input in self.inputs {
-            let verticalStackView = UIStackView()
-            verticalStackView.spacing = 2
-            verticalStackView.axis = .vertical
-            verticalStackView.alignment = .fill
-            verticalStackView.distribution = .fill
+            
+            let stackView = UIStackView()
+            stackView.spacing = 2
+            stackView.axis = .horizontal
+            stackView.alignment = .fill
+            stackView.distribution = .fillProportionally
+            
+            let inputStackView = UIStackView()
+            inputStackView.spacing = 2
+            inputStackView.axis = .vertical
+            inputStackView.alignment = .fill
+            inputStackView.distribution = .fill
 
             let inputTextFieldView = PrimerGenericFieldView()
             inputTextFieldView.delegate = self
@@ -60,26 +72,103 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             inputContainerView.placeholderText = input.topPlaceholder
             inputContainerView.setup()
             inputContainerView.tintColor = .systemBlue
-            verticalStackView.addArrangedSubview(inputContainerView)
+            inputStackView.addArrangedSubview(inputContainerView)
             
             if let descriptor = input.descriptor {
                 let lbl = UILabel()
                 lbl.font = UIFont.systemFont(ofSize: 12)
                 lbl.translatesAutoresizingMaskIntoConstraints = false
                 lbl.text = descriptor
-                verticalStackView.addArrangedSubview(lbl)
+                inputStackView.addArrangedSubview(lbl)
             }
-            stackViews.append(verticalStackView)
+            
+            if self.config.type == PrimerPaymentMethodType.adyenMBWay.rawValue {
+                let phoneNumberLabelStackView = UIStackView()
+                phoneNumberLabelStackView.spacing = 2
+                phoneNumberLabelStackView.axis = .vertical
+                phoneNumberLabelStackView.alignment = .fill
+                phoneNumberLabelStackView.distribution = .fill
+                phoneNumberLabelStackView.addArrangedSubview(mbwayTopLabelView)
+                inputTextFieldView.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
+                stackViews.insert(phoneNumberLabelStackView, at: 0)
+                stackView.addArrangedSubview(prefixSelectorButton)
+            }
+
+            stackView.addArrangedSubview(inputStackView)
+            stackViews.append(stackView)
         }
         
         return stackViews
     }
     
-    var dataSource = CountryCode.allCases {
+    // MARK: Adyen MBWay PhoneNumber prefix view
+    
+    var prefixSelectorButton: PrimerButton = {
+        let prefixSelectorButton = PrimerButton()
+        prefixSelectorButton.isAccessibilityElement = true
+        prefixSelectorButton.accessibilityIdentifier = "prefix_selector_btn"
+        prefixSelectorButton.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
+        prefixSelectorButton.setTitle("\(FormPaymentMethodTokenizationViewModel.countryCodeFlag) \(FormPaymentMethodTokenizationViewModel.countryDialCode)", for: .normal)
+        prefixSelectorButton.setTitleColor(.black, for: .normal)
+        prefixSelectorButton.clipsToBounds = true
+        prefixSelectorButton.isUserInteractionEnabled = false
+        prefixSelectorButton.translatesAutoresizingMaskIntoConstraints = false
+        prefixSelectorButton.widthAnchor.constraint(equalToConstant: 80.0).isActive = true
+        prefixSelectorButton.contentVerticalAlignment = .top
+        return prefixSelectorButton
+    }()
+    
+    // MARK: Adyen MBWay Input View
+    
+    var mbwayTopLabelView: UILabel = {
+        let label = UILabel()
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        label.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
+        label.text = Strings.MBWay.inputTopPlaceholder
+        label.textColor = theme.text.system.color
+        return label
+    }()
+
+    var mbwayInputView: Input = {
+        let input1 = Input()
+        input1.keyboardType = .numberPad
+        input1.allowedCharacterSet = CharacterSet.decimalDigits
+        input1.isValid = { text in
+            return text.isPhoneNumber
+        }
+        return input1
+    }()
+    
+    // MARK: Adyen Blik Input View
+    
+    var adyenBlikInputView: Input = {
+        let input1 = Input()
+        input1.name = "OTP"
+        input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
+        input1.textFieldPlaceholder = Strings.Blik.inputTextFieldPlaceholder
+        input1.keyboardType = .numberPad
+        input1.descriptor = Strings.Blik.inputDescriptor
+        input1.allowedCharacterSet = CharacterSet.decimalDigits
+        input1.maxCharactersAllowed = 6
+        input1.isValid = { text in
+            return text.isNumeric && text.count >= 6
+        }
+        return input1
+    }()
+    
+    var countriesDataSource = CountryCode.allCases {
         didSet {
             tableView.reloadData()
         }
     }
+    
+    var phoneNumberCountryCodesDataSource = CountryCode.phoneNumberCountryCodes {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+    
+    var phoneNumberCountryCodes = CountryCode.phoneNumberCountryCodes
     var countries = CountryCode.allCases
 
     internal lazy var tableView: UITableView = {
@@ -95,25 +184,26 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
 
         tableView.rowHeight = 41
-        tableView.register(CountryTableViewCell.self, forCellReuseIdentifier: CountryTableViewCell.className)
+            tableView.register(CountryTableViewCell.self, forCellReuseIdentifier: CountryTableViewCell.className)
+
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
     }()
     
-    internal lazy var searchCountryTextField: PrimerSearchTextField = {
-        let textField = PrimerSearchTextField(frame: .zero)
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        textField.delegate = self
-        textField.borderStyle = .none
-        textField.layer.cornerRadius = 3.0
-        textField.font = UIFont.systemFont(ofSize: 16.0)
-        textField.placeholder = Strings.CountrySelector.searchCountryTitle
-        textField.rightViewMode = .always
-        return textField
+    internal lazy var searchableTextField: PrimerSearchTextField = {
+            let textField = PrimerSearchTextField(frame: .zero)
+            textField.translatesAutoresizingMaskIntoConstraints = false
+            textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            textField.delegate = self
+            textField.borderStyle = .none
+            textField.layer.cornerRadius = 3.0
+            textField.font = UIFont.systemFont(ofSize: 16.0)
+            textField.placeholder = Strings.CountrySelector.searchCountryTitle
+            textField.rightViewMode = .always
+            return textField
     }()
-
+    
     var cardNetwork: CardNetwork? {
         didSet {
             cvvField.cardNetwork = cardNetwork ?? .unknown
@@ -329,13 +419,19 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     // MARK: Input Payment Methods Array
     
     /// Array containing the payment method types expecting some input step to be performed
-    let inputPaymentMethodTypes: [String] = [PrimerPaymentMethodType.adyenBlik.rawValue]
+    let inputPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenBlik, .adyenMBWay]
     
     // MARK: Account Info Payment Methods Array
     
     /// Array containing the payment method types expecting some account info
     /// to transfer the founds to
-    let accountInfoPaymentMethodTypes: [String] = [PrimerPaymentMethodType.rapydFast.rawValue]
+    let accountInfoPaymentMethodTypes: [PrimerPaymentMethodType] = [.rapydFast]
+    
+    // MARK: Payment Pending Info Array
+    
+    /// Dictionary containing the payment method types expecting to show a view with the Payment Logo and a message
+    /// informing the user to complete the payment outside of the current Application context
+    let needingExternalCompletionPaymentMethodDictionary: [PrimerPaymentMethodType: String] = [.adyenMBWay: Strings.MBWay.completeYourPayment]
     
     // MARK: Account Info Payment
     
@@ -408,7 +504,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
-                return self.evaluateStepAfterSelectedPaymentMethodSessionActionFire()
+                return self.presentPaymentMethodUserInterface()
             }
             .then { () -> Promise<Void> in
                 return self.evaluatePaymentMethodNeedingFurtherUserActions()
@@ -460,9 +556,12 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                    if let statusUrlStr = decodedClientToken.statusUrl,
                       let statusUrl = URL(string: statusUrlStr),
                       decodedClientToken.intent != nil {
+                                              
+                       let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type)
+                       let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary.first { $0.key == paymentMethodType } != nil) == true
                        
                        firstly {
-                           self.presentPaymentMethodAppropriateViewController()
+                           self.presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: isPaymentMethodNeedingExternalCompletion)
                        }
                        .then { () -> Promise<String> in
                            let pollingModule = PollingModule(url: statusUrl)
@@ -487,30 +586,22 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    private func evaluateStepAfterSelectedPaymentMethodSessionActionFire() -> Promise<Void> {
-        switch self.config.type {
-        case PrimerPaymentMethodType.adyenBlik.rawValue:
-            return self.presentPaymentMethodAppropriateViewController()
-        default:
-            return Promise()
-        }
-    }
-    
     private func evaluatePaymentMethodNeedingFurtherUserActions() -> Promise<Void> {
-        switch self.config.type {
-        case PrimerPaymentMethodType.adyenBlik.rawValue:
-            return self.awaitUserInput()
-        default:
+        
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) else {
             return Promise()
         }
+        
+        return self.awaitUserInput()
     }
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async {
-                
-            }
+        
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) else {
+            return Promise()
         }
+        
+        return self.presentPaymentMethodAppropriateViewController()
     }
     
     override func awaitUserInput() -> Promise<Void> {
@@ -543,10 +634,11 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 place: .cardForm))
         Analytics.Service.record(event: viewEvent)
         
-        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
-
         switch config.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
+            self.uiModule.submitButton?.startAnimating()
+            self.userInputCompletion?()
+        case PrimerPaymentMethodType.adyenMBWay.rawValue:
             self.uiModule.submitButton?.startAnimating()
             self.userInputCompletion?()
             
@@ -629,6 +721,50 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     seal.reject(err)
                 }
             }
+            
+            
+        case PrimerPaymentMethodType.adyenMBWay.rawValue:
+            return Promise { seal in
+                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                guard let configId = config.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                guard let phoneNumber = inputs.first?.text else {
+                    let err = PrimerError.invalidValue(key: "phoneNumber", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                let tokenizationRequest = InputPhoneNumberPaymentMethodTokenizationRequest(
+                    paymentInstrument: InputPhoneNumberPaymentMethodOptions(
+                        paymentMethodType: config.type,
+                        paymentMethodConfigId: configId,
+                        sessionInfo: InputPhoneNumberPaymentMethodOptions.SessionInfo(
+                            phoneNumber: "\(FormPaymentMethodTokenizationViewModel.countryDialCode)\(phoneNumber)",
+                            locale: PrimerSettings.current.localeData.localeCode)))
+                
+                let apiClient = PrimerAPIClient()
+                apiClient.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: tokenizationRequest) { result in
+                    switch result {
+                    case .success(let paymentMethodToken):
+                        seal.fulfill(paymentMethodToken)
+                    case .failure(let err):
+                        seal.reject(err)
+                    }
+                }
+            }
+
         default:
             fatalError("Payment method card should never end here.")
         }
@@ -661,23 +797,23 @@ extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
 extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataSource.count
+            return countriesDataSource.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let country = dataSource[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as! CountryTableViewCell
-        cell.configure(viewModel: country)
-        return cell
+            let country = countriesDataSource[indexPath.row]
+            let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as! CountryTableViewCell
+            cell.configure(viewModel: country)
+            return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let country = self.dataSource[indexPath.row]
-        countryFieldView.textField.text = "\(country.flag) \(country.country)"
-        countryFieldView.countryCode = country
-        countryFieldView.validation = .valid
-        countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
-        Primer.shared.primerRootVC?.popViewController()
+            let country = self.countriesDataSource[indexPath.row]
+            countryFieldView.textField.text = "\(country.flag) \(country.country)"
+            countryFieldView.countryCode = country
+            countryFieldView.validation = .valid
+            countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
+            Primer.shared.primerRootVC?.popViewController()
     }
 }
 
@@ -685,8 +821,7 @@ extension FormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTo
     
     func cancel() {
         didCancel?()
-        
-        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+        inputs = []
         
         let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
         ErrorHandler.handle(error: err)
@@ -696,6 +831,7 @@ extension FormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTo
 extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
         if string == "\n" {
             // Keyboard's return button tapoped
             textField.resignFirstResponder()
@@ -711,25 +847,26 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
         }
         
         if query.isEmpty {
-            dataSource = countries
+                countriesDataSource = countries
             return true
         }
         
-        var countryResults: [CountryCode] = []
-        
-        for country in countries {
-            if country.country.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
-                countryResults.append(country)
+            var countryResults: [CountryCode] = []
+            
+            for country in countries {
+                if country.country.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
+                    countryResults.append(country)
+                }
             }
-        }
-        
-        dataSource = countryResults
+            
+            countriesDataSource = countryResults
+
         
         return true
     }
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        dataSource = countries
+        countriesDataSource = countries
         return true
     }
 }

@@ -14,32 +14,17 @@ extension FormPaymentMethodTokenizationViewModel {
     // MARK: Input view
     
     func makeInputViews() -> [Input] {
-        guard inputPaymentMethodTypes.contains(self.config.type) else { return [] }
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) else { return [] }
         
         switch self.config.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             return [adyenBlikInputView]
+        case PrimerPaymentMethodType.adyenMBWay.rawValue:
+            return [mbwayInputView]
         default:
             return []
         }
-    }
-    
-    // MARK: Adyen Blik Input View
-    
-    var adyenBlikInputView: Input {
-        let input1 = Input()
-        input1.name = "OTP"
-        input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
-        input1.textFieldPlaceholder = Strings.Blik.inputTextFieldPlaceholder
-        input1.keyboardType = .numberPad
-        input1.descriptor = Strings.Blik.inputDescriptor
-        input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
-        input1.maxCharactersAllowed = 6
-        input1.isValid = { text in
-            return text.isNumeric && text.count >= 6
-        }
-        return input1
-    }
+    }    
 }
 
 extension FormPaymentMethodTokenizationViewModel {
@@ -134,6 +119,7 @@ extension FormPaymentMethodTokenizationViewModel {
         accountNumberStackView.layer.borderColor = UIColor.gray200.cgColor
         accountNumberStackView.layer.borderWidth = 2.0
         accountNumberStackView.isLayoutMarginsRelativeArrangement = true
+        accountNumberStackView.layer.cornerRadius = 8.0
 
         if let accountNumber = ClientTokenService.decodedClientToken?.accountNumber {
             let accountNumberLabel = UILabel()
@@ -161,6 +147,39 @@ extension FormPaymentMethodTokenizationViewModel {
         return PrimerFormView(formViews: views)
     }
 }
+extension FormPaymentMethodTokenizationViewModel {
+    
+    // MARK: Payment Pending Info View
+    
+    func makePaymentPendingInfoView(logo: UIImage? = nil,
+                                    message: String) -> PrimerFormView {
+        
+        // The top logo
+        
+        let logoImageView = UIImageView(image: logo ?? uiModule.logo)
+        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        logoImageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        logoImageView.clipsToBounds = true
+        logoImageView.contentMode = .scaleAspectFit
+        
+        // Message string
+        
+        let completeYourPaymentLabel = UILabel()
+        completeYourPaymentLabel.numberOfLines = 0
+        completeYourPaymentLabel.textAlignment = .center
+        completeYourPaymentLabel.text = message
+        completeYourPaymentLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
+        completeYourPaymentLabel.textColor = theme.text.title.color
+
+        let views = [[logoImageView],
+                     [completeYourPaymentLabel]]
+        
+        return PrimerFormView(formViews: views)
+
+    }
+
+}
+
 
 extension FormPaymentMethodTokenizationViewModel {
     
@@ -187,12 +206,26 @@ extension FormPaymentMethodTokenizationViewModel {
     
     // MARK: Present appropriate View Controller
     
-    func presentPaymentMethodAppropriateViewController() -> Promise<Void> {
-        if inputPaymentMethodTypes.contains(self.config.type) {
+    func presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: Bool = false) -> Promise<Void> {
+        
+        if shouldCompletePaymentExternally {
+            
+            guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+                  let message = needingExternalCompletionPaymentMethodDictionary.first(where: { $0.key == paymentMethodType })?.value else {
+                return Promise()
+            }
+            
+            let infoView = makePaymentPendingInfoView(message: message)
+            let paymentPendingInfoView = PrimerPaymentPendingInfoViewController(formPaymentMethodTokenizationViewModel: self, infoView: infoView)
+            Primer.shared.primerRootVC?.show(viewController: paymentPendingInfoView)
+            return Promise()
+        }
+        
+        if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) {
             return presentInputViewController()
         }
         
-        if accountInfoPaymentMethodTypes.contains(self.config.type) {
+        if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), accountInfoPaymentMethodTypes.contains(paymentMethodType) {
             return presentAccountInfoViewController()
         }
         
@@ -210,7 +243,7 @@ extension FormPaymentMethodTokenizationViewModel {
     
     func presentInputViewController() -> Promise<Void> {
         return Promise { seal in
-            let pcfvc = PrimerInputViewController(navigationBarLogo: UIImage(named: "blik-logo-black", in: Bundle.primerResources, compatibleWith: nil), formPaymentMethodTokenizationViewModel: self)
+            let pcfvc = PrimerInputViewController(navigationBarLogo: uiModule.buttonImage, formPaymentMethodTokenizationViewModel: self, inputsDistribution: .horizontal)
             inputs.append(contentsOf: makeInputViews())
             Primer.shared.primerRootVC?.show(viewController: pcfvc)
             seal.fulfill()

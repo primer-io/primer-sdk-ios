@@ -4,9 +4,9 @@ PODS:
   - KlarnaMobileSDK/full (2.2.2)
   - PrimerKlarnaSDK (0.1.0):
     - KlarnaMobileSDK (= 2.2.2)
-  - PrimerSDK (2.5.0):
-    - PrimerSDK/Core (= 2.5.0)
-  - PrimerSDK/Core (2.5.0)
+  - PrimerSDK (2.6.0):
+    - PrimerSDK/Core (= 2.6.0)
+  - PrimerSDK/Core (2.6.0)
 
 DEPENDENCIES:
   - PrimerKlarnaSDK
@@ -24,7 +24,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   KlarnaMobileSDK: 23b44390d06c6e3a90b5325bea6c10bf97ac6044
   PrimerKlarnaSDK: 86e3a6ef788cd6d2ca40633badd5aed25332c779
-  PrimerSDK: 4edfa74566313f0580e7ffc189767d89f84853a3
+  PrimerSDK: 901093e3f8e0fe107f79badbc36dfd4ba0e8075c
 
 PODFILE CHECKSUM: 4548972285611296387e86c6b7e5189b27f29bdc
 
