@@ -1,11 +1,8 @@
 #if canImport(UIKit)
+import UIKit
 
 #if canImport(Primer3DS)
 import Primer3DS
-#endif
-import UIKit
-#if canImport(PrimerKlarnaSDK)
-import PrimerKlarnaSDK
 #endif
 
 // swiftlint:disable identifier_name
@@ -51,11 +48,6 @@ public class Primer {
         } catch {
             fatalError(error.localizedDescription)
         }
-#endif
-        
-#if canImport(PrimerKlarnaSDK)
-        print("Imported PrimerKlarnaSDK")
-        PrimerKlarna.shared
 #endif
     }
     
