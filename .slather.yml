@@ -1,0 +1,5 @@
+coverage_service: cobertura_xml
+xcodeproj: Example/PrimerSDK.xcodeproj
+workspace: Example/PrimerSDK.xcworkspace
+scheme: "PrimerSDK_Tests"
+output_directory: fastlane/test_output
