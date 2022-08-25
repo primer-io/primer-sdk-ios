@@ -48,12 +48,6 @@
           ]
         }
       }
-    },
-    {
-      "name": "PrimerKlarnaSDK",
-      "ios": {
-        "source_files": "PrimerKlarnaSDK/PrimerKlarnaSDK/Classes/**/*.{h,m,swift}"
-      }
     }
   ],
   "swift_version": "4.2"
