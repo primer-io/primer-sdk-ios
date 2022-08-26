@@ -231,6 +231,23 @@ class Base: XCTestCase {
             )
         ),
         Payment(
+            id: "KLARNA",
+            environment: .sandbox,
+            currency: "SEK",
+            countryCode: "SE",
+            amount: "1001",
+            expectations: Payment.Expectations(
+                amount: "kr10.01",
+                surcharge: nil,
+                webviewImage: nil,
+                webviewTexts: nil,
+                buttonTexts: nil,
+                resultScreenTexts: [
+                    "status": "SUCCESS"
+                ]
+            )
+        ),
+        Payment(
             id: "PAYPAL",
             environment: .sandbox,
             currency: "GBP",
