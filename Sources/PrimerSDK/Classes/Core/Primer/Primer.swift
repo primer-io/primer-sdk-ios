@@ -32,23 +32,23 @@ public class Primer {
     }
 
     fileprivate init() {
-        #if canImport(Primer3DS)
+#if canImport(Primer3DS)
         print("Can import Primer3DS")
-        #else
+#else
         print("Failed to import Primer3DS")
-        #endif
+#endif
         
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
         
-        #if DEBUG
+#if DEBUG
         do {
             try Analytics.Service.deleteEvents()
         } catch {
             fatalError(error.localizedDescription)
         }
-        #endif
+#endif
     }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
