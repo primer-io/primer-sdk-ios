@@ -21,7 +21,9 @@ extension PaymentMethodTokenizationViewModel {
             self.paymentMethodTokenData = paymentMethodTokenData
 
             if Primer.shared.intent == .vault {
+                PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { _ in }
                 self.handleSuccessfulFlow()
+                
             } else {
                 self.didStartPayment?()
                 self.didStartPayment = nil
