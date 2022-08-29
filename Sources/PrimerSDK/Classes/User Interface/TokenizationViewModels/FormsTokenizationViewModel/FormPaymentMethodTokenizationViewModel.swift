@@ -132,9 +132,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     var mbwayInputView: Input = {
         let input1 = Input()
         input1.keyboardType = .numberPad
-        input1.allowedCharacterSet = CharacterSet.decimalDigits
+        input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
         input1.isValid = { text in
-            return text.isPhoneNumber
+            return text.isValidPhoneNumberForPaymentMethodType(.adyenMBWay)
         }
         return input1
     }()
