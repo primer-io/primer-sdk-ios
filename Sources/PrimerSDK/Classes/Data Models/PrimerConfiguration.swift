@@ -43,6 +43,13 @@ struct PrimerConfiguration: Codable {
             }
         }
         
+#if !canImport(PrimerKlarnaSDK)
+        if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna }) {
+            viewModels.remove(at: klarnaViewModelIndex)
+            print("WARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project so you can perform payments with Klarna.")
+        }
+#endif
+        
         for (index, viewModel) in viewModels.enumerated() {
             if viewModel.config.type == .applePay {
                 viewModels.swapAt(0, index)

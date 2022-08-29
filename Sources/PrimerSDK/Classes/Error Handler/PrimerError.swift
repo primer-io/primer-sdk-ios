@@ -270,6 +270,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?)
     case missingCustomUI(paymentMethod: PaymentMethodConfigType, userInfo: [String: String]?)
+    case failedToFindModule(name: String, userInfo: [String: String]?, diagnosticsId: String?)
     case applePayTimedOut(userInfo: [String: String]?)
     
     var errorId: String {
@@ -324,6 +325,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "generic-underlying-errors"
         case .missingCustomUI:
             return "missing-custom-ui"
+        case .failedToFindModule:
+            return "failed-to-find-module"
         case .applePayTimedOut:
             return "apple-pay-timed-out"
         }
@@ -387,6 +390,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Multiple errors occured: \(errors.combinedDescription)"
         case .missingCustomUI(let paymentMethod, _):
             return "[\(errorId)] Missing custom user interface for \(paymentMethod.rawValue)"
+        case .failedToFindModule(let name, _, let diagnosticsId):
+            return "[\(errorId)] Failed to find module \(name)"
         case .applePayTimedOut:
             return "[\(errorId)] Apple Pay timed out"
         }
@@ -421,7 +426,8 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .unsupportedIntent(_, let userInfo),
                 .underlyingErrors(_, let userInfo),
                 .missingCustomUI(_, let userInfo),
-                .applePayTimedOut(let userInfo):
+                .applePayTimedOut(let userInfo),
+                .failedToFindModule(_, let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -492,6 +498,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "Check underlying errors for more information."
         case .missingCustomUI(let paymentMethod, _):
             return "You have to built your UI for \(paymentMethod.rawValue) and utilize PrimerCheckoutComponents.UIManager's functionality."
+        case .failedToFindModule(let name, _, _):
+            return "Make sure you have added the module \(name) in your project."
         case .applePayTimedOut:
             return "Make sure you have an active internet connection and your Apple Pay configuration is correct."
         }

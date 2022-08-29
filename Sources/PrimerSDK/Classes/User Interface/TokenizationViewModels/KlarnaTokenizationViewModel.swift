@@ -4,6 +4,10 @@ import Foundation
 import WebKit
 import UIKit
 
+#if canImport(PrimerKlarnaSDK)
+import PrimerKlarnaSDK
+#endif
+
 class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalPaymentMethodTokenizationViewModelProtocol {
     
     private var sessionId: String?
@@ -13,8 +17,12 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
     
-    private var webViewController: PrimerWebViewController?
-    private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+#if canImport(PrimerKlarnaSDK)
+    private var klarnaViewController: PrimerKlarnaViewController?
+#endif
+    private var klarnaPaymentSession: KlarnaCreatePaymentSessionAPIResponse?
+    private var klarnaCustomerTokenAPIResponse: KlarnaCustomerTokenAPIResponse?
+    private var klarnaPaymentSessionCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
     
     private lazy var _title: String = { return "Klarna" }()
@@ -71,6 +79,11 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
     }
     
     override func validate() throws {
+#if !canImport(PrimerKlarnaSDK)
+        let err = PrimerError.failedToFindModule(name: "PrimerKlarnaSDK", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+        ErrorHandler.handle(error: err)
+        throw err
+#endif
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
@@ -171,24 +184,27 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
         
         firstly {
-            self.generateWebViewUrl()
+            self.createPaymentSession()
         }
-        .then { url -> Promise<String> in
-            self.presentKlarnaController(with: url)
+        .then { paymentSession -> Promise<String> in
+            self.presentKlarnaController()
         }
         .then { authorizationToken -> Promise<KlarnaCustomerTokenAPIResponse> in
             self.authorizationToken = authorizationToken
-            return self.createKlarnaCustomerToken(authorizationToken: authorizationToken)
+            return self.authorizePaymentSession(authorizationToken: authorizationToken)
         }
         .then { customerTokenResponse -> Promise<PaymentMethodToken> in
+#if canImport(PrimerKlarnaSDK)
             DispatchQueue.main.async {
                 self.willDismissExternalView?()
+                
+                self.klarnaViewController?.dismiss(animated: true, completion: {
+                    DispatchQueue.main.async {
+                        self.didDismissExternalView?()
+                    }
+                })
             }
-            self.webViewController?.presentingViewController?.dismiss(animated: true, completion: {
-                DispatchQueue.main.async {
-                    self.didDismissExternalView?()
-                }
-            })
+#endif
             
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
@@ -244,359 +260,221 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel, ExternalP
         }
     }
     
-    private func generateWebViewUrl() -> Promise<URL> {
+    private func createPaymentSession() -> Promise<KlarnaCreatePaymentSessionAPIResponse> {
         return Promise { seal in
-            self.generateWebViewUrl { result in
-                switch result {
-                case .success(let url):
-                    seal.fulfill(url)
-                case .failure(let err):
-                    seal.reject(err)
-                }
+            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
             }
-        }
-    }
-    
-    private func generateWebViewUrl(completion: @escaping (Result<URL, Error>) -> Void) {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            completion(.failure(PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])))
-            return
-        }
-        
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        guard let configId = config.id else {
-            let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
-        }
-        
-        guard let klarnaSessionType = settings.klarnaSessionType else {
-            let err = PrimerError.invalidValue(key: "settings.klarnaSessionType", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
-        }
-        
-        var amount = settings.amount
-        if amount == nil && Primer.shared.flow == .checkoutWithKlarna {
-            let err = PrimerError.invalidSetting(name: "amount", value: settings.amount != nil ? "\(settings.amount!)" : nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
-        }
-        
-        var orderItems: [OrderItem]? = nil
-        
-        if case .hostedPaymentPage = klarnaSessionType {
-            if amount == nil {
+            
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            guard let configId = config.id else {
+                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            guard let klarnaSessionType = settings.klarnaSessionType else {
+                let err = PrimerError.invalidValue(key: "settings.klarnaSessionType", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            var amount = settings.amount
+            if amount == nil && Primer.shared.flow == .checkoutWithKlarna {
                 let err = PrimerError.invalidSetting(name: "amount", value: settings.amount != nil ? "\(settings.amount!)" : nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                 ErrorHandler.handle(error: err)
-                completion(.failure(err))
+                seal.reject(err)
                 return
             }
             
-            if settings.currency == nil {
-                let err = PrimerError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                completion(.failure(err))
-                return
-            }
+            var orderItems: [OrderItem]? = nil
             
-            if (settings.orderItems ?? []).isEmpty {
-                let err = PrimerError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                completion(.failure(err))
-                return
-            }
-            
-            if !(settings.orderItems ?? []).filter({ $0.unitAmount == nil }).isEmpty {
-                let err = PrimerError.invalidValue(key: "settings.orderItems.amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                completion(.failure(err))
-                return
-            }
-            
-            orderItems = settings.orderItems
-            
-            log(logLevel: .info, message: "Klarna amount: \(amount!) \(settings.currency!.rawValue)")
-            
-        } else if case .recurringPayment = klarnaSessionType {
-            // Do not send amount for recurring payments, even if it's set
-            amount = nil
-        }
-        
-        var body: KlarnaCreatePaymentSessionAPIRequest
-        
-        if settings.countryCode != nil || settings.currency != nil {
-            body = KlarnaCreatePaymentSessionAPIRequest(
-                paymentMethodConfigId: configId,
-                sessionType: klarnaSessionType,
-                localeData: settings.localeData,
-                description: klarnaSessionType == .recurringPayment ? settings.klarnaPaymentDescription : nil,
-                redirectUrl: "https://primer.io/success",
-                totalAmount: amount,
-                orderItems: orderItems)
-        } else {
-            body = KlarnaCreatePaymentSessionAPIRequest(
-                paymentMethodConfigId: configId,
-                sessionType: klarnaSessionType,
-                localeData: settings.localeData,
-                description: klarnaSessionType == .recurringPayment ? settings.klarnaPaymentDescription : nil,
-                redirectUrl: "https://primer.io/success",
-                totalAmount: amount,
-                orderItems: orderItems)
-        }
-        
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-
-        api.createKlarnaPaymentSession(clientToken: decodedClientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
-            switch result {
-            case .failure(let err):
-                completion(.failure(err))
-                
-            case .success(let res):
-                log(
-                    logLevel: .info,
-                    message: "\(res)",
-                    className: "\(String(describing: self.self))",
-                    function: #function
-                )
-                
-                self?.sessionId = res.sessionId
-                
-                guard let url = URL(string: res.hppRedirectUrl) else {
-                    let err = PrimerError.invalidValue(key: "hppRedirectUrl", value: res.hppRedirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+            if case .hostedPaymentPage = klarnaSessionType {
+                if amount == nil {
+                    let err = PrimerError.invalidSetting(name: "amount", value: settings.amount != nil ? "\(settings.amount!)" : nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
                     ErrorHandler.handle(error: err)
-                    completion(.failure(err))
+                    seal.reject(err)
                     return
                 }
                 
-                completion(.success(url))
-            }
-        }
-    }
-    
-    private func presentKlarnaController(with url: URL) -> Promise<String> {
-        return Promise { seal in
-            self.presentKlarnaController(with: url) { (token, err) in
-                if let err = err {
+                if settings.currency == nil {
+                    let err = PrimerError.invalidSetting(name: "currency", value: settings.currency?.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
                     seal.reject(err)
-                } else if let token = token {
-                    seal.fulfill(token)
+                    return
                 }
+                
+                if (settings.orderItems ?? []).isEmpty {
+                    let err = PrimerError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                if !(settings.orderItems ?? []).filter({ $0.unitAmount == nil }).isEmpty {
+                    let err = PrimerError.invalidValue(key: "settings.orderItems.amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                orderItems = settings.orderItems
+                
+                log(logLevel: .info, message: "Klarna amount: \(amount!) \(settings.currency!.rawValue)")
+                
+            } else if case .recurringPayment = klarnaSessionType {
+                // Do not send amount for recurring payments, even if it's set
+                amount = nil
             }
-        }
-    }
-    
-    private func presentKlarnaController(with url: URL, completion: @escaping (_ authorizationToken: String?, _ err: Error?) -> Void) {
-        DispatchQueue.main.async {
-            self.webViewController = PrimerWebViewController(with: url)
-            self.webViewController!.navigationDelegate = self
-            self.webViewController!.modalPresentationStyle = .fullScreen
             
-            self.webViewCompletion = completion
+            var body: KlarnaCreatePaymentSessionAPIRequest
             
-            self.willPresentExternalView?()
-            Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
-                DispatchQueue.main.async {
-                    self.didPresentExternalView?()
-                }
-            })
-        }
-    }
-    
-    private func createKlarnaCustomerToken(authorizationToken: String) -> Promise<KlarnaCustomerTokenAPIResponse> {
-        return Promise { seal in
-            self.createKlarnaCustomerToken(authorizationToken: authorizationToken) { result in
+            if settings.countryCode != nil || settings.currency != nil {
+                body = KlarnaCreatePaymentSessionAPIRequest(
+                    paymentMethodConfigId: configId,
+                    sessionType: klarnaSessionType,
+                    localeData: settings.localeData,
+                    description: klarnaSessionType == .recurringPayment ? settings.klarnaPaymentDescription : nil,
+                    redirectUrl: "https://primer.io/success",
+                    totalAmount: amount,
+                    orderItems: orderItems)
+            } else {
+                body = KlarnaCreatePaymentSessionAPIRequest(
+                    paymentMethodConfigId: configId,
+                    sessionType: klarnaSessionType,
+                    localeData: settings.localeData,
+                    description: klarnaSessionType == .recurringPayment ? settings.klarnaPaymentDescription : nil,
+                    redirectUrl: "https://primer.io/success",
+                    totalAmount: amount,
+                    orderItems: orderItems)
+            }
+            
+            let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            
+            api.createKlarnaPaymentSession(clientToken: decodedClientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
-                case .success(let res):
-                    seal.fulfill(res)
-                }
-            }
-        }
-    }
-    
-    private func createKlarnaCustomerToken(authorizationToken: String, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
-        }
-        
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
-              let sessionId = self.sessionId else {
-                  let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                  ErrorHandler.handle(error: err)
-                  completion(.failure(err))
-                  return
-              }
-        
-        let body = CreateKlarnaCustomerTokenAPIRequest(
-            paymentMethodConfigId: configId,
-            sessionId: sessionId,
-            authorizationToken: authorizationToken,
-            description: settings.klarnaPaymentDescription,
-            localeData: settings.localeData
-        )
-        
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-
-        api.createKlarnaCustomerToken(clientToken: decodedClientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
-            switch result {
-            case .failure(let err):
-                completion(.failure(err))
-            case .success(let response):
-                completion(.success(response))
-            }
-        }
-    }
-    
-    private func finalizePaymentSession() -> Promise<KlarnaCustomerTokenAPIResponse> {
-        return Promise { seal in
-            self.finalizePaymentSession { result in
-                switch result {
-                case .failure(let err):
-                    seal.reject(err)
-                case .success(let res):
-                    seal.fulfill(res)
-                }
-            }
-        }
-    }
-    
-    private func finalizePaymentSession(completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
-        }
-        
-        guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
-              let sessionId = self.sessionId else {
-                  let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                  ErrorHandler.handle(error: err)
-                  completion(.failure(err))
-                  return
-              }
-        
-        let body = KlarnaFinalizePaymentSessionRequest(paymentMethodConfigId: configId, sessionId: sessionId)
-        
-        log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession")
-        
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
-
-        api.finalizeKlarnaPaymentSession(clientToken: decodedClientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
-            switch result {
-            case .failure(let err):
-                completion(.failure(err))
-            case .success(let response):
-                log(logLevel: .info, message: "\(response)", className: "KlarnaService", function: "createPaymentSession")
-                completion(.success(response))
-            }
-        }
-    }
-    
-}
-
-extension KlarnaTokenizationViewModel: WKNavigationDelegate {
-    
-    func webView(
-        _ webView: WKWebView,
-        decidePolicyFor navigationAction: WKNavigationAction,
-        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
-    ) {
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        if var urlStr = navigationAction.request.url?.absoluteString,
-           urlStr.hasPrefix("bankid://") == true {
-            // This is a redirect to the BankId app
-            
-            
-            if urlStr.contains("redirect=null"), let urlScheme = settings.urlScheme {
-                // Klarna's redirect param should contain our URL scheme, replace null with urlScheme if we have a urlScheme if present.
-                urlStr = urlStr.replacingOccurrences(of: "redirect=null", with: "redirect=\(urlScheme)")
-            }
-            
-            // The bankid redirection URL looks like the one below
-            /// bankid:///?autostarttoken=197701116050-fa74-49cf-b98c-bfe651f9a7c6&redirect=null
-            if UIApplication.shared.canOpenURL(URL(string: urlStr)!) {
-                decisionHandler(.allow)
-                UIApplication.shared.open(URL(string: urlStr)!, options: [:]) { (isFinished) in
                     
+                case .success(let res):
+                    log(
+                        logLevel: .info,
+                        message: "\(res)",
+                        className: "\(String(describing: self.self))",
+                        function: #function
+                    )
+                    
+                    self?.sessionId = res.sessionId
+                    self?.klarnaPaymentSession = res
+                    seal.fulfill(res)
                 }
-                return
             }
-        }
-        
-        let allowedHosts: [String] = [
-            "primer.io",
-            "livedemostore.primer.io"
-            //            "api.playground.klarna.com",
-            //            "api.sandbox.primer.io"
-        ]
-        
-        if let url = navigationAction.request.url, let host = url.host, allowedHosts.contains(host) {
-            let urlStateParameter = url.queryParameterValue(for: "state")
-            if urlStateParameter == "cancel" {
-                let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                webViewCompletion?(nil, err)
-                webViewCompletion = nil
-                decisionHandler(.cancel)
-                return
-            }
-            
-            let token = url.queryParameterValue(for: "token")
-            
-            if (token ?? "").isEmpty || token == "undefined" || token == "null" {
-                let err = PrimerError.invalidValue(key: "paymentMethodToken", value: token, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
-                ErrorHandler.handle(error: err)
-                webViewCompletion?(nil, err)
-                webViewCompletion = nil
-                decisionHandler(.cancel)
-                return
-            }
-            
-            log(logLevel: .info, message: "🚀🚀 \(url)")
-            log(logLevel: .info, message: "🚀🚀 token \(token!)")
-            
-            webViewCompletion?(token, nil)
-            webViewCompletion = nil
-            
-            log(logLevel: .info, message: "🚀🚀🚀 \(token!)")
-            
-            // Cancels navigation
-            decisionHandler(.cancel)
-            
-        } else {
-            // Allow navigation to continue
-            decisionHandler(.allow)
         }
     }
     
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        let nsError = error as NSError
-        if !(nsError.domain == "NSURLErrorDomain" && nsError.code == -1002) {
-            // Code -1002 means bad URL redirect. Klarna is redirecting to bankid:// which is considered a bad URL
-            // Not sure yet if we have to do that only for bankid://
-            webViewCompletion?(nil, error)
-            webViewCompletion = nil
+    private func presentKlarnaController() -> Promise<String> {
+        return Promise { seal in
+#if canImport(PrimerKlarnaSDK)
+            DispatchQueue.main.async {
+                guard let klarnaPaymentSession = self.klarnaPaymentSession else {
+                    let err = PrimerError.invalidValue(key: "Klarna payment session", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+
+                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                
+                self.klarnaViewController = PrimerKlarnaViewController(
+                    delegate: self,
+                    paymentCategory: .payLater,
+                    clientToken: klarnaPaymentSession.clientToken,
+                    urlScheme: settings.urlScheme)
+                
+                self.klarnaPaymentSessionCompletion = { authToken, err in
+                    if let err = err {
+                        seal.reject(err)
+                    } else if let authToken = authToken {
+                        seal.fulfill(authToken)
+                    } else {
+                        precondition(false, "Should always return an authToken or an error.")
+                    }
+                }
+                
+                self.willPresentExternalView?()
+                Primer.shared.primerRootVC?.show(viewController: self.klarnaViewController!)
+                self.didPresentExternalView?()
+            }
+#else
+            let err = PrimerError.failedToFindModule(name: "PrimerKlarnaSDK", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            seal.reject(err)
+#endif
         }
     }
     
+    private func authorizePaymentSession(authorizationToken: String) -> Promise<KlarnaCustomerTokenAPIResponse> {
+        return Promise { seal in
+            let state: AppStateProtocol = DependencyContainer.resolve()
+            
+            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            guard let configId = state.primerConfiguration?.getConfigId(for: .klarna),
+                  let sessionId = self.sessionId else {
+                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"])
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            let body = CreateKlarnaCustomerTokenAPIRequest(
+                paymentMethodConfigId: configId,
+                sessionId: sessionId,
+                authorizationToken: authorizationToken,
+                description: settings.klarnaPaymentDescription,
+                localeData: settings.localeData
+            )
+            
+            let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            
+            api.createKlarnaCustomerToken(clientToken: decodedClientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
+                switch result {
+                case .failure(let err):
+                    seal.reject(err)
+                case .success(let response):
+                    seal.fulfill(response)
+                }
+            }
+        }
+    }
 }
+
+#if canImport(PrimerKlarnaSDK)
+extension KlarnaTokenizationViewModel: PrimerKlarnaViewControllerDelegate {
+    
+    func primerKlarnaViewDidLoad() {
+        
+    }
+    
+    func primerKlarnaPaymentSessionCompleted(authorizationToken: String?, error: PrimerKlarnaError?) {
+        self.klarnaPaymentSessionCompletion?(authorizationToken, error)
+        self.klarnaPaymentSessionCompletion = nil
+    }
+}
+#endif
 
 extension KlarnaTokenizationViewModel {
     
