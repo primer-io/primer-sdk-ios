@@ -673,7 +673,7 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .applePayTimedOut:
             return "Make sure you have an active internet connection and your Apple Pay configuration is correct."
         case .failedToFindModule(let name, _, _):
-            return "Make sure you have added module \(name) in your project"
+            return "Make sure you have added the module \(name) in your project."
         case .unknown:
             return "Contact Primer and provide them diagnostics id \(self.diagnosticsId)"
         }
