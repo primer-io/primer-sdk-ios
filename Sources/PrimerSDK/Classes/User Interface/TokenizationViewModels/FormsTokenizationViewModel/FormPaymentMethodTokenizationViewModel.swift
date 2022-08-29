@@ -586,8 +586,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 
                 let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
                 let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
-                let clientSession = AppState.current.apiConfiguration?.clientSession
-                let checkoutPayment = PrimerCheckoutDataPayment(id: nil, orderId: clientSession?.order?.id, paymentFailureReason: nil)
                 var checkoutResult: PrimerCheckoutResultData?
                 
                 switch self.config.type {
@@ -601,7 +599,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 if isManualPaymentHandling || isHeadlessCheckoutDelegateImplemented {
                     PrimerDelegateProxy.primerDidEnterResumePendingWithData(checkoutResult)
                 } else {
-                    // To get called once we'll display the full UI on non-headless | auto flow
+                    // To get called once we'll display the full UI on non-headless | auto flow3
+                    // let clientSession = AppState.current.apiConfiguration?.clientSession
+                    // let checkoutPayment = PrimerCheckoutDataPayment(id: nil, orderId: clientSession?.order?.id, paymentFailureReason: nil)
                     // let checkoutData = PrimerCheckoutData(payment: checkoutPayment, paymentMethodData: checkoutResult)
                     // PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
