@@ -134,7 +134,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         input1.keyboardType = .numberPad
         input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
         input1.isValid = { text in
-            return text.isValidPhoneNumberForPaymentMethodType(.adyenMBWay)
+            return text.isNumeric && text.count >= 8
         }
         return input1
     }()
