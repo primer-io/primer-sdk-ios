@@ -38,6 +38,7 @@ public protocol PrimerDelegate {
         
     @objc optional func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
     @objc optional func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
+    @objc optional func primerDidEnterResumePendingWithData(_ data: PrimerCheckoutResultData?)
 }
 
 internal class PrimerDelegateProxy {
@@ -91,6 +92,12 @@ internal class PrimerDelegateProxy {
         DispatchQueue.main.async {
             Primer.shared.delegate?.primerDidCompleteCheckoutWithData(data)
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(data)
+        }
+    }
+    
+    static func primerDidEnterResumePendingWithData(_ data: PrimerCheckoutResultData?) {
+        DispatchQueue.main.async {
+            Primer.shared.delegate?.primerDidEnterResumePendingWithData?(data)
         }
     }
     
