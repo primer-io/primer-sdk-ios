@@ -499,7 +499,7 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .missingCustomUI(let paymentMethod, _):
             return "You have to built your UI for \(paymentMethod.rawValue) and utilize PrimerCheckoutComponents.UIManager's functionality."
         case .failedToFindModule(let name, _, _):
-            return "Make sure you have added module \(name) in your project"
+            return "Make sure you have added the module \(name) in your project."
         case .applePayTimedOut:
             return "Make sure you have an active internet connection and your Apple Pay configuration is correct."
         }
