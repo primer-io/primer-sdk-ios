@@ -35,9 +35,9 @@ public class PrimerHeadlessUniversalCheckout {
         }
         
         if PrimerHeadlessUniversalCheckout.current.delegate == nil {
-                    print("WARNING!\nPrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
-                }
-                        
+            print("WARNING!\nPrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
+        }
+        
         if let settings = settings {
             DependencyContainer.register(settings as PrimerSettingsProtocol)
         }
@@ -133,7 +133,7 @@ public class PrimerHeadlessUniversalCheckout {
             }
         }
     }
-
+    
     internal func listAvailablePaymentMethodsTypes() -> [String]? {
         return PrimerAPIConfiguration.paymentMethodConfigs?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
@@ -159,7 +159,7 @@ public class PrimerHeadlessUniversalCheckout {
         guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
         return paymentMethodConfig.tokenizationViewModel?.uiModule.paymentMethodButton
     }
-
+    
     public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType) -> UIImage? {
         return brand.getImage(assetType: assetType)
     }
