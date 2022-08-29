@@ -127,17 +127,17 @@
                                         <rect key="frame" x="0.0" y="527" width="382" height="220"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
-                                                <rect key="frame" x="122" y="0.0" width="138" height="31"/>
+                                                <rect key="frame" x="48" y="0.0" width="286" height="31"/>
                                                 <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
-                                                <state key="normal" title="Initialize Primer SDK"/>
+                                                <state key="normal" title="Initialize Primer SDK - Universal Checkout"/>
                                                 <connections>
                                                     <action selector="initializePrimerButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="kia-UZ-chG"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFw-xV-IYR">
-                                                <rect key="frame" x="107.5" y="63" width="167.5" height="31"/>
+                                                <rect key="frame" x="88.5" y="63" width="205.5" height="31"/>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="List Payment Methods"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Initialize Headless Checkout"/>
                                                 <connections>
                                                     <action selector="checkoutComponentsButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="2AF-kX-fGc"/>
                                                 </connections>
@@ -151,9 +151,9 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pfd-uc-ncs">
-                                                <rect key="frame" x="114" y="189" width="154" height="31"/>
+                                                <rect key="frame" x="67" y="189" width="248.5" height="31"/>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="HUC Raw Card Data"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Headless Checkout Raw Card Data"/>
                                                 <connections>
                                                     <action selector="hucRawCardDataButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="Ysh-fg-BRV"/>
                                                 </connections>
