@@ -432,14 +432,61 @@ internal struct PrimerPaymentMethodData {
 
 //MARK: - Public / User Facing
 
+// TODO: Update / Temporary name to avoid conflicts
+
+// MARK: Checkout Data
+
 @objc public class PrimerCheckoutData: NSObject, Codable {
     
     public let payment: PrimerCheckoutDataPayment?
+    public let paymentMethodData: PrimerCheckoutResultData?
     
-    public init(payment: PrimerCheckoutDataPayment?) {
+    public init(payment: PrimerCheckoutDataPayment?, paymentMethodData: PrimerCheckoutResultData? = nil) {
         self.payment = payment
+        self.paymentMethodData = paymentMethodData
     }
 }
+
+@objc public class PrimerCheckoutDataPayment: NSObject, Codable {
+    public let id: String?
+    public let orderId: String?
+    public let paymentFailureReason: PrimerPaymentErrorCode?
+    
+    public init(id: String?, orderId: String?, paymentFailureReason: PrimerPaymentErrorCode?) {
+        self.id = id
+        self.orderId = orderId
+        self.paymentFailureReason = paymentFailureReason
+    }
+}
+
+// MARK: -
+
+extension PrimerCheckoutDataPayment {
+    
+    convenience init(from paymentReponse: Payment.Response) {
+        self.init(id: paymentReponse.id, orderId: paymentReponse.orderId, paymentFailureReason: nil)
+    }
+}
+
+// MARK: Checkout Data Payment
+
+@objc public class PrimerCheckoutPaymentMethodData: NSObject, Codable {
+    public let paymentMethodType: PrimerCheckoutPaymentMethodType
+    
+    public init(type: PrimerCheckoutPaymentMethodType) {
+        self.paymentMethodType = type
+    }
+}
+
+@objc public class PrimerCheckoutPaymentMethodType: NSObject, Codable {
+    public let type: String
+    
+    public init(type: String) {
+        self.type = type
+    }
+}
+
+// MARK: Checkout Data Payment Error
 
 @objc public enum PrimerPaymentErrorCode: Int, RawRepresentable, Codable {
     case failed
@@ -468,42 +515,46 @@ internal struct PrimerPaymentMethodData {
     }
 }
 
-// TODO: Update / Temporary name to avoid conflicts
+// MARK: Checkout Data Payment Result
 
-@objc public class PrimerCheckoutPaymentMethodData: NSObject, Codable {
-    public let paymentMethodType: PrimerCheckoutPaymentMethodType
+@objc public class PrimerCheckoutResultData: NSObject, Codable {}
+
+@objc public class MultibancoCheckoutResultData: PrimerCheckoutResultData {
     
-    public init(type: PrimerCheckoutPaymentMethodType) {
-        self.paymentMethodType = type
+    let expiresAt: Date?
+    let entity: String?
+    let reference: String?
+    
+    private enum CodingKeys : String, CodingKey {
+        case expiresAt,
+             entity,
+             reference
+    }
+    
+    public init(expiresAt: Date?, entity: String?, reference: String?) {
+        self.expiresAt = expiresAt
+        self.entity = entity
+        self.reference = reference
+        super.init()
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        expiresAt = try? container.decode(Date.self, forKey: .expiresAt)
+        entity = try? container.decode(String.self, forKey: .entity)
+        reference = try? container.decode(String.self, forKey: .reference)
+        super.init()
+    }
+    
+    public override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try? container.encode(expiresAt, forKey: .expiresAt)
+        try? container.encode(entity, forKey: .entity)
+        try? container.encode(reference, forKey: .reference)
     }
 }
 
-@objc public class PrimerCheckoutPaymentMethodType: NSObject, Codable {
-    public let type: String
-    
-    public init(type: String) {
-        self.type = type
-    }
-}
-
-@objc public class PrimerCheckoutDataPayment: NSObject, Codable {
-    public let id: String?
-    public let orderId: String?
-    public let paymentFailureReason: PrimerPaymentErrorCode?
-    
-    public init(id: String?, orderId: String?, paymentFailureReason: PrimerPaymentErrorCode?) {
-        self.id = id
-        self.orderId = orderId
-        self.paymentFailureReason = paymentFailureReason
-    }
-}
-
-extension PrimerCheckoutDataPayment {
-    
-    convenience init(from paymentReponse: Payment.Response) {
-        self.init(id: paymentReponse.id, orderId: paymentReponse.orderId, paymentFailureReason: nil)
-    }
-}
+// MARK: Client Session
 
 @objc public class PrimerClientSession: NSObject, Codable {
     
@@ -532,6 +583,8 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
+// MARK: Client Session Order
+
 @objc public class PrimerOrder: NSObject, Codable {
     
     public let countryCode: String?
@@ -540,6 +593,8 @@ extension PrimerCheckoutDataPayment {
         self.countryCode = countryCode
     }
 }
+
+// MARK: Client Session Customer
 
 @objc public class PrimerCustomer: NSObject, Codable {
     
@@ -566,6 +621,8 @@ extension PrimerCheckoutDataPayment {
         self.shippingAddress = shippingAddress
     }
 }
+
+// MARK: Client Session Customer Line Item
 
 @objc public class PrimerLineItem: NSObject, Codable {
     
@@ -595,6 +652,8 @@ extension PrimerCheckoutDataPayment {
         self.taxAmount = taxAmount
     }
 }
+
+// MARK: Client Session Customer Address
 
 @objc public class PrimerAddress: NSObject, Codable {
     
@@ -627,6 +686,8 @@ extension PrimerCheckoutDataPayment {
         self.state = state
     }
 }
+
+// MARK: -
 
 extension PrimerClientSession {
     
