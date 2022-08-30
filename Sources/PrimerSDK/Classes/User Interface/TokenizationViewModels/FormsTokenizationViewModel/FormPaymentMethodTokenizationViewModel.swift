@@ -597,7 +597,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 }
                 
                 if isManualPaymentHandling || isHeadlessCheckoutDelegateImplemented {
-                    PrimerDelegateProxy.primerDidEnterResumePendingWithData(additionalInfo)
+                    PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
                 } else {
                     // To get called once we'll display the full UI on non-headless | auto flow3
                     // let clientSession = AppState.current.apiConfiguration?.clientSession
