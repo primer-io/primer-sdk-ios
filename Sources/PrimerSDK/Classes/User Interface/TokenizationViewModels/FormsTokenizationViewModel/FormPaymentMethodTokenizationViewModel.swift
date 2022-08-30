@@ -590,7 +590,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 
                 switch self.config.type {
                 case PrimerPaymentMethodType.adyenMultibanco.rawValue:
-                    additionalInfo = MultibancoCheckoutResultData(expiresAt: decodedClientToken.expiresAt, entity: decodedClientToken.entity, reference: decodedClientToken.reference)
+                    additionalInfo = MultibancoCheckoutAdditionalInfo(expiresAt: decodedClientToken.expiresAt, entity: decodedClientToken.entity, reference: decodedClientToken.reference)
                 default:
                     log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.config.type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
                     break

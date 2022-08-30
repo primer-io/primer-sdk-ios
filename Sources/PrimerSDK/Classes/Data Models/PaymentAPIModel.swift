@@ -439,11 +439,11 @@ internal struct PrimerPaymentMethodData {
 @objc public class PrimerCheckoutData: NSObject, Codable {
     
     public let payment: PrimerCheckoutDataPayment?
-    public let paymentMethodData: PrimerCheckoutAdditionalInfo?
+    public let additionalInfo: PrimerCheckoutAdditionalInfo?
     
-    public init(payment: PrimerCheckoutDataPayment?, paymentMethodData: PrimerCheckoutAdditionalInfo? = nil) {
+    public init(payment: PrimerCheckoutDataPayment?, additionalInfo: PrimerCheckoutAdditionalInfo? = nil) {
         self.payment = payment
-        self.paymentMethodData = paymentMethodData
+        self.additionalInfo = additionalInfo
     }
 }
 
@@ -519,7 +519,7 @@ extension PrimerCheckoutDataPayment {
 
 @objc public class PrimerCheckoutAdditionalInfo: NSObject, Codable {}
 
-@objc public class MultibancoCheckoutResultData: PrimerCheckoutAdditionalInfo {
+@objc public class MultibancoCheckoutAdditionalInfo: PrimerCheckoutAdditionalInfo {
     
     let expiresAt: Date?
     let entity: String?
