@@ -165,7 +165,8 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     public static func getAsset(for paymentMethodType: String, assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
-        guard let brand = PrimerAsset.Brand(rawValue: paymentMethodType) else { return nil }
+        let tmpPaymentMethodType = paymentMethodType.lowercased().replacingOccurrences(of: "_", with: "-")
+        guard let brand = PrimerAsset.Brand(rawValue: tmpPaymentMethodType) else { return nil }
         return PrimerAsset.getAsset(for: brand, assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
     
@@ -283,6 +284,7 @@ public struct PrimerAsset {
     }
     
     public enum Brand: String, CaseIterable {
+        
         case adyen, afterPay = "afterpay", aliPay = "alipay", alma, amazonPay = "amazonpay", amex, apaya, applePay = "apple-pay", atome
         case bancontact, banked, bizum, blik, bolt, boost, braintree, bridge, buckaroo
         case change, checkoutCom = "checkout", clearPay = "clearpay", coinBase = "coinbase", coinPayments = "coinpayments"
