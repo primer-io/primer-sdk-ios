@@ -586,18 +586,18 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 
                 let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
                 let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
-                var checkoutResult: PrimerCheckoutResultData?
+                var additionalInfo: PrimerCheckoutAdditionalInfo?
                 
                 switch self.config.type {
                 case PrimerPaymentMethodType.adyenMultibanco.rawValue:
-                    checkoutResult = MultibancoCheckoutResultData(expiresAt: decodedClientToken.expiresAt, entity: decodedClientToken.entity, reference: decodedClientToken.reference)
+                    additionalInfo = MultibancoCheckoutResultData(expiresAt: decodedClientToken.expiresAt, entity: decodedClientToken.entity, reference: decodedClientToken.reference)
                 default:
                     log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.config.type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
                     break
                 }
                 
                 if isManualPaymentHandling || isHeadlessCheckoutDelegateImplemented {
-                    PrimerDelegateProxy.primerDidEnterResumePendingWithData(checkoutResult)
+                    PrimerDelegateProxy.primerDidEnterResumePendingWithData(additionalInfo)
                 } else {
                     // To get called once we'll display the full UI on non-headless | auto flow3
                     // let clientSession = AppState.current.apiConfiguration?.clientSession
