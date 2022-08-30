@@ -404,24 +404,23 @@
                                 </connections>
                             </collectionView>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="mct-co-cWD">
-                                <rect key="frame" x="105.5" y="98" width="203" height="32"/>
+                                <rect key="frame" x="156.5" y="98" width="101" height="32"/>
                                 <segments>
                                     <segment title="Logo"/>
                                     <segment title="Icon"/>
                                 </segments>
                                 <connections>
-                                    <action selector="segmentedControlerValueChanged:" destination="2Gj-2M-9Uh" eventType="valueChanged" id="xGa-EP-Y08"/>
+                                    <action selector="assetTypeSegmentedControlValueChanged:" destination="2Gj-2M-9Uh" eventType="valueChanged" id="s5R-6o-CZR"/>
                                 </connections>
                             </segmentedControl>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Hbz-Z7-bQS">
-                                <rect key="frame" x="105.5" y="137" width="203" height="32"/>
+                                <rect key="frame" x="156.5" y="137" width="101" height="32"/>
                                 <segments>
-                                    <segment title="Original"/>
                                     <segment title="Light"/>
                                     <segment title="Dark"/>
                                 </segments>
                                 <connections>
-                                    <action selector="segmentedControlerValueChanged:" destination="2Gj-2M-9Uh" eventType="valueChanged" id="SNB-qe-BJ7"/>
+                                    <action selector="colorTypeSegmentedControlValueChanged:" destination="2Gj-2M-9Uh" eventType="valueChanged" id="bEa-BR-VMz"/>
                                 </connections>
                             </segmentedControl>
                         </subviews>
