@@ -98,6 +98,7 @@ internal class PrimerDelegateProxy {
     static func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         DispatchQueue.main.async {
             Primer.shared.delegate?.primerDidEnterResumePendingWithPaymentAdditionalInfo?(additionalInfo)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo?(additionalInfo)
         }
     }
     
