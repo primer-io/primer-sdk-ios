@@ -160,16 +160,17 @@ public class PrimerHeadlessUniversalCheckout {
         return paymentMethodConfig.tokenizationViewModel?.uiModule.paymentMethodButton
     }
     
-    public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType) -> UIImage? {
-        return brand.getImage(assetType: assetType)
+    public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
+        return brand.getImage(assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
     
-    public static func getAsset(for paymentMethodType: String, assetType: PrimerAsset.ImageType) -> UIImage? {
-        return PrimerAsset.getAsset(for: paymentMethodType, assetType: assetType)
+    public static func getAsset(for paymentMethodType: String, assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
+        guard let brand = PrimerAsset.Brand(rawValue: paymentMethodType) else { return nil }
+        return PrimerAsset.getAsset(for: brand, assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
     
-    public static func getAsset(for cardNetwork: CardNetwork, assetType: PrimerAsset.ImageType) -> UIImage? {
-        return PrimerAsset.getAsset(for: cardNetwork, assetType: assetType)
+    public static func getAsset(for cardNetwork: CardNetwork, assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
+        return PrimerAsset.getAsset(for: cardNetwork, assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
     
     public func showPaymentMethod(_ paymentMethod: String, completion: ((_ viewController: UIViewController) -> Void)? = nil) {
@@ -230,23 +231,35 @@ public class PrimerHeadlessUniversalCheckout {
 
 public struct PrimerAsset {
     
-    public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType) -> UIImage? {
-        return brand.getImage(assetType: assetType)
+    public static func getAsset(
+        for brand: PrimerAsset.Brand,
+        assetType: PrimerAsset.ImageType,
+        userInterfaceStyle: PrimerUserInterfaceStyle? = nil
+    ) -> UIImage? {
+        return brand.getImage(assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
     
-    public static func getAsset(for paymentMethodType: String, assetType: PrimerAsset.ImageType) -> UIImage? {
-        var brand: PrimerAsset.Brand?
-        return nil
+    public static func getAsset(
+        for paymentMethodType: String,
+        assetType: PrimerAsset.ImageType,
+        userInterfaceStyle: PrimerUserInterfaceStyle? = nil
+    ) -> UIImage? {
+        guard let brand = PrimerAsset.Brand(rawValue: paymentMethodType) else { return nil }
+        return brand.getImage(assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
     
-    public static func getAsset(for cardNetwork: CardNetwork, assetType: PrimerAsset.ImageType) -> UIImage? {
+    public static func getAsset(
+        for cardNetwork: CardNetwork,
+        assetType: PrimerAsset.ImageType,
+        userInterfaceStyle: PrimerUserInterfaceStyle? = nil
+    ) -> UIImage? {
         var brand: PrimerAsset.Brand?
         
         switch cardNetwork {
         case .amex:
             brand = .amex
         case .bancontact:
-            brand = .bankcontact
+            brand = .bancontact
         case .discover:
             brand = .discover
         case .jcb:
@@ -266,37 +279,34 @@ public struct PrimerAsset {
             return nil
         }
         
-        return brand?.getImage(assetType: assetType)
+        return brand?.getImage(assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
     
     public enum Brand: String, CaseIterable {
-        case adyen, afterPay = "after-pay", aliPay = "ali-pay", alma, amazonPay = "amazon-pay", amex, apaya, applePay = "apple-pay", atome
-        case bankcontact, banked, bizum, blik, bolt, boost, braintree, bridge, buckaroo
-        case change, checkoutCom = "checkout", clearPay = "clear-pay", coinBase = "coinbase", coinPayments = "coinpayments"
-        case dLocal = "d-local", directDebit = "direct-debit", discover, dotPay = "dotpay", eMerchantPay = "emerchantpay", eps, fintecture, fonoa, forter, fpx
-        case gCash = "gcash", giroPay = "giropay", globalPayments = "global-payments", goCardless = "go-cardless", googlePay = "google-pay", grabPay = "grab-pay"
+        case adyen, afterPay = "afterpay", aliPay = "alipay", alma, amazonPay = "amazonpay", amex, apaya, applePay = "apple-pay", atome
+        case bancontact, banked, bizum, blik, bolt, boost, braintree, bridge, buckaroo
+        case change, checkoutCom = "checkout", clearPay = "clearpay", coinBase = "coinbase", coinPayments = "coinpayments"
+        case dLocal = "dlocal", directDebit = "direct-debit", discover, dotPay = "dotpay", eMerchantPay = "emerchantpay", eps, fintecture, fonoa, forter, fpx
+        case gCash = "gcash", giroPay = "giropay", globalPayments = "globalpayments", goCardless = "gocardless", googlePay = "google-pay", grabPay = "grabpay"
+        case fast
         case hoolah
         case iDeal = "ideal", interac
         case ingenico
         case jcb
         case klarna, kount
-        case layBuy = "lay-buy", looker
-        case masterCard = "master-card", mbway = "mb-way", mercadoPago = "mercado-pago", metamask, mobilePay = "mobile-pay", mollie
+        case layBuy = "laybuy", looker
+        case masterCard = "mastercard", mbway = "mb-way", mercadoPago = "mercado-pago", metamask, mobilePay = "mobilepay", mollie
         case neonomics, netSuite = "netsuite", nexi, nuvei
-        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, payTrail = "paytrail", payshop
+        case opennode
+        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, payTrail = "paytrail", payshop, poli, promptPay = "promptpay"
         case ravelin, riskified
         case seon, sepa, sift, signifyd, sofort, stitch, stripe, swish
-        case tableau, taxjar, telserv, tink, trilo, trueLayer = "truelayer", trueMoney = "truemoney", trustly, twillio, twint
+        case tableau, taxjar, telserv, tink, trilo, trueLayer = "truelayer", trueMoney = "truemoney", trustly, twillio, twint, twoCtwoP = "twoc2p"
         case vipps, visa, volt, voucherify, vyne
         case wordline, worldPay = "worldpay"
-        case twoCtwoP = "2c2p"
         case xfers
-        case poli
-        case fast
-        case promptPay = "prompt-pay"
-        case opennode
         
-        public func getImage(assetType: PrimerAsset.ImageType) -> UIImage? {
+        public func getImage(assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
             var imageName = rawValue
             
             switch assetType {
@@ -306,18 +316,28 @@ public struct PrimerAsset {
                 imageName += "-icon"
             }
             
-            guard let image = UIImage(named: imageName, in: Bundle.primerResources, compatibleWith: nil) else { return nil }
-            return image
+            switch userInterfaceStyle {
+            case .dark:
+                imageName += "-dark"
+            default:
+                if let image = UIImage(named: "\(imageName)-light", in: Bundle.primerResources, compatibleWith: nil) {
+                    return image
+                } else if let image = UIImage(named: "\(imageName)-colored", in: Bundle.primerResources, compatibleWith: nil) {
+                    return image
+                }
+            }
+            
+            return nil
         }
     }
     
     public enum ImageType: String, CaseIterable, Equatable {
         case logo, icon
     }
-    
-    public enum ImageColor: String, CaseIterable, Equatable {
-        case original, light, dark
-    }
+}
+
+public enum PrimerUserInterfaceStyle: CaseIterable, Hashable {
+    case dark, light
 }
 
 extension PrimerHeadlessUniversalCheckout {
