@@ -75,7 +75,7 @@ public enum PrimerInputElementType: Int {
             
         case .phoneNumber:
             guard let text = value as? String else { return false }
-            return text.isValidPhoneNumber
+            return text.isNumeric
             
         default:
             return true

@@ -84,7 +84,7 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
                 return
             }
             
-            if !rawData.phoneNumber.isValidPhoneNumber {
+            if let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType), !rawData.phoneNumber.isValidPhoneNumberForPaymentMethodType(paymentMethodType) {
                 errors.append(PrimerValidationError.invalidPhoneNumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
             }
             

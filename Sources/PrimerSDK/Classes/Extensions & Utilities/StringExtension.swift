@@ -32,12 +32,6 @@ internal extension String {
         return String(data: data, encoding: .utf8)
     }
     
-    var isPhoneNumber: Bool {
-        let regex = "^(\\d){9,14}$"
-        let inputP = NSPredicate(format: "SELF MATCHES %@", regex)
-        return inputP.evaluate(with: self)
-    }
-
     var isNumeric: Bool {
         guard !self.isEmpty else { return false }
         let nums: Set<Character> = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -215,12 +209,6 @@ internal extension String {
         let emailP = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
         return emailP.evaluate(with: self)
     }
-    
-    var isValidPhoneNumber: Bool {
-        let phoneNumberRegEx = "^(^\\+628|628)(\\d{8,10})"
-        let phoneNumber = NSPredicate(format: "SELF MATCHES %@", phoneNumberRegEx)
-        return phoneNumber.evaluate(with: self)
-    }
 
     var isValidLuhn: Bool {
         var sum = 0
@@ -307,6 +295,24 @@ internal extension String {
     
     mutating func capitalizeFirstLetter() {
         self = self.capitalizingFirstLetter()
+    }
+}
+
+extension String {
+    
+    internal func isValidPhoneNumberForPaymentMethodType(_ paymentMethodType: PrimerPaymentMethodType) -> Bool {
+        
+        var regex = ""
+        
+        switch paymentMethodType {
+        case .xenditOvo:
+            regex = "^(^\\+628|628)(\\d{8,10})"
+        default:
+            regex = "^(^\\+)(\\d){9,14}$"
+        }
+        
+        let phoneNumber = NSPredicate(format: "SELF MATCHES %@", regex)
+        return phoneNumber.evaluate(with: self)
     }
 }
 
