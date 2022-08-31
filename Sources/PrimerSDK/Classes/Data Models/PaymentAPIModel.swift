@@ -439,7 +439,7 @@ internal struct PrimerPaymentMethodData {
 @objc public class PrimerCheckoutData: NSObject, Codable {
     
     public let payment: PrimerCheckoutDataPayment?
-    public let additionalInfo: PrimerCheckoutAdditionalInfo?
+    public var additionalInfo: PrimerCheckoutAdditionalInfo?
     
     public init(payment: PrimerCheckoutDataPayment?, additionalInfo: PrimerCheckoutAdditionalInfo? = nil) {
         self.payment = payment
