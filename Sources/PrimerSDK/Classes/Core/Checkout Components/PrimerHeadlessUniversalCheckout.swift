@@ -135,7 +135,14 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     internal func listAvailablePaymentMethodsTypes() -> [String]? {
-        return PrimerAPIConfiguration.paymentMethodConfigs?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
+        var paymentMethods = PrimerAPIConfiguration.paymentMethodConfigs
+        if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
+#if !canImport(PrimerKlarnaSDK)
+            paymentMethods?.remove(at: klarnaIndex)
+            print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
+#endif
+        }
+        return paymentMethods?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
     
     public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType]? {
