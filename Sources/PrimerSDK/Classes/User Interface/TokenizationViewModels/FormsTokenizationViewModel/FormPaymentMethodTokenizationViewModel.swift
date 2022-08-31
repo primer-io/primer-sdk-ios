@@ -603,7 +603,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     break
                 }
                 
-                if isManualPaymentHandling || isHeadlessCheckoutDelegateImplemented {
+                if isManualPaymentHandling {
                     PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
                     seal.fulfill(nil)
                 } else {
