@@ -195,6 +195,10 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
     
     func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         print("\n\n🤯🤯🤯 \(#function)\nadditionalInfo: \(additionalInfo)")
+        
+        DispatchQueue.main.async {
+            self.hideLoadingOverlay()
+        }
     }
     
     func primerHeadlessUniversalCheckoutDidFail(withError err: Error) {
