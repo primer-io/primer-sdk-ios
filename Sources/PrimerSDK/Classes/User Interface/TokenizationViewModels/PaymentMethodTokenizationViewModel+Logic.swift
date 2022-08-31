@@ -34,7 +34,6 @@ extension PaymentMethodTokenizationViewModel {
                     self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
                 }
                 .done { checkoutData in
-                    
                     self.didFinishPayment?(nil)
                     self.nullifyEventCallbacks()
                     

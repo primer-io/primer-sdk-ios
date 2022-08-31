@@ -628,7 +628,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
-        
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) else {
             return Promise()
         }
