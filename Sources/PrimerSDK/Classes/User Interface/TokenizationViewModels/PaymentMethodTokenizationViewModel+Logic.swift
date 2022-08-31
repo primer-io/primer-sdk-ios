@@ -154,6 +154,8 @@ extension PaymentMethodTokenizationViewModel {
                             .catch { err in
                                 seal.reject(err)
                             }
+                        } else if let checkoutData = self.paymentCheckoutData {
+                            seal.fulfill(checkoutData)
                         } else {
                             seal.fulfill(nil)
                         }
