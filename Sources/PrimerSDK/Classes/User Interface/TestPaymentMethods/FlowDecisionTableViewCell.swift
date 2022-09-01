@@ -13,7 +13,7 @@ class FlowDecisionTableViewCell: UITableViewCell {
     
     static var identifier: String = "FlowDecisionTableViewCell"
         
-    internal private(set) var decision: PrimerTestPaymentMethodOptions.FlowDecision!
+    internal private(set) var decision: PrimerTestPaymentMethodSessionInfo.FlowDecision!
     private let cellInternalPadding: CGFloat = 4
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -60,7 +60,7 @@ class FlowDecisionTableViewCell: UITableViewCell {
 
 extension FlowDecisionTableViewCell {
     
-    func configure(decision: PrimerTestPaymentMethodOptions.FlowDecision) {
+    func configure(decision: PrimerTestPaymentMethodSessionInfo.FlowDecision) {
         self.decision = decision
         textLabel?.text = decision.displayFlowTitle
         accessibilityIdentifier = "decision_\(decision)"

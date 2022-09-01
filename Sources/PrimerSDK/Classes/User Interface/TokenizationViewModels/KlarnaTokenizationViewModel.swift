@@ -227,32 +227,27 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            var instrument: PaymentInstrument
-            var request: PaymentMethodTokenizationRequest
+            var requestBody: TokenizationRequestBody
             
             if Primer.shared.intent == .vault {
-                instrument = PaymentInstrument(
+                let paymentInstrument = KlarnaPaymentSessionPaymentInstrument(
                     klarnaAuthorizationToken: self.authorizationToken!,
                     sessionData: self.klarnaCustomerTokenAPIResponse!.sessionData)
                 
-                request = PaymentMethodTokenizationRequest(
-                    paymentInstrument: instrument,
-                    paymentFlow: .vault)
+                requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
                 
             } else {
-                instrument = PaymentInstrument(
+                let paymentInstrument = KlarnaCustomerTokenPaymentInstrument(
                     klarnaCustomerToken: self.klarnaCustomerTokenAPIResponse!.customerTokenId,
                     sessionData: self.klarnaCustomerTokenAPIResponse!.sessionData)
                 
-                request = PaymentMethodTokenizationRequest(
-                    paymentInstrument: instrument,
-                    paymentFlow: .checkout)
+                requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
             }
             
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             
             firstly {
-                tokenizationService.tokenize(request: request)
+                tokenizationService.tokenize(requestBody: requestBody)
             }
             .done { paymentMethodTokenData in
                 seal.fulfill(paymentMethodTokenData)

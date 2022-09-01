@@ -702,23 +702,27 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     seal.reject(err)
                     return
                 }
-                                
-                let tokenizationRequest = BlikPaymentMethodTokenizationRequest(
-                    paymentInstrument: BlikPaymentMethodOptions(
-                        paymentMethodType: config.type,
-                        paymentMethodConfigId: configId,
-                        sessionInfo: BlikPaymentMethodOptions.SessionInfo(
-                            blikCode: blikCode,
-                            locale: PrimerSettings.current.localeData.localeCode)))
                 
-                let apiClient = PrimerAPIClient()
-                apiClient.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: tokenizationRequest) { result in
-                    switch result {
-                    case .success(let paymentMethodToken):
-                        seal.fulfill(paymentMethodToken)
-                    case .failure(let err):
-                        seal.reject(err)
-                    }
+                let sessionInfo = BlikSessionInfo(
+                    blikCode: blikCode,
+                    locale: PrimerSettings.current.localeData.localeCode)
+                
+                let paymentInstrument = OffSessionPaymentInstrument(
+                    paymentMethodConfigId: configId,
+                    paymentMethodType: config.type,
+                    sessionInfo: sessionInfo)
+                                
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+                
+                firstly {
+                    tokenizationService.tokenize(requestBody: requestBody)
+                }
+                .done { paymentMethodTokenData in
+                    seal.fulfill(paymentMethodTokenData)
+                }
+                .catch { err in
+                    seal.reject(err)
                 }
             }
             
@@ -731,19 +735,18 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     return
                 }
                 
-                var sessionInfo: AsyncPaymentMethodOptions.SessionInfo?
-                sessionInfo = AsyncPaymentMethodOptions.SessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+                let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
                 
-                
-                let request = AsyncPaymentMethodTokenizationRequest(
-                    paymentInstrument: AsyncPaymentMethodOptions(
-                        paymentMethodType: config.type,
-                        paymentMethodConfigId: configId,
-                        sessionInfo: sessionInfo))
+                let paymentInstrument = OffSessionPaymentInstrument(
+                    paymentMethodConfigId: configId,
+                    paymentMethodType: config.type,
+                    sessionInfo: sessionInfo)
+                            
+                let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
                 firstly {
-                    tokenizationService.tokenize(request: request)
+                    tokenizationService.tokenize(requestBody: requestBody)
                 }
                 .done{ paymentMethod in
                     seal.fulfill(paymentMethod)
@@ -777,22 +780,24 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     return
                 }
                 
-                let tokenizationRequest = InputPhoneNumberPaymentMethodTokenizationRequest(
-                    paymentInstrument: InputPhoneNumberPaymentMethodOptions(
-                        paymentMethodType: config.type,
-                        paymentMethodConfigId: configId,
-                        sessionInfo: InputPhoneNumberPaymentMethodOptions.SessionInfo(
-                            phoneNumber: "\(FormPaymentMethodTokenizationViewModel.countryDialCode)\(phoneNumber)",
-                            locale: PrimerSettings.current.localeData.localeCode)))
+                let sessionInfo = InputPhonenumberSessionInfo(phoneNumber: "\(FormPaymentMethodTokenizationViewModel.countryDialCode)\(phoneNumber)")
                 
-                let apiClient = PrimerAPIClient()
-                apiClient.tokenizePaymentMethod(clientToken: decodedClientToken, paymentMethodTokenizationRequest: tokenizationRequest) { result in
-                    switch result {
-                    case .success(let paymentMethodToken):
-                        seal.fulfill(paymentMethodToken)
-                    case .failure(let err):
-                        seal.reject(err)
-                    }
+                let paymentInstrument = OffSessionPaymentInstrument(
+                    paymentMethodConfigId: configId,
+                    paymentMethodType: config.type,
+                    sessionInfo: sessionInfo)
+                
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+                
+                firstly {
+                    tokenizationService.tokenize(requestBody: requestBody)
+                }
+                .done { paymentMethodTokenData in
+                    seal.fulfill(paymentMethodTokenData)
+                }
+                .catch { err in
+                    seal.reject(err)
                 }
             }
         
@@ -805,18 +810,18 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     return
                 }
                 
-                var sessionInfo: AsyncPaymentMethodOptions.SessionInfo?
-                sessionInfo = AsyncPaymentMethodOptions.SessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+                let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
                 
-                let request = AsyncPaymentMethodTokenizationRequest(
-                    paymentInstrument: AsyncPaymentMethodOptions(
-                        paymentMethodType: config.type,
-                        paymentMethodConfigId: configId,
-                        sessionInfo: sessionInfo))
+                let paymentInstrument = OffSessionPaymentInstrument(
+                    paymentMethodConfigId: configId,
+                    paymentMethodType: config.type,
+                    sessionInfo: sessionInfo)
+                
+                let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
                 firstly {
-                    tokenizationService.tokenize(request: request)
+                    tokenizationService.tokenize(requestBody: requestBody)
                 }
                 .done{ paymentMethod in
                     seal.fulfill(paymentMethod)

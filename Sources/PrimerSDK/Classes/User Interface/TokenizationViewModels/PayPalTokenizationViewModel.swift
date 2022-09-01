@@ -12,7 +12,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     var didDismissExternalView: (() -> Void)?
     
     private var payPalUrl: URL!
-    private var payPalInstrument: PaymentInstrument!
+    private var payPalInstrument: PayPalPaymentInstrument!
     private var session: Any!
     private var orderId: String?
     private var confirmBillingAgreementResponse: PayPalConfirmBillingAgreementResponse?
@@ -276,17 +276,19 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    private func createPaypalPaymentInstrument() -> Promise<PaymentInstrument> {
+    private func createPaypalPaymentInstrument() -> Promise<PayPalPaymentInstrument> {
         return Promise { seal in
             if Primer.shared.intent == .vault {
                 firstly {
                     self.generateBillingAgreementConfirmation()
                 }
                 .done { billingAgreement in
-                    let paymentInstrument = PaymentInstrument(
+                    let paymentInstrument = PayPalPaymentInstrument(
+                        paypalOrderId: nil,
                         paypalBillingAgreementId: billingAgreement.billingAgreementId,
                         shippingAddress: billingAgreement.shippingAddress,
                         externalPayerInfo: billingAgreement.externalPayerInfo)
+
                     seal.fulfill(paymentInstrument)
                 }
                 .catch { err in
@@ -303,7 +305,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 firstly {
                     self.fetchPayPalExternalPayerInfo(orderId: orderId)
                 }
-                .then { res -> Promise<PaymentInstrument> in
+                .then { res -> Promise<PayPalPaymentInstrument> in
                     return self.generatePaypalPaymentInstrument(externalPayerInfo: res.externalPayerInfo)
                 }
                 .done { response in
@@ -324,7 +326,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    private func generatePaypalPaymentInstrument(externalPayerInfo: ExternalPayerInfo?) -> Promise<PaymentInstrument> {
+    private func generatePaypalPaymentInstrument(externalPayerInfo: ExternalPayerInfo?) -> Promise<PayPalPaymentInstrument> {
         return Promise { seal in
             self.generatePaypalPaymentInstrument(externalPayerInfo: externalPayerInfo) { result in
                 switch result {
@@ -337,7 +339,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    private func generatePaypalPaymentInstrument(externalPayerInfo: ExternalPayerInfo?, completion: @escaping (Result<PaymentInstrument, Error>) -> Void) {
+    private func generatePaypalPaymentInstrument(externalPayerInfo: ExternalPayerInfo?, completion: @escaping (Result<PayPalPaymentInstrument, Error>) -> Void) {
         switch Primer.shared.intent {
         case .checkout:
             guard let orderId = orderId else {
@@ -354,7 +356,12 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return
             }
             
-            let paymentInstrument = PaymentInstrument(paypalOrderId: orderId, externalPayerInfo: externalPayerInfo)
+            let paymentInstrument = PayPalPaymentInstrument(
+                paypalOrderId: orderId,
+                paypalBillingAgreementId: nil,
+                shippingAddress: nil,
+                externalPayerInfo: externalPayerInfo)
+            
             completion(.success(paymentInstrument))
             
         case .vault:
@@ -364,11 +371,11 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 completion(.failure(err))
                 return
             }
-            let paymentInstrument = PaymentInstrument(
+            let paymentInstrument = PayPalPaymentInstrument(
+                paypalOrderId: nil,
                 paypalBillingAgreementId: confirmedBillingAgreement.billingAgreementId,
                 shippingAddress: confirmedBillingAgreement.shippingAddress,
-                externalPayerInfo: confirmedBillingAgreement.externalPayerInfo
-            )
+                externalPayerInfo: confirmedBillingAgreement.externalPayerInfo)
             
             completion(.success(paymentInstrument))
             
@@ -405,21 +412,10 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         })
     }
     
-    override func tokenize() -> Promise<PaymentMethodToken> {
-        return Promise { seal in
-            let request = PaymentMethodTokenizationRequest(paymentInstrument: self.payPalInstrument, state: AppState.current)
-
-            let tokenizationService: TokenizationServiceProtocol = DependencyContainer.resolve()
-            tokenizationService.tokenize(request: request) { result in
-                switch result {
-                case .failure(let err):
-                    seal.reject(err)
-                    
-                case .success(let token):
-                    seal.fulfill(token)
-                }
-            }
-        }
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+        let requestBody = TokenizationRequestBody(paymentInstrument: self.payPalInstrument)
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+        return tokenizationService.tokenize(requestBody: requestBody)
     }
 }
 

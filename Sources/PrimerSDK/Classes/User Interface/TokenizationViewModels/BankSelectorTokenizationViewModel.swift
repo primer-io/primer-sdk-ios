@@ -272,32 +272,30 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
     }
 
     private func tokenize(bank: Bank, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
-        let req = BankSelectorTokenizationRequest(
-            paymentInstrument: PaymentInstrument(
-                paymentMethodConfigId: self.config.id!,
-                sessionInfo: BankSelectorSessionInfo(issuer: bank.id),
-                type: "OFF_SESSION_PAYMENT",
-                paymentMethodType: config.type))
-        
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+        guard ClientTokenService.decodedClientToken != nil else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
         }
         
-        let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        apiClient.tokenizePaymentMethod(
-            clientToken: decodedClientToken,
-            paymentMethodTokenizationRequest: req) { result in
-                switch result {
-                case .success(let paymentMethodTokenData):
-                    self.paymentMethodTokenData = paymentMethodTokenData
-                    completion(self.paymentMethodTokenData, nil)
-                case .failure(let err):
-                    completion(nil, err)
-                }
-            }
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+        let requestBody = TokenizationRequestBody(
+            paymentInstrument: OffSessionPaymentInstrument(
+                paymentMethodConfigId: self.config.id!,
+                paymentMethodType: config.type,
+                sessionInfo: BankSelectorSessionInfo(issuer: bank.id)))
+        
+        firstly {
+            tokenizationService.tokenize(requestBody: requestBody)
+        }
+        .done { paymentMethodTokenData in
+            self.paymentMethodTokenData = paymentMethodTokenData
+            completion(self.paymentMethodTokenData, nil)
+        }
+        .catch { err in
+            completion(nil, err)
+        }
     }
     
 }

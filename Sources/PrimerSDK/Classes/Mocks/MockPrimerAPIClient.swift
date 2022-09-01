@@ -171,7 +171,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+    func tokenizePaymentMethod(clientToken: DecodedClientToken, tokenizationRequestBody: TokenizationRequestBody, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 

@@ -44,7 +44,7 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
         self.rawDataManager = rawDataManager
     }
     
-    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<TokenizationRequest> {
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<TokenizationRequestBody> {
         return Promise { seal in
             
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
@@ -61,13 +61,15 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
                 return
             }
             
-            let paymentInstrument = InputPhoneNumberPaymentMethodOptions(paymentMethodType:
-                                                                            paymentMethodType,
-                                                                         paymentMethodConfigId: paymentMethodId,
-                                                                         sessionInfo: InputPhoneNumberPaymentMethodOptions.SessionInfo(phoneNumber: rawData.phoneNumber, locale: PrimerSettings.current.localeData.localeCode))
+            let sessionInfo = InputPhonenumberSessionInfo(phoneNumber: rawData.phoneNumber)
             
-            let request = InputPhoneNumberPaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument)
-            seal.fulfill(request)
+            let paymentInstrument = OffSessionPaymentInstrument(
+                paymentMethodConfigId: paymentMethodId,
+                paymentMethodType: paymentMethodType,
+                sessionInfo: sessionInfo)
+            
+            let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+            seal.fulfill(requestBody)
         }
     }
     
