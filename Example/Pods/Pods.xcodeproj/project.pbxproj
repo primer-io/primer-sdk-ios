@@ -421,7 +421,7 @@
 		21F4ACB1142B1B9457658584BF5CD35A /* Pods-PrimerSDK_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-PrimerSDK_Example-dummy.m"; sourceTree = "<group>"; };
 		22C51EE6B4F227D96E4B383DF58FD186 /* zh.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; path = zh.json; sourceTree = "<group>"; };
 		22EDACD8CF58A44C1D63BA23AFE48A10 /* PrimerAPIConfigurationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerAPIConfigurationService.swift; sourceTree = "<group>"; };
-		23FD1D157B8C8E7148BE8A7D354A051F /* Pods-PrimerSDK_Tests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-PrimerSDK_Tests"; path = Pods_PrimerSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		23FD1D157B8C8E7148BE8A7D354A051F /* Pods_PrimerSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		243887FC4334120259758797DA191B80 /* Device.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		259EB9D748043C0546634B2DB77E9342 /* firstly.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = firstly.swift; sourceTree = "<group>"; };
 		25FF6E714801026B4DB4061A14358A7C /* FinallyWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FinallyWrappers.swift; sourceTree = "<group>"; };
@@ -469,7 +469,7 @@
 		49BCC30A8FAD0C22F3EE51C0699798AA /* ApayaTokenizationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApayaTokenizationViewModel.swift; sourceTree = "<group>"; };
 		4BC455586A7CD59BDAAD9221C57B35AD /* PrimerTestPaymentMethodViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerTestPaymentMethodViewController.swift; sourceTree = "<group>"; };
 		4BCE6253D4552C3F8FF77C7064279870 /* CardScannerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardScannerViewController.swift; sourceTree = "<group>"; };
-		4D3869E0A461E802A5916AA6523517A4 /* Pods-PrimerSDK_Example */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-PrimerSDK_Example"; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D3869E0A461E802A5916AA6523517A4 /* Pods_PrimerSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrimerSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F05F48EEFAE35302C50DDC4C43558ED /* FormType.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormType.swift; sourceTree = "<group>"; };
 		4F2992753FC921964F94E0417DF1BBB5 /* JSONParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JSONParser.swift; sourceTree = "<group>"; };
 		50AD00490930CF6A5DC3BFE0C29DF2FF /* URLExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
@@ -1129,8 +1129,8 @@
 		5E7CEBBE4BB56B730A515810549B52D9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4D3869E0A461E802A5916AA6523517A4 /* Pods-PrimerSDK_Example */,
-				23FD1D157B8C8E7148BE8A7D354A051F /* Pods-PrimerSDK_Tests */,
+				4D3869E0A461E802A5916AA6523517A4 /* Pods_PrimerSDK_Example.framework */,
+				23FD1D157B8C8E7148BE8A7D354A051F /* Pods_PrimerSDK_Tests.framework */,
 				28E47791C9F9D0A9BA05C719761A4F3F /* PrimerSDK */,
 				A8B3BC107C2BDC3C03D961866F721265 /* PrimerSDK-PrimerResources */,
 			);
@@ -1745,7 +1745,7 @@
 			);
 			name = "Pods-PrimerSDK_Tests";
 			productName = Pods_PrimerSDK_Tests;
-			productReference = 23FD1D157B8C8E7148BE8A7D354A051F /* Pods-PrimerSDK_Tests */;
+			productReference = 23FD1D157B8C8E7148BE8A7D354A051F /* Pods_PrimerSDK_Tests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		6C144A762E9B598392AFFEC8F873746A /* Pods-PrimerSDK_Example */ = {
@@ -1764,7 +1764,7 @@
 			);
 			name = "Pods-PrimerSDK_Example";
 			productName = Pods_PrimerSDK_Example;
-			productReference = 4D3869E0A461E802A5916AA6523517A4 /* Pods-PrimerSDK_Example */;
+			productReference = 4D3869E0A461E802A5916AA6523517A4 /* Pods_PrimerSDK_Example.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		6E6525C7043FBA7BB34A249010AF5593 /* PrimerSDK-PrimerResources */ = {
