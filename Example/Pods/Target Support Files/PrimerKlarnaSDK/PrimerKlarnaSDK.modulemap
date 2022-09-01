@@ -1,6 +1,0 @@
-framework module PrimerKlarnaSDK {
-  umbrella header "PrimerKlarnaSDK-umbrella.h"
-
-  export *
-  module * { export * }
-}
