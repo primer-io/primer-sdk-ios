@@ -234,25 +234,6 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse, completion: @escaping (_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void) {
-        guard let currencyStr = AppState.current.currency?.rawValue else {
-            let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            completion(nil, err)
-            return
-        }
-        
-        let instrument = PaymentInstrument(mx: apayaWebViewResponse.mxNumber,
-                                           mnc: apayaWebViewResponse.mnc,
-                                           mcc: apayaWebViewResponse.mcc,
-                                           hashedIdentifier: apayaWebViewResponse.hashedIdentifier,
-                                           productId: apayaWebViewResponse.productId,
-                                           currencyCode: currencyStr)
-        
-        let request = PaymentMethodTokenizationRequest(
-            paymentInstrument: instrument,
-            state: AppState.current
-        )
-        
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -260,19 +241,34 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return
         }
         
-        let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        apiClient.tokenizePaymentMethod(
-            clientToken: decodedClientToken,
-            paymentMethodTokenizationRequest: request) { result in
-                switch result {
-                case .success(let paymentMethodTokenData):
-                    self.paymentMethodTokenData = paymentMethodTokenData
-                    completion(self.paymentMethodTokenData, nil)
-                case .failure(let err):
-                    completion(nil, err)
-                }
-            }
+        guard let currencyStr = AppState.current.currency?.rawValue else {
+            let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            completion(nil, err)
+            return
+        }
         
+        let paymentInstrument = ApayaPaymentInstrument(
+            mx: apayaWebViewResponse.mxNumber,
+            mnc: apayaWebViewResponse.mnc,
+            mcc: apayaWebViewResponse.mcc,
+            hashedIdentifier: apayaWebViewResponse.hashedIdentifier,
+            productId: apayaWebViewResponse.productId,
+            currencyCode: currencyStr)
+        
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+        let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+        
+        firstly {
+            tokenizationService.tokenize(requestBody: requestBody)
+        }
+        .done { paymentMethodTokenData in
+            self.paymentMethodTokenData = paymentMethodTokenData
+            completion(self.paymentMethodTokenData, nil)
+        }
+        .catch { err in
+            completion(nil, err)
+        }
     }
 }
 
