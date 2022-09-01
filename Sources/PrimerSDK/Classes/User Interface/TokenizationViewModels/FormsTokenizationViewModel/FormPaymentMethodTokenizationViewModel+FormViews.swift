@@ -207,9 +207,7 @@ extension FormPaymentMethodTokenizationViewModel {
     // MARK: Present appropriate View Controller
     
     func presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: Bool = false) -> Promise<Void> {
-        
         if shouldCompletePaymentExternally {
-            
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
                   let message = needingExternalCompletionPaymentMethodDictionary.first(where: { $0.key == paymentMethodType })?.value else {
                 return Promise()

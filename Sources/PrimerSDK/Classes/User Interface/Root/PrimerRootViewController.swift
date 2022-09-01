@@ -138,6 +138,37 @@ internal class PrimerRootViewController: PrimerViewController {
                     return
                 }
                 
+                if let paymentMethodType = self?.paymentMethodType {
+                    guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
+                        let err = PrimerError.unableToPresentPaymentMethod(
+                            paymentMethodType: paymentMethodType,
+                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                            diagnosticsId: nil)
+                        ErrorHandler.handle(error: err)
+                        PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
+                        return
+                    }
+                    
+                    if case .checkout = Primer.shared.intent, paymentMethod.isCheckoutEnabled == false  {
+                        let err = PrimerError.unsupportedIntent(
+                            intent: .checkout,
+                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                            diagnosticsId: nil)
+                        ErrorHandler.handle(error: err)
+                        PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
+                        return
+                        
+                    } else if case .vault = Primer.shared.intent, paymentMethod.isVaultingEnabled == false {
+                        let err = PrimerError.unsupportedIntent(
+                            intent: .vault,
+                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                            diagnosticsId: nil)
+                        ErrorHandler.handle(error: err)
+                        PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
+                        return
+                    }
+                }
+                
                 let state: AppStateProtocol = DependencyContainer.resolve()
                 
                 if Primer.shared.intent == .vault, state.apiConfiguration?.clientSession?.customer?.id == nil {

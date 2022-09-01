@@ -132,9 +132,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     var mbwayInputView: Input = {
         let input1 = Input()
         input1.keyboardType = .numberPad
-        input1.allowedCharacterSet = CharacterSet.decimalDigits
+        input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
         input1.isValid = { text in
-            return text.isPhoneNumber
+            return text.isNumeric && text.count >= 8
         }
         return input1
     }()
@@ -582,6 +582,38 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                        let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                        seal.reject(error)
                    }
+            } else if decodedClientToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
+                
+                let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
+                let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
+                var additionalInfo: PrimerCheckoutAdditionalInfo?
+                
+                switch self.config.type {
+                case PrimerPaymentMethodType.adyenMultibanco.rawValue:
+                    additionalInfo = MultibancoCheckoutAdditionalInfo(expiresAt: decodedClientToken.expiresAt, entity: decodedClientToken.entity, reference: decodedClientToken.reference)
+                    
+                    if self.paymentCheckoutData == nil {
+                        self.paymentCheckoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+                    } else {
+                        self.paymentCheckoutData!.additionalInfo = additionalInfo
+                    }
+                    
+                default:
+                    log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.config.type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
+                    break
+                }
+                
+                if isManualPaymentHandling {
+                    PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
+                    seal.fulfill(nil)
+                } else {
+                    // To get called once we'll display the full UI on non-headless | auto flow3
+                    // let clientSession = AppState.current.apiConfiguration?.clientSession
+                    // let checkoutPayment = PrimerCheckoutDataPayment(id: nil, orderId: clientSession?.order?.id, paymentFailureReason: nil)
+                    // let checkoutData = PrimerCheckoutData(payment: checkoutPayment, paymentMethodData: checkoutResult)
+                    // PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                    seal.fulfill(nil)
+                }
             }
         }
     }
@@ -596,7 +628,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
-        
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) else {
             return Promise()
         }
@@ -762,6 +793,36 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     case .failure(let err):
                         seal.reject(err)
                     }
+                }
+            }
+        
+        case PrimerPaymentMethodType.adyenMultibanco.rawValue:
+            return Promise { seal in
+                guard let configId = config.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                var sessionInfo: AsyncPaymentMethodOptions.SessionInfo?
+                sessionInfo = AsyncPaymentMethodOptions.SessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+                
+                let request = AsyncPaymentMethodTokenizationRequest(
+                    paymentInstrument: AsyncPaymentMethodOptions(
+                        paymentMethodType: config.type,
+                        paymentMethodConfigId: configId,
+                        sessionInfo: sessionInfo))
+                
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                firstly {
+                    tokenizationService.tokenize(request: request)
+                }
+                .done{ paymentMethod in
+                    seal.fulfill(paymentMethod)
+                }
+                .catch { err in
+                    seal.reject(err)
                 }
             }
 
