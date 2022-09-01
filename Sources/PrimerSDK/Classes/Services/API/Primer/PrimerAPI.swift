@@ -52,7 +52,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest)
     case finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest)
     case createApayaSession(clientToken: DecodedClientToken, request: Apaya.CreateSessionAPIRequest)
-    case tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest)
+    case tokenizePaymentMethod(clientToken: DecodedClientToken, tokenizationRequestBody: TokenizationRequestBody)
     case listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest)
 
     case requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest)
@@ -310,19 +310,9 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(klarnaFinalizePaymentSessionRequest)
         case .createApayaSession(_, let request):
             return try? JSONEncoder().encode(request)
-        case .tokenizePaymentMethod(_, let paymentMethodTokenizationRequest):
-            if let request = paymentMethodTokenizationRequest as? PaymentMethodTokenizationRequest {
-                return try? JSONEncoder().encode(request)
-            } else if let request = paymentMethodTokenizationRequest as? AsyncPaymentMethodTokenizationRequest {
-                return try? JSONEncoder().encode(request)
-            } else if let request = paymentMethodTokenizationRequest as? BankSelectorTokenizationRequest {
-                return try? JSONEncoder().encode(request)
-            } else if let request = paymentMethodTokenizationRequest as? BlikPaymentMethodTokenizationRequest {
-                return try? JSONEncoder().encode(request)
-            } else if let request = paymentMethodTokenizationRequest as? TestPaymentMethodTokenizationRequest {
-                return try? JSONEncoder().encode(request)
-            } else if let request = paymentMethodTokenizationRequest as? InputPhoneNumberPaymentMethodTokenizationRequest {
-                return try? JSONEncoder().encode(request)
+        case .tokenizePaymentMethod(_, let req):
+            if let req = req as? TokenizationRequestBody {
+                return try? JSONEncoder().encode(req)
             } else {
                 return nil
             }

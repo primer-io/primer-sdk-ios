@@ -13,9 +13,9 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     
     // MARK: - Properties
     
-    internal private(set) var decisions = PrimerTestPaymentMethodOptions.FlowDecision.allCases
-    private var selectedDecision: PrimerTestPaymentMethodOptions.FlowDecision!
-    private var decisionSelectionCompletion: ((PrimerTestPaymentMethodOptions.FlowDecision) -> Void)?
+    internal private(set) var decisions = PrimerTestPaymentMethodSessionInfo.FlowDecision.allCases
+    private var selectedDecision: PrimerTestPaymentMethodSessionInfo.FlowDecision!
+    private var decisionSelectionCompletion: ((PrimerTestPaymentMethodSessionInfo.FlowDecision) -> Void)?
     private var payButtonTappedCompletion: (() -> Void)?
     private var lastSelectedIndexPath: IndexPath?
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -281,31 +281,34 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
 
 extension PrimerTestPaymentMethodTokenizationViewModel {
     
-    private func tokenize(decision: PrimerTestPaymentMethodOptions.FlowDecision, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
-        let req = TestPaymentMethodTokenizationRequest(
-            paymentInstrument: PrimerTestPaymentMethodOptions(paymentMethodType: config.type,
-                                                              paymentMethodConfigId: config.id!,
-                                                              sessionInfo: PrimerTestPaymentMethodOptions.SessionInfo(flowDecision: selectedDecision!)))
-        
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+    private func tokenize(decision: PrimerTestPaymentMethodSessionInfo.FlowDecision, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
+        guard ClientTokenService.decodedClientToken != nil else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
         }
         
-        let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        apiClient.tokenizePaymentMethod(
-            clientToken: decodedClientToken,
-            paymentMethodTokenizationRequest: req) { result in
-                switch result {
-                case .success(let paymentMethodTokenData):
-                    self.paymentMethodTokenData = paymentMethodTokenData
-                    completion(self.paymentMethodTokenData, nil)
-                case .failure(let err):
-                    completion(nil, err)
-                }
-            }
+        let sessionInfo = PrimerTestPaymentMethodSessionInfo(flowDecision: selectedDecision)
+        
+        let paymentInstrument = OffSessionPaymentInstrument(
+            paymentMethodConfigId: config.id!,
+            paymentMethodType: config.type,
+            sessionInfo: sessionInfo)
+        
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+        let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+        
+        firstly {
+            tokenizationService.tokenize(requestBody: requestBody)
+        }
+        .done { paymentMethodTokenData in
+            self.paymentMethodTokenData = paymentMethodTokenData
+            completion(self.paymentMethodTokenData, nil)
+        }
+        .catch { err in
+            completion(nil, err)
+        }
     }
     
 }

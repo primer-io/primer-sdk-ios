@@ -127,12 +127,13 @@ extension PrimerHeadlessUniversalCheckout {
             .then { () -> Promise<Void> in
                 self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: PrimerPaymentMethodType.paymentCard.rawValue))
             }
-            .then { () -> Promise<PaymentMethodTokenizationRequest> in
+            .then { () -> Promise<TokenizationRequestBody> in
                 self.buildRequestBody()
             }
-            .then { requestbody -> Promise<PaymentMethodToken> in
+            .then { requestBody -> Promise<PaymentMethodToken> in
                 PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: PrimerPaymentMethodType.paymentCard.rawValue)
-                return self.tokenize(request: requestbody)
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                return tokenizationService.tokenize(requestBody: requestBody)
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -182,7 +183,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func buildRequestBody() -> Promise<PaymentMethodTokenizationRequest> {
+        private func buildRequestBody() -> Promise<TokenizationRequestBody> {
             return Promise { seal in
                 switch self.paymentMethodType {
                 case PrimerPaymentMethodType.paymentCard.rawValue:
@@ -232,47 +233,18 @@ extension PrimerHeadlessUniversalCheckout {
                         cardholderName = cardholderNameField._text
                     }
                     
-                    let paymentInstrument = PaymentInstrument(
-                        number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String,
+                    let paymentInstrument = CardPaymentInstrument(
+                        number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as! String,
                         cvv: cvv,
                         expirationMonth: expiryMonth,
                         expirationYear: expiryYear,
-                        cardholderName: cardholderName,
-                        paypalOrderId: nil,
-                        paypalBillingAgreementId: nil,
-                        shippingAddress: nil,
-                        externalPayerInfo: nil,
-                        paymentMethodConfigId: nil,
-                        token: nil,
-                        sourceConfig: nil,
-                        gocardlessMandateId: nil,
-                        klarnaAuthorizationToken: nil,
-                        klarnaCustomerToken: nil,
-                        sessionData: nil)
+                        cardholderName: cardholderName)
                     
-                    let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil)
-                    seal.fulfill(request)
+                    let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+                    seal.fulfill(requestBody)
                     
                 default:
                     fatalError()
-                }
-            }
-        }
-        
-        private func tokenize(request: PaymentMethodTokenizationRequest) -> Promise<PaymentMethodToken> {
-            return Promise { seal in
-                let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-                apiClient.tokenizePaymentMethod(clientToken: ClientTokenService.decodedClientToken!, paymentMethodTokenizationRequest: request) { result in
-                    switch result {
-                    case .success(let paymentMethodToken):
-                        self.paymentMethod = paymentMethodToken
-                        seal.fulfill(paymentMethodToken)
-                        
-                    case .failure(let err):
-                        let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                        ErrorHandler.handle(error: containerErr)
-                        seal.reject(err)
-                    }
                 }
             }
         }
