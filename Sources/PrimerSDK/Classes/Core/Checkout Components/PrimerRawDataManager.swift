@@ -26,7 +26,7 @@ protocol PrimerRawDataTokenizationBuilderProtocol {
     
     init(paymentMethodType: String)
     func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager)
-    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<TokenizationRequest>
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<TokenizationRequestBody>
     func validateRawData(_ data: PrimerRawData) -> Promise<Void>
 }
 
@@ -109,12 +109,13 @@ extension PrimerHeadlessUniversalCheckout {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
             }
-            .then { () -> Promise<TokenizationRequest> in
+            .then { () -> Promise<TokenizationRequestBody> in
                 return self.makeRequestBody()
             }
-            .then { requestbody -> Promise<PaymentMethodToken> in
+            .then { requestBody -> Promise<PaymentMethodToken> in
                 PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodType)
-                return self.tokenize(request: requestbody)
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                return tokenizationService.tokenize(requestBody: requestBody)
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -156,7 +157,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func makeRequestBody() -> Promise<TokenizationRequest> {
+        private func makeRequestBody() -> Promise<TokenizationRequestBody> {
             
             return Promise { seal in
                 guard let rawData = self.rawData else {
@@ -171,24 +172,6 @@ extension PrimerHeadlessUniversalCheckout {
                     seal.fulfill(requestbody)
                 }.catch { err in
                     seal.reject(err)
-                }
-            }
-        }
-        
-        private func tokenize(request: TokenizationRequest) -> Promise<PrimerPaymentMethodTokenData> {
-            return Promise { seal in
-                let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-                apiClient.tokenizePaymentMethod(clientToken: ClientTokenService.decodedClientToken!, paymentMethodTokenizationRequest: request) { result in
-                    switch result {
-                    case .success(let paymentMethodTokenData):
-                        self.paymentMethodTokenData = paymentMethodTokenData
-                        seal.fulfill(paymentMethodTokenData)
-                        
-                    case .failure(let err):
-                        let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                        ErrorHandler.handle(error: containerErr)
-                        seal.reject(err)
-                    }
                 }
             }
         }
