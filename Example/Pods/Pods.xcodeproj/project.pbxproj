@@ -6,141 +6,126 @@
 	objectVersion = 46;
 	objects = {
 
-/* Begin PBXAggregateTarget section */
-		CED402C355914FFED9773C1549264B8C /* KlarnaMobileSDK */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 95653B049217C822345CFEDBE5C71646 /* Build configuration list for PBXAggregateTarget "KlarnaMobileSDK" */;
-			buildPhases = (
-				4A00A7D1D023D7CDC6A969AED97D1845 /* [CP] Copy XCFrameworks */,
-			);
-			dependencies = (
-			);
-			name = KlarnaMobileSDK;
-		};
-/* End PBXAggregateTarget section */
-
 /* Begin PBXBuildFile section */
-		0040219C168B42A417AB9BE2CE22722F /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A20F7019E40389DD4437B66DD082885 /* Icons.xcassets */; };
-		00B039509D8BC2255E1F4C3019702A32 /* ko.json in Resources */ = {isa = PBXBuildFile; fileRef = 5AAF54BACDEBE423BE78C567C4A4A585 /* ko.json */; };
+		0041A7EDD25F9FACDBD733AF6C833A88 /* el.json in Resources */ = {isa = PBXBuildFile; fileRef = 67C6CBA80F927F7B6B8350943C0A3C5F /* el.json */; };
+		00FAA1A471E2440368098C3228D90175 /* ta.json in Resources */ = {isa = PBXBuildFile; fileRef = 35C8DE13A20739405DF97C461FF29883 /* ta.json */; };
 		01B0400FEC115CD4F823F7114D986291 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3577F8BA75C3CDFF4DFCDF53862DD3 /* ArrayExtension.swift */; };
-		01E6EC4BC7DAAED69EA4F46E831E63F4 /* da.json in Resources */ = {isa = PBXBuildFile; fileRef = 109BC4EFF9095D40663BB94D907B5505 /* da.json */; };
 		022D27EBF71179F213FB177FF70F0CC7 /* CatchWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E23F27F5AC543C112AAF594DD551A6E3 /* CatchWrappers.swift */; };
 		0341AA780D964EA383A5924F0DD96EF4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D245E0514AAC1A2B9A6D5EA2F383E90F /* UIKit.framework */; };
-		0417BB72CC6FC13B2F2451DF3688FEAC /* no.json in Resources */ = {isa = PBXBuildFile; fileRef = CC72DA8755A1C47A85CD6E2F769CB1F8 /* no.json */; };
+		040A9D35AC1F7DBEC25A7C639C712E2B /* nb.json in Resources */ = {isa = PBXBuildFile; fileRef = D3472F4E261B2159D24FC329692BE3B4 /* nb.json */; };
 		041ADD7D88B375FE1DBA7BE624986564 /* CityField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0BBCB2C91F0AB765B5FD95933D6B158 /* CityField.swift */; };
 		045FB6A6600F14D2E1F8F1D5D0B01BC4 /* StrictRateLimitedDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7E8A7E912E9457A19C55D59593A9C7 /* StrictRateLimitedDispatcher.swift */; };
 		04E110A413D4AE8A135B4369A270A715 /* UINavigationController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49295FEAFC9EB13D3CE14A93F8AF861F /* UINavigationController+Extensions.swift */; };
 		05597FD711F5567E53301B7929F233CB /* ClientSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528C204C338CD7D315DBC5EF82612BE3 /* ClientSession.swift */; };
-		06C4D5D304D06DDFE56CA03D080A5193 /* af.json in Resources */ = {isa = PBXBuildFile; fileRef = E94224699E09708DDA0C8E4A72EAB6CB /* af.json */; };
-		07A66FBCCC98CCD6F6C62141EBC3B45B /* tt.json in Resources */ = {isa = PBXBuildFile; fileRef = 929230F592C70D45B8477194E92E0567 /* tt.json */; };
 		07E7FA7AF4BB3A120D4C9AC1110188A0 /* UserInterfaceModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D17949BBEE4F31BAA752BDDFD09B4402 /* UserInterfaceModule.swift */; };
-		07EB4A1F9EDBBBA52FAD9B10CC2301CB /* tg.json in Resources */ = {isa = PBXBuildFile; fileRef = 2E94C654916BE3DEDD770133E43FF5AC /* tg.json */; };
 		08714A587C065ED5AAB0060AFA634512 /* PrimerUIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0139C1D2D1C4276F698A6780B7FDAA7 /* PrimerUIImage.swift */; };
 		089A491B3E7142AB7D8FB19B55C8AEFF /* BankSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4D0FBF295A47B199A0B3D41F456199 /* BankSelectorViewController.swift */; };
-		0A03DBCE7A72A4180F46ADB6C8AB1494 /* lt.json in Resources */ = {isa = PBXBuildFile; fileRef = 09E0E476675FECEBB29FC950D9535110 /* lt.json */; };
-		0BA32CC65B041E67103CC872C8F5472B /* PrimerKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C4A93D500AF0D692B1C329816E74DC /* PrimerKlarnaViewController.swift */; };
 		0BF45FACBA549D03E8F93DF26735317C /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78225EA7CC7D56C1B756DBBA5EC53B1E /* AnyCodable.swift */; };
 		0C0700F8E16FD3BE64E34B4F7A6A5044 /* PrimerTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2166DC6567A0C24E7241E8D75C23AF90 /* PrimerTextField.swift */; };
 		0C5780C72B396DEE268C82978716E5F7 /* PrimerTheme+Buttons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361E09AC08EAE7E9168ED5E4575346CA /* PrimerTheme+Buttons.swift */; };
 		0CD668133A5978CD455C686E6ADEDFBE /* Guarantee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19888C489D574C7C117E83482A91E2CC /* Guarantee.swift */; };
-		0E0D4AB7C334C1E75F3D4BCCB60EE7A0 /* km.json in Resources */ = {isa = PBXBuildFile; fileRef = 1F642B971F3D79D1CAC9C4CFEAF7CF21 /* km.json */; };
 		0ECD8240015F543A7A08F4EA7FDE78BD /* ExternalPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D71A22E07E864334A87308E15C06014 /* ExternalPaymentMethodTokenizationViewModel.swift */; };
-		0FD976632718C48DFC117268D0621C33 /* uk.json in Resources */ = {isa = PBXBuildFile; fileRef = EB3EB4639AFEE0BACC97D3322F63662E /* uk.json */; };
+		0FD8E392D59C2F19632ACA045182FA4E /* bs.json in Resources */ = {isa = PBXBuildFile; fileRef = E430301DFAB02EF43DE13C6D140AD2D1 /* bs.json */; };
 		1106101C77C57C91FE2A606D8278D690 /* FirstNameField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E454B84B26371CE1ACF2F47D1A4A7C74 /* FirstNameField.swift */; };
+		11303F72E58C66C27C79D30B7425190D /* eu.json in Resources */ = {isa = PBXBuildFile; fileRef = D85A57CD5A0314FFE4A5F60B449AF9F4 /* eu.json */; };
 		115D335BA8E58009DE275425180908A4 /* ApplePay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14686E1443872274A95992920D6C7982 /* ApplePay.swift */; };
-		12369F997272A8DAEDE437479B14B4D2 /* zh.json in Resources */ = {isa = PBXBuildFile; fileRef = 22C51EE6B4F227D96E4B383DF58FD186 /* zh.json */; };
+		12810584C870D1D8BC42F07C2332B6CA /* cy.json in Resources */ = {isa = PBXBuildFile; fileRef = C034D0F87DA9DF1A17407CAB8E7FF44C /* cy.json */; };
+		130BC1452FD10DCDE7E7DB8B3A23EEFC /* sv.json in Resources */ = {isa = PBXBuildFile; fileRef = C6911DAE059C8A6DA4F62DC0537CA5C3 /* sv.json */; };
 		13F1282B01FF0C15601A1D0B29B6B89D /* CardNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493AC104C81739B3F067801893920598 /* CardNetwork.swift */; };
-		14C8A64CB2E14699CDCE19EDAEE6E816 /* ku.json in Resources */ = {isa = PBXBuildFile; fileRef = 952A3309BC4D6047B1880A7F25AE12C2 /* ku.json */; };
 		15537539F315B6E318E44A84C730C1AF /* PrimerTheme+Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9485AFC4F4D33F6C911A1531F7F63951 /* PrimerTheme+Colors.swift */; };
-		1569AED69F5C15DF7286FE98C91315A3 /* vi.json in Resources */ = {isa = PBXBuildFile; fileRef = D96DE2427937433511FCCA85B6BFE48C /* vi.json */; };
 		15AB22619FC7C305E64C97F3ED4B24E0 /* 3DSService+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEE0E8C640F6EA8360C76179D71F6A8 /* 3DSService+Promises.swift */; };
 		15DDE9F220A9E49027C3FB597ADBEEA2 /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86B2630EA1C81F9CC14BBBC413D7F8CE /* AnalyticsService.swift */; };
-		178443E9C88007877F57C1552C9AE76E /* Primer3DSProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A27D35F8BB160AE5587EF0534270B8 /* Primer3DSProtocols.swift */; };
 		17E5A5F6BED869627398650148A6A989 /* PrimerFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F0B130720DE07F079CAA0B02E240C3 /* PrimerFormViewController.swift */; };
-		1A55ADC77B85B00B4306DF95163AAF12 /* tr.json in Resources */ = {isa = PBXBuildFile; fileRef = 9C49C4737ADC1AE11D6C92AB4C94D814 /* tr.json */; };
+		1A4644EC4D0B5219E4C517206DC73F7D /* gl.json in Resources */ = {isa = PBXBuildFile; fileRef = B4B68DD128B4F7B3345A5EF88EF70166 /* gl.json */; };
 		1AF1F1C40E97082F720C6BD732A8DEBF /* PrimerRawCardDataTokenizationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5CB171965DDCABC49E36289626594FA /* PrimerRawCardDataTokenizationBuilder.swift */; };
 		1BC04FCD765D63930DD5827868225829 /* ApayaTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49BCC30A8FAD0C22F3EE51C0699798AA /* ApayaTokenizationViewModel.swift */; };
+		1C26E74DC4FC53ABEAD52C2A39C856F1 /* ar.json in Resources */ = {isa = PBXBuildFile; fileRef = E3D2894537E3E5F4FBE0712215AB784A /* ar.json */; };
 		1C30B908BE073AA25271E4F26BAE88AA /* PrimerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0F7EC8B2E74D8192E70D7BDBD804535 /* PrimerTableViewCell.swift */; };
 		1E017944E7726BC02B6CAAADE65A2E5F /* firstly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259EB9D748043C0546634B2DB77E9342 /* firstly.swift */; };
-		1E711C177A6A245DDF2AF55A080B5812 /* cy.json in Resources */ = {isa = PBXBuildFile; fileRef = C034D0F87DA9DF1A17407CAB8E7FF44C /* cy.json */; };
 		1F57AF6EB4CEAB97DC10966067B91E47 /* PrimerAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6F60B720D786227EA1A4124B57ADB08 /* PrimerAPIClient.swift */; };
 		1FFD5B5F14D7377F32C154C0AAECC761 /* VaultPaymentMethodViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EFA044F6F80F9E440CC226B9B05902 /* VaultPaymentMethodViewModel.swift */; };
 		20044A30782614F23E6DC67BBEA4ADEE /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79AD2DEC0B7C34DB7994F49DFD2D8FCE /* NetworkService.swift */; };
 		212E8253158E49B50DE36EE00B40723F /* PrimerInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12810A7C3C43C333B5667AEF5D9B72AE /* PrimerInputViewController.swift */; };
+		21BCFCCAA713C31B1816C0F36BF7AB25 /* az.json in Resources */ = {isa = PBXBuildFile; fileRef = B1403C050F501958A32CF6971282BBDE /* az.json */; };
 		21DA167C2AF0C435EB450DAAD4494007 /* CreateResumePaymentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08F43FE6577D76291F0F3F7C61E949B /* CreateResumePaymentService.swift */; };
 		2453BDB9699B0C32F7302458C7267994 /* PrimerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3555BF5E477B03C105370A97D14FF2F6 /* PrimerDelegate.swift */; };
-		25AB7C1A38A7602039C983E6A2C1DBB0 /* bs.json in Resources */ = {isa = PBXBuildFile; fileRef = E430301DFAB02EF43DE13C6D140AD2D1 /* bs.json */; };
+		24F752A013A9460A7F8BB187710C164E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6202E34941DC2746904BD9FE5F1D126A /* Localizable.strings */; };
+		25E248124681E2C581D0827207CCE1EA /* nl.json in Resources */ = {isa = PBXBuildFile; fileRef = BC09EBF5B51F4F87CE83B52926F52C1F /* nl.json */; };
 		26633806438D3877103D6832F9950D0B /* NSErrorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 609F3290DE173BD6565EDE563BF799A3 /* NSErrorExtension.swift */; };
 		270CFF0FC749F57C0605262D27016D14 /* Pods-PrimerSDK_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D66C3890C3566F38C935A2FFD9A237B0 /* Pods-PrimerSDK_Tests-dummy.m */; };
-		275AA6983AC26CAF096BD747E1133FC8 /* Pods-PrimerSDK_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 3780FF276696624E5AD4A629D4CC4AD8 /* Pods-PrimerSDK_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2820AD0A1D5F3AAC3CDA5F55E9911201 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1715EB0655B438153517DAE4697B899 /* UIDeviceExtension.swift */; };
-		285BF017C233144099FFB32869607859 /* PrimerTextFieldView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 605316BBF49258AFB977EA7985639BE7 /* PrimerTextFieldView.xib */; };
 		28E0E96067C458FB66D02A2FF0E85CED /* PrimerSDK-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 46F10C838A14A4D1EC5008A9A50587B5 /* PrimerSDK-dummy.m */; };
+		2915C445D8976F9096A26F98E028DA5C /* hu.json in Resources */ = {isa = PBXBuildFile; fileRef = 1AF9EA73B78B842EC1FC1A51419CF363 /* hu.json */; };
+		29801D2C35EF62CC0B9AFD70DAC6AE82 /* ur.json in Resources */ = {isa = PBXBuildFile; fileRef = F674CCEC3DEBCEF76193B030A2248179 /* ur.json */; };
 		2A417CFF3EF0109BC5C4F475BE258340 /* RateLimitedDispatcherBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DDEDA0D57F6F3762955C287D7B7194 /* RateLimitedDispatcherBase.swift */; };
 		2A6382B627DA904E806A004B3F6877D1 /* PrimerTheme+Views.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD304831348EAB010A5F5BE23D5B21C /* PrimerTheme+Views.swift */; };
 		2B1BDE8B5A035373CE004CAFDC586519 /* MockPrimerAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5729D1D8018BBE1FD63B430830BB40 /* MockPrimerAPIClient.swift */; };
-		2B2D3D5EA26F3C20F5CBD4CC5F5ABD45 /* pt.json in Resources */ = {isa = PBXBuildFile; fileRef = 8CC1871F5BC24E2F0F273FBD06FAE2B1 /* pt.json */; };
-		2B5BECAAA368250C903D4B23587C1E38 /* cs.json in Resources */ = {isa = PBXBuildFile; fileRef = D9094F35D149910525A58C7842D3E671 /* cs.json */; };
 		2B68957E7C1A0F69FB1B0D6DC5E44CE7 /* AES256.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB7FD878EE97288572C43F535120E8F /* AES256.swift */; };
+		2BAF59D709E1ED410E8AC5C5C457C58E /* bn.json in Resources */ = {isa = PBXBuildFile; fileRef = 412151C10B0415C422B523C0CFDE41F3 /* bn.json */; };
 		2C644F7285083BC8D1CCE36C2C628D99 /* Resolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333F1C3CB92C65090752065ECDD1D056 /* Resolver.swift */; };
 		2D6E946F5FD6285BBCF3C45730CA74F6 /* Dimensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D248FE64C103BED913087AB81227CFB /* Dimensions.swift */; };
+		2DBDC958FF5C90355C97408BA07773B5 /* sq.json in Resources */ = {isa = PBXBuildFile; fileRef = E31F46C2A7C1A39F894DA36385DA77CD /* sq.json */; };
+		2DD613AE54ACBFC3CC3B5A6E6951889E /* de.json in Resources */ = {isa = PBXBuildFile; fileRef = 9BB9B489EA793105E5CFC0C7D6611E8E /* de.json */; };
+		2DECDF00F4B8DC8FE15622A2B513B973 /* be.json in Resources */ = {isa = PBXBuildFile; fileRef = 339D1ABF019B058C89698E5E446975BF /* be.json */; };
+		2E118E63C99F4713767D3FFE58E04FC9 /* sw.json in Resources */ = {isa = PBXBuildFile; fileRef = 2C2A7B2C1AF232A31EF30814DE3B138A /* sw.json */; };
+		2E53918EE2C4ACAFA668E65BCAB0B78A /* ku.json in Resources */ = {isa = PBXBuildFile; fileRef = 952A3309BC4D6047B1880A7F25AE12C2 /* ku.json */; };
 		2F2CA11CFC973F6D63C6590A64414CB3 /* Catchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A818284EEFCCB45073004076A98F3BAC /* Catchable.swift */; };
 		2F3EA6F1D24CC4E3062B5E9882FC0FE9 /* CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0061D0B4E48550751682CBDAD5C29DE /* CustomStringConvertible.swift */; };
+		2FF3AB94BA5E4C2556C3E7E1AF6D085C /* no.json in Resources */ = {isa = PBXBuildFile; fileRef = CC72DA8755A1C47A85CD6E2F769CB1F8 /* no.json */; };
 		30B67487589AE89516DF20C84FB37B2C /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B375C6BB80B4634483FB1D646DC795 /* VaultService.swift */; };
 		3105732A14D04942851D412B77B08B6B /* PollingModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A233D41319ED79BDD92D100EE2FC8F /* PollingModule.swift */; };
 		31CB6174300273F1F1D0B56A119C826D /* Consolable.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC60811FE3441A1ADF7E7CECB68C678C /* Consolable.swift */; };
 		31F5BD7866E4CEDD662E315B018ACEC1 /* OrderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0659131F99E68CAD51A94935E0EB2B68 /* OrderItem.swift */; };
-		32D4F85BE1557ED62536344CFAB75F88 /* Primer3DS-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 301B5A7EDA2CB3339D636F18080D1A29 /* Primer3DS-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3433496F900E4AF1989E3BB2DE33D7EF /* it.json in Resources */ = {isa = PBXBuildFile; fileRef = 53339B40E127330523BC64A91965A3F1 /* it.json */; };
+		3393AFBA46D496541B3DE13486959776 /* sk.json in Resources */ = {isa = PBXBuildFile; fileRef = CBC4638E0A1E6C19E8F4AEA18408385B /* sk.json */; };
+		33E439CA6274C563923E962F3E3DD66F /* da.json in Resources */ = {isa = PBXBuildFile; fileRef = 109BC4EFF9095D40663BB94D907B5505 /* da.json */; };
+		360E0EAE1341A6C51FF2FF17B9BABE1A /* ha.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A8E2F56E4C53F8A6293CD6DA193F381 /* ha.json */; };
 		36D96EA943948931C9A93E28C01528EB /* race.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6714FC8C229ABD029887123A42684C73 /* race.swift */; };
 		3803E661FBB93894B480989A3EFDB3E9 /* DateFormatter+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B028693406FB623499B4657175261AFD /* DateFormatter+Extensions.swift */; };
+		383EB13520B7EE9CFD118C68EAEFB833 /* tt.json in Resources */ = {isa = PBXBuildFile; fileRef = 929230F592C70D45B8477194E92E0567 /* tt.json */; };
+		3A75139FE56E27ECB0FF0B487EA149A4 /* af.json in Resources */ = {isa = PBXBuildFile; fileRef = E94224699E09708DDA0C8E4A72EAB6CB /* af.json */; };
 		3B2A13184724AD7F38AAE62E35A26D06 /* VaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F02EADF2A190C5F3448DEFE05750 /* VaultCheckoutViewModel.swift */; };
 		3BBED0ED745E5D28187E038A39C6AD0D /* PrimerRawPhoneNumberDataTokenizationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 726CE82AD31DD0851E887F732A2DF811 /* PrimerRawPhoneNumberDataTokenizationBuilder.swift */; };
 		3BC75F80817CB3A7633670971AE73FC8 /* AnyEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C885BAB4648EFA4824A9D72295E1B9A6 /* AnyEncodable.swift */; };
-		3CB00A8718E19DD31E39640A38DC612C /* be.json in Resources */ = {isa = PBXBuildFile; fileRef = 339D1ABF019B058C89698E5E446975BF /* be.json */; };
 		3CCC43A90B476B0AED028739056BD63A /* PrimerSearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89493AFDB8D57F4D0FD314F1B9F1D937 /* PrimerSearchTextField.swift */; };
-		3CDD0125F05B59CF6D448A71F998AF44 /* el.json in Resources */ = {isa = PBXBuildFile; fileRef = 67C6CBA80F927F7B6B8350943C0A3C5F /* el.json */; };
 		3E9271C4A57CF55E3F4E4D794310E96C /* ClientTokenService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB87F57FE0AF86C3A149D74ECC35B3C /* ClientTokenService.swift */; };
-		3EB7A6B9A397005CB3B77FDC9DA30691 /* Primer3DSStructures.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4D19F41E80F57FCBCD6FEFFF2D898E /* Primer3DSStructures.swift */; };
-		3ED850508C13EBDEED78A9ABF0B31AC3 /* ka.json in Resources */ = {isa = PBXBuildFile; fileRef = 9359EDCC7A29B8292ED008CBCFB33BE2 /* ka.json */; };
 		3EDBE76FD9D002CF2E18F7D55D3026E6 /* GuaranteeWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198AACD21905FAF6520724D35808C145 /* GuaranteeWrappers.swift */; };
 		3FF78AC4EB682337E12D17FCFD4720A5 /* Connectivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F121D70CD1DFEDCB4B9E5096A749026 /* Connectivity.swift */; };
 		4177790462946575AD1BD2FD4A1AA61B /* PrimerCustomStyleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC8B5F6B40D54CE4DDACC5EFB88D6C9 /* PrimerCustomStyleTextField.swift */; };
 		42C4E09873F274DB696E33FB19D7612E /* CountryCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBAE0A15B60077028EEA7CB34E5AEC8 /* CountryCode.swift */; };
 		434675E4360CA1985C9321B05D0BE15A /* after.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F12A154F94997227A8C846D77065FB /* after.swift */; };
-		434F4A7728202FD2B63145DDD0A0C9DB /* sq.json in Resources */ = {isa = PBXBuildFile; fileRef = E31F46C2A7C1A39F894DA36385DA77CD /* sq.json */; };
-		44456026950ED31C3717835984331175 /* currencies.json in Resources */ = {isa = PBXBuildFile; fileRef = 6EC8EB79AFC9EB076B4A6609AAE456FA /* currencies.json */; };
+		43831D7620D32EABD186CC30D858D10D /* he.json in Resources */ = {isa = PBXBuildFile; fileRef = 28225FFAEF16A5740A6BE2084955010A /* he.json */; };
+		46AA00FE0542D64B258E785EB57D9A99 /* id.json in Resources */ = {isa = PBXBuildFile; fileRef = 16CF03728E529172C2F64627370F519D /* id.json */; };
 		46EBFAB7F990C81209EF18B7F77D291C /* AnalyticsEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6903407CB6093283F9091C020A734A3 /* AnalyticsEvent.swift */; };
-		47142F8BA06FB701D79FBEBD44727477 /* phone_number_country_codes.json in Resources */ = {isa = PBXBuildFile; fileRef = 04CB023937E0C3A85488554CF9863ACE /* phone_number_country_codes.json */; };
+		46FEE9AA8B49101516379F258BF2C9A6 /* fi.json in Resources */ = {isa = PBXBuildFile; fileRef = 9A10400D9B75BEF99616E2780192A864 /* fi.json */; };
 		475F92D2D452A9AC53CB6B3BF2512FD3 /* PrimerGenericTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF5052627E87495E86324A745BE1DBFA /* PrimerGenericTextFieldView.swift */; };
 		47AF79B20002E979A41BB93D11D28BDB /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86BC3582504AF436CFCFB7B8FFD06A79 /* Promise.swift */; };
 		4863756BBD1BBB3901650DB426AAEC29 /* ReloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840EE5FCF0B53FB186A4A73F532950F8 /* ReloadDelegate.swift */; };
 		4887BFE0B5B654E200EB958001E680FA /* LogEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C47E6C438CCF7F80BB5607CD4A1021 /* LogEvent.swift */; };
-		494836CEB5F7E66F8F4B9EFE8CA9EE53 /* sk.json in Resources */ = {isa = PBXBuildFile; fileRef = CBC4638E0A1E6C19E8F4AEA18408385B /* sk.json */; };
 		499B7D4533F41BBCF662DF17D771BF1F /* QRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0999249875DE0D4A75A4E39D6844FAF0 /* QRCodeViewController.swift */; };
 		4A75A5068A5D6293EBB059F4A76234D1 /* AlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9D63DA45BDF94F3777108E265F23AF /* AlertController.swift */; };
-		4ABBDB768FCF59B25E6235DE01B89868 /* ca.json in Resources */ = {isa = PBXBuildFile; fileRef = B7F69F28882C0F4E026B5F819A48F83F /* ca.json */; };
+		4A94BB65671FE4DB0D4E62FFD9F191BB /* Pods-PrimerSDK_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 3780FF276696624E5AD4A629D4CC4AD8 /* Pods-PrimerSDK_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B51B9D46A3E848F23B67E567930BDC1 /* PrimerContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E68457468C067FC2E62A44968530A6B9 /* PrimerContainerViewController.swift */; };
 		4B588E56BF5B9225D18F493DA6CB7AD3 /* PrimerStackVIew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AC0BC3DA7BF82BC470B1D0EECA3E81 /* PrimerStackVIew.swift */; };
 		4BDD0F92A0F0CF8EC472EA8468B07245 /* NSObject+ClassName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86753D18E34B3C4559ACC9EFA6D5142E /* NSObject+ClassName.swift */; };
 		4C20BBE502E6587E48FDBE6756CFDE4B /* PrimerTheme+TextStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E4E05A58FC9BAD1BAD53EE27AC6650 /* PrimerTheme+TextStyles.swift */; };
-		4C630E0FC2D18411CE395F64DBC36323 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6202E34941DC2746904BD9FE5F1D126A /* Localizable.strings */; };
+		4C643CD1676069BEDAF746E10BE8FEB3 /* en.json in Resources */ = {isa = PBXBuildFile; fileRef = ACD81841966D9851249F5D8452315058 /* en.json */; };
 		4CEEB4F238FA5199618C249AF22B8A91 /* PrimerTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D448FD7817C55CDFADCA3A6B2EEB2CA /* PrimerTextFieldView.swift */; };
 		4D5049A2A3E6EC472981329FF1E144DA /* hang.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DD575D25419C5BAC1CD11F06AB8E89 /* hang.swift */; };
-		503DF39E5AAAA436C30DDE2E8D295976 /* sw.json in Resources */ = {isa = PBXBuildFile; fileRef = 2C2A7B2C1AF232A31EF30814DE3B138A /* sw.json */; };
+		4D6A3DAA7FFD0A4425E02D895BC96E6B /* ps.json in Resources */ = {isa = PBXBuildFile; fileRef = C4D8660AE17FB5103524FD9079608FAB /* ps.json */; };
 		5054969253B50DB592EBEA4994EC53AE /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419FF9C377AC256D6697047C645C275F /* Keychain.swift */; };
 		51C1C623DB9A419CE276730A8849D4EA /* PaymentMethodConfigurationOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29171888FC30B584084E33747EBE1A86 /* PaymentMethodConfigurationOptions.swift */; };
-		51EC7CAB86F5B1A2E9B69E72E8205B0C /* hi.json in Resources */ = {isa = PBXBuildFile; fileRef = CF70109D5EDBAE9B2637778A9570BBC0 /* hi.json */; };
 		52797C1D5E79EABE709F35D80E839CED /* PrimerSDK-PrimerResources in Resources */ = {isa = PBXBuildFile; fileRef = A8B3BC107C2BDC3C03D961866F721265 /* PrimerSDK-PrimerResources */; };
 		528321E67A7C3352C27FBA78B69550E0 /* RateLimitedDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 911EA5142E00A6E6F1F4595B74138251 /* RateLimitedDispatcher.swift */; };
 		5385018EA186DB54BB844A6DF55C6838 /* 3DS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8FECC00EBBB9B5BECBE36B06615FC /* 3DS.swift */; };
 		53CA16B609FB00B26A3CE68BABA26D1D /* ClientSessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2998F065AF8CEAE8365CD57B3C260F /* ClientSessionService.swift */; };
 		53D7F78688674AE0E7ADA64CFCC61959 /* Mask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612BC62E520CB90C301673E9E2DCE911 /* Mask.swift */; };
+		543D841CFFB4195B432B93D3C591F6C3 /* hi.json in Resources */ = {isa = PBXBuildFile; fileRef = CF70109D5EDBAE9B2637778A9570BBC0 /* hi.json */; };
 		5473BFB0F17C0C165C632B91AF7BEB32 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650D3F76C8FE70568DAB2079DB387BB7 /* StringExtension.swift */; };
 		556FE259D9EAAE80BA71F4F44AA2D082 /* CancellablePromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6931FE85FA64988931AD0BF07924EC /* CancellablePromise.swift */; };
 		55A45446AFD8A0637425473662244C9D /* PrimerStateFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64D9D3732D74A8CCDC14673A2DDB367D /* PrimerStateFieldView.swift */; };
 		5621E3361DC1D38EBF3E9F6D094D7A2E /* Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E86EEFB28DEBFE45EBA5C8E581CE28 /* Primer.swift */; };
-		5665111593674FDB5FC3E20316EE7121 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB6F611E86A4758835A715E4B4184F6 /* Foundation.framework */; };
+		576CBFE7BB80FC46B6F006AE6E711708 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB6F611E86A4758835A715E4B4184F6 /* Foundation.framework */; };
+		579A0FE829E00B5D6805BBC2558E781B /* pt.json in Resources */ = {isa = PBXBuildFile; fileRef = 8CC1871F5BC24E2F0F273FBD06FAE2B1 /* pt.json */; };
 		584A6E833B0362455F4D55A60397A396 /* EnsureWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 411B2C8712DAE13E0BB4FB8B3944C21C /* EnsureWrappers.swift */; };
 		59A9D5F4FCC468C9168D448746599E44 /* ApplePayTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295D03A2E60B5FD9B04E576D97E98F83 /* ApplePayTokenizationViewModel.swift */; };
 		5A2ADE8C384C6ECC635811999229B9BF /* PrimerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 456CC3CE432DADC5A2C44F56088F3D3D /* PrimerError.swift */; };
@@ -148,27 +133,29 @@
 		5BB5280E5D3102DBCB0DA749256B4513 /* PayPalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790937B53E9A26B9663FFBBF081E3D09 /* PayPalService.swift */; };
 		5E2695117A8B7BFD711FCDD8566EDB72 /* CoreDataDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25157354D733D1088F97BC34D2A8F66 /* CoreDataDispatcher.swift */; };
 		5F1504D5EEB5A0F04B9A85B77EC22C6E /* WrapperProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4E7216B7BC8CC93C1138B826E1E2F2 /* WrapperProtocols.swift */; };
+		5F2BF9B296125B5EA5942AA49D23C957 /* fr.json in Resources */ = {isa = PBXBuildFile; fileRef = CA9C7662E10ACCF3C01C90BA28CCEC78 /* fr.json */; };
+		5F64062980E575568DD7870CC882ABDD /* hy.json in Resources */ = {isa = PBXBuildFile; fileRef = CAED0B576E22C02B6AC34BF6C3109E74 /* hy.json */; };
 		5FB6E58C2A46C02FE6D93B60F4A79C50 /* Decisions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E1AEF6DE5DACCCECC1347A2F5D1B197 /* Decisions.swift */; };
+		603339B29E7CC701285DB9373E114178 /* nn.json in Resources */ = {isa = PBXBuildFile; fileRef = F6B145B829F1F33BDACF1035FA1AB542 /* nn.json */; };
 		60F99E0A1BC0B8F76141DC516363B98D /* UIScreenExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFA05C94CCE608F8E2F27FED5CE977 /* UIScreenExtension.swift */; };
 		61DAE6122E04A95222F258074E1D4137 /* PrimerSimpleCardFormTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1B3F5820942557C5419D909C495266 /* PrimerSimpleCardFormTextFieldView.swift */; };
 		6296414D69782D34A181507D617401D4 /* PrimerCardNumberFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BFCCDE09BF98E5F5A90D560D783C69 /* PrimerCardNumberFieldView.swift */; };
 		643C9BE28CC828157810A15FDC19D5A1 /* PrimerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF786D14ED5203CE101F5DE1F7712C23 /* PrimerButton.swift */; };
+		64A35ADDE1C8498EC0E786CB7A2B8FBF /* ca.json in Resources */ = {isa = PBXBuildFile; fileRef = B7F69F28882C0F4E026B5F819A48F83F /* ca.json */; };
 		64C2147AF222851EF39582E4E7E02C2C /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50AD00490930CF6A5DC3BFE0C29DF2FF /* URLExtension.swift */; };
 		64E205CC2ECF79CBF53F4510CC6BF215 /* VaultPaymentMethodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1176B758B59998CC709A046B33D11A5A /* VaultPaymentMethodView.swift */; };
-		65E5E24033614E8E4EC02F1B036EA8FA /* ps.json in Resources */ = {isa = PBXBuildFile; fileRef = C4D8660AE17FB5103524FD9079608FAB /* ps.json */; };
 		666D99E4F9E143CF5CD54CE306A6AA09 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027FFD7D9FA8124F7620344848FE5217 /* Logger.swift */; };
 		66A10D4C5CA20133D6F564E670A39749 /* PrimerVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E60ED1E3E46CB8CB11300B25FA20AE /* PrimerVaultManagerViewController.swift */; };
-		687DDE0C02E7F22AC1B430CC96178E9F /* eu.json in Resources */ = {isa = PBXBuildFile; fileRef = D85A57CD5A0314FFE4A5F60B449AF9F4 /* eu.json */; };
+		681CEBE98F731A18021211CBC26AEBD6 /* vi.json in Resources */ = {isa = PBXBuildFile; fileRef = D96DE2427937433511FCCA85B6BFE48C /* vi.json */; };
 		6898A17B3B81CF0544D9D22EB8A51737 /* StateField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5900E6373A8531B202A246A604353BD8 /* StateField.swift */; };
-		68ACB37F510881672306BD77106AEF4A /* nb.json in Resources */ = {isa = PBXBuildFile; fileRef = D3472F4E261B2159D24FC329692BE3B4 /* nb.json */; };
 		68E2269FCACD88D554D7DCDD4FEC9200 /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E29734F54ED4D8E34161857A074D32E /* IntExtension.swift */; };
 		6903E6426F07460B439D0D60338B4CFE /* PrimerCityFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F959DC0040F0A9425B5B64C09244E8B /* PrimerCityFieldView.swift */; };
 		6A16521C1F0467361D752AC47CAD613A /* CardNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C92D83FD25E4B7D84C4F1557ADE955 /* CardNumberField.swift */; };
-		6B738910612E22ACFA90FD0FC4C1F444 /* ja.json in Resources */ = {isa = PBXBuildFile; fileRef = 76ACF8393BA81ECEEF3241AF611EF8A6 /* ja.json */; };
+		6CB2EB4E8AA742B6379AE50ACDBACCC6 /* dv.json in Resources */ = {isa = PBXBuildFile; fileRef = 532B0BA9040BB8D21DA27265AED72DF6 /* dv.json */; };
+		6D3EA3E307231D647D69E9D5DD0859D0 /* ko.json in Resources */ = {isa = PBXBuildFile; fileRef = 5AAF54BACDEBE423BE78C567C4A4A585 /* ko.json */; };
 		6D6D94F6AE11BBFE2BD478FE7628C047 /* PrimerTestPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3805F4532032C2F2CE7DCDDEC0A51A8 /* PrimerTestPaymentMethodTokenizationViewModel.swift */; };
 		6DD0F6BA35F429409F324284E754FF43 /* PrimerNibView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534183569EE5D11DC32AFBD4B20F103D /* PrimerNibView.swift */; };
 		6E7D311F56E68FC13B6FD8E1BC26960F /* PrimerTheme+Borders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2876BD0522CE662234D6D6BAB94CC0A0 /* PrimerTheme+Borders.swift */; };
-		70045C39E48BB395316861B57650BC1B /* fa.json in Resources */ = {isa = PBXBuildFile; fileRef = 98FE9B1D7D475B04085A9027C417DDB6 /* fa.json */; };
 		700806F5C1506EA6945CFAEF036F292A /* Throwable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D004486B4182B7DCAAD7A89B8906A7 /* Throwable.swift */; };
 		71038FB2153C736E42FDBB12AA7C3DCD /* PrimerTheme+Inputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EC4E765806F3B252C069F06B83AEC1 /* PrimerTheme+Inputs.swift */; };
 		71206951E1DEF9A2F9795434A1FF6DF5 /* WebViewUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF8697BED97AAAB27F68CDB429D1F8 /* WebViewUtil.swift */; };
@@ -176,18 +163,18 @@
 		72ED8C414C0B52EB624EB18BAE6B80AC /* PrimerUniversalCheckoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2535B5EE2A3F71DA9661A9ED2CEC89 /* PrimerUniversalCheckoutViewController.swift */; };
 		72FCDA3E74D2988093B4CE1A8E98FA39 /* ResumeHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6735ECE6BEA5FFDB3B41BA4B21BB6AA /* ResumeHandlerProtocol.swift */; };
 		731494DA7100AC39A708107FC500C9ED /* SequenceWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB763D5B724023666C97E2F88AA95B1A /* SequenceWrappers.swift */; };
+		74C6EF85D678BC2D21014B0DEE0CE89C /* ky.json in Resources */ = {isa = PBXBuildFile; fileRef = C9C5997B4FB5609DD93A40445D4E8CA1 /* ky.json */; };
 		74D2C45B20E329726B9CD33D172ACD8E /* DependencyInjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DA69C535FBDF82C113719E89EBD4D6 /* DependencyInjection.swift */; };
 		7571717927C0CD22815E068AF9451FDB /* FormType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F05F48EEFAE35302C50DDC4C43558ED /* FormType.swift */; };
 		762AFDDC94DC2DCE28555FA82A94001B /* when.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D156A020BAD7294F0240BBD1D165EB8 /* when.swift */; };
 		781EACAF2F4F7ACF7591FB0F9DF80030 /* SuccessResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF311079BE03B1F2764CB539A761772 /* SuccessResponse.swift */; };
-		78A45B63E32B2574A09F4CD4398D6637 /* nn.json in Resources */ = {isa = PBXBuildFile; fileRef = F6B145B829F1F33BDACF1035FA1AB542 /* nn.json */; };
 		78B9DE3274CF30C79D99997C2DCE7A44 /* PaymentMethodsGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DD484D9F38A6BC60FA467784AE97BDA /* PaymentMethodsGroupView.swift */; };
-		792188862A988C31237DA81868320D2D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB6F611E86A4758835A715E4B4184F6 /* Foundation.framework */; };
 		79B22E0B462BC6752705C0EDD3211553 /* PaymentMethodTokenizationViewModel+Logic.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB98441A4D5F5D49382DA7B12D5D1A42 /* PaymentMethodTokenizationViewModel+Logic.swift */; };
 		79EE13F54A8A037A1F5472B2F4CF6FB9 /* BankTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8E401E64685E0C1B0A11CBDAB3B70E /* BankTableViewCell.swift */; };
 		7A5FD9D001D513F12E75384DEF2731BC /* AdyenDotPay.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCFD8FFC1CFA4E5B2F5A9F0050DDE3C0 /* AdyenDotPay.swift */; };
-		7BB0D5BD0F05F2DFDA5EF429CD504390 /* hy.json in Resources */ = {isa = PBXBuildFile; fileRef = CAED0B576E22C02B6AC34BF6C3109E74 /* hy.json */; };
 		7C32BE53C1A5BA958F2CC8578EF72914 /* Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D513C2369A46068B3CAEEF63436D8FC4 /* Cancellable.swift */; };
+		7DF03F8B093D96EF027C8F64406F2076 /* ru.json in Resources */ = {isa = PBXBuildFile; fileRef = 46AE243EA2B8804FE03F8099927A0395 /* ru.json */; };
+		7DF23932778CFC36A9CAFD9B365F05E1 /* currencies.json in Resources */ = {isa = PBXBuildFile; fileRef = 6EC8EB79AFC9EB076B4A6609AAE456FA /* currencies.json */; };
 		7EEBB099A90D579C5AB405579AD841C7 /* CardComponentsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15200724FF43F92FEA49E499A5D717A /* CardComponentsManager.swift */; };
 		7F0A6FD0B11FDDB340B90CCE4E715AB2 /* PayPal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7DAB40D418E6B31A8C6C1D324AAE3D /* PayPal.swift */; };
 		8110DE629A08C07DB8C5F24CE220A02B /* Content.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A4BAA35EF30DA3966D0DC6272563719 /* Content.swift */; };
@@ -195,28 +182,27 @@
 		82D72BD89F9A2CD96577153D9BF91B1C /* FormPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98EF87DA322A7C566BEC18EBBCBC6E8E /* FormPaymentMethodTokenizationViewModel.swift */; };
 		839FB9A6FC9DFC0FC5B9794E19B243F6 /* PrimerImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A59DE8BA64195F5750B6D73DC09F95 /* PrimerImageView.swift */; };
 		83C92A2F644C204645F55E93F1FB8C31 /* CountryField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FBC447D8D6A22F3DB27EA6DEDF0A98 /* CountryField.swift */; };
-		8548D98B63B0CE7C33DA6C183E9A9BF0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D245E0514AAC1A2B9A6D5EA2F383E90F /* UIKit.framework */; };
-		85B48F2503532A6F80F906C77BCAE900 /* hr.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EFE056059D59AC9A6B91407388F8943 /* hr.json */; };
+		856A391168D501242CB1BA8F2AB07685 /* es.json in Resources */ = {isa = PBXBuildFile; fileRef = 8BA3289F005BF191B8673752E915C69F /* es.json */; };
 		86341EA6FD71F1A220C6C82B06001B3B /* PrimerSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFC19A97D8C979E8682F0B0A930D6C17 /* PrimerSettings.swift */; };
 		86CD93ACDA1EEC2B56F09596BCD76A9F /* ExternalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BFC1D36DA74A564DCFAAA3D82163D2 /* ExternalViewModel.swift */; };
 		8816D087AC13D863BDA3695E79AF4DE7 /* PrimerInputElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B35E860609B069C04CD5F1CF4BE483 /* PrimerInputElements.swift */; };
+		885D181F39003EE6970A188092BF02CE /* tr.json in Resources */ = {isa = PBXBuildFile; fileRef = 9C49C4737ADC1AE11D6C92AB4C94D814 /* tr.json */; };
 		8881968547975AB67C8FD4B8BF341937 /* PaymentMethodTokenizationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C90D8D88F1D7A6EEB3019BBCFDE70A9 /* PaymentMethodTokenizationRequest.swift */; };
 		889967564F3965E4705B67A740F2EE0D /* RecoverWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D689AAA7509E57C10C6C0E5B6B37BCDF /* RecoverWrappers.swift */; };
 		890BB019F693781619312856A62BC172 /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D140A4668A2FB972909D9646798D770 /* Optional+Extensions.swift */; };
-		89515CAF60010A5898FD78EE985CD8E0 /* ug.json in Resources */ = {isa = PBXBuildFile; fileRef = 08F5C3CD800C1988BBF7722E99B19192 /* ug.json */; };
+		89F1EC1CC42396E8512E363EEB1411CC /* hr.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EFE056059D59AC9A6B91407388F8943 /* hr.json */; };
 		8ABAB26B1689F177A0FFF7FB516EB3D1 /* AddressField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFB8191CC455F8FF54EE0D097229B41 /* AddressField.swift */; };
-		8AD7038F9F76D050C90B81C94FA09595 /* gl.json in Resources */ = {isa = PBXBuildFile; fileRef = B4B68DD128B4F7B3345A5EF88EF70166 /* gl.json */; };
+		8C59D12C7F7535427B4C86E766FFDD4F /* so.json in Resources */ = {isa = PBXBuildFile; fileRef = B1F7A7C66BF4EEB6C2C3BE591E3B0FB6 /* so.json */; };
 		8CE1CDBD4F3D6193792AA28D5FC025CD /* CVVField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CA146D6B0900F814205A88C76B307E /* CVVField.swift */; };
-		8DCD5215EFE7493AFC08C496176C410D /* Primer3DS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A8CB8CE45D30504283FFDC3DAB1D9C0 /* Primer3DS.swift */; };
-		8E3F4975CA6911369E8F3D13A7EE919C /* bn.json in Resources */ = {isa = PBXBuildFile; fileRef = 412151C10B0415C422B523C0CFDE41F3 /* bn.json */; };
+		8D2041CC8435E5C310E3E3ADFE0D0E36 /* ka.json in Resources */ = {isa = PBXBuildFile; fileRef = 9359EDCC7A29B8292ED008CBCFB33BE2 /* ka.json */; };
 		8EBA9C394D3D5A033D34FB5E9295CFE2 /* ClientSessionActionsModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56D8522020A4AFB7304A8C02C0CF627 /* ClientSessionActionsModule.swift */; };
+		8EE8C7EE25E1D40CB06C8D183659E53E /* th.json in Resources */ = {isa = PBXBuildFile; fileRef = 947EEAC0E72200F2ABC33F2CCA55A7A9 /* th.json */; };
 		8F2F61630BB9F0E5462632BE901EF1F0 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F70439DF7CFA226D343251EBEEA821 /* AppState.swift */; };
 		8F34131D70022E6F17BB91A29498A0A6 /* CancelContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 830BCB0A97C257B4C4BC641D8BEC3013 /* CancelContext.swift */; };
-		91422F5566656A36BFD3E5AB238088EF /* uz.json in Resources */ = {isa = PBXBuildFile; fileRef = FCCF16758DB5CD97DDC4D39554BAA4B6 /* uz.json */; };
+		928A7EDD88459F127F32643B08E913D6 /* fa.json in Resources */ = {isa = PBXBuildFile; fileRef = 98FE9B1D7D475B04085A9027C417DDB6 /* fa.json */; };
 		931921D95F1C15F1C56C41F8921E59DC /* PrimerNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043D57167CF463460B564F442DDD4AEF /* PrimerNavigationBar.swift */; };
 		93CF5A91126FFE418D6FB67316CF48CA /* QRCodeTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607388FC601DCC6B3B34CC695796572A /* QRCodeTokenizationViewModel.swift */; };
 		94ACEF8B5E40708CAD623C4B9407F65D /* UserDefaultsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D978035D91CB0BE3E944D6271E1B3A6 /* UserDefaultsExtension.swift */; };
-		955B62FB6DF16FB118E198F3FFF1ACD3 /* PrimerKlarnaError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99F134863728EBADCDC1A1A3FB2D5B4A /* PrimerKlarnaError.swift */; };
 		971C14C3F0E7CC4E7A4996CFB523AE25 /* CardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A3D56AF4AB0B42C49F1999A71B9B24E /* CardButton.swift */; };
 		981C71D2F618286DB05ED9BB6F07EFA0 /* JSONParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2992753FC921964F94E0417DF1BBB5 /* JSONParser.swift */; };
 		983100E974B256B5F2F7D9BB42C205C5 /* PrimerHeadlessUniversalCheckoutProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92408A25A5C08AEB93F4DC40BF1B0AD /* PrimerHeadlessUniversalCheckoutProtocols.swift */; };
@@ -224,32 +210,32 @@
 		98BF53BAB906C5D5E216223D46D49229 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38ADE229538BF3030329470C86E415DC /* Currency.swift */; };
 		996FF4BD8CA19FC204C70B54E7757118 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60E14BAA5C9E3B508D26134181E0CD8 /* PaymentMethod.swift */; };
 		99996E6DBAE339505A938F347044D3BE /* PrimerAddressLineFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1413AE74B6AD514F8D92EB46CFA6A47 /* PrimerAddressLineFieldView.swift */; };
+		99A5099416D0726AB2D081EF39F56C99 /* lt.json in Resources */ = {isa = PBXBuildFile; fileRef = 09E0E476675FECEBB29FC950D9535110 /* lt.json */; };
 		99B2967A03F3CC7F0D9DC0FBF9E6958C /* PaymentResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30200ADFDD705DE9BDE76B7CAA829B20 /* PaymentResponse.swift */; };
-		9BE11FCF1F54DBE1BFB08E8565CE3BBE /* ml.json in Resources */ = {isa = PBXBuildFile; fileRef = 18A7AE60BFC6A5544DBD3C2765BCF53C /* ml.json */; };
-		9BEC7147BEB0432B823713A35A66FD0A /* he.json in Resources */ = {isa = PBXBuildFile; fileRef = 28225FFAEF16A5740A6BE2084955010A /* he.json */; };
 		9C9B3039BC559E3145A1C5053035AE69 /* Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC8E70548526AF9721D3338C3DFF200 /* Weak.swift */; };
 		9C9E188AFF25593938EDE0679C88AE36 /* PrimerWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 195CEB353D3BF97F9BE62E88D6100B6C /* PrimerWebViewController.swift */; };
 		9CE83EF2C76762858078A6E8940EEA8F /* CardScannerViewController+SimpleScanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62622E9572651F9CD983777FDB4111DE /* CardScannerViewController+SimpleScanDelegate.swift */; };
 		9CFF3A5447F17866059EFE03C140D429 /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA38FA34AC43A1A6F89AE617FCB99094 /* ErrorHandler.swift */; };
 		9DDBB332CB561B24A5036CEB64ED7250 /* PrimerThemeData+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C69B6A55650F2B1DED4B1ED18C07A8 /* PrimerThemeData+Deprecated.swift */; };
-		A158D14F17C0B75A92239CEEF891D8F5 /* mk.json in Resources */ = {isa = PBXBuildFile; fileRef = ECAABC2DFA86D26985CE6F8A4FF2E1D1 /* mk.json */; };
-		A1EBFD186115AC5CDC1BA6E6F6651643 /* ru.json in Resources */ = {isa = PBXBuildFile; fileRef = 46AE243EA2B8804FE03F8099927A0395 /* ru.json */; };
+		9E2C69E7093CB5683BF75811065C8F54 /* kk.json in Resources */ = {isa = PBXBuildFile; fileRef = 204D81D5272AA0EB58C29CC7298B59C8 /* kk.json */; };
+		9E8BD235A3309CD40636DB409D6393C1 /* cs.json in Resources */ = {isa = PBXBuildFile; fileRef = D9094F35D149910525A58C7842D3E671 /* cs.json */; };
 		A2034A15E91B228985C0C3753B9EB9C3 /* CancellableCatchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51697A85E1799703714332DA65779BAC /* CancellableCatchable.swift */; };
 		A22B6818C06604597EDB93B28DBFF5B4 /* PrimerExpiryDateFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BA208657722F7BB5072DD83B61DF4E /* PrimerExpiryDateFieldView.swift */; };
 		A2E8C22BAC560490AA344CEC592938E6 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53480342C4E09EF6E494D4C09F35D021 /* Parser.swift */; };
-		A30D9E9A7FCFAC59E45AE13380B71907 /* id.json in Resources */ = {isa = PBXBuildFile; fileRef = 16CF03728E529172C2F64627370F519D /* id.json */; };
-		A4757498A911F77AEF3BD8736EC1BD42 /* ar.json in Resources */ = {isa = PBXBuildFile; fileRef = E3D2894537E3E5F4FBE0712215AB784A /* ar.json */; };
 		A48E519BBAB7180E49B504B795D76543 /* CardholderNameField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744D796DCD5B7EA049B74E7C33C4DE09 /* CardholderNameField.swift */; };
-		A4E9464AEE494EBE027ACAA1365F7947 /* ro.json in Resources */ = {isa = PBXBuildFile; fileRef = 71FA18D498E9454E36152EC746201582 /* ro.json */; };
 		A5B413534CBFC7200EB390D298236241 /* PrimerRawData.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD04451422D0E1C42E8EBE3B144F13C /* PrimerRawData.swift */; };
 		A5BAE6DD92735BEB48BD80A3E2718CF1 /* BankSelectorTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AC87FF221FA67445263A04694A6B136 /* BankSelectorTokenizationViewModel.swift */; };
 		A5D596A8DC319C3DF876034836BDC765 /* PrimerResultComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BB9E5CE333437E9FD642F5B7B4F97F /* PrimerResultComponentView.swift */; };
 		A631070014675EA0FFEEECBA2564B146 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB6F611E86A4758835A715E4B4184F6 /* Foundation.framework */; };
+		A6A82516FBED3C2B4ACBC47623E71FAB /* ms.json in Resources */ = {isa = PBXBuildFile; fileRef = F7F07CF931B402BD1164016C4F89C697 /* ms.json */; };
+		A6BE3DAED4F653EE4844F6A4B61E2A7D /* PrimerTextFieldView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 605316BBF49258AFB977EA7985639BE7 /* PrimerTextFieldView.xib */; };
 		A7407B9EAF2A16C5C5D978F0C867091B /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EF70356BE395E222D741FB39E17C94B /* Strings.swift */; };
+		A74C036470C14A970FBAE550E4ECD510 /* mk.json in Resources */ = {isa = PBXBuildFile; fileRef = ECAABC2DFA86D26985CE6F8A4FF2E1D1 /* mk.json */; };
 		A7861C57815A20D98326E55F40C788A2 /* PrimerCVVFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D264D203A650088FB5EDFA7D3D5CCE4 /* PrimerCVVFieldView.swift */; };
 		A8D3E3A0F0580C413E2604438D42F652 /* PrimerAPIClient+3DS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759331F1F8BCA151B2DE566D07EDC1DF /* PrimerAPIClient+3DS.swift */; };
 		A9EE778EB6E29A9CA3C24A51DAE44777 /* PrimerAPIConfigurationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22EDACD8CF58A44C1D63BA23AFE48A10 /* PrimerAPIConfigurationService.swift */; };
 		AB5092E3C9795D528EF85D7251A1A777 /* PrimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAFB4E60CBA4029C01A09CBEDCE0051A /* PrimerViewController.swift */; };
+		AB7FED54C48494B99DC7EDE970925B7A /* zh.json in Resources */ = {isa = PBXBuildFile; fileRef = 22C51EE6B4F227D96E4B383DF58FD186 /* zh.json */; };
 		ACAF10090CECB685E2ABA07DE62B2C23 /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64CBE7F8A1C1A9F196DB076B0299F79 /* DataExtension.swift */; };
 		AD8657D76B8F91DEB457B186737CF96D /* PrimerTextFieldView+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD87E12954AC92D82A68A151CD2F47C /* PrimerTextFieldView+Analytics.swift */; };
 		AEC529E1E2E2E2D12DD227890D9FA60B /* PrimerCardholderNameFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9361C3DC9A03B82F5AD8972D9C11701B /* PrimerCardholderNameFieldView.swift */; };
@@ -257,15 +243,13 @@
 		AF2A4CCA12E7654CA8F0DE86142D6204 /* CheckoutModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28E4A18DD12F49D2D5BB42A3F7CBACF /* CheckoutModule.swift */; };
 		AF61833B751B2F8F164DE482BBF31232 /* CardFormPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803ADEF29CABD247581190E9633B03AC /* CardFormPaymentMethodTokenizationViewModel.swift */; };
 		B01223D464C1D57901A62A58DECDB2EC /* CancellableThenable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE51D566465FCA02C718220ECED1E6C9 /* CancellableThenable.swift */; };
-		B0FF0B9089D9375FAC556ABC9EF18CE9 /* az.json in Resources */ = {isa = PBXBuildFile; fileRef = B1403C050F501958A32CF6971282BBDE /* az.json */; };
-		B255BAC161796DC3AC726D3207434E7F /* so.json in Resources */ = {isa = PBXBuildFile; fileRef = B1F7A7C66BF4EEB6C2C3BE591E3B0FB6 /* so.json */; };
+		B11D8DF98412916EE47D6FB1E0732E60 /* phone_number_country_codes.json in Resources */ = {isa = PBXBuildFile; fileRef = 04CB023937E0C3A85488554CF9863ACE /* phone_number_country_codes.json */; };
 		B2CF9868C23804F1437CEDB2713527D3 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243887FC4334120259758797DA191B80 /* Device.swift */; };
 		B2EF2CBBF6FC11DFA7554D7A0CAF70CC /* Klarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21ABA08CB3E694CCEF8166AB8623A442 /* Klarna.swift */; };
 		B48AF67FC1CA7892EE8022E7AE752A8E /* PrimerSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC1A1A1128DFFF55ADC5ABA7D8280E7 /* PrimerSource.swift */; };
 		B4ABED48174FECDEECBCC10B20D52178 /* PrimerTextFieldView+CardFormFieldsAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6635E79D3B6BCA6C9140AEAD0795D2 /* PrimerTextFieldView+CardFormFieldsAnalytics.swift */; };
-		B69E030E48C99F075D009821D1D87170 /* sr.json in Resources */ = {isa = PBXBuildFile; fileRef = F4265D60115C52FCCB8757DFDC866579 /* sr.json */; };
+		B7E92C68D1D33C8F732407BE0FC0206D /* km.json in Resources */ = {isa = PBXBuildFile; fileRef = 1F642B971F3D79D1CAC9C4CFEAF7CF21 /* km.json */; };
 		B9094BFE8F7889EA6C4BCF8A0376FC6F /* PaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53263B2B76A079F81A49DB147E5AC4D3 /* PaymentMethodTokenizationViewModel.swift */; };
-		B994C1E5532577B624F57A2836171398 /* sl.json in Resources */ = {isa = PBXBuildFile; fileRef = 6A3CCD0B8D3177A2121D9648919B8AD5 /* sl.json */; };
 		B9CA007D10CB47479C70D4F733ACABF8 /* ClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76ED3600623D7D2A2FA306314A9C019C /* ClientToken.swift */; };
 		B9F0BF3CD6791B382BC798D2662FD9C7 /* PrimerFlowEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AEE31A3769504CDCD50D9B7C201114 /* PrimerFlowEnums.swift */; };
 		BB094C9C2BB3EB1D33D5E6ADD1A6A3AE /* PrimerHeadlessUniversalCheckout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6081D87FFBB2C53D182A0D7973D1EB8 /* PrimerHeadlessUniversalCheckout.swift */; };
@@ -275,149 +259,112 @@
 		BC9B3E39F4FAAE1759E311FA70FF1C4A /* PrimerLastNameFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A72580AAD6609E9D8B2884B11D30FA /* PrimerLastNameFieldView.swift */; };
 		BCE53F9FF4E3D60598617E3F4E9E85D5 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 314AE8FA9D6229AFC3D3180CC7A12407 /* Configuration.swift */; };
 		BDD3A7F239B87C53E95B0BCE938C3C7B /* Identifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3488185F07C2FEAC561F3A8BABE490D /* Identifiable.swift */; };
+		BDED687DA4A4F646117EAC9C159FC36E /* uz.json in Resources */ = {isa = PBXBuildFile; fileRef = FCCF16758DB5CD97DDC4D39554BAA4B6 /* uz.json */; };
 		BEFED51994BFEE702AF3AD18B36339F1 /* Thenable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA577DE0B16A0C2458F697D56EE287A6 /* Thenable.swift */; };
-		BF41D39F8D956987C2EACE72659E4E81 /* is.json in Resources */ = {isa = PBXBuildFile; fileRef = CCE113DC4F04A90505074BE3EE39E0F2 /* is.json */; };
-		C03A659CEFFBD410D3C55FB9DB1745AE /* en.json in Resources */ = {isa = PBXBuildFile; fileRef = ACD81841966D9851249F5D8452315058 /* en.json */; };
 		C107ACC18570EB04079B825ACE49353D /* PrimerPaymentPendingInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A50717687948D0B72606C86FF78714CB /* PrimerPaymentPendingInfoViewController.swift */; };
 		C1281C808E21B66261711A316064637D /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A6DD4373EE93D65802400A485924E0 /* Error.swift */; };
-		C33FB4A4939BACAD1BC8D994E202B1BE /* nl.json in Resources */ = {isa = PBXBuildFile; fileRef = BC09EBF5B51F4F87CE83B52926F52C1F /* nl.json */; };
-		C475DB550CC6CAEDCFDD8DCB7BD5ED01 /* PrimerKlarnaSDK-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 685CD74CF750C9A0D8E3A4CF195BB703 /* PrimerKlarnaSDK-dummy.m */; };
-		C4AD869FA9D525B59061604610F42ECB /* fr.json in Resources */ = {isa = PBXBuildFile; fileRef = CA9C7662E10ACCF3C01C90BA28CCEC78 /* fr.json */; };
+		C526CD6C82A8A97F70494A649675CACE /* is.json in Resources */ = {isa = PBXBuildFile; fileRef = CCE113DC4F04A90505074BE3EE39E0F2 /* is.json */; };
 		C59A33DE7EAD2F248FA21C4836359AB8 /* PrimerTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A44852DF9B5D5A6473D0071CCE630A /* PrimerTheme.swift */; };
 		C5BE4D2CB205E72994F9769292211033 /* FinallyWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FF6E714801026B4DB4061A14358A7C /* FinallyWrappers.swift */; };
+		C5F06300C0838975B3DCC3440376BDD7 /* sd.json in Resources */ = {isa = PBXBuildFile; fileRef = 0BD72ECC3FEC67430FB01510788188CA /* sd.json */; };
 		C60B257B62D839D9DD15C83EC4D68141 /* PaymentAPIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 481208936491BDF7BF4702112EBCC9C9 /* PaymentAPIModel.swift */; };
 		C61574DCFA703A2CF1E20DD222E26177 /* PrimerRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2091ADBF701C908EFF592255753B2DDA /* PrimerRootViewController.swift */; };
 		C65B0A4088EB5346F7850D3DF323B280 /* Field.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF25B063793954D8EF5B63A386174CBC /* Field.swift */; };
 		C6AF4C58F068DEAB8DB9A9014FD337A4 /* SuccessMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFB5487F39DC1F088B8B7B5183FF6FC /* SuccessMessage.swift */; };
 		C6DDC1F06465B245BA4CB6C9E23D20F9 /* PrimerScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564F566DA639B506CBF883678EAF3E7C /* PrimerScrollView.swift */; };
-		C79A2639B9A99790EFEB8CC350D513D4 /* ms.json in Resources */ = {isa = PBXBuildFile; fileRef = F7F07CF931B402BD1164016C4F89C697 /* ms.json */; };
-		C7A133B4831C1FB5ED7319CE09BBF859 /* pl.json in Resources */ = {isa = PBXBuildFile; fileRef = 5ECCD8160965E7A31A7A2A859A55DCEC /* pl.json */; };
+		C6EDDE4B4FAF1571DB1CEA64003F6C61 /* pl.json in Resources */ = {isa = PBXBuildFile; fileRef = 5ECCD8160965E7A31A7A2A859A55DCEC /* pl.json */; };
 		C7BE318EE4049714F223F3DB82CE3132 /* PrimerFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB1E3080A3782DB22C9EB21F9AE4E41 /* PrimerFormView.swift */; };
-		C8A1713FFC4CCD163EF410A75FEB7866 /* dv.json in Resources */ = {isa = PBXBuildFile; fileRef = 532B0BA9040BB8D21DA27265AED72DF6 /* dv.json */; };
 		C8A8F934BA50257C35BF637AD2EBEE67 /* PrimerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB1E2FD2C74B098B6C8C5952BF6EE04 /* PrimerConfiguration.swift */; };
-		CA6D5707C3DA74B6F071385893001C2C /* mn.json in Resources */ = {isa = PBXBuildFile; fileRef = E39790E3B66D84BA99AB143A78E7A509 /* mn.json */; };
 		CB9EB773C0F327501A69454339D85E81 /* PrimerLoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7280BA9ABB0E5301658C63A551E31E8 /* PrimerLoadingViewController.swift */; };
-		CF19B87D58F33E9B2DFC0B4526B210D5 /* de.json in Resources */ = {isa = PBXBuildFile; fileRef = 9BB9B489EA793105E5CFC0C7D6611E8E /* de.json */; };
+		CBB26980E1531A212C32F4264AE75F53 /* ja.json in Resources */ = {isa = PBXBuildFile; fileRef = 76ACF8393BA81ECEEF3241AF611EF8A6 /* ja.json */; };
+		CF905EA40A32127104C8DA37162A7724 /* sl.json in Resources */ = {isa = PBXBuildFile; fileRef = 6A3CCD0B8D3177A2121D9648919B8AD5 /* sl.json */; };
 		D0237C6DF612B5E27D7E69279DCB7359 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2540B46CEFAA9B478C51BFC74475781 /* Endpoint.swift */; };
+		D026FE8D61614BB0BE51934B200B4F05 /* mn.json in Resources */ = {isa = PBXBuildFile; fileRef = E39790E3B66D84BA99AB143A78E7A509 /* mn.json */; };
 		D0756939272E4460F0F6DDBDD9CA36F3 /* ImageName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 741BC6DB82546C153D687DFA1F6BBB9C /* ImageName.swift */; };
 		D2B65C79074AAF5F161F430F91E7B4F0 /* Dispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8639B14634A8BE8E9EFAFA13BEA9F1A1 /* Dispatcher.swift */; };
 		D2D33E0AD76B85DAD5D8214C6860084A /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D076B05D514775F01293A40357CC3BD1 /* DateExtension.swift */; };
 		D3A849CD9EE9BB15156316FD1BEC56D8 /* PrimerTestPaymentMethodViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BC455586A7CD59BDAAD9221C57B35AD /* PrimerTestPaymentMethodViewController.swift */; };
+		D48850E614CA23D6AE62196DE54B514C /* ug.json in Resources */ = {isa = PBXBuildFile; fileRef = 08F5C3CD800C1988BBF7722E99B19192 /* ug.json */; };
 		D4CD5DF8661489EAB99794F92FB63317 /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4307C5DC5711C94AAF4C386326EE0C1 /* Queue.swift */; };
 		D561F0D87FC5AF984DCFB637444DD109 /* ExpiryDateField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 890177F142669D506DE5DE344B2A5A6D /* ExpiryDateField.swift */; };
+		D58F289B245AAC1C4991D29158504DAE /* bg.json in Resources */ = {isa = PBXBuildFile; fileRef = CDC5F23BF15858A2E657497951425DF8 /* bg.json */; };
 		D596E2B41C673AD5018AEA0A0321E51C /* Pods-PrimerSDK_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = EE9674DAD0C961C92687877090E1E047 /* Pods-PrimerSDK_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5EEA975748EC131A3BF3B3AF1AB4E22 /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A20F7019E40389DD4437B66DD082885 /* Icons.xcassets */; };
 		D6390A09D869B5A86DD35EAB97D995C7 /* Bank.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A80BD692B2DC9A098F9D1C7DB1F578 /* Bank.swift */; };
-		D826B39D72343E0872FCF32CC0471674 /* bg.json in Resources */ = {isa = PBXBuildFile; fileRef = CDC5F23BF15858A2E657497951425DF8 /* bg.json */; };
+		D969C2EDECEBA03549083B8B1BADD026 /* sr.json in Resources */ = {isa = PBXBuildFile; fileRef = F4265D60115C52FCCB8757DFDC866579 /* sr.json */; };
 		D9C94E65BD9150DB6EA1BE79DD6B2D5C /* FormPaymentMethodTokenizationViewModel+FormViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11247E4F61833BE31EAA0A0ACCE8823 /* FormPaymentMethodTokenizationViewModel+FormViews.swift */; };
 		D9CC1DE3A269870D69D326CF26C99ED7 /* LastNameField.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7299C2CC3DCC65C7E285CAE61939EE /* LastNameField.swift */; };
 		D9DE2F0743D4E566C78F7F4B9006E1C1 /* FlowDecisionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3D53B66B5BFD04D7EC1527CDF1992 /* FlowDecisionTableViewCell.swift */; };
-		DA1B19CA3BCFE454EF63C513EE4C22EE /* am.json in Resources */ = {isa = PBXBuildFile; fileRef = 11D53C53F4B08739F1D0A676AD102CD7 /* am.json */; };
-		DA1C66860244BBF918163D5F82BE505A /* ur.json in Resources */ = {isa = PBXBuildFile; fileRef = F674CCEC3DEBCEF76193B030A2248179 /* ur.json */; };
 		DA55CEA0696415B7C218313F5A1ED5B8 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9411A6FDBB3FEF55FFA7AAEAB3F223BB /* Colors.swift */; };
-		DC2FFC7C3D93904F61210B9843433F7B /* Pods-PrimerSDK_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 21F4ACB1142B1B9457658584BF5CD35A /* Pods-PrimerSDK_Example-dummy.m */; };
-		DCEB332F720B36DB48FC3479ADEB859E /* lv.json in Resources */ = {isa = PBXBuildFile; fileRef = 8090CF29969579DF89F0C776ECCD1BCD /* lv.json */; };
-		DCFD39DFA2D0666AEADFA8FC8FF9B4DF /* fi.json in Resources */ = {isa = PBXBuildFile; fileRef = 9A10400D9B75BEF99616E2780192A864 /* fi.json */; };
+		DC0DB9336742441ED5C103CFC95885B0 /* lv.json in Resources */ = {isa = PBXBuildFile; fileRef = 8090CF29969579DF89F0C776ECCD1BCD /* lv.json */; };
 		DD587A603D304965C6A2063A63D42846 /* PayPalTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86687E5CFA9981FD81304F6D683584B1 /* PayPalTokenizationViewModel.swift */; };
-		DE93C7ED2C43E63DF5EACA2CC8FD9AFD /* es.json in Resources */ = {isa = PBXBuildFile; fileRef = 8BA3289F005BF191B8673752E915C69F /* es.json */; };
 		DEF991CFC4C19B0D1B6634E0BA8F74A4 /* PrimerThemeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EB2DF5884A0380A72B522FCBA803F6B /* PrimerThemeData.swift */; };
 		E08156669A75EA35C9455C4ECBAA0401 /* Downloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F19A0C94E7E56D84FBD5102694B1FD /* Downloader.swift */; };
-		E08BBA3D1AD3E67C3B4F3D4E1DD3C865 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB6F611E86A4758835A715E4B4184F6 /* Foundation.framework */; };
 		E0C4B154E8A5B4EC3C065A3A78275C17 /* PrimerCardFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 161D8B3BE1A3C899B2C91917AC85CC86 /* PrimerCardFormViewController.swift */; };
 		E0F6E037F2FF0CA82C86BBE061CB91DE /* PrimerHeadlessUniversalCheckoutUIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2127652E26536F6EF489875444B042F7 /* PrimerHeadlessUniversalCheckoutUIManager.swift */; };
 		E112691528E29C3814B63B5E4C4250DA /* PrimerPostalCodeFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBD700AFD2323B22D8F8DF7C4CEC56A6 /* PrimerPostalCodeFieldView.swift */; };
-		E148D38022651BDBE414684996EFE873 /* ky.json in Resources */ = {isa = PBXBuildFile; fileRef = C9C5997B4FB5609DD93A40445D4E8CA1 /* ky.json */; };
 		E150EB1E3DDC0F59C4FDE4E1058FCAF7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB6F611E86A4758835A715E4B4184F6 /* Foundation.framework */; };
 		E19323EE6DCF79B5D790847A35A97498 /* ConcurrencyLimitedDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563132C96B7D0F8AD1A9B032599E150D /* ConcurrencyLimitedDispatcher.swift */; };
 		E2124F1DD8D9BF616230930C52774786 /* TokenizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349A2BD595E3AFEB8741D4C2E8939635 /* TokenizationService.swift */; };
 		E2213A2624192198BFB168ED6534B769 /* UIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A78D70BF33D9CB39F14FE92585FEA /* UIUtils.swift */; };
 		E23ABD21F61E744D945613ED1DE87045 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1658208C74A8C28DD9BE5EA99DC1FB /* Box.swift */; };
-		E2B45040A411B72BBECB1A4205DF3F9D /* ta.json in Resources */ = {isa = PBXBuildFile; fileRef = 35C8DE13A20739405DF97C461FF29883 /* ta.json */; };
 		E2BFCBD82B22F1ADA43BEEFD207C3C7D /* KlarnaTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF317A7F7A2F3AC9FFAB016E3DBAF86E /* KlarnaTokenizationViewModel.swift */; };
 		E39556F822C24702D883A2E5C526B040 /* PrimerAccountInfoPaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617D5CAB9FF3AE29DE57F64EC2E29300 /* PrimerAccountInfoPaymentViewController.swift */; };
-		E3A63C8A25987DAB9BC3208333CAB074 /* PrimerKlarnaSDK-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 8DFC2D894C02D6F132704B59C2C157EA /* PrimerKlarnaSDK-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E3CACABEF61BA12388FF9F57B5155CE1 /* PrimerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5A13C606AAB94515C6959B8956A610 /* PrimerAPI.swift */; };
 		E55C73C7E6F9C1ABCC175FE2909F3F7E /* PostalCodeField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341871DA409E0FF0F941D7614040D93C /* PostalCodeField.swift */; };
-		E62E6688F3834B60B6B4331A4D50B4B0 /* sd.json in Resources */ = {isa = PBXBuildFile; fileRef = 0BD72ECC3FEC67430FB01510788188CA /* sd.json */; };
+		E5910AF2E6178D507716E58348C7C035 /* et.json in Resources */ = {isa = PBXBuildFile; fileRef = CE3DB90AD5A4A83AD3C4C8D92C599752 /* et.json */; };
+		E6516CFDF9C535ED71BF0326088A21D9 /* am.json in Resources */ = {isa = PBXBuildFile; fileRef = 11D53C53F4B08739F1D0A676AD102CD7 /* am.json */; };
 		E6CF0B077EBE44DEB2D6EB04253BF011 /* PrimerSDK-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795A506EA0112F3AE062921DA56E134 /* PrimerSDK-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E6ED006629AC0FAA09049F0276B20D97 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1D864CA1419EAEAC91C621F0557B7C6 /* Analytics.swift */; };
 		E8BEB357A2F026EF9FBACF4CD229B443 /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F22BED1642BF23559AFDA29AFD3127 /* ImageManager.swift */; };
 		E8C0107D86210CADC280944FF8944D6D /* PresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC64F64D0B2CE909FDA9678F53596255 /* PresentationController.swift */; };
 		E8C7F1ABBAE526622BCDDA91AA3E380E /* PrimerFirstNameFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F2FBC11EADFDC1E5C8F1D37F2025D6 /* PrimerFirstNameFieldView.swift */; };
-		EA36A744FD5CE7A385B26AAB43746EAB /* hu.json in Resources */ = {isa = PBXBuildFile; fileRef = 1AF9EA73B78B842EC1FC1A51419CF363 /* hu.json */; };
 		EB10530F2B35E3D46E026B3C89BFBE60 /* HeaderFooterLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1051B403BF72D71DE1C8B0F1803724D /* HeaderFooterLabelView.swift */; };
 		EBFDDDCE1EE002BD6BC22A1649B2EA4D /* UILocalizableUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303379666E0C0FE96F6D5A294B474584 /* UILocalizableUtil.swift */; };
+		EE3DE3E85B700E098BB7C3635AEFDBCE /* ml.json in Resources */ = {isa = PBXBuildFile; fileRef = 18A7AE60BFC6A5544DBD3C2765BCF53C /* ml.json */; };
 		EEBEEF469AAD5326B485446EF5857C60 /* 3DSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AAB226959F8708CAAA61D8B971B4AAA /* 3DSService.swift */; };
 		F1200226DD64F177D7629DCC5BD29A28 /* VaultPaymentMethodViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FB23D3AABA3B725D67CBEB165F99B0 /* VaultPaymentMethodViewController.swift */; };
-		F1F757002C4B4E0475D172F1BFE4E879 /* th.json in Resources */ = {isa = PBXBuildFile; fileRef = 947EEAC0E72200F2ABC33F2CCA55A7A9 /* th.json */; };
+		F2FD7836F640220E6461C1F41EA0F7EC /* tg.json in Resources */ = {isa = PBXBuildFile; fileRef = 2E94C654916BE3DEDD770133E43FF5AC /* tg.json */; };
 		F342114EE904296C3F70AFDBD5CED961 /* PrimerAPIClient+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038628E2AD4EBC09D48FF4D7B586DC95 /* PrimerAPIClient+Promises.swift */; };
 		F39834D34CDD58A5E3485D5D7C99E8F7 /* Apaya.swift in Sources */ = {isa = PBXBuildFile; fileRef = 076B08C5812C4C1930D9841186900782 /* Apaya.swift */; };
 		F4178DC6893757B53F94975B2C4AA902 /* PrimerResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77EEF9F1445141AA22E6554904310E64 /* PrimerResultViewController.swift */; };
-		F4B688753C11BA192EC0E3E61A466CB2 /* Primer3DS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CEAB2EBE2E0EE09B023C208B5FA250F /* Primer3DS-dummy.m */; };
-		F865AD8A661661902E8AB43C5714AE82 /* ha.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A8E2F56E4C53F8A6293CD6DA193F381 /* ha.json */; };
+		F620E8E93CEC95CD42A8DC1457F613C6 /* ro.json in Resources */ = {isa = PBXBuildFile; fileRef = 71FA18D498E9454E36152EC746201582 /* ro.json */; };
+		F6FCEA41B7D4A17FD20C345E86296343 /* Pods-PrimerSDK_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 21F4ACB1142B1B9457658584BF5CD35A /* Pods-PrimerSDK_Example-dummy.m */; };
 		F8B6F708E136DA7E84C308BA2D046864 /* PrimerViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70799BE51E0392403A852874D9704A55 /* PrimerViewExtensions.swift */; };
 		F8FFD0FE43DD14B504D08F94D66AD2A7 /* PaymentMethodToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9A0958E52716685BD84550A6868A78 /* PaymentMethodToken.swift */; };
 		F91B8323C059C265BE59532238698A40 /* CardScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCE6253D4552C3F8FF77C7064279870 /* CardScannerViewController.swift */; };
 		F9431597D20B087A669C652AD33DE3F7 /* PostalCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80AAC6FD77FECE46A24841EF5967917 /* PostalCode.swift */; };
 		FA2378AAB11FA059F7FCB5CBD07B15BC /* PrimerImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96ECB3DB084D36E41A184B761EC6E329 /* PrimerImage.swift */; };
+		FB746B91C9B3AB6FFE526273ECA8EF47 /* it.json in Resources */ = {isa = PBXBuildFile; fileRef = 53339B40E127330523BC64A91965A3F1 /* it.json */; };
 		FBF7C372CBFFE1990705FB613CAE090A /* CountryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A7351E51FEF9EE155753FDE3B1CD9A /* CountryTableViewCell.swift */; };
 		FC369AB1F8298A78F40A47DCF58F9105 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7234AF21DAFB232B9B240B3349F1B0A /* BundleExtension.swift */; };
 		FC548D2DD501D8C345013F48CB75B548 /* CountrySelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F878F9CC1BA26D3B6B188407081D840 /* CountrySelectorViewController.swift */; };
-		FC9E18C529B5E0FB01757553B7240419 /* sv.json in Resources */ = {isa = PBXBuildFile; fileRef = C6911DAE059C8A6DA4F62DC0537CA5C3 /* sv.json */; };
-		FDACE06D8CE70BDDF3D6CF5AC871AE23 /* kk.json in Resources */ = {isa = PBXBuildFile; fileRef = 204D81D5272AA0EB58C29CC7298B59C8 /* kk.json */; };
-		FDDEDDF319CAA4EBE5FA914B307DEB9C /* et.json in Resources */ = {isa = PBXBuildFile; fileRef = CE3DB90AD5A4A83AD3C4C8D92C599752 /* et.json */; };
 		FEC606F77AD6AA7EAE2DBB933A69E87C /* PrimerNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5491C4867F7A8051A4C79443C295AB6 /* PrimerNavigationController.swift */; };
 		FF2A6E5FE84FA36E550863894FD17E80 /* PrimerPaymentMethodType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFA6A395A999106B9BFA0920CFE8A0F4 /* PrimerPaymentMethodType.swift */; };
+		FFE4FA0676BFBB7FAF69B47C1BBB5F84 /* uk.json in Resources */ = {isa = PBXBuildFile; fileRef = EB3EB4639AFEE0BACC97D3322F63662E /* uk.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		41F3213F1EE0BD0FC756CF488C762486 /* PBXContainerItemProxy */ = {
+		81BE7E8434F1DB0940646703D904E5C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = F3BE9108C53B53949406218CEA55E0B2;
 			remoteInfo = PrimerSDK;
 		};
-		482407F8A66B41C7EC2A8B7D86776A65 /* PBXContainerItemProxy */ = {
+		AF313164FE6CB22FFDF29E98CAD8FDA7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 6C144A762E9B598392AFFEC8F873746A;
 			remoteInfo = "Pods-PrimerSDK_Example";
 		};
-		55385F83FC3248291C1BCD70B001861B /* PBXContainerItemProxy */ = {
+		F35827C4A26319ACEB5019862D5E9E56 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 6E6525C7043FBA7BB34A249010AF5593;
 			remoteInfo = "PrimerSDK-PrimerResources";
-		};
-		A18C8134F85E1D4624E1DC42E55FCAAA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CED402C355914FFED9773C1549264B8C;
-			remoteInfo = KlarnaMobileSDK;
-		};
-		D845B604FF640F0FE99E76846E563DD9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 46078E413137E8360E17944FC2E93839;
-			remoteInfo = PrimerKlarnaSDK;
-		};
-		DFAD647D851BC800A495ED202D751940 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 6F5F0A81CAE773CFE5371059A81B5B6A;
-			remoteInfo = Primer3DS;
-		};
-		FB05DC88BD6FFEC3031154645324E003 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CED402C355914FFED9773C1549264B8C;
-			remoteInfo = KlarnaMobileSDK;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -433,7 +380,6 @@
 		0659131F99E68CAD51A94935E0EB2B68 /* OrderItem.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OrderItem.swift; sourceTree = "<group>"; };
 		06A44852DF9B5D5A6473D0071CCE630A /* PrimerTheme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerTheme.swift; sourceTree = "<group>"; };
 		076B08C5812C4C1930D9841186900782 /* Apaya.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Apaya.swift; sourceTree = "<group>"; };
-		08417C8E26C7764C623F4EFCBE91229C /* Primer3DS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Primer3DS.debug.xcconfig; sourceTree = "<group>"; };
 		08AC0BC3DA7BF82BC470B1D0EECA3E81 /* PrimerStackVIew.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerStackVIew.swift; sourceTree = "<group>"; };
 		08F5C3CD800C1988BBF7722E99B19192 /* ug.json */ = {isa = PBXFileReference; includeInIndex = 1; path = ug.json; sourceTree = "<group>"; };
 		0999249875DE0D4A75A4E39D6844FAF0 /* QRCodeViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QRCodeViewController.swift; sourceTree = "<group>"; };
@@ -451,7 +397,6 @@
 		1176B758B59998CC709A046B33D11A5A /* VaultPaymentMethodView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodView.swift; sourceTree = "<group>"; };
 		11D53C53F4B08739F1D0A676AD102CD7 /* am.json */ = {isa = PBXFileReference; includeInIndex = 1; path = am.json; sourceTree = "<group>"; };
 		12810A7C3C43C333B5667AEF5D9B72AE /* PrimerInputViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerInputViewController.swift; sourceTree = "<group>"; };
-		12840CD793D612F9BBC0C4A1D884EBE1 /* Primer3DS-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Primer3DS-Info.plist"; sourceTree = "<group>"; };
 		14686E1443872274A95992920D6C7982 /* ApplePay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePay.swift; sourceTree = "<group>"; };
 		15E86EEFB28DEBFE45EBA5C8E581CE28 /* Primer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Primer.swift; sourceTree = "<group>"; };
 		161D8B3BE1A3C899B2C91917AC85CC86 /* PrimerCardFormViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerCardFormViewController.swift; sourceTree = "<group>"; };
@@ -462,7 +407,6 @@
 		19888C489D574C7C117E83482A91E2CC /* Guarantee.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Guarantee.swift; sourceTree = "<group>"; };
 		198AACD21905FAF6520724D35808C145 /* GuaranteeWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuaranteeWrappers.swift; sourceTree = "<group>"; };
 		1A2998F065AF8CEAE8365CD57B3C260F /* ClientSessionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClientSessionService.swift; sourceTree = "<group>"; };
-		1A8CB8CE45D30504283FFDC3DAB1D9C0 /* Primer3DS.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Primer3DS.swift; path = Sources/Primer3DS/Classes/Primer3DS.swift; sourceTree = "<group>"; };
 		1ABFA37C7CEF182535745CE4039C6E7F /* Localizable.strings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1AF9EA73B78B842EC1FC1A51419CF363 /* hu.json */ = {isa = PBXFileReference; includeInIndex = 1; path = hu.json; sourceTree = "<group>"; };
 		1B4E7216B7BC8CC93C1138B826E1E2F2 /* WrapperProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WrapperProtocols.swift; sourceTree = "<group>"; };
@@ -493,7 +437,6 @@
 		2CCF8697BED97AAAB27F68CDB429D1F8 /* WebViewUtil.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebViewUtil.swift; sourceTree = "<group>"; };
 		2D448FD7817C55CDFADCA3A6B2EEB2CA /* PrimerTextFieldView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerTextFieldView.swift; sourceTree = "<group>"; };
 		2E94C654916BE3DEDD770133E43FF5AC /* tg.json */ = {isa = PBXFileReference; includeInIndex = 1; path = tg.json; sourceTree = "<group>"; };
-		301B5A7EDA2CB3339D636F18080D1A29 /* Primer3DS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Primer3DS-umbrella.h"; sourceTree = "<group>"; };
 		30200ADFDD705DE9BDE76B7CAA829B20 /* PaymentResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaymentResponse.swift; sourceTree = "<group>"; };
 		303379666E0C0FE96F6D5A294B474584 /* UILocalizableUtil.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UILocalizableUtil.swift; sourceTree = "<group>"; };
 		314AE8FA9D6229AFC3D3180CC7A12407 /* Configuration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
@@ -501,7 +444,6 @@
 		339D1ABF019B058C89698E5E446975BF /* be.json */ = {isa = PBXFileReference; includeInIndex = 1; path = be.json; sourceTree = "<group>"; };
 		341871DA409E0FF0F941D7614040D93C /* PostalCodeField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PostalCodeField.swift; sourceTree = "<group>"; };
 		349A2BD595E3AFEB8741D4C2E8939635 /* TokenizationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TokenizationService.swift; sourceTree = "<group>"; };
-		349F05576626C2DCC2E3DD39EB5DFCBB /* KlarnaMobileSDK-xcframeworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "KlarnaMobileSDK-xcframeworks.sh"; sourceTree = "<group>"; };
 		3555BF5E477B03C105370A97D14FF2F6 /* PrimerDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerDelegate.swift; sourceTree = "<group>"; };
 		35C8DE13A20739405DF97C461FF29883 /* ta.json */ = {isa = PBXFileReference; includeInIndex = 1; path = ta.json; sourceTree = "<group>"; };
 		361E09AC08EAE7E9168ED5E4575346CA /* PrimerTheme+Buttons.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PrimerTheme+Buttons.swift"; sourceTree = "<group>"; };
@@ -515,7 +457,6 @@
 		3FD8BB5C9368DA0323A358D84C213E64 /* Localizable.strings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		411B2C8712DAE13E0BB4FB8B3944C21C /* EnsureWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EnsureWrappers.swift; sourceTree = "<group>"; };
 		412151C10B0415C422B523C0CFDE41F3 /* bn.json */ = {isa = PBXFileReference; includeInIndex = 1; path = bn.json; sourceTree = "<group>"; };
-		4122CEAC5CE2D854AC73C2DAD498BD3F /* Primer3DS-xcframeworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Primer3DS-xcframeworks.sh"; sourceTree = "<group>"; };
 		419FF9C377AC256D6697047C645C275F /* Keychain.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		456CC3CE432DADC5A2C44F56088F3D3D /* PrimerError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerError.swift; sourceTree = "<group>"; };
 		46AE243EA2B8804FE03F8099927A0395 /* ru.json */ = {isa = PBXFileReference; includeInIndex = 1; path = ru.json; sourceTree = "<group>"; };
@@ -542,7 +483,6 @@
 		53339B40E127330523BC64A91965A3F1 /* it.json */ = {isa = PBXFileReference; includeInIndex = 1; path = it.json; sourceTree = "<group>"; };
 		534183569EE5D11DC32AFBD4B20F103D /* PrimerNibView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerNibView.swift; sourceTree = "<group>"; };
 		53480342C4E09EF6E494D4C09F35D021 /* Parser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
-		53A27D35F8BB160AE5587EF0534270B8 /* Primer3DSProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Primer3DSProtocols.swift; path = Sources/Primer3DS/Classes/Primer3DSProtocols.swift; sourceTree = "<group>"; };
 		55EFA044F6F80F9E440CC226B9B05902 /* VaultPaymentMethodViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewModel.swift; sourceTree = "<group>"; };
 		563132C96B7D0F8AD1A9B032599E150D /* ConcurrencyLimitedDispatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConcurrencyLimitedDispatcher.swift; sourceTree = "<group>"; };
 		564F566DA639B506CBF883678EAF3E7C /* PrimerScrollView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerScrollView.swift; sourceTree = "<group>"; };
@@ -567,20 +507,17 @@
 		617D5CAB9FF3AE29DE57F64EC2E29300 /* PrimerAccountInfoPaymentViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerAccountInfoPaymentViewController.swift; sourceTree = "<group>"; };
 		62622E9572651F9CD983777FDB4111DE /* CardScannerViewController+SimpleScanDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CardScannerViewController+SimpleScanDelegate.swift"; sourceTree = "<group>"; };
 		639AE4928116FBD4FAE7B3DD6BD21271 /* Pods-PrimerSDK_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrimerSDK_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
-		63C4A93D500AF0D692B1C329816E74DC /* PrimerKlarnaViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PrimerKlarnaViewController.swift; path = PrimerKlarnaSDK/Classes/PrimerKlarnaViewController.swift; sourceTree = "<group>"; };
 		64D9D3732D74A8CCDC14673A2DDB367D /* PrimerStateFieldView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerStateFieldView.swift; sourceTree = "<group>"; };
 		650D3F76C8FE70568DAB2079DB387BB7 /* StringExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		66F12A154F94997227A8C846D77065FB /* after.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = after.swift; sourceTree = "<group>"; };
 		6714FC8C229ABD029887123A42684C73 /* race.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = race.swift; sourceTree = "<group>"; };
 		67A80BD692B2DC9A098F9D1C7DB1F578 /* Bank.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Bank.swift; sourceTree = "<group>"; };
 		67C6CBA80F927F7B6B8350943C0A3C5F /* el.json */ = {isa = PBXFileReference; includeInIndex = 1; path = el.json; sourceTree = "<group>"; };
-		685CD74CF750C9A0D8E3A4CF195BB703 /* PrimerKlarnaSDK-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "PrimerKlarnaSDK-dummy.m"; sourceTree = "<group>"; };
 		6993A1E7E4DA72D9DF427747FA6CAD86 /* Localizable.strings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6A1658208C74A8C28DD9BE5EA99DC1FB /* Box.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		6A3CCD0B8D3177A2121D9648919B8AD5 /* sl.json */ = {isa = PBXFileReference; includeInIndex = 1; path = sl.json; sourceTree = "<group>"; };
 		6AAB226959F8708CAAA61D8B971B4AAA /* 3DSService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = 3DSService.swift; sourceTree = "<group>"; };
 		6B4D0FBF295A47B199A0B3D41F456199 /* BankSelectorViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BankSelectorViewController.swift; sourceTree = "<group>"; };
-		6CEAB2EBE2E0EE09B023C208B5FA250F /* Primer3DS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Primer3DS-dummy.m"; sourceTree = "<group>"; };
 		6D156A020BAD7294F0240BBD1D165EB8 /* when.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = when.swift; sourceTree = "<group>"; };
 		6D248FE64C103BED913087AB81227CFB /* Dimensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Dimensions.swift; sourceTree = "<group>"; };
 		6D978035D91CB0BE3E944D6271E1B3A6 /* UserDefaultsExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserDefaultsExtension.swift; sourceTree = "<group>"; };
@@ -627,17 +564,13 @@
 		86753D18E34B3C4559ACC9EFA6D5142E /* NSObject+ClassName.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "NSObject+ClassName.swift"; sourceTree = "<group>"; };
 		86B2630EA1C81F9CC14BBBC413D7F8CE /* AnalyticsService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
 		86BC3582504AF436CFCFB7B8FFD06A79 /* Promise.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
-		880C58F3BD086593B4FD06659B102A5B /* PrimerKlarnaSDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PrimerKlarnaSDK.debug.xcconfig; sourceTree = "<group>"; };
 		890177F142669D506DE5DE344B2A5A6D /* ExpiryDateField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExpiryDateField.swift; sourceTree = "<group>"; };
 		89493AFDB8D57F4D0FD314F1B9F1D937 /* PrimerSearchTextField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerSearchTextField.swift; sourceTree = "<group>"; };
 		8A3D56AF4AB0B42C49F1999A71B9B24E /* CardButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardButton.swift; sourceTree = "<group>"; };
-		8A7192185507781FF13210BB8B4EE995 /* Primer3DS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Primer3DS.release.xcconfig; sourceTree = "<group>"; };
 		8BA3289F005BF191B8673752E915C69F /* es.json */ = {isa = PBXFileReference; includeInIndex = 1; path = es.json; sourceTree = "<group>"; };
 		8CC1871F5BC24E2F0F273FBD06FAE2B1 /* pt.json */ = {isa = PBXFileReference; includeInIndex = 1; path = pt.json; sourceTree = "<group>"; };
 		8D71A22E07E864334A87308E15C06014 /* ExternalPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExternalPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
-		8DFC2D894C02D6F132704B59C2C157EA /* PrimerKlarnaSDK-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrimerKlarnaSDK-umbrella.h"; sourceTree = "<group>"; };
 		8E29734F54ED4D8E34161857A074D32E /* IntExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IntExtension.swift; sourceTree = "<group>"; };
-		8E6C92F959BA31C3D221D4866DB079C1 /* ThreeDS_SDK.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = ThreeDS_SDK.xcframework; path = Sources/Frameworks/ThreeDS_SDK.xcframework; sourceTree = "<group>"; };
 		8F878F9CC1BA26D3B6B188407081D840 /* CountrySelectorViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CountrySelectorViewController.swift; sourceTree = "<group>"; };
 		90FB23D3AABA3B725D67CBEB165F99B0 /* VaultPaymentMethodViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultPaymentMethodViewController.swift; sourceTree = "<group>"; };
 		911EA5142E00A6E6F1F4595B74138251 /* RateLimitedDispatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RateLimitedDispatcher.swift; sourceTree = "<group>"; };
@@ -653,10 +586,8 @@
 		96ECB3DB084D36E41A184B761EC6E329 /* PrimerImage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerImage.swift; sourceTree = "<group>"; };
 		98EF87DA322A7C566BEC18EBBCBC6E8E /* FormPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		98FE9B1D7D475B04085A9027C417DDB6 /* fa.json */ = {isa = PBXFileReference; includeInIndex = 1; path = fa.json; sourceTree = "<group>"; };
-		99F134863728EBADCDC1A1A3FB2D5B4A /* PrimerKlarnaError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PrimerKlarnaError.swift; path = PrimerKlarnaSDK/Classes/PrimerKlarnaError.swift; sourceTree = "<group>"; };
 		9A10400D9B75BEF99616E2780192A864 /* fi.json */ = {isa = PBXFileReference; includeInIndex = 1; path = fi.json; sourceTree = "<group>"; };
 		9AFB8191CC455F8FF54EE0D097229B41 /* AddressField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddressField.swift; sourceTree = "<group>"; };
-		9B39C0B271D6811B2B7E58FCD6BDC6EF /* PrimerKlarnaSDK.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = PrimerKlarnaSDK.modulemap; sourceTree = "<group>"; };
 		9BB9B489EA793105E5CFC0C7D6611E8E /* de.json */ = {isa = PBXFileReference; includeInIndex = 1; path = de.json; sourceTree = "<group>"; };
 		9C49C4737ADC1AE11D6C92AB4C94D814 /* tr.json */ = {isa = PBXFileReference; includeInIndex = 1; path = tr.json; sourceTree = "<group>"; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -688,13 +619,11 @@
 		ADD2BE235C286CF184CF04A678922C99 /* Localizable.strings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AF5052627E87495E86324A745BE1DBFA /* PrimerGenericTextFieldView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerGenericTextFieldView.swift; sourceTree = "<group>"; };
 		B028693406FB623499B4657175261AFD /* DateFormatter+Extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "DateFormatter+Extensions.swift"; sourceTree = "<group>"; };
-		B08DEA8EB3020FA9AB88D6762227F681 /* PrimerKlarnaSDK-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrimerKlarnaSDK-prefix.pch"; sourceTree = "<group>"; };
 		B1403C050F501958A32CF6971282BBDE /* az.json */ = {isa = PBXFileReference; includeInIndex = 1; path = az.json; sourceTree = "<group>"; };
 		B1F7A7C66BF4EEB6C2C3BE591E3B0FB6 /* so.json */ = {isa = PBXFileReference; includeInIndex = 1; path = so.json; sourceTree = "<group>"; };
 		B429083200B13F604ED3C87DFFC0C016 /* Pods-PrimerSDK_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-PrimerSDK_Tests.modulemap"; sourceTree = "<group>"; };
 		B4B375C6BB80B4634483FB1D646DC795 /* VaultService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VaultService.swift; sourceTree = "<group>"; };
 		B4B68DD128B4F7B3345A5EF88EF70166 /* gl.json */ = {isa = PBXFileReference; includeInIndex = 1; path = gl.json; sourceTree = "<group>"; };
-		B4E337B51B85CC143B799CBF0EB220E1 /* PrimerKlarnaSDK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PrimerKlarnaSDK.release.xcconfig; sourceTree = "<group>"; };
 		B6081D87FFBB2C53D182A0D7973D1EB8 /* PrimerHeadlessUniversalCheckout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessUniversalCheckout.swift; sourceTree = "<group>"; };
 		B64CBE7F8A1C1A9F196DB076B0299F79 /* DataExtension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DataExtension.swift; sourceTree = "<group>"; };
 		B7F69F28882C0F4E026B5F819A48F83F /* ca.json */ = {isa = PBXFileReference; includeInIndex = 1; path = ca.json; sourceTree = "<group>"; };
@@ -706,7 +635,6 @@
 		BC09EBF5B51F4F87CE83B52926F52C1F /* nl.json */ = {isa = PBXFileReference; includeInIndex = 1; path = nl.json; sourceTree = "<group>"; };
 		BC4DB9A4EFF356B456975E16772FCA39 /* Localizable.strings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		BCB7FD878EE97288572C43F535120E8F /* AES256.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AES256.swift; sourceTree = "<group>"; };
-		BCF811A9945CC3E79817FD2F680C18E4 /* PrimerKlarnaSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "PrimerKlarnaSDK-Info.plist"; sourceTree = "<group>"; };
 		BF317A7F7A2F3AC9FFAB016E3DBAF86E /* KlarnaTokenizationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KlarnaTokenizationViewModel.swift; sourceTree = "<group>"; };
 		BF8E401E64685E0C1B0A11CBDAB3B70E /* BankTableViewCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BankTableViewCell.swift; sourceTree = "<group>"; };
 		C034D0F87DA9DF1A17407CAB8E7FF44C /* cy.json */ = {isa = PBXFileReference; includeInIndex = 1; path = cy.json; sourceTree = "<group>"; };
@@ -726,10 +654,8 @@
 		CB9D63DA45BDF94F3777108E265F23AF /* AlertController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		CB9EED92C370C43D1E9DF34F8388C6D4 /* Localizable.strings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = pt.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CBC4638E0A1E6C19E8F4AEA18408385B /* sk.json */ = {isa = PBXFileReference; includeInIndex = 1; path = sk.json; sourceTree = "<group>"; };
-		CBDC219497AD557B8AF0C862EA01C9AC /* Primer3DS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Primer3DS-prefix.pch"; sourceTree = "<group>"; };
 		CC72DA8755A1C47A85CD6E2F769CB1F8 /* no.json */ = {isa = PBXFileReference; includeInIndex = 1; path = no.json; sourceTree = "<group>"; };
 		CCE113DC4F04A90505074BE3EE39E0F2 /* is.json */ = {isa = PBXFileReference; includeInIndex = 1; path = is.json; sourceTree = "<group>"; };
-		CD2D2D00E7122E49DA6BE0007BDD6C9B /* KlarnaMobileSDK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = KlarnaMobileSDK.release.xcconfig; sourceTree = "<group>"; };
 		CDC5F23BF15858A2E657497951425DF8 /* bg.json */ = {isa = PBXFileReference; includeInIndex = 1; path = bg.json; sourceTree = "<group>"; };
 		CDF311079BE03B1F2764CB539A761772 /* SuccessResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SuccessResponse.swift; sourceTree = "<group>"; };
 		CE3DB90AD5A4A83AD3C4C8D92C599752 /* et.json */ = {isa = PBXFileReference; includeInIndex = 1; path = et.json; sourceTree = "<group>"; };
@@ -741,7 +667,6 @@
 		D25157354D733D1088F97BC34D2A8F66 /* CoreDataDispatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CoreDataDispatcher.swift; sourceTree = "<group>"; };
 		D2540B46CEFAA9B478C51BFC74475781 /* Endpoint.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		D264B4E57DF7DB00D71275605D100971 /* Pods-PrimerSDK_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-PrimerSDK_Example-frameworks.sh"; sourceTree = "<group>"; };
-		D2D0B76EDEFCB1976FD474198D7123F6 /* KlarnaMobileSDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = KlarnaMobileSDK.debug.xcconfig; sourceTree = "<group>"; };
 		D3472F4E261B2159D24FC329692BE3B4 /* nb.json */ = {isa = PBXFileReference; includeInIndex = 1; path = nb.json; sourceTree = "<group>"; };
 		D3488185F07C2FEAC561F3A8BABE490D /* Identifiable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Identifiable.swift; sourceTree = "<group>"; };
 		D513C2369A46068B3CAEEF63436D8FC4 /* Cancellable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Cancellable.swift; sourceTree = "<group>"; };
@@ -772,7 +697,6 @@
 		E1B945985145643C12B1E91600B680DE /* Pods-PrimerSDK_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrimerSDK_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
 		E23F27F5AC543C112AAF594DD551A6E3 /* CatchWrappers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CatchWrappers.swift; sourceTree = "<group>"; };
 		E28E4A18DD12F49D2D5BB42A3F7CBACF /* CheckoutModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CheckoutModule.swift; sourceTree = "<group>"; };
-		E2C68D058881028F632D3A0BD04CED4F /* KlarnaMobileSDK.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = KlarnaMobileSDK.xcframework; path = ios/XCFramework/full/universal/KlarnaMobileSDK.xcframework; sourceTree = "<group>"; };
 		E31F46C2A7C1A39F894DA36385DA77CD /* sq.json */ = {isa = PBXFileReference; includeInIndex = 1; path = sq.json; sourceTree = "<group>"; };
 		E3805F4532032C2F2CE7DCDDEC0A51A8 /* PrimerTestPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerTestPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		E39790E3B66D84BA99AB143A78E7A509 /* mn.json */ = {isa = PBXFileReference; includeInIndex = 1; path = mn.json; sourceTree = "<group>"; };
@@ -785,13 +709,11 @@
 		E7B35E860609B069C04CD5F1CF4BE483 /* PrimerInputElements.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerInputElements.swift; sourceTree = "<group>"; };
 		E884507DF2B84FA8A2E8AD8289881542 /* Pods-PrimerSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrimerSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
 		E94224699E09708DDA0C8E4A72EAB6CB /* af.json */ = {isa = PBXFileReference; includeInIndex = 1; path = af.json; sourceTree = "<group>"; };
-		E9EAC7EB9FE7EDE5994A9542180DD177 /* Primer3DS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = Primer3DS.modulemap; sourceTree = "<group>"; };
 		E9F2FBC11EADFDC1E5C8F1D37F2025D6 /* PrimerFirstNameFieldView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerFirstNameFieldView.swift; sourceTree = "<group>"; };
 		EAB6F611E86A4758835A715E4B4184F6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		EB3EB4639AFEE0BACC97D3322F63662E /* uk.json */ = {isa = PBXFileReference; includeInIndex = 1; path = uk.json; sourceTree = "<group>"; };
 		EB98441A4D5F5D49382DA7B12D5D1A42 /* PaymentMethodTokenizationViewModel+Logic.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PaymentMethodTokenizationViewModel+Logic.swift"; sourceTree = "<group>"; };
 		ECAABC2DFA86D26985CE6F8A4FF2E1D1 /* mk.json */ = {isa = PBXFileReference; includeInIndex = 1; path = mk.json; sourceTree = "<group>"; };
-		ED4D19F41E80F57FCBCD6FEFFF2D898E /* Primer3DSStructures.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Primer3DSStructures.swift; path = Sources/Primer3DS/Classes/Primer3DSStructures.swift; sourceTree = "<group>"; };
 		ED5A13C606AAB94515C6959B8956A610 /* PrimerAPI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerAPI.swift; sourceTree = "<group>"; };
 		ED7E8A7E912E9457A19C55D59593A9C7 /* StrictRateLimitedDispatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StrictRateLimitedDispatcher.swift; sourceTree = "<group>"; };
 		EDD04451422D0E1C42E8EBE3B144F13C /* PrimerRawData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerRawData.swift; sourceTree = "<group>"; };
@@ -817,10 +739,8 @@
 		F9F0B130720DE07F079CAA0B02E240C3 /* PrimerFormViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerFormViewController.swift; sourceTree = "<group>"; };
 		FCCF16758DB5CD97DDC4D39554BAA4B6 /* uz.json */ = {isa = PBXFileReference; includeInIndex = 1; path = uz.json; sourceTree = "<group>"; };
 		FCFD8FFC1CFA4E5B2F5A9F0050DDE3C0 /* AdyenDotPay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdyenDotPay.swift; sourceTree = "<group>"; };
-		FE0C1FD24F7ECFA7B9140F323CE3E83D /* PrimerKlarnaSDK */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = PrimerKlarnaSDK; path = PrimerKlarnaSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE51D566465FCA02C718220ECED1E6C9 /* CancellableThenable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CancellableThenable.swift; sourceTree = "<group>"; };
 		FFC19A97D8C979E8682F0B0A930D6C17 /* PrimerSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerSettings.swift; sourceTree = "<group>"; };
-		FFE8CD355A453EF1396E2D5E8E370F7A /* Primer3DS */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Primer3DS; path = Primer3DS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -832,27 +752,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		14276B2DCDF2AAA1E6236418C48A7E8A /* Frameworks */ = {
+		1D9B174AACEDA6738DC3E11C850EA48A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E08BBA3D1AD3E67C3B4F3D4E1DD3C865 /* Foundation.framework in Frameworks */,
+				576CBFE7BB80FC46B6F006AE6E711708 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		53C851F440012A9DF56A279E954B8A3C /* Frameworks */ = {
+		62959517BFA8AE1FD9EB4042F8B2D53A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		5E5A7E9862EBBA8DB5500272B7909C0B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				792188862A988C31237DA81868320D2D /* Foundation.framework in Frameworks */,
-				8548D98B63B0CE7C33DA6C183E9A9BF0 /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -862,14 +773,6 @@
 			files = (
 				A631070014675EA0FFEEECBA2564B146 /* Foundation.framework in Frameworks */,
 				0341AA780D964EA383A5924F0DD96EF4 /* UIKit.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9618105836D9332570899F258FDC59DE /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				5665111593674FDB5FC3E20316EE7121 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -942,17 +845,6 @@
 			path = "Sources/PrimerSDK/Classes/Error Handler";
 			sourceTree = "<group>";
 		};
-		145C01B6E800DE8F8990E5A85E864618 /* PrimerKlarnaSDK */ = {
-			isa = PBXGroup;
-			children = (
-				99F134863728EBADCDC1A1A3FB2D5B4A /* PrimerKlarnaError.swift */,
-				63C4A93D500AF0D692B1C329816E74DC /* PrimerKlarnaViewController.swift */,
-				8A0548FE355B5C8200AFA95A3FB460B7 /* Support Files */,
-			);
-			name = PrimerKlarnaSDK;
-			path = PrimerKlarnaSDK;
-			sourceTree = "<group>";
-		};
 		1628BF05B4CAFDCC3549A101F5A10A17 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1014,29 +906,6 @@
 			);
 			name = TestPaymentMethods;
 			path = TestPaymentMethods;
-			sourceTree = "<group>";
-		};
-		267E984F08EEA76029978CB0B7F65BBA /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4D3869E0A461E802A5916AA6523517A4 /* Pods-PrimerSDK_Example */,
-				23FD1D157B8C8E7148BE8A7D354A051F /* Pods-PrimerSDK_Tests */,
-				FFE8CD355A453EF1396E2D5E8E370F7A /* Primer3DS */,
-				FE0C1FD24F7ECFA7B9140F323CE3E83D /* PrimerKlarnaSDK */,
-				28E47791C9F9D0A9BA05C719761A4F3F /* PrimerSDK */,
-				A8B3BC107C2BDC3C03D961866F721265 /* PrimerSDK-PrimerResources */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		2AF240E5078895EB7F3D2ECF35D4646F /* KlarnaMobileSDK */ = {
-			isa = PBXGroup;
-			children = (
-				4FBADD3F71B9FAC6ECE28297D036CB88 /* full */,
-				9FE94AB74B6B21B8B13CB1371302D061 /* Support Files */,
-			);
-			name = KlarnaMobileSDK;
-			path = KlarnaMobileSDK;
 			sourceTree = "<group>";
 		};
 		2E22B7CAB1353DF67FA6CF022491A931 /* Countries */ = {
@@ -1229,14 +1098,6 @@
 			path = PCI;
 			sourceTree = "<group>";
 		};
-		4FBADD3F71B9FAC6ECE28297D036CB88 /* full */ = {
-			isa = PBXGroup;
-			children = (
-				DC34A022E3EE67EDED995ED6E05A02E8 /* Frameworks */,
-			);
-			name = full;
-			sourceTree = "<group>";
-		};
 		554207FB3C775EA2EE06388A0261BF3C /* Dispatchers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1278,6 +1139,17 @@
 				D245E0514AAC1A2B9A6D5EA2F383E90F /* UIKit.framework */,
 			);
 			name = iOS;
+			sourceTree = "<group>";
+		};
+		5E7CEBBE4BB56B730A515810549B52D9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4D3869E0A461E802A5916AA6523517A4 /* Pods-PrimerSDK_Example */,
+				23FD1D157B8C8E7148BE8A7D354A051F /* Pods-PrimerSDK_Tests */,
+				28E47791C9F9D0A9BA05C719761A4F3F /* PrimerSDK */,
+				A8B3BC107C2BDC3C03D961866F721265 /* PrimerSDK-PrimerResources */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		623627116F9181DAAFBB037FA6D7EA9E /* Cancellation */ = {
@@ -1334,14 +1206,6 @@
 			path = Networking;
 			sourceTree = "<group>";
 		};
-		7C81475A68F5427A291063C94BD8A56D /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				8E6C92F959BA31C3D221D4866DB079C1 /* ThreeDS_SDK.xcframework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		7E0021F1810848B543FAF68A6834F64F /* CardScanner */ = {
 			isa = PBXGroup;
 			children = (
@@ -1350,22 +1214,6 @@
 			);
 			name = CardScanner;
 			path = CardScanner;
-			sourceTree = "<group>";
-		};
-		7FA56E6B404F12940A08B543E86226BD /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				E9EAC7EB9FE7EDE5994A9542180DD177 /* Primer3DS.modulemap */,
-				6CEAB2EBE2E0EE09B023C208B5FA250F /* Primer3DS-dummy.m */,
-				12840CD793D612F9BBC0C4A1D884EBE1 /* Primer3DS-Info.plist */,
-				CBDC219497AD557B8AF0C862EA01C9AC /* Primer3DS-prefix.pch */,
-				301B5A7EDA2CB3339D636F18080D1A29 /* Primer3DS-umbrella.h */,
-				4122CEAC5CE2D854AC73C2DAD498BD3F /* Primer3DS-xcframeworks.sh */,
-				08417C8E26C7764C623F4EFCBE91229C /* Primer3DS.debug.xcconfig */,
-				8A7192185507781FF13210BB8B4EE995 /* Primer3DS.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/Primer3DS";
 			sourceTree = "<group>";
 		};
 		884ACBD4BED74017F1E8F7C92798F43E /* Pod */ = {
@@ -1416,21 +1264,6 @@
 			);
 			name = PCI;
 			path = PCI;
-			sourceTree = "<group>";
-		};
-		8A0548FE355B5C8200AFA95A3FB460B7 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				9B39C0B271D6811B2B7E58FCD6BDC6EF /* PrimerKlarnaSDK.modulemap */,
-				685CD74CF750C9A0D8E3A4CF195BB703 /* PrimerKlarnaSDK-dummy.m */,
-				BCF811A9945CC3E79817FD2F680C18E4 /* PrimerKlarnaSDK-Info.plist */,
-				B08DEA8EB3020FA9AB88D6762227F681 /* PrimerKlarnaSDK-prefix.pch */,
-				8DFC2D894C02D6F132704B59C2C157EA /* PrimerKlarnaSDK-umbrella.h */,
-				880C58F3BD086593B4FD06659B102A5B /* PrimerKlarnaSDK.debug.xcconfig */,
-				B4E337B51B85CC143B799CBF0EB220E1 /* PrimerKlarnaSDK.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/PrimerKlarnaSDK";
 			sourceTree = "<group>";
 		};
 		8BA3257B983C774F6554CF3D80B2F395 /* Primer */ = {
@@ -1576,17 +1409,6 @@
 			);
 			name = 3DS;
 			path = 3DS;
-			sourceTree = "<group>";
-		};
-		9FE94AB74B6B21B8B13CB1371302D061 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				349F05576626C2DCC2E3DD39EB5DFCBB /* KlarnaMobileSDK-xcframeworks.sh */,
-				D2D0B76EDEFCB1976FD474198D7123F6 /* KlarnaMobileSDK.debug.xcconfig */,
-				CD2D2D00E7122E49DA6BE0007BDD6C9B /* KlarnaMobileSDK.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/KlarnaMobileSDK";
 			sourceTree = "<group>";
 		};
 		A15358C888FD6D55D7A70D772FFEEC81 /* PrimerSDK */ = {
@@ -1770,16 +1592,6 @@
 			path = Sources/PrimerSDK/Classes/Mocks;
 			sourceTree = "<group>";
 		};
-		C8C61AD67B3F21015552F1CB96D98EDD /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				2AF240E5078895EB7F3D2ECF35D4646F /* KlarnaMobileSDK */,
-				D82E2BC887C458B1BF322D087D9825E2 /* Primer3DS */,
-				145C01B6E800DE8F8990E5A85E864618 /* PrimerKlarnaSDK */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		C99317E726DB0D5CA94A6EFE2CA8C63E /* Pods-PrimerSDK_Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -1811,8 +1623,7 @@
 				9D940727FF8FB9C785EB98E56350EF41 /* Podfile */,
 				7247ACD97AB79769C7D29E910A7E0D09 /* Development Pods */,
 				1628BF05B4CAFDCC3549A101F5A10A17 /* Frameworks */,
-				C8C61AD67B3F21015552F1CB96D98EDD /* Pods */,
-				267E984F08EEA76029978CB0B7F65BBA /* Products */,
+				5E7CEBBE4BB56B730A515810549B52D9 /* Products */,
 				56409D50D0FA1C19C592518252ACCB45 /* Targets Support Files */,
 			);
 			sourceTree = "<group>";
@@ -1847,19 +1658,6 @@
 			path = Wrappers;
 			sourceTree = "<group>";
 		};
-		D82E2BC887C458B1BF322D087D9825E2 /* Primer3DS */ = {
-			isa = PBXGroup;
-			children = (
-				1A8CB8CE45D30504283FFDC3DAB1D9C0 /* Primer3DS.swift */,
-				53A27D35F8BB160AE5587EF0534270B8 /* Primer3DSProtocols.swift */,
-				ED4D19F41E80F57FCBCD6FEFFF2D898E /* Primer3DSStructures.swift */,
-				7C81475A68F5427A291063C94BD8A56D /* Frameworks */,
-				7FA56E6B404F12940A08B543E86226BD /* Support Files */,
-			);
-			name = Primer3DS;
-			path = Primer3DS;
-			sourceTree = "<group>";
-		};
 		DC341534F0F751E90DBE9F9F51531A54 /* Pods-PrimerSDK_Example */ = {
 			isa = PBXGroup;
 			children = (
@@ -1875,14 +1673,6 @@
 			);
 			name = "Pods-PrimerSDK_Example";
 			path = "Target Support Files/Pods-PrimerSDK_Example";
-			sourceTree = "<group>";
-		};
-		DC34A022E3EE67EDED995ED6E05A02E8 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				E2C68D058881028F632D3A0BD04CED4F /* KlarnaMobileSDK.xcframework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		E76D65EE50894A0F9D26F492BE664668 /* Modules */ = {
@@ -1953,11 +1743,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		84058D7A8DF91B08D110BEFF1977D488 /* Headers */ = {
+		B505DDFEE93DC1748F675172121C6F28 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				32D4F85BE1557ED62536344CFAB75F88 /* Primer3DS-umbrella.h in Headers */,
+				4A94BB65671FE4DB0D4E62FFD9F191BB /* Pods-PrimerSDK_Example-umbrella.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1969,14 +1759,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C3775D9D25442F5F4A7B04B025F5B605 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				275AA6983AC26CAF096BD747E1133FC8 /* Pods-PrimerSDK_Example-umbrella.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		DA0A39FBF2F7BA2C8FD218CE456C1E87 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1985,36 +1767,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EB0092A2608F19645A684D0E0B4B86C4 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E3A63C8A25987DAB9BC3208333CAB074 /* PrimerKlarnaSDK-umbrella.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		46078E413137E8360E17944FC2E93839 /* PrimerKlarnaSDK */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = FC9F77E16A0C1875619AD7BE79476080 /* Build configuration list for PBXNativeTarget "PrimerKlarnaSDK" */;
-			buildPhases = (
-				EB0092A2608F19645A684D0E0B4B86C4 /* Headers */,
-				2984B6F2EDEB166D0C2B3057D92B211E /* Sources */,
-				14276B2DCDF2AAA1E6236418C48A7E8A /* Frameworks */,
-				B05A921B3303D0651D855D514C0809AF /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				49A03BB70A93115C1D1769804A05E57C /* PBXTargetDependency */,
-			);
-			name = PrimerKlarnaSDK;
-			productName = PrimerKlarnaSDK;
-			productReference = FE0C1FD24F7ECFA7B9140F323CE3E83D /* PrimerKlarnaSDK */;
-			productType = "com.apple.product-type.framework";
-		};
 		6849240CBB3AA7809D185A43939876BA /* Pods-PrimerSDK_Tests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DB74BC4B5C5930D4C8F1AC03B808A393 /* Build configuration list for PBXNativeTarget "Pods-PrimerSDK_Tests" */;
@@ -2027,7 +1782,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				CB71793C38681D03203A68717987D05A /* PBXTargetDependency */,
+				1157D8F3015AF2A4FB013F07174332AB /* PBXTargetDependency */,
 			);
 			name = "Pods-PrimerSDK_Tests";
 			productName = Pods_PrimerSDK_Tests;
@@ -2036,20 +1791,17 @@
 		};
 		6C144A762E9B598392AFFEC8F873746A /* Pods-PrimerSDK_Example */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E5BB70981E47B8AB247898B186634257 /* Build configuration list for PBXNativeTarget "Pods-PrimerSDK_Example" */;
+			buildConfigurationList = F978C8F95E406B727BEB461AF06CD6F7 /* Build configuration list for PBXNativeTarget "Pods-PrimerSDK_Example" */;
 			buildPhases = (
-				C3775D9D25442F5F4A7B04B025F5B605 /* Headers */,
-				2F8105E229A6EE5FBF891CBB399AB72E /* Sources */,
-				9618105836D9332570899F258FDC59DE /* Frameworks */,
-				C60452CE6933B062006A86D5725ACF96 /* Resources */,
+				B505DDFEE93DC1748F675172121C6F28 /* Headers */,
+				56F8E0C396EEBAF4EEB6D438222BB63E /* Sources */,
+				1D9B174AACEDA6738DC3E11C850EA48A /* Frameworks */,
+				B8B3E98238C88B12A3ECD2AAB9D724AD /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				412508A1BD20A68416FCA98E963721F7 /* PBXTargetDependency */,
-				52D6D8658A51FA5DFA2C6D3EC4A7C83E /* PBXTargetDependency */,
-				D864C0FB253B2071BB0AD3DCB373F340 /* PBXTargetDependency */,
-				BDFD0343634E8E4778019663CA5FE640 /* PBXTargetDependency */,
+				8C7B052C98B04A94101E51AA43AAACFE /* PBXTargetDependency */,
 			);
 			name = "Pods-PrimerSDK_Example";
 			productName = Pods_PrimerSDK_Example;
@@ -2058,11 +1810,11 @@
 		};
 		6E6525C7043FBA7BB34A249010AF5593 /* PrimerSDK-PrimerResources */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5310914E17B9CC7AA0A4C9F03BD4A419 /* Build configuration list for PBXNativeTarget "PrimerSDK-PrimerResources" */;
+			buildConfigurationList = 1B18406B6131077FE780D4C75C7252C3 /* Build configuration list for PBXNativeTarget "PrimerSDK-PrimerResources" */;
 			buildPhases = (
-				CA65F78C14F34ACEA782ED0DE0B760CA /* Sources */,
-				53C851F440012A9DF56A279E954B8A3C /* Frameworks */,
-				EBCE95A08197AC7537C3A5D13334A087 /* Resources */,
+				3E44B0B58D38221A2DCECC95CC0EA620 /* Sources */,
+				62959517BFA8AE1FD9EB4042F8B2D53A /* Frameworks */,
+				2CFF93743DC336DEED75B599DC23A8C8 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -2072,25 +1824,6 @@
 			productName = PrimerResources;
 			productReference = A8B3BC107C2BDC3C03D961866F721265 /* PrimerSDK-PrimerResources */;
 			productType = "com.apple.product-type.bundle";
-		};
-		6F5F0A81CAE773CFE5371059A81B5B6A /* Primer3DS */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 6004DC48EAFFC21734C2180D1DDDFCC5 /* Build configuration list for PBXNativeTarget "Primer3DS" */;
-			buildPhases = (
-				84058D7A8DF91B08D110BEFF1977D488 /* Headers */,
-				73BC8E4B06FD50D4A4E6FE3D1F4951F9 /* [CP] Copy XCFrameworks */,
-				773BF85567A4D1EF16790CE8A8E7CAD4 /* Sources */,
-				5E5A7E9862EBBA8DB5500272B7909C0B /* Frameworks */,
-				B8E52586E0F3D75F547E77A32AA52133 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = Primer3DS;
-			productName = Primer3DS;
-			productReference = FFE8CD355A453EF1396E2D5E8E370F7A /* Primer3DS */;
-			productType = "com.apple.product-type.framework";
 		};
 		F3BE9108C53B53949406218CEA55E0B2 /* PrimerSDK */ = {
 			isa = PBXNativeTarget;
@@ -2104,7 +1837,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				C0D4D3B65ABD452642CBE7EDB6A733AE /* PBXTargetDependency */,
+				430DB74F275B8783D8D46D97181DE64E /* PBXTargetDependency */,
 			);
 			name = PrimerSDK;
 			productName = PrimerSDK;
@@ -2142,15 +1875,12 @@
 				tr,
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
-			productRefGroup = 267E984F08EEA76029978CB0B7F65BBA /* Products */;
+			productRefGroup = 5E7CEBBE4BB56B730A515810549B52D9 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CED402C355914FFED9773C1549264B8C /* KlarnaMobileSDK */,
 				6C144A762E9B598392AFFEC8F873746A /* Pods-PrimerSDK_Example */,
 				6849240CBB3AA7809D185A43939876BA /* Pods-PrimerSDK_Tests */,
-				6F5F0A81CAE773CFE5371059A81B5B6A /* Primer3DS */,
-				46078E413137E8360E17944FC2E93839 /* PrimerKlarnaSDK */,
 				F3BE9108C53B53949406218CEA55E0B2 /* PrimerSDK */,
 				6E6525C7043FBA7BB34A249010AF5593 /* PrimerSDK-PrimerResources */,
 			);
@@ -2158,6 +1888,91 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2CFF93743DC336DEED75B599DC23A8C8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A75139FE56E27ECB0FF0B487EA149A4 /* af.json in Resources */,
+				E6516CFDF9C535ED71BF0326088A21D9 /* am.json in Resources */,
+				1C26E74DC4FC53ABEAD52C2A39C856F1 /* ar.json in Resources */,
+				21BCFCCAA713C31B1816C0F36BF7AB25 /* az.json in Resources */,
+				2DECDF00F4B8DC8FE15622A2B513B973 /* be.json in Resources */,
+				D58F289B245AAC1C4991D29158504DAE /* bg.json in Resources */,
+				2BAF59D709E1ED410E8AC5C5C457C58E /* bn.json in Resources */,
+				0FD8E392D59C2F19632ACA045182FA4E /* bs.json in Resources */,
+				64A35ADDE1C8498EC0E786CB7A2B8FBF /* ca.json in Resources */,
+				9E8BD235A3309CD40636DB409D6393C1 /* cs.json in Resources */,
+				7DF23932778CFC36A9CAFD9B365F05E1 /* currencies.json in Resources */,
+				12810584C870D1D8BC42F07C2332B6CA /* cy.json in Resources */,
+				33E439CA6274C563923E962F3E3DD66F /* da.json in Resources */,
+				2DD613AE54ACBFC3CC3B5A6E6951889E /* de.json in Resources */,
+				6CB2EB4E8AA742B6379AE50ACDBACCC6 /* dv.json in Resources */,
+				0041A7EDD25F9FACDBD733AF6C833A88 /* el.json in Resources */,
+				4C643CD1676069BEDAF746E10BE8FEB3 /* en.json in Resources */,
+				856A391168D501242CB1BA8F2AB07685 /* es.json in Resources */,
+				E5910AF2E6178D507716E58348C7C035 /* et.json in Resources */,
+				11303F72E58C66C27C79D30B7425190D /* eu.json in Resources */,
+				928A7EDD88459F127F32643B08E913D6 /* fa.json in Resources */,
+				46FEE9AA8B49101516379F258BF2C9A6 /* fi.json in Resources */,
+				5F2BF9B296125B5EA5942AA49D23C957 /* fr.json in Resources */,
+				1A4644EC4D0B5219E4C517206DC73F7D /* gl.json in Resources */,
+				360E0EAE1341A6C51FF2FF17B9BABE1A /* ha.json in Resources */,
+				43831D7620D32EABD186CC30D858D10D /* he.json in Resources */,
+				543D841CFFB4195B432B93D3C591F6C3 /* hi.json in Resources */,
+				89F1EC1CC42396E8512E363EEB1411CC /* hr.json in Resources */,
+				2915C445D8976F9096A26F98E028DA5C /* hu.json in Resources */,
+				5F64062980E575568DD7870CC882ABDD /* hy.json in Resources */,
+				D5EEA975748EC131A3BF3B3AF1AB4E22 /* Icons.xcassets in Resources */,
+				46AA00FE0542D64B258E785EB57D9A99 /* id.json in Resources */,
+				C526CD6C82A8A97F70494A649675CACE /* is.json in Resources */,
+				FB746B91C9B3AB6FFE526273ECA8EF47 /* it.json in Resources */,
+				CBB26980E1531A212C32F4264AE75F53 /* ja.json in Resources */,
+				8D2041CC8435E5C310E3E3ADFE0D0E36 /* ka.json in Resources */,
+				9E2C69E7093CB5683BF75811065C8F54 /* kk.json in Resources */,
+				B7E92C68D1D33C8F732407BE0FC0206D /* km.json in Resources */,
+				6D3EA3E307231D647D69E9D5DD0859D0 /* ko.json in Resources */,
+				2E53918EE2C4ACAFA668E65BCAB0B78A /* ku.json in Resources */,
+				74C6EF85D678BC2D21014B0DEE0CE89C /* ky.json in Resources */,
+				24F752A013A9460A7F8BB187710C164E /* Localizable.strings in Resources */,
+				99A5099416D0726AB2D081EF39F56C99 /* lt.json in Resources */,
+				DC0DB9336742441ED5C103CFC95885B0 /* lv.json in Resources */,
+				A74C036470C14A970FBAE550E4ECD510 /* mk.json in Resources */,
+				EE3DE3E85B700E098BB7C3635AEFDBCE /* ml.json in Resources */,
+				D026FE8D61614BB0BE51934B200B4F05 /* mn.json in Resources */,
+				A6A82516FBED3C2B4ACBC47623E71FAB /* ms.json in Resources */,
+				040A9D35AC1F7DBEC25A7C639C712E2B /* nb.json in Resources */,
+				25E248124681E2C581D0827207CCE1EA /* nl.json in Resources */,
+				603339B29E7CC701285DB9373E114178 /* nn.json in Resources */,
+				2FF3AB94BA5E4C2556C3E7E1AF6D085C /* no.json in Resources */,
+				B11D8DF98412916EE47D6FB1E0732E60 /* phone_number_country_codes.json in Resources */,
+				C6EDDE4B4FAF1571DB1CEA64003F6C61 /* pl.json in Resources */,
+				A6BE3DAED4F653EE4844F6A4B61E2A7D /* PrimerTextFieldView.xib in Resources */,
+				4D6A3DAA7FFD0A4425E02D895BC96E6B /* ps.json in Resources */,
+				579A0FE829E00B5D6805BBC2558E781B /* pt.json in Resources */,
+				F620E8E93CEC95CD42A8DC1457F613C6 /* ro.json in Resources */,
+				7DF03F8B093D96EF027C8F64406F2076 /* ru.json in Resources */,
+				C5F06300C0838975B3DCC3440376BDD7 /* sd.json in Resources */,
+				3393AFBA46D496541B3DE13486959776 /* sk.json in Resources */,
+				CF905EA40A32127104C8DA37162A7724 /* sl.json in Resources */,
+				8C59D12C7F7535427B4C86E766FFDD4F /* so.json in Resources */,
+				2DBDC958FF5C90355C97408BA07773B5 /* sq.json in Resources */,
+				D969C2EDECEBA03549083B8B1BADD026 /* sr.json in Resources */,
+				130BC1452FD10DCDE7E7DB8B3A23EEFC /* sv.json in Resources */,
+				2E118E63C99F4713767D3FFE58E04FC9 /* sw.json in Resources */,
+				00FAA1A471E2440368098C3228D90175 /* ta.json in Resources */,
+				F2FD7836F640220E6461C1F41EA0F7EC /* tg.json in Resources */,
+				8EE8C7EE25E1D40CB06C8D183659E53E /* th.json in Resources */,
+				885D181F39003EE6970A188092BF02CE /* tr.json in Resources */,
+				383EB13520B7EE9CFD118C68EAEFB833 /* tt.json in Resources */,
+				D48850E614CA23D6AE62196DE54B514C /* ug.json in Resources */,
+				FFE4FA0676BFBB7FAF69B47C1BBB5F84 /* uk.json in Resources */,
+				29801D2C35EF62CC0B9AFD70DAC6AE82 /* ur.json in Resources */,
+				BDED687DA4A4F646117EAC9C159FC36E /* uz.json in Resources */,
+				681CEBE98F731A18021211CBC26AEBD6 /* vi.json in Resources */,
+				AB7FED54C48494B99DC7EDE970925B7A /* zh.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3555CD6FF689702A32A86FF5DA44364D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2173,152 +1988,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B05A921B3303D0651D855D514C0809AF /* Resources */ = {
+		B8B3E98238C88B12A3ECD2AAB9D724AD /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B8E52586E0F3D75F547E77A32AA52133 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C60452CE6933B062006A86D5725ACF96 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EBCE95A08197AC7537C3A5D13334A087 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				06C4D5D304D06DDFE56CA03D080A5193 /* af.json in Resources */,
-				DA1B19CA3BCFE454EF63C513EE4C22EE /* am.json in Resources */,
-				A4757498A911F77AEF3BD8736EC1BD42 /* ar.json in Resources */,
-				B0FF0B9089D9375FAC556ABC9EF18CE9 /* az.json in Resources */,
-				3CB00A8718E19DD31E39640A38DC612C /* be.json in Resources */,
-				D826B39D72343E0872FCF32CC0471674 /* bg.json in Resources */,
-				8E3F4975CA6911369E8F3D13A7EE919C /* bn.json in Resources */,
-				25AB7C1A38A7602039C983E6A2C1DBB0 /* bs.json in Resources */,
-				4ABBDB768FCF59B25E6235DE01B89868 /* ca.json in Resources */,
-				2B5BECAAA368250C903D4B23587C1E38 /* cs.json in Resources */,
-				44456026950ED31C3717835984331175 /* currencies.json in Resources */,
-				1E711C177A6A245DDF2AF55A080B5812 /* cy.json in Resources */,
-				01E6EC4BC7DAAED69EA4F46E831E63F4 /* da.json in Resources */,
-				CF19B87D58F33E9B2DFC0B4526B210D5 /* de.json in Resources */,
-				C8A1713FFC4CCD163EF410A75FEB7866 /* dv.json in Resources */,
-				3CDD0125F05B59CF6D448A71F998AF44 /* el.json in Resources */,
-				C03A659CEFFBD410D3C55FB9DB1745AE /* en.json in Resources */,
-				DE93C7ED2C43E63DF5EACA2CC8FD9AFD /* es.json in Resources */,
-				FDDEDDF319CAA4EBE5FA914B307DEB9C /* et.json in Resources */,
-				687DDE0C02E7F22AC1B430CC96178E9F /* eu.json in Resources */,
-				70045C39E48BB395316861B57650BC1B /* fa.json in Resources */,
-				DCFD39DFA2D0666AEADFA8FC8FF9B4DF /* fi.json in Resources */,
-				C4AD869FA9D525B59061604610F42ECB /* fr.json in Resources */,
-				8AD7038F9F76D050C90B81C94FA09595 /* gl.json in Resources */,
-				F865AD8A661661902E8AB43C5714AE82 /* ha.json in Resources */,
-				9BEC7147BEB0432B823713A35A66FD0A /* he.json in Resources */,
-				51EC7CAB86F5B1A2E9B69E72E8205B0C /* hi.json in Resources */,
-				85B48F2503532A6F80F906C77BCAE900 /* hr.json in Resources */,
-				EA36A744FD5CE7A385B26AAB43746EAB /* hu.json in Resources */,
-				7BB0D5BD0F05F2DFDA5EF429CD504390 /* hy.json in Resources */,
-				0040219C168B42A417AB9BE2CE22722F /* Icons.xcassets in Resources */,
-				A30D9E9A7FCFAC59E45AE13380B71907 /* id.json in Resources */,
-				BF41D39F8D956987C2EACE72659E4E81 /* is.json in Resources */,
-				3433496F900E4AF1989E3BB2DE33D7EF /* it.json in Resources */,
-				6B738910612E22ACFA90FD0FC4C1F444 /* ja.json in Resources */,
-				3ED850508C13EBDEED78A9ABF0B31AC3 /* ka.json in Resources */,
-				FDACE06D8CE70BDDF3D6CF5AC871AE23 /* kk.json in Resources */,
-				0E0D4AB7C334C1E75F3D4BCCB60EE7A0 /* km.json in Resources */,
-				00B039509D8BC2255E1F4C3019702A32 /* ko.json in Resources */,
-				14C8A64CB2E14699CDCE19EDAEE6E816 /* ku.json in Resources */,
-				E148D38022651BDBE414684996EFE873 /* ky.json in Resources */,
-				4C630E0FC2D18411CE395F64DBC36323 /* Localizable.strings in Resources */,
-				0A03DBCE7A72A4180F46ADB6C8AB1494 /* lt.json in Resources */,
-				DCEB332F720B36DB48FC3479ADEB859E /* lv.json in Resources */,
-				A158D14F17C0B75A92239CEEF891D8F5 /* mk.json in Resources */,
-				9BE11FCF1F54DBE1BFB08E8565CE3BBE /* ml.json in Resources */,
-				CA6D5707C3DA74B6F071385893001C2C /* mn.json in Resources */,
-				C79A2639B9A99790EFEB8CC350D513D4 /* ms.json in Resources */,
-				68ACB37F510881672306BD77106AEF4A /* nb.json in Resources */,
-				C33FB4A4939BACAD1BC8D994E202B1BE /* nl.json in Resources */,
-				78A45B63E32B2574A09F4CD4398D6637 /* nn.json in Resources */,
-				0417BB72CC6FC13B2F2451DF3688FEAC /* no.json in Resources */,
-				47142F8BA06FB701D79FBEBD44727477 /* phone_number_country_codes.json in Resources */,
-				C7A133B4831C1FB5ED7319CE09BBF859 /* pl.json in Resources */,
-				285BF017C233144099FFB32869607859 /* PrimerTextFieldView.xib in Resources */,
-				65E5E24033614E8E4EC02F1B036EA8FA /* ps.json in Resources */,
-				2B2D3D5EA26F3C20F5CBD4CC5F5ABD45 /* pt.json in Resources */,
-				A4E9464AEE494EBE027ACAA1365F7947 /* ro.json in Resources */,
-				A1EBFD186115AC5CDC1BA6E6F6651643 /* ru.json in Resources */,
-				E62E6688F3834B60B6B4331A4D50B4B0 /* sd.json in Resources */,
-				494836CEB5F7E66F8F4B9EFE8CA9EE53 /* sk.json in Resources */,
-				B994C1E5532577B624F57A2836171398 /* sl.json in Resources */,
-				B255BAC161796DC3AC726D3207434E7F /* so.json in Resources */,
-				434F4A7728202FD2B63145DDD0A0C9DB /* sq.json in Resources */,
-				B69E030E48C99F075D009821D1D87170 /* sr.json in Resources */,
-				FC9E18C529B5E0FB01757553B7240419 /* sv.json in Resources */,
-				503DF39E5AAAA436C30DDE2E8D295976 /* sw.json in Resources */,
-				E2B45040A411B72BBECB1A4205DF3F9D /* ta.json in Resources */,
-				07EB4A1F9EDBBBA52FAD9B10CC2301CB /* tg.json in Resources */,
-				F1F757002C4B4E0475D172F1BFE4E879 /* th.json in Resources */,
-				1A55ADC77B85B00B4306DF95163AAF12 /* tr.json in Resources */,
-				07A66FBCCC98CCD6F6C62141EBC3B45B /* tt.json in Resources */,
-				89515CAF60010A5898FD78EE985CD8E0 /* ug.json in Resources */,
-				0FD976632718C48DFC117268D0621C33 /* uk.json in Resources */,
-				DA1C66860244BBF918163D5F82BE505A /* ur.json in Resources */,
-				91422F5566656A36BFD3E5AB238088EF /* uz.json in Resources */,
-				1569AED69F5C15DF7286FE98C91315A3 /* vi.json in Resources */,
-				12369F997272A8DAEDE437479B14B4D2 /* zh.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		4A00A7D1D023D7CDC6A969AED97D1845 /* [CP] Copy XCFrameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/KlarnaMobileSDK/KlarnaMobileSDK-xcframeworks.sh",
-				"${PODS_ROOT}/KlarnaMobileSDK/ios/XCFramework/full/universal/KlarnaMobileSDK.xcframework",
-			);
-			name = "[CP] Copy XCFrameworks";
-			outputPaths = (
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/KlarnaMobileSDK/full/KlarnaMobileSDK.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/KlarnaMobileSDK/KlarnaMobileSDK-xcframeworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		73BC8E4B06FD50D4A4E6FE3D1F4951F9 /* [CP] Copy XCFrameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Primer3DS/Primer3DS-xcframeworks.sh",
-				"${PODS_ROOT}/Primer3DS/Sources/Frameworks/ThreeDS_SDK.xcframework",
-			);
-			name = "[CP] Copy XCFrameworks";
-			outputPaths = (
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Primer3DS/ThreeDS_SDK.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Primer3DS/Primer3DS-xcframeworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		297586DE30D9DB3FBD3851FE22CF4275 /* Sources */ = {
@@ -2575,39 +2252,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2984B6F2EDEB166D0C2B3057D92B211E /* Sources */ = {
+		3E44B0B58D38221A2DCECC95CC0EA620 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				955B62FB6DF16FB118E198F3FFF1ACD3 /* PrimerKlarnaError.swift in Sources */,
-				C475DB550CC6CAEDCFDD8DCB7BD5ED01 /* PrimerKlarnaSDK-dummy.m in Sources */,
-				0BA32CC65B041E67103CC872C8F5472B /* PrimerKlarnaViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2F8105E229A6EE5FBF891CBB399AB72E /* Sources */ = {
+		56F8E0C396EEBAF4EEB6D438222BB63E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC2FFC7C3D93904F61210B9843433F7B /* Pods-PrimerSDK_Example-dummy.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		773BF85567A4D1EF16790CE8A8E7CAD4 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8DCD5215EFE7493AFC08C496176C410D /* Primer3DS.swift in Sources */,
-				F4B688753C11BA192EC0E3E61A466CB2 /* Primer3DS-dummy.m in Sources */,
-				178443E9C88007877F57C1552C9AE76E /* Primer3DSProtocols.swift in Sources */,
-				3EB7A6B9A397005CB3B77FDC9DA30691 /* Primer3DSStructures.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CA65F78C14F34ACEA782ED0DE0B760CA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				F6FCEA41B7D4A17FD20C345E86296343 /* Pods-PrimerSDK_Example-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2622,47 +2278,23 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		412508A1BD20A68416FCA98E963721F7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = KlarnaMobileSDK;
-			target = CED402C355914FFED9773C1549264B8C /* KlarnaMobileSDK */;
-			targetProxy = FB05DC88BD6FFEC3031154645324E003 /* PBXContainerItemProxy */;
-		};
-		49A03BB70A93115C1D1769804A05E57C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = KlarnaMobileSDK;
-			target = CED402C355914FFED9773C1549264B8C /* KlarnaMobileSDK */;
-			targetProxy = A18C8134F85E1D4624E1DC42E55FCAAA /* PBXContainerItemProxy */;
-		};
-		52D6D8658A51FA5DFA2C6D3EC4A7C83E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Primer3DS;
-			target = 6F5F0A81CAE773CFE5371059A81B5B6A /* Primer3DS */;
-			targetProxy = DFAD647D851BC800A495ED202D751940 /* PBXContainerItemProxy */;
-		};
-		BDFD0343634E8E4778019663CA5FE640 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = PrimerSDK;
-			target = F3BE9108C53B53949406218CEA55E0B2 /* PrimerSDK */;
-			targetProxy = 41F3213F1EE0BD0FC756CF488C762486 /* PBXContainerItemProxy */;
-		};
-		C0D4D3B65ABD452642CBE7EDB6A733AE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "PrimerSDK-PrimerResources";
-			target = 6E6525C7043FBA7BB34A249010AF5593 /* PrimerSDK-PrimerResources */;
-			targetProxy = 55385F83FC3248291C1BCD70B001861B /* PBXContainerItemProxy */;
-		};
-		CB71793C38681D03203A68717987D05A /* PBXTargetDependency */ = {
+		1157D8F3015AF2A4FB013F07174332AB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Pods-PrimerSDK_Example";
 			target = 6C144A762E9B598392AFFEC8F873746A /* Pods-PrimerSDK_Example */;
-			targetProxy = 482407F8A66B41C7EC2A8B7D86776A65 /* PBXContainerItemProxy */;
+			targetProxy = AF313164FE6CB22FFDF29E98CAD8FDA7 /* PBXContainerItemProxy */;
 		};
-		D864C0FB253B2071BB0AD3DCB373F340 /* PBXTargetDependency */ = {
+		430DB74F275B8783D8D46D97181DE64E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = PrimerKlarnaSDK;
-			target = 46078E413137E8360E17944FC2E93839 /* PrimerKlarnaSDK */;
-			targetProxy = D845B604FF640F0FE99E76846E563DD9 /* PBXContainerItemProxy */;
+			name = "PrimerSDK-PrimerResources";
+			target = 6E6525C7043FBA7BB34A249010AF5593 /* PrimerSDK-PrimerResources */;
+			targetProxy = F35827C4A26319ACEB5019862D5E9E56 /* PBXContainerItemProxy */;
+		};
+		8C7B052C98B04A94101E51AA43AAACFE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PrimerSDK;
+			target = F3BE9108C53B53949406218CEA55E0B2 /* PrimerSDK */;
+			targetProxy = 81BE7E8434F1DB0940646703D904E5C3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2692,6 +2324,40 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		03819C216E03F02851FE5D2175E38393 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E884507DF2B84FA8A2E8AD8289881542 /* Pods-PrimerSDK_Example.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		05B9E071CFCA1E8A62F14905A80EE6EF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DF6E4F8E7C26A7BBEC17AAD4042A317D /* Pods-PrimerSDK_Tests.debug.xcconfig */;
@@ -2725,21 +2391,6 @@
 			};
 			name = Debug;
 		};
-		09A52D54A967D521D32A55FABBFAFA8F /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CD2D2D00E7122E49DA6BE0007BDD6C9B /* KlarnaMobileSDK.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		2AE27162961F0AE7B1B7DDE1D274FAAD /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 51B15B52AB0EFD7A5E8B700E62038EEF /* PrimerSDK.release.xcconfig */;
@@ -2771,135 +2422,6 @@
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
-		};
-		30274ACC213C5EA4CDE4DEC77392BF9A /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 51B15B52AB0EFD7A5E8B700E62038EEF /* PrimerSDK.release.xcconfig */;
-			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/PrimerSDK";
-				IBSC_MODULE = PrimerSDK;
-				INFOPLIST_FILE = "Target Support Files/PrimerSDK/ResourceBundle-PrimerResources-PrimerSDK-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				PRODUCT_NAME = PrimerResources;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Release;
-		};
-		4E687C4A86CAA9AEFEB474630D7B5288 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8A7192185507781FF13210BB8B4EE995 /* Primer3DS.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/Primer3DS/Primer3DS-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/Primer3DS/Primer3DS-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/Primer3DS/Primer3DS.modulemap";
-				PRODUCT_MODULE_NAME = Primer3DS;
-				PRODUCT_NAME = Primer3DS;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 4.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		589B583BBEA27F9F26846910DF24E339 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7540675C759C8CDA799A0607647F2B20 /* PrimerSDK.debug.xcconfig */;
-			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/PrimerSDK";
-				IBSC_MODULE = PrimerSDK;
-				INFOPLIST_FILE = "Target Support Files/PrimerSDK/ResourceBundle-PrimerResources-PrimerSDK-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				PRODUCT_NAME = PrimerResources;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
-		};
-		60192E584E7615A352BDA38E45C35DC1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B4E337B51B85CC143B799CBF0EB220E1 /* PrimerKlarnaSDK.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/PrimerKlarnaSDK/PrimerKlarnaSDK-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/PrimerKlarnaSDK/PrimerKlarnaSDK-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/PrimerKlarnaSDK/PrimerKlarnaSDK.modulemap";
-				PRODUCT_MODULE_NAME = PrimerKlarnaSDK;
-				PRODUCT_NAME = PrimerKlarnaSDK;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.3;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		779079783FB4E6B349AC2780C272E37D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3C474C1A0DABE2A3F404B63D4D59F30C /* Pods-PrimerSDK_Example.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
 		};
 		7EE7A78859F657F6BEFC651185B43192 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -2997,10 +2519,11 @@
 			};
 			name = Release;
 		};
-		8B338351570AAEEC42CE703558042CF9 /* Debug */ = {
+		9FE23CF9E7E182C33813CBC09CD6CA29 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 880C58F3BD086593B4FD06659B102A5B /* PrimerKlarnaSDK.debug.xcconfig */;
+			baseConfigurationReference = 3C474C1A0DABE2A3F404B63D4D59F30C /* Pods-PrimerSDK_Example.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -3010,18 +2533,19 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/PrimerKlarnaSDK/PrimerKlarnaSDK-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/PrimerKlarnaSDK/PrimerKlarnaSDK-Info.plist";
+				INFOPLIST_FILE = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/PrimerKlarnaSDK/PrimerKlarnaSDK.modulemap";
-				PRODUCT_MODULE_NAME = PrimerKlarnaSDK;
-				PRODUCT_NAME = PrimerKlarnaSDK;
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -3125,102 +2649,55 @@
 			};
 			name = Debug;
 		};
-		DAEF156D3430A7399DB361AE745145B1 /* Debug */ = {
+		ED2C7E471B23D38A9935FDFD6F896894 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D2D0B76EDEFCB1976FD474198D7123F6 /* KlarnaMobileSDK.debug.xcconfig */;
+			baseConfigurationReference = 7540675C759C8CDA799A0607647F2B20 /* PrimerSDK.debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/PrimerSDK";
+				IBSC_MODULE = PrimerSDK;
+				INFOPLIST_FILE = "Target Support Files/PrimerSDK/ResourceBundle-PrimerResources-PrimerSDK-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		E41365A7221C88C2F388DCB1E55286A7 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 08417C8E26C7764C623F4EFCBE91229C /* Primer3DS.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/Primer3DS/Primer3DS-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/Primer3DS/Primer3DS-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/Primer3DS/Primer3DS.modulemap";
-				PRODUCT_MODULE_NAME = Primer3DS;
-				PRODUCT_NAME = Primer3DS;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 4.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		F1A5EC1D4361A6E54DFDA8E75ABC51FE /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E884507DF2B84FA8A2E8AD8289881542 /* Pods-PrimerSDK_Example.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-PrimerSDK_Example/Pods-PrimerSDK_Example.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = PrimerResources;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		F40B935338B2899B78EEDFFDD1BC5C31 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 51B15B52AB0EFD7A5E8B700E62038EEF /* PrimerSDK.release.xcconfig */;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/PrimerSDK";
+				IBSC_MODULE = PrimerSDK;
+				INFOPLIST_FILE = "Target Support Files/PrimerSDK/ResourceBundle-PrimerResources-PrimerSDK-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				PRODUCT_NAME = PrimerResources;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1B18406B6131077FE780D4C75C7252C3 /* Build configuration list for PBXNativeTarget "PrimerSDK-PrimerResources" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ED2C7E471B23D38A9935FDFD6F896894 /* Debug */,
+				F40B935338B2899B78EEDFFDD1BC5C31 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D299434AB35E7FD6F7921C8EF24742FF /* Debug */,
 				7EE7A78859F657F6BEFC651185B43192 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		5310914E17B9CC7AA0A4C9F03BD4A419 /* Build configuration list for PBXNativeTarget "PrimerSDK-PrimerResources" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				589B583BBEA27F9F26846910DF24E339 /* Debug */,
-				30274ACC213C5EA4CDE4DEC77392BF9A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -3234,24 +2711,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6004DC48EAFFC21734C2180D1DDDFCC5 /* Build configuration list for PBXNativeTarget "Primer3DS" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E41365A7221C88C2F388DCB1E55286A7 /* Debug */,
-				4E687C4A86CAA9AEFEB474630D7B5288 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		95653B049217C822345CFEDBE5C71646 /* Build configuration list for PBXAggregateTarget "KlarnaMobileSDK" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DAEF156D3430A7399DB361AE745145B1 /* Debug */,
-				09A52D54A967D521D32A55FABBFAFA8F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		DB74BC4B5C5930D4C8F1AC03B808A393 /* Build configuration list for PBXNativeTarget "Pods-PrimerSDK_Tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -3261,20 +2720,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E5BB70981E47B8AB247898B186634257 /* Build configuration list for PBXNativeTarget "Pods-PrimerSDK_Example" */ = {
+		F978C8F95E406B727BEB461AF06CD6F7 /* Build configuration list for PBXNativeTarget "Pods-PrimerSDK_Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				779079783FB4E6B349AC2780C272E37D /* Debug */,
-				F1A5EC1D4361A6E54DFDA8E75ABC51FE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		FC9F77E16A0C1875619AD7BE79476080 /* Build configuration list for PBXNativeTarget "PrimerKlarnaSDK" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8B338351570AAEEC42CE703558042CF9 /* Debug */,
-				60192E584E7615A352BDA38E45C35DC1 /* Release */,
+				9FE23CF9E7E182C33813CBC09CD6CA29 /* Debug */,
+				03819C216E03F02851FE5D2175E38393 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
