@@ -154,21 +154,13 @@ When initializing the SDK you can provide Universal Checkout with some configura
 You can set the locale for all text in the checkout. If not provided, it will default to the device's locale data.
 
 ```swift{:copy}
-import PrimerSDK
- 
-class MyViewController: UIViewController {
- 
-    override func viewDidLoad() {
-        super.viewDidLoad()
- 
-        // Initialize the SDK with the default settings.
-        let localeData = PrimerLocaleData(languageCode: "en", 
-                                          regionCode: "UK",
-                                          localeCode: "en-UK")
-        let settings = PrimerSettings(localeData: localeData)
-        Primer.shared.configure(settings: settings, delegate: self)
-    }
-}
+let localeData = PrimerLocaleData(languageCode: "en", 
+                                  regionCode: "UK",
+                                  localeCode: "en-UK")
+                                  
+let settings = PrimerSettings(localeData: localeData)
+
+Primer.shared.configure(settings: settings, delegate: self)
 ```
 
 
@@ -177,19 +169,11 @@ class MyViewController: UIViewController {
 You can disable 3DS validation checks on the simulator. It defaults to `true`.
 
 ```swift{:copy}
-import PrimerSDK
- 
-class MyViewController: UIViewController {
- 
-    override func viewDidLoad() {
-        super.viewDidLoad()
- 
-        // Initialize the SDK with the default settings.
-        let debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
-        let settings = PrimerSettings(debugOptions: debugOptions)
-        Primer.shared.configure(settings: settings, delegate: self)
-    }
-}
+let debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+
+let settings = PrimerSettings(debugOptions: debugOptions)
+
+Primer.shared.configure(settings: settings, delegate: self)
 ```
 
 
@@ -204,8 +188,6 @@ The options below are all part of `PrimerPaymentMethodOptions`. See the code exa
 Handling redirects is required for Payment Methods like iDeal that present a webpage for the customer to enter their credentials and validate their payment.
 
 When the user selects such a Payment Method, Universal Checkout will first attempt to show the webpage in a popup or a browser tab to maintain the context, and will then safely bring the user back to the initial page to continue the flow.
-
-
 
 | option                   | Type    | Description                                                                                                        |          |
 | ------------------------ | ------- |--------------------------------------------------------------------------------------------------------------------|----------|
@@ -231,21 +213,76 @@ These options only apply to the native Klarna implementation (`KLARNA`).
 #### Example Code
 
 ```swift{:copy}
-import PrimerSDK
+let paymentMethodOptions = PrimerPaymentMethodOptions(
+    urlScheme: "merchant://",
+    applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.xxx"))
+    
+let settings = PrimerSettings(paymentMethodOptions: paymentMethodOptions)
+
+Primer.shared.configure(settings: settings, delegate: self)
+```
+
+
+### 💳 **UI Options**
+
+You can switch off certain features of the Universal Checkout.
+
+The options below are all part of `PrimerUIOptions`. See the code example at the end for implementation details.
+
+#### ⚙️ _Screens_
+
+| option                | Type   | Description                               | Default | |
+|-----------------------|--------|--------------------------------------|----------|--------|
+| `isInitScreenEnabled` | `Bool` | Set it to false if you don’t want the first loading screen of the SDK to be shown. | `true`   | Optional |
+| `isSuccessScreenEnabled` | `Bool` | Set it to false if you don’t want the success screen of the SDK to be shown, and you want to handle a successful payment in your app. | `true`   | Optional |
+| `isErrorScreenEnabled` | `Bool` | Set it to false if you don’t want the error screen of the SDK to be shown, and you prefer to show your own error view. | `true`   | Optional |
+
+#### ⚙️ _Theme_
+
+To customize the appearance of the SDK define the `PrimerTheme` object, then pass it in as an argument when configuring the SDK.
+
+```swift{:copy}
+let theme = PrimerTheme(
+    cornerRadiusTheme: CornerRadiusTheme(textFields: 8),
+    colorTheme: PrimerDefaultTheme(tint1: themeColor),
+    layout: PrimerLayout(showTopTitle: false, textFieldHeight: 44),
+    textFieldTheme: .outlined
+)
  
-class MyViewController: UIViewController {
+Primer.shared.configure(theme: theme)
+```
+
+Access the `colorTheme` property to add custom colors.
+
+```swift{:copy}
+PrimerTheme(
+  colorTheme: ColorTheme
+  darkTheme: ColorTheme // iOS 13.0+ only
+)
  
-    override func viewDidLoad() {
-        super.viewDidLoad()
- 
-        // Initialize the SDK with the default settings.
-        let paymentMethodOptions = PrimerPaymentMethodOptions(
-            urlScheme: "merchant://",
-            applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.xxx"))
-        let settings = PrimerSettings(paymentMethodOptions: paymentMethodOptions)
-        Primer.shared.configure(settings: settings, delegate: self)
-    }
+protocol ColorTheme {
+  var text1: UIColor { get } // headers, main text
+  var text2: UIColor { get } // white text for darker buttons
+  var text3: UIColor { get } // system text, theme colored text
+  var secondaryText1: UIColor { get } // less visible subheaders
+  var main1: UIColor { get } // backgrounds
+  var main2: UIColor { get } // table cells, default buttons
+  var tint1: UIColor { get } // borders, theme colored components
+  var neutral1: UIColor { get } // unselected buttons
+  var disabled1: UIColor { get } // disabled components
+  var error1: UIColor { get } // error borders and messages
 }
+ 
+// example:
+let colorTheme = PrimerDefaultTheme(tint1: .systemPink)
+```
+
+Update the `cornerRadiusTheme` to change the corner radius of different components.
+
+
+```swift{:copy}
+let cornerRadiusTheme = CornerRadiusTheme(buttons: 8, sheetView: 18)
+let theme = PrimerTheme(cornerRadiusTheme: cornerRadiusTheme)
 ```
 
 ---
