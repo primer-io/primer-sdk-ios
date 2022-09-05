@@ -136,7 +136,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    private func dispatchActions(config: PrimerPaymentMethod, selectedPaymentMethod: PaymentMethodToken) -> Promise<Void> {
+    private func dispatchActions(config: PrimerPaymentMethod, selectedPaymentMethod: PrimerPaymentMethodTokenData) -> Promise<Void> {
         return Promise { seal in
             var network: String?
             if config.type == PrimerPaymentMethodType.paymentCard.rawValue {
@@ -180,7 +180,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    private func exchangePaymentMethodToken(_ paymentMethodToken: PaymentMethodToken) -> Promise<PaymentMethodToken> {
+    private func exchangePaymentMethodToken(_ paymentMethodToken: PrimerPaymentMethodTokenData) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)

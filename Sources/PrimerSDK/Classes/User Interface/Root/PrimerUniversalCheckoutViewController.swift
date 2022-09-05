@@ -15,11 +15,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var titleLabel: UILabel!
     private var savedPaymentMethodStackView: UIStackView!
     private var payButton: PrimerButton!
-    private var selectedPaymentMethod: PaymentMethodToken?
+    private var selectedPaymentMethod: PrimerPaymentMethodTokenData?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
     private var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
-    private var singleUsePaymentMethod: PaymentMethodToken?
+    private var singleUsePaymentMethod: PrimerPaymentMethodTokenData?
     private var resumePaymentId: String?
     
     override func viewDidLoad() {

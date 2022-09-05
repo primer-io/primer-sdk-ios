@@ -26,7 +26,7 @@ protocol PrimerRawDataTokenizationBuilderProtocol {
     
     init(paymentMethodType: String)
     func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager)
-    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<TokenizationRequestBody>
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization>
     func validateRawData(_ data: PrimerRawData) -> Promise<Void>
 }
 
@@ -109,10 +109,10 @@ extension PrimerHeadlessUniversalCheckout {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
             }
-            .then { () -> Promise<TokenizationRequestBody> in
+            .then { () -> Promise<Request.Body.Tokenization> in
                 return self.makeRequestBody()
             }
-            .then { requestBody -> Promise<PaymentMethodToken> in
+            .then { requestBody -> Promise<PrimerPaymentMethodTokenData> in
                 PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodType)
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
                 return tokenizationService.tokenize(requestBody: requestBody)
@@ -157,7 +157,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func makeRequestBody() -> Promise<TokenizationRequestBody> {
+        private func makeRequestBody() -> Promise<Request.Body.Tokenization> {
             
             return Promise { seal in
                 guard let rawData = self.rawData else {

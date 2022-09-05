@@ -2,7 +2,7 @@
 
 import UIKit
 
-public typealias PrimerPaymentMethodTokenData = PaymentMethodToken
+public typealias PrimerPaymentMethodTokenData = Response.Body.Tokenization
 
 @objc
 public protocol PrimerDelegate {

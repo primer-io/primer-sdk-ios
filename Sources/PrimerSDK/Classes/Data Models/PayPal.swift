@@ -1,103 +1,83 @@
 #if canImport(UIKit)
 
-struct PayPalPurchaseUnit: Encodable {
-    let amount: PayPalAmount
+extension Request.Body {
+    public class PayPal {}
 }
 
-struct PayPalAmount: Encodable {
-    let currencyCode: String
-    let value: String
+extension Response.Body {
+    public class PayPal {}
+}
 
-    enum CodingKeys: String, CodingKey {
-        case currencyCode = "currency_code"
-        case value = "value"
+extension Request.Body.PayPal {
+    
+    struct ConfirmBillingAgreement: Encodable {
+        let paymentMethodConfigId, tokenId: String
+    }
+    
+    struct CreateBillingAgreement: Codable {
+        
+        let paymentMethodConfigId: String
+        let returnUrl: String
+        let cancelUrl: String
+    }
+    
+    struct CreateOrder: Codable {
+        
+        let paymentMethodConfigId: String
+        let amount: Int
+        let currencyCode: Currency
+        var locale: CountryCode?
+        let returnUrl: String
+        let cancelUrl: String
+    }
+    
+    struct PayerInfo: Codable {
+        
+        let paymentMethodConfigId: String
+        let orderId: String
     }
 }
 
-struct PayPalApplicationContext: Codable {
-    let returnUrl: String
-    let cancelUrl: String
-
-    enum CodingKeys: String, CodingKey {
-        case returnUrl = "return_url"
-        case cancelUrl = "cancel_url"
+extension Response.Body.PayPal {
+    
+    struct ConfirmBillingAgreement: Codable {
+        
+        let billingAgreementId: String
+        let externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo
+        let shippingAddress: Response.Body.Tokenization.PayPal.ShippingAddress
+    }
+    
+    struct CreateBillingAgreement: Codable {
+        
+        let tokenId: String
+        let approvalUrl: String
+    }
+    
+    struct CreateOrder: Codable {
+        
+        let orderId: String
+        let approvalUrl: String
+    }
+    
+    public struct PayerInfo: Codable {
+        
+        let orderId: String
+        let externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo
     }
 }
 
-struct PayPalCreateOrderRequest: Codable {
-    let paymentMethodConfigId: String
-    let amount: Int
-    let currencyCode: Currency
-    var locale: CountryCode?
-    let returnUrl: String
-    let cancelUrl: String
-}
-
-struct PayPalCreateOrderResponse: Codable {
-    let orderId: String
-    let approvalUrl: String
-}
-
-struct PayPalCreateBillingAgreementRequest: Codable {
-    let paymentMethodConfigId: String
-    let returnUrl: String
-    let cancelUrl: String
-}
-
-struct PayPalCreateBillingAgreementResponse: Codable {
-    let tokenId: String
-    let approvalUrl: String
-}
-
-struct PayPalAccessTokenResponse: Codable {
-    let accessToken: String?
-}
-
-struct PayPalOrderLink: Decodable {
-    let href: String?
-    let rel: String?
-    let method: String?
-}
-
-struct PayPalConfirmBillingAgreementRequest: Encodable {
-    let paymentMethodConfigId, tokenId: String
-}
-
-struct PayPalConfirmBillingAgreementResponse: Codable {
-    let billingAgreementId: String
-    let externalPayerInfo: ExternalPayerInfo
-    let shippingAddress: ShippingAddress
-}
-
-/**
- Contains information of the shipping address (if available).
- 
- *Values*
- 
- `firstName`: Recipient's firstname.
- 
- `lastName`: Recipient's lastname.
- 
- `addressLine1`: Recipient's address line 1.
- 
- `addressLine2`: Recipient's address line 2.
- 
- `city`: Recipient's city.
- 
- `state`: Recipient's state.
- 
- `countryCode`: Recipient's country code.
- 
- `postalCode`: Recipient's postal code.
- 
- - Author:
- Primer
- - Version:
- 1.2.2
- */
-
-public struct ShippingAddress: Codable {
-    let firstName, lastName, addressLine1, addressLine2, city, state, countryCode, postalCode: String?
+extension Response.Body.Tokenization {
+    
+    public class PayPal {
+        
+        public struct ShippingAddress: Codable {
+            let firstName, lastName, addressLine1, addressLine2, city, state, countryCode, postalCode: String?
+        }
+        
+        public struct ExternalPayerInfo: Codable {
+            public var externalPayerId, email, firstName, lastName: String?
+        }
+    }
 }
 
 #endif

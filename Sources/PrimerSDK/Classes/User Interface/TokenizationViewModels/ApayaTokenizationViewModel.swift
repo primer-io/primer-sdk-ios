@@ -158,10 +158,11 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return completion(.failure(err))
         }
         
-        let body = Apaya.CreateSessionAPIRequest(merchantAccountId: merchantAccountId,
-                                                 language: PrimerSettings.current.localeData.languageCode,
-                                                 currencyCode: currency.rawValue,
-                                                 phoneNumber: AppState.current.apiConfiguration?.clientSession?.customer?.mobileNumber)
+        let body = Request.Body.Apaya.CreateSession(
+            merchantAccountId: merchantAccountId,
+            language: PrimerSettings.current.localeData.languageCode,
+            currencyCode: currency.rawValue,
+            phoneNumber: AppState.current.apiConfiguration?.clientSession?.customer?.mobileNumber)
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.createApayaSession(clientToken: decodedClientToken, request: body) { [weak self] result in
@@ -233,7 +234,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse, completion: @escaping (_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void) {
+    private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse, completion: @escaping (_ paymentMethod: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -257,7 +258,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             currencyCode: currencyStr)
         
         let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-        let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+        let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
         
         firstly {
             tokenizationService.tokenize(requestBody: requestBody)

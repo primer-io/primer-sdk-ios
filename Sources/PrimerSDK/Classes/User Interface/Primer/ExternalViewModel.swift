@@ -10,7 +10,7 @@
 import Foundation
 
 internal protocol ExternalViewModelProtocol {
-    func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void)
+    func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PrimerPaymentMethodTokenData], Error>) -> Void)
 }
 
 internal class ExternalViewModel: ExternalViewModelProtocol {
@@ -19,7 +19,7 @@ internal class ExternalViewModel: ExternalViewModelProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
-    func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
+    func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PrimerPaymentMethodTokenData], Error>) -> Void) {
         if ClientTokenService.decodedClientToken.exists {
             let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
             vaultService.loadVaultedPaymentMethods({ err in
@@ -39,7 +39,7 @@ internal class ExternalViewModel: ExternalViewModelProtocol {
 }
 
 internal class MockExternalViewModel: ExternalViewModelProtocol {
-    func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PaymentMethodToken], Error>) -> Void) {
+    func fetchVaultedPaymentMethods(_ completion: @escaping (Result<[PrimerPaymentMethodTokenData], Error>) -> Void) {
 
     }
 }
