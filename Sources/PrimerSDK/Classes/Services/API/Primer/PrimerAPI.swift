@@ -72,8 +72,8 @@ enum PrimerAPI: Endpoint, Equatable {
     
     // Create - Resume Payment
     
-    case createPayment(clientToken: DecodedClientToken, paymentRequest: Payment.CreateRequest)
-    case resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Payment.ResumeRequest)
+    case createPayment(clientToken: DecodedClientToken, paymentRequest: Request.Body.Payment.Create)
+    case resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume)
 
 }
 

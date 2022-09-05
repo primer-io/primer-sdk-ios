@@ -33,7 +33,7 @@ class MerchantCheckoutViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var postalCodeLabel: UILabel!
     
-    var paymentMethodsDataSource: [PaymentMethodToken] = [] {
+    var paymentMethodsDataSource: [PrimerPaymentMethodTokenData] = [] {
         didSet {
             self.tableView.reloadData()
         }
