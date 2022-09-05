@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-      - qa-sonar-coverage
+      - qa-develop
 
   pull_request:
     types: [opened, synchronize, reopened]
