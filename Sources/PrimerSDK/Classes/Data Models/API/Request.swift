@@ -9,8 +9,8 @@
 
 import Foundation
 
-internal class Request {
-    internal class Body {}
+public class Request {
+    public class Body {}
     internal class URLParameters {}
 }
 

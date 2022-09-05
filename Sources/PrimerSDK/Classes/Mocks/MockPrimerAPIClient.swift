@@ -265,7 +265,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
     }
 
-    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Payment.CreateRequest, completion: @escaping (Result<Payment.Response, Error>) -> Void) {
+    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Request.Body.Payment.Create, completion: @escaping (Result<Response.Body.Payment, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
@@ -274,14 +274,14 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
         
         do {
-            let value = try JSONDecoder().decode(Payment.Response.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.Payment.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
     
-    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Payment.ResumeRequest, completion: @escaping (_ result: Result<Payment.Response, Error>) -> Void) {
+    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (_ result: Result<Response.Body.Payment, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
@@ -290,7 +290,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
         
         do {
-            let value = try JSONDecoder().decode(Payment.Response.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.Payment.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
