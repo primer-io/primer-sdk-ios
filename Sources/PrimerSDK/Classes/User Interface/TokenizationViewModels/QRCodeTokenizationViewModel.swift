@@ -129,7 +129,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
         didCancel?()
     }
     
-    override func tokenize() -> Promise<PaymentMethodToken> {
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let configId = config.id else {
                 let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -146,7 +146,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                 sessionInfo: sessionInfo)
             
             
-            let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {

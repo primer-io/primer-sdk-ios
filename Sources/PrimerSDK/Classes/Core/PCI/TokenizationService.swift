@@ -5,7 +5,7 @@ import Foundation
 internal protocol TokenizationServiceProtocol {
     
     var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
-    func tokenize(requestBody: TokenizationRequestBody) -> Promise<PrimerPaymentMethodTokenData>
+    func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData>
 }
 
 internal class TokenizationService: TokenizationServiceProtocol {
@@ -16,7 +16,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    func tokenize(requestBody: TokenizationRequestBody) -> Promise<PrimerPaymentMethodTokenData> {
+    func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)

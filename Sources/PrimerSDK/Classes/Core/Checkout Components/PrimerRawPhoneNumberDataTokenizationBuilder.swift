@@ -44,7 +44,7 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
         self.rawDataManager = rawDataManager
     }
     
-    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<TokenizationRequestBody> {
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
             
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
@@ -68,7 +68,7 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
                 paymentMethodType: paymentMethodType,
                 sessionInfo: sessionInfo)
             
-            let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             seal.fulfill(requestBody)
         }
     }

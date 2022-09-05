@@ -41,7 +41,7 @@ extension ClientTokenService {
     
     private static func validateToken(_ clientToken: RawJWTToken, completion: @escaping (Error?) -> Void) {
         
-        let clientTokenRequest = ClientTokenValidationRequest(clientToken: clientToken)
+        let clientTokenRequest = Request.Body.ClientTokenValidation(clientToken: clientToken)
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.validateClientToken(request: clientTokenRequest) { result in
             switch result {

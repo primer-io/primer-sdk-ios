@@ -80,7 +80,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         self.rawDataManager = rawDataManager
     }
     
-    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<TokenizationRequestBody> {
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
             
             guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
@@ -104,7 +104,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 expirationYear: rawData.expiryYear,
                 cardholderName: rawData.cardholderName)
             
-            let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             seal.fulfill(requestBody)
         }
     }

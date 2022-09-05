@@ -16,7 +16,7 @@ class PayPalServiceTests: XCTestCase {
     func test_startOrderSession_calls_api() throws {
         let expectation = XCTestExpectation(description: "Create PayPal payment sesion | Success")
         let approvalUrl = "https://primer.io"
-        let response = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: approvalUrl)
+        let response = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: approvalUrl)
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
         let mockAppState: AppStateProtocol = DependencyContainer.resolve()
@@ -51,7 +51,7 @@ class PayPalServiceTests: XCTestCase {
     func test_startOrderSession_fails_if_client_token_nil() throws {
         let expectation = XCTestExpectation(description: "Create PayPal payment sesion | Failure: No client token")
 
-        let response = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: "primer.io")
+        let response = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: "primer.io")
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: true)
         let state = MockAppState()
@@ -82,7 +82,7 @@ class PayPalServiceTests: XCTestCase {
     func test_startOrderSession_fails_if_configId_nil() throws {
         let expectation = XCTestExpectation(description: "Create PayPal payment sesion | Failure: No config ID")
 
-        let response = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: "primer.io")
+        let response = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: "primer.io")
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
         let state = MockAppState(apiConfiguration: nil)
@@ -120,7 +120,7 @@ class PayPalServiceTests: XCTestCase {
         MockLocator.registerDependencies()
 
         let service = MockPayPalService()
-        let createOrderRes = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: approvalUrl)
+        let createOrderRes = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: approvalUrl)
         let createOrderData = try JSONEncoder().encode(createOrderRes)
         client.response = createOrderData
         client.throwsError = false
@@ -130,7 +130,9 @@ class PayPalServiceTests: XCTestCase {
             case .failure:
                 XCTAssert(true)
             case .success:
-                let createBillingAgreementRes = PayPalCreateBillingAgreementResponse(tokenId: "tid", approvalUrl: "https://primer.io")
+                let createBillingAgreementRes = Response.Body.PayPal.CreateBillingAgreement(
+                    tokenId: "tid",
+                    approvalUrl: "https://primer.io")
                 let createBillingAgreementData = try! JSONEncoder().encode(createBillingAgreementRes)
                 client.response = createBillingAgreementData
                 client.throwsError = false
@@ -156,7 +158,9 @@ class PayPalServiceTests: XCTestCase {
     func test_startBillingAgreementSession_fails_if_client_token_nil() throws {
         let expectation = XCTestExpectation(description: "Create PayPal billing agreement | Failure: No client token")
 
-        let response = PayPalCreateBillingAgreementResponse(tokenId: "tid", approvalUrl: "https://primer.io")
+        let response = Response.Body.PayPal.CreateBillingAgreement(
+            tokenId: "tid",
+            approvalUrl: "https://primer.io")
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
         let state = MockAppState()
@@ -186,7 +190,9 @@ class PayPalServiceTests: XCTestCase {
     func test_startBillingAgreementSession_fails_if_configId_nil() throws {
         let expectation = XCTestExpectation(description: "Create PayPal billing agreement | Failure: No config ID")
 
-        let response = PayPalCreateBillingAgreementResponse(tokenId: "tid", approvalUrl: "https://primer.io")
+        let response = Response.Body.PayPal.CreateBillingAgreement(
+            tokenId: "tid",
+            approvalUrl: "https://primer.io")
         let data = try JSONEncoder().encode(response)
         let api = MockPrimerAPIClient(with: data, throwsError: false)
         let state = MockAppState(apiConfiguration: nil)
@@ -227,7 +233,7 @@ class PayPalServiceTests: XCTestCase {
         DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         
-        let createOrderRes = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: "approvalUrl")
+        let createOrderRes = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: "approvalUrl")
         let createOrderData = try JSONEncoder().encode(createOrderRes)
         api.response = createOrderData
         api.throwsError = false
