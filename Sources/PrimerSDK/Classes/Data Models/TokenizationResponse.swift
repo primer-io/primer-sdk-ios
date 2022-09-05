@@ -1,35 +1,35 @@
+//
+//  TokenizationResponse.swift
+//  PrimerSDK
+//
+//  Created by Evangelos on 2/9/22.
+//
+
 #if canImport(UIKit)
 
 import Foundation
 
-struct GetVaultedPaymentMethodsResponse: Decodable {
-    var data: [PrimerPaymentMethodTokenData]
+extension Response.Body {
+    
+    public class Tokenization: NSObject, Codable {
+        
+        public var analyticsId: String?
+        public var id: String?
+        public var isVaulted: Bool?
+        private var isAlreadyVaulted: Bool?
+        public var paymentInstrumentType: PaymentInstrumentType
+        public var paymentMethodType: String?
+        public var paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData?
+        public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
+        public var token: String?
+        public var tokenType: TokenType?
+        public var vaultData: Response.Body.Tokenization.VaultData?
+    }
 }
 
-/**
- Each **PaymentMethodToken** represents a payment method added on Primer and carries the necessary information
- for identification (e.g. type), as well as further information to be used if needed.
- 
- - Author:
- Primer
- - Version:
- 1.2.2
- */
-
-public class PaymentMethodToken: NSObject, Codable {
+// Should be removed
+extension Response.Body.Tokenization {
     
-    public var analyticsId: String?
-    public var id: String?
-    public var isVaulted: Bool?
-    private var isAlreadyVaulted: Bool?
-    public var paymentInstrumentType: PaymentInstrumentType
-    public var paymentMethodType: String?
-    public var paymentInstrumentData: PaymentInstrumentData?
-    public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
-    public var token: String?
-    public var tokenType: TokenType?
-    public var vaultData: VaultData?
-
     public var icon: ImageName {
         switch self.paymentInstrumentType {
         case .paymentCard:
@@ -46,9 +46,7 @@ public class PaymentMethodToken: NSObject, Codable {
         default: return .creditCard
         }
     }
-}
-
-internal extension PaymentMethodToken {
+    
     var cardButtonViewModel: CardButtonViewModel? {
         switch self.paymentInstrumentType {
         case .paymentCard:
@@ -95,16 +93,40 @@ internal extension PaymentMethodToken {
     }
 }
 
-struct CardButtonViewModel {
-    let network, cardholder, last4, expiry: String
-    let imageName: ImageName
-    let paymentMethodType: PaymentInstrumentType
-    var surCharge: Int? {
-        guard let options = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options else { return nil }
-        guard let paymentCardOption = options.filter({ $0["type"] as? String == PrimerPaymentMethodType.paymentCard.rawValue }).first else { return nil }
-        guard let networks = paymentCardOption["networks"] as? [[String: Any]] else { return nil }
-        guard let tmpNetwork = networks.filter({ ($0["type"] as? String)?.lowercased() == network.lowercased() }).first else { return nil }
-        return tmpNetwork["surcharge"] as? Int
+extension Response.Body.Tokenization {
+
+    public struct PaymentInstrumentData: Codable {
+        
+        public let paypalBillingAgreementId: String?
+        public let first6Digits: String?
+        public let last4Digits: String?
+        public let expirationMonth: String?
+        public let expirationYear: String?
+        public let cardholderName: String?
+        public let network: String?
+        public let isNetworkTokenized: Bool?
+        public let klarnaCustomerToken: String?
+        public let sessionData: Response.Body.Klarna.SessionData?
+        public let externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo?
+        public let shippingAddress: Response.Body.Tokenization.PayPal.ShippingAddress?
+        public let binData: BinData?
+        public let threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
+        public let gocardlessMandateId: String?
+        public let authorizationToken: String?
+        // APAYA
+        public let hashedIdentifier: String?
+        public let mnc: Int?
+        public let mcc: Int?
+        public let mx: String?
+        public let currencyCode: Currency?
+        public let productId: String?
+    }
+}
+
+extension Response.Body.Tokenization {
+    
+    public struct VaultData: Codable {
+        public var customerId: String
     }
 }
 

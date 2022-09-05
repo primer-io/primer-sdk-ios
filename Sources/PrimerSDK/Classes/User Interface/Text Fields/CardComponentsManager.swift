@@ -17,7 +17,7 @@ public protocol CardComponentsManagerDelegate {
     @objc optional func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void)
     /// The cardComponentsManager(_:onTokenizeSuccess:) is the only required method, and it will return the payment method token (which
     /// contains all the information needed)
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken)
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData)
     /// The cardComponentsManager(_:tokenizationFailedWith:) will return any tokenization errors that have occured.
     @objc optional func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error])
     /// The cardComponentsManager(_:isLoading:) will return true when the CardComponentsManager is performing an async operation and waiting for a result, false
@@ -64,7 +64,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     }
     internal var paymentMethodsConfig: PrimerAPIConfiguration?
     private(set) public var isLoading: Bool = false
-    internal private(set) var paymentMethod: PaymentMethodToken?
+    internal private(set) var paymentMethod: PrimerPaymentMethodTokenData?
     
     deinit {
         setIsLoading(false)
@@ -253,7 +253,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     cardholderName: self.cardholderField?.cardholderName)
                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-                let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+                let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
                 firstly {
                     return tokenizationService.tokenize(requestBody: requestBody)

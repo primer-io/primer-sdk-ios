@@ -11,7 +11,7 @@
 import XCTest
 
 class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
-    var selectedPaymentMethod: PaymentMethodToken?
+    var selectedPaymentMethod: PrimerPaymentMethodTokenData?
     
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] {
         return []
@@ -21,7 +21,7 @@ class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         return nil
     }
     
-    var paymentMethods: [PaymentMethodToken] {
+    var paymentMethods: [PrimerPaymentMethodTokenData] {
         return []
     }
     

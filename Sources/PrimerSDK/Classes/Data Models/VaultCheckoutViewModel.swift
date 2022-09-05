@@ -10,9 +10,9 @@
 import Foundation
 
 internal protocol VaultCheckoutViewModelProtocol {
-    var paymentMethods: [PaymentMethodToken] { get }
+    var paymentMethods: [PrimerPaymentMethodTokenData] { get }
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] { get }
-    var selectedPaymentMethod: PaymentMethodToken? { get }
+    var selectedPaymentMethod: PrimerPaymentMethodTokenData? { get }
     var amountStringed: String? { get }
     func loadConfig(_ completion: @escaping (Error?) -> Void)
 }
@@ -33,7 +33,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         return amount.toCurrencyString(currency: currency)
     }
 
-    var paymentMethods: [PaymentMethodToken] {
+    var paymentMethods: [PrimerPaymentMethodTokenData] {
         if #available(iOS 11.0, *) {
             return AppState.current.paymentMethods
         } else {
@@ -46,7 +46,7 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
         }
     }
 
-    var selectedPaymentMethod: PaymentMethodToken? {
+    var selectedPaymentMethod: PrimerPaymentMethodTokenData? {
         return AppState.current.selectedPaymentMethod
     }
 

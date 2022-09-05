@@ -18,7 +18,7 @@ class BankTableViewCell: UITableViewCell {
     var nameLabel = UILabel()
     var arrowImageView = UIImageView()
     
-    internal private(set) var bank: Bank!
+    internal private(set) var bank: AdyenBank!
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -65,7 +65,7 @@ class BankTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(viewModel: Bank) {
+    func configure(viewModel: AdyenBank) {
         self.bank = viewModel
         nameLabel.text = viewModel.name
         logoImageView.image = nil

@@ -699,7 +699,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
 
 extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate {
     
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken) {
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData) {
         self.cardComponentsManagerTokenizationCompletion?(paymentMethodToken, nil)
         self.cardComponentsManagerTokenizationCompletion = nil
     }

@@ -9,9 +9,9 @@
 
 import Foundation
 
-protocol TokenizationPaymentInstrument: Encodable {}
+protocol TokenizationRequestBodyPaymentInstrument: Encodable {}
 
-struct ApayaPaymentInstrument: TokenizationPaymentInstrument {
+struct ApayaPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var mx: String
     var mnc: String
     var mcc: String
@@ -20,7 +20,7 @@ struct ApayaPaymentInstrument: TokenizationPaymentInstrument {
     var currencyCode: String
 }
 
-struct ApplePayPaymentInstrument: TokenizationPaymentInstrument {
+struct ApplePayPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     
     var paymentMethodConfigId: String
     var sourceConfig: ApplePayPaymentInstrument.SourceConfig
@@ -38,7 +38,7 @@ struct ApplePayPaymentInstrument: TokenizationPaymentInstrument {
     }
 }
 
-struct CardPaymentInstrument: TokenizationPaymentInstrument {
+struct CardPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var number: String
     var cvv: String
     var expirationMonth: String
@@ -46,17 +46,17 @@ struct CardPaymentInstrument: TokenizationPaymentInstrument {
     var cardholderName: String?
 }
 
-struct KlarnaCustomerTokenPaymentInstrument: TokenizationPaymentInstrument {
+struct KlarnaCustomerTokenPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var klarnaCustomerToken: String?
-    var sessionData: KlarnaSessionData?
+    var sessionData: Response.Body.Klarna.SessionData?
 }
 
-struct KlarnaPaymentSessionPaymentInstrument: TokenizationPaymentInstrument {
+struct KlarnaPaymentSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var klarnaAuthorizationToken: String
-    var sessionData: KlarnaSessionData
+    var sessionData: Response.Body.Klarna.SessionData
 }
 
-class OffSessionPaymentInstrument: TokenizationPaymentInstrument {
+class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     
     var paymentMethodConfigId: String
     var paymentMethodType: String
@@ -99,11 +99,11 @@ class OffSessionPaymentInstrument: TokenizationPaymentInstrument {
     }
 }
 
-struct PayPalPaymentInstrument: TokenizationPaymentInstrument {
+struct PayPalPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var paypalOrderId: String?
     var paypalBillingAgreementId: String?
-    var shippingAddress: ShippingAddress?
-    var externalPayerInfo: ExternalPayerInfo?
+    var shippingAddress: Response.Body.Tokenization.PayPal.ShippingAddress?
+    var externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo?
 }
 
 /**
@@ -157,41 +157,7 @@ public enum PaymentInstrumentType: String, Codable {
     }
 }
 
-/**
- This structure contains all the available information on the payment instrument. Each payment instrument contains its own data,
- therefore not all fields will have a value.
- 
- - Author:
- Primer
- - Version:
- 1.2.2
- */
 
-public struct PaymentInstrumentData: Codable {
-    public let paypalBillingAgreementId: String?
-    public let first6Digits: String?
-    public let last4Digits: String?
-    public let expirationMonth: String?
-    public let expirationYear: String?
-    public let cardholderName: String?
-    public let network: String?
-    public let isNetworkTokenized: Bool?
-    public let klarnaCustomerToken: String?
-    public let sessionData: KlarnaSessionData?
-    public let externalPayerInfo: ExternalPayerInfo?
-    public let shippingAddress: ShippingAddress?
-    public let binData: BinData?
-    public let threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
-    public let gocardlessMandateId: String?
-    public let authorizationToken: String?
-    // APAYA
-    public let hashedIdentifier: String?
-    public let mnc: Int?
-    public let mcc: Int?
-    public let mx: String?
-    public let currencyCode: Currency?
-    public let productId: String?
-}
 
 /**
  Contains extra information about the payment method.
@@ -214,10 +180,6 @@ public struct BinData: Codable {
     public var productUsageType: String?
     public var productCode: String?
     public var productName: String?
-}
-
-public struct VaultData: Codable {
-    public var customerId: String
 }
 
 #endif
