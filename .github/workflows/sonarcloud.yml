@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+      - qa-sonar-coverage
+
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
