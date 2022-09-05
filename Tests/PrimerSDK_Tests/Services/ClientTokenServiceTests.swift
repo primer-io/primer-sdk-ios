@@ -83,7 +83,7 @@ extension ClientTokenServiceTests {
         }
         
         // 2. Validate the token from the dedicated API
-        let clientTokenRequest = ClientTokenValidationRequest(clientToken: clientToken)
+        let clientTokenRequest = Request.Body.ClientTokenValidation(clientToken: clientToken)
         let client = MockPrimerAPIClient()
         let validTokenResponse = SuccessResponse(success: true)
         let validTokenResponseData = try? JSONEncoder().encode(validTokenResponse)

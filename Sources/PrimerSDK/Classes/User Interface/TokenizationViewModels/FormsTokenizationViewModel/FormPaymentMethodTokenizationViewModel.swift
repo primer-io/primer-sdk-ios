@@ -678,7 +678,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    override func tokenize() -> Promise<PaymentMethodToken> {
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         switch config.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             return Promise { seal in
@@ -713,7 +713,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     sessionInfo: sessionInfo)
                                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-                let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+                let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
                 firstly {
                     tokenizationService.tokenize(requestBody: requestBody)
@@ -742,7 +742,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     paymentMethodType: config.type,
                     sessionInfo: sessionInfo)
                             
-                let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+                let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
                 firstly {
@@ -788,7 +788,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     sessionInfo: sessionInfo)
                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-                let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+                let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
                 firstly {
                     tokenizationService.tokenize(requestBody: requestBody)
@@ -817,7 +817,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     paymentMethodType: config.type,
                     sessionInfo: sessionInfo)
                 
-                let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+                let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
                 firstly {

@@ -5,7 +5,7 @@ import UIKit
 internal class VaultedPaymentInstrumentCell: UITableViewCell {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private(set) var paymentMethod: PaymentMethodToken!
+    private(set) var paymentMethod: PrimerPaymentMethodTokenData!
     var isDeleting: Bool = false {
         didSet {
             if isDeleting {
@@ -88,7 +88,7 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         }
     }
     
-    func configure(paymentMethod: PaymentMethodToken, isDeleting: Bool) {
+    func configure(paymentMethod: PrimerPaymentMethodTokenData, isDeleting: Bool) {
         self.paymentMethod = paymentMethod
         self.isDeleting = isDeleting
         

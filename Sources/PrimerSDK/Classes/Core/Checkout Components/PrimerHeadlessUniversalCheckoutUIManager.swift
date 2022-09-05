@@ -96,7 +96,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        private(set) public var paymentMethod: PaymentMethodToken?
+        private(set) public var paymentMethod: PrimerPaymentMethodTokenData?
         private var resumePaymentId: String?
         private var paymentMethodTokenData: PrimerPaymentMethodTokenData?
         private var paymentCheckoutData: PrimerCheckoutData?
@@ -125,10 +125,10 @@ extension PrimerHeadlessUniversalCheckout {
             .then { () -> Promise<Void> in
                 self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: PrimerPaymentMethodType.paymentCard.rawValue))
             }
-            .then { () -> Promise<TokenizationRequestBody> in
+            .then { () -> Promise<Request.Body.Tokenization> in
                 self.buildRequestBody()
             }
-            .then { requestBody -> Promise<PaymentMethodToken> in
+            .then { requestBody -> Promise<PrimerPaymentMethodTokenData> in
                 PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: PrimerPaymentMethodType.paymentCard.rawValue)
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
                 return tokenizationService.tokenize(requestBody: requestBody)
@@ -181,7 +181,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func buildRequestBody() -> Promise<TokenizationRequestBody> {
+        private func buildRequestBody() -> Promise<Request.Body.Tokenization> {
             return Promise { seal in
                 switch self.paymentMethodType {
                 case PrimerPaymentMethodType.paymentCard.rawValue:
@@ -238,7 +238,7 @@ extension PrimerHeadlessUniversalCheckout {
                         expirationYear: expiryYear,
                         cardholderName: cardholderName)
                     
-                    let requestBody = TokenizationRequestBody(paymentInstrument: paymentInstrument)
+                    let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                     seal.fulfill(requestBody)
                     
                 default:
