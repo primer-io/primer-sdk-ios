@@ -123,9 +123,6 @@ jobs:
       - name: npm Install
         run: npm install
 
-      - name: Slather generate xml report
-        run: slather coverage -x
-
       - name: Run Appium Test
         env:
           BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
