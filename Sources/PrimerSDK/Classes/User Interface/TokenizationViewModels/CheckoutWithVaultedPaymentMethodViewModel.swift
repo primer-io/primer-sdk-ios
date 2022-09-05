@@ -293,12 +293,12 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     
     // Resume payment with Resume payment ID
     
-    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Payment.Response?> {
+    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         
         return Promise { seal in
             
             let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
+            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
                 
                 guard error == nil else {
                     seal.reject(error!)
@@ -459,10 +459,10 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Payment.Response?> {
+    private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-            createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodData)) { paymentResponse, error in
+            createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
                 guard error == nil else {
                     seal.reject(error!)
                     return

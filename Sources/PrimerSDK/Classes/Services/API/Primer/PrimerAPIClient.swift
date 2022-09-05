@@ -91,10 +91,16 @@ protocol PrimerAPIClientProtocol {
     func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void)
 
     
-    // Create - Resume Payment
-    
-    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Payment.CreateRequest, completion: @escaping (_ result: Result<Payment.Response, Error>) -> Void)
-    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Payment.ResumeRequest, completion: @escaping (_ result: Result<Payment.Response, Error>) -> Void)
+    // Payment
+    func createPayment(
+        clientToken: DecodedClientToken,
+        paymentRequestBody: Request.Body.Payment.Create,
+        completion: @escaping (_ result: Result<Response.Body.Payment, Error>) -> Void)
+    func resumePayment(
+        clientToken: DecodedClientToken,
+        paymentId: String,
+        paymentResumeRequest: Request.Body.Payment.Resume,
+        completion: @escaping (_ result: Result<Response.Body.Payment, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -465,9 +471,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Payment.CreateRequest, completion: @escaping (Result<Payment.Response, Error>) -> Void) {
+    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Request.Body.Payment.Create, completion: @escaping (Result<Response.Body.Payment, Error>) -> Void) {
         let endpoint = PrimerAPI.createPayment(clientToken: clientToken, paymentRequest: paymentRequestBody)
-        networkService.request(endpoint) { (result: Result<Payment.Response, Error>) in
+        networkService.request(endpoint) { (result: Result<Response.Body.Payment, Error>) in
             switch result {
             case .success(let res):
                 completion(.success(res))
@@ -478,9 +484,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     
-    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Payment.ResumeRequest, completion: @escaping (Result<Payment.Response, Error>) -> Void) {
+    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Result<Response.Body.Payment, Error>) -> Void) {
         let endpoint = PrimerAPI.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest)
-        networkService.request(endpoint) { (result: Result<Payment.Response, Error>) in
+        networkService.request(endpoint) { (result: Result<Response.Body.Payment, Error>) in
             switch result {
             case .success(let res):
                 completion(.success(res))
