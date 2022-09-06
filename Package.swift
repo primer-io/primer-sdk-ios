@@ -19,13 +19,14 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
+        .package(name: "PrimerKlarnaSDK", path: "https://github.com/primer-io/primer-klarna-sdk-ios.git")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "PrimerSDK",
-            dependencies: [],
+            dependencies: ["PrimerKlarnaSDK"],
             path: "Sources/PrimerSDK",
             resources: [
                 .process("Resources"),
