@@ -5,6 +5,8 @@
 //  Created by Evangelos on 9/2/22.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 import SafariServices
 
@@ -898,3 +900,5 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager: SFSafariViewControl
         webViewCompletion = nil
     }
 }
+
+#endif
