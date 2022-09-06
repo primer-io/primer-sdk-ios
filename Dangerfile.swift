@@ -1,10 +1,14 @@
 import Danger
+import Foundation
 //import DangerSwiftCoverage
 
 let danger = Danger()
 let pr = danger.github.pullRequest
-let editedFiles = danger.git.modifiedFiles + danger.git.createdFiles
 let isReleasePr = pr.head.ref.hasPrefix("release")
+let allCreatedAndModifiedFiles = danger.git.modifiedFiles + danger.git.createdFiles
+let sdkEditedFiles = allCreatedAndModifiedFiles
+    .filter { $0.name != "Dangerfile.swift" }
+    .filter { !$0.hasPrefix("Example/") }
 
 // You can use these functions to send feedback:
 // message("Highlight something in the table")
@@ -16,10 +20,9 @@ let isReleasePr = pr.head.ref.hasPrefix("release")
 
 // Checks whether new files have "Copyright / Created by" mentions
 
-let swiftFilesWithCopyright = editedFiles.filter {
+let swiftFilesWithCopyright = sdkEditedFiles.filter {
     $0.fileType == .swift &&
-    danger.utils.readFile($0).contains("//  Created by") &&
-    $0.name != "Dangerfile.swift"
+    danger.utils.readFile($0).contains("//  Created by")
 }
 
 if swiftFilesWithCopyright.count > 0 {
@@ -29,10 +32,9 @@ if swiftFilesWithCopyright.count > 0 {
 
 // MARK: - Check UIKit import
 
-let swiftFilesNotContainingUIKitImport = editedFiles.filter {
+let swiftFilesNotContainingUIKitImport = sdkEditedFiles.filter {
     $0.fileType == .swift &&
-    danger.utils.readFile($0).contains("#if canImport(UIKit)") == false &&
-    $0.name != "Dangerfile.swift"
+    danger.utils.readFile($0).contains("#if canImport(UIKit)") == false
 }
 
 if swiftFilesNotContainingUIKitImport.count > 0 {
@@ -44,7 +46,7 @@ if swiftFilesNotContainingUIKitImport.count > 0 {
 
 // Raw check based on created / updated files containing `import XCTest`
 
-let swiftTestFilesContainChanges = editedFiles.filter {
+let swiftTestFilesContainChanges = sdkEditedFiles.filter {
     $0.fileType == .swift &&
     danger.utils.readFile($0).contains("import XCTest")
 }
@@ -88,7 +90,7 @@ if pr.assignees?.count == 0 {
 
 // Use a different path for SwiftLint
 
-//let files = editedFiles.filter { $0.fileType == .swift }
+//let files = sdkEditedFiles.filter { $0.fileType == .swift }
 //SwiftLint.lint(.files(files), inline: true, swiftlintPath: "Sources/.swiftlint.yml")
 //
 
@@ -96,3 +98,4 @@ if pr.assignees?.count == 0 {
 
 //Coverage.xcodeBuildCoverage(.derivedDataFolder("Build"),
 //                            minimumCoverage: 30)
+
