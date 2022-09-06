@@ -127,17 +127,17 @@
                                         <rect key="frame" x="0.0" y="527" width="382" height="220"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uou-Rn-KOH">
-                                                <rect key="frame" x="122" y="0.0" width="138" height="31"/>
+                                                <rect key="frame" x="48" y="0.0" width="286" height="31"/>
                                                 <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
-                                                <state key="normal" title="Initialize Primer SDK"/>
+                                                <state key="normal" title="Initialize Primer SDK - Universal Checkout"/>
                                                 <connections>
                                                     <action selector="initializePrimerButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="kia-UZ-chG"/>
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFw-xV-IYR">
-                                                <rect key="frame" x="107.5" y="63" width="167.5" height="31"/>
+                                                <rect key="frame" x="88.5" y="63" width="205.5" height="31"/>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="List Payment Methods"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Initialize Headless Checkout"/>
                                                 <connections>
                                                     <action selector="checkoutComponentsButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="2AF-kX-fGc"/>
                                                 </connections>
@@ -151,9 +151,9 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pfd-uc-ncs">
-                                                <rect key="frame" x="114" y="189" width="154" height="31"/>
+                                                <rect key="frame" x="67" y="189" width="248.5" height="31"/>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="HUC Raw Card Data"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Headless Checkout Raw Card Data"/>
                                                 <connections>
                                                     <action selector="hucRawCardDataButtonTapped:" destination="Hsc-Wl-Q65" eventType="touchUpInside" id="Ysh-fg-BRV"/>
                                                 </connections>
@@ -404,24 +404,23 @@
                                 </connections>
                             </collectionView>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="mct-co-cWD">
-                                <rect key="frame" x="105.5" y="98" width="203" height="32"/>
+                                <rect key="frame" x="156.5" y="98" width="101" height="32"/>
                                 <segments>
                                     <segment title="Logo"/>
                                     <segment title="Icon"/>
                                 </segments>
                                 <connections>
-                                    <action selector="segmentedControlerValueChanged:" destination="2Gj-2M-9Uh" eventType="valueChanged" id="xGa-EP-Y08"/>
+                                    <action selector="assetTypeSegmentedControlValueChanged:" destination="2Gj-2M-9Uh" eventType="valueChanged" id="s5R-6o-CZR"/>
                                 </connections>
                             </segmentedControl>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Hbz-Z7-bQS">
-                                <rect key="frame" x="105.5" y="137" width="203" height="32"/>
+                                <rect key="frame" x="156.5" y="137" width="101" height="32"/>
                                 <segments>
-                                    <segment title="Original"/>
                                     <segment title="Light"/>
                                     <segment title="Dark"/>
                                 </segments>
                                 <connections>
-                                    <action selector="segmentedControlerValueChanged:" destination="2Gj-2M-9Uh" eventType="valueChanged" id="SNB-qe-BJ7"/>
+                                    <action selector="colorTypeSegmentedControlValueChanged:" destination="2Gj-2M-9Uh" eventType="valueChanged" id="bEa-BR-VMz"/>
                                 </connections>
                             </segmentedControl>
                         </subviews>

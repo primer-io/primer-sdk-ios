@@ -172,6 +172,10 @@ extension ManualPaymentMerchantCheckoutViewController: PrimerDelegate {
             }
         }
     }
+    
+    func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
+        print("\n\n🤯🤯🤯 \(#function)\nadditionalInfo: \(additionalInfo)")
+    }
 
     func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         print("\n\n🤯🤯🤯 \(#function)\nresumeToken: \(resumeToken)")

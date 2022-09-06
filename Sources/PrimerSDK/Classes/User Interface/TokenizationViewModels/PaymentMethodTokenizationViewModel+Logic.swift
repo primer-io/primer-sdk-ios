@@ -21,7 +21,9 @@ extension PaymentMethodTokenizationViewModel {
             self.paymentMethodTokenData = paymentMethodTokenData
 
             if Primer.shared.intent == .vault {
+                PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { _ in }
                 self.handleSuccessfulFlow()
+                
             } else {
                 self.didStartPayment?()
                 self.didStartPayment = nil
@@ -32,7 +34,6 @@ extension PaymentMethodTokenizationViewModel {
                     self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
                 }
                 .done { checkoutData in
-                    
                     self.didFinishPayment?(nil)
                     self.nullifyEventCallbacks()
                     
@@ -152,6 +153,8 @@ extension PaymentMethodTokenizationViewModel {
                             .catch { err in
                                 seal.reject(err)
                             }
+                        } else if let checkoutData = self.paymentCheckoutData {
+                            seal.fulfill(checkoutData)
                         } else {
                             seal.fulfill(nil)
                         }

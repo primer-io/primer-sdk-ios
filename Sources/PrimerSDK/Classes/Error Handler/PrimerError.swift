@@ -338,6 +338,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case cancelledByCustomer(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case paymentFailed(userInfo: [String: String]?, diagnosticsId: String?)
     case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String?)
+    case failedToFindModule(name: String, userInfo: [String: String]?, diagnosticsId: String?)
     case unknown(userInfo: [String: String]?, diagnosticsId: String?)
     
     var errorId: String {
@@ -402,6 +403,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return PrimerPaymentErrorCode.failed.rawValue
         case .applePayTimedOut:
             return "apple-pay-timed-out"
+        case .failedToFindModule:
+            return "failed-to-find-module"
         case .unknown:
             return "unknown"
         }
@@ -468,6 +471,8 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .paymentFailed(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .applePayTimedOut(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .failedToFindModule(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .unknown(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
@@ -543,6 +548,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] The payment failed, retry. (diagnosticsId: \(self.diagnosticsId)"
         case .applePayTimedOut:
             return "[\(errorId)] Apple Pay timed out (diagnosticsId: \(self.diagnosticsId)"
+        case .failedToFindModule(let name, _, let diagnosticsId):
+            return "[\(errorId)] Failed to find module \(name) (diagnosticsId: \(self.diagnosticsId)"
         case .unknown:
             return "[\(errorId)] Something went wrong (diagnosticsId: \(self.diagnosticsId)"
         }
@@ -582,6 +589,7 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .cancelledByCustomer(_, let userInfo, _),
                 .paymentFailed(let userInfo, _),
                 .applePayTimedOut(let userInfo, _),
+                .failedToFindModule(_, let userInfo, _),
                 .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
             tmpUserInfo["diagnosticsId"] = self.diagnosticsId
@@ -664,6 +672,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return nil
         case .applePayTimedOut:
             return "Make sure you have an active internet connection and your Apple Pay configuration is correct."
+        case .failedToFindModule(let name, _, _):
+            return "Make sure you have added the module \(name) in your project."
         case .unknown:
             return "Contact Primer and provide them diagnostics id \(self.diagnosticsId)"
         }
