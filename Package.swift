@@ -21,7 +21,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
 //        .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios.git", from: "0.5.0")
-        .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios.git", .branch("feature/DEX-2448-Klarna1-SPM-local"))
+        .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios.git", Version(1, 0, 0)..<Version(2, 0, 0))
         
     ],
     targets: [
