@@ -110,7 +110,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<KlarnaCreatePaymentSessionAPIResponse> in
+            .then { () -> Promise<Response.Body.Klarna.CreatePaymentSession> in
                 return self.createPaymentSession()
             }
             .then { session -> Promise<Void> in
@@ -120,7 +120,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.awaitUserInput()
             }
-            .then { () -> Promise<KlarnaCustomerTokenAPIResponse> in
+            .then { () -> Promise<Response.Body.Klarna.CustomerToken> in
                 return self.authorizePaymentSession(authorizationToken: self.authorizationToken!)
             }
             .done { klarnaCustomerTokenAPIResponse in

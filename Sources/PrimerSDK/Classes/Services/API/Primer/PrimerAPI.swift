@@ -58,7 +58,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest)
     
     // 3DS
-    case begin3DSRemoteAuth(clientToken: DecodedClientToken, paymentMethodToken: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
+    case begin3DSRemoteAuth(clientToken: DecodedClientToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
     case continue3DSRemoteAuth(clientToken: DecodedClientToken, threeDSTokenId: String)
     
     // Generic
