@@ -32,15 +32,9 @@ platform :ios do
 
 ###################### PUBLIC LANES #######################
 
-  lane :tests do
-    run_tests(workspace: app_workspace,
-              scheme: app_test_scheme)
-  end
-
-  lane :ui_tests do
-    run_tests(workspace: app_workspace,
-              devices: ["iPhone SE", "iPhone 8"],
-              scheme: app_ui_test_scheme)
+  lane :run_tests_and_generate_code_coverage do
+    tests
+    generate_code_coverage
   end
 
   lane :danger_check do
@@ -97,6 +91,33 @@ platform :ios do
   end
 
   ######################### PRIVATE LANES #########################
+
+  desc 'This action generates the code coverage and as Cobertura XML'
+  lane :generate_code_coverage do
+
+    slather(
+      use_bundle_exec: true,
+      output_directory: './fastlane/test_output',
+      cobertura_xml: true,
+      scheme: app_test_scheme,
+      workspace: app_workspace,
+      proj: app_xcode_proj
+    )
+
+  end
+
+  desc 'This action runs XCTests'
+  lane :tests do
+    run_tests(workspace: app_workspace,
+              scheme: app_test_scheme)
+  end
+
+  desc 'This action run UITests'
+  lane :ui_tests do
+    run_tests(workspace: app_workspace,
+              devices: ["iPhone SE", "iPhone 8"],
+              scheme: app_ui_test_scheme)
+  end
 
   desc 'This action builds the app and uplads it to Appetize'
   private_lane :appetize_build_and_upload do
