@@ -830,6 +830,36 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     seal.reject(err)
                 }
             }
+        
+        case PrimerPaymentMethodType.adyenMultibanco.rawValue:
+            return Promise { seal in
+                guard let configId = config.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                var sessionInfo: AsyncPaymentMethodOptions.SessionInfo?
+                sessionInfo = AsyncPaymentMethodOptions.SessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+                
+                let request = AsyncPaymentMethodTokenizationRequest(
+                    paymentInstrument: AsyncPaymentMethodOptions(
+                        paymentMethodType: config.type,
+                        paymentMethodConfigId: configId,
+                        sessionInfo: sessionInfo))
+                
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                firstly {
+                    tokenizationService.tokenize(request: request)
+                }
+                .done{ paymentMethod in
+                    seal.fulfill(paymentMethod)
+                }
+                .catch { err in
+                    seal.reject(err)
+                }
+            }
 
         default:
             fatalError("Payment method card should never end here.")
