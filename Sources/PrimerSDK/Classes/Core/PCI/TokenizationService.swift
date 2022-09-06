@@ -78,7 +78,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                         do {
                             threeDSBeginAuthExtraData = try ThreeDSService.buildBeginAuthExtraData()
                         } catch {
-                            onTokenizeSuccess(.success(paymentMethodToken))
+                            seal.fulfill(paymentMethodTokenData)
                             return
                         }
                         
@@ -90,7 +90,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                         }
 
                         threeDSService.perform3DS(
-                                paymentMethodToken: paymentMethodToken,
+                            paymentMethodTokenData: paymentMethodTokenData,
                             protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2,
                             beginAuthExtraData: threeDSBeginAuthExtraData,
                                 sdkDismissed: { () in
@@ -98,14 +98,12 @@ internal class TokenizationService: TokenizationServiceProtocol {
                                 }, completion: { result in
                                     DispatchQueue.main.async {
                                         switch result {
-                                        case .success(let paymentMethodToken):
-                                            onTokenizeSuccess(.success(paymentMethodToken.0))
-                                            
+                                        case .success(let paymentMethodTokenData):
+                                            seal.fulfill(paymentMethodTokenData.0)
                                         case .failure(let err):
                                             // Even if 3DS fails, continue...
                                             log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
-                                            onTokenizeSuccess(.success(paymentMethodToken))
-                                            
+                                            seal.fulfill(paymentMethodTokenData)
                                         }
                                     }
 

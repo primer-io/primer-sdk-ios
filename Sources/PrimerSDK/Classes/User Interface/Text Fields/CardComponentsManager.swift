@@ -282,8 +282,8 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         do {
                             beginAuthExtraData = try ThreeDSService.buildBeginAuthExtraData()
                         } catch {
-                            self.paymentMethod = paymentMethodToken
-                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                            self.paymentMethod = paymentMethodTokenData
+                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                             return
                         }
                         
@@ -295,7 +295,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         }
                         
                         threeDSService.perform3DS(
-                            paymentMethodToken: paymentMethodToken,
+                            paymentMethodTokenData: paymentMethodTokenData,
                             protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2,
                             beginAuthExtraData: beginAuthExtraData,
                             sdkDismissed: { () in
@@ -308,7 +308,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                                 case .failure(let err):
                                     // Even if 3DS fails, continue...
                                     log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
-                                    self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
+                                    self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                                     
                                 }
                             })
