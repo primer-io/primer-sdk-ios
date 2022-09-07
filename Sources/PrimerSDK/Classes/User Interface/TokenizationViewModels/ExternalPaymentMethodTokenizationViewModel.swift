@@ -255,7 +255,7 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
     
     func safariViewController(_ controller: SFSafariViewController, initialLoadDidRedirectTo URL: URL) {
         print(URL.absoluteString)
-        if URL.absoluteString.hasSuffix("primer.io/static/loading.html") {
+        if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
             self.webViewController?.dismiss(animated: true)
             Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
