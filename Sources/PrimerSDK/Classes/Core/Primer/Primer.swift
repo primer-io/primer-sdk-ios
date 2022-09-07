@@ -58,7 +58,7 @@ public class Primer {
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         if url.absoluteString == settings.paymentMethodOptions.urlScheme {
-            NotificationCenter.default.post(name: Notification.Name("URLSchemeRedirect"), object: nil)
+            NotificationCenter.default.post(name: Notification.Name.urlSchemeRedirect, object: nil)
         }
         
         return false
