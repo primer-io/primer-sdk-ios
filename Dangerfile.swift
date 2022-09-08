@@ -8,6 +8,7 @@ let isReleasePr = pr.head.ref.hasPrefix("release")
 let allCreatedAndModifiedFiles = danger.git.modifiedFiles + danger.git.createdFiles
 let sdkEditedFiles = allCreatedAndModifiedFiles
     .filter { $0.name != "Dangerfile.swift" }
+    .filter { !$0.hasPrefix("Tests/PrimerSDK_Tests") }
     .filter { !$0.hasPrefix("Example/") }
 
 // You can use these functions to send feedback:

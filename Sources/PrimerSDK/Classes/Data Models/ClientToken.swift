@@ -2,8 +2,11 @@
 
 import Foundation
 
-struct ClientTokenValidationRequest: Codable {
-    let clientToken: String
+extension Request.Body {
+    
+    struct ClientTokenValidation: Encodable {
+        let clientToken: String
+    }
 }
 
 struct DecodedClientToken: Codable {

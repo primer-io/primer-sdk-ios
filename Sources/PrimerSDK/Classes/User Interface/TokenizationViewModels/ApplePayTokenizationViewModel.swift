@@ -293,24 +293,23 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return
             }
             
-            let instrument = PaymentInstrument(
+            let paymentInstrument = ApplePayPaymentInstrument(
                 paymentMethodConfigId: applePayConfigId,
-                token: self.applePayPaymentResponse.token,
-                sourceConfig: ApplePaySourceConfig(source: "IN_APP", merchantId: merchantIdentifier)
-            )
-            let request = PaymentMethodTokenizationRequest(paymentInstrument: instrument, state: AppState.current)
+                sourceConfig: ApplePayPaymentInstrument.SourceConfig(source: "IN_APP", merchantId: merchantIdentifier),
+                token: self.applePayPaymentResponse.token)
+
+            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             
-            let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-            apiClient.tokenizePaymentMethod(
-                clientToken: decodedClientToken,
-                paymentMethodTokenizationRequest: request) { result in
-                    switch result {
-                    case .success(let paymentMethodTokenData):
-                        seal.fulfill(paymentMethodTokenData)
-                    case .failure(let err):
-                        seal.reject(err)
-                    }
-                }
+            firstly {
+                tokenizationService.tokenize(requestBody: requestBody)
+            }
+            .done { paymentMethodTokenData in
+                seal.fulfill(paymentMethodTokenData)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
         }
     }
 }
@@ -357,7 +356,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         do {
             let tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self, from: payment.token.paymentData)
             let applePayPaymentResponse = ApplePayPaymentResponse(
-                token: ApplePayPaymentResponseToken(
+                token: ApplePayPaymentInstrument.PaymentResponseToken(
                     paymentMethod: ApplePayPaymentResponsePaymentMethod(
                         displayName: payment.token.paymentMethod.displayName,
                         network: payment.token.paymentMethod.network?.rawValue,

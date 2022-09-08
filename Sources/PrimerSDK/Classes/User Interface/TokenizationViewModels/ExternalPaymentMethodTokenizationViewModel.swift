@@ -169,7 +169,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    override func tokenize() -> Promise<PaymentMethodToken> {
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let configId = config.id else {
                 let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -178,18 +178,18 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 return
             }
             
-            var sessionInfo: AsyncPaymentMethodOptions.SessionInfo?
-            sessionInfo = AsyncPaymentMethodOptions.SessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+            let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
             
-            let request = AsyncPaymentMethodTokenizationRequest(
-                paymentInstrument: AsyncPaymentMethodOptions(
-                    paymentMethodType: config.type,
-                    paymentMethodConfigId: configId,
-                    sessionInfo: sessionInfo))
-            
+            let paymentInstrument = OffSessionPaymentInstrument(
+                paymentMethodConfigId: configId,
+                paymentMethodType: config.type,
+                sessionInfo: sessionInfo)
+                        
+            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+            
             firstly {
-                tokenizationService.tokenize(request: request)
+                tokenizationService.tokenize(requestBody: requestBody)
             }
             .done{ paymentMethod in
                 seal.fulfill(paymentMethod)

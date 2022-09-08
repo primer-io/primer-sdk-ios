@@ -20,26 +20,26 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         self.throwsError = throwsError
     }
 
-    func fetchVaultedPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (Result<GetVaultedPaymentMethodsResponse, Error>) -> Void) {
+    func fetchVaultedPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (Result<Response.Body.VaultedPaymentMethods, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(GetVaultedPaymentMethodsResponse.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.VaultedPaymentMethods.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
 
-    func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+    func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (Result<PrimerPaymentMethodTokenData, Error>) -> Void) {
         
     }
     
-    func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<GetVaultedPaymentMethodsResponse> {
+    func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<Response.Body.VaultedPaymentMethods> {
         return Promise { seal in
             do {
-                let value = try JSONDecoder().decode(GetVaultedPaymentMethodsResponse.self, from: response!)
+                let value = try JSONDecoder().decode(Response.Body.VaultedPaymentMethods.self, from: response!)
                 seal.fulfill(value)
             } catch {
                 seal.reject(error)
@@ -59,7 +59,11 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 //        }
     }
 
-    func fetchConfiguration(clientToken: DecodedClientToken, requestParameters: PrimerAPIConfiguration.API.RequestParameters?, completion: @escaping (Result<PrimerAPIConfiguration, Error>) -> Void) {
+    func fetchConfiguration(
+        clientToken: DecodedClientToken,
+        requestParameters: Request.URLParameters.Configuration?,
+        completion: @escaping (Result<PrimerAPIConfiguration, Error>) -> Void)
+    {
         isCalled = true
         guard let response = response else { return }
 
@@ -83,43 +87,43 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 //        }
 //    }
 
-    func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: PayPalCreateOrderRequest, completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
+    func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder, completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(PayPalCreateOrderResponse.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.PayPal.CreateOrder.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
 
-    func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: PayPalCreateBillingAgreementRequest, completion: @escaping (Result<PayPalCreateBillingAgreementResponse, Error>) -> Void) {
+    func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement, completion: @escaping (Result<Response.Body.PayPal.CreateBillingAgreement, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(PayPalCreateBillingAgreementResponse.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.PayPal.CreateBillingAgreement.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
 
-    func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: PayPalConfirmBillingAgreementRequest, completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
+    func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement, completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(PayPalConfirmBillingAgreementResponse.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.PayPal.ConfirmBillingAgreement.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
 
-    func createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: KlarnaCreatePaymentSessionAPIRequest, completion: @escaping (Result<KlarnaCreatePaymentSessionAPIResponse, Error>) -> Void) {
+    func createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession, completion: @escaping (Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void) {
         isCalled = true
 
         guard throwsError == false else {
@@ -129,14 +133,14 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(KlarnaCreatePaymentSessionAPIResponse.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.Klarna.CreatePaymentSession.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
 
-    func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: CreateKlarnaCustomerTokenAPIRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+    func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken, completion: @escaping (Result<Response.Body.Klarna.CustomerToken, Error>) -> Void) {
         isCalled = true
 
         guard throwsError == false else {
@@ -146,14 +150,14 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
         guard let response = response else { return }
         do {
-            let value = try JSONDecoder().decode(KlarnaCustomerTokenAPIResponse.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.Klarna.CustomerToken.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
 
-    func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: KlarnaFinalizePaymentSessionRequest, completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+    func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession, completion: @escaping (Result<Response.Body.Klarna.CustomerToken, Error>) -> Void) {
         isCalled = true
 
         guard throwsError == false else {
@@ -164,19 +168,19 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(KlarnaCustomerTokenAPIResponse.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.Klarna.CustomerToken.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
 
-    func tokenizePaymentMethod(clientToken: DecodedClientToken, paymentMethodTokenizationRequest: TokenizationRequest, completion: @escaping (Result<PaymentMethodToken, Error>) -> Void) {
+    func tokenizePaymentMethod(clientToken: DecodedClientToken, tokenizationRequestBody: Request.Body.Tokenization, completion: @escaping (Result<PrimerPaymentMethodTokenData, Error>) -> Void) {
         isCalled = true
         guard let response = response else { return }
 
         do {
-            let value = try JSONDecoder().decode(PaymentMethodToken.self, from: response)
+            let value = try JSONDecoder().decode(PrimerPaymentMethodTokenData.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
@@ -185,21 +189,21 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
     func createApayaSession(
         clientToken: DecodedClientToken,
-        request: Apaya.CreateSessionAPIRequest,
-        completion: @escaping (Result<Apaya.CreateSessionAPIResponse, Error>) -> Void
+        request: Request.Body.Apaya.CreateSession,
+        completion: @escaping (Result<Response.Body.Apaya.CreateSession, Error>) -> Void
     ) {
         isCalled = true
         guard let response = response else { return }
         
         do {
-            let value = try JSONDecoder().decode(Apaya.CreateSessionAPIResponse.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.Apaya.CreateSession.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
     
-    func listAdyenBanks(clientToken: DecodedClientToken, request: BankTokenizationSessionRequest, completion: @escaping (Result<[Bank], Error>) -> Void) {
+    func listAdyenBanks(clientToken: DecodedClientToken, request: Request.Body.Adyen.BanksList, completion: @escaping (Result<[Response.Body.Adyen.Bank], Error>) -> Void) {
         
     }
     
@@ -211,7 +215,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         
     }
     
-    func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
+    func threeDSBeginAuth(clientToken: DecodedClientToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
@@ -244,7 +248,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void) {
+    func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
@@ -253,7 +257,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
         
         do {
-            let value = try JSONDecoder().decode(PayPal.PayerInfo.Response.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.PayPal.PayerInfo.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
@@ -261,7 +265,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
     }
 
-    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Payment.CreateRequest, completion: @escaping (Result<Payment.Response, Error>) -> Void) {
+    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Request.Body.Payment.Create, completion: @escaping (Result<Response.Body.Payment, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
@@ -270,14 +274,14 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
         
         do {
-            let value = try JSONDecoder().decode(Payment.Response.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.Payment.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
         }
     }
     
-    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Payment.ResumeRequest, completion: @escaping (_ result: Result<Payment.Response, Error>) -> Void) {
+    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (_ result: Result<Response.Body.Payment, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
@@ -286,7 +290,7 @@ internal class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
         
         do {
-            let value = try JSONDecoder().decode(Payment.Response.self, from: response)
+            let value = try JSONDecoder().decode(Response.Body.Payment.self, from: response)
             completion(.success(value))
         } catch {
             completion(.failure(error))
@@ -316,7 +320,7 @@ extension MockPrimerAPIClient {
 
 extension MockPrimerAPIClient {
     
-    func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodToken: PaymentMethodToken, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
+    func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         isCalled = true
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])
@@ -349,7 +353,7 @@ extension MockPrimerAPIClient {
         }
     }
     
-    func validateClientToken(request: ClientTokenValidationRequest, completion: @escaping (Result<SuccessResponse, Error>) -> Void) {
+    func validateClientToken(request: Request.Body.ClientTokenValidation, completion: @escaping (Result<SuccessResponse, Error>) -> Void) {
         
         guard let response = response else {
             let nsErr = NSError(domain: "mock", code: 100, userInfo: [NSLocalizedDescriptionKey: "Mocked response needs to be set"])

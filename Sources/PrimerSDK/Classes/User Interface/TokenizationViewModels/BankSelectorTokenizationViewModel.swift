@@ -12,13 +12,13 @@ import UIKit
 
 class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     
-    internal private(set) var banks: [Bank] = []
-    internal private(set) var dataSource: [Bank] = [] {
+    internal private(set) var banks: [AdyenBank] = []
+    internal private(set) var dataSource: [AdyenBank] = [] {
         didSet {
             tableView.reloadData()
         }
     }
-    private var bankSelectionCompletion: ((Bank) -> Void)?
+    private var bankSelectionCompletion: ((AdyenBank) -> Void)?
     private var tokenizationService: TokenizationServiceProtocol?
     override func validate() throws {
         guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
@@ -34,7 +34,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
      
      It must be set before the user taps on a cell, and nullified when a **paymentMethod** is returned.
      */
-    fileprivate var tmpTokenizationCallback: ((_ paymentMethod: PaymentMethodToken?, _ err: Error?) -> Void)?
+    fileprivate var tmpTokenizationCallback: ((_ paymentMethod: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void)?
     
     internal lazy var tableView: UITableView = {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -68,7 +68,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         return textField
     }()
     
-    private var selectedBank: Bank?
+    private var selectedBank: AdyenBank?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -207,7 +207,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
     
-    private func fetchBanks() -> Promise<[Bank]> {
+    private func fetchBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -227,7 +227,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             }
                     
             let client: PrimerAPIClientProtocol = PrimerAPIClient()
-            let request = BankTokenizationSessionRequest(
+            let request = Request.Body.Adyen.BanksList(
                 paymentMethodConfigId: config.id!,
                 parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
             
@@ -243,7 +243,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
     
-    private func fetchPaymentMethodToken() -> Promise<PaymentMethodToken> {
+    private func fetchPaymentMethodToken() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.tmpTokenizationCallback = { (paymentMethod, err) in
                 if let err = err {
@@ -271,38 +271,37 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
         }
     }
 
-    private func tokenize(bank: Bank, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
-        let req = BankSelectorTokenizationRequest(
-            paymentInstrument: PaymentInstrument(
-                paymentMethodConfigId: self.config.id!,
-                sessionInfo: BankSelectorSessionInfo(issuer: bank.id),
-                type: "OFF_SESSION_PAYMENT",
-                paymentMethodType: config.type))
-        
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+    private func tokenize(bank: AdyenBank, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
+        guard ClientTokenService.decodedClientToken != nil else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
         }
         
-        let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-        apiClient.tokenizePaymentMethod(
-            clientToken: decodedClientToken,
-            paymentMethodTokenizationRequest: req) { result in
-                switch result {
-                case .success(let paymentMethodTokenData):
-                    self.paymentMethodTokenData = paymentMethodTokenData
-                    completion(self.paymentMethodTokenData, nil)
-                case .failure(let err):
-                    completion(nil, err)
-                }
-            }
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+        let requestBody = Request.Body.Tokenization(
+            paymentInstrument: OffSessionPaymentInstrument(
+                paymentMethodConfigId: self.config.id!,
+                paymentMethodType: config.type,
+                sessionInfo: BankSelectorSessionInfo(issuer: bank.id)))
+        
+        firstly {
+            tokenizationService.tokenize(requestBody: requestBody)
+        }
+        .done { paymentMethodTokenData in
+            self.paymentMethodTokenData = paymentMethodTokenData
+            completion(self.paymentMethodTokenData, nil)
+        }
+        .catch { err in
+            completion(nil, err)
+        }
     }
     
 }
 
 extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataSource.count
     }
@@ -321,6 +320,7 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
 }
 
 extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
+    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if string == "\n" {
             // Keyboard's return button tapoped
@@ -341,7 +341,7 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
             return true
         }
         
-        var bankResults: [Bank] = []
+        var bankResults: [AdyenBank] = []
         
         for bank in banks {
             if bank.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {

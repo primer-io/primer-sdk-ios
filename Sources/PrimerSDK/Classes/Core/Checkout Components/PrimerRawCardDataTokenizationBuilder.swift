@@ -82,7 +82,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         self.rawDataManager = rawDataManager
     }
     
-    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<TokenizationRequest> {
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
             
             guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
@@ -99,26 +99,15 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 return
             }
             
-            let paymentInstrument = PaymentInstrument(
-                number: PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String,
+            let paymentInstrument = CardPaymentInstrument(
+                number: PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as! String,
                 cvv: rawData.cvv,
                 expirationMonth: rawData.expiryMonth,
                 expirationYear: rawData.expiryYear,
-                cardholderName: rawData.cardholderName,
-                paypalOrderId: nil,
-                paypalBillingAgreementId: nil,
-                shippingAddress: nil,
-                externalPayerInfo: nil,
-                paymentMethodConfigId: nil,
-                token: nil,
-                sourceConfig: nil,
-                gocardlessMandateId: nil,
-                klarnaAuthorizationToken: nil,
-                klarnaCustomerToken: nil,
-                sessionData: nil)
+                cardholderName: rawData.cardholderName)
             
-            let request = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: nil)
-            seal.fulfill(request)
+            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+            seal.fulfill(requestBody)
         }
     }
     

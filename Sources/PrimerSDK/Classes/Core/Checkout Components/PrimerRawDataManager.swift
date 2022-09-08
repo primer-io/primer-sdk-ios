@@ -26,7 +26,7 @@ protocol PrimerRawDataTokenizationBuilderProtocol {
     
     init(paymentMethodType: String)
     func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager)
-    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<TokenizationRequest>
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization>
     func validateRawData(_ data: PrimerRawData) -> Promise<Void>
 }
 
@@ -109,12 +109,13 @@ extension PrimerHeadlessUniversalCheckout {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
             }
-            .then { () -> Promise<TokenizationRequest> in
+            .then { () -> Promise<Request.Body.Tokenization> in
                 return self.makeRequestBody()
             }
-            .then { requestbody -> Promise<PaymentMethodToken> in
+            .then { requestBody -> Promise<PrimerPaymentMethodTokenData> in
                 PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodType)
-                return self.tokenize(request: requestbody)
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                return tokenizationService.tokenize(requestBody: requestBody)
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -156,7 +157,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func makeRequestBody() -> Promise<TokenizationRequest> {
+        private func makeRequestBody() -> Promise<Request.Body.Tokenization> {
             
             return Promise { seal in
                 guard let rawData = self.rawData else {
@@ -171,24 +172,6 @@ extension PrimerHeadlessUniversalCheckout {
                     seal.fulfill(requestbody)
                 }.catch { err in
                     seal.reject(err)
-                }
-            }
-        }
-        
-        private func tokenize(request: TokenizationRequest) -> Promise<PrimerPaymentMethodTokenData> {
-            return Promise { seal in
-                let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-                apiClient.tokenizePaymentMethod(clientToken: ClientTokenService.decodedClientToken!, paymentMethodTokenizationRequest: request) { result in
-                    switch result {
-                    case .success(let paymentMethodTokenData):
-                        self.paymentMethodTokenData = paymentMethodTokenData
-                        seal.fulfill(paymentMethodTokenData)
-                        
-                    case .failure(let err):
-                        let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                        ErrorHandler.handle(error: containerErr)
-                        seal.reject(err)
-                    }
                 }
             }
         }
@@ -347,7 +330,7 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     
                     let threeDSService = ThreeDSService()
-                    threeDSService.perform3DS(paymentMethodToken: paymentMethodTokenData, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                    threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                         switch result {
                         case .success(let paymentMethodToken):
                             DispatchQueue.main.async {
@@ -481,10 +464,10 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Payment.Response?> {
+        private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
             return Promise { seal in
                 let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-                createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodData)) { paymentResponse, error in
+                createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
                     guard error == nil else {
                         seal.reject(error!)
                         return
@@ -507,10 +490,10 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Payment.Response?> {
+        private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
             return Promise { seal in
                 let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-                createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
+                createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
                     
                     guard error == nil else {
                         seal.reject(error!)
