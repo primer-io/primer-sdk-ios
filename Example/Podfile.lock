@@ -1,18 +1,35 @@
 PODS:
-  - PrimerSDK (2.7.0):
-    - PrimerSDK/Core (= 2.7.0)
-  - PrimerSDK/Core (2.7.0)
+  - KlarnaMobileSDK (2.2.2):
+    - KlarnaMobileSDK/full (= 2.2.2)
+  - KlarnaMobileSDK/full (2.2.2)
+  - Primer3DS (1.0.0)
+  - PrimerKlarnaSDK (1.0.0):
+    - KlarnaMobileSDK (= 2.2.2)
+  - PrimerSDK (2.8.0):
+    - PrimerSDK/Core (= 2.8.0)
+  - PrimerSDK/Core (2.8.0)
 
 DEPENDENCIES:
+  - Primer3DS
+  - PrimerKlarnaSDK (= 1.0.0)
   - PrimerSDK (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - KlarnaMobileSDK
+    - Primer3DS
+    - PrimerKlarnaSDK
 
 EXTERNAL SOURCES:
   PrimerSDK:
     :path: "../"
 
 SPEC CHECKSUMS:
-  PrimerSDK: 096edd2c51f34498c26faa8df71cf27881e0a0d2
+  KlarnaMobileSDK: 23b44390d06c6e3a90b5325bea6c10bf97ac6044
+  Primer3DS: 0b298ca54adb07e3f5ae3d74e574b6d3084e8a0d
+  PrimerKlarnaSDK: 33e693a1c74c83cbed34f7ea0c2c7de1ec7026b8
+  PrimerSDK: a563e184fb36eac147342fe0852001f035ae3d5a
 
-PODFILE CHECKSUM: 7794106bbe59c992dc7eba7a8d346f514d6cb39e
+PODFILE CHECKSUM: 22c96cf7bbab9eb2310ae6504e0bb79601a75f46
 
 COCOAPODS: 1.11.3
