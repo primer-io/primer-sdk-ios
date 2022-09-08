@@ -66,7 +66,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
-
+            
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
@@ -171,7 +171,10 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                 self.qrCode = decodedClientToken.qrCode
                 
                 firstly {
-                    self.presentPaymentMethodUserInterface()
+                    self.evaluateFireDidReceiveAdditionalInfoEvent()
+                }
+                .then { () -> Promise<Void> in
+                    self.evaluatePresentUserInterface()
                 }
                 .then { () -> Promise<Void> in
                     return self.awaitUserInput()
@@ -185,6 +188,78 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             } else {
                 let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 seal.reject(error)
+            }
+        }
+    }
+}
+
+extension QRCodeTokenizationViewModel {
+    
+    private func evaluatePresentUserInterface() -> Promise<Void> {
+        return Promise { seal in
+            
+            guard PrimerSettings.current.paymentHandling == .auto else {
+                seal.fulfill()
+                return
+            }
+            
+            _ = self.presentPaymentMethodUserInterface()
+            seal.fulfill()
+        }
+    }
+    
+    private func evaluateFireDidReceiveAdditionalInfoEvent() -> Promise<Void> {
+        return Promise { seal in
+            
+            let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
+            let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
+            var additionalInfo: PrimerCheckoutAdditionalInfo?
+            
+            switch self.config.type {
+            case PrimerPaymentMethodType.rapydPromptPay.rawValue,
+                PrimerPaymentMethodType.omisePromptPay.rawValue:
+                
+                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                guard let expiresAt = decodedClientToken.expiresAt else {
+                    let err = PrimerError.invalidValue(key: "decodedClientToken.expiresAt", value: decodedClientToken.expiresAt, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                guard let qrCodeString = decodedClientToken.qrCode,
+                      let qrCodeUrl = URL(string: qrCodeString) else {
+                    let err = PrimerError.invalidValue(key: "decodedClientToken.qrCode", value: decodedClientToken.qrCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                additionalInfo = PromptPayCheckoutAdditionalInfo(expiresAt: expiresAt,
+                                                                 qrCodeUrl: qrCodeUrl)
+            default:
+                log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.config.type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
+                break
+            }
+            
+            if isManualPaymentHandling {
+                
+                if let additionalInfo = additionalInfo {
+                    PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
+                    seal.fulfill()
+                } else {
+                    let err = PrimerError.invalidValue(key: "additionalInfo", value: additionalInfo, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                }
+            } else {
+                seal.fulfill()
             }
         }
     }

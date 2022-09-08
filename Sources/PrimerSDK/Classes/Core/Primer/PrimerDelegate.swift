@@ -102,6 +102,12 @@ internal class PrimerDelegateProxy {
         }
     }
     
+    static func primerDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo) {
+        DispatchQueue.main.async {
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo?(additionalInfo)
+        }
+    }
+    
     static func primerDidFailWithError(_ error: PrimerErrorProtocol, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
         DispatchQueue.main.async {
             if case .merchantError = (error as? PrimerError) {
