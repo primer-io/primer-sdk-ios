@@ -33,6 +33,7 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :run_tests_and_generate_code_coverage do
+    run_pod_install
     tests
     generate_code_coverage
   end
@@ -57,10 +58,7 @@ platform :ios do
       match_type: "development"
     )
 
-    cocoapods(
-      use_bundle_exec: true,
-      podfile: "Example/Podfile"
-    )
+    run_pod_install
 
     # Build for browserstack
     build_app(
@@ -92,6 +90,16 @@ platform :ios do
 
   ######################### PRIVATE LANES #########################
 
+  desc 'Run pod install'
+  lane :run_pod_install do
+
+    cocoapods(
+      use_bundle_exec: true,
+      podfile: "Example/Podfile"
+    )
+
+  end
+
   desc 'This action generates the code coverage and as Cobertura XML'
   lane :generate_code_coverage do
 
@@ -122,10 +130,7 @@ platform :ios do
   desc 'This action builds the app and uplads it to Appetize'
   private_lane :appetize_build_and_upload do
 
-    cocoapods(
-      use_bundle_exec: true,
-      podfile: "Example/Podfile"
-    )
+    run_pod_install
 
     build_app(
       scheme: app_scheme,
