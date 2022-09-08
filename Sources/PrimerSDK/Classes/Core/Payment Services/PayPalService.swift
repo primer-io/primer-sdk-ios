@@ -3,10 +3,10 @@
 import Foundation
 
 internal protocol PayPalServiceProtocol {
-    func startOrderSession(_ completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void)
+    func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void)
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
-    func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void)
-    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void)
+    func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void)
+    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void)
 }
 
 internal class PayPalService: PayPalServiceProtocol {
@@ -37,7 +37,7 @@ internal class PayPalService: PayPalServiceProtocol {
         return (decodedClientToken, url, configId)
     }
 
-    func startOrderSession(_ completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
+    func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
@@ -95,7 +95,7 @@ internal class PayPalService: PayPalServiceProtocol {
             urlScheme = urlScheme.replacingOccurrences(of: "://", with: "")
         }
 
-        let body = PayPalCreateOrderRequest(
+        let body = Request.Body.PayPal.CreateOrder(
             paymentMethodConfigId: configId,
             amount: amount,
             currencyCode: currency,
@@ -153,7 +153,7 @@ internal class PayPalService: PayPalServiceProtocol {
             urlScheme = urlScheme.replacingOccurrences(of: "://", with: "")
         }
 
-        let body = PayPalCreateBillingAgreementRequest(
+        let body = Request.Body.PayPal.CreateBillingAgreement(
             paymentMethodConfigId: configId,
             returnUrl: "\(urlScheme)://paypal-success",
             cancelUrl: "\(urlScheme)://paypal-cancel"
@@ -174,7 +174,7 @@ internal class PayPalService: PayPalServiceProtocol {
         }
     }
 
-    func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
+    func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void) {
         let state: AppStateProtocol = AppState.current
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -206,7 +206,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        let body = PayPalConfirmBillingAgreementRequest(paymentMethodConfigId: configId, tokenId: tokenId)
+        let body = Request.Body.PayPal.ConfirmBillingAgreement(paymentMethodConfigId: configId, tokenId: tokenId)
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
 
@@ -222,7 +222,7 @@ internal class PayPalService: PayPalServiceProtocol {
         }
     }
     
-    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void) {
+    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void) {
         let state: AppStateProtocol = AppState.current
         
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -246,7 +246,7 @@ internal class PayPalService: PayPalServiceProtocol {
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
         api.fetchPayPalExternalPayerInfo(
             clientToken: decodedClientToken,
-            payPalExternalPayerInfoRequestBody: PayPal.PayerInfo.Request(paymentMethodConfigId: configId, orderId: orderId)) { result in
+            payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)) { result in
                 switch result {
                 case .success(let response):
                     completion(.success(response))

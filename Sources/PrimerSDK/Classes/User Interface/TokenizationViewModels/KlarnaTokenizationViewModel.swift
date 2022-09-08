@@ -17,8 +17,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 #if canImport(PrimerKlarnaSDK)
     private var klarnaViewController: PrimerKlarnaViewController?
 #endif
-    private var klarnaPaymentSession: KlarnaCreatePaymentSessionAPIResponse?
-    private var klarnaCustomerTokenAPIResponse: KlarnaCustomerTokenAPIResponse?
+    private var klarnaPaymentSession: Response.Body.Klarna.CreatePaymentSession?
+    private var klarnaCustomerTokenAPIResponse: Response.Body.Klarna.CustomerToken?
     private var klarnaPaymentSessionCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
     
@@ -110,7 +110,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<KlarnaCreatePaymentSessionAPIResponse> in
+            .then { () -> Promise<Response.Body.Klarna.CreatePaymentSession> in
                 return self.createPaymentSession()
             }
             .then { session -> Promise<Void> in
@@ -120,7 +120,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.awaitUserInput()
             }
-            .then { () -> Promise<KlarnaCustomerTokenAPIResponse> in
+            .then { () -> Promise<Response.Body.Klarna.CustomerToken> in
                 return self.authorizePaymentSession(authorizationToken: self.authorizationToken!)
             }
             .done { klarnaCustomerTokenAPIResponse in
@@ -227,32 +227,27 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            var instrument: PaymentInstrument
-            var request: PaymentMethodTokenizationRequest
+            var requestBody: Request.Body.Tokenization
             
             if Primer.shared.intent == .vault {
-                instrument = PaymentInstrument(
+                let paymentInstrument = KlarnaPaymentSessionPaymentInstrument(
                     klarnaAuthorizationToken: self.authorizationToken!,
                     sessionData: self.klarnaCustomerTokenAPIResponse!.sessionData)
                 
-                request = PaymentMethodTokenizationRequest(
-                    paymentInstrument: instrument,
-                    paymentFlow: .vault)
+                requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
             } else {
-                instrument = PaymentInstrument(
+                let paymentInstrument = KlarnaCustomerTokenPaymentInstrument(
                     klarnaCustomerToken: self.klarnaCustomerTokenAPIResponse!.customerTokenId,
                     sessionData: self.klarnaCustomerTokenAPIResponse!.sessionData)
                 
-                request = PaymentMethodTokenizationRequest(
-                    paymentInstrument: instrument,
-                    paymentFlow: .checkout)
+                requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             }
             
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             
             firstly {
-                tokenizationService.tokenize(request: request)
+                tokenizationService.tokenize(requestBody: requestBody)
             }
             .done { paymentMethodTokenData in
                 seal.fulfill(paymentMethodTokenData)
@@ -263,7 +258,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    private func createPaymentSession() -> Promise<KlarnaCreatePaymentSessionAPIResponse> {
+    private func createPaymentSession() -> Promise<Response.Body.Klarna.CreatePaymentSession> {
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -331,7 +326,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
-            let body = KlarnaCreatePaymentSessionAPIRequest(
+            let body = Request.Body.Klarna.CreatePaymentSession(
                 paymentMethodConfigId: configId,
                 sessionType: .recurringPayment,
                 localeData: PrimerSettings.current.localeData,
@@ -370,7 +365,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    private func authorizePaymentSession(authorizationToken: String) -> Promise<KlarnaCustomerTokenAPIResponse> {
+    private func authorizePaymentSession(authorizationToken: String) -> Promise<Response.Body.Klarna.CustomerToken> {
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -389,7 +384,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return
             }
             
-            let body = CreateKlarnaCustomerTokenAPIRequest(
+            let body = Request.Body.Klarna.CreateCustomerToken(
                 paymentMethodConfigId: configId,
                 sessionId: sessionId,
                 authorizationToken: authorizationToken,
@@ -410,7 +405,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    private func finalizePaymentSession() -> Promise<KlarnaCustomerTokenAPIResponse> {
+    private func finalizePaymentSession() -> Promise<Response.Body.Klarna.CustomerToken> {
         return Promise { seal in
             self.finalizePaymentSession { result in
                 switch result {
@@ -423,7 +418,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    private func finalizePaymentSession(completion: @escaping (Result<KlarnaCustomerTokenAPIResponse, Error>) -> Void) {
+    private func finalizePaymentSession(completion: @escaping (Result<Response.Body.Klarna.CustomerToken, Error>) -> Void) {
         guard let decodedClientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -441,7 +436,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return
         }
         
-        let body = KlarnaFinalizePaymentSessionRequest(paymentMethodConfigId: configId, sessionId: sessionId)
+        let body = Request.Body.Klarna.FinalizePaymentSession(paymentMethodConfigId: configId, sessionId: sessionId)
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession")
         
         let api: PrimerAPIClientProtocol = DependencyContainer.resolve()

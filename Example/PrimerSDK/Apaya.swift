@@ -14,7 +14,7 @@ class ApayaViewModel {
     var carrier: ApayaCarrier
     var hashedIdentifier: String?
     
-    init?(paymentMethod: PaymentMethodToken) {
+    init?(paymentMethod: PrimerPaymentMethodTokenData) {
         guard paymentMethod.paymentInstrumentType == .apayaToken else { return nil }
         guard let mcc = paymentMethod.paymentInstrumentData?.mcc,
               let mnc = paymentMethod.paymentInstrumentData?.mnc,

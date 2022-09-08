@@ -17,7 +17,7 @@ public protocol CardComponentsManagerDelegate {
     @objc optional func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void)
     /// The cardComponentsManager(_:onTokenizeSuccess:) is the only required method, and it will return the payment method token (which
     /// contains all the information needed)
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PaymentMethodToken)
+    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData)
     /// The cardComponentsManager(_:tokenizationFailedWith:) will return any tokenization errors that have occured.
     @objc optional func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error])
     /// The cardComponentsManager(_:isLoading:) will return true when the CardComponentsManager is performing an async operation and waiting for a result, false
@@ -64,7 +64,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     }
     internal var paymentMethodsConfig: PrimerAPIConfiguration?
     private(set) public var isLoading: Bool = false
-    internal private(set) var paymentMethod: PaymentMethodToken?
+    internal private(set) var paymentMethod: PrimerPaymentMethodTokenData?
     
     deinit {
         setIsLoading(false)
@@ -245,99 +245,87 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             .done { paymentMethodsConfig in
                 self.paymentMethodsConfig = paymentMethodsConfig
                 
-                let paymentInstrument = PaymentInstrument(
+                let paymentInstrument = CardPaymentInstrument(
                     number: self.cardnumberField.cardnumber,
                     cvv: self.cvvField.cvv,
                     expirationMonth: self.expiryDateField.expiryMonth!,
                     expirationYear: "20" + self.expiryDateField.expiryYear!,
-                    cardholderName: self.cardholderField?.cardholderName,
-                    paypalOrderId: nil,
-                    paypalBillingAgreementId: nil,
-                    shippingAddress: nil,
-                    externalPayerInfo: nil,
-                    paymentMethodConfigId: nil,
-                    token: nil,
-                    sourceConfig: nil,
-                    gocardlessMandateId: nil,
-                    klarnaAuthorizationToken: nil,
-                    klarnaCustomerToken: nil,
-                    sessionData: nil)
+                    cardholderName: self.cardholderField?.cardholderName)
                 
-                let paymentMethodTokenizationRequest = PaymentMethodTokenizationRequest(paymentInstrument: paymentInstrument, paymentFlow: Primer.shared.intent == .vault ? .vault : .checkout)
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
-                let apiClient: PrimerAPIClientProtocol = DependencyContainer.resolve()
-                apiClient.tokenizePaymentMethod(clientToken: self.decodedClientToken!, paymentMethodTokenizationRequest: paymentMethodTokenizationRequest) { result in
-                    switch result {
-                    case .success(let paymentMethodToken):
-                        
-                        var isThreeDSEnabled: Bool = false
-                        if AppState.current.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
-                            isThreeDSEnabled = true
-                        }
-                        
-                        /// 3DS requirements on tokenization are:
-                        ///     - The payment method has to be a card
-                        ///     - It has to be a vault flow
-                        ///     - is3DSOnVaultingEnabled has to be enabled by the developer
-                        ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
-                        if paymentMethodToken.paymentInstrumentType == .paymentCard,
-                           Primer.shared.intent == .vault,
-                           PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.is3DSOnVaultingEnabled,
-                           paymentMethodToken.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
-                           isThreeDSEnabled {
-#if canImport(Primer3DS)
-                            let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
-                            DependencyContainer.register(threeDSService)
-                            
-                            var beginAuthExtraData: ThreeDS.BeginAuthExtraData
-                            do {
-                                beginAuthExtraData = try ThreeDSService.buildBeginAuthExtraData()
-                            } catch {
-                                self.paymentMethod = paymentMethodToken
-                                self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
-                                return
-                            }
-                            
-                            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                                ErrorHandler.handle(error: err)
-                                self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
-                                return
-                            }
-                            
-                            threeDSService.perform3DS(
-                                paymentMethodToken: paymentMethodToken,
-                                protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2,
-                                beginAuthExtraData: beginAuthExtraData,
-                                sdkDismissed: { () in
-                                    
-                                }, completion: { result in
-                                    switch result {
-                                    case .success(let res):
-                                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: res.0)
-                                        
-                                    case .failure(let err):
-                                        // Even if 3DS fails, continue...
-                                        log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
-                                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
-                                        
-                                    }
-                                })
-                            
-#else
-                            print("\nWARNING!\nCannot perform 3DS, Primer3DS SDK is missing. Continue without 3DS\n")
-                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
-#endif
-                            
-                        } else {
-                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodToken)
-                        }
-                        
-                    case .failure(let err):
-                        let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                        ErrorHandler.handle(error: containerErr)
-                        self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
+                firstly {
+                    return tokenizationService.tokenize(requestBody: requestBody)
+                }
+                .done { paymentMethodTokenData in
+                    var isThreeDSEnabled: Bool = false
+                    if AppState.current.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                        isThreeDSEnabled = true
                     }
+                    
+                    /// 3DS requirements on tokenization are:
+                    ///     - The payment method has to be a card
+                    ///     - It has to be a vault flow
+                    ///     - is3DSOnVaultingEnabled has to be enabled by the developer
+                    ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
+                    if paymentMethodTokenData.paymentInstrumentType == .paymentCard,
+                       Primer.shared.intent == .vault,
+                       PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.is3DSOnVaultingEnabled,
+                       paymentMethodTokenData.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
+                       isThreeDSEnabled {
+#if canImport(Primer3DS)
+                        let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
+                        DependencyContainer.register(threeDSService)
+                        
+                        var beginAuthExtraData: ThreeDS.BeginAuthExtraData
+                        do {
+                            beginAuthExtraData = try ThreeDSService.buildBeginAuthExtraData()
+                        } catch {
+                            self.paymentMethod = paymentMethodTokenData
+                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
+                            return
+                        }
+                        
+                        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                            ErrorHandler.handle(error: err)
+                            self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
+                            return
+                        }
+                        
+                        threeDSService.perform3DS(
+                            paymentMethodTokenData: paymentMethodTokenData,
+                            protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2,
+                            beginAuthExtraData: beginAuthExtraData,
+                            sdkDismissed: { () in
+                                
+                            }, completion: { result in
+                                switch result {
+                                case .success(let res):
+                                    self.delegate?.cardComponentsManager(self, onTokenizeSuccess: res.0)
+                                    
+                                case .failure(let err):
+                                    // Even if 3DS fails, continue...
+                                    log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
+                                    self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
+                                    
+                                }
+                            })
+                        
+#else
+                        print("\nWARNING!\nCannot perform 3DS, Primer3DS SDK is missing. Continue without 3DS\n")
+                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
+#endif
+                        
+                    } else {
+                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
+                    }
+                }
+                .catch { err in
+                    let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: containerErr)
+                    self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 }
             }
             .catch { err in

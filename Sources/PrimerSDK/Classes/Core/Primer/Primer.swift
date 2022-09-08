@@ -56,6 +56,11 @@ public class Primer {
         return Primer3DS.application(app, open: url, options: options)
 #endif
         
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        if url.absoluteString == settings.paymentMethodOptions.urlScheme {
+            NotificationCenter.default.post(name: Notification.Name.urlSchemeRedirect, object: nil)
+        }
+        
         return false
     }
     

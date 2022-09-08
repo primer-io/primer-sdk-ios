@@ -136,7 +136,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    private func dispatchActions(config: PrimerPaymentMethod, selectedPaymentMethod: PaymentMethodToken) -> Promise<Void> {
+    private func dispatchActions(config: PrimerPaymentMethod, selectedPaymentMethod: PrimerPaymentMethodTokenData) -> Promise<Void> {
         return Promise { seal in
             var network: String?
             if config.type == PrimerPaymentMethodType.paymentCard.rawValue {
@@ -180,7 +180,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    private func exchangePaymentMethodToken(_ paymentMethodToken: PaymentMethodToken) -> Promise<PaymentMethodToken> {
+    private func exchangePaymentMethodToken(_ paymentMethodToken: PrimerPaymentMethodTokenData) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -293,12 +293,12 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     
     // Resume payment with Resume payment ID
     
-    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Payment.Response?> {
+    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         
         return Promise { seal in
             
             let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Payment.ResumeRequest(token: resumeToken)) { paymentResponse, error in
+            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
                 
                 guard error == nil else {
                     seal.reject(error!)
@@ -423,7 +423,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 }
                 
                 let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodToken: paymentMethodTokenData, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
                     case .success(let paymentMethodToken):
                         DispatchQueue.main.async {
@@ -459,10 +459,10 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Payment.Response?> {
+    private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
-            createResumePaymentService.createPayment(paymentRequest: Payment.CreateRequest(token: paymentMethodData)) { paymentResponse, error in
+            createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
                 guard error == nil else {
                     seal.reject(error!)
                     return

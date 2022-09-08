@@ -15,13 +15,7 @@ struct ApplePayRequest {
 }
 
 struct ApplePayPaymentResponse {
-    let token: ApplePayPaymentResponseToken
-}
-
-struct ApplePayPaymentResponseToken: Codable {
-    let paymentMethod: ApplePayPaymentResponsePaymentMethod
-    let transactionIdentifier: String
-    let paymentData: ApplePayPaymentResponseTokenPaymentData
+    let token: ApplePayPaymentInstrument.PaymentResponseToken
 }
 
 struct ApplePayPaymentResponsePaymentMethod: Codable {
