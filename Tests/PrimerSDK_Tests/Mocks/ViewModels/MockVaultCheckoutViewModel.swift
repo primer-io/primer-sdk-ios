@@ -11,10 +11,6 @@
 import XCTest
 
 class MockVaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
-    func loadConfig() -> Promise<Void> {
-        return Promise()
-    }
-    
     var selectedPaymentMethod: PrimerPaymentMethodTokenData?
     
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] {

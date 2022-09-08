@@ -31,9 +31,9 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     @objc
     override func receivedNotification(_ notification: Notification) {
         switch notification.name.rawValue {
-        case "URLSchemeRedirect":
+        case Notification.Name.urlSchemeRedirect.rawValue:
             self.webViewController?.dismiss(animated: true)
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         default:
             super.receivedNotification(notification)
         }
@@ -55,7 +55,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             })
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name("URLSchemeRedirect"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.urlSchemeRedirect, object: nil)
         
         super.start()
     }
