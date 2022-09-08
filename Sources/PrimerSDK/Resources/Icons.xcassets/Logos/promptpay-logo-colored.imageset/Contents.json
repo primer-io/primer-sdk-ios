@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "prompt-pay-logo.png",
+      "filename" : "promptpay-logo.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "prompt-pay-logo@2x.png",
+      "filename" : "promptpay-logo@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "prompt-pay-logo@3x.png",
+      "filename" : "promptpay-logo@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

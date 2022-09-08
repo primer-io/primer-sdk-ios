@@ -98,7 +98,8 @@ class PrimerPaymentMethod: Codable {
                 return PrimerTestPaymentMethodTokenizationViewModel(config: self)
                 
             case PrimerPaymentMethodType.xfersPayNow.rawValue,
-                PrimerPaymentMethodType.rapydPromptPay.rawValue:
+                PrimerPaymentMethodType.rapydPromptPay.rawValue,
+                PrimerPaymentMethodType.omisePromptPay.rawValue:
                 return QRCodeTokenizationViewModel(config: self)
                 
             default:
