@@ -98,8 +98,7 @@ class MyViewController: UIViewController {
         super.viewDidLoad()
  
         // Initialize the SDK with the default settings.
-        let settings = PrimerSettings()
-        Primer.shared.configure(settings: settings, delegate: self)
+        Primer.shared.configure(delegate: self)
     }
 }
  
