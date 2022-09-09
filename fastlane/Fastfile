@@ -119,7 +119,8 @@ platform :ios do
   desc 'This action runs XCTests'
   private_lane :tests do
     run_tests(workspace: app_workspace,
-              scheme: app_test_scheme)
+              scheme: app_test_scheme,
+              fail_build: false)
   end
 
   desc 'This action run UITests'
