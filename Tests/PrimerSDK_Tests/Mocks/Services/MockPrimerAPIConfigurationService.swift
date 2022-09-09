@@ -11,7 +11,7 @@
 
 class MockPrimerAPIConfigurationService: PrimerAPIConfigurationServiceProtocol {
     
-    var viewModels: [ExternalPaymentMethodTokenizationViewModel] = []
+    var viewModels: [WebRedirectPaymentMethodTokenizationViewModel] = []
     var fetchConfigCalled = false
     let requestDisplayMetadata: Bool?
     

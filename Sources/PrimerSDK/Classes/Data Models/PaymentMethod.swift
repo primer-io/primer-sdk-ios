@@ -61,7 +61,7 @@ class PrimerPaymentMethod: Codable {
     var hasUnknownSurcharge: Bool = false
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
         if implementationType == .webRedirect {
-            return ExternalPaymentMethodTokenizationViewModel(config: self)
+            return WebRedirectPaymentMethodTokenizationViewModel(config: self)
             
         } else {
             switch self.type {

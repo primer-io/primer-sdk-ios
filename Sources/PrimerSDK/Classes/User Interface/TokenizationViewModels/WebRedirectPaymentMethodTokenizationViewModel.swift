@@ -1,5 +1,5 @@
 //
-//  AsyncPaymentMethodTokenizationViewModel.swift
+//  WebRedirectPaymentMethodTokenizationViewModel.swift
 //  PrimerSDK
 //
 //  Created by Evangelos Pittas on 11/10/21.
@@ -11,7 +11,7 @@ import Foundation
 import SafariServices
 import UIKit
 
-class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private var redirectUrl: URL!
     private var statusUrl: URL!
@@ -240,7 +240,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
 }
 
-extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
+extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         self.didCancel?()
