@@ -6,6 +6,7 @@ internal protocol PrimerAPIConfigurationServiceProtocol {
     init(requestDisplayMetadata: Bool?)
     func fetchConfiguration() -> Promise<Void>
     func fetchConfigurationIfNeeded() -> Promise<Void>
+    func fetchConfigurationAndVaultedPaymentMethods() -> Promise<Void>
 }
 
 internal class PrimerAPIConfigurationService: PrimerAPIConfigurationServiceProtocol {
@@ -62,6 +63,22 @@ internal class PrimerAPIConfigurationService: PrimerAPIConfigurationServiceProto
                 }
             }
         }
+    }
+    
+    func fetchConfigurationAndVaultedPaymentMethods() -> Promise<Void> {
+        let vaultService: VaultServiceProtocol = VaultService()
+        let vaultedPaymentMethodsPromise = vaultService.fetchVaultedPaymentMethods()
+        let fetchConfigurationPromise = self.fetchConfiguration()
+        return when(fulfilled: [fetchConfigurationPromise, vaultedPaymentMethodsPromise])
+        
+//
+//        return Promise { seal in
+//
+//
+//            let vaultService: VaultServiceProtocol = VaultService()
+//            let vaultedPaymentMethodsPromise = vaultService.fetchVaultedPaymentMethods()
+//            let fetchConfigurationPromise = self.fetchConfiguration()
+//        }
     }
 }
 
