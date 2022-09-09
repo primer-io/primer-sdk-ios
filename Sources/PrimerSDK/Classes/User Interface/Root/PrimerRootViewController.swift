@@ -53,11 +53,7 @@ internal class PrimerUIManager {
             }
             .then { () -> Promise<Void> in
                 let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
-                return configurationService.fetchConfiguration()
-            }
-            .then { () -> Promise<Void> in
-                let vaultService: VaultServiceProtocol = VaultService()
-                return vaultService.fetchVaultedPaymentMethods()
+                return configurationService.fetchConfigurationAndVaultedPaymentMethods()
             }
             .then { () -> Promise<Void> in
                 return PrimerUIManager.validatePaymentUIPresentation()

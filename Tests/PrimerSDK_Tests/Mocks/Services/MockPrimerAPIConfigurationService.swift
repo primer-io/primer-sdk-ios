@@ -30,6 +30,10 @@ class MockPrimerAPIConfigurationService: PrimerAPIConfigurationServiceProtocol {
             seal.fulfill()
         }
     }
+    
+    func fetchConfigurationAndVaultedPaymentMethods() -> Promise<Void> {
+        return Promise()
+    }
 }
 
 #endif
