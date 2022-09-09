@@ -33,6 +33,7 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :run_tests_and_generate_code_coverage do
+    sh ("(cd Example; pod deintegrate)")
     run_pod_install
     tests
     generate_code_coverage
@@ -91,17 +92,18 @@ platform :ios do
   ######################### PRIVATE LANES #########################
 
   desc 'Run pod install'
-  lane :run_pod_install do
+  private_lane :run_pod_install do
 
     cocoapods(
       use_bundle_exec: true,
-      podfile: "Example/Podfile"
+      podfile: "Example/Podfile",
+      clean_install: true
     )
 
   end
 
   desc 'This action generates the code coverage and as Cobertura XML'
-  lane :generate_code_coverage do
+  private_lane :generate_code_coverage do
 
     slather(
       use_bundle_exec: true,
@@ -115,13 +117,13 @@ platform :ios do
   end
 
   desc 'This action runs XCTests'
-  lane :tests do
+  private_lane :tests do
     run_tests(workspace: app_workspace,
               scheme: app_test_scheme)
   end
 
   desc 'This action run UITests'
-  lane :ui_tests do
+  private_lane :ui_tests do
     run_tests(workspace: app_workspace,
               devices: ["iPhone SE", "iPhone 8"],
               scheme: app_ui_test_scheme)
