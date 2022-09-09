@@ -260,7 +260,6 @@
 		BF4DBCED2F06ACB3B8B698A8F455AC6F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D245E0514AAC1A2B9A6D5EA2F383E90F /* UIKit.framework */; };
 		C0C358ED1CF6793B54CA2989AE1422E0 /* PrimerTestPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C04A7D2D050F58EF68A74FBDC31CCA0 /* PrimerTestPaymentMethodTokenizationViewModel.swift */; };
 		C0D55203FDFCE0B77F3FFA160A2048CD /* PrimerImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B29E08BD7DDFBB36180F5CFDEFC58F /* PrimerImageView.swift */; };
-		C1201FB6FAEA93D1C9C27A039232BD47 /* ExternalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2849062D7DA4B990DAAD08FC89B196 /* ExternalViewModel.swift */; };
 		C15547293C99AF94CC97D1B19E868C60 /* PrimerSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21203EE757A5D2FE740F6345EEF18ADF /* PrimerSource.swift */; };
 		C1744FA61FBDE4009D43FD0344675303 /* PrimerCardFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FCB2D000F4662B63A970142728796E /* PrimerCardFormViewController.swift */; };
 		C1B48651C7E7F041924494E88DB6CB9F /* FormPaymentMethodTokenizationViewModel+FormViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = E358BDCC83FD188797341946015A08EC /* FormPaymentMethodTokenizationViewModel+FormViews.swift */; };
@@ -704,7 +703,6 @@
 		DA6D91A0478EC883063FEFE17F80BDA5 /* bg.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; path = bg.json; sourceTree = "<group>"; };
 		DA947B794B007F2B060CDB84703B550C /* CheckoutEventsNotifierModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CheckoutEventsNotifierModule.swift; sourceTree = "<group>"; };
 		DC082EC6C0D7FF8818DEE7E698517D70 /* PrimerTheme+Borders.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PrimerTheme+Borders.swift"; sourceTree = "<group>"; };
-		DC2849062D7DA4B990DAAD08FC89B196 /* ExternalViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExternalViewModel.swift; sourceTree = "<group>"; };
 		DC923521DEE1FE768E3E92FB0F7B7256 /* CardScannerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardScannerViewController.swift; sourceTree = "<group>"; };
 		DCB37DC0F1C41D9629735420A2506CC3 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		DCE569891F7E8AEBB71310D2B680C456 /* nb.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; path = nb.json; sourceTree = "<group>"; };
@@ -847,7 +845,6 @@
 			isa = PBXGroup;
 			children = (
 				37EEFCF92ADD309115AECBDA9BDCD6F1 /* CardButton.swift */,
-				DC2849062D7DA4B990DAAD08FC89B196 /* ExternalViewModel.swift */,
 			);
 			path = Primer;
 			sourceTree = "<group>";
@@ -2082,7 +2079,6 @@
 				E107E8757E87F00C86A2D5AF985956DE /* ErrorHandler.swift in Sources */,
 				81307EEBA1CC3F0F0C85A625425B0D9D /* ExpiryDateField.swift in Sources */,
 				466FFBD921C488002B73A32FE2FCC75E /* ExternalPaymentMethodTokenizationViewModel.swift in Sources */,
-				C1201FB6FAEA93D1C9C27A039232BD47 /* ExternalViewModel.swift in Sources */,
 				637406D6D5A1A0283B4DB2DEB9917327 /* Field.swift in Sources */,
 				5333FC1A199443559D59FA3AB75E0FDB /* FinallyWrappers.swift in Sources */,
 				EE46B893886DEB65CD4F02F1DB2C8026 /* firstly.swift in Sources */,
