@@ -178,6 +178,7 @@
 		818A488F96A2E827B657F6FB01779A72 /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1FF63CF2D0F443726BA609670BC0633D /* Icons.xcassets */; };
 		8317AAB161E6BD4FCC09A4D75AA34CCE /* ku.json in Resources */ = {isa = PBXBuildFile; fileRef = 47F15F173A1738F94129E62A8B1B4A3F /* ku.json */; };
 		83819D3560A04C4F6BA7B4D5D815A5C0 /* bs.json in Resources */ = {isa = PBXBuildFile; fileRef = FA28CE08EF940107B1BF818B9BFE83FD /* bs.json */; };
+		8419F30528CB4CA300876E33 /* PrimerUIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8419F30428CB4CA300876E33 /* PrimerUIManager.swift */; };
 		845C45761C8148552F48A15CFB17273C /* PrimerStateFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 024CB7FC14AEF1713E159F05B95A4CF8 /* PrimerStateFieldView.swift */; };
 		84E9B3373BEC4F9310AFCEA6410FE491 /* StateField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D9EB529732EB156303ECF9817090FA6 /* StateField.swift */; };
 		8613A5F09CE36B82B20EFE57EB593A6B /* et.json in Resources */ = {isa = PBXBuildFile; fileRef = 2B919D7D47688E8C7D8DF4E373726D41 /* et.json */; };
@@ -578,6 +579,7 @@
 		827DD6C639C173BAA25DEA64ADC74994 /* be.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; path = be.json; sourceTree = "<group>"; };
 		83B1ED2F180F7F8BCEE88B791150C22C /* ko.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; path = ko.json; sourceTree = "<group>"; };
 		83E1E1AD17B3203CB650092E7C35189B /* PrimerImage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerImage.swift; sourceTree = "<group>"; };
+		8419F30428CB4CA300876E33 /* PrimerUIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerUIManager.swift; sourceTree = "<group>"; };
 		844D63E6F260673B62FF2ED670C338C7 /* FirstNameField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FirstNameField.swift; sourceTree = "<group>"; };
 		8454246150B800938757BC3E090D784E /* ConcurrencyLimitedDispatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConcurrencyLimitedDispatcher.swift; sourceTree = "<group>"; };
 		8459756CB9033AC367638A9F007FB926 /* Localizable.strings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -836,6 +838,7 @@
 				6573DEAF02FF98C3215859B43FE2212C /* TokenizationViewModels */,
 				652E93F55F810E9B6D8CADB52C4FB1B6 /* UI Delegates */,
 				879D66C0A61F26183B32D3D763F4BA31 /* Vault */,
+				8419F30428CB4CA300876E33 /* PrimerUIManager.swift */,
 			);
 			name = "User Interface";
 			path = "Sources/PrimerSDK/Classes/User Interface";
@@ -2053,6 +2056,7 @@
 				182E1965F6ED1F5A028A92AA9B86BFBD /* ConcurrencyLimitedDispatcher.swift in Sources */,
 				6120F7F5E270F5D886FCC3A6F33BA069 /* Configuration.swift in Sources */,
 				42B3A353622DC45B1748DA51686F3567 /* Connectivity.swift in Sources */,
+				8419F30528CB4CA300876E33 /* PrimerUIManager.swift in Sources */,
 				2C22A70438F7CCFB5AB758BE2BF9BD91 /* Consolable.swift in Sources */,
 				608D257EA6F399AF2FB6FC47C26141EE /* Content.swift in Sources */,
 				68066238AABCC4701608286522CDC79E /* CoreDataDispatcher.swift in Sources */,
