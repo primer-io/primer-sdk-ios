@@ -195,7 +195,7 @@ class Networking {
             }
     }
     
-    static func createPayment(with paymentMethod: PaymentMethodToken,
+    static func createPayment(with paymentMethod: PrimerPaymentMethodTokenData,
                               customDefinedApiKey: String? = nil,
                               completion: @escaping (Payment.Response?, Error?) -> Void) {
         guard let paymentMethodToken = paymentMethod.token else {
@@ -292,5 +292,71 @@ internal extension String {
         df.locale = Locale(identifier: "en_US_POSIX")
         df.timeZone = timeZone == nil ? TimeZone(abbreviation: "UTC") : timeZone
         return df.date(from: self)
+    }
+}
+
+public struct Payment {
+    
+    public struct CreateRequest: Encodable {
+        let paymentMethodToken: String
+        
+        public init(token: String) {
+            self.paymentMethodToken = token
+        }
+    }
+    
+    public struct ResumeRequest: Encodable {
+        let resumeToken: String
+        
+        public init(token: String) {
+            self.resumeToken = token
+        }
+    }
+    
+    public struct Response: Codable {
+        public let id: String?
+        public let paymentId: String?
+        public let amount: Int?
+        public let currencyCode: String?
+        public let customer: Request.Body.ClientSession.Customer?
+        public let customerId: String?
+        public let dateStr: String?
+        public var date: Date? {
+            return dateStr?.toDate()
+        }
+        public let order: Request.Body.ClientSession.Order?
+        public let orderId: String?
+        public let requiredAction: Payment.Response.RequiredAction?
+        public let status: Status
+        public let paymentFailureReason: PrimerPaymentErrorCode.RawValue?
+        
+        public enum CodingKeys: String, CodingKey {
+            case id, paymentId, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status, paymentFailureReason
+            case dateStr = "date"
+        }
+        
+        public struct RequiredAction: Codable {
+            public let clientToken: String
+            public let name: RequiredActionName
+            public let description: String?
+        }
+        
+        /// This enum is giong to be simplified removing the following cases:
+        /// - authorized
+        /// - settled
+        /// - declined
+        /// We are going to have only the following
+        /// - pending
+        /// - success
+        /// - failed
+        public enum Status: String, Codable {
+            case authorized = "AUTHORIZED"
+            case settled = "SETTLED"
+            case settling = "SETTLING"
+            case declined = "DECLINED"
+            case failed = "FAILED"
+            case pending = "PENDING"
+            case success = "SUCCESS"
+        }
     }
 }

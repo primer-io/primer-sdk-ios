@@ -2,8 +2,11 @@
 
 import Foundation
 
-struct ClientTokenValidationRequest: Codable {
-    let clientToken: String
+extension Request.Body {
+    
+    struct ClientTokenValidation: Encodable {
+        let clientToken: String
+    }
 }
 
 struct DecodedClientToken: Codable {
@@ -24,6 +27,11 @@ struct DecodedClientToken: Codable {
     var threeDSecureToken: String?
     var qrCode: String?
     var accountNumber: String?
+    
+    // Voucher info
+    var expiresAt: Date?
+    var entity: String?
+    var reference: String?
     
     var isValid: Bool {
         do {
@@ -55,6 +63,10 @@ struct DecodedClientToken: Codable {
         // QR Code
         case qrCode
         case qrCodeUrl
+        // Voucher info
+        case expiresAt
+        case entity
+        case reference
     }
     
     init(
@@ -131,6 +143,14 @@ struct DecodedClientToken: Codable {
         } else if let qrCode = try? container.decode(String.self, forKey: .qrCodeUrl) {
             self.qrCode = qrCode
         }
+        
+        // Voucher info
+        if let dateString = try? container.decode(String.self, forKey: .expiresAt) {
+            let dateFormatter = DateFormatter().withVoucherExpirationDateFormat()
+            self.expiresAt = dateFormatter.date(from: dateString)
+        }
+        self.reference = try? container.decode(String.self, forKey: .reference)
+        self.entity = try? container.decode(String.self, forKey: .entity)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -149,11 +169,17 @@ struct DecodedClientToken: Codable {
         try? container.encode(accountNumber, forKey: .accountNumber)
         try? container.encode(expDate?.timeIntervalSince1970, forKey: .expiration)
         try? container.encode(expDate?.timeIntervalSince1970, forKey: .exp)
+        
         if qrCode?.isHttpOrHttpsURL == true {
             try? container.encode(qrCode, forKey: .qrCodeUrl)
         } else {
             try? container.encode(qrCode, forKey: .qrCode)
         }
+        
+        // Voucher info
+        try? container.encode(expiresAt, forKey: .expiresAt)
+        try? container.encode(reference, forKey: .reference)
+        try? container.encode(entity, forKey: .entity)
     }
 }
 

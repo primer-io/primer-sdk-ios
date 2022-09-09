@@ -67,7 +67,8 @@ class PrimerPaymentMethod: Codable {
             switch self.type {
             case PrimerPaymentMethodType.adyenBlik.rawValue,
                 PrimerPaymentMethodType.rapydFast.rawValue,
-                PrimerPaymentMethodType.adyenMBWay.rawValue:
+                PrimerPaymentMethodType.adyenMBWay.rawValue,
+                PrimerPaymentMethodType.adyenMultibanco.rawValue:
                 return FormPaymentMethodTokenizationViewModel(config: self)
                 
             case PrimerPaymentMethodType.adyenDotPay.rawValue,

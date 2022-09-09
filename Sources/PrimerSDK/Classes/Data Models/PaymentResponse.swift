@@ -49,6 +49,7 @@ public enum RequiredActionName: String, Codable {
     case threeDSAuthentication = "3DS_AUTHENTICATION"
     case usePrimerSDK = "USE_PRIMER_SDK"
     case processor3DS = "PROCESSOR_3DS"
+    case paymentMethodVoucher = "PAYMENT_METHOD_VOUCHER"
 }
 
 internal protocol PaymentResponseProtocol {

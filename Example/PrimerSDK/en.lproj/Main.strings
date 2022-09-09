@@ -5,11 +5,11 @@
 /* Class = "UILabel"; text = "Label"; ObjectID = "Da7-sC-pmD"; */
 "Da7-sC-pmD.text" = "Label";
 
-/* Class = "UIButton"; configuration.title = "List Payment Methods"; ObjectID = "FFw-xV-IYR"; */
-"FFw-xV-IYR.configuration.title" = "List Payment Methods";
+/* Class = "UIButton"; configuration.title = "Initialize Headless Checkout"; ObjectID = "FFw-xV-IYR"; */
+"FFw-xV-IYR.configuration.title" = "Initialize Headless Checkout";
 
-/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "FFw-xV-IYR"; */
-"FFw-xV-IYR.normalTitle" = "Button";
+/* Class = "UIButton"; normalTitle = "Initialize Headless Checkout"; ObjectID = "FFw-xV-IYR"; */
+"FFw-xV-IYR.normalTitle" = "Initialize Headless Checkout";
 
 /* Class = "UISegmentedControl"; Hbz-Z7-bQS.segmentTitles[0] = "Original"; ObjectID = "Hbz-Z7-bQS"; */
 "Hbz-Z7-bQS.segmentTitles[0]" = "Original";
@@ -59,8 +59,8 @@
 /* Class = "UILabel"; text = "Response"; ObjectID = "UZP-tB-OYk"; */
 "UZP-tB-OYk.text" = "Response";
 
-/* Class = "UIButton"; normalTitle = "Initialize Primer SDK"; ObjectID = "Uou-Rn-KOH"; */
-"Uou-Rn-KOH.normalTitle" = "Initialize Primer SDK";
+/* Class = "UIButton"; normalTitle = "Initialize Primer SDK - Universal Checkout"; ObjectID = "Uou-Rn-KOH"; */
+"Uou-Rn-KOH.normalTitle" = "Initialize Primer SDK - Universal Checkout";
 
 /* Class = "UITextField"; placeholder = "Amount"; ObjectID = "W9k-iX-6KF"; */
 "W9k-iX-6KF.placeholder" = "Amount";
@@ -71,8 +71,8 @@
 /* Class = "UIButton"; configuration.title = "List Asssets"; ObjectID = "ZkM-Ng-TD5"; */
 "ZkM-Ng-TD5.configuration.title" = "List Asssets";
 
-/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "ZkM-Ng-TD5"; */
-"ZkM-Ng-TD5.normalTitle" = "Button";
+/* Class = "UIButton"; normalTitle = "List Asssets"; ObjectID = "ZkM-Ng-TD5"; */
+"ZkM-Ng-TD5.normalTitle" = "List Asssets";
 
 /* Class = "UIButton"; normalTitle = "Add Apaya"; ObjectID = "a9R-Y4-8Wy"; */
 "a9R-Y4-8Wy.normalTitle" = "Add Apaya";

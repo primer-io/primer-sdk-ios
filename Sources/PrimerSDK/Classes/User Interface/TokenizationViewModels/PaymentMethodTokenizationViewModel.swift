@@ -71,24 +71,27 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var didPresentPaymentMethodUI: (() -> Void)?
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
-    
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
     var paymentCheckoutData: PrimerCheckoutData?
     var successMessage: String?
-    
     var resumePaymentId: String?
-    
     var position: Int = 0
     var uiModule: UserInterfaceModule!
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        NotificationCenter.default.removeObserver(self)
     }
     
     required init(config: PrimerPaymentMethod) {
         self.config = config
         super.init()
         self.uiModule = UserInterfaceModule(paymentMethodTokenizationViewModel: self)
+    }
+    
+    @objc
+    func receivedNotification(_ notification: Notification) {
+        // Use it to handle notifications that apply on tokenization view models.
     }
     
     @objc

@@ -24,9 +24,17 @@ class MerchantAssetsViewController: UIViewController {
             self.reloadImages()
         }
     }
+    var userInterfaceStyle: PrimerUserInterfaceStyle = .light {
+        didSet {
+            self.view.backgroundColor = self.userInterfaceStyle == .dark ? .darkGray : .lightGray
+            self.reloadImages()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = .lightGray
+        self.collectionView.backgroundColor = .clear
         self.reloadImages()
     }
     
@@ -39,12 +47,17 @@ class MerchantAssetsViewController: UIViewController {
         self.assets = tmpAssets
     }
     
-    @IBAction func segmentedControlerValueChanged(_ sender: UISegmentedControl) {
+    @IBAction func assetTypeSegmentedControlValueChanged(_ sender: UISegmentedControl) {
         if imageTypeSegmentedControl == sender {
             self.assetType = sender.selectedSegmentIndex == 1 ? .icon : .logo
         }
     }
     
+    @IBAction func colorTypeSegmentedControlValueChanged(_ sender: UISegmentedControl) {
+        if colorTypeSegmentedControl == sender {
+            self.userInterfaceStyle = sender.selectedSegmentIndex == 0 ? .light : .dark
+        }
+    }
 }
 
 extension MerchantAssetsViewController: UICollectionViewDataSource {
@@ -69,6 +82,7 @@ class MerchantAssetCell: UICollectionViewCell {
     @IBOutlet weak var titleLabel: UILabel!
     
     func configure(asset: (name: String, image: UIImage?)) {
+        self.imageView.contentMode = .scaleAspectFit
         self.imageView.image = asset.image
         self.titleLabel.text = asset.name
     }

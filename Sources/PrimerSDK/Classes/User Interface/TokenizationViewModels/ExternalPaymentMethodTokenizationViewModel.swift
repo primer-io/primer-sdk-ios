@@ -28,6 +28,17 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
+    @objc
+    override func receivedNotification(_ notification: Notification) {
+        switch notification.name.rawValue {
+        case Notification.Name.urlSchemeRedirect.rawValue:
+            self.webViewController?.dismiss(animated: true)
+            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+        default:
+            super.receivedNotification(notification)
+        }
+    }
+    
     override func validate() throws {
         if ClientTokenService.decodedClientToken?.isValid != true {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -43,6 +54,8 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.didDismissPaymentMethodUI?()
             })
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.urlSchemeRedirect, object: nil)
         
         super.start()
     }
@@ -156,7 +169,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    override func tokenize() -> Promise<PaymentMethodToken> {
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let configId = config.id else {
                 let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -165,18 +178,18 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 return
             }
             
-            var sessionInfo: AsyncPaymentMethodOptions.SessionInfo?
-            sessionInfo = AsyncPaymentMethodOptions.SessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+            let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
             
-            let request = AsyncPaymentMethodTokenizationRequest(
-                paymentInstrument: AsyncPaymentMethodOptions(
-                    paymentMethodType: config.type,
-                    paymentMethodConfigId: configId,
-                    sessionInfo: sessionInfo))
-            
+            let paymentInstrument = OffSessionPaymentInstrument(
+                paymentMethodConfigId: configId,
+                paymentMethodType: config.type,
+                sessionInfo: sessionInfo)
+                        
+            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+            
             firstly {
-                tokenizationService.tokenize(request: request)
+                tokenizationService.tokenize(requestBody: requestBody)
             }
             .done{ paymentMethod in
                 seal.fulfill(paymentMethod)
@@ -237,6 +250,14 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
     func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {
         if didLoadSuccessfully {
             self.didPresentPaymentMethodUI?()
+        }
+    }
+    
+    func safariViewController(_ controller: SFSafariViewController, initialLoadDidRedirectTo URL: URL) {
+        print(URL.absoluteString)
+        if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
+            self.webViewController?.dismiss(animated: true)
+            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
     }
 }

@@ -9,9 +9,18 @@
 
 import Foundation
 
-public struct Apaya {
+extension Request.Body {
+    class Apaya {}
+}
+
+extension Response.Body {
+    class Apaya {}
+}
+
+extension Request.Body.Apaya {
     
-    public struct CreateSessionAPIRequest: Encodable {
+    public struct CreateSession: Encodable {
+        
         let merchantAccountId: String
         let reference: String = "recurring"
         let language: String?
@@ -26,12 +35,20 @@ public struct Apaya {
             case phoneNumber = "phone_number"
         }
     }
+}
+
+
+extension Response.Body.Apaya {
     
-    public struct CreateSessionAPIResponse: Decodable {
+    public struct CreateSession: Decodable {
+        
         let url: String
         let token: String?
         let passthroughVariable: String?
     }
+}
+
+public struct Apaya {
     
     public struct WebViewResponse {
         
@@ -121,7 +138,7 @@ public struct Apaya {
         var carrier: Apaya.Carrier
         var hashedIdentifier: String?
         
-        init?(paymentMethod: PaymentMethodToken) {
+        init?(paymentMethod: PrimerPaymentMethodTokenData) {
             guard paymentMethod.paymentInstrumentType == .apayaToken else { return nil }
             guard let mcc = paymentMethod.paymentInstrumentData?.mcc,
                   let mnc = paymentMethod.paymentInstrumentData?.mnc,

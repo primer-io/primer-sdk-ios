@@ -1,9 +1,9 @@
 #if canImport(UIKit)
+import UIKit
 
 #if canImport(Primer3DS)
 import Primer3DS
 #endif
-import UIKit
 
 // swiftlint:disable identifier_name
 private let _Primer = Primer()
@@ -55,6 +55,11 @@ public class Primer {
 #if canImport(Primer3DS)
         return Primer3DS.application(app, open: url, options: options)
 #endif
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        if url.absoluteString == settings.paymentMethodOptions.urlScheme {
+            NotificationCenter.default.post(name: Notification.Name.urlSchemeRedirect, object: nil)
+        }
         
         return false
     }
@@ -152,44 +157,12 @@ public class Primer {
         self.intent = intent
         checkoutSessionId = UUID().uuidString
         
-        guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
-            let err = PrimerError.unableToPresentPaymentMethod(
-                paymentMethodType: paymentMethodType,
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-            completion?(err)
-            return
-        }
-        
-        if case .checkout = intent, paymentMethod.isCheckoutEnabled == false  {
-            let err = PrimerError.unsupportedIntent(
-                intent: intent,
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-            completion?(err)
-            return
-            
-        } else if case .vault = intent, paymentMethod.isVaultingEnabled == false {
-            let err = PrimerError.unsupportedIntent(
-                intent: intent,
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-            completion?(err)
-            return
-        }
-        
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
                 params: [
-                    "intent": self.intent!.rawValue
+                    "intent": intent.rawValue
                 ]))
         
         let connectivityEvent = Analytics.Event(
@@ -203,8 +176,8 @@ public class Primer {
             properties: TimerEventProperties(
                 momentType: .start,
                 id: self.timingEventId!))
-        Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         
+        Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
         self.show(paymentMethodType: paymentMethodType, withClientToken: clientToken, completion: completion)
     }
     

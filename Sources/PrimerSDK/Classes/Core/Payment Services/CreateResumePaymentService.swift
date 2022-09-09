@@ -10,8 +10,8 @@
 import Foundation
 
 internal protocol CreateResumePaymentServiceProtocol {
-    func createPayment(paymentRequest: Payment.CreateRequest, completion: @escaping (Payment.Response?, Error?) -> Void)
-    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Payment.ResumeRequest, completion: @escaping (Payment.Response?, Error?) -> Void)
+    func createPayment(paymentRequest: Request.Body.Payment.Create, completion: @escaping (Response.Body.Payment?, Error?) -> Void)
+    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Response.Body.Payment?, Error?) -> Void)
 }
 
 internal class CreateResumePaymentService {
@@ -24,7 +24,7 @@ internal class CreateResumePaymentService {
 
 extension CreateResumePaymentService: CreateResumePaymentServiceProtocol {
 
-    func createPayment(paymentRequest: Payment.CreateRequest, completion: @escaping (Payment.Response?, Error?) -> Void) {
+    func createPayment(paymentRequest: Request.Body.Payment.Create, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -45,7 +45,7 @@ extension CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
     }
     
-    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Payment.ResumeRequest, completion: @escaping (Payment.Response?, Error?) -> Void) {
+    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
         
         guard let clientToken = ClientTokenService.decodedClientToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
