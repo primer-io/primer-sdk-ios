@@ -33,7 +33,7 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :run_tests_and_generate_code_coverage do
-    sh ("(cd Example; pod deintegrate)")
+    sh ("(cd ../Example; pod deintegrate)")
     run_pod_install
     tests
     generate_code_coverage
