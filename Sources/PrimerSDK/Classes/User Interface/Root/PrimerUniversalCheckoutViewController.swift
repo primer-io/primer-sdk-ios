@@ -306,7 +306,7 @@ extension PrimerUniversalCheckoutViewController {
         DispatchQueue.main.async { [weak self] in
             self?.view?.isUserInteractionEnabled = isEnabled
             (self?.parent as? PrimerContainerViewController)?.scrollView.isScrollEnabled = isEnabled
-            PrimerUIManager.primerRootViewController?.swipeGesture?.isEnabled = isEnabled
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(isEnabled)
             
             for sv in (self?.verticalStackView.arrangedSubviews ?? []) {
                 sv.alpha = sv == self?.savedPaymentMethodStackView ? 1.0 : (isEnabled ? 1.0 : 0.5)
