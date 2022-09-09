@@ -62,9 +62,9 @@ internal class QRCodeViewController: PrimerFormViewController {
     }
     
     private func renderAmount() {
-        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+        let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
         
-        if let amountStr = checkoutViewModel.amountStringed {
+        if let amountStr = universalCheckoutViewModel.amountStr {
             amountLabel.translatesAutoresizingMaskIntoConstraints = false
             amountLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
             amountLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
