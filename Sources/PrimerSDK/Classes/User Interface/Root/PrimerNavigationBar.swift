@@ -91,7 +91,7 @@ class PrimerNavigationBar: PrimerView {
                 place: .vaultManager))
         Analytics.Service.record(event: uiEvent)
         
-        Primer.shared.primerRootVC?.popViewController()
+        PrimerUIManager.primerRootViewController?.popViewController()
     }
     
     private func setup() {

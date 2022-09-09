@@ -14,6 +14,7 @@ internal protocol VaultCheckoutViewModelProtocol {
     var availablePaymentOptions: [PaymentMethodTokenizationViewModelProtocol] { get }
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? { get }
     var amountStringed: String? { get }
+    func loadConfig() -> Promise<Void>
     func loadConfig(_ completion: @escaping (Error?) -> Void)
 }
 
@@ -56,6 +57,18 @@ internal class VaultCheckoutViewModel: VaultCheckoutViewModelProtocol {
     
     init() {
 
+    }
+    
+    func loadConfig() -> Promise<Void> {
+        return Promise { seal in
+            self.loadConfig { err in
+                if let err = err {
+                    seal.reject(err)
+                } else {
+                    seal.fulfill()
+                }
+            }
+        }
     }
 
     func loadConfig(_ completion: @escaping (Error?) -> Void) {

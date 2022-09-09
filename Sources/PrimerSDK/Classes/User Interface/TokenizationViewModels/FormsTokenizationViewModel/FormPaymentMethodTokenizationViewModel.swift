@@ -374,7 +374,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     private lazy var countryFieldContainerView: PrimerCustomFieldView = {
         PrimerCountryField.countryContainerViewFieldView(countryFieldView, openCountriesListPressed: {
             DispatchQueue.main.async {
-                Primer.shared.primerRootVC?.show(viewController: self.countrySelectorViewController)
+                PrimerUIManager.primerRootViewController?.show(viewController: self.countrySelectorViewController)
             }
         })
     }()
@@ -498,7 +498,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 place: .cardForm))
         Analytics.Service.record(event: event)
         
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
@@ -886,12 +886,12 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let country = self.countriesDataSource[indexPath.row]
-        countryFieldView.textField.text = "\(country.flag) \(country.country)"
-        countryFieldView.countryCode = country
-        countryFieldView.validation = .valid
-        countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
-        Primer.shared.primerRootVC?.popViewController()
+            let country = self.countriesDataSource[indexPath.row]
+            countryFieldView.textField.text = "\(country.flag) \(country.country)"
+            countryFieldView.countryCode = country
+            countryFieldView.validation = .valid
+            countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
+            PrimerUIManager.primerRootViewController?.popViewController()
     }
 }
 

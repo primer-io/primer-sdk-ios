@@ -61,7 +61,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     switch errorDecision.type {
                     case .fail(let message):
                         DispatchQueue.main.async {
-                            Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: message)
+                            PrimerUIManager.primerRootViewController?.dismissOrShowResultScreen(type: .failure, withMessage: message)
                         }
                     }
                 }
@@ -160,7 +160,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
                 }
                 .done { errMessage in
-                    Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: errMessage)
+                    PrimerUIManager.primerRootViewController?.dismissOrShowResultScreen(type: .failure, withMessage: errMessage)
                 }
                 .catch { _ in }
                 return
@@ -232,7 +232,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             self.verticalStackView.layoutIfNeeded()
         }
         
-        Primer.shared.primerRootVC?.layoutIfNeeded()
+        PrimerUIManager.primerRootViewController?.layoutIfNeeded()
     }
     
     private func renderAvailablePaymentMethods() {
@@ -257,7 +257,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         vpivc.delegate = self
         vpivc.view.translatesAutoresizingMaskIntoConstraints = false
         vpivc.view.heightAnchor.constraint(equalToConstant: self.parent!.view.bounds.height).isActive = true
-        Primer.shared.primerRootVC?.show(viewController: vpivc)
+        PrimerUIManager.primerRootViewController?.show(viewController: vpivc)
     }
     
     @objc
@@ -303,7 +303,7 @@ extension PrimerUniversalCheckoutViewController {
         DispatchQueue.main.async { [weak self] in
             self?.view?.isUserInteractionEnabled = isEnabled
             (self?.parent as? PrimerContainerViewController)?.scrollView.isScrollEnabled = isEnabled
-            Primer.shared.primerRootVC?.swipeGesture?.isEnabled = isEnabled
+            PrimerUIManager.primerRootViewController?.swipeGesture?.isEnabled = isEnabled
             
             for sv in (self?.verticalStackView.arrangedSubviews ?? []) {
                 sv.alpha = sv == self?.savedPaymentMethodStackView ? 1.0 : (isEnabled ? 1.0 : 0.5)
