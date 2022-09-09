@@ -83,7 +83,7 @@ class PrimerContainerViewController: PrimerViewController {
         self.childViewHeightConstraint = nil
         childViewHeightConstraint = childView.heightAnchor.constraint(equalToConstant: childViewController.view.bounds.size.height)
         childViewHeightConstraint?.isActive = true
-        Primer.shared.primerRootVC?.resetConstraint(for: childViewController)
+        PrimerUIManager.primerRootViewController?.resetConstraint(for: childViewController)
         view.layoutIfNeeded()
     }
 }

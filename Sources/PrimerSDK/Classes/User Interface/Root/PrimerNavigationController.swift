@@ -22,7 +22,7 @@ class PrimerNavigationController: UINavigationController, UINavigationBarDelegat
     }
     
     func navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
-        Primer.shared.primerRootVC?.popViewController()
+        PrimerUIManager.primerRootViewController?.popViewController()
         return false
     }
     

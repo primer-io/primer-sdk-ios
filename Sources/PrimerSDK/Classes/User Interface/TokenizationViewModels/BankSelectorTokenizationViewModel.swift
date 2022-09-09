@@ -186,7 +186,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             DispatchQueue.main.async {
                 let bsvc = BankSelectorViewController(viewModel: self)
                 DispatchQueue.main.async {
-                    Primer.shared.primerRootVC?.show(viewController: bsvc)
+                    PrimerUIManager.primerRootViewController?.show(viewController: bsvc)
                     seal.fulfill()
                 }
             }

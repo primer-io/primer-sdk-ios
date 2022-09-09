@@ -102,7 +102,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
@@ -236,7 +236,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     DispatchQueue.main.async {
                         self.willPresentPaymentMethodUI?()
                         self.isCancelled = true
-                        Primer.shared.primerRootVC?.present(paymentVC, animated: true, completion: {
+                        PrimerUIManager.primerRootViewController?.present(paymentVC, animated: true, completion: {
                             DispatchQueue.main.async {
                                 PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type)
                                 self.didPresentPaymentMethodUI?()
