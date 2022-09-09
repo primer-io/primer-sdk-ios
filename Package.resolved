@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "PrimerKlarnaSDK",
+        "repositoryURL": "https://github.com/primer-io/primer-klarna-sdk-ios.git",
+        "state": {
+          "branch": null,
+          "revision": "4a8c60a5555c36841e9529cbd2f87b448e4d7d14",
+          "version": "1.0.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

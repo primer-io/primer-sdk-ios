@@ -13,7 +13,7 @@ class MockPayPalService: PayPalServiceProtocol {
 
     var confirmBillingAgreementCalled = false
 
-    func confirmBillingAgreement(_ completion: @escaping (Result<PayPalConfirmBillingAgreementResponse, Error>) -> Void) {
+    func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void) {
         confirmBillingAgreementCalled = true
     }
 
@@ -26,13 +26,13 @@ class MockPayPalService: PayPalServiceProtocol {
 
     var startOrderSessionCalled = false
 
-    func startOrderSession(_ completion: @escaping (Result<PayPalCreateOrderResponse, Error>) -> Void) {
+    func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void) {
         startOrderSessionCalled = true
-        let res = PayPalCreateOrderResponse(orderId: "oid", approvalUrl: "https://primer.io")
+        let res = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: "https://primer.io")
         completion(.success(res))
     }
     
-    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<PayPal.PayerInfo.Response, Error>) -> Void) {
+    func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void) {
         
     }
 }

@@ -6,6 +6,8 @@
 //  Copyright © 2022 Primer API ltd, Inc. All rights reserved.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 // MARK: - Strings
@@ -918,3 +920,5 @@ extension Strings {
             comment: "The title of the mocked failed flow for a Test Payment Method")
     }
 }
+
+#endif

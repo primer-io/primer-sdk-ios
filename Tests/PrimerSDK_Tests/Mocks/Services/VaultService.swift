@@ -18,7 +18,7 @@ class MockVaultService: VaultServiceProtocol {
 //                analyticsId: "id",
 //                tokenType: "type",
 //                paymentInstrumentType: .PAYMENT_CARD,
-//                paymentInstrumentData: PaymentInstrumentData(
+//                paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData(
 //                    last4Digits: nil,
 //                    expirationMonth: nil,
 //                    expirationYear: nil,
@@ -32,7 +32,7 @@ class MockVaultService: VaultServiceProtocol {
 //        ]
 //    }
 
-    var paymentMethodVMs: [PaymentMethodToken] {
+    var paymentMethodVMs: [PrimerPaymentMethodTokenData] {
         return []
     }
 

@@ -29,13 +29,13 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
 {"resumeToken":"AY6mjuo9111"}
 """
 
-    func createPayment(paymentRequest: Payment.CreateRequest, completion: @escaping (Payment.Response?, Error?) -> Void) {
+    func createPayment(paymentRequest: Request.Body.Payment.Create, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
         guard let data = rawPaymentResponse.data(using: .utf8) else {
             return
         }
         
         do {
-            let response = try JSONParser().parse(Payment.Response.self, from: data)
+            let response = try JSONParser().parse(Response.Body.Payment.self, from: data)
             completion(response, nil)
         } catch {
             completion(nil, error)
@@ -43,14 +43,14 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
         
     }
     
-    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Payment.ResumeRequest, completion: @escaping (Payment.Response?, Error?) -> Void) {
+    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
                 
         guard let data = rawPaymentResponse.data(using: .utf8) else {
             return
         }
         
         do {
-            let response = try JSONParser().parse(Payment.Response.self, from: data)
+            let response = try JSONParser().parse(Response.Body.Payment.self, from: data)
             completion(response, nil)
         } catch {
             completion(nil, error)

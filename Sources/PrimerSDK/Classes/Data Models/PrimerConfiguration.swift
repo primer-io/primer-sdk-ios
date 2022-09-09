@@ -10,196 +10,208 @@
 import Foundation
 import PassKit
 
-protocol CheckoutModuleOptions: Codable {}
+typealias PrimerAPIConfiguration = Response.Body.Configuration
 
-struct PrimerAPIConfiguration: Codable {
+extension Request.URLParameters {
     
-    static var current: PrimerAPIConfiguration? {
-        return AppState.current.apiConfiguration
-    }
-    
-    static var paymentMethodConfigs: [PrimerPaymentMethod]? {
-        return AppState.current.apiConfiguration?.paymentMethods
-    }
-    
-    static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
-        var viewModels = PrimerAPIConfiguration.paymentMethodConfigs?
-            .filter({ $0.isEnabled })
-            .filter({ $0.baseLogoImage != nil })
-            .compactMap({ $0.tokenizationViewModel })
-        ?? []
+    class Configuration: Codable {
         
-        let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
-        if !PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
-            if let applePayViewModel = viewModels.filter({ $0.config.type == PrimerPaymentMethodType.applePay.rawValue }).first,
-               let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
-                viewModels.remove(at: applePayViewModelIndex)
+        let skipPaymentMethodTypes: [String]?
+        let requestDisplayMetadata: Bool?
+        
+        private enum CodingKeys: String, CodingKey {
+            case skipPaymentMethodTypes = "skipPaymentMethods"
+            case requestDisplayMetadata = "withDisplayMetadata"
+        }
+        
+        init(skipPaymentMethodTypes: [String]?, requestDisplayMetadata: Bool?) {
+            self.skipPaymentMethodTypes = skipPaymentMethodTypes
+            self.requestDisplayMetadata = requestDisplayMetadata
+        }
+        
+        required init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.skipPaymentMethodTypes = (try? container.decode([String]?.self, forKey: .skipPaymentMethodTypes)) ?? nil
+            self.requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
+            
+            if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
+                throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
             }
         }
         
-        for (index, viewModel) in viewModels.enumerated() {
-            if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
-                viewModels.swapAt(0, index)
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            
+            if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
+                throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
+            }
+            
+            if let skipPaymentMethodTypes = skipPaymentMethodTypes {
+                try container.encode(skipPaymentMethodTypes, forKey: .skipPaymentMethodTypes)
+            }
+            
+            if let requestDisplayMetadata = requestDisplayMetadata {
+                try container.encode(requestDisplayMetadata, forKey: .requestDisplayMetadata)
             }
         }
         
-        for (index, viewModel) in viewModels.enumerated() {
-            viewModel.position = index
-        }
+        func toDictionary() -> [String: String]? {
+            var dict: [String: String] = [:]
+            
+            if let skipPaymentMethodTypes = skipPaymentMethodTypes, !skipPaymentMethodTypes.isEmpty {
+                dict[CodingKeys.skipPaymentMethodTypes.rawValue] = skipPaymentMethodTypes.joined(separator: ",")
                 
-        return viewModels
-    }
-    
-    let coreUrl: String?
-    let pciUrl: String?
-    var clientSession: ClientSession.APIResponse?
-    let paymentMethods: [PrimerPaymentMethod]?
-    let keys: ThreeDS.Keys?
-    let checkoutModules: [CheckoutModule]?
-    
-    var isSetByClientSession: Bool {
-        return clientSession != nil
-    }
-    
-    internal let sdkSupportedPaymentMethodTypes: [PrimerPaymentMethodType] = PrimerPaymentMethodType.allCases
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
-        self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
-        self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
-        let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
-        self.paymentMethods = throwables.compactMap({ $0.value })
-        self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
-        let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
-        self.checkoutModules = moduleThrowables.compactMap({ $0.value })
-        
-        if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
-            for paymentMethodOption in options {
-                if let type = paymentMethodOption["type"] as? String {
-                    if type == PrimerPaymentMethodType.paymentCard.rawValue,
-                        let networks = paymentMethodOption["networks"] as? [[String: Any]],
-                       !networks.isEmpty
-                    {
-                        for network in networks {
-                            guard network["type"] is String,
-                            network["surcharge"] is Int
-                            else { continue }
-                            
-                        }
-                    } else if let surcharge = paymentMethodOption["surcharge"] as? Int,
-                              let paymentMethod = self.paymentMethods?.filter({ $0.type == type }).first
-                    {
-                        paymentMethod.hasUnknownSurcharge = false
-                        paymentMethod.surcharge = surcharge
-                    }
+                if let requestDisplayMetadata = requestDisplayMetadata {
+                    dict[CodingKeys.requestDisplayMetadata.rawValue] = requestDisplayMetadata ? "true" : "false"
+                }
+            } else {
+                if let requestDisplayMetadata = requestDisplayMetadata {
+                    dict[CodingKeys.requestDisplayMetadata.rawValue] = requestDisplayMetadata ? "true" : "false"
                 }
             }
-        }
-        
-        if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
-            paymentMethod.hasUnknownSurcharge = true
-            paymentMethod.surcharge = nil
-        }
-    }
-    
-    init(
-        coreUrl: String?,
-        pciUrl: String?,
-        clientSession: ClientSession.APIResponse?,
-        paymentMethods: [PrimerPaymentMethod]?,
-        keys: ThreeDS.Keys?,
-        checkoutModules: [PrimerAPIConfiguration.CheckoutModule]?
-    ) {
-        self.coreUrl = coreUrl
-        self.pciUrl = pciUrl
-        self.clientSession = clientSession
-        self.paymentMethods = paymentMethods
-        self.keys = keys
-        self.checkoutModules = checkoutModules
-    }
-    
-    func getConfigId(for type: String) -> String? {
-        guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
-        return method.id
-    }
-    
-    func getProductId(for type: String) -> String? {
-        guard let method = self.paymentMethods?
-                .first(where: { method in return method.type == type }) else { return nil }
-        
-        if let apayaOptions = method.options as? ApayaOptions {
-            return apayaOptions.merchantAccountId
-        } else {
-            return nil
+                        
+            return dict.keys.isEmpty ? nil : dict
         }
     }
 }
 
-extension PrimerAPIConfiguration {
+extension Response.Body {
     
-    class API {
+    struct Configuration: Codable {
         
-        struct RequestParameters: Codable {
+        static var current: PrimerAPIConfiguration? {
+            return AppState.current.apiConfiguration
+        }
+        
+        static var paymentMethodConfigs: [PrimerPaymentMethod]? {
+            return AppState.current.apiConfiguration?.paymentMethods
+        }
+        
+        static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
+            var viewModels = PrimerAPIConfiguration.paymentMethodConfigs?
+                .filter({ $0.isEnabled })
+                .filter({ $0.baseLogoImage != nil })
+                .compactMap({ $0.tokenizationViewModel })
+            ?? []
             
-            let skipPaymentMethodTypes: [String]?
-            let requestDisplayMetadata: Bool?
-            
-            private enum CodingKeys: String, CodingKey {
-                case skipPaymentMethodTypes = "skipPaymentMethods"
-                case requestDisplayMetadata = "withDisplayMetadata"
-            }
-            
-            init(skipPaymentMethodTypes: [String]?, requestDisplayMetadata: Bool?) {
-                self.skipPaymentMethodTypes = skipPaymentMethodTypes
-                self.requestDisplayMetadata = requestDisplayMetadata
-            }
-            
-            init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                self.skipPaymentMethodTypes = (try? container.decode([String]?.self, forKey: .skipPaymentMethodTypes)) ?? nil
-                self.requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
-                
-                if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
-                    throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
+            let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
+            if !PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
+                if let applePayViewModel = viewModels.filter({ $0.config.type == PrimerPaymentMethodType.applePay.rawValue }).first,
+                   let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
+                    viewModels.remove(at: applePayViewModelIndex)
                 }
             }
             
-            func encode(to encoder: Encoder) throws {
-                var container = encoder.container(keyedBy: CodingKeys.self)
-                
-                if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
-                    throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
-                }
-                
-                if let skipPaymentMethodTypes = skipPaymentMethodTypes {
-                    try container.encode(skipPaymentMethodTypes, forKey: .skipPaymentMethodTypes)
-                }
-                
-                if let requestDisplayMetadata = requestDisplayMetadata {
-                    try container.encode(requestDisplayMetadata, forKey: .requestDisplayMetadata)
+            #if !canImport(PrimerKlarnaSDK)
+            if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
+                viewModels.remove(at: klarnaViewModelIndex)
+                print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
+            }
+            #endif
+            
+            for (index, viewModel) in viewModels.enumerated() {
+                if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
+                    viewModels.swapAt(0, index)
                 }
             }
             
-            func toDictionary() -> [String: String]? {
-                var dict: [String: String] = [:]
-                
-                if let skipPaymentMethodTypes = skipPaymentMethodTypes, !skipPaymentMethodTypes.isEmpty {
-                    dict[CodingKeys.skipPaymentMethodTypes.rawValue] = skipPaymentMethodTypes.joined(separator: ",")
+            for (index, viewModel) in viewModels.enumerated() {
+                viewModel.position = index
+            }
                     
-                    if let requestDisplayMetadata = requestDisplayMetadata {
-                        dict[CodingKeys.requestDisplayMetadata.rawValue] = requestDisplayMetadata ? "true" : "false"
-                    }
-                } else {
-                    if let requestDisplayMetadata = requestDisplayMetadata {
-                        dict[CodingKeys.requestDisplayMetadata.rawValue] = requestDisplayMetadata ? "true" : "false"
+            return viewModels
+        }
+        
+        let coreUrl: String?
+        let pciUrl: String?
+        var clientSession: ClientSession.APIResponse?
+        let paymentMethods: [PrimerPaymentMethod]?
+        let keys: ThreeDS.Keys?
+        let checkoutModules: [Response.Body.Configuration.CheckoutModule]?
+        
+        var isSetByClientSession: Bool {
+            return clientSession != nil
+        }
+        
+        internal let sdkSupportedPaymentMethodTypes: [PrimerPaymentMethodType] = PrimerPaymentMethodType.allCases
+        
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
+            self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
+            self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
+            let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
+            self.paymentMethods = throwables.compactMap({ $0.value })
+            self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
+            let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
+            self.checkoutModules = moduleThrowables.compactMap({ $0.value })
+            
+            if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
+                for paymentMethodOption in options {
+                    if let type = paymentMethodOption["type"] as? String {
+                        if type == PrimerPaymentMethodType.paymentCard.rawValue,
+                            let networks = paymentMethodOption["networks"] as? [[String: Any]],
+                           !networks.isEmpty
+                        {
+                            for network in networks {
+                                guard network["type"] is String,
+                                network["surcharge"] is Int
+                                else { continue }
+                                
+                            }
+                        } else if let surcharge = paymentMethodOption["surcharge"] as? Int,
+                                  let paymentMethod = self.paymentMethods?.filter({ $0.type == type }).first
+                        {
+                            paymentMethod.hasUnknownSurcharge = false
+                            paymentMethod.surcharge = surcharge
+                        }
                     }
                 }
-                
-                return dict.keys.isEmpty ? nil : dict
+            }
+            
+            if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
+                paymentMethod.hasUnknownSurcharge = true
+                paymentMethod.surcharge = nil
+            }
+        }
+        
+        init(
+            coreUrl: String?,
+            pciUrl: String?,
+            clientSession: ClientSession.APIResponse?,
+            paymentMethods: [PrimerPaymentMethod]?,
+            keys: ThreeDS.Keys?,
+            checkoutModules: [PrimerAPIConfiguration.CheckoutModule]?
+        ) {
+            self.coreUrl = coreUrl
+            self.pciUrl = pciUrl
+            self.clientSession = clientSession
+            self.paymentMethods = paymentMethods
+            self.keys = keys
+            self.checkoutModules = checkoutModules
+        }
+        
+        func getConfigId(for type: String) -> String? {
+            guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
+            return method.id
+        }
+        
+        func getProductId(for type: String) -> String? {
+            guard let method = self.paymentMethods?
+                    .first(where: { method in return method.type == type }) else { return nil }
+            
+            if let apayaOptions = method.options as? ApayaOptions {
+                return apayaOptions.merchantAccountId
+            } else {
+                return nil
             }
         }
     }
+}
+
+protocol CheckoutModuleOptions: Codable {}
+
+extension Response.Body.Configuration {
     
     struct CheckoutModule: Codable {
         

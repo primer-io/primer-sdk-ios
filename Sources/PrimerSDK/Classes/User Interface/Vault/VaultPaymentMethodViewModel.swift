@@ -1,7 +1,7 @@
 #if canImport(UIKit)
 
 internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
-    var paymentMethods: [PaymentMethodToken] { get }
+    var paymentMethods: [PrimerPaymentMethodTokenData] { get }
     var selectedPaymentMethodId: String? { get set }
     func reloadVault(with completion: @escaping (Error?) -> Void)
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void)
@@ -9,7 +9,7 @@ internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
 
 internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
 
-    var paymentMethods: [PaymentMethodToken] {
+    var paymentMethods: [PrimerPaymentMethodTokenData] {
         return AppState.current.paymentMethods
     }
     var selectedPaymentMethodId: String? {
@@ -47,7 +47,7 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
 internal class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
     
     var theme: PrimerTheme { return PrimerTheme() }
-    var paymentMethods: [PaymentMethodToken] { return [] }
+    var paymentMethods: [PrimerPaymentMethodTokenData] { return [] }
     var selectedPaymentMethodId: String? = "id"
 
     func reloadVault(with completion: @escaping (Error?) -> Void) {

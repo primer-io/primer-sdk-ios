@@ -98,6 +98,28 @@ class UniversalCheckout: XCTestCase {
         applePay.buttons["Pay Primer Merchant, €1.19"].tap()
     }
     
+    func testPresentKlarna() throws {
+        try Base().testInitialize(
+            env: "sandbox",
+            customerId: "customer_id",
+            phoneNumber: nil,
+            countryCode: "SE",
+            currency: "SEK",
+            amount: "101",
+            performPayment: false)
+
+        try base.openUniversalCheckout()
+        
+        let primerScrollView = app.scrollViews["primer_container_scroll_view"]
+        let elementsQuery = primerScrollView.otherElements
+        let klarnaButton = elementsQuery/*@START_MENU_TOKEN@*/.buttons["KLARNA"]/*[[".otherElements[\"no_additional_fees_surcharge_group_view\"].buttons[\"KLARNA\"]",".buttons[\"KLARNA\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+        klarnaButton.tap()
+        
+        let klarnaWebViewStaticText = app.webViews.webViews.webViews/*@START_MENU_TOKEN@*/.staticTexts["Klarna’s privacy notice"]/*[[".otherElements[\"Payment View\"]",".otherElements.matching(identifier: \"Klarna\")",".staticTexts[\"larna’s privacy notice\"]",".staticTexts[\"Klarna’s privacy notice\"]"],[[[-1,3],[-1,2],[-1,1,2],[-1,0,1]],[[-1,3],[-1,2],[-1,1,2]],[[-1,3],[-1,2]]],[0]]@END_MENU_TOKEN@*/
+        let klarnaWebViewStaticTextExists = expectation(for: Expectation.exists, evaluatedWith: klarnaWebViewStaticText, handler: nil)
+        wait(for: [klarnaWebViewStaticTextExists], timeout: 15.0)
+    }
+    
     func testPayPal() throws {
         let payment = Base.paymentMethods.filter({ $0.alias == "PAYPAL" }).first!
         try base.testPayment(payment, cancelPayment: false)

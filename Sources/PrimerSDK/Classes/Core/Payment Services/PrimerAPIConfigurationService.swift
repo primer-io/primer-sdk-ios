@@ -29,7 +29,7 @@ internal class PrimerAPIConfigurationService: PrimerAPIConfigurationServiceProto
                 return
             }
             
-            let requestParameters = PrimerAPIConfiguration.API.RequestParameters(
+            let requestParameters = Request.URLParameters.Configuration(
                 skipPaymentMethodTypes: [],
                 requestDisplayMetadata: true)
             

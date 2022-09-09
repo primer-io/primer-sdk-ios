@@ -33,7 +33,7 @@ class MerchantCheckoutViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var postalCodeLabel: UILabel!
     
-    var paymentMethodsDataSource: [PaymentMethodToken] = [] {
+    var paymentMethodsDataSource: [PrimerPaymentMethodTokenData] = [] {
         didSet {
             self.tableView.reloadData()
         }
@@ -122,6 +122,10 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     }
     
     // Optional
+    
+    func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+        decisionHandler(.succeed())
+    }
     
     func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         print("\nMERCHANT CHECKOUT VIEW CONTROLLER\n\(#function)\nData: \(data)")
