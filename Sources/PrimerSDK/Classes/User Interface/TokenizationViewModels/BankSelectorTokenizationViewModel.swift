@@ -10,7 +10,7 @@
 import SafariServices
 import UIKit
 
-class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
+class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
     
     internal private(set) var banks: [AdyenBank] = []
     internal private(set) var dataSource: [AdyenBank] = [] {

@@ -93,7 +93,7 @@
 		44EA46B9DE46C69C1437ACC8453A482D /* PrimerInputElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 138979F6015085DA715DC4E2CE59E709 /* PrimerInputElements.swift */; };
 		45678D54AE3BE890CCB1354B2D014ADF /* PrimerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E5AF61290425A4661AA649817C5DE92 /* PrimerViewController.swift */; };
 		4663BE14BB837E21B6ADB5B52AF5E497 /* PrimerCustomStyleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ED08EFE1C53E3558FEE7F3BC84B5F6 /* PrimerCustomStyleTextField.swift */; };
-		466FFBD921C488002B73A32FE2FCC75E /* ExternalPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D617CFDB31C465C73A1753F729EF7BE2 /* ExternalPaymentMethodTokenizationViewModel.swift */; };
+		466FFBD921C488002B73A32FE2FCC75E /* WebRedirectPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D617CFDB31C465C73A1753F729EF7BE2 /* WebRedirectPaymentMethodTokenizationViewModel.swift */; };
 		46AE63889EB88E0231EA625056242262 /* CardNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510F2F4AC86D74E0283C1378BED2229E /* CardNumberField.swift */; };
 		470C0B7E1CBFCEE564C620D432CA740B /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73F6E2207B0EA103726A5EC4ABE2FE /* StringExtension.swift */; };
 		470DE91692BF41396803CB3C83CDFB69 /* after.swift in Sources */ = {isa = PBXBuildFile; fileRef = D456005F4F0FCA62BA74FAC93E653561 /* after.swift */; };
@@ -693,7 +693,7 @@
 		D456005F4F0FCA62BA74FAC93E653561 /* after.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = after.swift; sourceTree = "<group>"; };
 		D4E92A2987EEFBBC69D892085853DD71 /* PrimerNibView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrimerNibView.swift; sourceTree = "<group>"; };
 		D5C75C640B6C53DEFC68B5AB8DFD7530 /* dv.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; path = dv.json; sourceTree = "<group>"; };
-		D617CFDB31C465C73A1753F729EF7BE2 /* ExternalPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExternalPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
+		D617CFDB31C465C73A1753F729EF7BE2 /* WebRedirectPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebRedirectPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		D66C3890C3566F38C935A2FFD9A237B0 /* Pods-PrimerSDK_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-PrimerSDK_Tests-dummy.m"; sourceTree = "<group>"; };
 		D7FA12558208882A4CE28279BE72AEEF /* Localizable.strings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D8971FAAAA7049B7A90ACD62E1263057 /* ApplePayTokenizationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplePayTokenizationViewModel.swift; sourceTree = "<group>"; };
@@ -1024,7 +1024,7 @@
 				D8971FAAAA7049B7A90ACD62E1263057 /* ApplePayTokenizationViewModel.swift */,
 				C105EE7E1020D638DE71197731BCBCA6 /* BankSelectorTokenizationViewModel.swift */,
 				D38A4B9564CC422291CA80FC1B3F1A1D /* CheckoutWithVaultedPaymentMethodViewModel.swift */,
-				D617CFDB31C465C73A1753F729EF7BE2 /* ExternalPaymentMethodTokenizationViewModel.swift */,
+				D617CFDB31C465C73A1753F729EF7BE2 /* WebRedirectPaymentMethodTokenizationViewModel.swift */,
 				5CE388D72FC97B2D254E6775F9D9A8FB /* KlarnaTokenizationViewModel.swift */,
 				A797E4A847D770DEDED5403089761F39 /* PaymentMethodTokenizationViewModel.swift */,
 				66BB0A3AFE8D690CB38E2D5082FA108C /* PaymentMethodTokenizationViewModel+Logic.swift */,
@@ -2078,7 +2078,7 @@
 				B3DABD78D67AE847A8A675CE2B4193A4 /* Error.swift in Sources */,
 				E107E8757E87F00C86A2D5AF985956DE /* ErrorHandler.swift in Sources */,
 				81307EEBA1CC3F0F0C85A625425B0D9D /* ExpiryDateField.swift in Sources */,
-				466FFBD921C488002B73A32FE2FCC75E /* ExternalPaymentMethodTokenizationViewModel.swift in Sources */,
+				466FFBD921C488002B73A32FE2FCC75E /* WebRedirectPaymentMethodTokenizationViewModel.swift in Sources */,
 				637406D6D5A1A0283B4DB2DEB9917327 /* Field.swift in Sources */,
 				5333FC1A199443559D59FA3AB75E0FDB /* FinallyWrappers.swift in Sources */,
 				EE46B893886DEB65CD4F02F1DB2C8026 /* firstly.swift in Sources */,
