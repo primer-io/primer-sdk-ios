@@ -52,8 +52,12 @@ internal class PrimerUIManager {
                 return ClientTokenService.storeClientToken(clientToken)
             }
             .then { () -> Promise<Void> in
-                let vaultCheckoutService: VaultCheckoutViewModelProtocol = VaultCheckoutViewModel()
-                return vaultCheckoutService.loadConfig()
+                let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                return configurationService.fetchConfiguration()
+            }
+            .then { () -> Promise<Void> in
+                let vaultService: VaultServiceProtocol = VaultService()
+                return vaultService.fetchVaultedPaymentMethods()
             }
             .then { () -> Promise<Void> in
                 return PrimerUIManager.validatePaymentUIPresentation()
