@@ -79,11 +79,6 @@ final internal class DependencyContainer {
                 DependencyContainer.register(primerAPIClient)
                 return self.resolve()
                 
-            } else if key == String(describing: VaultCheckoutViewModelProtocol.self) {
-                let vaultCheckoutViewModel: VaultCheckoutViewModelProtocol = VaultCheckoutViewModel()
-                DependencyContainer.register(vaultCheckoutViewModel)
-                return self.resolve()
-                
             } else if key == String(describing: VaultServiceProtocol.self) {
                 let vaultService: VaultServiceProtocol = VaultService()
                 DependencyContainer.register(vaultService)

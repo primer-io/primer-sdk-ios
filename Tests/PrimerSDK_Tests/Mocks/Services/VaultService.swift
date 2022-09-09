@@ -47,7 +47,7 @@ class MockVaultService: VaultServiceProtocol {
 
     var loadVaultedPaymentMethodsCalled = false
 
-    func loadVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
+    func fetchVaultedPaymentMethods(_ completion: @escaping (Error?) -> Void) {
         loadVaultedPaymentMethodsCalled = true
     }
 

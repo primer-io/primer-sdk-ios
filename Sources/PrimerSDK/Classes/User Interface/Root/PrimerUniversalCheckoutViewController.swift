@@ -47,35 +47,37 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         renderAvailablePaymentMethods()
         
         guard ClientTokenService.decodedClientToken.exists else { return }
-        let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-        vaultService.loadVaultedPaymentMethods { [weak self] error in
-            guard error == nil else {
-                var primerErr: PrimerError!
-                if let error = error as? PrimerError {
-                    primerErr = error
-                } else {
-                    primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: nil, diagnosticsId: nil)
-                }
-                
-                PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
-                    switch errorDecision.type {
-                    case .fail(let message):
-                        DispatchQueue.main.async {
-                            PrimerUIManager.primerRootViewController?.dismissOrShowResultScreen(type: .failure, withMessage: message)
-                        }
-                    }
-                }
-                return
+        
+        let vaultService: VaultServiceProtocol = VaultService()
+        firstly {
+            vaultService.fetchVaultedPaymentMethods()
+        }
+        .done { [weak self] in
+            self?.renderSelectedPaymentInstrument(insertAt: 1)
+        }
+        .catch { err in
+            var primerErr: PrimerError!
+            if let error = err as? PrimerError {
+                primerErr = error
+            } else {
+                primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: nil)
             }
             
-            self?.renderSelectedPaymentInstrument(insertAt: 1)
+            PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
+                switch errorDecision.type {
+                case .fail(let message):
+                    DispatchQueue.main.async {
+                        Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: message)
+                    }
+                }
+            }
         }
     }
     
     private func renderAmount() {
-        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+        let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
         
-        if let amountStr = checkoutViewModel.amountStringed {
+        if let amountStr = universalCheckoutViewModel.amountStr {
             titleLabel = UILabel()
             titleLabel.translatesAutoresizingMaskIntoConstraints = false
             titleLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -99,10 +101,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             savedPaymentMethodStackView = nil
         }
         
-        let checkoutViewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+        let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
         
-        if let selectedPaymentMethod = checkoutViewModel.selectedPaymentMethod, let cardButtonViewModel = selectedPaymentMethod.cardButtonViewModel {
-            
+        if let selectedPaymentMethod = universalCheckoutViewModel.selectedPaymentMethod,
+            let cardButtonViewModel = selectedPaymentMethod.cardButtonViewModel
+        {
             self.selectedPaymentMethod = selectedPaymentMethod
             
             if savedPaymentMethodStackView == nil {
