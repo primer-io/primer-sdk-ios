@@ -111,6 +111,16 @@ internal class PrimerUIManager {
                     return
                 }
                 
+                guard PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0.config.type == paymentMethodType }) != nil else {
+                    let err = PrimerError.unableToPresentPaymentMethod(
+                        paymentMethodType: paymentMethodType,
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
                 if case .checkout = Primer.shared.intent, paymentMethod.isCheckoutEnabled == false  {
                     let err = PrimerError.unsupportedIntent(
                         intent: .checkout,
