@@ -110,6 +110,14 @@ public class Primer {
             completion?(nil)
         }
         .catch { err in
+            var primerErr: PrimerError!
+            if let err = err as? PrimerError {
+                primerErr = err
+            } else {
+                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+            }
+            
+            PrimerUIManager.primerRootViewController?.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
         }
     }
@@ -128,6 +136,14 @@ public class Primer {
             completion?(nil)
         }
         .catch { err in
+            var primerErr: PrimerError!
+            if let err = err as? PrimerError {
+                primerErr = err
+            } else {
+                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+            }
+            
+            PrimerUIManager.primerRootViewController?.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
         }
     }
@@ -146,6 +162,14 @@ public class Primer {
             completion?(nil)
         }
         .catch { err in
+            var primerErr: PrimerError!
+            if let err = err as? PrimerError {
+                primerErr = err
+            } else {
+                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+            }
+            
+            PrimerUIManager.primerRootViewController?.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
         }
     }
