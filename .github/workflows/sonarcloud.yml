@@ -71,7 +71,7 @@ jobs:
           bundle exec fastlane run_tests_and_generate_code_coverage
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          COVERAGE_ACCESS_TOKEN: ${{ secrets.SONAR_TOKEN }}
           FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
           FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
           SOURCE_BRANCH: ${{ github.head_ref }}
