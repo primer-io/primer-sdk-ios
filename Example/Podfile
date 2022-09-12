@@ -4,10 +4,21 @@ platform :ios, '10.0'
 
 target 'PrimerSDK_Example' do
   pod 'PrimerSDK', :path => '../'
-  # pod 'Primer3DS'
+  pod 'Primer3DS'
   pod 'PrimerKlarnaSDK', '1.0.0'
 
   target 'PrimerSDK_Tests' do
     inherit! :search_paths
+  end
+
+end
+
+pre_install do |installer|
+ installer.pod_targets.each do |pod|
+   if pod.name.eql?('Primer3DS')
+     def pod.build_type;
+     Pod::BuildType.static_library
+    end
+   end
   end
 end
