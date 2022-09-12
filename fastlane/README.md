@@ -39,38 +39,6 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 
 
-### ios run_pod_install
-
-```sh
-[bundle exec] fastlane ios run_pod_install
-```
-
-Run pod install
-
-### ios generate_code_coverage
-
-```sh
-[bundle exec] fastlane ios generate_code_coverage
-```
-
-This action generates the code coverage and as Cobertura XML
-
-### ios tests
-
-```sh
-[bundle exec] fastlane ios tests
-```
-
-This action runs XCTests
-
-### ios ui_tests
-
-```sh
-[bundle exec] fastlane ios ui_tests
-```
-
-This action run UITests
-
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
