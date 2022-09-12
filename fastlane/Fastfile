@@ -35,7 +35,7 @@ platform :ios do
   lane :run_tests_and_generate_code_coverage do
     sh ("(cd ../Example; pod deintegrate)")
     run_pod_install
-    tests
+    # tests
     generate_code_coverage
   end
 
@@ -107,6 +107,8 @@ platform :ios do
 
     slather(
       use_bundle_exec: true,
+      github: true,
+      verbose: true,
       output_directory: './fastlane/test_output',
       cobertura_xml: true,
       scheme: app_test_scheme,
