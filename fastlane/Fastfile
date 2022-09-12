@@ -120,7 +120,8 @@ platform :ios do
   private_lane :tests do
     run_tests(workspace: app_workspace,
               scheme: app_test_scheme,
-              fail_build: false)
+              fail_build: false,
+              device: 'iPhone 11 Pro')
   end
 
   desc 'This action run UITests'
