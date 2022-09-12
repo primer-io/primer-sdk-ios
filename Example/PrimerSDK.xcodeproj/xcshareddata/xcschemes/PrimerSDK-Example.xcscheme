@@ -40,7 +40,9 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      codeCoverageEnabled = "YES"
+      onlyGenerateCoverageForSpecifiedTargets = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -50,6 +52,15 @@
             ReferencedContainer = "container:PrimerSDK.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+      <CodeCoverageTargets>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "607FACE41AFB9204008FA782"
+            BuildableName = "PrimerSDK_Tests.xctest"
+            BlueprintName = "PrimerSDK_Tests"
+            ReferencedContainer = "container:PrimerSDK.xcodeproj">
+         </BuildableReference>
+      </CodeCoverageTargets>
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -60,6 +71,26 @@
                BlueprintName = "PrimerSDK_Tests"
                ReferencedContainer = "container:PrimerSDK.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "PayPalServiceTests/test_confirmBillingAgreement_calls_api()">
+               </Test>
+               <Test
+                  Identifier = "PayPalServiceTests/test_startBillingAgreementSession_calls_api()">
+               </Test>
+               <Test
+                  Identifier = "PayPalServiceTests/test_startOrderSession_calls_api()">
+               </Test>
+               <Test
+                  Identifier = "PaymentMethodConfigServiceTests">
+               </Test>
+               <Test
+                  Identifier = "PaymentMethodConfigTests">
+               </Test>
+               <Test
+                  Identifier = "VaultCheckoutViewModelTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
          <TestableReference
             skipped = "NO">
