@@ -32,7 +32,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   run-and-export-tests:
-    needs: sonarcloud
     name: Export Test coverage to SonarCloud
     runs-on: macos-latest
     steps:
