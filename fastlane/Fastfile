@@ -121,6 +121,7 @@ platform :ios do
     run_tests(workspace: app_workspace,
               scheme: app_test_scheme,
               fail_build: false,
+              skip_package_dependencies_resolution: true,
               device: 'iPhone 11 Pro')
   end
 
