@@ -78,7 +78,6 @@ internal class PrimerRootViewController: PrimerViewController {
         
         let childViewHeight = childView.frame.size.height
         
-        
         switch notification.name {
         case UIResponder.keyboardWillHideNotification:
             childViewBottomConstraint.constant = 0.0
@@ -464,24 +463,9 @@ internal class PrimerRootViewController: PrimerViewController {
 extension PrimerRootViewController {
     
     private func presentPaymentMethod(type: String) {
-        guard let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
-            let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: { errorDecision in
-                switch errorDecision.type {
-                case .fail(let message):
-                    var merchantErr: Error!
-                    if let message = message {
-                        merchantErr = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    } else {
-                        merchantErr = NSError.emptyDescriptionError
-                    }
-                    
-                    PrimerUIManager.primerRootViewController?.dismissOrShowResultScreen(type: .failure, withMessage: merchantErr.localizedDescription)
-                }
-            })
-            return
-        }
+        let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first
+        
+        precondition(paymentMethodTokenizationViewModel != nil, "PrimerUIManager should have validated that the view model exists.")
         
         var imgView: UIImageView?
         if let squareLogo = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.uiModule.icon {
@@ -495,21 +479,21 @@ extension PrimerRootViewController {
         
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         
-        paymentMethodTokenizationViewModel.checkouEventsNotifierModule.didStartTokenization = {
+        paymentMethodTokenizationViewModel?.checkouEventsNotifierModule.didStartTokenization = {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         
-        paymentMethodTokenizationViewModel.willPresentPaymentMethodUI = {
+        paymentMethodTokenizationViewModel?.willPresentPaymentMethodUI = {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         
-        paymentMethodTokenizationViewModel.didPresentPaymentMethodUI = {}
+        paymentMethodTokenizationViewModel?.didPresentPaymentMethodUI = {}
         
-        paymentMethodTokenizationViewModel.willDismissPaymentMethodUI = {
+        paymentMethodTokenizationViewModel?.willDismissPaymentMethodUI = {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         
-        paymentMethodTokenizationViewModel.start()
+        paymentMethodTokenizationViewModel?.start()
     }
 }
 
