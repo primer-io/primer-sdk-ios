@@ -506,7 +506,7 @@ extension PrimerRootViewController: UIGestureRecognizerDelegate {
 
 extension PrimerRootViewController {
     
-    private func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
+    internal func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
         PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
             switch errorDecision.type {
             case .fail(let message):
