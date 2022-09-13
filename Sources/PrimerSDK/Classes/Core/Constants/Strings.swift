@@ -2,9 +2,9 @@
 //  Strings.swift
 //  PrimerSDK
 //
-//  Created by Dario Carlomagno on 10/02/22.
-//  Copyright © 2022 Primer API ltd, Inc. All rights reserved.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
+
 
 #if canImport(UIKit)
 

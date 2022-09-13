@@ -1,8 +1,8 @@
 //
-//  FormPaymentMethodTokenizationViewModel.swift
+//  PrimerAccountInfoPaymentViewController.swift
 //  PrimerSDK
 //
-//  Created by Evangelos Pittas on 11/10/21.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
 #if canImport(UIKit)
