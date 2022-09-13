@@ -165,6 +165,88 @@ extension Strings {
             comment: "The message copy that tells the user how to transfer funds given a displayed account code.")
     }
     
+    // MARK: Vouncher Info Confirmation Steps
+    
+    enum VoucherInfoConfirmationSteps {
+        
+        static let confirmationStepTitle = NSLocalizedString(
+            "multibancoPayWith",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Pay with Multibanco",
+            comment: "The voucher confirmation title label.")
+        
+        static let confirmationStep1LabelText = NSLocalizedString(
+            "multibancoFirstStep",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "1. A voucher with payment details will be created.",
+            comment: "The voucher confirmation step 1 explanation")
+        
+        static let confirmationStep2LabelText = NSLocalizedString(
+            "multibancoSecondStep",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "2. Go to a Multibanco ATM, select the Multibanco payment method and enter the payment details.",
+            comment: "The voucher confirmation step 2 explanation")
+
+        static let confirmationStep3LabelText = NSLocalizedString(
+            "multibancoThirdStep",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "3. Login to your online bank account to pay by bank transfer using the payment details.",
+            comment: "The voucher confirmation step 3 explanation")
+        
+        static let submitButtonTitle = NSLocalizedString(
+            "multibancoSubmitButton",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Confirm to pay",
+            comment: "Confirm - Confirm Mandate (Button text)")
+    }
+    
+    // MARK: Vocher Info Payment View
+    
+    enum VoucherInfoPaymentView {
+        
+        static let completeYourPayment = AccountInfoPaymentView.completeYourPayment
+        
+        static let descriptionLabel =  NSLocalizedString(
+            "multibancoPleaseMakePayment",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Please make the payment at an ATM, or using online banking.",
+            comment: "The voucher description label.")
+        
+        static let expiresAt = NSLocalizedString(
+            "multibancoExpiresAt",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Expires at",
+            comment: "The prefix copy we put before the expiration date.")
+        
+        static let entityLabelText = NSLocalizedString(
+            "multibancoEntity",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Entity",
+            comment: "The entity description label.")
+        
+        static let referenceLabelText = NSLocalizedString(
+            "multibancoReference",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Reference",
+            comment: "The reference description label.")
+        
+        static let amountLabelText = NSLocalizedString(
+            "multibancoAmount",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Amount",
+            comment: "The amount description label.")
+    }
+    
     // MARK: QR Code
     
     enum QRCodeView {

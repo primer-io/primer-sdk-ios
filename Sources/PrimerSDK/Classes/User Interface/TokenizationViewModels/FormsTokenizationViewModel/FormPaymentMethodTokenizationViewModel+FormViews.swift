@@ -33,13 +33,22 @@ extension FormPaymentMethodTokenizationViewModel {
     
     func makeAccountInfoPaymentView() -> PrimerFormView? {
         
-        switch self.config.type {
-        case PrimerPaymentMethodType.rapydFast.rawValue:
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else {
+            return nil
+        }
+        
+        switch paymentMethodType {
+        case .rapydFast:
             return rapydFastAccountInfoView
+        case .adyenMultibanco:
+            return voucherInfoView
         default:
             return nil
         }
     }
+}
+
+extension FormPaymentMethodTokenizationViewModel {
     
     // MARK: Rapyd Fast Account Info Payment View
     
@@ -146,7 +155,135 @@ extension FormPaymentMethodTokenizationViewModel {
         
         return PrimerFormView(formViews: views)
     }
+
 }
+
+extension FormPaymentMethodTokenizationViewModel {
+    
+    // MARK: Voucher Confirmation Info View
+    
+    var voucherConfirmationInfoView: PrimerFormView {
+        
+        
+        // Complete your payment
+        
+        let confirmationTitleLabel = UILabel()
+        confirmationTitleLabel.text = Strings.VoucherInfoConfirmationSteps.confirmationStepTitle
+        confirmationTitleLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.title)
+        confirmationTitleLabel.textColor = theme.text.title.color
+
+        
+    }
+    
+    // MARK: Voucher Info View
+    
+    var voucherInfoView: PrimerFormView {
+        
+        // Complete your payment
+        
+        let completeYourPaymentLabel = UILabel()
+        completeYourPaymentLabel.text = Strings.AccountInfoPaymentView.completeYourPayment
+        completeYourPaymentLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.title)
+        completeYourPaymentLabel.textColor = theme.text.title.color
+        
+        // Due at
+        
+        let dueAtContainerStackView = UIStackView()
+        dueAtContainerStackView.axis = .horizontal
+        dueAtContainerStackView.spacing = 8.0
+        
+        let calendarImage = UIImage(named: "calendar", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        let calendarImageView = UIImageView(image: calendarImage)
+        calendarImageView.tintColor = .gray600
+        calendarImageView.clipsToBounds = true
+        calendarImageView.contentMode = .scaleAspectFit
+        dueAtContainerStackView.addArrangedSubview(calendarImageView)
+        
+        if let expDate = ClientTokenService.decodedClientToken?.expDate {
+            let dueAtPrefixLabel = UILabel()
+            let dueDateAttributedString = NSMutableAttributedString()
+            let prefix = NSAttributedString(
+                string: Strings.AccountInfoPaymentView.dueAt,
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray600])
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .short
+            let dueAtDate = NSAttributedString(
+                string: formatter.string(from: expDate),
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
+            dueDateAttributedString.append(prefix)
+            dueDateAttributedString.append(NSAttributedString(string: " ", attributes: nil))
+            dueDateAttributedString.append(dueAtDate)
+            dueAtPrefixLabel.attributedText = dueDateAttributedString
+            dueAtPrefixLabel.numberOfLines = 0
+            dueAtPrefixLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.body)
+            dueAtContainerStackView.addArrangedSubview(dueAtPrefixLabel)
+        }
+                
+        // Account number
+        
+        let accountNumberInfoContainerStackView = PrimerStackView()
+        accountNumberInfoContainerStackView.axis = .vertical
+        accountNumberInfoContainerStackView.spacing = 12.0
+        accountNumberInfoContainerStackView.addBackground(color: .gray100)
+        accountNumberInfoContainerStackView.layoutMargins = UIEdgeInsets(top: PrimerDimensions.StackViewSpacing.default,
+                                                                         left: PrimerDimensions.StackViewSpacing.default,
+                                                                         bottom: PrimerDimensions.StackViewSpacing.default,
+                                                                         right: PrimerDimensions.StackViewSpacing.default)
+        accountNumberInfoContainerStackView.isLayoutMarginsRelativeArrangement = true
+        accountNumberInfoContainerStackView.layer.cornerRadius = PrimerDimensions.cornerRadius
+
+        let transferFundsLabel = UILabel()
+        transferFundsLabel.text = Strings.AccountInfoPaymentView.pleaseTransferFunds
+        transferFundsLabel.numberOfLines = 0
+        transferFundsLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
+        transferFundsLabel.textColor = theme.text.title.color
+        accountNumberInfoContainerStackView.addArrangedSubview(transferFundsLabel)
+        
+        let accountNumberStackView = PrimerStackView()
+        accountNumberStackView.axis = .horizontal
+        accountNumberStackView.spacing = 12.0
+        accountNumberStackView.heightAnchor.constraint(equalToConstant: 56.0).isActive = true
+        accountNumberStackView.addBackground(color: .white)
+        accountNumberStackView.layoutMargins = UIEdgeInsets(top: PrimerDimensions.StackViewSpacing.default,
+                                                                         left: PrimerDimensions.StackViewSpacing.default,
+                                                                         bottom: PrimerDimensions.StackViewSpacing.default,
+                                                                         right: PrimerDimensions.StackViewSpacing.default)
+        accountNumberStackView.layer.cornerRadius = PrimerDimensions.cornerRadius / 2
+        accountNumberStackView.layer.borderColor = UIColor.gray200.cgColor
+        accountNumberStackView.layer.borderWidth = 2.0
+        accountNumberStackView.isLayoutMarginsRelativeArrangement = true
+        accountNumberStackView.layer.cornerRadius = 8.0
+
+        if let accountNumber = ClientTokenService.decodedClientToken?.accountNumber {
+            let accountNumberLabel = UILabel()
+            accountNumberLabel.text = accountNumber
+            accountNumberLabel.font = UIFont.boldSystemFont(ofSize: PrimerDimensions.Font.label)
+            accountNumberLabel.textColor = theme.text.title.color
+            accountNumberStackView.addArrangedSubview(accountNumberLabel)
+        }
+        
+        let copyToClipboardImage = UIImage(named: "copy-to-clipboard", in: Bundle.primerResources, compatibleWith: nil)
+        let copiedToClipboardImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)
+        let copyToClipboardButton = UIButton(type: .custom)
+        copyToClipboardButton.setImage(copyToClipboardImage, for: .normal)
+        copyToClipboardButton.setImage(copiedToClipboardImage, for: .selected)
+        copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
+        copyToClipboardButton.addTarget(self, action: #selector(copyToClipboardTapped), for: .touchUpInside)
+        accountNumberStackView.addArrangedSubview(copyToClipboardButton)
+        
+        accountNumberInfoContainerStackView.addArrangedSubview(accountNumberStackView)
+        
+        let views = [[completeYourPaymentLabel],
+                     [dueAtContainerStackView],
+                     [accountNumberInfoContainerStackView]]
+        
+        return PrimerFormView(formViews: views)
+    }
+
+    
+}
+
 extension FormPaymentMethodTokenizationViewModel {
     
     // MARK: Payment Pending Info View
