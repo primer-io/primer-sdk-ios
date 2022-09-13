@@ -117,7 +117,7 @@ public class Primer {
                 primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
             }
             
-            PrimerUIManager.primerRootViewController?.handleErrorBasedOnSDKSettings(primerErr)
+            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
         }
     }
@@ -143,7 +143,7 @@ public class Primer {
                 primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
             }
             
-            PrimerUIManager.primerRootViewController?.handleErrorBasedOnSDKSettings(primerErr)
+            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
         }
     }
@@ -169,7 +169,7 @@ public class Primer {
                 primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
             }
             
-            PrimerUIManager.primerRootViewController?.handleErrorBasedOnSDKSettings(primerErr)
+            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
         }
     }

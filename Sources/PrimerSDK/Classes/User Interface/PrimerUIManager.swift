@@ -151,6 +151,32 @@ internal class PrimerUIManager {
             seal.fulfill()
         }
     }
+    
+    static func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, withMessage message: String? = nil) {
+        if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
+            showResultScreenForResultType(type: .success, message: message)
+        } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
+            showResultScreenForResultType(type: .failure, message: message)
+        } else {
+            Primer.shared.dismiss()
+        }
+    }
+    
+    static func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
+        PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
+            switch errorDecision.type {
+            case .fail(let message):
+                PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: message)
+            }
+        }
+    }
+    
+    static private func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
+        let resultViewController = PrimerResultViewController(screenType: type, message: message)
+        resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+        PrimerUIManager.primerRootViewController?.show(viewController: resultViewController)
+    }
 }
 
 #endif
