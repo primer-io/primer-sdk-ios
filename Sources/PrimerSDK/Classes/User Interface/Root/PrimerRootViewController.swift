@@ -219,7 +219,7 @@ internal class PrimerRootViewController: PrimerViewController {
         } else {
             let err = PrimerError.invalidValue(key: "paymentMethodType", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a payment method type"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
-            PrimerUIManager.primerRootViewController?.handleErrorBasedOnSDKSettings(err)
+            PrimerUIManager.handleErrorBasedOnSDKSettings(err)
         }
     }
     
@@ -434,16 +434,6 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
     
-    internal func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, withMessage message: String? = nil) {
-        if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
-            showResultScreenForResultType(type: .success, message: message)
-        } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
-            showResultScreenForResultType(type: .failure, message: message)
-        } else {
-            Primer.shared.dismiss()
-        }
-    }
-    
     internal func resetConstraint(for viewController: UIViewController) {
         let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height) > self.availableScreenHeight ? self.availableScreenHeight : (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height)
         self.childViewHeightConstraint.isActive = false
@@ -501,25 +491,6 @@ extension PrimerRootViewController: UIGestureRecognizerDelegate {
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
-    }
-}
-
-extension PrimerRootViewController {
-    
-    internal func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
-        PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
-            switch errorDecision.type {
-            case .fail(let message):
-                PrimerUIManager.primerRootViewController?.dismissOrShowResultScreen(type: .failure, withMessage: message)
-            }
-        }
-    }
-    
-    private func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
-        let resultViewController = PrimerResultViewController(screenType: type, message: message)
-        resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-        PrimerUIManager.primerRootViewController?.show(viewController: resultViewController)
     }
 }
 

@@ -486,11 +486,11 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     }
     
     func handleSuccessfulFlow() {
-        PrimerUIManager.primerRootViewController?.dismissOrShowResultScreen(type: .success)
+        PrimerUIManager.dismissOrShowResultScreen(type: .success)
     }
     
     func handleFailureFlow(errorMessage: String?) {
-        PrimerUIManager.primerRootViewController?.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
+        PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
     }
 }
 

@@ -328,11 +328,11 @@ extension PaymentMethodTokenizationViewModel {
     }
     
     func handleSuccessfulFlow() {
-        PrimerUIManager.primerRootViewController?.dismissOrShowResultScreen(type: .success, withMessage: self.successMessage)
+        PrimerUIManager.dismissOrShowResultScreen(type: .success, withMessage: self.successMessage)
     }
     
     func handleFailureFlow(errorMessage: String?) {
-        PrimerUIManager.primerRootViewController?.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
+        PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
     }
         
     internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {

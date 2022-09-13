@@ -67,7 +67,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 switch errorDecision.type {
                 case .fail(let message):
                     DispatchQueue.main.async {
-                        PrimerUIManager.primerRootViewController?.dismissOrShowResultScreen(type: .failure, withMessage: message)
+                        PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: message)
                     }
                 }
             }
@@ -163,7 +163,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
                 }
                 .done { errMessage in
-                    PrimerUIManager.primerRootViewController?.dismissOrShowResultScreen(type: .failure, withMessage: errMessage)
+                    PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errMessage)
                 }
                 .catch { _ in }
                 return
