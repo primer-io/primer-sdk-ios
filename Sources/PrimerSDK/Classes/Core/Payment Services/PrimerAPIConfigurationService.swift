@@ -70,15 +70,6 @@ internal class PrimerAPIConfigurationService: PrimerAPIConfigurationServiceProto
         let vaultedPaymentMethodsPromise = vaultService.fetchVaultedPaymentMethods()
         let fetchConfigurationPromise = self.fetchConfiguration()
         return when(fulfilled: [fetchConfigurationPromise, vaultedPaymentMethodsPromise])
-        
-//
-//        return Promise { seal in
-//
-//
-//            let vaultService: VaultServiceProtocol = VaultService()
-//            let vaultedPaymentMethodsPromise = vaultService.fetchVaultedPaymentMethods()
-//            let fetchConfigurationPromise = self.fetchConfiguration()
-//        }
     }
 }
 

@@ -39,28 +39,6 @@ internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol {
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
-        
-//
-//    func loadConfig(_ completion: @escaping (Error?) -> Void) {
-//        if ClientTokenService.decodedClientToken != nil {
-//            let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
-//            firstly {
-//                configurationService.fetchConfiguration()
-//            }
-//            .done {
-//                let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
-//                vaultService.loadVaultedPaymentMethods(completion)
-//            }
-//            .catch { err in
-//                completion(err)
-//            }
-//        } else {
-//            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-//            ErrorHandler.handle(error: err)
-//            completion(err)
-//        }
-//    }
-
 }
 
 #endif

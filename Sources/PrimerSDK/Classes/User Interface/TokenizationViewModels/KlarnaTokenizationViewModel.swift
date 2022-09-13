@@ -187,10 +187,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     clientToken: self.klarnaPaymentSession!.clientToken,
                     urlScheme: settings.paymentMethodOptions.urlScheme)
                 
-                //                PrimerUIManager.primerRootVC?.present(self.klarnaViewController!, animated: true, completion: {
-                //                    self.didPresentExternalView?()
-                //                    seal.fulfill()
-                //                })
                 self.klarnaPaymentSessionCompletion = { _, err in
                     if let err = err {
                         seal.reject(err)
