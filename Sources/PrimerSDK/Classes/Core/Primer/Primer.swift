@@ -106,7 +106,7 @@ public class Primer {
             PrimerUIManager.preparePresentation(clientToken: clientToken, function: #function)
         }
         .done {
-            PrimerUIManager.primerRootViewController?.presentPaymentUI()
+            PrimerUIManager.presentPaymentUI()
             completion?(nil)
         }
         .catch { err in
@@ -132,7 +132,7 @@ public class Primer {
             PrimerUIManager.preparePresentation(clientToken: clientToken, function: #function)
         }
         .done {
-            PrimerUIManager.primerRootViewController?.presentPaymentUI()
+            PrimerUIManager.presentPaymentUI()
             completion?(nil)
         }
         .catch { err in
@@ -158,7 +158,7 @@ public class Primer {
             PrimerUIManager.preparePresentation(clientToken: clientToken, function: #function)
         }
         .done {
-            PrimerUIManager.primerRootViewController?.presentPaymentUI()
+            PrimerUIManager.presentPaymentUI()
             completion?(nil)
         }
         .catch { err in

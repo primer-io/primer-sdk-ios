@@ -67,6 +67,56 @@ internal class PrimerUIManager {
         }
     }
     
+    static func presentPaymentUI() {
+        if let paymentMethodType = Primer.shared.selectedPaymentMethodType {
+            PrimerUIManager.presentPaymentMethod(type: paymentMethodType)
+        } else if Primer.shared.intent == .checkout {
+            let pucvc = PrimerUniversalCheckoutViewController()
+            PrimerUIManager.primerRootViewController?.show(viewController: pucvc)
+        } else if Primer.shared.intent == .vault {
+            let pvmvc = PrimerVaultManagerViewController()
+            PrimerUIManager.primerRootViewController?.show(viewController: pvmvc)
+        } else {
+            let err = PrimerError.invalidValue(key: "paymentMethodType", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a payment method type"], diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            PrimerUIManager.handleErrorBasedOnSDKSettings(err)
+        }
+    }
+    
+    static func presentPaymentMethod(type: String) {
+        let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first
+        
+        precondition(paymentMethodTokenizationViewModel != nil, "PrimerUIManager should have validated that the view model exists.")
+        
+        var imgView: UIImageView?
+        if let squareLogo = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.uiModule.icon {
+            imgView = UIImageView()
+            imgView?.image = squareLogo
+            imgView?.contentMode = .scaleAspectFit
+            imgView?.translatesAutoresizingMaskIntoConstraints = false
+            imgView?.heightAnchor.constraint(equalToConstant: 24.0).isActive = true
+            imgView?.widthAnchor.constraint(equalToConstant: 24.0).isActive = true
+        }
+        
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
+        
+        paymentMethodTokenizationViewModel?.checkouEventsNotifierModule.didStartTokenization = {
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
+        }
+        
+        paymentMethodTokenizationViewModel?.willPresentPaymentMethodUI = {
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
+        }
+        
+        paymentMethodTokenizationViewModel?.didPresentPaymentMethodUI = {}
+        
+        paymentMethodTokenizationViewModel?.willDismissPaymentMethodUI = {
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
+        }
+        
+        paymentMethodTokenizationViewModel?.start()
+    }
+    
     static func prepareRootViewController()  -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
