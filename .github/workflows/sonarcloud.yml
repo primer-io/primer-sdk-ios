@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-      - qa-develop
+      - qa-develop*
 
   pull_request:
     types: [opened, synchronize, reopened]
