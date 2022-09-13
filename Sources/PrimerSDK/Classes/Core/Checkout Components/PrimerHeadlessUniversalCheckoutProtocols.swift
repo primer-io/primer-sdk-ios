@@ -1,9 +1,10 @@
 //
-//  CheckoutComponents.swift
+//  PrimerHeadlessUniversalCheckoutProtocols.swift
 //  PrimerSDK
 //
-//  Created by Evangelos on 28/1/22.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
+
 
 #if canImport(UIKit)
 

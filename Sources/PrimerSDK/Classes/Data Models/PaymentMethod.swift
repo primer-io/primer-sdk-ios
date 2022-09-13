@@ -1,8 +1,8 @@
 //
-//  PaymentMethodConfiguration.swift
+//  PrimerPaymentMethod.swift
 //  PrimerSDK
 //
-//  Created by Evangelos on 28/12/21.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
 #if canImport(UIKit)

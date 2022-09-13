@@ -2,7 +2,7 @@
 //  QRCodeTokenizationViewModel.swift
 //  PrimerSDK
 //
-//  Created by Evangelos on 11/1/22.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
 #if canImport(UIKit)

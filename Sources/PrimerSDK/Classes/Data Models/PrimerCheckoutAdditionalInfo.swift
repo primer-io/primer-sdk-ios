@@ -2,7 +2,7 @@
 //  PrimerCheckoutAdditionalInfo.swift
 //  PrimerSDK
 //
-//  Created by Dario Carlomagno on 08/09/22.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
 #if canImport(UIKit)

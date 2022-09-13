@@ -2,8 +2,9 @@
 //  UserInterfaceModule.swift
 //  PrimerSDK
 //
-//  Created by Evangelos on 8/7/22.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
+
 
 #if canImport(UIKit)
 

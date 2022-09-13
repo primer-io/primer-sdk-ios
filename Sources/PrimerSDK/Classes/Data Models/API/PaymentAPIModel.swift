@@ -2,7 +2,7 @@
 //  PaymentAPIModel.swift
 //  PrimerSDK
 //
-//  Created by Evangelos on 5/9/22.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
 #if canImport(UIKit)
