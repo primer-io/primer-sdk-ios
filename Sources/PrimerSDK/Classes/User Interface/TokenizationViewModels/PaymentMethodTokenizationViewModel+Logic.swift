@@ -60,7 +60,11 @@ extension PaymentMethodTokenizationViewModel {
                             clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         }
                         .done { merchantErrorMessage in
-                            PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
+                            if Primer.shared.selectedPaymentMethodType == nil {
+                                PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
+                            } else {
+                                PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+                            }
                         }
                         // The above promises will never end up on error.
                         .catch { _ in }
