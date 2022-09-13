@@ -207,22 +207,6 @@ internal class PrimerRootViewController: PrimerViewController {
         self.view.isUserInteractionEnabled = isUserInteractionEnabled
     }
     
-    internal func presentPaymentUI() {
-        if let paymentMethodType = Primer.shared.selectedPaymentMethodType {
-            self.presentPaymentMethod(type: paymentMethodType)
-        } else if Primer.shared.intent == .checkout {
-            let pucvc = PrimerUniversalCheckoutViewController()
-            self.show(viewController: pucvc)
-        } else if Primer.shared.intent == .vault {
-            let pvmvc = PrimerVaultManagerViewController()
-            self.show(viewController: pvmvc)
-        } else {
-            let err = PrimerError.invalidValue(key: "paymentMethodType", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a payment method type"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            PrimerUIManager.handleErrorBasedOnSDKSettings(err)
-        }
-    }
-    
     internal func layoutIfNeeded() {
         for vc in nc.viewControllers {
             vc.view.layoutIfNeeded()
@@ -452,39 +436,7 @@ internal class PrimerRootViewController: PrimerViewController {
 
 extension PrimerRootViewController {
     
-    private func presentPaymentMethod(type: String) {
-        let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first
-        
-        precondition(paymentMethodTokenizationViewModel != nil, "PrimerUIManager should have validated that the view model exists.")
-        
-        var imgView: UIImageView?
-        if let squareLogo = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.uiModule.icon {
-            imgView = UIImageView()
-            imgView?.image = squareLogo
-            imgView?.contentMode = .scaleAspectFit
-            imgView?.translatesAutoresizingMaskIntoConstraints = false
-            imgView?.heightAnchor.constraint(equalToConstant: 24.0).isActive = true
-            imgView?.widthAnchor.constraint(equalToConstant: 24.0).isActive = true
-        }
-        
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-        
-        paymentMethodTokenizationViewModel?.checkouEventsNotifierModule.didStartTokenization = {
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-        }
-        
-        paymentMethodTokenizationViewModel?.willPresentPaymentMethodUI = {
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-        }
-        
-        paymentMethodTokenizationViewModel?.didPresentPaymentMethodUI = {}
-        
-        paymentMethodTokenizationViewModel?.willDismissPaymentMethodUI = {
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-        }
-        
-        paymentMethodTokenizationViewModel?.start()
-    }
+    
 }
 
 extension PrimerRootViewController: UIGestureRecognizerDelegate {

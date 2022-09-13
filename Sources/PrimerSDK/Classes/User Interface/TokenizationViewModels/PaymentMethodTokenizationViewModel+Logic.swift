@@ -47,7 +47,6 @@ extension PaymentMethodTokenizationViewModel {
                     UIApplication.shared.endIgnoringInteractionEvents()
                 }
                 .catch { err in
-                                        
                     self.didFinishPayment?(err)
                     self.nullifyEventCallbacks()
                     
