@@ -51,8 +51,21 @@ extension Strings {
             tableName: nil,
             bundle: Bundle.primerResources,
             value: "Edit",
-            comment: "Edit - Vault Payment Method (Button text)"
-        )
+            comment: "Edit - Vault Payment Method (Button text)")
+
+        static let share = NSLocalizedString(
+            "primer-vault-payment-method-share",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Share",
+            comment: "Share - Share button showing the standard Apple Share sheet on iOS (Button text)")
+        
+        static let close = NSLocalizedString(
+            "primer-vault-payment-method-close",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Close",
+            comment: "Close - Close button generally used to dismiss the PrimerSDK (Button text)")
     }
 }
 
@@ -103,6 +116,21 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Pay with card",
             comment: "Pay with card - Payment Method Type (Card Not vaulted)")
+        
+        static let confirm = NSLocalizedString(
+            "primer-confirm-mandate-confirm",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Confirm",
+            comment: "Confirm button title text")
+        
+        static let confirmToPay = NSLocalizedString(
+            "confirmButtonTitle",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Confirm to pay",
+            comment: "Confirm button title text")
+
     }
 }
 
@@ -195,14 +223,7 @@ extension Strings {
             tableName: nil,
             bundle: Bundle.primerResources,
             value: "3. Login to your online bank account to pay by bank transfer using the payment details.",
-            comment: "The voucher confirmation step 3 explanation")
-        
-        static let submitButtonTitle = NSLocalizedString(
-            "multibancoSubmitButton",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Confirm to pay",
-            comment: "Confirm - Confirm Mandate (Button text)")
+            comment: "The voucher confirmation step 3 explanation")        
     }
     
     // MARK: Vocher Info Payment View
@@ -291,14 +312,6 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Confirm SEPA Direct Debit",
             comment: "Confirm SEPA Direct Debit - Confirm Mandate (Main title text)"
-        )
-        
-        static let submitButtonTitle = NSLocalizedString(
-            "primer-confirm-mandate-confirm",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Confirm",
-            comment: "Confirm - Confirm Mandate (Button text)"
         )
     }
     

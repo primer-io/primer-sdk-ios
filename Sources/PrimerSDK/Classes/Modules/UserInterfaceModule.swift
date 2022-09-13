@@ -944,6 +944,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             PrimerPaymentMethodType.xfersPayNow.rawValue:
             let btn = PrimerButton()
             btn.isEnabled = false
+            btn.accessibilityIdentifier = "submit_btn"
             btn.clipsToBounds = true
             btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
             btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
@@ -951,7 +952,20 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
             btn.setTitleColor(.white, for: .normal)
             btn.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
-            btn.setTitle("Confirm", for: .normal)
+            btn.setTitle(Strings.PaymentButton.confirm, for: .normal)
+            return btn
+        
+        case PrimerPaymentMethodType.adyenMultibanco.rawValue:
+            let btn = PrimerButton()
+            btn.isEnabled = true
+            btn.clipsToBounds = true
+            btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
+            btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+            btn.layer.cornerRadius = 4
+            btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
+            btn.setTitleColor(.white, for: .normal)
+            btn.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
+            btn.setTitle(Strings.PaymentButton.confirmToPay, for: .normal)
             return btn
             
         default:

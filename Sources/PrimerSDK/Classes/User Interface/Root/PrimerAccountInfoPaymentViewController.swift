@@ -33,8 +33,8 @@ internal class PrimerAccountInfoPaymentViewController: PrimerFormViewController 
                 
         verticalStackView.spacing = 16
                 
-        if let accountInfoView = self.formPaymentMethodTokenizationViewModel.accountInfoView {
-            verticalStackView.addArrangedSubview(accountInfoView)
+        if let infoView = self.formPaymentMethodTokenizationViewModel.infoView {
+            verticalStackView.addArrangedSubview(infoView)
         }
         
         if let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton {

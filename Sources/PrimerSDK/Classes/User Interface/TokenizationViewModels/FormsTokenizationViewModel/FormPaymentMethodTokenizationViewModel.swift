@@ -35,13 +35,13 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     var didCancel: (() -> Void)?
-                    
+    
     private static let countryCodeFlag = AppState.current.apiConfiguration?.clientSession?.order?.countryCode?.flag ?? ""
     private static let countryDialCode = CountryCode.phoneNumberCountryCodes.first(where: { $0.code == AppState.current.apiConfiguration?.clientSession?.order?.countryCode?.rawValue})?.dialCode ?? ""
-
+        
     var inputTextFieldsStackViews: [UIStackView] {
         var stackViews: [UIStackView] = []
-            
+        
         for input in self.inputs {
             
             let stackView = UIStackView()
@@ -55,7 +55,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             inputStackView.axis = .vertical
             inputStackView.alignment = .fill
             inputStackView.distribution = .fill
-
+            
             let inputTextFieldView = PrimerGenericFieldView()
             inputTextFieldView.delegate = self
             inputTextFieldView.translatesAutoresizingMaskIntoConstraints = false
@@ -93,7 +93,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 stackViews.insert(phoneNumberLabelStackView, at: 0)
                 stackView.addArrangedSubview(prefixSelectorButton)
             }
-
+            
             stackView.addArrangedSubview(inputStackView)
             stackViews.append(stackView)
         }
@@ -128,7 +128,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         label.textColor = theme.text.system.color
         return label
     }()
-
+    
     var mbwayInputView: Input = {
         let input1 = Input()
         input1.keyboardType = .numberPad
@@ -170,7 +170,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     var phoneNumberCountryCodes = CountryCode.phoneNumberCountryCodes
     var countries = CountryCode.allCases
-
+    
     internal lazy var tableView: UITableView = {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
@@ -182,26 +182,26 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         if #available(iOS 11.0, *) {
             tableView.contentInsetAdjustmentBehavior = .never
         }
-
+        
         tableView.rowHeight = 41
-            tableView.register(CountryTableViewCell.self, forCellReuseIdentifier: CountryTableViewCell.className)
-
+        tableView.register(CountryTableViewCell.self, forCellReuseIdentifier: CountryTableViewCell.className)
+        
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
     }()
     
     internal lazy var searchableTextField: PrimerSearchTextField = {
-            let textField = PrimerSearchTextField(frame: .zero)
-            textField.translatesAutoresizingMaskIntoConstraints = false
-            textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-            textField.delegate = self
-            textField.borderStyle = .none
-            textField.layer.cornerRadius = 3.0
-            textField.font = UIFont.systemFont(ofSize: 16.0)
-            textField.placeholder = Strings.CountrySelector.searchCountryTitle
-            textField.rightViewMode = .always
-            return textField
+        let textField = PrimerSearchTextField(frame: .zero)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        textField.delegate = self
+        textField.borderStyle = .none
+        textField.layer.cornerRadius = 3.0
+        textField.font = UIFont.systemFont(ofSize: 16.0)
+        textField.placeholder = Strings.CountrySelector.searchCountryTitle
+        textField.rightViewMode = .always
+        return textField
     }()
     
     var cardNetwork: CardNetwork? {
@@ -209,7 +209,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             cvvField.cardNetwork = cardNetwork ?? .unknown
         }
     }
-        
+    
     var isShowingBillingAddressFieldsRequired: Bool {
         let billingAddressModuleOptions = AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
         return billingAddressModuleOptions != nil
@@ -218,7 +218,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     internal lazy var countrySelectorViewController: CountrySelectorViewController = {
         CountrySelectorViewController(viewModel: self)
     }()
-
+    
     // MARK: - Card number field
     
     internal lazy var cardNumberField: PrimerCardNumberFieldView = {
@@ -228,9 +228,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     private lazy var cardNumberContainerView: PrimerCustomFieldView = {
         PrimerCardNumberField.cardNumberContainerViewWithFieldView(cardNumberField)
     }()
-
+    
     // MARK: - Cardholder name field
-
+    
     private lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
         if !PrimerCardholderNameField.isCardholderNameFieldEnabled { return nil }
         return PrimerCardholderNameField.cardholderNameFieldViewWithDelegate(self)
@@ -240,7 +240,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         if !PrimerCardholderNameField.isCardholderNameFieldEnabled { return nil }
         return PrimerCardholderNameField.cardholderNameContainerViewFieldView(cardholderNameField)
     }()
-        
+    
     // MARK: - Expiry date field
     
     private lazy var expiryDateField: PrimerExpiryDateFieldView = {
@@ -250,29 +250,29 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     private lazy var expiryDateContainerView: PrimerCustomFieldView = {
         return PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
     }()
-
+    
     // MARK: - CVV field
     
     private lazy var cvvField: PrimerCVVFieldView = {
         PrimerCVVField.cvvFieldViewWithDelegate(self)
     }()
-        
+    
     private lazy var cvvContainerView: PrimerCustomFieldView = {
         PrimerCVVField.cvvContainerViewFieldView(cvvField)
     }()
     
     // MARK: - Billing address
-        
+    
     private var countryField: BillingAddressField {
         (countryFieldView, countryFieldContainerView, billingAddressCheckoutModuleOptions?.countryCode == false)
     }
-        
+    
     // MARK: First name
     
     private lazy var firstNameFieldView: PrimerFirstNameFieldView = {
         PrimerFirstNameField.firstNameFieldViewWithDelegate(self)
     }()
-        
+    
     private lazy var firstNameContainerView: PrimerCustomFieldView = {
         PrimerFirstNameField.firstNameFieldContainerViewFieldView(firstNameFieldView)
     }()
@@ -286,7 +286,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     private lazy var lastNameFieldView: PrimerLastNameFieldView = {
         PrimerLastNameField.lastNameFieldViewWithDelegate(self)
     }()
-            
+    
     private lazy var lastNameContainerView: PrimerCustomFieldView = {
         PrimerLastNameField.lastNameFieldContainerViewFieldView(lastNameFieldView)
     }()
@@ -296,11 +296,11 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     // MARK: Address Line 1
-
+    
     private lazy var addressLine1FieldView: PrimerAddressLine1FieldView = {
         PrimerAddressLine1Field.addressLine1FieldViewWithDelegate(self)
     }()
-            
+    
     private lazy var addressLine1ContainerView: PrimerCustomFieldView = {
         PrimerAddressLine1Field.addressLine1ContainerViewFieldView(addressLine1FieldView)
     }()
@@ -308,13 +308,13 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     private var addressLine1Field: BillingAddressField {
         (addressLine1FieldView, addressLine1ContainerView, billingAddressCheckoutModuleOptions?.addressLine1 == false)
     }
-
+    
     // MARK: Address Line 2
-
+    
     private lazy var addressLine2FieldView: PrimerAddressLine2FieldView = {
         PrimerAddressLine2Field.addressLine2FieldViewWithDelegate(self)
     }()
-            
+    
     private lazy var addressLine2ContainerView: PrimerCustomFieldView = {
         PrimerAddressLine2Field.addressLine2ContainerViewFieldView(addressLine2FieldView)
     }()
@@ -328,7 +328,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     private lazy var postalCodeFieldView: PrimerPostalCodeFieldView = {
         PrimerPostalCodeField.postalCodeViewWithDelegate(self)
     }()
-        
+    
     private lazy var postalCodeContainerView: PrimerCustomFieldView = {
         PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeFieldView)
     }()
@@ -338,11 +338,11 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     // MARK: City
-
+    
     private lazy var cityFieldView: PrimerCityFieldView = {
         PrimerCityField.cityFieldViewWithDelegate(self)
     }()
-            
+    
     private lazy var cityContainerView: PrimerCustomFieldView = {
         PrimerCityField.cityFieldContainerViewFieldView(cityFieldView)
     }()
@@ -352,11 +352,11 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     // MARK: State
-
+    
     private lazy var stateFieldView: PrimerStateFieldView = {
         PrimerStateField.stateFieldViewWithDelegate(self)
     }()
-            
+    
     private lazy var stateContainerView: PrimerCustomFieldView = {
         PrimerStateField.stateFieldContainerViewFieldView(stateFieldView)
     }()
@@ -366,11 +366,11 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     // MARK: Country
-        
+    
     private lazy var countryFieldView: PrimerCountryFieldView = {
         PrimerCountryField.countryFieldViewWithDelegate(self)
     }()
-
+    
     private lazy var countryFieldContainerView: PrimerCustomFieldView = {
         PrimerCountryField.countryContainerViewFieldView(countryFieldView, openCountriesListPressed: {
             DispatchQueue.main.async {
@@ -421,6 +421,11 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     /// Array containing the payment method types expecting some input step to be performed
     let inputPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenBlik, .adyenMBWay]
     
+    // MARK: Voucher Info Payment Methods Array
+    
+    /// Array containing the payment method types issuing a voucher
+    let voucherPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenMultibanco]
+    
     // MARK: Account Info Payment Methods Array
     
     /// Array containing the payment method types expecting some account info
@@ -436,13 +441,13 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     // MARK: Account Info Payment
     
     /// Generic info view
-    var accountInfoView: PrimerFormView?
+    var infoView: PrimerFormView?
     
     // MARK: Input completion block
     
     /// Input completion block callback
     var userInputCompletion: (() -> Void)?
-
+    
     // MARK: - Init
     
     deinit {
@@ -524,7 +529,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
-
+            
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
@@ -546,6 +551,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
+            
+            
+            
             seal.fulfill()
         }
     }
@@ -553,35 +561,35 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
         return Promise { seal in
             if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-                   if let statusUrlStr = decodedClientToken.statusUrl,
-                      let statusUrl = URL(string: statusUrlStr),
-                      decodedClientToken.intent != nil {
-                                              
-                       let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type)
-                       let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary.first { $0.key == paymentMethodType } != nil) == true
-                       
-                       firstly {
-                           self.presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: isPaymentMethodNeedingExternalCompletion)
-                       }
-                       .then { () -> Promise<String> in
-                           let pollingModule = PollingModule(url: statusUrl)
-                           self.didCancel = {
-                               pollingModule.cancel()
-                               return
-                           }
-                           
-                           return pollingModule.start()
-                       }
-                       .done { resumeToken in
-                           seal.fulfill(resumeToken)
-                       }
-                       .catch { err in
-                           seal.reject(err)
-                       }
-                   } else {
-                       let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                       seal.reject(error)
-                   }
+                if let statusUrlStr = decodedClientToken.statusUrl,
+                   let statusUrl = URL(string: statusUrlStr),
+                   decodedClientToken.intent != nil {
+                    
+                    let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type)
+                    let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary.first { $0.key == paymentMethodType } != nil) == true
+                    
+                    firstly {
+                        self.presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: isPaymentMethodNeedingExternalCompletion)
+                    }
+                    .then { () -> Promise<String> in
+                        let pollingModule = PollingModule(url: statusUrl)
+                        self.didCancel = {
+                            pollingModule.cancel()
+                            return
+                        }
+                        
+                        return pollingModule.start()
+                    }
+                    .done { resumeToken in
+                        seal.fulfill(resumeToken)
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                } else {
+                    let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    seal.reject(error)
+                }
             } else if decodedClientToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
                 
                 let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
@@ -595,7 +603,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     if self.paymentCheckoutData == nil {
                         self.paymentCheckoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
                     } else {
-                        self.paymentCheckoutData!.additionalInfo = additionalInfo
+                        self.paymentCheckoutData?.additionalInfo = additionalInfo
                     }
                     
                 default:
@@ -607,12 +615,18 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
                     seal.fulfill(nil)
                 } else {
-                    // To get called once we'll display the full UI on non-headless | auto flow3
-                    // let clientSession = AppState.current.apiConfiguration?.clientSession
-                    // let checkoutPayment = PrimerCheckoutDataPayment(id: nil, orderId: clientSession?.order?.id, paymentFailureReason: nil)
-                    // let checkoutData = PrimerCheckoutData(payment: checkoutPayment, paymentMethodData: checkoutResult)
-                    // PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
-                    seal.fulfill(nil)
+                    
+                    firstly {
+                        presentVoucherInfoViewController()
+                    }
+                    .catch { error in
+                        seal.reject(error)
+                    }
+                    
+                    let clientSession = AppState.current.apiConfiguration?.clientSession
+                    let checkoutPayment = PrimerCheckoutDataPayment(id: nil, orderId: clientSession?.order?.id, paymentFailureReason: nil)
+                    let checkoutData = PrimerCheckoutData(payment: checkoutPayment, additionalInfo: additionalInfo)
+                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
             }
         }
@@ -620,7 +634,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     private func evaluatePaymentMethodNeedingFurtherUserActions() -> Promise<Void> {
         
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) else {
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), (inputPaymentMethodTypes.contains(paymentMethodType) || voucherPaymentMethodTypes.contains(paymentMethodType)) else {
             return Promise()
         }
         
@@ -628,7 +642,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) else {
+        
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), (inputPaymentMethodTypes.contains(paymentMethodType) || voucherPaymentMethodTypes.contains(paymentMethodType)) else {
             return Promise()
         }
         
@@ -650,6 +665,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     override func submitButtonTapped() {
+        
         let viewEvent = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -666,10 +682,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         Analytics.Service.record(event: viewEvent)
         
         switch config.type {
-        case PrimerPaymentMethodType.adyenBlik.rawValue:
-            self.uiModule.submitButton?.startAnimating()
-            self.userInputCompletion?()
-        case PrimerPaymentMethodType.adyenMBWay.rawValue:
+        case PrimerPaymentMethodType.adyenBlik.rawValue,
+            PrimerPaymentMethodType.adyenMBWay.rawValue,
+            PrimerPaymentMethodType.adyenMultibanco.rawValue:
             self.uiModule.submitButton?.startAnimating()
             self.userInputCompletion?()
             
@@ -682,12 +697,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         switch config.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             return Promise { seal in
-                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
-                }
                 
                 guard let configId = config.id else {
                     let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -711,7 +720,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     paymentMethodConfigId: configId,
                     paymentMethodType: config.type,
                     sessionInfo: sessionInfo)
-                                
+                
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
                 let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
@@ -741,7 +750,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     paymentMethodConfigId: configId,
                     paymentMethodType: config.type,
                     sessionInfo: sessionInfo)
-                            
+                
                 let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
@@ -759,12 +768,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             
         case PrimerPaymentMethodType.adyenMBWay.rawValue:
             return Promise { seal in
-                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
-                }
                 
                 guard let configId = config.id else {
                     let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -800,7 +803,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     seal.reject(err)
                 }
             }
-        
+            
         case PrimerPaymentMethodType.adyenMultibanco.rawValue:
             return Promise { seal in
                 guard let configId = config.id else {
@@ -830,41 +833,11 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     seal.reject(err)
                 }
             }
-        
-        case PrimerPaymentMethodType.adyenMultibanco.rawValue:
-            return Promise { seal in
-                guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
-                }
-                
-                let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
-                
-                let paymentInstrument = OffSessionPaymentInstrument(
-                    paymentMethodConfigId: configId,
-                    paymentMethodType: config.type,
-                    sessionInfo: sessionInfo)
-                
-                let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-                firstly {
-                    tokenizationService.tokenize(requestBody: requestBody)
-                }
-                .done{ paymentMethod in
-                    seal.fulfill(paymentMethod)
-                }
-                .catch { err in
-                    seal.reject(err)
-                }
-            }
-
+            
         default:
             fatalError("Payment method card should never end here.")
         }
-    }    
+    }
 }
 
 extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
@@ -893,23 +866,23 @@ extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
 extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return countriesDataSource.count
+        return countriesDataSource.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            let country = countriesDataSource[indexPath.row]
-            let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as! CountryTableViewCell
-            cell.configure(viewModel: country)
-            return cell
+        let country = countriesDataSource[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as! CountryTableViewCell
+        cell.configure(viewModel: country)
+        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            let country = self.countriesDataSource[indexPath.row]
-            countryFieldView.textField.text = "\(country.flag) \(country.country)"
-            countryFieldView.countryCode = country
-            countryFieldView.validation = .valid
-            countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
-            Primer.shared.primerRootVC?.popViewController()
+        let country = self.countriesDataSource[indexPath.row]
+        countryFieldView.textField.text = "\(country.flag) \(country.country)"
+        countryFieldView.countryCode = country
+        countryFieldView.validation = .valid
+        countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
+        Primer.shared.primerRootVC?.popViewController()
     }
 }
 
@@ -943,20 +916,20 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
         }
         
         if query.isEmpty {
-                countriesDataSource = countries
+            countriesDataSource = countries
             return true
         }
         
-            var countryResults: [CountryCode] = []
-            
-            for country in countries {
-                if country.country.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
-                    countryResults.append(country)
-                }
+        var countryResults: [CountryCode] = []
+        
+        for country in countries {
+            if country.country.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
+                countryResults.append(country)
             }
-            
-            countriesDataSource = countryResults
-
+        }
+        
+        countriesDataSource = countryResults
+        
         
         return true
     }
