@@ -199,13 +199,12 @@ extension QRCodeTokenizationViewModel {
         return Promise { seal in
             
             let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
-            let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
             
             /// There is no need to check whether the Headless is implemented as the unsupported payment methods will be listed into
             /// PrimerHeadlessUniversalCheckout's private constant `unsupportedPaymentMethodTypes`
             /// Xfers is among them so it won't be loaded
             
-            guard isHeadlessCheckoutDelegateImplemented == false, isManualPaymentHandling else {
+            guard isHeadlessCheckoutDelegateImplemented == false else {
                 seal.fulfill()
                 return
             }
@@ -237,6 +236,14 @@ extension QRCodeTokenizationViewModel {
             let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
             
             guard isHeadlessCheckoutDelegateImplemented else {
+                // We are not in Headless, so no need to go through this logic
+                seal.fulfill()
+                return
+            }
+            
+            let isHeadlessDidReceiveAdditionalInfoImplemented = PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
+
+            guard isHeadlessDidReceiveAdditionalInfoImplemented else {
                 let err = PrimerError.generic(message: "Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)' hasn't been implemented. No events will be sent to your delegate instance.", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -266,7 +273,7 @@ extension QRCodeTokenizationViewModel {
                     return
                 }
                 
-                guard let expiresAt = decodedClientToken.expiresAt else {
+                guard let expiresAt = decodedClientToken.expDate else {
                     let err = PrimerError.invalidValue(key: "decodedClientToken.expiresAt", value: decodedClientToken.expiresAt, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
