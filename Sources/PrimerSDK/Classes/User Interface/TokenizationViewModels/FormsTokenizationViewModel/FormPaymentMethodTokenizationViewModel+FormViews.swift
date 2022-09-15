@@ -71,9 +71,7 @@ extension FormPaymentMethodTokenizationViewModel {
             let prefix = NSAttributedString(
                 string: Strings.AccountInfoPaymentView.dueAt,
                 attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray600])
-            let formatter = DateFormatter()
-            formatter.dateStyle = .medium
-            formatter.timeStyle = .short
+            let formatter = DateFormatter().withExpirationDisplayDateFormat()
             let dueAtDate = NSAttributedString(
                 string: formatter.string(from: expDate),
                 attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])

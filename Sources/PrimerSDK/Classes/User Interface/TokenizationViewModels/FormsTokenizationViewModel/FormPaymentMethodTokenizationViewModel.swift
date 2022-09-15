@@ -584,13 +584,22 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                    }
             } else if decodedClientToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
                 
-                let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
                 let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
                 var additionalInfo: PrimerCheckoutAdditionalInfo?
                 
                 switch self.config.type {
                 case PrimerPaymentMethodType.adyenMultibanco.rawValue:
-                    additionalInfo = MultibancoCheckoutAdditionalInfo(expiresAt: decodedClientToken.expiresAt, entity: decodedClientToken.entity, reference: decodedClientToken.reference)
+                    
+                    let formatter = DateFormatter().withExpirationDisplayDateFormat()
+                    
+                    var expiresAtAdditionalInfo: String?
+                    if let unwrappedExpiresAt = decodedClientToken.expiresAt {
+                        expiresAtAdditionalInfo = formatter.string(from: unwrappedExpiresAt)
+                    }
+
+                    additionalInfo = MultibancoCheckoutAdditionalInfo(expiresAt: expiresAtAdditionalInfo,
+                                                                      entity: decodedClientToken.entity,
+                                                                      reference: decodedClientToken.reference)
                     
                     if self.paymentCheckoutData == nil {
                         self.paymentCheckoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)

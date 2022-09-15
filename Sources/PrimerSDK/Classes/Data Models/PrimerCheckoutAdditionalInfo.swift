@@ -17,7 +17,7 @@ import Foundation
 
 @objc public class MultibancoCheckoutAdditionalInfo: PrimerCheckoutAdditionalInfo {
     
-    let expiresAt: Date?
+    let expiresAt: String?
     let entity: String?
     let reference: String?
     
@@ -27,7 +27,7 @@ import Foundation
         case reference
     }
     
-    public init(expiresAt: Date?, entity: String?, reference: String?) {
+    public init(expiresAt: String?, entity: String?, reference: String?) {
         self.expiresAt = expiresAt
         self.entity = entity
         self.reference = reference
@@ -36,7 +36,7 @@ import Foundation
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        expiresAt = try? container.decode(Date.self, forKey: .expiresAt)
+        expiresAt = try? container.decode(String.self, forKey: .expiresAt)
         entity = try? container.decode(String.self, forKey: .entity)
         reference = try? container.decode(String.self, forKey: .reference)
         super.init()
@@ -58,31 +58,36 @@ import Foundation
 
 @objc public class PromptPayCheckoutAdditionalInfo: PrimerCheckoutQRCodeInfo {
     
-    let expiresAt: Date
-    let qrCodeUrl: URL
+    let expiresAt: String
+    let qrCodeUrl: String?
+    let qrCodeBase64: String?
     
     private enum CodingKeys : String, CodingKey {
         case expiresAt
         case qrCodeUrl
+        case qrCodeBase64
     }
     
-    public init(expiresAt: Date, qrCodeUrl: URL) {
+    public init(expiresAt: String, qrCodeUrl: String?, qrCodeBase64: String?) {
         self.expiresAt = expiresAt
         self.qrCodeUrl = qrCodeUrl
+        self.qrCodeBase64 = qrCodeBase64
         super.init()
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        expiresAt = try container.decode(Date.self, forKey: .expiresAt)
-        qrCodeUrl = try container.decode(URL.self, forKey: .qrCodeUrl)
+        expiresAt = try container.decode(String.self, forKey: .expiresAt)
+        qrCodeUrl = try? container.decode(String.self, forKey: .qrCodeUrl)
+        qrCodeBase64 = try? container.decode(String.self, forKey: .qrCodeBase64)
         super.init()
     }
     
     public override func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(expiresAt, forKey: .expiresAt)
-        try container.encode(qrCodeUrl, forKey: .qrCodeUrl)
+        try? container.encode(qrCodeUrl, forKey: .qrCodeUrl)
+        try? container.encode(qrCodeBase64, forKey: .qrCodeBase64)
     }
 
 }

@@ -280,16 +280,27 @@ extension QRCodeTokenizationViewModel {
                     return
                 }
                 
-                guard let qrCodeString = decodedClientToken.qrCode,
-                      let qrCodeUrl = URL(string: qrCodeString) else {
+                guard let qrCodeString = decodedClientToken.qrCode else {
                     let err = PrimerError.invalidValue(key: "decodedClientToken.qrCode", value: decodedClientToken.qrCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
                 
-                additionalInfo = PromptPayCheckoutAdditionalInfo(expiresAt: expiresAt,
-                                                                 qrCodeUrl: qrCodeUrl)
+                let formatter = DateFormatter().withExpirationDisplayDateFormat()
+                let expiresAtDateString = formatter.string(from: expiresAt)
+                
+                if qrCodeString.isHttpOrHttpsURL, URL(string: qrCodeString) != nil {
+
+                    additionalInfo = PromptPayCheckoutAdditionalInfo(expiresAt: expiresAtDateString,
+                                                                     qrCodeUrl: qrCodeString,
+                                                                     qrCodeBase64: nil)
+                } else {
+                    additionalInfo = PromptPayCheckoutAdditionalInfo(expiresAt: expiresAtDateString,
+                                                                     qrCodeUrl: nil,
+                                                                     qrCodeBase64: qrCodeString)
+                }
+                
             default:
                 log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.config.type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
                 break
