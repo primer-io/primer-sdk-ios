@@ -382,7 +382,7 @@ extension FormPaymentMethodTokenizationViewModel {
             
             let infoView = makePaymentPendingInfoView(message: message)
             let paymentPendingInfoView = PrimerPaymentPendingInfoViewController(formPaymentMethodTokenizationViewModel: self, infoView: infoView)
-            Primer.shared.primerRootVC?.show(viewController: paymentPendingInfoView)
+            PrimerUIManager.primerRootViewController?.show(viewController: paymentPendingInfoView)
             return Promise()
         }
         
@@ -405,7 +405,7 @@ extension FormPaymentMethodTokenizationViewModel {
         return Promise { seal in
             let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: self.uiModule.buttonImage, formPaymentMethodTokenizationViewModel: self)
             infoView = voucherConfirmationInfoView
-            Primer.shared.primerRootVC?.show(viewController: pcfvc)
+            PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
             seal.fulfill()
         }
     }
@@ -417,7 +417,7 @@ extension FormPaymentMethodTokenizationViewModel {
                                                                formPaymentMethodTokenizationViewModel: self,
                                                                shouldShareVoucherInfoWithText: VoucherValue.sharableVoucherValuesText)
             infoView = voucherInfoView
-            Primer.shared.primerRootVC?.show(viewController: pcfvc)
+            PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
             seal.fulfill()
         }
     }
@@ -426,7 +426,7 @@ extension FormPaymentMethodTokenizationViewModel {
         return Promise { seal in
             let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: self.uiModule.buttonImage, formPaymentMethodTokenizationViewModel: self)
             infoView = makeAccountInfoPaymentView()
-            Primer.shared.primerRootVC?.show(viewController: pcfvc)
+            PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
             seal.fulfill()
         }
     }
@@ -435,7 +435,7 @@ extension FormPaymentMethodTokenizationViewModel {
         return Promise { seal in
             let pcfvc = PrimerInputViewController(navigationBarLogo: uiModule.buttonImage, formPaymentMethodTokenizationViewModel: self, inputsDistribution: .horizontal)
             inputs.append(contentsOf: makeInputViews())
-            Primer.shared.primerRootVC?.show(viewController: pcfvc)
+            PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
             seal.fulfill()
         }
     }

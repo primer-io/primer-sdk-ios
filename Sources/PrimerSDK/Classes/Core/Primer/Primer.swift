@@ -12,14 +12,14 @@ private let _Primer = Primer()
 public class Primer {
     
     // MARK: - PROPERTIES
-    internal var primerWindow: UIWindow?
+    
     public var delegate: PrimerDelegate?
     public internal(set) var intent: PrimerSessionIntent?
-    internal var presentingViewController: UIViewController?
-    internal var primerRootVC: PrimerRootViewController?
+    public private(set) var selectedPaymentMethodType: String?
+    
     internal let sdkSessionId = UUID().uuidString
     internal var checkoutSessionId: String?
-    private var timingEventId: String?
+    internal var timingEventId: String?
     
     // MARK: - INITIALIZATION
     
@@ -97,92 +97,83 @@ public class Primer {
      */
     
     public func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
-        intent = .checkout
-        checkoutSessionId = UUID().uuidString
-        
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "intent": intent!.rawValue
-                ]))
-        
-        let connectivityEvent = Analytics.Event(
-            eventType: .networkConnectivity,
-            properties: NetworkConnectivityEventProperties(
-                networkType: Connectivity.networkType))
-        
+        self.intent = .checkout
+        self.selectedPaymentMethodType = nil
+        self.checkoutSessionId = UUID().uuidString
         self.timingEventId = UUID().uuidString
-        let timingEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .start,
-                id: self.timingEventId!))
         
-        Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-        self.show(paymentMethodType: nil, withClientToken: clientToken, completion: completion)
+        firstly {
+            PrimerUIManager.preparePresentation(clientToken: clientToken, function: #function)
+        }
+        .done {
+            PrimerUIManager.presentPaymentUI()
+            completion?(nil)
+        }
+        .catch { err in
+            var primerErr: PrimerError!
+            if let err = err as? PrimerError {
+                primerErr = err
+            } else {
+                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+            }
+            
+            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+            completion?(err)
+        }
     }
     
     public func showVaultManager(clientToken: String, completion: ((Error?) -> Void)? = nil) {
-        intent = .vault
-        checkoutSessionId = UUID().uuidString
-        
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "intent": intent!.rawValue
-                ]))
-        
-        let connectivityEvent = Analytics.Event(
-            eventType: .networkConnectivity,
-            properties: NetworkConnectivityEventProperties(
-                networkType: Connectivity.networkType))
-        
+        self.intent = .vault
+        self.selectedPaymentMethodType = nil
+        self.checkoutSessionId = UUID().uuidString
         self.timingEventId = UUID().uuidString
-        let timingEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .start,
-                id: self.timingEventId!))
         
-        Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-        self.show(paymentMethodType: nil, withClientToken: clientToken, completion: completion)
+        firstly {
+            PrimerUIManager.preparePresentation(clientToken: clientToken, function: #function)
+        }
+        .done {
+            PrimerUIManager.presentPaymentUI()
+            completion?(nil)
+        }
+        .catch { err in
+            var primerErr: PrimerError!
+            if let err = err as? PrimerError {
+                primerErr = err
+            } else {
+                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+            }
+            
+            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+            completion?(err)
+        }
     }
     
-    // swiftlint:disable cyclomatic_complexity
     public func showPaymentMethod(_ paymentMethodType: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
         self.intent = intent
-        checkoutSessionId = UUID().uuidString
-        
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "intent": intent.rawValue
-                ]))
-        
-        let connectivityEvent = Analytics.Event(
-            eventType: .networkConnectivity,
-            properties: NetworkConnectivityEventProperties(
-                networkType: Connectivity.networkType))
-        
+        self.selectedPaymentMethodType = paymentMethodType
+        self.checkoutSessionId = UUID().uuidString
         self.timingEventId = UUID().uuidString
-        let timingEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .start,
-                id: self.timingEventId!))
         
-        Analytics.Service.record(events: [sdkEvent, connectivityEvent, timingEvent])
-        self.show(paymentMethodType: paymentMethodType, withClientToken: clientToken, completion: completion)
+        firstly {
+            PrimerUIManager.preparePresentation(clientToken: clientToken, function: #function)
+        }
+        .done {
+            PrimerUIManager.presentPaymentUI()
+            completion?(nil)
+        }
+        .catch { err in
+            var primerErr: PrimerError!
+            if let err = err as? PrimerError {
+                primerErr = err
+            } else {
+                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+            }
+            
+            PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+            completion?(err)
+        }
     }
-    
-    // swiftlint:enable cyclomatic_complexity
-    
+        
     /** Dismisses any opened checkout sheet view. */
     public func dismiss() {
         let sdkEvent = Analytics.Event(
@@ -201,65 +192,22 @@ public class Primer {
         
         Analytics.Service.sync()
         
-        checkoutSessionId = nil
+        self.checkoutSessionId = nil
+        self.selectedPaymentMethodType = nil
         ClientTokenService.resetClientToken()
         
-        DispatchQueue.main.async { [weak self] in
-            self?.primerRootVC?.dismissPrimerRootViewController(animated: true, completion: {
-                self?.primerWindow?.isHidden = true
+        DispatchQueue.main.async {
+            PrimerUIManager.primerRootViewController?.dismissPrimerRootViewController(animated: true, completion: {
+                PrimerUIManager.primerWindow?.isHidden = true
                 if #available(iOS 13, *) {
-                    self?.primerWindow?.windowScene = nil
+                    PrimerUIManager.primerWindow?.windowScene = nil
                 }
-                self?.primerWindow?.rootViewController = nil
-                self?.primerRootVC = nil
-                self?.primerWindow?.resignKey()
-                self?.primerWindow = nil
+                PrimerUIManager.primerWindow?.rootViewController = nil
+                PrimerUIManager.primerRootViewController = nil
+                PrimerUIManager.primerWindow?.resignKey()
+                PrimerUIManager.primerWindow = nil
                 PrimerDelegateProxy.primerDidDismiss()
             })
-        }
-    }
-    
-    private func show(paymentMethodType: String?, withClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
-        ClientTokenService.storeClientToken(clientToken) { [weak self] error in
-            self?.show(paymentMethodType: paymentMethodType)
-            completion?(error)
-        }
-    }
-    
-    private func show(paymentMethodType: String?) {
-        let event = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "intent": self.intent!.rawValue
-                ]))
-        Analytics.Service.record(event: event)
-        
-        DispatchQueue.main.async {
-            if self.primerRootVC == nil {
-                self.primerRootVC = PrimerRootViewController(paymentMethodType: paymentMethodType)
-            }
-            self.presentingViewController = self.primerRootVC
-            
-            if self.primerWindow == nil {
-                if #available(iOS 13.0, *) {
-                    if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
-                        self.primerWindow = UIWindow(windowScene: windowScene)
-                    } else {
-                        // Not opted-in in UISceneDelegate
-                        self.primerWindow = UIWindow(frame: UIScreen.main.bounds)
-                    }
-                } else {
-                    // Fallback on earlier versions
-                    self.primerWindow = UIWindow(frame: UIScreen.main.bounds)
-                }
-                
-                self.primerWindow!.rootViewController = self.primerRootVC
-                self.primerWindow!.backgroundColor = UIColor.clear
-                self.primerWindow!.windowLevel = UIWindow.Level.normal
-                self.primerWindow!.makeKeyAndVisible()
-            }
         }
     }
 }

@@ -28,7 +28,7 @@ extension PaymentMethodTokenizationViewModel {
                 self.didStartPayment?()
                 self.didStartPayment = nil
                 
-                Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+                PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
                 
                 firstly {
                     self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
@@ -47,7 +47,6 @@ extension PaymentMethodTokenizationViewModel {
                     UIApplication.shared.endIgnoringInteractionEvents()
                 }
                 .catch { err in
-                                        
                     self.didFinishPayment?(err)
                     self.nullifyEventCallbacks()
                     
@@ -61,7 +60,11 @@ extension PaymentMethodTokenizationViewModel {
                             clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         }
                         .done { merchantErrorMessage in
-                            Primer.shared.primerRootVC?.popToMainScreen(completion: nil)
+                            if Primer.shared.selectedPaymentMethodType == nil {
+                                PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
+                            } else {
+                                PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+                            }
                         }
                         // The above promises will never end up on error.
                         .catch { _ in }
@@ -104,7 +107,7 @@ extension PaymentMethodTokenizationViewModel {
                     clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                 }
                 .done { merchantErrorMessage in
-                    Primer.shared.primerRootVC?.popToMainScreen(completion: nil)
+                    PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
                 }
                 // The above promises will never end up on error.
                 .catch { _ in }
@@ -328,11 +331,11 @@ extension PaymentMethodTokenizationViewModel {
     }
     
     func handleSuccessfulFlow() {
-        Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .success, withMessage: self.successMessage)
+        PrimerUIManager.dismissOrShowResultScreen(type: .success, withMessage: self.successMessage)
     }
     
     func handleFailureFlow(errorMessage: String?) {
-        Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
+        PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
     }
         
     internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {

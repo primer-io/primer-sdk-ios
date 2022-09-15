@@ -96,7 +96,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
 #if canImport(PrimerKlarnaSDK)
@@ -187,10 +187,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     clientToken: self.klarnaPaymentSession!.clientToken,
                     urlScheme: settings.paymentMethodOptions.urlScheme)
                 
-                //                Primer.shared.primerRootVC?.present(self.klarnaViewController!, animated: true, completion: {
-                //                    self.didPresentExternalView?()
-                //                    seal.fulfill()
-                //                })
                 self.klarnaPaymentSessionCompletion = { _, err in
                     if let err = err {
                         seal.reject(err)
@@ -200,7 +196,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 }
                 
                 self.willPresentExternalView?()
-                Primer.shared.primerRootVC?.show(viewController: self.klarnaViewController!)
+                PrimerUIManager.primerRootViewController?.show(viewController: self.klarnaViewController!)
                 self.didPresentExternalView?()
                 seal.fulfill()
 #else

@@ -10,7 +10,7 @@
 import SafariServices
 import UIKit
 
-class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
+class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
     
     private var tokenizationService: TokenizationServiceProtocol?
     private var statusUrl: URL!
@@ -97,7 +97,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             DispatchQueue.main.async {
                 let qrcvc = QRCodeViewController(viewModel: self)
                 self.willPresentPaymentMethodUI?()
-                Primer.shared.primerRootVC?.show(viewController: qrcvc)
+                PrimerUIManager.primerRootViewController?.show(viewController: qrcvc)
                 self.didPresentPaymentMethodUI?()
                 seal.fulfill(())
             }

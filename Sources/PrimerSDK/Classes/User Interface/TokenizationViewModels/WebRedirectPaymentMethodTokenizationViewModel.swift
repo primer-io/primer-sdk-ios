@@ -1,5 +1,5 @@
 //
-//  AsyncPaymentMethodTokenizationViewModel.swift
+//  WebRedirectPaymentMethodTokenizationViewModel.swift
 //  PrimerSDK
 //
 //  Created by Evangelos Pittas on 11/10/21.
@@ -11,7 +11,7 @@ import Foundation
 import SafariServices
 import UIKit
 
-class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private var redirectUrl: URL!
     private var statusUrl: URL!
@@ -33,7 +33,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         switch notification.name.rawValue {
         case Notification.Name.urlSchemeRedirect.rawValue:
             self.webViewController?.dismiss(animated: true)
-            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         default:
             super.receivedNotification(notification)
         }
@@ -80,7 +80,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
-        Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
@@ -138,7 +138,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 self.webViewController?.delegate = self
                 
                 self.willPresentPaymentMethodUI?()
-                Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
                         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.config.type)
                         self.didPresentPaymentMethodUI?()
@@ -240,7 +240,7 @@ class ExternalPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
 }
 
-extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
+extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         self.didCancel?()
@@ -257,7 +257,7 @@ extension ExternalPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
         print(URL.absoluteString)
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
             self.webViewController?.dismiss(animated: true)
-            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
     }
 }

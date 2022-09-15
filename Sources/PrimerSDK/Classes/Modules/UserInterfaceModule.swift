@@ -916,10 +916,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             PrimerPaymentMethodType.adyenMBWay.rawValue:
             switch Primer.shared.intent {
             case .checkout:
-                let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+                let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
                 buttonTitle = Strings.PaymentButton.pay
-                if let currency = AppState.current.currency, let amount = AppState.current.amount {
-                    buttonTitle += " \(amount.toCurrencyString(currency: currency))"
+                if let amountStr = universalCheckoutViewModel.amountStr {
+                    buttonTitle += " \(amountStr))"
                 }
                 
             case .vault:

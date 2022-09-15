@@ -11,39 +11,49 @@ import UIKit
 
 internal class PrimerRootViewController: PrimerViewController {
     
-    private var paymentMethodType: String?
-    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    var backgroundView = PrimerView()
-    var childView: PrimerView = PrimerView()
-    var childViewHeightConstraint: NSLayoutConstraint!
-    var childViewBottomConstraint: NSLayoutConstraint!
+    // MARK: - PROPERTIES
     
-    var nc = PrimerNavigationController()
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    
+    // Child views
+    private var backgroundView = PrimerView()
+    private var childView: PrimerView = PrimerView()
+    private var nc = PrimerNavigationController()
+    
+    // Constraints
+    private var childViewHeightConstraint: NSLayoutConstraint!
+    private var childViewBottomConstraint: NSLayoutConstraint!
     private var topPadding: CGFloat = 0.0
     private var bottomPadding: CGFloat = 0.0
     private let presentationDuration: TimeInterval = 0.3
-    
+    private var originalChildViewHeight: CGFloat?
     private lazy var availableScreenHeight: CGFloat = {
         return UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
     }()
     
-    internal var swipeGesture: UISwipeGestureRecognizer?
+    // User Interaction
+    private var tapGesture: UITapGestureRecognizer?
+    private var swipeGesture: UISwipeGestureRecognizer?
+    
+    // MARK: - INITIALIZATION LIFECYCLE
     
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
     
-    init(paymentMethodType: String?) {
-        self.paymentMethodType = paymentMethodType
-        super.init(nibName: nil, bundle: nil)
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        self.registerForNotifications()
     }
     
     required init?(coder: NSCoder) {
-        fatalError()
+        fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    // MARK: Helpers
+    
+    private func registerForNotifications() {
+        NotificationCenter.default.removeObserver(self)
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.keyboardNotification(notification:)),
@@ -53,161 +63,10 @@ internal class PrimerRootViewController: PrimerViewController {
                                                selector: #selector(self.keyboardNotification(notification:)),
                                                name: UIResponder.keyboardWillHideNotification,
                                                object: nil)
-        
-        if #available(iOS 13.0, *) {
-            let window = Primer.shared.primerWindow ?? UIApplication.shared.windows[0]
-            topPadding = window.safeAreaInsets.top
-            bottomPadding = window.safeAreaInsets.bottom
-        } else if #available(iOS 11.0, *) {
-            let window = Primer.shared.primerWindow ?? UIApplication.shared.windows[0]
-            topPadding = window.safeAreaInsets.top 
-            bottomPadding = window.safeAreaInsets.bottom
-        } else {
-            topPadding = 20.0
-            bottomPadding = 0.0
-        }
-        
-        view.addSubview(backgroundView)
-        backgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.0)
-        backgroundView.translatesAutoresizingMaskIntoConstraints = false
-        backgroundView.pin(view: view)
-        
-        view.addSubview(childView)
-        
-        childView.backgroundColor = theme.view.backgroundColor
-        childView.isUserInteractionEnabled = true
-        nc.view.backgroundColor = theme.view.backgroundColor
-        
-        childView.translatesAutoresizingMaskIntoConstraints = false
-        childView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        childView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        
-        childViewHeightConstraint = NSLayoutConstraint(item: childView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
-        childViewHeightConstraint.isActive = true
-        childViewBottomConstraint = NSLayoutConstraint(item: childView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: -childViewHeightConstraint.constant)
-        childViewBottomConstraint.isActive = true
-        view.layoutIfNeeded()
-        
-        let tapGesture = UITapGestureRecognizer(
-            target: self,
-            action: #selector(dismissGestureRecognizerAction))
-        tapGesture.delegate = self
-        backgroundView.addGestureRecognizer(tapGesture)
-        
-        let swipDown = UISwipeGestureRecognizer(
-            target: self,
-            action: #selector(dismissGestureRecognizerAction)
-        )
-        swipDown.delegate = self
-        swipDown.direction = .down
-        swipeGesture = swipDown
-        childView.addGestureRecognizer(swipDown)
-        
-        render()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-    
-    func blurBackground() {
-        UIView.animate(withDuration: presentationDuration) {
-            self.backgroundView.backgroundColor = self.theme.blurView.backgroundColor
-        }
-    }
-    
-    private func render() {
-        if PrimerSettings.current.uiOptions.isInitScreenEnabled {
-            blurBackground()
-            showLoadingScreenIfNeeded(imageView: nil, message: nil)
-        }
-        
-        let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
-        
-        viewModel.loadConfig({ [weak self] error in
-            DispatchQueue.main.async {
-                guard error == nil else {
-                    var primerErr: PrimerError!
-                    if let error = error as? PrimerError {
-                        primerErr = error
-                    } else {
-                        primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: nil, diagnosticsId: nil)
-                    }
-                    
-                    self?.handleErrorBasedOnSDKSettings(primerErr)
-                    return
-                }
-                
-                if let paymentMethodType = self?.paymentMethodType {
-                    guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
-                        let err = PrimerError.unableToPresentPaymentMethod(
-                            paymentMethodType: paymentMethodType,
-                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                            diagnosticsId: nil)
-                        ErrorHandler.handle(error: err)
-                        PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-                        return
-                    }
-                    
-                    if case .checkout = Primer.shared.intent, paymentMethod.isCheckoutEnabled == false  {
-                        let err = PrimerError.unsupportedIntent(
-                            intent: .checkout,
-                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                            diagnosticsId: nil)
-                        ErrorHandler.handle(error: err)
-                        PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-                        return
-                        
-                    } else if case .vault = Primer.shared.intent, paymentMethod.isVaultingEnabled == false {
-                        let err = PrimerError.unsupportedIntent(
-                            intent: .vault,
-                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                            diagnosticsId: nil)
-                        ErrorHandler.handle(error: err)
-                        PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
-                        return
-                    }
-                }
-                
-                let state: AppStateProtocol = DependencyContainer.resolve()
-                
-                if Primer.shared.intent == .vault, state.apiConfiguration?.clientSession?.customer?.id == nil {
-                    let err = PrimerError.invalidValue(key: "customer.id", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                    Primer.shared.primerRootVC?.handleErrorBasedOnSDKSettings(err)
-                    return
-                    
-                }
-                
-                if let paymentMethodType = self?.paymentMethodType {
-                    self?.presentPaymentMethod(type: paymentMethodType)
-                } else if Primer.shared.intent == .checkout {
-                    let pucvc = PrimerUniversalCheckoutViewController()
-                    self?.show(viewController: pucvc)
-                } else if Primer.shared.intent == .vault {
-                    let pvmvc = PrimerVaultManagerViewController()
-                    self?.show(viewController: pvmvc)
-                } else {
-                    let err = PrimerError.invalidValue(key: "paymentMethodType", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a payment method type"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                    Primer.shared.primerRootVC?.handleErrorBasedOnSDKSettings(err)
-                }
-            }
-        })
-    }
-    
-    func layoutIfNeeded() {
-        for vc in nc.viewControllers {
-            vc.view.layoutIfNeeded()
-        }
-        
-        childView.layoutIfNeeded()
-        view.layoutIfNeeded()
-    }
-    
-    var originalChildViewHeight: CGFloat?
-    
-    @objc func keyboardNotification(notification: NSNotification) {
+    @objc
+    private func keyboardNotification(notification: NSNotification) {
         guard let userInfo = notification.userInfo else { return }
         
         let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
@@ -218,7 +77,6 @@ internal class PrimerRootViewController: PrimerViewController {
         let animationCurve:UIView.AnimationOptions = UIView.AnimationOptions(rawValue: animationCurveRaw)
         
         let childViewHeight = childView.frame.size.height
-        
         
         switch notification.name {
         case UIResponder.keyboardWillHideNotification:
@@ -255,22 +113,107 @@ internal class PrimerRootViewController: PrimerViewController {
             })
     }
     
+    // MARK: - VIEW LIFECYCLE
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.setupChildViews()
+        self.setupGestureRecognizers()
+        self.blurBackgroundIfNeeded()
+        self.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+    }
+    
+    // MARK: Helpers
+    
+    private func setupChildViews() {
+        if #available(iOS 13.0, *) {
+            let window = PrimerUIManager.primerWindow ?? UIApplication.shared.windows[0]
+            topPadding = window.safeAreaInsets.top
+            bottomPadding = window.safeAreaInsets.bottom
+        } else if #available(iOS 11.0, *) {
+            let window = PrimerUIManager.primerWindow ?? UIApplication.shared.windows[0]
+            topPadding = window.safeAreaInsets.top
+            bottomPadding = window.safeAreaInsets.bottom
+        } else {
+            topPadding = 20.0
+            bottomPadding = 0.0
+        }
+        
+        view.addSubview(backgroundView)
+        backgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.0)
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        backgroundView.pin(view: view)
+        
+        view.addSubview(childView)
+        
+        childView.backgroundColor = theme.view.backgroundColor
+        childView.isUserInteractionEnabled = true
+        nc.view.backgroundColor = theme.view.backgroundColor
+        
+        childView.translatesAutoresizingMaskIntoConstraints = false
+        childView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        childView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        childViewHeightConstraint = NSLayoutConstraint(item: childView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
+        childViewHeightConstraint.isActive = true
+        childViewBottomConstraint = NSLayoutConstraint(item: childView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: -childViewHeightConstraint.constant)
+        childViewBottomConstraint.isActive = true
+        view.layoutIfNeeded()
+    }
+    
+    private func setupGestureRecognizers() {
+        self.tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(dismissGestureRecognizerAction))
+        self.tapGesture!.delegate = self
+        backgroundView.addGestureRecognizer(self.tapGesture!)
+        
+        self.swipeGesture = UISwipeGestureRecognizer(
+            target: self,
+            action: #selector(dismissGestureRecognizerAction)
+        )
+        self.swipeGesture!.delegate = self
+        self.swipeGesture!.direction = .down
+        childView.addGestureRecognizer(self.swipeGesture!)
+    }
+    
     @objc
     private func dismissGestureRecognizerAction(sender: UISwipeGestureRecognizer) {
         Primer.shared.dismiss()
     }
     
-    func dismissPrimerRootViewController(animated flag: Bool, completion: (() -> Void)? = nil) {
-        view.endEditing(true)
-        
-        childViewBottomConstraint.constant = childView.bounds.height
-        
-        UIView.animate(withDuration: flag ? presentationDuration : 0, delay: 0, options: .curveEaseInOut) {
-            self.view.alpha = 0
-            self.view.layoutIfNeeded()
-        } completion: { _ in
-            completion?()
+    private func blurBackgroundIfNeeded() {
+        if PrimerSettings.current.uiOptions.isInitScreenEnabled {
+            UIView.animate(withDuration: presentationDuration) {
+                self.backgroundView.backgroundColor = self.theme.blurView.backgroundColor
+            }
         }
+    }
+    
+    private func calculateNavigationControllerHeight(for viewController: UIViewController) -> CGFloat {
+        if viewController.view.bounds.size.height + nc.navigationBar.bounds.height > availableScreenHeight {
+            return self.availableScreenHeight
+        } else {
+            return viewController.view.bounds.size.height + nc.navigationBar.bounds.height
+        }
+    }
+    
+    // MARK: - API
+    
+    internal func enableUserInteraction(_ isUserInteractionEnabled: Bool) {
+        self.swipeGesture?.isEnabled = isUserInteractionEnabled
+        self.tapGesture?.isEnabled = isUserInteractionEnabled
+        self.view.isUserInteractionEnabled = isUserInteractionEnabled
+    }
+    
+    internal func layoutIfNeeded() {
+        for vc in nc.viewControllers {
+            vc.view.layoutIfNeeded()
+        }
+        
+        childView.layoutIfNeeded()
+        view.layoutIfNeeded()
     }
     
     internal func show(viewController: UIViewController) {
@@ -376,16 +319,27 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
     
-    func resetConstraint(for viewController: UIViewController) {
-        let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height) > self.availableScreenHeight ? self.availableScreenHeight : (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height)
-        self.childViewHeightConstraint.isActive = false
-        self.childViewHeightConstraint?.constant = navigationControllerHeight + self.bottomPadding
-        self.childViewHeightConstraint.isActive = true
+    internal func showLoadingScreenIfNeeded(imageView: UIImageView?, message: String?) {
+        if let lastViewController = (nc.viewControllers.last as? PrimerContainerViewController)?.childViewController {
+            if lastViewController is PrimerLoadingViewController ||
+                lastViewController is PrimerResultViewController {
+                return
+            }
+        }
         
-        UIView.animate(withDuration: self.presentationDuration, delay: 0, options: .curveEaseInOut) {
-            self.view.layoutIfNeeded()
-        } completion: { _ in
+        DispatchQueue.main.async {
+            var show = true
             
+            if self.nc.viewControllers.isEmpty {
+                show = PrimerSettings.current.uiOptions.isInitScreenEnabled
+            }
+            
+            let height = self.nc.viewControllers.first?.view.bounds.height ?? 300
+            
+            if show {
+                let lvc = PrimerLoadingViewController(height: height, imageView: imageView, message: message)
+                self.show(viewController: lvc)
+            }
         }
     }
     
@@ -409,30 +363,6 @@ internal class PrimerRootViewController: PrimerViewController {
             self.view.layoutIfNeeded()
         } completion: { _ in
             
-        }
-    }
-    
-    internal func showLoadingScreenIfNeeded(imageView: UIImageView?, message: String?) {
-        if let lastViewController = (nc.viewControllers.last as? PrimerContainerViewController)?.childViewController {
-            if lastViewController is PrimerLoadingViewController ||
-                lastViewController is PrimerResultViewController {
-                return
-            }
-        }
-        
-        DispatchQueue.main.async {
-            var show = true
-            
-            if self.nc.viewControllers.isEmpty {
-                show = PrimerSettings.current.uiOptions.isInitScreenEnabled
-            }
-            
-            let height = self.nc.viewControllers.first?.view.bounds.height ?? 300
-            
-            if show {
-                let lvc = PrimerLoadingViewController(height: height, imageView: imageView, message: message)
-                self.show(viewController: lvc)
-            }
         }
     }
     
@@ -475,111 +405,44 @@ internal class PrimerRootViewController: PrimerViewController {
         self.nc.popToViewController(mainScreenViewController, animated: true, completion: completion)
     }
     
-    private func calculateNavigationControllerHeight(for viewController: UIViewController) -> CGFloat {
-        if viewController.view.bounds.size.height + nc.navigationBar.bounds.height > availableScreenHeight {
-            return self.availableScreenHeight
-        } else {
-            return viewController.view.bounds.size.height + nc.navigationBar.bounds.height
+    internal func dismissPrimerRootViewController(animated flag: Bool, completion: (() -> Void)? = nil) {
+        view.endEditing(true)
+        
+        childViewBottomConstraint.constant = childView.bounds.height
+        
+        UIView.animate(withDuration: flag ? presentationDuration : 0, delay: 0, options: .curveEaseInOut) {
+            self.view.alpha = 0
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+            completion?()
+        }
+    }
+    
+    internal func resetConstraint(for viewController: UIViewController) {
+        let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height) > self.availableScreenHeight ? self.availableScreenHeight : (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height)
+        self.childViewHeightConstraint.isActive = false
+        self.childViewHeightConstraint?.constant = navigationControllerHeight + self.bottomPadding
+        self.childViewHeightConstraint.isActive = true
+        
+        UIView.animate(withDuration: self.presentationDuration, delay: 0, options: .curveEaseInOut) {
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+            
         }
     }
 }
 
+// MARK: -
+
 extension PrimerRootViewController {
     
-    func presentPaymentMethod(type: String) {
-        guard let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first else {
-            let err = PrimerError.invalidValue(key: "config.type", value: type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            PrimerDelegateProxy.primerDidFailWithError(err, data: nil, decisionHandler: { errorDecision in
-                switch errorDecision.type {
-                case .fail(let message):
-                    var merchantErr: Error!
-                    if let message = message {
-                        merchantErr = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    } else {
-                        merchantErr = NSError.emptyDescriptionError
-                    }
-                    
-                    Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: merchantErr.localizedDescription)
-                }
-            })
-            return
-        }
-        
-        var imgView: UIImageView?
-        if let squareLogo = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.uiModule.icon {
-            imgView = UIImageView()
-            imgView?.image = squareLogo
-            imgView?.contentMode = .scaleAspectFit
-            imgView?.translatesAutoresizingMaskIntoConstraints = false
-            imgView?.heightAnchor.constraint(equalToConstant: 24.0).isActive = true
-            imgView?.widthAnchor.constraint(equalToConstant: 24.0).isActive = true
-        }
-        
-        paymentMethodTokenizationViewModel.checkouEventsNotifierModule.didStartTokenization = {
-            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-        }
-        
-        paymentMethodTokenizationViewModel.willPresentPaymentMethodUI = {
-            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-        }
-        
-        paymentMethodTokenizationViewModel.didPresentPaymentMethodUI = {}
-        
-        paymentMethodTokenizationViewModel.willDismissPaymentMethodUI = {
-            Primer.shared.primerRootVC?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-        }
-        
-        //        paymentMethodTokenizationViewModel.tokenizationCompletion = { (tok, err) in
-        //            if let err = err {
-        //                Primer.shared.primerRootVC?.handle(error: err)
-        //            } else {
-        //                Primer.shared.primerRootVC?.handleSuccess()
-        //            }
-        //        }
-        
-        paymentMethodTokenizationViewModel.start()
-    }
+    
 }
 
 extension PrimerRootViewController: UIGestureRecognizerDelegate {
+    
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        // ...
         return true
-    }
-}
-
-
-extension PrimerRootViewController {
-    
-    private func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
-        PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
-            switch errorDecision.type {
-            case .fail(let message):
-                Primer.shared.primerRootVC?.dismissOrShowResultScreen(type: .failure, withMessage: message)
-            }
-        }
-    }
-}
-
-extension PrimerRootViewController {
-    
-    private func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
-        let resultViewController = PrimerResultViewController(screenType: type, message: message)
-        resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-        Primer.shared.primerRootVC?.show(viewController: resultViewController)
-    }
-    
-    func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, withMessage message: String? = nil) {
-                
-        if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
-            showResultScreenForResultType(type: .success, message: message)
-        } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
-            showResultScreenForResultType(type: .failure, message: message)
-        } else {
-            Primer.shared.dismiss()
-        }
     }
 }
 
