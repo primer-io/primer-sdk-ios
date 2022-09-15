@@ -115,7 +115,6 @@ struct DecodedClientToken: Codable {
         self.intent = try? container.decode(String.self, forKey: .intent)
         self.statusUrl = try? container.decode(String.self, forKey: .statusUrl)
         self.redirectUrl = try? container.decode(String.self, forKey: .redirectUrl)
-        self.qrCode = try? container.decode(String.self, forKey: .qrCode)
         self.accountNumber = try? container.decode(String.self, forKey: .accountNumber)
         
         // For some APMs we receive another value out of the client token `expiration`

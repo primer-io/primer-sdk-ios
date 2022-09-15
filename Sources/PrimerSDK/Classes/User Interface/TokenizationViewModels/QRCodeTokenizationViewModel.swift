@@ -2,7 +2,7 @@
 //  QRCodeTokenizationViewModel.swift
 //  PrimerSDK
 //
-//  Created by Evangelos on 11/1/22.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
 #if canImport(UIKit)
@@ -66,7 +66,7 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
-
+            
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
@@ -171,7 +171,10 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
                 self.qrCode = decodedClientToken.qrCode
                 
                 firstly {
-                    self.presentPaymentMethodUserInterface()
+                    self.evaluateFireDidReceiveAdditionalInfoEvent()
+                }
+                .then { () -> Promise<Void> in
+                    self.evaluatePresentUserInterface()
                 }
                 .then { () -> Promise<Void> in
                     return self.awaitUserInput()
@@ -185,6 +188,131 @@ class QRCodeTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
             } else {
                 let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 seal.reject(error)
+            }
+        }
+    }
+}
+
+extension QRCodeTokenizationViewModel {
+    
+    private func evaluatePresentUserInterface() -> Promise<Void> {
+        return Promise { seal in
+            
+            let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
+            
+            /// There is no need to check whether the Headless is implemented as the unsupported payment methods will be listed into
+            /// PrimerHeadlessUniversalCheckout's private constant `unsupportedPaymentMethodTypes`
+            /// Xfers is among them so it won't be loaded
+            
+            guard isHeadlessCheckoutDelegateImplemented == false else {
+                seal.fulfill()
+                return
+            }
+            
+            firstly {
+                self.presentPaymentMethodUserInterface()
+            }
+            .done {
+                seal.fulfill()
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+            
+            return
+        }
+    }
+    
+    private func evaluateFireDidReceiveAdditionalInfoEvent() -> Promise<Void> {
+        return Promise { seal in
+            
+            /// There is no need to check whether the Headless is implemented as the unsupported payment methods will be listed into
+            /// PrimerHeadlessUniversalCheckout's private constant `unsupportedPaymentMethodTypes`
+            /// Xfers is among them so it won't be loaded
+            ///
+            ///
+            /// This Promise only fires event in case of Headless support ad its been designed ad-hoc for this purpose
+            
+            let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
+            
+            guard isHeadlessCheckoutDelegateImplemented else {
+                // We are not in Headless, so no need to go through this logic
+                seal.fulfill()
+                return
+            }
+            
+            let isHeadlessDidReceiveAdditionalInfoImplemented = PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
+
+            guard isHeadlessDidReceiveAdditionalInfoImplemented else {
+                let err = PrimerError.generic(message: "Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)' hasn't been implemented. No events will be sent to your delegate instance.", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            /// We don't want to put a lot of conditions for already unhandled payment methods
+            /// So we'll fulFill the promise directly, leaving the rest of the logic as clean as possible to proceed with almost
+            /// only happy path
+            
+            guard self.config.type != PrimerPaymentMethodType.xfersPayNow.rawValue else {
+                seal.fulfill()
+                return
+            }
+
+            
+            var additionalInfo: PrimerCheckoutAdditionalInfo?
+            
+            switch self.config.type {
+            case PrimerPaymentMethodType.rapydPromptPay.rawValue,
+                PrimerPaymentMethodType.omisePromptPay.rawValue:
+                
+                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                guard let expiresAt = decodedClientToken.expDate else {
+                    let err = PrimerError.invalidValue(key: "decodedClientToken.expiresAt", value: decodedClientToken.expiresAt, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                guard let qrCodeString = decodedClientToken.qrCode else {
+                    let err = PrimerError.invalidValue(key: "decodedClientToken.qrCode", value: decodedClientToken.qrCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                let formatter = DateFormatter().withExpirationDisplayDateFormat()
+                let expiresAtDateString = formatter.string(from: expiresAt)
+                
+                if qrCodeString.isHttpOrHttpsURL, URL(string: qrCodeString) != nil {
+
+                    additionalInfo = PromptPayCheckoutAdditionalInfo(expiresAt: expiresAtDateString,
+                                                                     qrCodeUrl: qrCodeString,
+                                                                     qrCodeBase64: nil)
+                } else {
+                    additionalInfo = PromptPayCheckoutAdditionalInfo(expiresAt: expiresAtDateString,
+                                                                     qrCodeUrl: nil,
+                                                                     qrCodeBase64: qrCodeString)
+                }
+                
+            default:
+                log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.config.type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
+                break
+            }
+                        
+            if let additionalInfo = additionalInfo {
+                PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
+                seal.fulfill()
+            } else {
+                let err = PrimerError.invalidValue(key: "additionalInfo", value: additionalInfo, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
             }
         }
     }

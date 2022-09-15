@@ -2,8 +2,9 @@
 //  UserInterfaceModule.swift
 //  PrimerSDK
 //
-//  Created by Evangelos on 8/7/22.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
+
 
 #if canImport(UIKit)
 
@@ -653,16 +654,34 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: nil),
                     text: nil,
                     textColor: nil))
-            
-        case .rapydPromptPay:
-            return nil
-            
+                        
         case .rapydPoli:
             return nil
             
         case .twoCtwoP:
             return nil
-            
+    
+        case .rapydPromptPay,
+                .omisePromptPay:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#023C68",
+                        lightHex: nil,
+                        darkHex: nil),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: nil,
+                        dark: nil),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: nil,
+                        darkHex: nil),
+                    text: nil,
+                    textColor: nil))
+
         case .xenditOvo:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
