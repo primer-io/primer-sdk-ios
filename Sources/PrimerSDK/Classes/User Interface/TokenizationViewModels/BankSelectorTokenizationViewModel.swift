@@ -10,7 +10,7 @@
 import SafariServices
 import UIKit
 
-class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewModel {
+class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
     
     internal private(set) var banks: [AdyenBank] = []
     internal private(set) var dataSource: [AdyenBank] = [] {
@@ -186,7 +186,7 @@ class BankSelectorTokenizationViewModel: ExternalPaymentMethodTokenizationViewMo
             DispatchQueue.main.async {
                 let bsvc = BankSelectorViewController(viewModel: self)
                 DispatchQueue.main.async {
-                    Primer.shared.primerRootVC?.show(viewController: bsvc)
+                    PrimerUIManager.primerRootViewController?.show(viewController: bsvc)
                     seal.fulfill()
                 }
             }

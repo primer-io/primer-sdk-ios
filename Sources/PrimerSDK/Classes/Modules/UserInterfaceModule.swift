@@ -2,8 +2,9 @@
 //  UserInterfaceModule.swift
 //  PrimerSDK
 //
-//  Created by Evangelos on 8/7/22.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
+
 
 #if canImport(UIKit)
 
@@ -653,16 +654,34 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: nil),
                     text: nil,
                     textColor: nil))
-            
-        case .rapydPromptPay:
-            return nil
-            
+                        
         case .rapydPoli:
             return nil
             
         case .twoCtwoP:
             return nil
-            
+    
+        case .rapydPromptPay,
+                .omisePromptPay:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#023C68",
+                        lightHex: nil,
+                        darkHex: nil),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: nil,
+                        dark: nil),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: nil,
+                        darkHex: nil),
+                    text: nil,
+                    textColor: nil))
+
         case .xenditOvo:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -897,10 +916,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             PrimerPaymentMethodType.adyenMBWay.rawValue:
             switch Primer.shared.intent {
             case .checkout:
-                let viewModel: VaultCheckoutViewModelProtocol = DependencyContainer.resolve()
+                let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
                 buttonTitle = Strings.PaymentButton.pay
-                if let currency = AppState.current.currency, let amount = AppState.current.amount {
-                    buttonTitle += " \(amount.toCurrencyString(currency: currency))"
+                if let amountStr = universalCheckoutViewModel.amountStr {
+                    buttonTitle += " \(amountStr))"
                 }
                 
             case .vault:
@@ -944,6 +963,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             PrimerPaymentMethodType.xfersPayNow.rawValue:
             let btn = PrimerButton()
             btn.isEnabled = false
+            btn.accessibilityIdentifier = "submit_btn"
             btn.clipsToBounds = true
             btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
             btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
@@ -951,7 +971,20 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
             btn.setTitleColor(.white, for: .normal)
             btn.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
-            btn.setTitle("Confirm", for: .normal)
+            btn.setTitle(Strings.PaymentButton.confirm, for: .normal)
+            return btn
+        
+        case PrimerPaymentMethodType.adyenMultibanco.rawValue:
+            let btn = PrimerButton()
+            btn.isEnabled = true
+            btn.clipsToBounds = true
+            btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
+            btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+            btn.layer.cornerRadius = 4
+            btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
+            btn.setTitleColor(.white, for: .normal)
+            btn.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
+            btn.setTitle(Strings.PaymentButton.confirmToPay, for: .normal)
             return btn
             
         default:

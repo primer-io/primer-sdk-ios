@@ -231,7 +231,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private lazy var countryFieldContainerView: PrimerCustomFieldView = {
         PrimerCountryField.countryContainerViewFieldView(countryFieldView, openCountriesListPressed: {
             DispatchQueue.main.async {
-                Primer.shared.primerRootVC?.show(viewController: self.countrySelectorViewController)
+                PrimerUIManager.primerRootViewController?.show(viewController: self.countrySelectorViewController)
             }
         })
     }()
@@ -291,22 +291,22 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func start() {
         self.checkouEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
+            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = false
         }
         
         self.checkouEventsNotifierModule.didFinishTokenization = {
             self.uiModule.submitButton?.stopAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = true
         }
         
         self.didStartPayment = {
             self.uiModule.submitButton?.startAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
+            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = false
         }
         
         self.didFinishPayment = { err in
             self.uiModule.submitButton?.stopAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = true
             
             self.willDismissPaymentMethodUI?()
             self.webViewController?.dismiss(animated: true, completion: {
@@ -424,7 +424,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 switch self.config.type {
                 case PrimerPaymentMethodType.paymentCard.rawValue:
                     let pcfvc = PrimerCardFormViewController(viewModel: self)
-                    Primer.shared.primerRootVC?.show(viewController: pcfvc)
+                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
                 default:
                     precondition(false, "Should never end up here")
@@ -551,7 +551,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             
             DispatchQueue.main.async {
-                Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
                         seal.fulfill()
                     }
@@ -723,7 +723,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
         isLoading ? self.uiModule.submitButton?.startAnimating() : self.uiModule.submitButton?.stopAnimating()
-        Primer.shared.primerRootVC?.view.isUserInteractionEnabled = !isLoading
+        PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = !isLoading
     }
     
     fileprivate func autofocusToNextFieldIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
@@ -915,7 +915,7 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
         countryFieldView.countryCode = country
         countryFieldView.validation = .valid
         countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
-        Primer.shared.primerRootVC?.popViewController()
+        PrimerUIManager.primerRootViewController?.popViewController()
     }
 }
 

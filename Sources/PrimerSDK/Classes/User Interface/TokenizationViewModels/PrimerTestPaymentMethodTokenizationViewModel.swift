@@ -54,22 +54,22 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         
         self.checkouEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
+            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = false
         }
         
         self.checkouEventsNotifierModule.didFinishTokenization = {
             self.uiModule.submitButton?.stopAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = true
         }
         
         self.didStartPayment = {
             self.uiModule.submitButton?.startAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = false
+            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = false
         }
         
         self.didFinishPayment = { err in
             self.uiModule.submitButton?.stopAnimating()
-            Primer.shared.primerRootVC?.view.isUserInteractionEnabled = true
+            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = true
         }
         
         super.start()
@@ -158,7 +158,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                 let testPaymentMethodsVC = PrimerTestPaymentMethodViewController(viewModel: self)
                 
                 self.willPresentPaymentMethodUI?()
-                Primer.shared.primerRootVC?.show(viewController: testPaymentMethodsVC)
+                PrimerUIManager.primerRootViewController?.show(viewController: testPaymentMethodsVC)
                 self.didPresentPaymentMethodUI?()
                 seal.fulfill()
             }

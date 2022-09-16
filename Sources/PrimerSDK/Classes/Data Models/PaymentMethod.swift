@@ -1,8 +1,8 @@
 //
-//  PaymentMethodConfiguration.swift
+//  PrimerPaymentMethod.swift
 //  PrimerSDK
 //
-//  Created by Evangelos on 28/12/21.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
 #if canImport(UIKit)
@@ -61,7 +61,7 @@ class PrimerPaymentMethod: Codable {
     var hasUnknownSurcharge: Bool = false
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
         if implementationType == .webRedirect {
-            return ExternalPaymentMethodTokenizationViewModel(config: self)
+            return WebRedirectPaymentMethodTokenizationViewModel(config: self)
             
         } else {
             switch self.type {
@@ -98,7 +98,8 @@ class PrimerPaymentMethod: Codable {
                 return PrimerTestPaymentMethodTokenizationViewModel(config: self)
                 
             case PrimerPaymentMethodType.xfersPayNow.rawValue,
-                PrimerPaymentMethodType.rapydPromptPay.rawValue:
+                PrimerPaymentMethodType.rapydPromptPay.rawValue,
+                PrimerPaymentMethodType.omisePromptPay.rawValue:
                 return QRCodeTokenizationViewModel(config: self)
                 
             default:

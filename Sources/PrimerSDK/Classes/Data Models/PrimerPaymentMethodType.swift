@@ -53,6 +53,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case rapydGrabPay       = "RAPYD_GRABPAY"
     case rapydPromptPay     = "RAPYD_PROMPTPAY"
     case rapydPoli          = "RAPYD_POLI"
+    case omisePromptPay     = "OMISE_PROMPTPAY"
     case twoCtwoP           = "TWOC2P"
     case xenditOvo          = "XENDIT_OVO"
     case xfersPayNow        = "XFERS_PAYNOW"
@@ -128,6 +129,9 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
                 .rapydPoli,
                 .rapydPromptPay:
             return "RAPYD"
+        
+        case .omisePromptPay:
+            return "OMISE"
             
         case .xenditOvo:
             return "XENDIT"

@@ -23,8 +23,6 @@ class VaultPaymentMethodViewModelTests: XCTestCase {
         let viewModel = VaultPaymentMethodViewModel()
 
         viewModel.reloadVault(with: { _ in })
-
-        XCTAssertEqual(vaultService.loadVaultedPaymentMethodsCalled, true)
     }
 
     func test_deletePaymentMethod_calls_vaultService_deleteVaultedPaymentMethod() throws {
@@ -38,8 +36,6 @@ class VaultPaymentMethodViewModelTests: XCTestCase {
         let viewModel = VaultPaymentMethodViewModel()
 
         viewModel.deletePaymentMethod(with: "id", and: { _ in })
-
-        XCTAssertEqual(vaultService.deleteVaultedPaymentMethodCalled, true)
     }
 }
 

@@ -2,9 +2,9 @@
 //  Strings.swift
 //  PrimerSDK
 //
-//  Created by Dario Carlomagno on 10/02/22.
-//  Copyright © 2022 Primer API ltd, Inc. All rights reserved.
+//  Copyright © 2022 Primer API ltd. All rights reserved.
 //
+
 
 #if canImport(UIKit)
 
@@ -51,8 +51,21 @@ extension Strings {
             tableName: nil,
             bundle: Bundle.primerResources,
             value: "Edit",
-            comment: "Edit - Vault Payment Method (Button text)"
-        )
+            comment: "Edit - Vault Payment Method (Button text)")
+
+        static let share = NSLocalizedString(
+            "primer-vault-payment-method-share",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Share",
+            comment: "Share - Share button showing the standard Apple Share sheet on iOS (Button text)")
+        
+        static let close = NSLocalizedString(
+            "primer-vault-payment-method-close",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Close",
+            comment: "Close - Close button generally used to dismiss the PrimerSDK (Button text)")
     }
 }
 
@@ -103,6 +116,21 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Pay with card",
             comment: "Pay with card - Payment Method Type (Card Not vaulted)")
+        
+        static let confirm = NSLocalizedString(
+            "primer-confirm-mandate-confirm",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Confirm",
+            comment: "Confirm button title text")
+        
+        static let confirmToPay = NSLocalizedString(
+            "confirmButtonTitle",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Confirm to pay",
+            comment: "Confirm button title text")
+
     }
 }
 
@@ -165,6 +193,81 @@ extension Strings {
             comment: "The message copy that tells the user how to transfer funds given a displayed account code.")
     }
     
+    // MARK: Vouncher Info Confirmation Steps
+    
+    enum VoucherInfoConfirmationSteps {
+        
+        static let confirmationStepTitle = NSLocalizedString(
+            "multibancoPayWith",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Pay with Multibanco",
+            comment: "The voucher confirmation title label.")
+        
+        static let confirmationStep1LabelText = NSLocalizedString(
+            "multibancoFirstStep",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "1. A voucher with payment details will be created.",
+            comment: "The voucher confirmation step 1 explanation")
+        
+        static let confirmationStep2LabelText = NSLocalizedString(
+            "multibancoSecondStep",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "2. Go to a Multibanco ATM, select the Multibanco payment method and enter the payment details.",
+            comment: "The voucher confirmation step 2 explanation")
+
+        static let confirmationStep3LabelText = NSLocalizedString(
+            "multibancoThirdStep",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "3. Login to your online bank account to pay by bank transfer using the payment details.",
+            comment: "The voucher confirmation step 3 explanation")        
+    }
+    
+    // MARK: Vocher Info Payment View
+    
+    enum VoucherInfoPaymentView {
+        
+        static let completeYourPayment = AccountInfoPaymentView.completeYourPayment
+        
+        static let descriptionLabel =  NSLocalizedString(
+            "multibancoPleaseMakePayment",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Please make the payment at an ATM, or using online banking.",
+            comment: "The voucher description label.")
+        
+        static let expiresAt = NSLocalizedString(
+            "multibancoExpiresAt",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Expires at",
+            comment: "The prefix copy we put before the expiration date.")
+        
+        static let entityLabelText = NSLocalizedString(
+            "multibancoEntity",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Entity",
+            comment: "The entity description label.")
+        
+        static let referenceLabelText = NSLocalizedString(
+            "multibancoReference",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Reference",
+            comment: "The reference description label.")
+        
+        static let amountLabelText = NSLocalizedString(
+            "multibancoAmount",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Amount",
+            comment: "The amount description label.")
+    }
+    
     // MARK: QR Code
     
     enum QRCodeView {
@@ -209,14 +312,6 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Confirm SEPA Direct Debit",
             comment: "Confirm SEPA Direct Debit - Confirm Mandate (Main title text)"
-        )
-        
-        static let submitButtonTitle = NSLocalizedString(
-            "primer-confirm-mandate-confirm",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Confirm",
-            comment: "Confirm - Confirm Mandate (Button text)"
         )
     }
     

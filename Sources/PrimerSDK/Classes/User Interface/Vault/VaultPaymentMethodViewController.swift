@@ -242,7 +242,7 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
                 self?.tableView.reloadData()
                 // Going back if no payment method remains
                 if viewModel.paymentMethods.isEmpty {
-                    Primer.shared.primerRootVC?.popViewController()
+                    PrimerUIManager.primerRootViewController?.popViewController()
                 }
             }
         })

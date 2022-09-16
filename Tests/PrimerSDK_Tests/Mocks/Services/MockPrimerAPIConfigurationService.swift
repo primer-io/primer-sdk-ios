@@ -11,7 +11,7 @@
 
 class MockPrimerAPIConfigurationService: PrimerAPIConfigurationServiceProtocol {
     
-    var viewModels: [ExternalPaymentMethodTokenizationViewModel] = []
+    var viewModels: [WebRedirectPaymentMethodTokenizationViewModel] = []
     var fetchConfigCalled = false
     let requestDisplayMetadata: Bool?
     
@@ -29,6 +29,10 @@ class MockPrimerAPIConfigurationService: PrimerAPIConfigurationServiceProtocol {
         return Promise { seal in
             seal.fulfill()
         }
+    }
+    
+    func fetchConfigurationAndVaultedPaymentMethods() -> Promise<Void> {
+        return Promise()
     }
 }
 

@@ -500,7 +500,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
                 
                 DispatchQueue.main.async {
-                    Primer.shared.primerRootVC?.present(self.webViewController!, animated: true, completion: {
+                    PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                         DispatchQueue.main.async {
                             seal.fulfill()
                         }

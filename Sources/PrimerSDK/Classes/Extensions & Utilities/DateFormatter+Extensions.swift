@@ -5,6 +5,8 @@
 //  Created by Dario Carlomagno on 28/08/22.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 internal extension DateFormatter {
@@ -20,5 +22,23 @@ internal extension DateFormatter {
         self.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         return self
     }
+}
+
+internal extension DateFormatter {
+    
+    /**
+     The provided function sets the `style` of `date` and `time` property of DateFormatter.
+     
+     Format: `Sep 16, 2022 at 11:46 AM`
+     
+     - Returns: The DateFormatter instance.
+     */
+    func withExpirationDisplayDateFormat() -> DateFormatter {
+        self.dateStyle = .medium
+        self.timeStyle = .short
+        return self
+    }
     
 }
+
+#endif
