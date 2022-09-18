@@ -1,6 +1,5 @@
-.github/CODEOWNERS      @primer-io/checkout-pci-reviewers
-.github/workflows       @primer-io/checkout-pci-reviewers
+.github/CODEOWNERS                        @primer-io/checkout-pci-reviewers
+.github/workflows                         @primer-io/checkout-pci-reviewers
 
-/Sources                @primer-io/checkout-pci-reviewers
-/fastlane               @primer-io/checkout-pci-reviewers
-
+/Sources/PrimerSDK/Classes/PCI            @primer-io/checkout-pci-reviewers
+/fastlane                                 @primer-io/checkout-pci-reviewers
