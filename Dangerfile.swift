@@ -67,10 +67,13 @@ if (additions + deletions > bigPRThreshold) {
 
 // MARK: - PR Title
 
-// The PR title needs to start with DEX-
+// The PR title needs to start with any of the following prefixes contained
+// in the array
 
-if !isReleasePr && pr.title.hasPrefix("DEX-") == false {
-    warn("Please add ticket number prefix 'DEX-{TICKET-NUMBER}' to the PR")
+let ticketPrefixes = ["DEX-", "CHKT-"]
+
+if !isReleasePr && ticketPrefixes.first(where: { pr.title.hasPrefix($0) }) != nil {
+    warn("Please add ticket number prefix to the PR")
 }
 
 // MARK: - PR WIP
@@ -99,4 +102,3 @@ if pr.assignees?.count == 0 {
 
 //Coverage.xcodeBuildCoverage(.derivedDataFolder("Build"),
 //                            minimumCoverage: 30)
-
