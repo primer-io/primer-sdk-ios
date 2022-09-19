@@ -49,12 +49,7 @@ final internal class DependencyContainer {
         let dependency = dependencies[key] as? T
 
         if dependency == nil {
-            if key == String(describing: CreateResumePaymentServiceProtocol.self) {
-                let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-                DependencyContainer.register(createResumePaymentService)
-                return self.resolve()
-                
-            } else if key == String(describing: AppStateProtocol.self) {
+            if key == String(describing: AppStateProtocol.self) {
                 let appState: AppStateProtocol = AppState()
                 DependencyContainer.register(appState)
                 return self.resolve()
