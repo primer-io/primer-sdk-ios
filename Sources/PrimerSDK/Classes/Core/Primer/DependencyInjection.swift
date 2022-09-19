@@ -59,11 +59,6 @@ final internal class DependencyContainer {
                 DependencyContainer.register(primerSettings)
                 return self.resolve()
                 
-            } else if key == String(describing: TokenizationServiceProtocol.self) {
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-                DependencyContainer.register(tokenizationService)
-                return self.resolve()
-                
             } else if key == String(describing: VaultPaymentMethodViewModelProtocol.self) {
                 let vaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
                 DependencyContainer.register(vaultPaymentMethodViewModel)
