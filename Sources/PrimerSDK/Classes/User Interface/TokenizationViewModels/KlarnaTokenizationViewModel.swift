@@ -181,11 +181,22 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 #if canImport(PrimerKlarnaSDK)
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 
+                guard let urlSchemeStr = settings.paymentMethodOptions.urlScheme,
+                      URL(string: urlSchemeStr) != nil else {
+                    let err = PrimerError.invalidUrlScheme(
+                        urlScheme: settings.paymentMethodOptions.urlScheme,
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
                 self.klarnaViewController = PrimerKlarnaViewController(
                     delegate: self,
                     paymentCategory: .payLater,
                     clientToken: self.klarnaPaymentSession!.clientToken,
-                    urlScheme: settings.paymentMethodOptions.urlScheme)
+                    urlScheme: urlSchemeStr)
                 
                 self.klarnaPaymentSessionCompletion = { _, err in
                     if let err = err {
@@ -345,15 +356,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         className: "\(String(describing: self.self))",
                         function: #function
                     )
-                    
-                    self?.klarnaPaymentSession = res
-                    
-                    guard URL(string: res.hppRedirectUrl) != nil else {
-                        let err = PrimerError.invalidValue(key: "hppRedirectUrl", value: res.hppRedirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                        return
-                    }
                     
                     seal.fulfill(res)
                 }
