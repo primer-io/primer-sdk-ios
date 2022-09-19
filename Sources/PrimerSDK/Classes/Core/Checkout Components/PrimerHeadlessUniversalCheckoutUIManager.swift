@@ -563,7 +563,7 @@ extension PrimerHeadlessUniversalCheckout {
 
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
             return Promise { seal in
-                let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+                let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
                 createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
                     guard error == nil else {
                         seal.reject(error!)
@@ -644,7 +644,7 @@ extension PrimerHeadlessUniversalCheckout {
             
             return Promise { seal in
                 
-                let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+                let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
                 createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
                     
                     guard error == nil else {
