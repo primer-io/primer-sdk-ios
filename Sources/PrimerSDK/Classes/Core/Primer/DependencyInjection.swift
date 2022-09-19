@@ -59,11 +59,6 @@ final internal class DependencyContainer {
                 DependencyContainer.register(primerSettings)
                 return self.resolve()
                 
-            } else if key == String(describing: PayPalServiceProtocol.self) {
-                let payPalService: PayPalServiceProtocol = PayPalService()
-                DependencyContainer.register(payPalService)
-                return self.resolve()
-                
             } else if key == String(describing: TokenizationServiceProtocol.self) {
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
                 DependencyContainer.register(tokenizationService)
