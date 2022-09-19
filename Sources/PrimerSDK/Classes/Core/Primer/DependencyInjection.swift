@@ -59,11 +59,6 @@ final internal class DependencyContainer {
                 DependencyContainer.register(primerSettings)
                 return self.resolve()
                 
-            } else if key == String(describing: VaultServiceProtocol.self) {
-                let vaultService: VaultServiceProtocol = VaultService()
-                DependencyContainer.register(vaultService)
-                return self.resolve()
-                
             } else if key == String(describing: PayPalServiceProtocol.self) {
                 let payPalService: PayPalServiceProtocol = PayPalService()
                 DependencyContainer.register(payPalService)
