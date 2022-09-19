@@ -80,7 +80,7 @@ extension Response.Body.Klarna {
         let sessionId: String
         let categories: [Response.Body.Klarna.SessionCategory]
         let hppSessionId: String?
-        let hppRedirectUrl: String
+        let hppRedirectUrl: String?
     }
     
     struct CustomerToken: Codable {
