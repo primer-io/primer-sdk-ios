@@ -164,7 +164,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             currencyCode: currency.rawValue,
             phoneNumber: AppState.current.apiConfiguration?.clientSession?.customer?.mobileNumber)
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         api.createApayaSession(clientToken: decodedClientToken, request: body) { [weak self] result in
             switch result {
             case .failure(let err):
