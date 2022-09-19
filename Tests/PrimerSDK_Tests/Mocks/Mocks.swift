@@ -346,7 +346,6 @@ class MockLocator {
         // register dependencies
         DependencyContainer.register(mockSettings as PrimerSettingsProtocol)
         DependencyContainer.register(state as AppStateProtocol)
-        DependencyContainer.register(MockTokenizationService(paymentInstrumentType: "PAYMENT_CARD", tokenType: TokenType.singleUse.rawValue) as TokenizationServiceProtocol)
         DependencyContainer.register(MockVaultPaymentMethodViewModel() as VaultPaymentMethodViewModelProtocol)
         DependencyContainer.register(PrimerTheme() as PrimerThemeProtocol)
     }
