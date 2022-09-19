@@ -59,11 +59,6 @@ final internal class DependencyContainer {
                 DependencyContainer.register(primerSettings)
                 return self.resolve()
                 
-            } else if key == String(describing: VaultPaymentMethodViewModelProtocol.self) {
-                let vaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
-                DependencyContainer.register(vaultPaymentMethodViewModel)
-                return self.resolve()
-                
             } else if key == String(describing: PrimerThemeProtocol.self) {
                 let primerTheme: PrimerThemeProtocol = PrimerTheme()
                 DependencyContainer.register(primerTheme)
