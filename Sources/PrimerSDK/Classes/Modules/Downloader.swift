@@ -177,11 +177,13 @@ internal class Downloader: NSObject, DownloaderModule {
                     let validStatusCodeRange = 200..<300
                     if validStatusCodeRange.contains(statusCode) {
                         do {
+                            FileManager.default.delegate = self
                             try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
                             seal.fulfill(())
                             
                         } catch {
                             let primerErr = PrimerError.underlyingErrors(errors: [error], userInfo: nil, diagnosticsId: nil)
+                            ErrorHandler.handle(error: primerErr)
                             seal.reject(primerErr)
                         }
                     } else {
@@ -200,6 +202,13 @@ internal class Downloader: NSObject, DownloaderModule {
             
             task.resume()
         }
+    }
+}
+
+extension Downloader: FileManagerDelegate {
+    
+    func fileManager(_ fileManager: FileManager, shouldProceedAfterError error: Error, copyingItemAt srcURL: URL, to dstURL: URL) -> Bool {
+        return true
     }
 }
 
