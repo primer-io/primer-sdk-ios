@@ -70,7 +70,7 @@ if (additions + deletions > bigPRThreshold) {
 // The PR title needs to start with any of the following prefixes contained
 // in the array
 
-let ticketPrefixes = ["DEX-", "CHKT-"]
+let ticketPrefixes = ["DEVX-", "CHKT-"]
 
 if !isReleasePr && ticketPrefixes.first(where: { pr.title.hasPrefix($0) }) != nil {
     warn("Please add ticket number prefix to the PR")
