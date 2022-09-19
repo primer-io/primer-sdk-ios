@@ -33,7 +33,7 @@ extension CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             return
         }
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         
         api.createPayment(clientToken: clientToken, paymentRequestBody: paymentRequest) { result in
             switch result {
@@ -54,7 +54,7 @@ extension CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             return
         }
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         
         api.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest) { result in
             switch result {

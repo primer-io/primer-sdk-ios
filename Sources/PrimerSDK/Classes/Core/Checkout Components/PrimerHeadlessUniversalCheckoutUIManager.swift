@@ -524,7 +524,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         private func startPolling(on url: URL, completion: @escaping (String?, Error?) -> Void) {
-            let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            let client: PrimerAPIClientProtocol = PrimerAPIClient()
             client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
                 if self.webViewCompletion == nil {
                     let err = PrimerError.cancelled(

@@ -428,7 +428,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return
         }
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         
         api.begin3DSAuth(clientToken: decodedClientToken, paymentMethodTokenData: paymentMethodTokenData, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
             switch result {
@@ -448,7 +448,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return
         }
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         api.continue3DSAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId) { result in
             switch result {
             case .failure(let err):
@@ -490,7 +490,6 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         }
         
         let api = MockPrimerAPIClient()
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
         api.response = response
         
         api.begin3DSAuth(clientToken: decodedClientToken, paymentMethodTokenData: paymentMethodTokenData, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: completion)
@@ -505,9 +504,7 @@ class MockThreeDSService: ThreeDSServiceProtocol {
         }
         
         let api = MockPrimerAPIClient()
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
         api.response = response
-        
         api.continue3DSAuth(clientToken: decodedClientToken, threeDSTokenId: threeDSTokenId, completion: completion)
     }
 }

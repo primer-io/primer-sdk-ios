@@ -342,7 +342,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 totalAmount: nil,
                 orderItems: nil)
             
-            let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            let api: PrimerAPIClientProtocol = PrimerAPIClient()
             
             api.createKlarnaPaymentSession(clientToken: decodedClientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
                 switch result {
@@ -390,7 +390,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 localeData: PrimerSettings.current.localeData
             )
             
-            let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            let api: PrimerAPIClientProtocol = PrimerAPIClient()
             
             api.createKlarnaCustomerToken(clientToken: decodedClientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
                 switch result {
@@ -437,7 +437,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         let body = Request.Body.Klarna.FinalizePaymentSession(paymentMethodConfigId: configId, sessionId: sessionId)
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession")
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         api.finalizeKlarnaPaymentSession(clientToken: decodedClientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {
             case .failure(let err):

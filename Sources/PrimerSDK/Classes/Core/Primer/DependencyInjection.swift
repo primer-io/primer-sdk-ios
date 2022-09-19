@@ -59,11 +59,6 @@ final internal class DependencyContainer {
                 DependencyContainer.register(primerSettings)
                 return self.resolve()
                 
-            } else if key == String(describing: PrimerAPIClientProtocol.self) {
-                let primerAPIClient: PrimerAPIClientProtocol = PrimerAPIClient()
-                DependencyContainer.register(primerAPIClient)
-                return self.resolve()
-                
             } else if key == String(describing: VaultServiceProtocol.self) {
                 let vaultService: VaultServiceProtocol = VaultService()
                 DependencyContainer.register(vaultService)
