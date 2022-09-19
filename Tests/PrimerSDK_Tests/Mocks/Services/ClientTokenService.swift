@@ -77,6 +77,10 @@ class MockClientTokenService: ClientTokenServiceProtocol {
         if (throwError) { return completion(PrimerError.generic(message: "An error occured", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)) }
         return completion(nil)
     }
+    
+    static func resetClientToken() {
+        
+    }
 }
 
 #endif
