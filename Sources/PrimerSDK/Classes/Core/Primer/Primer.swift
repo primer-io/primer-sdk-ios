@@ -196,18 +196,8 @@ public class Primer {
         self.selectedPaymentMethodType = nil
         ClientTokenService.resetClientToken()
         
-        DispatchQueue.main.async {
-            PrimerUIManager.primerRootViewController?.dismissPrimerRootViewController(animated: true, completion: {
-                PrimerUIManager.primerWindow?.isHidden = true
-                if #available(iOS 13, *) {
-                    PrimerUIManager.primerWindow?.windowScene = nil
-                }
-                PrimerUIManager.primerWindow?.rootViewController = nil
-                PrimerUIManager.primerRootViewController = nil
-                PrimerUIManager.primerWindow?.resignKey()
-                PrimerUIManager.primerWindow = nil
-                PrimerDelegateProxy.primerDidDismiss()
-            })
+        PrimerUIManager.dismissPrimerUI(animated: true) {
+            PrimerDelegateProxy.primerDidDismiss()
         }
     }
 }

@@ -213,6 +213,29 @@ internal class PrimerUIManager {
         }
     }
     
+    static func dismissPrimerUI(animated flag: Bool, completion: (() -> Void)? = nil) {
+        DispatchQueue.main.async {
+            guard let primerRootViewController = PrimerUIManager.primerRootViewController else {
+                completion?()
+                return
+            }
+            
+            primerRootViewController.dismissPrimerRootViewController(animated: flag) {
+                DispatchQueue.main.async {
+                    PrimerUIManager.primerWindow?.isHidden = true
+                    if #available(iOS 13, *) {
+                        PrimerUIManager.primerWindow?.windowScene = nil
+                    }
+                    PrimerUIManager.primerWindow?.rootViewController = nil
+                    PrimerUIManager.primerRootViewController = nil
+                    PrimerUIManager.primerWindow?.resignKey()
+                    PrimerUIManager.primerWindow = nil
+                    completion?()
+                }
+            }
+        }
+    }
+    
     static func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, withMessage message: String? = nil) {
         if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
             showResultScreenForResultType(type: .success, message: message)

@@ -406,15 +406,17 @@ internal class PrimerRootViewController: PrimerViewController {
     }
     
     internal func dismissPrimerRootViewController(animated flag: Bool, completion: (() -> Void)? = nil) {
-        view.endEditing(true)
-        
-        childViewBottomConstraint.constant = childView.bounds.height
-        
-        UIView.animate(withDuration: flag ? presentationDuration : 0, delay: 0, options: .curveEaseInOut) {
-            self.view.alpha = 0
-            self.view.layoutIfNeeded()
-        } completion: { _ in
-            completion?()
+        DispatchQueue.main.async {
+            self.view.endEditing(true)
+            self.childViewBottomConstraint.constant = self.childView.bounds.height
+            
+            UIView.animate(withDuration: flag ? self.presentationDuration : 0, delay: 0, options: .curveEaseInOut) {
+                self.view.alpha = 0
+                self.view.layoutIfNeeded()
+                
+            } completion: { _ in
+                completion?()
+            }
         }
     }
     
