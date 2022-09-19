@@ -17,7 +17,6 @@ class VaultPaymentMethodViewModelTests: XCTestCase {
         let vaultService = MockVaultService()
 
         MockLocator.registerDependencies()
-        DependencyContainer.register(clientTokenService as ClientTokenServiceProtocol)
         DependencyContainer.register(vaultService as VaultServiceProtocol)
 
         let viewModel = VaultPaymentMethodViewModel()
@@ -30,7 +29,6 @@ class VaultPaymentMethodViewModelTests: XCTestCase {
         let vaultService = MockVaultService()
 
         MockLocator.registerDependencies()
-        DependencyContainer.register(clientTokenService as ClientTokenServiceProtocol)
         DependencyContainer.register(vaultService as VaultServiceProtocol)
 
         let viewModel = VaultPaymentMethodViewModel()
