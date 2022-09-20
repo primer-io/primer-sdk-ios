@@ -16,6 +16,8 @@ internal protocol AppStateProtocol: AnyObject {
     var paymentMethods: [PrimerPaymentMethodTokenData] { get set }
     var selectedPaymentMethodId: String? { get set }
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? { get }
+    
+    static func resetAPIConfiguration()
 }
 
 internal class AppState: AppStateProtocol {
@@ -40,6 +42,10 @@ internal class AppState: AppStateProtocol {
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? {
         guard let selectedPaymentMethodToken = selectedPaymentMethodId else { return nil }
         return paymentMethods.first(where: { $0.id == selectedPaymentMethodToken })
+    }
+    
+    static func resetAPIConfiguration() {
+        AppState.current.apiConfiguration = nil
     }
 
     deinit {

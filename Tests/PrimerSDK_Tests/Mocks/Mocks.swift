@@ -123,6 +123,10 @@ class MockAppState: AppStateProtocol {
     var paymentMethods: [PrimerPaymentMethodTokenData] = []
     var selectedPaymentMethodId: String?
     var selectedPaymentMethod: PrimerPaymentMethodTokenData?
+    
+    static func resetAPIConfiguration() {
+        AppState.current.apiConfiguration = nil
+    }
 
     init(
         clientToken: String? = MockAppState.mockClientToken,

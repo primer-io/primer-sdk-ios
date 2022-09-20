@@ -44,6 +44,9 @@ internal class PrimerUIManager {
             events = [sdkEvent, connectivityEvent, timingEvent]
             Analytics.Service.record(events: events)
             
+            let previousClientToken = AppState.current.clientToken
+            let needsAPIConfigurationCall = (AppState.current.apiConfiguration == nil) || (previousClientToken != clientToken)
+            
             firstly {
                 PrimerUIManager.prepareRootViewController()
             }
@@ -51,7 +54,7 @@ internal class PrimerUIManager {
                 return ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: false)
             }
             .then { () -> Promise<Void> in
-                if AppState.current.clientToken == clientToken && AppState.current.apiConfiguration != nil {
+                if !needsAPIConfigurationCall {
                     // Client token is the same as before, therefore the config
                     // request has already been made.
                     return Promise()
