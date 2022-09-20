@@ -25,6 +25,11 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 return
             }
             
+            if AppState.current.apiConfiguration?.hasSurchargeEnabled == false {
+                seal.fulfill()
+                return
+            }
+            
             var params: [String: Any] = ["paymentMethodType": paymentMethodType]
             
             if let cardNetwork = cardNetwork {
@@ -60,6 +65,11 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
     func unselectPaymentMethodIfNeeded() -> Promise<Void> {
         return Promise { seal in
             guard Primer.shared.intent == .checkout else {
+                seal.fulfill()
+                return
+            }
+            
+            if AppState.current.apiConfiguration?.hasSurchargeEnabled == false {
                 seal.fulfill()
                 return
             }

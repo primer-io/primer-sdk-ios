@@ -27,15 +27,10 @@ class MockClientTokenService: ClientTokenServiceProtocol {
         return jwtTokenPayload
     }
     
-    static func storeClientToken(_ clientToken: String) -> Promise<Void> {
+    static func storeClientToken(_ clientToken: String, isAPIValidationEnabled: Bool) -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
-    }
-    
-    static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void) {
-        completion(nil)
-        return
     }
     
     func fetchClientToken() -> Promise<Void> {
@@ -76,6 +71,10 @@ class MockClientTokenService: ClientTokenServiceProtocol {
         loadCheckoutConfigCalled = true
         if (throwError) { return completion(PrimerError.generic(message: "An error occured", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)) }
         return completion(nil)
+    }
+    
+    static func resetClientToken() {
+        
     }
 }
 

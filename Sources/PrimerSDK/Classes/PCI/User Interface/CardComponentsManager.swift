@@ -105,23 +105,27 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             }
             
             delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
-                
                 guard error == nil, let clientToken = clientToken else {
                     seal.reject(error!)
                     return
                 }
                 
-                ClientTokenService.storeClientToken(clientToken, completion: { error in
-                    
-                    guard error == nil else {
-                        seal.reject(error!)
-                        return
-                    }
-                    
+                firstly {
+                    ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: false)
+                }
+                .done {
                     if let decodedClientToken = self.decodedClientToken {
                         seal.fulfill(decodedClientToken)
+                    } else {
+                        precondition(false, "Decoded client token should never be null at this point.")
+                        let err = PrimerError.invalidValue(key: "self.decodedClientToken", value: nil, userInfo: nil, diagnosticsId: nil)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
                     }
-                })
+                }
+                .catch { err in
+                    seal.reject(err)
+                }
             })
         }
     }

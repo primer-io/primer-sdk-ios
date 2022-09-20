@@ -43,7 +43,7 @@ public class PrimerHeadlessUniversalCheckout {
         }
         
         firstly {
-            return ClientTokenService.storeClientToken(clientToken)
+            return ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: false)
         }
         .then { () -> Promise<Void> in
             self.clientToken = clientToken
@@ -112,7 +112,7 @@ public class PrimerHeadlessUniversalCheckout {
         return Promise { seal in
             if AppState.current.clientToken == nil, let clientToken = PrimerHeadlessUniversalCheckout.current.clientToken {
                 firstly {
-                    ClientTokenService.storeClientToken(clientToken)
+                    ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: false)
                 }
                 .then({ () -> Promise<Void> in
                     self.continueValidateSession()

@@ -44,16 +44,27 @@ internal class PrimerUIManager {
             events = [sdkEvent, connectivityEvent, timingEvent]
             Analytics.Service.record(events: events)
             
-            
             firstly {
                 PrimerUIManager.prepareRootViewController()
             }
             .then { () -> Promise<Void> in
-                return ClientTokenService.storeClientToken(clientToken)
+                return ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: false)
             }
             .then { () -> Promise<Void> in
-                let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
-                return configurationService.fetchConfigurationAndVaultedPaymentMethods()
+                if AppState.current.clientToken == clientToken && AppState.current.apiConfiguration != nil {
+                    // Client token is the same as before, therefore the config
+                    // request has already been made.
+                    return Promise()
+                } else {
+                    let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                    let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
+                    
+                    if isHeadlessCheckoutDelegateImplemented {
+                        return configurationService.fetchConfiguration()
+                    } else {
+                        return configurationService.fetchConfigurationAndVaultedPaymentMethods()
+                    }
+                }
             }
             .then { () -> Promise<Void> in
                 return PrimerUIManager.validatePaymentUIPresentation()
