@@ -157,10 +157,15 @@ internal class Downloader: NSObject, DownloaderModule {
     
     private func downloadData(from url: URL, to localUrl: URL) -> Promise<Void> {
         return Promise { seal in
-            let sessionConfig = URLSessionConfiguration.default
-            sessionConfig.urlCache = URLCache.shared
-            let session = URLSession(configuration: sessionConfig)
+            let session = URLSession.shared
+            session.configuration.urlCache = URLCache.shared
             let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 2)
+            let cache = session.configuration.urlCache
+            
+            if cache?.cachedResponse(for: request) != nil {
+                seal.fulfill()
+                return
+            }
             
             let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
                 if let error = error {
@@ -179,14 +184,13 @@ internal class Downloader: NSObject, DownloaderModule {
                     let validStatusCodeRange = 200..<300
                     if validStatusCodeRange.contains(statusCode) {
                         do {
-                            let cache = session.configuration.urlCache
+                            FileManager.default.delegate = self
+                            try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
                             
                             if cache?.cachedResponse(for: request) == nil, let data = try? Data(contentsOf: tempLocalUrl) {
                                 cache?.storeCachedResponse(CachedURLResponse(response: response, data: data), for: request)
                             }
-                                                        
-                            FileManager.default.delegate = self
-                            try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
+                            
                             seal.fulfill(())
                             
                         } catch {
