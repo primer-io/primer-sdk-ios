@@ -201,10 +201,10 @@ extension PaymentMethodTokenizationViewModel {
                         
                     case .continueWithNewClientToken(let newClientToken):
                         firstly {
-                            ClientTokenService.storeClientToken(newClientToken)
+                            ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: true)
                         }
                         .then { () -> Promise<Void> in
-                            let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                            let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: false)
                             return configurationService.fetchConfiguration()
                         }
                         .done {
@@ -253,7 +253,7 @@ extension PaymentMethodTokenizationViewModel {
                     
                     if let requiredAction = paymentResponse!.requiredAction {
                         firstly {
-                            ClientTokenService.storeClientToken(requiredAction.clientToken)
+                            ClientTokenService.storeClientToken(requiredAction.clientToken, isAPIValidationEnabled: true)
                         }
                         .done { checkoutData in
                             guard let decodedClientToken = ClientTokenService.decodedClientToken else {

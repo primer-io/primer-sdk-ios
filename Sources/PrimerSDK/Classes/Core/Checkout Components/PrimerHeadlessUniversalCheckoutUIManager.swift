@@ -333,10 +333,10 @@ extension PrimerHeadlessUniversalCheckout {
                             
                         case .continueWithNewClientToken(let newClientToken):
                             firstly {
-                                ClientTokenService.storeClientToken(newClientToken)
+                                ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: true)
                             }
                             .then { () -> Promise<Void> in
-                                let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                                let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: false)
                                 return configurationService.fetchConfiguration()
                             }
                             .done {
@@ -385,7 +385,7 @@ extension PrimerHeadlessUniversalCheckout {
                         
                         if let requiredAction = paymentResponse!.requiredAction {
                             firstly {
-                                ClientTokenService.storeClientToken(requiredAction.clientToken)
+                                ClientTokenService.storeClientToken(requiredAction.clientToken, isAPIValidationEnabled: true)
                             }
                             .done { checkoutData in
                                 guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -759,25 +759,25 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
         
         if PrimerHeadlessUniversalCheckout.current.clientToken != clientToken {
             
-            ClientTokenService.storeClientToken(clientToken) { error in
+            firstly {
+                ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: true)
+            }
+            .done {
                 DispatchQueue.main.async {
-                    
-                    guard error == nil else {
-                        var primerErr: PrimerError!
-                        if let error = error as? PrimerError {
-                            primerErr = error
-                        } else {
-                            primerErr = PrimerError.generic(message: error!.localizedDescription, userInfo: nil, diagnosticsId: nil)
-                        }
-                        
-                        ErrorHandler.handle(error: error!)
-                        PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
-                            // FIXME: Handle decision for HUC
-                        }
-                        return
-                    }
-                    
                     self.continueHandleNewClientToken(clientToken)
+                }
+            }
+            .catch { err in
+                var primerErr: PrimerError!
+                if let err = err as? PrimerError {
+                    primerErr = err
+                } else {
+                    primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: nil)
+                }
+                
+                ErrorHandler.handle(error: primerErr)
+                PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
+                    // FIXME: Handle decision for HUC
                 }
             }
         } else {
