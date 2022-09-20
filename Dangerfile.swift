@@ -26,10 +26,10 @@ let swiftFilesWithCopyright = sdkEditedFiles.filter {
     danger.utils.readFile($0).contains("//  Created by")
 }
 
-if swiftFilesWithCopyright.count > 0 {
-    let files = swiftFilesWithCopyright.joined(separator: ", ")
-    warn("In Danger we don't include copyright headers, found them in: \(files)")
-}
+//if swiftFilesWithCopyright.count > 0 {
+//    let files = swiftFilesWithCopyright.joined(separator: ", ")
+//    warn("In Danger we don't include copyright headers, found them in: \(files)")
+//}
 
 // MARK: - Check UIKit import
 
