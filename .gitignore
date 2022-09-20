@@ -1,48 +1,61 @@
-# Xcode
-#
-# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
-
-.idea
-
+### macOS ###
+# General
 .DS_Store
+.AppleDouble
+.LSOverride
+default.profraw
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
 
 ## User settings
 xcuserdata/
-Certificates.swift
 
-## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
-*.xcscmblueprint
-*.xccheckout
+### Xcode Patch ###
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+/*.gcno
 
+### Projects and Workspaces ###
+*.xcodeproj
+*.xcworkspace
 
-## compatibility with Xcode 3 and earlier (ignoring not required starting Xcode 4)
-build/
-DerivedData/
-*.moved-aside
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
+### Tuist derived files ###
+graph.dot
+Example/Derived
 
+### Tuist version files ###
+.tuist-bin
 
 ## Obj-C/Swift specific
 *.hmap
-
 
 ## App packaging
 *.ipa
 *.dSYM.zip
 *.dSYM
 
-
 ## Playgrounds
 timeline.xctimeline
 playground.xcworkspace
-
 
 # Swift Package Manager
 #
@@ -67,24 +80,6 @@ playground.xcworkspace
 
 # Pods/
 
-
-# Add this line if you want to avoid checking in source code from the Xcode workspace
-# *.xcworkspace
-
-
-# Carthage
-#
-# Add this line if you want to avoid checking in source code from Carthage dependencies.
-# Carthage/Checkouts
-
-Carthage/Build/
-
-
-# Accio dependency management
-Dependencies/
-.accio/
-
-
 # fastlane
 #
 # It is recommended to not store the screenshots in the git repo.
@@ -92,22 +87,21 @@ Dependencies/
 # For more information about the recommended setup visit:
 # https://docs.fastlane.tools/best-practices/source-control/#source-control
 
-fastlane/report.xml
+fastlane/test_output
+fastlane/README.md
 fastlane/Preview.html
 fastlane/screenshots/**
 fastlane/test_output
 
+### Misc
+.idea
+.DS_Store
 
-# Code Injection
-#
-# After new code Injection tools there's a generated folder /iOSInjectionProject
-# https://github.com/johnno1962/injectionforxcode
+### Primer
 
-iOSInjectionProject//*.png
-
-id_rsa_github_actions.*
-id_rsa_github_actions
-id_rsa_ios.*
-id_rsa_ios
-
-ThreeDS_SDK.xcframework
+Example/Pods/KlarnaMobileSDK
+Example/Pods/Primer3DS
+Example/Pods/PrimerKlarnaSDK
+Example/Pods/Manifest.lock
+Example/Pods/Pods.xcodeproj/project.pbxproj
+Example/Pods/Target Support Files

@@ -1,6 +1,0 @@
-framework module Pods_PrimerSDK_Tests {
-  umbrella header "Pods-PrimerSDK_Tests-umbrella.h"
-
-  export *
-  module * { export * }
-}
