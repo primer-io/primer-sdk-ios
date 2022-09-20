@@ -10,15 +10,13 @@ github_run_id = ENV["GITHUB_RUN_ID"]
 github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
-app_workspace = "Example/PrimerSDK.xcworkspace"
-app_xcode_proj = "Example/PrimerSDK.xcodeproj"
-app_scheme = "PrimerSDK-Example"
-app_test_scheme = "PrimerSDK_Tests"
-app_ui_test_scheme = "PrimerSDKExample_UITests"
+app_workspace = "Example/Primer.io Example App.xcworkspace"
+app_xcode_proj = "Example/Primer.io Example App.xcodeproj"
+app_scheme = "ExampleApp"
 
 # Packages
-app_output_path = "/var/tmp/PrimerSDK_Example.xcarchive/Products/Applications/PrimerSDK_Example.app"
-app_output_archive_path = "/var/tmp/PrimerSDK_Example.xcarchive"
+app_output_path = "/var/tmp/Primer.io Example App.xcarchive/Products/Applications/Primer.io Example App.app"
+app_output_archive_path = "/var/tmp/Primer.io Example App.xcarchive"
 
 # Utils
 sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
@@ -33,14 +31,12 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :tests do
-    run_tests(workspace: app_workspace,
-              scheme: app_test_scheme)
+    run_tests(workspace: app_workspace)
   end
 
   lane :ui_tests do
     run_tests(workspace: app_workspace,
-              devices: ["iPhone SE", "iPhone 8"],
-              scheme: app_ui_test_scheme)
+              devices: ["iPhone SE", "iPhone 8"])
   end
 
   lane :danger_check do
