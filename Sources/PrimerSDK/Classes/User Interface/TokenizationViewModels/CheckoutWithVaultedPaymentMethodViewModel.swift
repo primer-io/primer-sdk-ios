@@ -335,7 +335,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                             ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: false)
                         }
                         .then { () -> Promise<Void> in
-                            let configService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                            let configService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: false)
                             return configService.fetchConfiguration()
                         }
                         .done {

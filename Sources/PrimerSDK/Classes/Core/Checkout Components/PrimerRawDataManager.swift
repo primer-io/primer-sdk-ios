@@ -242,7 +242,7 @@ extension PrimerHeadlessUniversalCheckout {
                                 ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: true)
                             }
                             .then { () -> Promise<Void> in
-                                let configurationService = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                                let configurationService = PrimerAPIConfigurationService(requestDisplayMetadata: false)
                                 return configurationService.fetchConfiguration()
                             }
                             .done {
