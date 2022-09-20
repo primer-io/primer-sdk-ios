@@ -1,6 +1,0 @@
-framework module Pods_HeadlessUniversalCheckoutExample {
-  umbrella header "Pods-HeadlessUniversalCheckoutExample-umbrella.h"
-
-  export *
-  module * { export * }
-}

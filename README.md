@@ -1,4 +1,4 @@
-<h1 align="center"><img src="./assets/primer-logo.png?raw=true" height="24px"> Primer iOS SDK</h1>
+<h1 align="center"><img src="./assets/Readme Resources/primer-logo.png?raw=true" height="24px"> Primer iOS SDK</h1>
 
 <div align="center">
   <h3 align="center">
@@ -10,7 +10,7 @@
 
 <br/>
 
-<div align="center"><img src="./assets/checkout-banner.gif?raw=true"  width="50%"/></div>
+<div align="center"><img src="./assets/Readme Resources/checkout-banner.gif?raw=true"  width="50%"/></div>
 
 <br/>
 <br/>
@@ -74,7 +74,7 @@ The Swift Package Manager is a tool for automating the distribution of Swift cod
 5. Let Xcode download the package and set everything up
 
 
-<img src="./assets/spm-3.png" />
+<img src="./assets/Readme Resources/spm-3.png" />
 
 <br/>
 
@@ -135,4 +135,4 @@ The payment’s data will be returned on `primerDidCompleteCheckoutWithData(:)`.
 
 ## Contributing guidelines:
 
-[Contributing doc](Contributing.md)
+[Contributing doc](CONTRIBUTING.md)
