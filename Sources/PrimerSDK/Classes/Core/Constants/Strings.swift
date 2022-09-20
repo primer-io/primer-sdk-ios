@@ -504,7 +504,7 @@ extension Strings {
             comment: "SAVED PAYMENT METHOD - Vault Checkout Card Title")
         
         static var mainTitleText: String {
-            if Primer.shared.intent == .vault {
+            if PrimerInternal.shared.intent == .vault {
                 return availablePaymentMethodsTitle
             } else {
                 return savedPaymentMethodsTitle

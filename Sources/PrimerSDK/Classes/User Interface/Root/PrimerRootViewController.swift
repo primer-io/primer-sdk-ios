@@ -180,7 +180,7 @@ internal class PrimerRootViewController: PrimerViewController {
     
     @objc
     private func dismissGestureRecognizerAction(sender: UISwipeGestureRecognizer) {
-        Primer.shared.dismiss()
+        PrimerInternal.shared.dismiss()
     }
     
     private func blurBackgroundIfNeeded() {
@@ -368,7 +368,7 @@ internal class PrimerRootViewController: PrimerViewController {
     
     internal func popToMainScreen(completion: (() -> Void)?) {
         var vcToPop: PrimerContainerViewController?
-        if Primer.shared.intent == .vault {
+        if PrimerInternal.shared.intent == .vault {
             for vc in nc.viewControllers {
                 if let cvc = vc as? PrimerContainerViewController, cvc.childViewController is PrimerVaultManagerViewController {
                     vcToPop = cvc

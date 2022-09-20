@@ -289,7 +289,7 @@ extension PrimerHeadlessUniversalCheckout {
         
         internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
             return Promise { seal in
-                if Primer.shared.intent == .vault {
+                if PrimerInternal.shared.intent == .vault {
                     seal.fulfill()
                 } else {
                     let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
@@ -801,7 +801,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
             }
             
             let threeDSService = ThreeDSService()
-            Primer.shared.intent = .checkout
+            PrimerInternal.shared.intent = .checkout
             
             threeDSService.perform3DS(paymentMethodTokenData: paymentMethod, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                 switch result {

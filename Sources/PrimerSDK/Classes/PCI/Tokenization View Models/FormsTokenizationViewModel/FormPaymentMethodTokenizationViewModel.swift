@@ -467,7 +467,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             throw err
         }
         
-        if Primer.shared.intent == .checkout {
+        if PrimerInternal.shared.intent == .checkout {
             if AppState.current.amount == nil {
                 let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)

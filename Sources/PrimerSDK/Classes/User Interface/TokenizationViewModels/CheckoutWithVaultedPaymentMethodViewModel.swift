@@ -161,7 +161,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     
     internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
-            if Primer.shared.intent == .vault {
+            if PrimerInternal.shared.intent == .vault {
                 seal.fulfill()
             } else {
                 let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
