@@ -1,3 +1,6 @@
+[![Tuist badge](https://img.shields.io/badge/Powered%20by-Tuist-blue)](https://tuist.io)
+[![CocoaPods badge](https://img.shields.io/badge/cocoapods-FA2A02?style=for-the-badge&logo=cocoapods&logoColor=white)](https://cocoapods.org)
+
 <h1 align="center"><img src="./assets/Readme Resources/primer-logo.png?raw=true" height="24px"> Primer iOS SDK</h1>
 
 <div align="center">
@@ -55,7 +58,7 @@ The iOS SDK is available with Cocoapods. Just add the PrimerSDK pod and run `pod
 ```swift{:copy}
 target 'MyApp' do
   # Other pods...
- 
+
   # Add this to your Podfile
   pod 'PrimerSDK' # Add this line
 end
@@ -91,19 +94,19 @@ Import the Primer SDK and set its delegate as shown in the following example:
 
 ```swift{:copy}
 import PrimerSDK
- 
+
 class MyViewController: UIViewController {
- 
+
     override func viewDidLoad() {
         super.viewDidLoad()
- 
+
         // Initialize the SDK with the default settings.
         Primer.shared.configure(delegate: self)
     }
 }
- 
+
 extension MyViewController: PrimerDelegate {
- 
+
     func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
         // Primer checkout completed with data
         // do something...
@@ -117,7 +120,7 @@ extension MyViewController: PrimerDelegate {
 
 ## 🔍 &nbsp;Rendering the checkout
 
-Now you can use the client token that you generated on your backend. 
+Now you can use the client token that you generated on your backend.
 Call the `showUniversalCheckout(clientToken)` function (as shown below) to present Universal Checkout.
 
 ```swift{:copy}
