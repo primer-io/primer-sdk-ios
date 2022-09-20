@@ -1,7 +1,4 @@
-[![Tuist badge](https://img.shields.io/badge/Powered%20by-Tuist-blue)](https://tuist.io)
-[![CocoaPods badge](https://img.shields.io/badge/cocoapods-FA2A02?style=for-the-badge&logo=cocoapods&logoColor=white)](https://cocoapods.org)
-
-<h1 align="center"><img src="./assets/Readme Resources/primer-logo.png?raw=true" height="24px"> Primer iOS SDK</h1>
+<h1 align="center"><img src="./Readme Resources/assets/primer-logo.png?raw=true" height="24px"> Primer iOS SDK</h1>
 
 <div align="center">
   <h3 align="center">
@@ -13,7 +10,7 @@
 
 <br/>
 
-<div align="center"><img src="./assets/Readme Resources/checkout-banner.gif?raw=true"  width="50%"/></div>
+<div align="center"><img src="./Readme Resources/assets/checkout-banner.gif?raw=true"  width="50%"/></div>
 
 <br/>
 <br/>
@@ -77,7 +74,7 @@ The Swift Package Manager is a tool for automating the distribution of Swift cod
 5. Let Xcode download the package and set everything up
 
 
-<img src="./assets/Readme Resources/spm-3.png" />
+<img src="./Readme Resources/assets/spm-3.png" />
 
 <br/>
 
@@ -139,3 +136,14 @@ The payment’s data will be returned on `primerDidCompleteCheckoutWithData(:)`.
 ## Contributing guidelines:
 
 [Contributing doc](CONTRIBUTING.md)
+
+## Example app:
+
+[![Tuist badge](https://img.shields.io/badge/Powered%20by-Tuist-blue)](https://tuist.io)
+
+### To install:
+
+- Make sure you have Tuist installed on your mac
+  - `curl -Ls https://install.tuist.io | bash`
+- move to the root folder of this repository
+- launch `sh ./Example/tuist-generate.sh`
