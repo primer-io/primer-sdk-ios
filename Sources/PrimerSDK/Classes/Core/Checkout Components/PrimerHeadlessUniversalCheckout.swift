@@ -353,6 +353,7 @@ extension PrimerHeadlessUniversalCheckout {
     
     internal class Delegate: NSObject, UITextFieldDelegate {
         
+        
         private var inputElement: PrimerInputElement
         private weak var inputElementDelegate: PrimerInputElementDelegate?
         private var detectedType: Any?
