@@ -7,7 +7,7 @@ target 'ExampleApp' do
 
   # Pods for ExampleApp
   pod 'PrimerSDK', :path => '../'
-  pod 'Primer3DS'
-  pod 'PrimerKlarnaSDK'
+pod 'Primer3DS'
+pod 'PrimerKlarnaSDK'
 
 end
