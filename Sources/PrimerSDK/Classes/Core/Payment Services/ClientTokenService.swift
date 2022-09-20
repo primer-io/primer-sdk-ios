@@ -7,7 +7,7 @@ internal typealias RawJWTToken = String
 
 internal protocol ClientTokenServiceProtocol {
     static var decodedClientToken: DecodedClientToken? { get }
-    static func storeClientToken(_ clientToken: String) -> Promise<Void>
+    static func storeClientToken(_ clientToken: String, isAPIValidationEnabled: Bool) -> Promise<Void>
     static func resetClientToken()
 }
 
@@ -31,7 +31,7 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
     
     // MARK: Store
     
-    static func storeClientToken(_ clientToken: String) -> Promise<Void> {
+    static func storeClientToken(_ clientToken: String, isAPIValidationEnabled: Bool) -> Promise<Void> {
         return Promise { seal in
             do {
                 _ = try validateInternally(clientToken)
@@ -40,14 +40,21 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
                 return
             }
             
-            // 2. Validate the token from the dedicated API
-            validateToken(clientToken) { error in
-                if let error = error {
-                    AppState.current.clientToken = nil
-                    seal.reject(error)
-                } else {
-                    AppState.current.clientToken = clientToken
-                    seal.fulfill()
+            let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
+            
+            if !isAPIValidationEnabled || !isManualPaymentHandling {
+                AppState.current.clientToken = clientToken
+                seal.fulfill()
+                
+            } else {
+                validateToken(clientToken) { error in
+                    if let error = error {
+                        AppState.current.clientToken = nil
+                        seal.reject(error)
+                    } else {
+                        AppState.current.clientToken = clientToken
+                        seal.fulfill()
+                    }
                 }
             }
         }

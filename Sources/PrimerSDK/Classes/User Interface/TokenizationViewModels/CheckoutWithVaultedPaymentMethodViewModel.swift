@@ -332,7 +332,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         
                     case .continueWithNewClientToken(let newClientToken):
                         firstly {
-                            ClientTokenService.storeClientToken(newClientToken)
+                            ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: false)
                         }
                         .then { () -> Promise<Void> in
                             let configService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
@@ -384,7 +384,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                     
                     if let requiredAction = paymentResponse!.requiredAction {
                         firstly {
-                            ClientTokenService.storeClientToken(requiredAction.clientToken)
+                            ClientTokenService.storeClientToken(requiredAction.clientToken, isAPIValidationEnabled: true)
                         }
                         .done { checkoutData in
                             guard let decodedClientToken = ClientTokenService.decodedClientToken else {

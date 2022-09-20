@@ -105,14 +105,13 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             }
             
             delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
-                
                 guard error == nil, let clientToken = clientToken else {
                     seal.reject(error!)
                     return
                 }
                 
                 firstly {
-                    ClientTokenService.storeClientToken(clientToken)
+                    ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: false)
                 }
                 .done {
                     if let decodedClientToken = self.decodedClientToken {

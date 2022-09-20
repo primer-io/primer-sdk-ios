@@ -239,7 +239,7 @@ extension PrimerHeadlessUniversalCheckout {
                             
                         case .continueWithNewClientToken(let newClientToken):
                             firstly {
-                                ClientTokenService.storeClientToken(newClientToken)
+                                ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: true)
                             }
                             .then { () -> Promise<Void> in
                                 let configurationService = PrimerAPIConfigurationService(requestDisplayMetadata: true)
@@ -291,7 +291,7 @@ extension PrimerHeadlessUniversalCheckout {
                         
                         if let requiredAction = paymentResponse!.requiredAction {
                             firstly {
-                                ClientTokenService.storeClientToken(requiredAction.clientToken)
+                                ClientTokenService.storeClientToken(requiredAction.clientToken, isAPIValidationEnabled: true)
                             }
                             .done { checkoutData in
                                 guard let decodedClientToken = ClientTokenService.decodedClientToken else {
