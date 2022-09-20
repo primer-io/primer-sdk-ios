@@ -89,7 +89,7 @@ extension Response.Body {
         
         var hasSurchargeEnabled: Bool {
             let pmSurcharge = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { $0["surcharge"] as? Int != nil })
-            let cardSurcharge = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { /*$0["type"] as? String == "PAYMENT_CARD" &&*/ (($0["networks"] as? [[String: Any]])?.first(where: { $0["surcharge"] as? Int != nil })) != nil  })
+            let cardSurcharge = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { (($0["networks"] as? [[String: Any]])?.first(where: { $0["surcharge"] as? Int != nil })) != nil  })
             return pmSurcharge != nil || cardSurcharge != nil
         }
         
