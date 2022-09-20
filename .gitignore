@@ -99,9 +99,4 @@ fastlane/test_output
 
 ### Primer
 
-Example/Pods/KlarnaMobileSDK
-Example/Pods/Primer3DS
-Example/Pods/PrimerKlarnaSDK
-Example/Pods/Manifest.lock
-Example/Pods/Pods.xcodeproj/project.pbxproj
-Example/Pods/Target Support Files
+Example/Pods
