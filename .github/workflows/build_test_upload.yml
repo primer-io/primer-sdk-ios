@@ -69,7 +69,6 @@ jobs:
           if [ ! -d ".tuist-bin" ]
           then
             curl -Ls https://install.tuist.io | bash
-            tuist bundle
           fi
 
       - name: Create the Xcode project and workspace
