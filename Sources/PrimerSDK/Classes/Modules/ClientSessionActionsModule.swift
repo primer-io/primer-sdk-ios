@@ -20,7 +20,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
     
     func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) -> Promise<Void> {
         return Promise { seal in
-            guard Primer.shared.intent == .checkout else {
+            guard PrimerInternal.shared.intent == .checkout else {
                 seal.fulfill()
                 return
             }
@@ -64,7 +64,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
     
     func unselectPaymentMethodIfNeeded() -> Promise<Void> {
         return Promise { seal in
-            guard Primer.shared.intent == .checkout else {
+            guard PrimerInternal.shared.intent == .checkout else {
                 seal.fulfill()
                 return
             }

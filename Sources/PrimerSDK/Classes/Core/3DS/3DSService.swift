@@ -69,7 +69,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
     static func validate3DSParameters() throws {
         var errors: [Error] = []
                 
-        if Primer.shared.intent == .checkout && AppState.current.amount == nil {
+        if PrimerInternal.shared.intent == .checkout && AppState.current.amount == nil {
             let err = PrimerError.invalidValue(key: "settings.amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             errors.append(err)

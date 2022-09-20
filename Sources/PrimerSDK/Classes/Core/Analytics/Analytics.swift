@@ -35,11 +35,11 @@ class Analytics {
             self.eventType = eventType
             self.properties = properties
             self.analyticsUrl = ClientTokenService.decodedClientToken?.analyticsUrl
-            self.checkoutSessionId = Primer.shared.checkoutSessionId
+            self.checkoutSessionId = PrimerInternal.shared.checkoutSessionId
             self.clientSessionId = AppState.current.apiConfiguration?.clientSession?.clientSessionId
             self.customerId = AppState.current.apiConfiguration?.clientSession?.customer?.id
             self.localId = String.randomString(length: 32)
-            self.sdkSessionId = Primer.shared.sdkSessionId
+            self.sdkSessionId = PrimerInternal.shared.sdkSessionId
         }
         
         private enum CodingKeys: String, CodingKey {

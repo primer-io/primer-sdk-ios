@@ -45,8 +45,8 @@ internal class PrimerDelegateProxy {
     
     static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         DispatchQueue.main.async {
-            if Primer.shared.delegate?.primerDidTokenizePaymentMethod != nil {
-                Primer.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
+            if PrimerInternal.shared.delegate?.primerDidTokenizePaymentMethod != nil {
+                PrimerInternal.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
             }
             
             if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod != nil {
@@ -57,8 +57,8 @@ internal class PrimerDelegateProxy {
     
     static func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         DispatchQueue.main.async {
-            if Primer.shared.delegate?.primerDidResumeWith != nil {
-                Primer.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
+            if PrimerInternal.shared.delegate?.primerDidResumeWith != nil {
+                PrimerInternal.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
             }
             
             if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith != nil {
@@ -69,8 +69,8 @@ internal class PrimerDelegateProxy {
     
     static func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         DispatchQueue.main.async {
-            if Primer.shared.delegate?.primerWillCreatePaymentWithData != nil || PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData != nil {
-                Primer.shared.delegate?.primerWillCreatePaymentWithData?(data, decisionHandler: decisionHandler)
+            if PrimerInternal.shared.delegate?.primerWillCreatePaymentWithData != nil || PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData != nil {
+                PrimerInternal.shared.delegate?.primerWillCreatePaymentWithData?(data, decisionHandler: decisionHandler)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData?(data, decisionHandler: decisionHandler)
             } else {
                 decisionHandler(.continuePaymentCreation())
@@ -79,25 +79,25 @@ internal class PrimerDelegateProxy {
     }
     
     static var isOnCheckoutDismissedImplemented: Bool {
-        return Primer.shared.delegate?.primerDidDismiss != nil
+        return PrimerInternal.shared.delegate?.primerDidDismiss != nil
     }
     
     static func primerDidDismiss() {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.primerDidDismiss?()
+            PrimerInternal.shared.delegate?.primerDidDismiss?()
         }
     }
     
     static func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.primerDidCompleteCheckoutWithData(data)
+            PrimerInternal.shared.delegate?.primerDidCompleteCheckoutWithData(data)
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(data)
         }
     }
     
     static func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.primerDidEnterResumePendingWithPaymentAdditionalInfo?(additionalInfo)
+            PrimerInternal.shared.delegate?.primerDidEnterResumePendingWithPaymentAdditionalInfo?(additionalInfo)
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo?(additionalInfo)
         }
     }
@@ -117,7 +117,7 @@ internal class PrimerDelegateProxy {
             
             let exposedError: Error = error.exposedError
             
-            if Primer.shared.delegate?.primerDidFailWithError == nil,
+            if PrimerInternal.shared.delegate?.primerDidFailWithError == nil,
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail == nil
             {
                 print("WARNING!\nDelegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
@@ -125,8 +125,8 @@ internal class PrimerDelegateProxy {
                 return
             }
 
-            if Primer.shared.delegate?.primerDidFailWithError != nil {
-                Primer.shared.delegate?.primerDidFailWithError?(exposedError, data: data, decisionHandler: { errorDecision in
+            if PrimerInternal.shared.delegate?.primerDidFailWithError != nil {
+                PrimerInternal.shared.delegate?.primerDidFailWithError?(exposedError, data: data, decisionHandler: { errorDecision in
                     switch errorDecision.type {
                     case .fail(let message):
                         DispatchQueue.main.async {
@@ -161,14 +161,14 @@ internal class PrimerDelegateProxy {
     
     static func primerClientSessionWillUpdate() {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.primerClientSessionWillUpdate?()
+            PrimerInternal.shared.delegate?.primerClientSessionWillUpdate?()
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutClientSessionWillUpdate?()
         }
     }
     
     static func primerClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.primerClientSessionDidUpdate?(clientSession)
+            PrimerInternal.shared.delegate?.primerClientSessionDidUpdate?(clientSession)
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutClientSessionDidUpdate?(clientSession)
         }
     }

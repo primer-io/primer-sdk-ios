@@ -750,7 +750,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             // for the a Payment Method Instrument object out of `/configuration` API response
             //
             // if let metadataButtonText = metadataButtonText { return metadataButtonText }
-            return Primer.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.PaymentButton.payWithCard
+            return PrimerInternal.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.PaymentButton.payWithCard
             
         case PrimerPaymentMethodType.twoCtwoP.rawValue:
             return Strings.PaymentButton.payInInstallments
@@ -914,7 +914,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         switch self.paymentMethodTokenizationViewModel.config.type {
         case PrimerPaymentMethodType.paymentCard.rawValue,
             PrimerPaymentMethodType.adyenMBWay.rawValue:
-            switch Primer.shared.intent {
+            switch PrimerInternal.shared.intent {
             case .checkout:
                 let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
                 buttonTitle = Strings.PaymentButton.pay
