@@ -195,6 +195,7 @@ public class Primer {
         self.checkoutSessionId = nil
         self.selectedPaymentMethodType = nil
         ClientTokenService.resetClientToken()
+        AppState.resetAPIConfiguration()
         
         DispatchQueue.main.async {
             PrimerUIManager.primerRootViewController?.dismissPrimerRootViewController(animated: true, completion: {
