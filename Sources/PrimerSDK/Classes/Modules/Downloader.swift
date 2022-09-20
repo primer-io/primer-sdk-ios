@@ -158,6 +158,7 @@ internal class Downloader: NSObject, DownloaderModule {
     private func downloadData(from url: URL, to localUrl: URL) -> Promise<Void> {
         return Promise { seal in
             let sessionConfig = URLSessionConfiguration.default
+            sessionConfig.urlCache = URLCache.shared
             let session = URLSession(configuration: sessionConfig)
             let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 2)
             
@@ -166,7 +167,8 @@ internal class Downloader: NSObject, DownloaderModule {
                     let primerErr = PrimerError.underlyingErrors(errors: [error], userInfo: nil, diagnosticsId: nil)
                     seal.reject(primerErr)
                     
-                } else if let tempLocalUrl = tempLocalUrl {
+                } else if let response = response,
+                          let tempLocalUrl = tempLocalUrl {
                     guard let statusCode = (response as? HTTPURLResponse)?.statusCode else {
                         let err = InternalError.invalidValue(key: "URL status code", value: nil, userInfo: nil, diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
@@ -177,6 +179,12 @@ internal class Downloader: NSObject, DownloaderModule {
                     let validStatusCodeRange = 200..<300
                     if validStatusCodeRange.contains(statusCode) {
                         do {
+                            let cache = session.configuration.urlCache
+                            
+                            if cache?.cachedResponse(for: request) == nil, let data = try? Data(contentsOf: tempLocalUrl) {
+                                cache?.storeCachedResponse(CachedURLResponse(response: response, data: data), for: request)
+                            }
+                                                        
                             FileManager.default.delegate = self
                             try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
                             seal.fulfill(())
