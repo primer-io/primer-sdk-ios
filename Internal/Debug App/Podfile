@@ -1,3 +1,5 @@
+source 'https://github.com/ios-3ds-sdk/Specs.git'
+
 # Uncomment the next line to define a global platform for your project
 platform :ios, '10.0'
 
@@ -7,7 +9,7 @@ target 'ExampleApp' do
 
   # Pods for ExampleApp
   pod 'PrimerSDK', :path => '../../'
-  pod 'Primer3DS'
+  pod 'Primer3DS', :git => 'https://github.com/primer-io/primer-sdk-3ds-ios.git', :branch => 'beta/threeds-as-pod-dependency'
   pod 'PrimerKlarnaSDK'
 
   target 'ExampleAppTests' do
