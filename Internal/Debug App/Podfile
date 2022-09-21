@@ -6,7 +6,7 @@ target 'ExampleApp' do
   use_frameworks!
 
   # Pods for ExampleApp
-  pod 'PrimerSDK', :path => '../'
+  pod 'PrimerSDK', :path => '../../'
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
 

@@ -3,9 +3,11 @@
 # Generate Example App project structure
 # via Tuist and Project.swift schema
 
+internal_app_path="Internal/Debug App"
+
 if [[ $1 = "is_ci" ]]; then
-  tuist generate --path "Internal/Debug App" --no-open
+  tuist generate --path "$internal_app_path" --no-open
 else
-  tuist generate --path "Internal/Debug App"
-  (cd "Example" && pod install)
+  tuist generate --path "$internal_app_path"
+  (cd "$internal_app_path" && pod install)
 fi
