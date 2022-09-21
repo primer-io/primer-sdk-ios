@@ -59,16 +59,16 @@ internal class PrimerInternal {
     }
     
     internal func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-#if canImport(Primer3DS)
-        return Primer3DS.application(app, open: url, options: options)
-#endif
-        
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         if url.absoluteString == settings.paymentMethodOptions.urlScheme {
             NotificationCenter.default.post(name: Notification.Name.urlSchemeRedirect, object: nil)
         }
         
+#if canImport(Primer3DS)
+        return Primer3DS.application(app, open: url, options: options)
+#else
         return false
+#endif
     }
     
     internal func application(_ application: UIApplication,
@@ -76,9 +76,9 @@ internal class PrimerInternal {
                             restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
 #if canImport(Primer3DS)
         return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
-#endif
-        
+#else
         return false
+#endif
     }
     
     @objc
