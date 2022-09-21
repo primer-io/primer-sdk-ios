@@ -107,6 +107,7 @@ platform :ios do
       sdk: "iphonesimulator", # Appetize needs a simulator app
       workspace: app_workspace,
       configuration: "Debug",
+      include_bitcode: false,
       export_method: "development",
       archive_path: app_output_archive_path,
       # Build speed optimisation
