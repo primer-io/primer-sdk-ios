@@ -139,6 +139,15 @@ The payment’s data will be returned on `primerDidCompleteCheckoutWithData(:)`.
 
 ## Example app:
 
+### Make sure you've got CocoaPods installed
+
+- At the root of this repo, open your Terminal
+  - `cd Example`
+  - `pod install`
+
+
+## Internal Debug App
+
 [![Tuist badge](https://img.shields.io/badge/Powered%20by-Tuist-blue)](https://tuist.io)
 
 ### To install:
@@ -146,4 +155,4 @@ The payment’s data will be returned on `primerDidCompleteCheckoutWithData(:)`.
 - Make sure you have Tuist installed on your mac
   - `curl -Ls https://install.tuist.io | bash`
 - move to the root folder of this repository
-- launch `sh ./Example/tuist-generate.sh`
+- launch `sh ./Internal/Debug\ App/tuist-generate.sh`

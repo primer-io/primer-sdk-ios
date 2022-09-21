@@ -4,8 +4,8 @@
 # via Tuist and Project.swift schema
 
 if [[ $1 = "is_ci" ]]; then
-  tuist generate --path "Example" --no-open
+  tuist generate --path "Internal/Debug App" --no-open
 else
-  tuist generate --path "Example"
+  tuist generate --path "Internal/Debug App"
   (cd "Example" && pod install)
 fi
