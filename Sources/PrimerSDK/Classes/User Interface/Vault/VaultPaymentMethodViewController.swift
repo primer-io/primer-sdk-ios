@@ -93,7 +93,7 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         self.isDeleting = isDeleting
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        let viewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
         isEnabled = viewModel.selectedPaymentMethodId == paymentMethod.id
         horizontalStackView.axis = .horizontal
         horizontalStackView.alignment = .fill
@@ -189,7 +189,7 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         tableView.rowHeight = 46
         tableView.alwaysBounceVertical = false
         tableView.register(VaultedPaymentInstrumentCell.self, forCellReuseIdentifier: "VaultedPaymentInstrumentCell")
-        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        let viewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
         viewModel.reloadVault { _ in
             
         }
@@ -235,7 +235,7 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
     }
     
     private func deletePaymentMethod(_ paymentMethodToken: String) {
-        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        let viewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
         viewModel.deletePaymentMethod(with: paymentMethodToken, and: { [weak self] _ in
             DispatchQueue.main.async {
                 self?.delegate?.reload()
@@ -260,13 +260,13 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        let viewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
         // That's actually payment instruments
         return viewModel.paymentMethods.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        let viewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
         let paymentMethod = viewModel.paymentMethods[indexPath.row]
         let cell = tableView.dequeueReusableCell(
             withIdentifier: "VaultedPaymentInstrumentCell",
@@ -277,7 +277,7 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let viewModel: VaultPaymentMethodViewModelProtocol = DependencyContainer.resolve()
+        let viewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
         let paymentMethod = viewModel.paymentMethods[indexPath.row]
         
         if !isDeleting {

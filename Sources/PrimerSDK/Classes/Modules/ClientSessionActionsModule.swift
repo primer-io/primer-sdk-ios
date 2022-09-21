@@ -39,7 +39,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
             }
             let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
             
-            let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
+            let clientSessionService: ClientSessionServiceProtocol = ClientSessionService()
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
             
             PrimerDelegateProxy.primerClientSessionWillUpdate()
@@ -75,7 +75,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
             }
             
             let unselectPaymentMethodAction = ClientSession.Action(type: .unselectPaymentMethod, params: nil)
-            let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
+            let clientSessionService: ClientSessionServiceProtocol = ClientSessionService()
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: [unselectPaymentMethodAction]))
             
             PrimerDelegateProxy.primerClientSessionWillUpdate()
@@ -100,7 +100,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
     
     func dispatch(actions: [ClientSession.Action]) -> Promise<Void> {
         return Promise { seal in
-            let clientSessionService: ClientSessionServiceProtocol = DependencyContainer.resolve()
+            let clientSessionService: ClientSessionServiceProtocol = ClientSessionService()
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
             
             PrimerDelegateProxy.primerClientSessionWillUpdate()

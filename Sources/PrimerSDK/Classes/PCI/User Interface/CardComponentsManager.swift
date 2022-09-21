@@ -84,7 +84,6 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         self.cardholderField = cardholderNameField
         self.billingAddressFieldViews = billingAddressFieldViews
         super.init()
-        DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
     }
     
     internal func setIsLoading(_ isLoading: Bool) {
@@ -382,7 +381,6 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         cardholderNameField: PrimerCardholderNameFieldView?,
         postalCodeField: PrimerPostalCodeFieldView
     ) {
-        DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
