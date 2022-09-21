@@ -111,6 +111,7 @@ platform :ios do
       workspace: app_workspace,
       configuration: "Debug",
       destination: "generic/platform=iOS Simulator",
+      xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64"
       include_bitcode: false,
       export_method: "development",
       archive_path: app_output_archive_path,
