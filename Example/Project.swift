@@ -1,32 +1,32 @@
 import ProjectDescription
 
 enum BaseSettings {
-    
+
     static let settingsDictionary: [String: SettingValue] = [
         "DEVELOPMENT_TEAM": .string("N8UN9TR5DY")
     ]
 }
 
 enum AppSettings {
-    
+
     static let settingsDictionary = SettingsDictionary()
         .merging(BaseSettings.settingsDictionary)
         .merging(["CODE_SIGN_IDENTITY": .string("Apple Development: DX Primer (8B5K7AGMS8)")])
         .manualCodeSigning(provisioningProfileSpecifier: "match Development com.primerapi.PrimerSDKExample")
-        
+
     static let settingsConfigurations: [Configuration] = [.debug(name: "Debug", settings: settingsDictionary),
-                                                   .release(name: "Release", settings: settingsDictionary)]
+                                                          .release(name: "Release", settings: settingsDictionary)]
 
     static let settings = Settings.settings(configurations: settingsConfigurations)
 }
 
 enum TestAppSettings {
-    
+
     static let settingsDictionary = SettingsDictionary()
         .merging(BaseSettings.settingsDictionary)
 
     static let settingsConfigurations: [Configuration] = [.debug(name: "Debug", settings: settingsDictionary),
-                                                   .release(name: "Release", settings: settingsDictionary)]
+                                                          .release(name: "Release", settings: settingsDictionary)]
 
     static let settings = Settings.settings(configurations: settingsConfigurations)
 }
@@ -43,7 +43,7 @@ let project = Project(
             infoPlist: "Info.plist",
             sources: ["Sources/**"],
             resources: ["Resources/**"],
-            entitlements: "Resources/ExampleApp.entitlements",
+            entitlements: "ExampleApp.entitlements",
             settings: AppSettings.settings
         ),
         Target(

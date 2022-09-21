@@ -7,6 +7,5 @@ if [[ $1 = "is_ci" ]]; then
   tuist generate --path "Example" --no-open
 else
   tuist generate --path "Example"
+  (cd "Example" && pod install)
 fi
-
-(cd "Example" && pod install)
