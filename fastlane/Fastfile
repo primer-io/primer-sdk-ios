@@ -59,28 +59,25 @@ platform :ios do
       match_type: "development"
     )
 
-    # cocoapods(
-    #   use_bundle_exec: true,
-    #   podfile: "Internal/Debug App/Podfile"
-    # )
-    #
-    # # Build for browserstack
-    # build_app(
-    #   scheme: app_scheme,
-    #   workspace: app_workspace,
-    #   configuration: "Debug",
-    #   include_bitcode: false,
-    #   export_method: "development",
-    #   skip_package_dependencies_resolution: true
-    # )
-    #
-    # # Upload to Browserstack
-    # upload_to_browserstack_and_save_id(
-    #   file_path: ENV["IPA_OUTPUT_PATH"]
-    # )
+    cocoapods(
+      use_bundle_exec: true,
+      podfile: "Internal/Debug App/Podfile"
+    )
 
-    # Build for appetize
-    appetize_build_and_upload
+    # Build for browserstack
+    build_app(
+      scheme: app_scheme,
+      workspace: app_workspace,
+      configuration: "Debug",
+      include_bitcode: false,
+      export_method: "development",
+      skip_package_dependencies_resolution: true
+    )
+
+    # Upload to Browserstack
+    upload_to_browserstack_and_save_id(
+      file_path: ENV["IPA_OUTPUT_PATH"]
+    )
 
     # Upload to Firebase
     firebase_app_distribution(
