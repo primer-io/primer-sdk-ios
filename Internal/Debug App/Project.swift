@@ -20,6 +20,17 @@ enum AppSettings {
     static let settings = Settings.settings(configurations: settingsConfigurations)
 }
 
+enum TestAppSettings {
+
+    static let settingsDictionary = SettingsDictionary()
+        .merging(BaseSettings.settingsDictionary)
+
+    static let settingsConfigurations: [Configuration] = [.debug(name: "Debug", settings: settingsDictionary),
+                                                          .release(name: "Release", settings: settingsDictionary)]
+
+    static let settings = Settings.settings(configurations: settingsConfigurations)
+}
+
 let project = Project(
     name: "Primer.io Example App",
     organizationName: "Primer API Ltd",
@@ -34,6 +45,30 @@ let project = Project(
             resources: ["Resources/**"],
             entitlements: "ExampleApp.entitlements",
             settings: AppSettings.settings
+        ),
+        Target(
+            name: "ExampleAppTests",
+            platform: .iOS,
+            product: .unitTests,
+            bundleId: "com.primerapi.PrimerSDKExampleTests",
+            infoPlist: .default,
+            sources: ["Tests/Unit Tests/**"],
+            dependencies: [
+                .target(name: "ExampleApp")
+            ],
+            settings: TestAppSettings.settings
+        ),
+        Target(
+            name: "ExampleAppUITests",
+            platform: .iOS,
+            product: .uiTests,
+            bundleId: "com.primer.PrimerSDKExample-UITests",
+            infoPlist: .default,
+            sources: ["Tests/UI Tests/**"],
+            dependencies: [
+                .target(name: "ExampleApp")
+            ],
+            settings: TestAppSettings.settings
         )
     ]
 )

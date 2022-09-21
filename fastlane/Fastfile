@@ -10,8 +10,8 @@ github_run_id = ENV["GITHUB_RUN_ID"]
 github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
-app_workspace = "Example/Primer.io Example App.xcworkspace"
-app_xcode_proj = "Example/Primer.io Example App.xcodeproj"
+app_workspace = "Internal/Debug App/Primer.io Example App.xcworkspace"
+app_xcode_proj = "Internal/Debug App/Primer.io Example App.xcodeproj"
 app_scheme = "ExampleApp"
 
 # Packages
@@ -61,7 +61,7 @@ platform :ios do
 
     cocoapods(
       use_bundle_exec: true,
-      podfile: "Example/Podfile"
+      podfile: "Internal/Debug App/Podfile"
     )
 
     # Build for browserstack
@@ -99,9 +99,9 @@ platform :ios do
 
     cocoapods(
       use_bundle_exec: true,
-      podfile: "Example/Podfile"
+      podfile: "Internal/Debug App/Podfile"
     )
-    
+
     build_app(
       scheme: app_scheme,
       sdk: "iphonesimulator", # Appetize needs a simulator app

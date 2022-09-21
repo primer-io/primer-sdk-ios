@@ -28,19 +28,19 @@ Temporary Items
 xcuserdata/
 
 ### Xcode Patch ###
-*.xcodeproj/*
-!*.xcodeproj/project.pbxproj
+Example/Primer.io Example App.xcodeproj/xcshareddata
+Example/Primer.io Example App.xcworkspace
 !*.xcodeproj/xcshareddata/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 
 ### Projects and Workspaces ###
-*.xcodeproj
-*.xcworkspace
+Internal/Debug App/*.xcodeproj
+Internal/Debug App/*.xcworkspace
 
 ### Tuist derived files ###
 graph.dot
-Example/Derived
+Internal/Debug App/Derived
 
 ### Tuist version files ###
 .tuist-bin
@@ -101,3 +101,5 @@ fastlane/test_output
 
 Example/Pods
 Example/Podfile.lock
+Internal/Debug App/Pods
+Internal/Debug App/Podfile.lock
