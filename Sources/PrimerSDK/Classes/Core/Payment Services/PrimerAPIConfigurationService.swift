@@ -5,7 +5,7 @@ import UIKit
 internal protocol PrimerAPIConfigurationServiceProtocol {
     init(requestDisplayMetadata: Bool?)
     func fetchConfiguration() -> Promise<Void>
-    func fetchConfigurationIfNeeded() -> Promise<Void>
+    // func fetchConfiguration(withDisplayMetadata: Bool) -> Promise<Void>
     func fetchConfigurationAndVaultedPaymentMethods() -> Promise<Void>
 }
 
@@ -42,24 +42,6 @@ internal class PrimerAPIConfigurationService: PrimerAPIConfigurationServiceProto
                 case .success(let config):
                     AppState.current.apiConfiguration = config
                     seal.fulfill()
-                }
-            }
-        }
-    }
-    
-    func fetchConfigurationIfNeeded() -> Promise<Void> {
-        return Promise { seal in
-            if AppState.current.apiConfiguration != nil {
-                seal.fulfill()
-            } else {
-                firstly {
-                    self.fetchConfiguration()
-                }
-                .done {
-                    seal.fulfill()
-                }
-                .catch { err in
-                    seal.reject(err)
                 }
             }
         }
