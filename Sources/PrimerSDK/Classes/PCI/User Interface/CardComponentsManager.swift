@@ -273,7 +273,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     ///     - is3DSOnVaultingEnabled has to be enabled by the developer
                     ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
                     if paymentMethodTokenData.paymentInstrumentType == .paymentCard,
-                       Primer.shared.intent == .vault,
+                       PrimerInternal.shared.intent == .vault,
                        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.is3DSOnVaultingEnabled,
                        paymentMethodTokenData.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
                        isThreeDSEnabled {

@@ -330,7 +330,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             throw err
         }
         
-        if Primer.shared.intent == .checkout {
+        if PrimerInternal.shared.intent == .checkout {
             if AppState.current.amount == nil {
                 let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -618,7 +618,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     func configurePayButton(amount: Int) {
         DispatchQueue.main.async {
-            guard Primer.shared.intent == .checkout,
+            guard PrimerInternal.shared.intent == .checkout,
                   let currency = AppState.current.currency else {
                 return
             }
