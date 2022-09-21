@@ -9,8 +9,13 @@ public class Primer {
     
     // MARK: - PROPERTIES
     
-    public var delegate: PrimerDelegate? {
-        return PrimerInternal.shared.delegate
+    public weak var delegate: PrimerDelegate? {
+        set {
+            PrimerInternal.shared.delegate = newValue
+        }
+        get {
+            return PrimerInternal.shared.delegate
+        }
     }
     public var intent: PrimerSessionIntent? {
         return PrimerInternal.shared.intent

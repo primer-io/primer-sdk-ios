@@ -20,7 +20,7 @@ internal class PrimerInternal {
     
     // MARK: - PROPERTIES
     
-    internal private(set) var delegate: PrimerDelegate?
+    internal var delegate: PrimerDelegate?
     internal var intent: PrimerSessionIntent?
     internal private(set) var selectedPaymentMethodType: String?
     
