@@ -59,11 +59,6 @@ platform :ios do
       match_type: "development"
     )
 
-    cocoapods(
-      use_bundle_exec: true,
-      podfile: "Example/Podfile"
-    )
-
     # Build for browserstack
     build_app(
       scheme: app_scheme,
@@ -96,11 +91,6 @@ platform :ios do
 
   desc 'This action builds the app and uplads it to Appetize'
   private_lane :appetize_build_and_upload do
-
-    cocoapods(
-      use_bundle_exec: true,
-      podfile: "Example/Podfile"
-    )
 
     build_app(
       scheme: app_scheme,
