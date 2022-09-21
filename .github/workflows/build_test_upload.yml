@@ -72,7 +72,7 @@ jobs:
           fi
 
       - name: Create the Xcode project and workspace
-        run: sh ./Example/tuist-generate.sh is_ci
+        run: sh ./Internal/Debug\ App/tuist-generate.sh is_ci
 
       - name: Distribute internally on Firebase, Browserstack and Appetize 🚀
         run: |
