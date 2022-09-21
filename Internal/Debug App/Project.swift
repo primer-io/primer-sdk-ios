@@ -5,7 +5,11 @@ enum BaseSettings {
     static let appName = "ExampleApp"
     
     static let settingsDictionary: [String: SettingValue] = [
-        "DEVELOPMENT_TEAM": .string("N8UN9TR5DY")
+        "DEVELOPMENT_TEAM": .string("N8UN9TR5DY"),
+        "ONLY_ACTIVE_ARCH": .string("YES"),
+        "ENABLE_BITCODE": .string("YES"),
+        "LD_RUNPATH_SEARCH_PATHS": .array(["$(inherited)",
+                                           "@executable_path/Frameworks"])
     ]
 }
 

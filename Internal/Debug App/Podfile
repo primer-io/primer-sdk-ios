@@ -20,13 +20,3 @@ target 'ExampleApp' do
   end
 
 end
-
-pre_install do |installer|
- installer.pod_targets.each do |pod|
-   if pod.name.eql?('Primer3DS')
-     def pod.build_type;
-     Pod::BuildType.static_library
-    end
-   end
-  end
-end
