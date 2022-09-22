@@ -1,4 +1,4 @@
-<h1 align="center"><img src="./assets/primer-logo.png?raw=true" height="24px"> Primer iOS SDK</h1>
+<h1 align="center"><img src="./Readme Resources/assets/primer-logo.png?raw=true" height="24px"> Primer iOS SDK</h1>
 
 <div align="center">
   <h3 align="center">
@@ -10,7 +10,7 @@
 
 <br/>
 
-<div align="center"><img src="./assets/checkout-banner.gif?raw=true"  width="50%"/></div>
+<div align="center"><img src="./Readme Resources/assets/checkout-banner.gif?raw=true"  width="50%"/></div>
 
 <br/>
 <br/>
@@ -55,7 +55,7 @@ The iOS SDK is available with Cocoapods. Just add the PrimerSDK pod and run `pod
 ```swift{:copy}
 target 'MyApp' do
   # Other pods...
- 
+
   # Add this to your Podfile
   pod 'PrimerSDK' # Add this line
 end
@@ -74,7 +74,7 @@ The Swift Package Manager is a tool for automating the distribution of Swift cod
 5. Let Xcode download the package and set everything up
 
 
-<img src="./assets/spm-3.png" />
+<img src="./Readme Resources/assets/spm-3.png" />
 
 <br/>
 
@@ -91,19 +91,19 @@ Import the Primer SDK and set its delegate as shown in the following example:
 
 ```swift{:copy}
 import PrimerSDK
- 
+
 class MyViewController: UIViewController {
- 
+
     override func viewDidLoad() {
         super.viewDidLoad()
- 
+
         // Initialize the SDK with the default settings.
         Primer.shared.configure(delegate: self)
     }
 }
- 
+
 extension MyViewController: PrimerDelegate {
- 
+
     func primerDidCompleteCheckoutWithData(_ data: CheckoutData) {
         // Primer checkout completed with data
         // do something...
@@ -117,7 +117,7 @@ extension MyViewController: PrimerDelegate {
 
 ## 🔍 &nbsp;Rendering the checkout
 
-Now you can use the client token that you generated on your backend. 
+Now you can use the client token that you generated on your backend.
 Call the `showUniversalCheckout(clientToken)` function (as shown below) to present Universal Checkout.
 
 ```swift{:copy}
@@ -135,4 +135,24 @@ The payment’s data will be returned on `primerDidCompleteCheckoutWithData(:)`.
 
 ## Contributing guidelines:
 
-[Contributing doc](Contributing.md)
+[Contributing doc](CONTRIBUTING.md)
+
+## Example app:
+
+### Make sure you've got CocoaPods installed
+
+- At the root of this repo, open your Terminal
+  - `cd Example`
+  - `pod install`
+
+
+## Internal Debug App
+
+[![Tuist badge](https://img.shields.io/badge/Powered%20by-Tuist-blue)](https://tuist.io)
+
+### To install:
+
+- Make sure you have Tuist installed on your mac
+  - `curl -Ls https://install.tuist.io | bash`
+- move to the root folder of this repository
+- launch `sh ./Internal/Debug\ App/tuist-generate.sh`
