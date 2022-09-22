@@ -201,7 +201,7 @@ internal class PrimerInternal {
         
         self.checkoutSessionId = nil
         self.selectedPaymentMethodType = nil
-        PrimerAPIConfigurationModule.resetClientSession()
+        PrimerAPIConfigurationModule.resetSession()
         
         PrimerUIManager.dismissPrimerUI(animated: true) {
             PrimerDelegateProxy.primerDidDismiss()

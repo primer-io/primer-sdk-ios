@@ -9,6 +9,7 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
     static var clientToken: JWTToken? { get }
     static var decodedJWTToken: DecodedJWTToken? { get }
     static var apiConfiguration: PrimerAPIConfiguration? { get }
+    static func resetSession()
 
     init(apiClient: PrimerAPIClientProtocol)
     func setupSession(
@@ -19,7 +20,6 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
     ) -> Promise<Void>
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void>
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void>
-    static func resetClientSession()
 }
 
 internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
@@ -37,7 +37,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             if newValue?.decodedJWTToken != nil {
                 AppState.current.clientToken = newValue
             } else {
-                PrimerAPIConfigurationModule.resetClientSession()
+                PrimerAPIConfigurationModule.resetSession()
             }
         }
     }
@@ -50,7 +50,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             if PrimerAPIConfigurationModule.clientToken != nil {
                 AppState.current.apiConfiguration = newValue
             } else {
-                PrimerAPIConfigurationModule.resetClientSession()
+                PrimerAPIConfigurationModule.resetSession()
             }
         }
     }
@@ -63,6 +63,11 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         }
         
         return decodedJWTToken
+    }
+    
+    static func resetSession() {
+        AppState.current.clientToken = nil
+        AppState.current.apiConfiguration = nil
     }
     
     private let apiClient: PrimerAPIClientProtocol
@@ -86,10 +91,10 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             }
             
             firstly {
-                PrimerAPIConfigurationModule.validateClientToken(clientToken, requestRemoteClientTokenValidation: requestClientTokenValidation)
+                self.validateClientToken(clientToken, requestRemoteClientTokenValidation: requestClientTokenValidation)
             }
             .then { () -> Promise<PrimerAPIConfiguration> in
-                return PrimerAPIConfigurationModule.fetchConfigurationAndVaultedPaymentMethodsIfNeeded(
+                return self.fetchConfigurationAndVaultedPaymentMethodsIfNeeded(
                     requestDisplayMetadata: requestDisplayMetadata,
                     requestVaultedPaymentMethods: requestVaultedPaymentMethods)
             }
@@ -130,7 +135,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
         return Promise { seal in
             firstly {
-                PrimerAPIConfigurationModule.validateClientToken(newClientToken, requestRemoteClientTokenValidation: true)
+                self.validateClientToken(newClientToken, requestRemoteClientTokenValidation: true)
             }
             .done {
                 PrimerAPIConfigurationModule.clientToken = newClientToken
@@ -143,15 +148,10 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             }
         }
     }
-    
-    static func resetClientSession() {
-        AppState.current.clientToken = nil
-        AppState.current.apiConfiguration = nil
-    }
 
     // MARK: - HELPERS
     
-    private static func validateClientToken(_ clientToken: String, requestRemoteClientTokenValidation: Bool) -> Promise<Void> {
+    private func validateClientToken(_ clientToken: String, requestRemoteClientTokenValidation: Bool) -> Promise<Void> {
         return Promise { seal in
             do {
                 _ = try validateClientTokenInternally(clientToken)
@@ -168,7 +168,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 
             } else {
                 firstly {
-                    PrimerAPIConfigurationModule.validateClientTokenRemotely(clientToken)
+                    self.validateClientTokenRemotely(clientToken)
                 }
                 .done {
                     seal.fulfill()
@@ -180,7 +180,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         }
     }
     
-    private static func validateClientTokenInternally(_ tokenToValidate: JWTToken) throws -> JWTToken {
+    private func validateClientTokenInternally(_ tokenToValidate: JWTToken) throws -> JWTToken {
         guard var currentDecodedToken = tokenToValidate.decodedJWTToken,
               let expDate = currentDecodedToken.expDate,
               expDate > Date() else {
@@ -232,11 +232,10 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         return segments.joined(separator: ".").base64RFC4648Format
     }
     
-    private static func validateClientTokenRemotely(_ clientToken: JWTToken) -> Promise<Void> {
+    private func validateClientTokenRemotely(_ clientToken: JWTToken) -> Promise<Void> {
         return Promise { seal in
             let clientTokenRequest = Request.Body.ClientTokenValidation(clientToken: clientToken)
-            let api: PrimerAPIClientProtocol = PrimerAPIClient()
-            api.validateClientToken(request: clientTokenRequest) { result in
+            self.apiClient.validateClientToken(request: clientTokenRequest) { result in
                 switch result {
                 case .success:
                     seal.fulfill()
@@ -247,7 +246,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         }
     }
     
-    private static func fetchConfiguration(requestDisplayMetadata: Bool) -> Promise<PrimerAPIConfiguration> {
+    private func fetchConfiguration(requestDisplayMetadata: Bool) -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -260,8 +259,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 skipPaymentMethodTypes: [],
                 requestDisplayMetadata: requestDisplayMetadata)
 
-            let api: PrimerAPIClientProtocol = PrimerAPIClient()
-            api.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result) in
+            self.apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result) in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -272,14 +270,14 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         }
     }
     
-    private static func fetchConfigurationAndVaultedPaymentMethodsIfNeeded(
+    private func fetchConfigurationAndVaultedPaymentMethodsIfNeeded(
         requestDisplayMetadata: Bool,
         requestVaultedPaymentMethods: Bool
     ) -> Promise<PrimerAPIConfiguration> {
         if requestVaultedPaymentMethods {
             let vaultService: VaultServiceProtocol = VaultService()
             let vaultedPaymentMethodsPromise = vaultService.fetchVaultedPaymentMethods()
-            let fetchConfigurationPromise = PrimerAPIConfigurationModule.fetchConfiguration(requestDisplayMetadata: true)
+            let fetchConfigurationPromise = self.fetchConfiguration(requestDisplayMetadata: true)
             
             return Promise { seal in
                 firstly {
@@ -293,7 +291,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 }
             }
         } else {
-            return PrimerAPIConfigurationModule.fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
+            return self.fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
         }
         
     }
