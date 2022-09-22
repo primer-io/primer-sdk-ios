@@ -16,7 +16,7 @@ internal class ClientSessionService: ClientSessionServiceProtocol {
             return
         }
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         api.requestPrimerConfigurationWithActions(clientToken: decodedClientToken, request: actionsRequest) { result in
             switch result {
             case .success(let configuration):

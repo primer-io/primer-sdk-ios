@@ -18,7 +18,7 @@ internal protocol UniversalCheckoutViewModelProtocol {
 internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol {
 
     var amountStr: String? {
-        if (Primer.shared.intent ?? .vault) == .vault { return nil }
+        if (PrimerInternal.shared.intent ?? .vault) == .vault { return nil }
         guard let amount = AppState.current.amount else { return nil }
         guard let currency = AppState.current.currency else { return nil }
         return amount.toCurrencyString(currency: currency)

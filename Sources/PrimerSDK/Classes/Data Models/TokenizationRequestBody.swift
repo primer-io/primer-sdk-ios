@@ -19,8 +19,8 @@ extension Request.Body {
         
         init(paymentInstrument: TokenizationRequestBodyPaymentInstrument) {
             self.paymentInstrument = paymentInstrument
-            self.tokenType = Primer.shared.intent == .vault ? .multiUse : nil
-            self.paymentFlow = Primer.shared.intent == .vault ? .vault : nil
+            self.tokenType = PrimerInternal.shared.intent == .vault ? .multiUse : nil
+            self.paymentFlow = PrimerInternal.shared.intent == .vault ? .vault : nil
         }
         
         func encode(to encoder: Encoder) throws {

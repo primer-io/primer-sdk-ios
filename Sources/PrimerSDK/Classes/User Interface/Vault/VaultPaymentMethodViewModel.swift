@@ -26,7 +26,7 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
     }
 
     func reloadVault(with completion: @escaping (Error?) -> Void) {
-        let vaultService: VaultServiceProtocol = DependencyContainer.resolve()
+        let vaultService: VaultServiceProtocol = VaultService()
         firstly {
             vaultService.fetchVaultedPaymentMethods()
         }

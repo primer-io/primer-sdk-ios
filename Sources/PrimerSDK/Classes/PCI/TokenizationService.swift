@@ -45,7 +45,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
 
             log(logLevel: .verbose, title: nil, message: "URL: \(url)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
             
-            let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            let api: PrimerAPIClientProtocol = PrimerAPIClient()
             
             api.tokenizePaymentMethod(clientToken: decodedClientToken, tokenizationRequestBody: requestBody) { (result) in
                 switch result {
@@ -66,7 +66,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     ///     - is3DSOnVaultingEnabled has to be enabled by the developer
                     ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
                     if paymentMethodTokenData.paymentInstrumentType == .paymentCard,
-                       Primer.shared.intent == .vault,
+                       PrimerInternal.shared.intent == .vault,
                        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.is3DSOnVaultingEnabled,
                        paymentMethodTokenData.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
                        isThreeDSEnabled {

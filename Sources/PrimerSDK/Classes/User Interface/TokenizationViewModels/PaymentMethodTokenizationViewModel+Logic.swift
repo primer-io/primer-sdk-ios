@@ -20,7 +20,7 @@ extension PaymentMethodTokenizationViewModel {
         .done { paymentMethodTokenData in
             self.paymentMethodTokenData = paymentMethodTokenData
 
-            if Primer.shared.intent == .vault {
+            if PrimerInternal.shared.intent == .vault {
                 PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { _ in }
                 self.handleSuccessfulFlow()
                 
@@ -60,7 +60,7 @@ extension PaymentMethodTokenizationViewModel {
                             clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         }
                         .done { merchantErrorMessage in
-                            if Primer.shared.selectedPaymentMethodType == nil {
+                            if PrimerInternal.shared.selectedPaymentMethodType == nil {
                                 PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
                             } else {
                                 PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
@@ -340,7 +340,7 @@ extension PaymentMethodTokenizationViewModel {
         
     internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
-            if Primer.shared.intent == .vault {
+            if PrimerInternal.shared.intent == .vault {
                 seal.fulfill()
             } else {
                 let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
@@ -363,7 +363,7 @@ extension PaymentMethodTokenizationViewModel {
 
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
                 guard error == nil else {
                     seal.reject(error!)
@@ -393,7 +393,7 @@ extension PaymentMethodTokenizationViewModel {
         
         return Promise { seal in
             
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
                 
                 guard error == nil else {

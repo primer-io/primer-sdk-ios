@@ -289,7 +289,7 @@ extension PrimerHeadlessUniversalCheckout {
         
         internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
             return Promise { seal in
-                if Primer.shared.intent == .vault {
+                if PrimerInternal.shared.intent == .vault {
                     seal.fulfill()
                 } else {
                     let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
@@ -524,7 +524,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         private func startPolling(on url: URL, completion: @escaping (String?, Error?) -> Void) {
-            let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            let client: PrimerAPIClientProtocol = PrimerAPIClient()
             client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
                 if self.webViewCompletion == nil {
                     let err = PrimerError.cancelled(
@@ -563,7 +563,7 @@ extension PrimerHeadlessUniversalCheckout {
 
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
             return Promise { seal in
-                let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+                let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
                 createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
                     guard error == nil else {
                         seal.reject(error!)
@@ -644,7 +644,7 @@ extension PrimerHeadlessUniversalCheckout {
             
             return Promise { seal in
                 
-                let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+                let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
                 createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
                     
                     guard error == nil else {
@@ -801,7 +801,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
             }
             
             let threeDSService = ThreeDSService()
-            Primer.shared.intent = .checkout
+            PrimerInternal.shared.intent = .checkout
             
             threeDSService.perform3DS(paymentMethodTokenData: paymentMethod, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                 switch result {

@@ -24,7 +24,7 @@ internal class VaultService: VaultServiceProtocol {
                 return
             }
             
-            let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            let api: PrimerAPIClientProtocol = PrimerAPIClient()
             
             firstly {
                 api.fetchVaultedPaymentMethods(clientToken: clientToken)
@@ -57,7 +57,7 @@ internal class VaultService: VaultServiceProtocol {
                 return
             }
             
-            let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            let api: PrimerAPIClientProtocol = PrimerAPIClient()
             api.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { (result) in
                 switch result {
                 case .failure(let err):

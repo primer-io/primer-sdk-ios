@@ -45,7 +45,6 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
         cardholderNameField: PrimerCardholderNameFieldView?,
         postalCodeField: PrimerPostalCodeFieldView
     ) {
-        DependencyContainer.register(PrimerAPIClient() as PrimerAPIClientProtocol)
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField

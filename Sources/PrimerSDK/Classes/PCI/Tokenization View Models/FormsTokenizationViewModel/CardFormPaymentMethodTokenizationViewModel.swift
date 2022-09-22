@@ -330,7 +330,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             throw err
         }
         
-        if Primer.shared.intent == .checkout {
+        if PrimerInternal.shared.intent == .checkout {
             if AppState.current.amount == nil {
                 let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -575,7 +575,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     private func startPolling(on url: URL, completion: @escaping (String?, Error?) -> Void) {
-        let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let client: PrimerAPIClientProtocol = PrimerAPIClient()
         client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
             if self.webViewCompletion == nil {
                 let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -618,7 +618,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     func configurePayButton(amount: Int) {
         DispatchQueue.main.async {
-            guard Primer.shared.intent == .checkout,
+            guard PrimerInternal.shared.intent == .checkout,
                   let currency = AppState.current.currency else {
                 return
             }

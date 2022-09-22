@@ -49,22 +49,7 @@ final internal class DependencyContainer {
         let dependency = dependencies[key] as? T
 
         if dependency == nil {
-            if key == String(describing: ClientSessionServiceProtocol.self) {
-                let clientSessionService: ClientSessionServiceProtocol = ClientSessionService()
-                DependencyContainer.register(clientSessionService)
-                return self.resolve()
-                
-            } else if key == String(describing: ClientTokenServiceProtocol.self) {
-                let clientTokenService: ClientTokenServiceProtocol = ClientTokenService()
-                DependencyContainer.register(clientTokenService)
-                return self.resolve()
-                
-            } else if key == String(describing: CreateResumePaymentServiceProtocol.self) {
-                let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-                DependencyContainer.register(createResumePaymentService)
-                return self.resolve()
-                
-            } else if key == String(describing: AppStateProtocol.self) {
+            if key == String(describing: AppStateProtocol.self) {
                 let appState: AppStateProtocol = AppState()
                 DependencyContainer.register(appState)
                 return self.resolve()
@@ -74,38 +59,9 @@ final internal class DependencyContainer {
                 DependencyContainer.register(primerSettings)
                 return self.resolve()
                 
-            } else if key == String(describing: PrimerAPIClientProtocol.self) {
-                let primerAPIClient: PrimerAPIClientProtocol = PrimerAPIClient()
-                DependencyContainer.register(primerAPIClient)
-                return self.resolve()
-                
-            } else if key == String(describing: VaultServiceProtocol.self) {
-                let vaultService: VaultServiceProtocol = VaultService()
-                DependencyContainer.register(vaultService)
-                return self.resolve()
-                
-            } else if key == String(describing: PayPalServiceProtocol.self) {
-                let payPalService: PayPalServiceProtocol = PayPalService()
-                DependencyContainer.register(payPalService)
-                return self.resolve()
-                
-            } else if key == String(describing: TokenizationServiceProtocol.self) {
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-                DependencyContainer.register(tokenizationService)
-                return self.resolve()
-                
-            } else if key == String(describing: VaultPaymentMethodViewModelProtocol.self) {
-                let vaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
-                DependencyContainer.register(vaultPaymentMethodViewModel)
-                return self.resolve()
-                
             } else if key == String(describing: PrimerThemeProtocol.self) {
                 let primerTheme: PrimerThemeProtocol = PrimerTheme()
                 DependencyContainer.register(primerTheme)
-                return self.resolve()
-            } else if key == String(describing: PrimerAPIConfigurationServiceProtocol.self) {
-                let configuration: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: false)
-                DependencyContainer.register(configuration)
                 return self.resolve()
             }
         }

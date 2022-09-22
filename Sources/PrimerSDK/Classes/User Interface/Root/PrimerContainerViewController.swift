@@ -91,7 +91,7 @@ class PrimerContainerViewController: PrimerViewController {
 extension PrimerContainerViewController: UIScrollViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y == 0 && scrollView.panGestureRecognizer.translation(in: scrollView.superview).y > 0 {
-            Primer.shared.dismiss()
+            PrimerInternal.shared.dismiss()
         }
     }
 }

@@ -34,7 +34,7 @@ internal class PrimerAPIConfigurationService: PrimerAPIConfigurationServiceProto
                 skipPaymentMethodTypes: [],
                 requestDisplayMetadata: true)
             
-            let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            let api: PrimerAPIClientProtocol = PrimerAPIClient()
             api.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result) in
                 switch result {
                 case .failure(let err):
