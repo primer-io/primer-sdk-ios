@@ -110,7 +110,7 @@ extension Analytics {
         }
         
         internal static func sync(batchSize: UInt = 100) {
-            let analyticsUrlStr = ClientTokenService.decodedClientToken?.analyticsUrlV2 ?? "https://analytics.production.data.primer.io/sdk-logs"
+            let analyticsUrlStr = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2 ?? "https://analytics.production.data.primer.io/sdk-logs"
             guard let analyticsUrl = URL(string: analyticsUrlStr) else { return }
             
             primerLogAnalytics(

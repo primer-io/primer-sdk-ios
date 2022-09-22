@@ -21,7 +21,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     private var bankSelectionCompletion: ((AdyenBank) -> Void)?
     private var tokenizationService: TokenizationServiceProtocol?
     override func validate() throws {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
@@ -178,7 +178,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         
-        guard ClientTokenService.decodedClientToken?.intent?.contains("_REDIRECTION") == false else {
+        guard PrimerAPIConfigurationModule.decodedJWTToken?.intent?.contains("_REDIRECTION") == false else {
             return super.presentPaymentMethodUserInterface()
         }
         
@@ -195,7 +195,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     
     override func awaitUserInput() -> Promise<Void> {
         
-        guard ClientTokenService.decodedClientToken?.intent?.contains("_REDIRECTION") == false else {
+        guard PrimerAPIConfigurationModule.decodedJWTToken?.intent?.contains("_REDIRECTION") == false else {
             return super.awaitUserInput()
         }
         
@@ -209,7 +209,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     
     private func fetchBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
-            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -231,7 +231,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                 paymentMethodConfigId: config.id!,
                 parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
             
-            client.listAdyenBanks(clientToken: decodedClientToken, request: request) { result in
+            client.listAdyenBanks(clientToken: decodedJWTToken, request: request) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -272,7 +272,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }
 
     private func tokenize(bank: AdyenBank, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
-        guard ClientTokenService.decodedClientToken != nil else {
+        guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(nil, err)

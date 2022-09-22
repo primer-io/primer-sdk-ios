@@ -140,10 +140,10 @@ extension PaymentMethodTokenizationViewModel {
             firstly {
                 self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
             }
-            .done { decodedClientToken in
-                if let decodedClientToken = decodedClientToken {
+            .done { decodedJWTToken in
+                if let decodedJWTToken = decodedJWTToken {
                     firstly {
-                        self.handleDecodedClientTokenIfNeeded(decodedClientToken)
+                        self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
                     }
                     .done { resumeToken in
                         if let resumeToken = resumeToken {
@@ -191,7 +191,7 @@ extension PaymentMethodTokenizationViewModel {
     //     - nil for success
     //     - Reject with an error
     
-    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedClientToken?> {
+    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
                 PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
@@ -201,20 +201,20 @@ extension PaymentMethodTokenizationViewModel {
                         
                     case .continueWithNewClientToken(let newClientToken):
                         firstly {
-                            ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: true)
-                        }
-                        .then { () -> Promise<Void> in
-                            let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: false)
-                            return configurationService.fetchConfiguration()
+                            PrimerAPIConfigurationModule.setupSession(
+                                forClientToken: newClientToken,
+                                requestDisplayMetadata: false,
+                                requestClientTokenValidation: true,
+                                requestVaultedPaymentMethods: false)
                         }
                         .done {
-                            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
                             
-                            seal.fulfill(decodedClientToken)
+                            seal.fulfill(decodedJWTToken)
                         }
                         .catch { err in
                             seal.reject(err)
@@ -253,16 +253,16 @@ extension PaymentMethodTokenizationViewModel {
                     
                     if let requiredAction = paymentResponse!.requiredAction {
                         firstly {
-                            ClientTokenService.storeClientToken(requiredAction.clientToken, isAPIValidationEnabled: true)
+                            PrimerAPIConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
                         }
-                        .done { checkoutData in
-                            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                        .done {
+                            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
                             
-                            seal.fulfill(decodedClientToken)
+                            seal.fulfill(decodedJWTToken)
                         }
                         .catch { err in
                             seal.reject(err)

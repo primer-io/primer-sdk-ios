@@ -26,7 +26,7 @@ extension CreateResumePaymentService: CreateResumePaymentServiceProtocol {
 
     func createPayment(paymentRequest: Request.Body.Payment.Create, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
         
-        guard let clientToken = ClientTokenService.decodedClientToken else {
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(nil, err)
@@ -47,7 +47,7 @@ extension CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
         
-        guard let clientToken = ClientTokenService.decodedClientToken else {
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(nil, err)

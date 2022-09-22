@@ -25,7 +25,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 return
             }
             
-            if AppState.current.apiConfiguration?.hasSurchargeEnabled == false {
+            if PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled == false {
                 seal.fulfill()
                 return
             }
@@ -43,20 +43,16 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 ]
             }
             let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
-            
-            let clientSessionService: ClientSessionServiceProtocol = ClientSessionService()
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
             
             PrimerDelegateProxy.primerClientSessionWillUpdate()
             
             firstly {
-                clientSessionService.requestPrimerConfigurationWithActions(actionsRequest: clientSessionActionsRequest)
+                PrimerAPIConfigurationModule.updateSession(withActions: clientSessionActionsRequest)
             }
-            .done { primerApiConfiguration in
-                AppState.current.apiConfiguration?.clientSession = primerApiConfiguration.clientSession
-                
-                if AppState.current.apiConfiguration != nil {
-                    PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: AppState.current.apiConfiguration!))
+            .done {
+                if PrimerAPIConfigurationModule.apiConfiguration != nil {
+                    PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: PrimerAPIConfigurationModule.apiConfiguration!))
                 }
                
                 seal.fulfill()
@@ -74,7 +70,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 return
             }
             
-            if AppState.current.apiConfiguration?.hasSurchargeEnabled == false {
+            if PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled == false {
                 seal.fulfill()
                 return
             }
@@ -85,19 +81,16 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
             }
             
             let unselectPaymentMethodAction = ClientSession.Action(type: .unselectPaymentMethod, params: nil)
-            let clientSessionService: ClientSessionServiceProtocol = ClientSessionService()
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: [unselectPaymentMethodAction]))
             
             PrimerDelegateProxy.primerClientSessionWillUpdate()
             
             firstly {
-                clientSessionService.requestPrimerConfigurationWithActions(actionsRequest: clientSessionActionsRequest)
+                PrimerAPIConfigurationModule.updateSession(withActions: clientSessionActionsRequest)
             }
-            .done { primerApiConfiguration in
-                AppState.current.apiConfiguration?.clientSession = primerApiConfiguration.clientSession
-                
-                if AppState.current.apiConfiguration != nil {
-                    PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: AppState.current.apiConfiguration!))
+            .done {
+                if PrimerAPIConfigurationModule.apiConfiguration != nil {
+                    PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: PrimerAPIConfigurationModule.apiConfiguration!))
                 }
                 
                 seal.fulfill()
@@ -110,19 +103,16 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
     
     func dispatch(actions: [ClientSession.Action]) -> Promise<Void> {
         return Promise { seal in
-            let clientSessionService: ClientSessionServiceProtocol = ClientSessionService()
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
             
             PrimerDelegateProxy.primerClientSessionWillUpdate()
             
             firstly {
-                clientSessionService.requestPrimerConfigurationWithActions(actionsRequest: clientSessionActionsRequest)
+                PrimerAPIConfigurationModule.updateSession(withActions: clientSessionActionsRequest)
             }
-            .done { primerApiConfiguration in
-                AppState.current.apiConfiguration?.clientSession = primerApiConfiguration.clientSession
-                
+            .done {
                 if AppState.current.apiConfiguration != nil {
-                    PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: AppState.current.apiConfiguration!))
+                    PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: PrimerAPIConfigurationModule.apiConfiguration!))
                 }
                 
                 seal.fulfill()

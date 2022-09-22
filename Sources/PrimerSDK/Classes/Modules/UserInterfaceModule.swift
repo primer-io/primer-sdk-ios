@@ -730,7 +730,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return Strings.CardFormView.additionalFeesTitle
         default:
             guard let currency = AppState.current.currency else { return nil }
-            guard let availablePaymentMethods = AppState.current.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
+            guard let availablePaymentMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
             guard let str = availablePaymentMethods.filter({ $0.type == paymentMethodTokenizationViewModel.config.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
             return "+\(str)"
         }

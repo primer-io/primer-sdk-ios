@@ -17,16 +17,16 @@ internal class PayPalService: PayPalServiceProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
-    private func prepareUrlAndTokenAndId(path: String) -> (DecodedClientToken, URL, String)? {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+    private func prepareUrlAndTokenAndId(path: String) -> (DecodedJWTToken, URL, String)? {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             return nil
         }
 
-        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             return nil
         }
 
-        guard let coreURL = decodedClientToken.coreUrl else {
+        guard let coreURL = decodedJWTToken.coreUrl else {
             return nil
         }
 
@@ -34,11 +34,11 @@ internal class PayPalService: PayPalServiceProtocol {
             return nil
         }
 
-        return (decodedClientToken, url, configId)
+        return (decodedJWTToken, url, configId)
     }
 
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void) {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
@@ -47,10 +47,10 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        guard let configId = AppState.current.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             let err = PrimerError.invalidValue(
                 key: "configuration.paypal.id",
-                value: AppState.current.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
+                value: PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -105,7 +105,7 @@ internal class PayPalService: PayPalServiceProtocol {
         
         let api: PrimerAPIClientProtocol = PrimerAPIClient()
 
-        api.createPayPalOrderSession(clientToken: decodedClientToken, payPalCreateOrderRequest: body) { result in
+        api.createPayPalOrderSession(clientToken: decodedJWTToken, payPalCreateOrderRequest: body) { result in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -120,7 +120,7 @@ internal class PayPalService: PayPalServiceProtocol {
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = AppState.current
         
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
@@ -161,7 +161,7 @@ internal class PayPalService: PayPalServiceProtocol {
         
         let api: PrimerAPIClientProtocol = PrimerAPIClient()
 
-        api.createPayPalBillingAgreementSession(clientToken: decodedClientToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
+        api.createPayPalBillingAgreementSession(clientToken: decodedJWTToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -177,7 +177,7 @@ internal class PayPalService: PayPalServiceProtocol {
     func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void) {
         let state: AppStateProtocol = AppState.current
         
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
@@ -210,7 +210,7 @@ internal class PayPalService: PayPalServiceProtocol {
         
         let api: PrimerAPIClientProtocol = PrimerAPIClient()
 
-        api.confirmPayPalBillingAgreement(clientToken: decodedClientToken, payPalConfirmBillingAgreementRequest: body) { result in
+        api.confirmPayPalBillingAgreement(clientToken: decodedJWTToken, payPalConfirmBillingAgreementRequest: body) { result in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -225,7 +225,7 @@ internal class PayPalService: PayPalServiceProtocol {
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void) {
         let state: AppStateProtocol = AppState.current
         
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
@@ -245,7 +245,7 @@ internal class PayPalService: PayPalServiceProtocol {
         
         let api: PrimerAPIClientProtocol = PrimerAPIClient()
         api.fetchPayPalExternalPayerInfo(
-            clientToken: decodedClientToken,
+            clientToken: decodedJWTToken,
             payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)) { result in
                 switch result {
                 case .success(let response):

@@ -80,16 +80,16 @@ extension Response.Body {
     struct Configuration: Codable {
         
         static var current: PrimerAPIConfiguration? {
-            return AppState.current.apiConfiguration
+            return PrimerAPIConfigurationModule.apiConfiguration
         }
         
         static var paymentMethodConfigs: [PrimerPaymentMethod]? {
-            return AppState.current.apiConfiguration?.paymentMethods
+            return PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods
         }
         
         var hasSurchargeEnabled: Bool {
-            let pmSurcharge = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { $0["surcharge"] as? Int != nil })
-            let cardSurcharge = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { (($0["networks"] as? [[String: Any]])?.first(where: { $0["surcharge"] as? Int != nil })) != nil  })
+            let pmSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { $0["surcharge"] as? Int != nil })
+            let cardSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { (($0["networks"] as? [[String: Any]])?.first(where: { $0["surcharge"] as? Int != nil })) != nil  })
             return pmSurcharge != nil || cardSurcharge != nil
         }
         

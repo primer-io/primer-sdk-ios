@@ -54,7 +54,7 @@ class PollingModule: Module {
             return
         }
         
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(nil, err)
@@ -62,7 +62,7 @@ class PollingModule: Module {
         }
         
         let client: PrimerAPIClientProtocol = PrimerAPIClient()
-        client.poll(clientToken: decodedClientToken, url: self.url.absoluteString) { result in
+        client.poll(clientToken: decodedJWTToken, url: self.url.absoluteString) { result in
             switch result {
             case .success(let res):
                 if res.status == .pending {

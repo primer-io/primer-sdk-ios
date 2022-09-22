@@ -68,7 +68,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
             
     var isShowingBillingAddressFieldsRequired: Bool {
-        guard let billingAddressModule = AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
+        guard let billingAddressModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
         return (billingAddressModule.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode == true
     }
     
@@ -239,7 +239,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     // MARK: All billing address fields
     
     internal var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
-        return AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
+        return PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
     }
     
     internal var billingAddressFields: [[BillingAddressField]] {
@@ -318,14 +318,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     override func validate() throws {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
         
-        guard decodedClientToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+        guard decodedJWTToken.pciUrl != nil else {
+            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -455,9 +455,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
     
-    override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-            if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+            if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
     #if canImport(Primer3DS)
                 guard let paymentMethodTokenData = paymentMethodTokenData else {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -468,7 +468,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 }
                 
                 let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
                     case .success(let paymentMethodToken):
                         DispatchQueue.main.async {
@@ -503,12 +503,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 seal.reject(err)
     #endif
                 
-            } else if decodedClientToken.intent == RequiredActionName.processor3DS.rawValue {
-                if let redirectUrlStr = decodedClientToken.redirectUrl,
+            } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
+                if let redirectUrlStr = decodedJWTToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),
-                   let statusUrlStr = decodedClientToken.statusUrl,
+                   let statusUrlStr = decodedJWTToken.statusUrl,
                    let statusUrl = URL(string: statusUrlStr),
-                   decodedClientToken.intent != nil {
+                   decodedJWTToken.intent != nil {
                     
                     DispatchQueue.main.async {
                         UIApplication.shared.endIgnoringInteractionEvents()
@@ -576,7 +576,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     private func startPolling(on url: URL, completion: @escaping (String?, Error?) -> Void) {
         let client: PrimerAPIClientProtocol = PrimerAPIClient()
-        client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
+        client.poll(clientToken: PrimerAPIConfigurationModule.decodedJWTToken, url: url.absoluteString) { result in
             if self.webViewCompletion == nil {
                 let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -705,7 +705,7 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
-        if let clientToken = AppState.current.clientToken {
+        if let clientToken = PrimerAPIConfigurationModule.clientToken {
             completion(clientToken, nil)
         } else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
