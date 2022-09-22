@@ -164,9 +164,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private func fetchOAuthURL() -> Promise<URL> {
         return Promise { seal in
-            let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
+            let paypalService: PayPalServiceProtocol = PayPalService()
             
-            switch Primer.shared.intent {
+            switch PrimerInternal.shared.intent {
             case .checkout:
                 paypalService.startOrderSession { result in
                     switch result {
@@ -264,7 +264,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     func fetchPayPalExternalPayerInfo(orderId: String) -> Promise<Response.Body.PayPal.PayerInfo> {
         return Promise { seal in
-            let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
+            let paypalService: PayPalServiceProtocol = PayPalService()
             paypalService.fetchPayPalExternalPayerInfo(orderId: orderId) { result in
                 switch result {
                 case .success(let response):
@@ -278,7 +278,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private func createPaypalPaymentInstrument() -> Promise<PayPalPaymentInstrument> {
         return Promise { seal in
-            if Primer.shared.intent == .vault {
+            if PrimerInternal.shared.intent == .vault {
                 firstly {
                     self.generateBillingAgreementConfirmation()
                 }
@@ -340,7 +340,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func generatePaypalPaymentInstrument(externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo?, completion: @escaping (Result<PayPalPaymentInstrument, Error>) -> Void) {
-        switch Primer.shared.intent {
+        switch PrimerInternal.shared.intent {
         case .checkout:
             guard let orderId = orderId else {
                 let err = PrimerError.invalidValue(key: "orderId", value: orderId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -398,7 +398,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func generateBillingAgreementConfirmation(_ completion: @escaping (Response.Body.PayPal.ConfirmBillingAgreement?, Error?) -> Void) {
-        let paypalService: PayPalServiceProtocol = DependencyContainer.resolve()
+        let paypalService: PayPalServiceProtocol = PayPalService()
         paypalService.confirmBillingAgreement({ result in
             switch result {
             case .failure(let err):

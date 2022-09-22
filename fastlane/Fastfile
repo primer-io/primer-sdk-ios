@@ -10,15 +10,13 @@ github_run_id = ENV["GITHUB_RUN_ID"]
 github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
-app_workspace = "Example/PrimerSDK.xcworkspace"
-app_xcode_proj = "Example/PrimerSDK.xcodeproj"
-app_scheme = "PrimerSDK-Example"
-app_test_scheme = "PrimerSDK_Tests"
-app_ui_test_scheme = "PrimerSDKExample_UITests"
+app_workspace = "Internal/Debug App/Primer.io Example App.xcworkspace"
+app_xcode_proj = "Internal/Debug App/Primer.io Example App.xcodeproj"
+app_scheme = "ExampleApp"
 
 # Packages
-app_output_path = "/var/tmp/PrimerSDK_Example.xcarchive/Products/Applications/PrimerSDK_Example.app"
-app_output_archive_path = "/var/tmp/PrimerSDK_Example.xcarchive"
+app_output_path = "/var/tmp/Primer.io Example App.xcarchive/Products/Applications/Primer.io Example App.app"
+app_output_archive_path = "/var/tmp/Primer.io Example App.xcarchive"
 
 # Utils
 sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
@@ -33,14 +31,12 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :tests do
-    run_tests(workspace: app_workspace,
-              scheme: app_test_scheme)
+    run_tests(workspace: app_workspace)
   end
 
   lane :ui_tests do
     run_tests(workspace: app_workspace,
-              devices: ["iPhone SE", "iPhone 8"],
-              scheme: app_ui_test_scheme)
+              devices: ["iPhone SE", "iPhone 8"])
   end
 
   lane :danger_check do
@@ -65,7 +61,7 @@ platform :ios do
 
     cocoapods(
       use_bundle_exec: true,
-      podfile: "Example/Podfile"
+      podfile: "Internal/Debug App/Podfile"
     )
 
     # Build for browserstack
@@ -83,9 +79,6 @@ platform :ios do
       file_path: ENV["IPA_OUTPUT_PATH"]
     )
 
-    # Build for appetize
-    appetize_build_and_upload
-
     # Upload to Firebase
     firebase_app_distribution(
       service_credentials_file: "firebase_credentials.json",
@@ -101,9 +94,12 @@ platform :ios do
   desc 'This action builds the app and uplads it to Appetize'
   private_lane :appetize_build_and_upload do
 
+    clear_derived_data
+
     cocoapods(
+      clean_install: true,
       use_bundle_exec: true,
-      podfile: "Example/Podfile"
+      podfile: "Internal/Debug App/Podfile"
     )
 
     build_app(
@@ -111,6 +107,9 @@ platform :ios do
       sdk: "iphonesimulator", # Appetize needs a simulator app
       workspace: app_workspace,
       configuration: "Debug",
+      destination: "generic/platform=iOS Simulator",
+      xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
+      include_bitcode: false,
       export_method: "development",
       archive_path: app_output_archive_path,
       # Build speed optimisation

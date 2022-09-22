@@ -49,7 +49,7 @@ class PrimerFormViewController: PrimerViewController {
         otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
         availablePaymentMethodsContainerStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
         
-        if Primer.shared.intent == .vault {
+        if PrimerInternal.shared.intent == .vault {
             for viewModel in paymentMethodTokenizationViewModels {
                 availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.uiModule.paymentMethodButton)
             }

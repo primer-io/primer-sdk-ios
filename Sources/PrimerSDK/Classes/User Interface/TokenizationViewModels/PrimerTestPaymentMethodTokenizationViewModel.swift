@@ -238,7 +238,7 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
     
     private func configurePayButton(amount: Int) {
         var title = Strings.PaymentButton.pay
-        if Primer.shared.intent == .checkout {
+        if PrimerInternal.shared.intent == .checkout {
             if let currency = AppState.current.currency {
                 title += " \(amount.toCurrencyString(currency: currency))"
             }

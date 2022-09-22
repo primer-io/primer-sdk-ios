@@ -1,0 +1,488 @@
+//
+//  PrimerAPIClient.swift
+//  primer-checkout-api
+//
+//  Created by Evangelos Pittas on 26/2/21.
+//
+
+#if canImport(UIKit)
+
+import Foundation
+
+protocol PrimerAPIClientProtocol {
+    
+    func validateClientToken(
+        request: Request.Body.ClientTokenValidation,
+        completion: @escaping (_ result: Result<SuccessResponse, Error>) -> Void)
+    func fetchConfiguration(
+        clientToken: DecodedClientToken,
+        requestParameters: Request.URLParameters.Configuration?,
+        completion: @escaping (_ result: Result<Response.Body.Configuration, Error>) -> Void)
+
+    func fetchVaultedPaymentMethods(
+        clientToken: DecodedClientToken,
+        completion: @escaping (_ result: Result<Response.Body.VaultedPaymentMethods, Error>) -> Void)
+    func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<Response.Body.VaultedPaymentMethods>
+    
+    func deleteVaultedPaymentMethod(
+        clientToken: DecodedClientToken,
+        id: String,
+        completion: @escaping (_ result: Result<Void, Error>) -> Void)
+    
+    // PayPal
+    func createPayPalOrderSession(
+        clientToken: DecodedClientToken,
+        payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder,
+        completion: @escaping (_ result: Result<Response.Body.PayPal.CreateOrder, Error>) -> Void)
+    func createPayPalBillingAgreementSession(
+        clientToken: DecodedClientToken,
+        payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement,
+        completion: @escaping (_ result: Result<Response.Body.PayPal.CreateBillingAgreement, Error>) -> Void)
+    func confirmPayPalBillingAgreement(
+        clientToken: DecodedClientToken,
+        payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement,
+        completion: @escaping (_ result: Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void)
+    
+    // Klarna
+    func createKlarnaPaymentSession(
+        clientToken: DecodedClientToken,
+        klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession,
+        completion: @escaping (_ result: Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void)
+    func createKlarnaCustomerToken(
+        clientToken: DecodedClientToken,
+        klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken,
+        completion: @escaping (_ result: Result<Response.Body.Klarna.CustomerToken, Error>) -> Void)
+    func finalizeKlarnaPaymentSession(
+        clientToken: DecodedClientToken,
+        klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession,
+        completion: @escaping (_ result: Result<Response.Body.Klarna.CustomerToken, Error>) -> Void)
+    
+    // Tokenization
+    func tokenizePaymentMethod(
+        clientToken: DecodedClientToken,
+        tokenizationRequestBody: Request.Body.Tokenization,
+        completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void)
+    func exchangePaymentMethodToken(
+        clientToken: DecodedClientToken,
+        paymentMethodId: String,
+        completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void)
+    
+    // 3DS
+    func begin3DSAuth(clientToken: DecodedClientToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
+    func continue3DSAuth(clientToken: DecodedClientToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
+    
+    // Apaya
+    func createApayaSession(
+        clientToken: DecodedClientToken,
+        request: Request.Body.Apaya.CreateSession,
+        completion: @escaping (_ result: Result<Response.Body.Apaya.CreateSession, Error>) -> Void)
+    
+    // Adyen Banks List
+    func listAdyenBanks(
+        clientToken: DecodedClientToken,
+        request: Request.Body.Adyen.BanksList,
+        completion: @escaping (_ result: Result<[Response.Body.Adyen.Bank], Error>) -> Void)
+    
+    func poll(clientToken: DecodedClientToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
+    
+    func requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
+    
+    func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
+    func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void)
+
+    
+    // Payment
+    func createPayment(
+        clientToken: DecodedClientToken,
+        paymentRequestBody: Request.Body.Payment.Create,
+        completion: @escaping (_ result: Result<Response.Body.Payment, Error>) -> Void)
+    func resumePayment(
+        clientToken: DecodedClientToken,
+        paymentId: String,
+        paymentResumeRequest: Request.Body.Payment.Resume,
+        completion: @escaping (_ result: Result<Response.Body.Payment, Error>) -> Void)
+}
+
+internal class PrimerAPIClient: PrimerAPIClientProtocol {
+        
+    internal let networkService: NetworkService
+
+    // MARK: - Object lifecycle
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+
+    init(networkService: NetworkService = URLSessionStack()) {
+        self.networkService = networkService
+    }
+
+    func fetchVaultedPaymentMethods(clientToken: DecodedClientToken, completion: @escaping (_ result: Result<Response.Body.VaultedPaymentMethods, Error>) -> Void) {
+        let endpoint = PrimerAPI.fetchVaultedPaymentMethods(clientToken: clientToken)
+        networkService.request(endpoint) { (result: Result<Response.Body.VaultedPaymentMethods, Error>) in
+            switch result {
+            case .success(let vaultedPaymentMethodsResponse):
+                AppState.current.selectedPaymentMethodId = vaultedPaymentMethodsResponse.data.first?.id
+                completion(.success(vaultedPaymentMethodsResponse))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String, completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void) {
+        let endpoint = PrimerAPI.exchangePaymentMethodToken(clientToken: clientToken, paymentMethodId: paymentMethodId)
+        networkService.request(endpoint) { (result: Result<PrimerPaymentMethodTokenData, Error>) in
+            switch result {
+            case .success(let paymentInstrument):
+                completion(.success(paymentInstrument))
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String, completion: @escaping (_ result: Result<Void, Error>) -> Void) {
+        let endpoint = PrimerAPI.deleteVaultedPaymentMethod(clientToken: clientToken, id: id)
+        networkService.request(endpoint) { (result: Result<DummySuccess, Error>) in
+            switch result {
+            case .success:
+                completion(.success(()))
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func fetchConfiguration(
+        clientToken: DecodedClientToken,
+        requestParameters: Request.URLParameters.Configuration?,
+        completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
+    {
+        let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters)
+        networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>) in
+            switch result {
+            case .success(let apiConfiguration):
+                var imageFiles: [ImageFile] = []
+                
+                for pm in (apiConfiguration.paymentMethods ?? []) {
+                    
+                    var coloredImageFile: ImageFile
+                    if let coloredVal = pm.displayMetadata?.button.iconUrl?.coloredUrlStr {
+                        var remoteUrl: URL?
+                        var base64Data: Data?
+                        
+                        if let data = Data(base64Encoded: coloredVal) {
+                            base64Data = data
+                        } else if let url = URL(string: coloredVal) {
+                            remoteUrl = url
+                        }
+                        
+                        coloredImageFile = ImageFile(
+                            fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
+                            fileExtension: "png",
+                            remoteUrl: remoteUrl,
+                            base64Data: base64Data)
+                        
+                    } else {
+                        coloredImageFile = ImageFile(
+                            fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
+                            fileExtension: "png",
+                            remoteUrl: nil,
+                            base64Data: nil)
+                    }
+                    imageFiles.append(coloredImageFile)
+                    
+                    var lightImageFile: ImageFile
+                    if let lightVal = pm.displayMetadata?.button.iconUrl?.lightUrlStr {
+                        var remoteUrl: URL?
+                        var base64Data: Data?
+                        
+                        if let data = Data(base64Encoded: lightVal) {
+                            base64Data = data
+                        } else if let url = URL(string: lightVal) {
+                            remoteUrl = url
+                        }
+                        
+                        lightImageFile = ImageFile(
+                            fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
+                            fileExtension: "png",
+                            remoteUrl: remoteUrl,
+                            base64Data: base64Data)
+                        
+                    } else {
+                        lightImageFile = ImageFile(
+                            fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
+                            fileExtension: "png",
+                            remoteUrl: nil,
+                            base64Data: nil)
+                    }
+                    imageFiles.append(lightImageFile)
+                    
+                    var darkImageFile: ImageFile
+                    if let darkVal = pm.displayMetadata?.button.iconUrl?.darkUrlStr {
+                        var remoteUrl: URL?
+                        var base64Data: Data?
+                        
+                        if let data = Data(base64Encoded: darkVal) {
+                            base64Data = data
+                        } else if let url = URL(string: darkVal) {
+                            remoteUrl = url
+                        }
+                        
+                        darkImageFile = ImageFile(
+                            fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
+                            fileExtension: "png",
+                            remoteUrl: remoteUrl,
+                            base64Data: base64Data)
+                        
+                    } else {
+                        darkImageFile = ImageFile(
+                            fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
+                            fileExtension: "png",
+                            remoteUrl: nil,
+                            base64Data: nil)
+                    }
+                    imageFiles.append(darkImageFile)
+                }
+                
+                let imageManager = ImageManager()
+                
+                firstly {
+                    imageManager.getImages(for: imageFiles)
+                }
+                .done { imageFiles in
+                    for (i, pm) in (apiConfiguration.paymentMethods ?? []).enumerated() {
+                        let paymentMethodImageFiles = imageFiles.filter({ $0.fileName.contains(pm.type.lowercased().replacingOccurrences(of: "_", with: "-")) })
+                        if paymentMethodImageFiles.isEmpty {
+                            continue
+                        }
+                        
+                        let coloredImageFile = paymentMethodImageFiles
+                            .filter({ $0.fileName.contains("dark") == false && $0.fileName.contains("light") == false }).first
+                        let darkImageFile = paymentMethodImageFiles
+                            .filter({ $0.fileName.contains("dark") == true }).first
+                        let lightImageFile = paymentMethodImageFiles
+                            .filter({ $0.fileName.contains("light") == true }).first
+                        
+                        let baseImage = PrimerTheme.BaseImage(
+                            colored: coloredImageFile?.image,
+                            light: lightImageFile?.image,
+                            dark: darkImageFile?.image)
+                        apiConfiguration.paymentMethods?[i].baseLogoImage = baseImage
+                    }
+
+                    completion(.success(apiConfiguration))
+                }
+                .catch { err in
+                    completion(.success(apiConfiguration))
+                }
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+
+    func createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder, completion: @escaping (_ result: Result<Response.Body.PayPal.CreateOrder, Error>) -> Void) {
+        let endpoint = PrimerAPI.createPayPalOrderSession(clientToken: clientToken, payPalCreateOrderRequest: payPalCreateOrderRequest)
+        networkService.request(endpoint) { (result: Result<Response.Body.PayPal.CreateOrder, Error>) in
+            switch result {
+            case .success(let payPalCreateOrderResponse):
+                completion(.success(payPalCreateOrderResponse))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+
+    func createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement, completion: @escaping (_ result: Result<Response.Body.PayPal.CreateBillingAgreement, Error>) -> Void) {
+        let endpoint = PrimerAPI.createPayPalBillingAgreementSession(clientToken: clientToken, payPalCreateBillingAgreementRequest: payPalCreateBillingAgreementRequest)
+        networkService.request(endpoint) { (result: Result<Response.Body.PayPal.CreateBillingAgreement, Error>) in
+            switch result {
+            case .success(let payPalCreateOrderResponse):
+                completion(.success(payPalCreateOrderResponse))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+
+    func confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement, completion: @escaping (_ result: Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void) {
+        let endpoint = PrimerAPI.confirmPayPalBillingAgreement(clientToken: clientToken, payPalConfirmBillingAgreementRequest: payPalConfirmBillingAgreementRequest)
+        networkService.request(endpoint) { (result: Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) in
+            switch result {
+            case .success(let payPalCreateOrderResponse):
+                completion(.success(payPalCreateOrderResponse))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+
+    func createKlarnaPaymentSession(
+        clientToken: DecodedClientToken,
+        klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession,
+        completion: @escaping (_ result: Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void)
+    {
+        let endpoint = PrimerAPI.createKlarnaPaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSessionAPIRequest)
+        networkService.request(endpoint) { (result: Result<Response.Body.Klarna.CreatePaymentSession, Error>) in
+            switch result {
+            case .success(let klarnaCreatePaymentSessionAPIResponse):
+                completion(.success(klarnaCreatePaymentSessionAPIResponse))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+
+    func createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken, completion: @escaping (_ result: Result<Response.Body.Klarna.CustomerToken, Error>) -> Void) {
+        let endpoint = PrimerAPI.createKlarnaCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: klarnaCreateCustomerTokenAPIRequest)
+        networkService.request(endpoint) { (result: Result<Response.Body.Klarna.CustomerToken, Error>) in
+            switch result {
+            case .success(let klarnaCreateCustomerTokenAPIRequest):
+                completion(.success(klarnaCreateCustomerTokenAPIRequest))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+
+    func finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession, completion: @escaping (_ result: Result<Response.Body.Klarna.CustomerToken, Error>) -> Void) {
+        let endpoint = PrimerAPI.finalizeKlarnaPaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: klarnaFinalizePaymentSessionRequest)
+        networkService.request(endpoint) { (result: Result<Response.Body.Klarna.CustomerToken, Error>) in
+            switch result {
+            case .success(let klarnaFinalizePaymentSessionResponse):
+                completion(.success(klarnaFinalizePaymentSessionResponse))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func createApayaSession(
+        clientToken: DecodedClientToken,
+        request: Request.Body.Apaya.CreateSession,
+        completion: @escaping (Result<Response.Body.Apaya.CreateSession, Error>) -> Void
+    ) {
+        let endpoint = PrimerAPI.createApayaSession(clientToken: clientToken, request: request)
+        networkService.request(endpoint) { (result: Result<Response.Body.Apaya.CreateSession, Error>) in
+            switch result {
+            case .success(let response):
+                completion(.success(response))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func listAdyenBanks(
+        clientToken: DecodedClientToken,
+        request: Request.Body.Adyen.BanksList,
+        completion: @escaping (Result<[Response.Body.Adyen.Bank], Error>) -> Void)
+    {
+        let endpoint = PrimerAPI.listAdyenBanks(clientToken: clientToken, request: request)
+        networkService.request(endpoint) { (result: Result<BanksListSessionResponse, Error>) in
+            switch result {
+            case .success(let res):
+                let banks = res.result
+                completion(.success(banks))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func poll(
+        clientToken: DecodedClientToken?,
+        url: String,
+        completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void
+    ) {
+        let endpoint = PrimerAPI.poll(clientToken: clientToken, url: url)
+        networkService.request(endpoint) { (result: Result<PollingResponse, Error>) in
+            switch result {
+            case .success(let response):
+                completion(.success(response))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest, completion: @escaping (Result<PrimerAPIConfiguration, Error>) -> Void) {
+        let endpoint = PrimerAPI.requestPrimerConfigurationWithActions(clientToken: clientToken, request: request)
+        networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>) in
+            switch result {
+            case .success(let response):
+                completion(.success(response))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void) {
+        let endpoint = PrimerAPI.sendAnalyticsEvents(url: url, body: body)
+        networkService.request(endpoint) { (result: Result<Analytics.Service.Response, Error>) in
+            switch result {
+            case .success(let response):
+                completion(.success(response))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void) {
+        let endpoint = PrimerAPI.fetchPayPalExternalPayerInfo(clientToken: clientToken, payPalExternalPayerInfoRequestBody: payPalExternalPayerInfoRequestBody)
+        networkService.request(endpoint) { (result: Result<Response.Body.PayPal.PayerInfo, Error>) in
+            switch result {
+            case .success(let res):
+                completion(.success(res))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func validateClientToken(request: Request.Body.ClientTokenValidation, completion: @escaping (Result<SuccessResponse, Error>) -> Void) {
+        let endpoint = PrimerAPI.validateClientToken(request: request)
+        networkService.request(endpoint) { (result: Result<SuccessResponse, Error>) in
+            switch result {
+            case .success(let success):
+                completion(.success(success))
+            case .failure(let error):
+                ErrorHandler.handle(error: error)
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func createPayment(clientToken: DecodedClientToken, paymentRequestBody: Request.Body.Payment.Create, completion: @escaping (Result<Response.Body.Payment, Error>) -> Void) {
+        let endpoint = PrimerAPI.createPayment(clientToken: clientToken, paymentRequest: paymentRequestBody)
+        networkService.request(endpoint) { (result: Result<Response.Body.Payment, Error>) in
+            switch result {
+            case .success(let res):
+                completion(.success(res))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    
+    func resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Result<Response.Body.Payment, Error>) -> Void) {
+        let endpoint = PrimerAPI.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest)
+        networkService.request(endpoint) { (result: Result<Response.Body.Payment, Error>) in
+            switch result {
+            case .success(let res):
+                completion(.success(res))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+}
+
+#endif

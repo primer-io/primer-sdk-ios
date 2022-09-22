@@ -161,7 +161,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     
     internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
-            if Primer.shared.intent == .vault {
+            if PrimerInternal.shared.intent == .vault {
                 seal.fulfill()
             } else {
                 let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
@@ -188,7 +188,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 seal.reject(err)
                 return
             }
-            let client: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            let client: PrimerAPIClientProtocol = PrimerAPIClient()
             client.exchangePaymentMethodToken(clientToken: decodedClientToken, paymentMethodId: paymentMethodToken.id!) { result in
                 DispatchQueue.main.async {
                     switch result {
@@ -297,7 +297,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         
         return Promise { seal in
             
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
                 
                 guard error == nil else {
@@ -332,10 +332,10 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         
                     case .continueWithNewClientToken(let newClientToken):
                         firstly {
-                            ClientTokenService.storeClientToken(newClientToken)
+                            ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: false)
                         }
                         .then { () -> Promise<Void> in
-                            let configService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                            let configService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: false)
                             return configService.fetchConfiguration()
                         }
                         .done {
@@ -384,7 +384,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                     
                     if let requiredAction = paymentResponse!.requiredAction {
                         firstly {
-                            ClientTokenService.storeClientToken(requiredAction.clientToken)
+                            ClientTokenService.storeClientToken(requiredAction.clientToken, isAPIValidationEnabled: true)
                         }
                         .done { checkoutData in
                             guard let decodedClientToken = ClientTokenService.decodedClientToken else {
@@ -461,7 +461,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = DependencyContainer.resolve()
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
                 guard error == nil else {
                     seal.reject(error!)

@@ -103,7 +103,7 @@ internal class PayPalService: PayPalServiceProtocol {
             cancelUrl: "\(urlScheme)://paypal-cancel"
         )
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
 
         api.createPayPalOrderSession(clientToken: decodedClientToken, payPalCreateOrderRequest: body) { result in
             switch result {
@@ -159,7 +159,7 @@ internal class PayPalService: PayPalServiceProtocol {
             cancelUrl: "\(urlScheme)://paypal-cancel"
         )
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
 
         api.createPayPalBillingAgreementSession(clientToken: decodedClientToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
@@ -208,7 +208,7 @@ internal class PayPalService: PayPalServiceProtocol {
 
         let body = Request.Body.PayPal.ConfirmBillingAgreement(paymentMethodConfigId: configId, tokenId: tokenId)
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
 
         api.confirmPayPalBillingAgreement(clientToken: decodedClientToken, payPalConfirmBillingAgreementRequest: body) { result in
             switch result {
@@ -243,7 +243,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         api.fetchPayPalExternalPayerInfo(
             clientToken: decodedClientToken,
             payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)) { result in

@@ -26,7 +26,7 @@ internal class PrimerUIManager {
                 properties: SDKEventProperties(
                     name: function,
                     params: [
-                        "intent": Primer.shared.intent?.rawValue ?? "null"
+                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
                     ]))
             
             let connectivityEvent = Analytics.Event(
@@ -39,21 +39,35 @@ internal class PrimerUIManager {
                 eventType: .timerEvent,
                 properties: TimerEventProperties(
                     momentType: .start,
-                    id: Primer.shared.timingEventId!))
+                    id: PrimerInternal.shared.timingEventId!))
             
             events = [sdkEvent, connectivityEvent, timingEvent]
             Analytics.Service.record(events: events)
             
+            let previousClientToken = AppState.current.clientToken
+            let needsAPIConfigurationCall = (AppState.current.apiConfiguration == nil) || (previousClientToken != clientToken)
             
             firstly {
                 PrimerUIManager.prepareRootViewController()
             }
             .then { () -> Promise<Void> in
-                return ClientTokenService.storeClientToken(clientToken)
+                return ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: false)
             }
             .then { () -> Promise<Void> in
-                let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
-                return configurationService.fetchConfigurationAndVaultedPaymentMethods()
+                if !needsAPIConfigurationCall {
+                    // Client token is the same as before, therefore the config
+                    // request has already been made.
+                    return Promise()
+                } else {
+                    let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
+                    let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
+                    
+                    if isHeadlessCheckoutDelegateImplemented {
+                        return configurationService.fetchConfiguration()
+                    } else {
+                        return configurationService.fetchConfigurationAndVaultedPaymentMethods()
+                    }
+                }
             }
             .then { () -> Promise<Void> in
                 return PrimerUIManager.validatePaymentUIPresentation()
@@ -68,12 +82,12 @@ internal class PrimerUIManager {
     }
     
     static func presentPaymentUI() {
-        if let paymentMethodType = Primer.shared.selectedPaymentMethodType {
+        if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             PrimerUIManager.presentPaymentMethod(type: paymentMethodType)
-        } else if Primer.shared.intent == .checkout {
+        } else if PrimerInternal.shared.intent == .checkout {
             let pucvc = PrimerUniversalCheckoutViewController()
             PrimerUIManager.primerRootViewController?.show(viewController: pucvc)
-        } else if Primer.shared.intent == .vault {
+        } else if PrimerInternal.shared.intent == .vault {
             let pvmvc = PrimerVaultManagerViewController()
             PrimerUIManager.primerRootViewController?.show(viewController: pvmvc)
         } else {
@@ -150,7 +164,7 @@ internal class PrimerUIManager {
     
     static func validatePaymentUIPresentation() -> Promise<Void> {
         return Promise { seal in
-            if let paymentMethodType = Primer.shared.selectedPaymentMethodType {
+            if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
                 guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
                     let err = PrimerError.unableToPresentPaymentMethod(
                         paymentMethodType: paymentMethodType,
@@ -171,7 +185,7 @@ internal class PrimerUIManager {
                     return
                 }
                 
-                if case .checkout = Primer.shared.intent, paymentMethod.isCheckoutEnabled == false  {
+                if case .checkout = PrimerInternal.shared.intent, paymentMethod.isCheckoutEnabled == false  {
                     let err = PrimerError.unsupportedIntent(
                         intent: .checkout,
                         userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
@@ -179,7 +193,7 @@ internal class PrimerUIManager {
                     seal.reject(err)
                     return
                     
-                } else if case .vault = Primer.shared.intent, paymentMethod.isVaultingEnabled == false {
+                } else if case .vault = PrimerInternal.shared.intent, paymentMethod.isVaultingEnabled == false {
                     let err = PrimerError.unsupportedIntent(
                         intent: .vault,
                         userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
@@ -191,7 +205,7 @@ internal class PrimerUIManager {
             
             let state: AppStateProtocol = DependencyContainer.resolve()
             
-            if Primer.shared.intent == .vault, state.apiConfiguration?.clientSession?.customer?.id == nil {
+            if PrimerInternal.shared.intent == .vault, state.apiConfiguration?.clientSession?.customer?.id == nil {
                 let err = PrimerError.invalidValue(key: "customer.id", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"], diagnosticsId: nil)
                 seal.reject(err)
                 return
@@ -202,13 +216,36 @@ internal class PrimerUIManager {
         }
     }
     
+    static func dismissPrimerUI(animated flag: Bool, completion: (() -> Void)? = nil) {
+        DispatchQueue.main.async {
+            guard let primerRootViewController = PrimerUIManager.primerRootViewController else {
+                completion?()
+                return
+            }
+            
+            primerRootViewController.dismissPrimerRootViewController(animated: flag) {
+                DispatchQueue.main.async {
+                    PrimerUIManager.primerWindow?.isHidden = true
+                    if #available(iOS 13, *) {
+                        PrimerUIManager.primerWindow?.windowScene = nil
+                    }
+                    PrimerUIManager.primerWindow?.rootViewController = nil
+                    PrimerUIManager.primerRootViewController = nil
+                    PrimerUIManager.primerWindow?.resignKey()
+                    PrimerUIManager.primerWindow = nil
+                    completion?()
+                }
+            }
+        }
+    }
+    
     static func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, withMessage message: String? = nil) {
         if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
             showResultScreenForResultType(type: .success, message: message)
         } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
             showResultScreenForResultType(type: .failure, message: message)
         } else {
-            Primer.shared.dismiss()
+            PrimerInternal.shared.dismiss()
         }
     }
     

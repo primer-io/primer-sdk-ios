@@ -162,7 +162,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
-                if Primer.shared.intent == .vault {
+                if PrimerInternal.shared.intent == .vault {
                     let err = PrimerError.unsupportedIntent(intent: .vault, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)

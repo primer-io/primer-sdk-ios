@@ -10,7 +10,7 @@
 import Foundation
 
 internal protocol Endpoint {
-//    var scheme: String { get }
+
     var baseURL: String? { get }
     var port: Int? { get }
     var path: String { get }
@@ -20,16 +20,6 @@ internal protocol Endpoint {
     var body: Data? { get }
     var shouldParseResponseBody: Bool { get }
 }
-
-// extension Endpoint {
-//    var scheme: String {
-//        return "http"
-//    }
-//    
-//    var port: Int? {
-//        return nil
-//    }
-// }
 
 enum HTTPMethod: String, Codable {
     case get = "GET"

@@ -45,9 +45,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
         
-        let klarnaSessionType: KlarnaSessionType = Primer.shared.intent == .vault ? .recurringPayment : .hostedPaymentPage
+        let klarnaSessionType: KlarnaSessionType = PrimerInternal.shared.intent == .vault ? .recurringPayment : .hostedPaymentPage
         
-        if Primer.shared.intent == .checkout && AppState.current.amount == nil  {
+        if PrimerInternal.shared.intent == .checkout && AppState.current.amount == nil  {
             let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
@@ -181,11 +181,22 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 #if canImport(PrimerKlarnaSDK)
                 let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
                 
+                guard let urlSchemeStr = settings.paymentMethodOptions.urlScheme,
+                      URL(string: urlSchemeStr) != nil else {
+                    let err = PrimerError.invalidUrlScheme(
+                        urlScheme: settings.paymentMethodOptions.urlScheme,
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
                 self.klarnaViewController = PrimerKlarnaViewController(
                     delegate: self,
                     paymentCategory: .payLater,
                     clientToken: self.klarnaPaymentSession!.clientToken,
-                    urlScheme: settings.paymentMethodOptions.urlScheme)
+                    urlScheme: urlSchemeStr)
                 
                 self.klarnaPaymentSessionCompletion = { _, err in
                     if let err = err {
@@ -225,7 +236,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
             var requestBody: Request.Body.Tokenization
             
-            if Primer.shared.intent == .vault {
+            if PrimerInternal.shared.intent == .vault {
                 let paymentInstrument = KlarnaPaymentSessionPaymentInstrument(
                     klarnaAuthorizationToken: self.authorizationToken!,
                     sessionData: self.klarnaCustomerTokenAPIResponse!.sessionData)
@@ -270,10 +281,10 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return
             }
             
-            let klarnaSessionType: KlarnaSessionType = Primer.shared.intent == .vault ? .recurringPayment : .hostedPaymentPage
+            let klarnaSessionType: KlarnaSessionType = PrimerInternal.shared.intent == .vault ? .recurringPayment : .hostedPaymentPage
             
             var amount = AppState.current.amount
-            if amount == nil && Primer.shared.intent == .checkout {
+            if amount == nil && PrimerInternal.shared.intent == .checkout {
                 let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -331,7 +342,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 totalAmount: nil,
                 orderItems: nil)
             
-            let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            let api: PrimerAPIClientProtocol = PrimerAPIClient()
             
             api.createKlarnaPaymentSession(clientToken: decodedClientToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
                 switch result {
@@ -345,15 +356,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         className: "\(String(describing: self.self))",
                         function: #function
                     )
-                    
-                    self?.klarnaPaymentSession = res
-                    
-                    guard URL(string: res.hppRedirectUrl) != nil else {
-                        let err = PrimerError.invalidValue(key: "hppRedirectUrl", value: res.hppRedirectUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                        return
-                    }
                     
                     seal.fulfill(res)
                 }
@@ -388,7 +390,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 localeData: PrimerSettings.current.localeData
             )
             
-            let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+            let api: PrimerAPIClientProtocol = PrimerAPIClient()
             
             api.createKlarnaCustomerToken(clientToken: decodedClientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
                 switch result {
@@ -435,7 +437,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         let body = Request.Body.Klarna.FinalizePaymentSession(paymentMethodConfigId: configId, sessionId: sessionId)
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession")
         
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         api.finalizeKlarnaPaymentSession(clientToken: decodedClientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {
             case .failure(let err):

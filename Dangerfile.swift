@@ -8,8 +8,8 @@ let isReleasePr = pr.head.ref.hasPrefix("release")
 let allCreatedAndModifiedFiles = danger.git.modifiedFiles + danger.git.createdFiles
 let sdkEditedFiles = allCreatedAndModifiedFiles
     .filter { $0.name != "Dangerfile.swift" }
-    .filter { !$0.hasPrefix("Tests/PrimerSDK_Tests") }
     .filter { !$0.hasPrefix("Example/") }
+    .filter { !$0.hasPrefix("Internal/") }
 
 // You can use these functions to send feedback:
 // message("Highlight something in the table")
@@ -26,10 +26,10 @@ let swiftFilesWithCopyright = sdkEditedFiles.filter {
     danger.utils.readFile($0).contains("//  Created by")
 }
 
-if swiftFilesWithCopyright.count > 0 {
-    let files = swiftFilesWithCopyright.joined(separator: ", ")
-    warn("In Danger we don't include copyright headers, found them in: \(files)")
-}
+//if swiftFilesWithCopyright.count > 0 {
+//    let files = swiftFilesWithCopyright.joined(separator: ", ")
+//    warn("In Danger we don't include copyright headers, found them in: \(files)")
+//}
 
 // MARK: - Check UIKit import
 
@@ -67,10 +67,13 @@ if (additions + deletions > bigPRThreshold) {
 
 // MARK: - PR Title
 
-// The PR title needs to start with DEX-
+// The PR title needs to start with any of the following prefixes contained
+// in the array
 
-if !isReleasePr && pr.title.hasPrefix("DEX-") == false {
-    warn("Please add ticket number prefix 'DEX-{TICKET-NUMBER}' to the PR")
+let ticketPrefixes = ["DEVX-", "CHKT-", "DXS-"]
+
+if !isReleasePr && ticketPrefixes.first(where: { pr.title.hasPrefix($0) }) != nil {
+    warn("Please add ticket number prefix to the PR")
 }
 
 // MARK: - PR WIP
@@ -99,4 +102,3 @@ if pr.assignees?.count == 0 {
 
 //Coverage.xcodeBuildCoverage(.derivedDataFolder("Build"),
 //                            minimumCoverage: 30)
-

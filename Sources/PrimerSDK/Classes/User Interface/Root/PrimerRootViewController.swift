@@ -180,7 +180,7 @@ internal class PrimerRootViewController: PrimerViewController {
     
     @objc
     private func dismissGestureRecognizerAction(sender: UISwipeGestureRecognizer) {
-        Primer.shared.dismiss()
+        PrimerInternal.shared.dismiss()
     }
     
     private func blurBackgroundIfNeeded() {
@@ -368,7 +368,7 @@ internal class PrimerRootViewController: PrimerViewController {
     
     internal func popToMainScreen(completion: (() -> Void)?) {
         var vcToPop: PrimerContainerViewController?
-        if Primer.shared.intent == .vault {
+        if PrimerInternal.shared.intent == .vault {
             for vc in nc.viewControllers {
                 if let cvc = vc as? PrimerContainerViewController, cvc.childViewController is PrimerVaultManagerViewController {
                     vcToPop = cvc
@@ -406,15 +406,17 @@ internal class PrimerRootViewController: PrimerViewController {
     }
     
     internal func dismissPrimerRootViewController(animated flag: Bool, completion: (() -> Void)? = nil) {
-        view.endEditing(true)
-        
-        childViewBottomConstraint.constant = childView.bounds.height
-        
-        UIView.animate(withDuration: flag ? presentationDuration : 0, delay: 0, options: .curveEaseInOut) {
-            self.view.alpha = 0
-            self.view.layoutIfNeeded()
-        } completion: { _ in
-            completion?()
+        DispatchQueue.main.async {
+            self.view.endEditing(true)
+            self.childViewBottomConstraint.constant = self.childView.bounds.height
+            
+            UIView.animate(withDuration: flag ? self.presentationDuration : 0, delay: 0, options: .curveEaseInOut) {
+                self.view.alpha = 0
+                self.view.layoutIfNeeded()
+                
+            } completion: { _ in
+                completion?()
+            }
         }
     }
     

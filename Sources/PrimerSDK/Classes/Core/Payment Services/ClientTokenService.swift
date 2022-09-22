@@ -7,8 +7,8 @@ internal typealias RawJWTToken = String
 
 internal protocol ClientTokenServiceProtocol {
     static var decodedClientToken: DecodedClientToken? { get }
-    static func storeClientToken(_ clientToken: String) -> Promise<Void>
-    static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void)
+    static func storeClientToken(_ clientToken: String, isAPIValidationEnabled: Bool) -> Promise<Void>
+    static func resetClientToken()
 }
 
 internal class ClientTokenService: ClientTokenServiceProtocol {
@@ -29,6 +29,37 @@ internal class ClientTokenService: ClientTokenServiceProtocol {
         return jwtTokenPayload
     }
     
+    // MARK: Store
+    
+    static func storeClientToken(_ clientToken: String, isAPIValidationEnabled: Bool) -> Promise<Void> {
+        return Promise { seal in
+            do {
+                _ = try validateInternally(clientToken)
+            } catch {
+                seal.reject(error)
+                return
+            }
+            
+            let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
+            
+            if !isAPIValidationEnabled || !isManualPaymentHandling {
+                AppState.current.clientToken = clientToken
+                seal.fulfill()
+                
+            } else {
+                validateToken(clientToken) { error in
+                    if let error = error {
+                        AppState.current.clientToken = nil
+                        seal.reject(error)
+                    } else {
+                        AppState.current.clientToken = clientToken
+                        seal.fulfill()
+                    }
+                }
+            }
+        }
+    }
+    
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
@@ -40,9 +71,8 @@ extension ClientTokenService {
     // MARK: API Validation
     
     private static func validateToken(_ clientToken: RawJWTToken, completion: @escaping (Error?) -> Void) {
-        
         let clientTokenRequest = Request.Body.ClientTokenValidation(clientToken: clientToken)
-        let api: PrimerAPIClientProtocol = DependencyContainer.resolve()
+        let api: PrimerAPIClientProtocol = PrimerAPIClient()
         api.validateClientToken(request: clientTokenRequest) { result in
             switch result {
             case .success:
@@ -51,9 +81,7 @@ extension ClientTokenService {
                 completion(error)
             }
         }
-        
     }
-    
 }
 
 extension ClientTokenService {
@@ -65,7 +93,6 @@ extension ClientTokenService {
     // if passes, store it
     
     private static func validateInternally(_ tokenToValidate: RawJWTToken) throws -> RawJWTToken {
-        
         guard var currentDecodedToken = tokenToValidate.jwtTokenPayload,
               let expDate = currentDecodedToken.expDate,
               expDate > Date() else {
@@ -115,47 +142,12 @@ extension ClientTokenService {
         }
         
         return segments.joined(separator: ".").base64RFC4648Format
-        
     }
 }
 
 extension ClientTokenService {
     
-    // MARK: Store
     
-    static func storeClientToken(_ clientToken: String) -> Promise<Void> {
-        return Promise { seal in
-            storeClientToken(clientToken) { error in
-                if let error = error {
-                    seal.reject(error)
-                } else {
-                    seal.fulfill()
-                }
-            }
-        }
-    }
-    
-    static func storeClientToken(_ clientToken: String, completion: @escaping (Error?) -> Void) {
-        // 1. Validate the token manually or return the previous one from current App State
-        do {
-            _ = try validateInternally(clientToken)
-        } catch {
-            completion(error)
-            return
-        }
-        
-        // 2. Validate the token from the dedicated API
-        validateToken(clientToken) { error in
-            guard error == nil else {
-                completion(error)
-                return
-            }
-            
-            // 3. Assign the new token to the App State
-            AppState.current.clientToken = clientToken
-            completion(nil)
-        }
-    }
 }
 
 extension ClientTokenService {
