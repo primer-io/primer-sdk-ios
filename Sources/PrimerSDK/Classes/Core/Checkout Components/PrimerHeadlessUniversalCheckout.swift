@@ -38,9 +38,10 @@ public class PrimerHeadlessUniversalCheckout {
         }
         
         DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
+        let apiConfigurationModule = PrimerAPIConfigurationModule()
                 
         firstly {
-            PrimerAPIConfigurationModule.setupSession(
+            apiConfigurationModule.setupSession(
                 forClientToken: clientToken,
                 requestDisplayMetadata: true,
                 requestClientTokenValidation: false,

@@ -49,8 +49,9 @@ internal class PrimerUIManager {
             }
             .then { () -> Promise<Void> in
                 let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
+                let apiConfigurationModule = PrimerAPIConfigurationModule()
                 
-                return PrimerAPIConfigurationModule.setupSession(
+                return apiConfigurationModule.setupSession(
                     forClientToken: clientToken,
                     requestDisplayMetadata: true,
                     requestClientTokenValidation: false,

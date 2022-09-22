@@ -332,8 +332,9 @@ extension PrimerHeadlessUniversalCheckout {
                             seal.fulfill(nil)
                             
                         case .continueWithNewClientToken(let newClientToken):
+                            let apiConfigurationModule = PrimerAPIConfigurationModule()
                             firstly {
-                                PrimerAPIConfigurationModule.setupSession(
+                                apiConfigurationModule.setupSession(
                                     forClientToken: newClientToken,
                                     requestDisplayMetadata: false,
                                     requestClientTokenValidation: true,
@@ -384,8 +385,10 @@ extension PrimerHeadlessUniversalCheckout {
                         self.resumePaymentId = paymentResponse!.id
                         
                         if let requiredAction = paymentResponse!.requiredAction {
+                            let apiConfigurationModule = PrimerAPIConfigurationModule()
+                            
                             firstly {
-                                PrimerAPIConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
+                                apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
                             }
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -758,9 +761,10 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
     private func handle(_ clientToken: String) {
         
         if PrimerAPIConfigurationModule.clientToken != clientToken {
+            let apiConfigurationModule = PrimerAPIConfigurationModule()
             
             firstly {
-                PrimerAPIConfigurationModule.storeRequiredActionClientToken(clientToken)
+                apiConfigurationModule.storeRequiredActionClientToken(clientToken)
             }
             .done {
                 DispatchQueue.main.async {

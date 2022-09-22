@@ -331,8 +331,10 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         seal.fulfill(nil)
                         
                     case .continueWithNewClientToken(let newClientToken):
+                        let apiConfigurationModule = PrimerAPIConfigurationModule()
+                        
                         firstly {
-                            PrimerAPIConfigurationModule.setupSession(
+                            apiConfigurationModule.setupSession(
                                 forClientToken: newClientToken,
                                 requestDisplayMetadata: false,
                                 requestClientTokenValidation: true,
@@ -383,8 +385,10 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                     self.resumePaymentId = paymentResponse!.id
                     
                     if let requiredAction = paymentResponse!.requiredAction {
+                        let apiConfigurationModule = PrimerAPIConfigurationModule()
+                        
                         firstly {
-                            PrimerAPIConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
+                            apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
                         }
                         .done {
                             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {

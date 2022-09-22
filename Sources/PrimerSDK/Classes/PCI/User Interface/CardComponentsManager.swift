@@ -108,8 +108,9 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     return
                 }
                 
+                let apiConfigurationModule = PrimerAPIConfigurationModule()
                 firstly {
-                    PrimerAPIConfigurationModule.setupSession(
+                    apiConfigurationModule.setupSession(
                         forClientToken: clientToken,
                         requestDisplayMetadata: false,
                         requestClientTokenValidation: false,

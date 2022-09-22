@@ -78,7 +78,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                let clientSessionActionsModule = ClientSessionActionsModule()
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in

@@ -10,14 +10,15 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
     static var decodedJWTToken: DecodedJWTToken? { get }
     static var apiConfiguration: PrimerAPIConfiguration? { get }
 
-    static func setupSession(
+    init(apiClient: PrimerAPIClientProtocol)
+    func setupSession(
         forClientToken clientToken: String,
         requestDisplayMetadata: Bool,
         requestClientTokenValidation: Bool,
         requestVaultedPaymentMethods: Bool
     ) -> Promise<Void>
-    static func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void>
-    static func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void>
+    func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void>
+    func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void>
     static func resetClientSession()
 }
 
@@ -64,7 +65,13 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         return decodedJWTToken
     }
     
-    static func setupSession(
+    private let apiClient: PrimerAPIClientProtocol
+    
+    required init(apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
+        self.apiClient = apiClient
+    }
+    
+    func setupSession(
         forClientToken clientToken: String,
         requestDisplayMetadata: Bool = true,
         requestClientTokenValidation: Bool = true,
@@ -99,7 +106,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         }
     }
     
-    static func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
+    func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -108,8 +115,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 return
             }
 
-            let api: PrimerAPIClientProtocol = PrimerAPIClient()
-            api.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken, request: actionsRequest) { result in
+            self.apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken, request: actionsRequest) { result in
                 switch result {
                 case .success(let configuration):
                     PrimerAPIConfigurationModule.apiConfiguration = configuration
@@ -121,13 +127,13 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         }
     }
     
-    static func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
+    func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
         return Promise { seal in
             firstly {
                 PrimerAPIConfigurationModule.validateClientToken(newClientToken, requestRemoteClientTokenValidation: true)
             }
             .done {
-                PrimerAPIConfigurationModule.clientToken = clientToken
+                PrimerAPIConfigurationModule.clientToken = newClientToken
                 seal.fulfill()
             }
             .catch { err in
