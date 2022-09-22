@@ -79,7 +79,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             }
             
             firstly {
-                PrimerAPIConfigurationModule.validateClientToken(clientToken, requestClientTokenValidation: requestClientTokenValidation)
+                PrimerAPIConfigurationModule.validateClientToken(clientToken, requestRemoteClientTokenValidation: requestClientTokenValidation)
             }
             .then { () -> Promise<PrimerAPIConfiguration> in
                 return PrimerAPIConfigurationModule.fetchConfigurationAndVaultedPaymentMethodsIfNeeded(
@@ -124,7 +124,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     static func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
         return Promise { seal in
             firstly {
-                PrimerAPIConfigurationModule.validateClientToken(newClientToken, requestClientTokenValidation: true)
+                PrimerAPIConfigurationModule.validateClientToken(newClientToken, requestRemoteClientTokenValidation: true)
             }
             .done {
                 PrimerAPIConfigurationModule.clientToken = clientToken
@@ -145,7 +145,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
 
     // MARK: - HELPERS
     
-    private static func validateClientToken(_ clientToken: String, requestClientTokenValidation: Bool) -> Promise<Void> {
+    private static func validateClientToken(_ clientToken: String, requestRemoteClientTokenValidation: Bool) -> Promise<Void> {
         return Promise { seal in
             do {
                 _ = try validateClientTokenInternally(clientToken)
@@ -156,7 +156,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             
             let isAutoPaymentHandling = PrimerSettings.current.paymentHandling == .auto
             
-            if !requestClientTokenValidation || isAutoPaymentHandling {
+            if !requestRemoteClientTokenValidation || isAutoPaymentHandling {
                 AppState.current.clientToken = clientToken
                 seal.fulfill()
                 
