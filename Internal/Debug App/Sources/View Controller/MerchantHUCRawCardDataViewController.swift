@@ -62,7 +62,7 @@ class MerchantHUCRawCardDataViewController: UIViewController {
                     paymentHandling: paymentHandling == .auto ? .auto : .manual,
                     paymentMethodOptions: PrimerPaymentMethodOptions(
                         urlScheme: "merchant://redirect",
-                        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team", merchantName: "Primer Merchant")
+                        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team", merchantName: "Primer Merchant", isCaptureBillingAddressEnabled: false)
                     )
                 )
                 
