@@ -55,14 +55,13 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     }
     
     static var decodedJWTToken: DecodedJWTToken? {
-        guard let tokenToValidate = AppState.current.clientToken else { return nil }
-        
-        do {
-            let clientToken = try PrimerAPIConfigurationModule.validateClientTokenInternally(tokenToValidate)
-            return clientToken.decodedJWTToken
-        } catch {
+        guard let decodedJWTToken = AppState.current.clientToken?.decodedJWTToken,
+              let expDate = decodedJWTToken.expDate,
+              expDate > Date() else {
             return nil
         }
+        
+        return decodedJWTToken
     }
     
     static func setupSession(
