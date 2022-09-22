@@ -29,8 +29,6 @@ class PayPalServiceTests: XCTestCase {
             XCTAssertEqual(error == nil, true)
         }
 
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
-
         let service = MockPayPalService()
         service.startOrderSession({ result in
             switch result {
@@ -56,7 +54,6 @@ class PayPalServiceTests: XCTestCase {
         let api = MockPrimerAPIClient(with: data, throwsError: true)
         let state = MockAppState()
 
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
         state.clientToken = nil
 
@@ -87,7 +84,6 @@ class PayPalServiceTests: XCTestCase {
         let api = MockPrimerAPIClient(with: data, throwsError: false)
         let state = MockAppState(apiConfiguration: nil)
 
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
 
         let service = PayPalService()
@@ -165,7 +161,6 @@ class PayPalServiceTests: XCTestCase {
         let api = MockPrimerAPIClient(with: data, throwsError: false)
         let state = MockAppState()
 
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
         state.clientToken = nil
 
@@ -197,7 +192,6 @@ class PayPalServiceTests: XCTestCase {
         let api = MockPrimerAPIClient(with: data, throwsError: false)
         let state = MockAppState(apiConfiguration: nil)
 
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
 
         let service = PayPalService()
@@ -230,7 +224,6 @@ class PayPalServiceTests: XCTestCase {
         let settings = MockPrimerSettings()
 
         DependencyContainer.register(state as AppStateProtocol)
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         
         let createOrderRes = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: "approvalUrl")
@@ -257,7 +250,6 @@ class PayPalServiceTests: XCTestCase {
         let api = MockPrimerAPIClient(with: data, throwsError: false)
         let state = MockAppState()
 
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
         state.clientToken = nil
 
@@ -288,7 +280,6 @@ class PayPalServiceTests: XCTestCase {
         let state = MockAppState(apiConfiguration: nil)
 
         MockLocator.registerDependencies()
-        DependencyContainer.register(api as PrimerAPIClientProtocol)
         DependencyContainer.register(state as AppStateProtocol)
 
         let service = PayPalService()
