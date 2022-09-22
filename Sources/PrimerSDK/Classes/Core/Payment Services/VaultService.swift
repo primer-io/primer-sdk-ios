@@ -17,7 +17,7 @@ internal class VaultService: VaultServiceProtocol {
         return Promise { seal in
             let state: AppStateProtocol = AppState.current
             
-            guard let clientToken = ClientTokenService.decodedClientToken else {
+            guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -50,7 +50,7 @@ internal class VaultService: VaultServiceProtocol {
 
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void> {
         return Promise { seal in
-            guard let clientToken = ClientTokenService.decodedClientToken else {
+            guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)

@@ -18,17 +18,17 @@ internal class TokenizationService: TokenizationServiceProtocol {
     
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
 
-            log(logLevel: .verbose, title: nil, message: "Client Token: \(decodedClientToken)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+            log(logLevel: .verbose, title: nil, message: "Client Token: \(decodedJWTToken)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
-            guard let pciURL = decodedClientToken.pciUrl else {
-                let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            guard let pciURL = decodedJWTToken.pciUrl else {
+                let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -37,7 +37,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
             log(logLevel: .verbose, title: nil, message: "PCI URL: \(pciURL)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
 
             guard let url = URL(string: "\(pciURL)/payment-instruments") else {
-                let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -47,7 +47,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
             
             let api: PrimerAPIClientProtocol = PrimerAPIClient()
             
-            api.tokenizePaymentMethod(clientToken: decodedClientToken, tokenizationRequestBody: requestBody) { (result) in
+            api.tokenizePaymentMethod(clientToken: decodedJWTToken, tokenizationRequestBody: requestBody) { (result) in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -56,7 +56,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                     self.paymentMethodTokenData = paymentMethodTokenData
                     
                     var isThreeDSEnabled: Bool = false
-                    if AppState.current.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                    if PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                         isThreeDSEnabled = true
                     }
 
@@ -82,7 +82,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                             return
                         }
                         
-                        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
@@ -91,7 +91,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
 
                         threeDSService.perform3DS(
                             paymentMethodTokenData: paymentMethodTokenData,
-                            protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2,
+                            protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2,
                             beginAuthExtraData: threeDSBeginAuthExtraData,
                                 sdkDismissed: { () in
 

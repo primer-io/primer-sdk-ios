@@ -36,8 +36,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     var didCancel: (() -> Void)?
     
-    private static let countryCodeFlag = AppState.current.apiConfiguration?.clientSession?.order?.countryCode?.flag ?? ""
-    private static let countryDialCode = CountryCode.phoneNumberCountryCodes.first(where: { $0.code == AppState.current.apiConfiguration?.clientSession?.order?.countryCode?.rawValue})?.dialCode ?? ""
+    private static let countryCodeFlag = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.flag ?? ""
+    private static let countryDialCode = CountryCode.phoneNumberCountryCodes.first(where: { $0.code == PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.rawValue})?.dialCode ?? ""
         
     var inputTextFieldsStackViews: [UIStackView] {
         var stackViews: [UIStackView] = []
@@ -211,7 +211,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     var isShowingBillingAddressFieldsRequired: Bool {
-        let billingAddressModuleOptions = AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
+        let billingAddressModuleOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
         return billingAddressModuleOptions != nil
     }
     
@@ -382,7 +382,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     // MARK: All billing address fields
     
     internal var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
-        return AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
+        return PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
     }
     
     internal var billingAddressFields: [[BillingAddressField]] {
@@ -455,14 +455,14 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     override func validate() throws {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
         
-        guard decodedClientToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+        guard decodedJWTToken.pciUrl != nil else {
+            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -558,12 +558,12 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-            if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-                if let statusUrlStr = decodedClientToken.statusUrl,
+            if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+                if let statusUrlStr = decodedJWTToken.statusUrl,
                    let statusUrl = URL(string: statusUrlStr),
-                   decodedClientToken.intent != nil {
+                   decodedJWTToken.intent != nil {
                     
                     let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type)
                     let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary.first { $0.key == paymentMethodType } != nil) == true
@@ -590,7 +590,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     seal.reject(error)
                 }
-            } else if decodedClientToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
+            } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
                 
                 let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
                 var additionalInfo: PrimerCheckoutAdditionalInfo?
@@ -601,13 +601,13 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     let formatter = DateFormatter().withExpirationDisplayDateFormat()
                     
                     var expiresAtAdditionalInfo: String?
-                    if let unwrappedExpiresAt = decodedClientToken.expiresAt {
+                    if let unwrappedExpiresAt = decodedJWTToken.expiresAt {
                         expiresAtAdditionalInfo = formatter.string(from: unwrappedExpiresAt)
                     }
 
                     additionalInfo = MultibancoCheckoutAdditionalInfo(expiresAt: expiresAtAdditionalInfo,
-                                                                      entity: decodedClientToken.entity,
-                                                                      reference: decodedClientToken.reference)
+                                                                      entity: decodedJWTToken.entity,
+                                                                      reference: decodedJWTToken.reference)
                     
                     if self.paymentCheckoutData == nil {
                         self.paymentCheckoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
@@ -632,7 +632,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                         seal.reject(error)
                     }
                     
-                    let clientSession = AppState.current.apiConfiguration?.clientSession
+                    let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
                     let checkoutPayment = PrimerCheckoutDataPayment(id: nil, orderId: clientSession?.order?.id, paymentFailureReason: nil)
                     let checkoutData = PrimerCheckoutData(payment: checkoutPayment, additionalInfo: additionalInfo)
                     PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)

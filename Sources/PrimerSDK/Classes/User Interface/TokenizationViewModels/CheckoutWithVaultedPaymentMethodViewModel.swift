@@ -182,14 +182,14 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     
     private func exchangePaymentMethodToken(_ paymentMethodToken: PrimerPaymentMethodTokenData) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
             let client: PrimerAPIClientProtocol = PrimerAPIClient()
-            client.exchangePaymentMethodToken(clientToken: decodedClientToken, paymentMethodId: paymentMethodToken.id!) { result in
+            client.exchangePaymentMethodToken(clientToken: decodedJWTToken, paymentMethodId: paymentMethodToken.id!) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let singleUsePaymentMethod):
@@ -207,10 +207,10 @@ class CheckoutWithVaultedPaymentMethodViewModel {
             firstly {
                 self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
             }
-            .done { decodedClientToken in
-                if let decodedClientToken = decodedClientToken {
+            .done { decodedJWTToken in
+                if let decodedJWTToken = decodedJWTToken {
                     firstly {
-                        self.handleDecodedClientTokenIfNeeded(decodedClientToken)
+                        self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
                     }
                     .done { resumeToken in
                         if let resumeToken = resumeToken {
@@ -322,7 +322,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedClientToken?> {
+    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
                 PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
@@ -332,20 +332,20 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         
                     case .continueWithNewClientToken(let newClientToken):
                         firstly {
-                            ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: false)
-                        }
-                        .then { () -> Promise<Void> in
-                            let configService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: false)
-                            return configService.fetchConfiguration()
+                            PrimerAPIConfigurationModule.setupSession(
+                                forClientToken: newClientToken,
+                                requestDisplayMetadata: false,
+                                requestClientTokenValidation: true,
+                                requestVaultedPaymentMethods: false)
                         }
                         .done {
-                            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
                             
-                            seal.fulfill(decodedClientToken)
+                            seal.fulfill(decodedJWTToken)
                         }
                         .catch { err in
                             seal.reject(err)
@@ -384,16 +384,16 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                     
                     if let requiredAction = paymentResponse!.requiredAction {
                         firstly {
-                            ClientTokenService.storeClientToken(requiredAction.clientToken, isAPIValidationEnabled: true)
+                            PrimerAPIConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
                         }
-                        .done { checkoutData in
-                            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                        .done {
+                            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
                             
-                            seal.fulfill(decodedClientToken)
+                            seal.fulfill(decodedJWTToken)
                         }
                         .catch { err in
                             seal.reject(err)
@@ -410,9 +410,9 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         }
     }
     
-    private func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
+    private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-            if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+            if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
     #if canImport(Primer3DS)
                 guard let paymentMethodTokenData = self.paymentMethodTokenData else {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -423,7 +423,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 }
                 
                 let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
                     case .success(let paymentMethodToken):
                         DispatchQueue.main.async {

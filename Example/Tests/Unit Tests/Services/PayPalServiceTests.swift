@@ -25,10 +25,6 @@ class PayPalServiceTests: XCTestCase {
         
         MockLocator.registerDependencies()
 
-        ClientTokenServiceTests.storeClientToken(clientAccessToken, on: mockAppState) { error in
-            XCTAssertEqual(error == nil, true)
-        }
-
         let service = MockPayPalService()
         service.startOrderSession({ result in
             switch result {

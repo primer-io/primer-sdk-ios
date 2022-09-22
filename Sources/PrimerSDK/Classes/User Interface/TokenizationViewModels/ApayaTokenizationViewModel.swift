@@ -23,19 +23,19 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     override func validate() throws {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
         
-        guard decodedClientToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+        guard decodedJWTToken.pciUrl != nil else {
+            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
         
-        guard let configuration = AppState.current.apiConfiguration else {
+        guard let configuration = PrimerAPIConfigurationModule.apiConfiguration else {
             let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
@@ -144,8 +144,8 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken,
-              let merchantAccountId = AppState.current.apiConfiguration?.getProductId(for: PrimerPaymentMethodType.apaya.rawValue)
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
+              let merchantAccountId = PrimerAPIConfigurationModule.apiConfiguration?.getProductId(for: PrimerPaymentMethodType.apaya.rawValue)
         else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -162,10 +162,10 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             merchantAccountId: merchantAccountId,
             language: PrimerSettings.current.localeData.languageCode,
             currencyCode: currency.rawValue,
-            phoneNumber: AppState.current.apiConfiguration?.clientSession?.customer?.mobileNumber)
+            phoneNumber: PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.mobileNumber)
         
         let api: PrimerAPIClientProtocol = PrimerAPIClient()
-        api.createApayaSession(clientToken: decodedClientToken, request: body) { [weak self] result in
+        api.createApayaSession(clientToken: decodedJWTToken, request: body) { [weak self] result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -235,7 +235,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse, completion: @escaping (_ paymentMethod: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(nil, err)

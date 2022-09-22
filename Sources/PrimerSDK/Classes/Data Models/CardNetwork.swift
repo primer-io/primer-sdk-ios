@@ -279,8 +279,8 @@ public enum CardNetwork: String, CaseIterable {
         case .unionpay:
             return "A000000333"
         default:
-            if let decodedClientToken = ClientTokenService.decodedClientToken,
-               let env = decodedClientToken.env {
+            if let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
+               let env = decodedJWTToken.env {
                 if env.uppercased() == "PRODUCTION" {
                     return nil
                 } else {
@@ -293,7 +293,7 @@ public enum CardNetwork: String, CaseIterable {
     }
     
     var surcharge: Int? {
-        guard let options = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options, !options.isEmpty else { return nil }
+        guard let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options, !options.isEmpty else { return nil }
         
         for paymentMethodOption in options {
             guard let type = paymentMethodOption["type"] as? String, type == PrimerPaymentMethodType.paymentCard.rawValue else { continue }

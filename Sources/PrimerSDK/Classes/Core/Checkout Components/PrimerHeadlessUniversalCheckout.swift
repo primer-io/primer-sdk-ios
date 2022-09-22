@@ -12,7 +12,6 @@ import UIKit
 public class PrimerHeadlessUniversalCheckout {
     
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate?
-    private(set) public var clientToken: String?
     public static let current = PrimerHeadlessUniversalCheckout()
     private let unsupportedPaymentMethodTypes: [String] = [
         PrimerPaymentMethodType.adyenBlik.rawValue,
@@ -38,17 +37,14 @@ public class PrimerHeadlessUniversalCheckout {
             print("WARNING!\nPrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
         }
         
-        if let settings = settings {
-            DependencyContainer.register(settings as PrimerSettingsProtocol)
-        }
-        
+        DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
+                
         firstly {
-            return ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: false)
-        }
-        .then { () -> Promise<Void> in
-            self.clientToken = clientToken
-            let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
-            return configurationService.fetchConfiguration()
+            PrimerAPIConfigurationModule.setupSession(
+                forClientToken: clientToken,
+                requestDisplayMetadata: true,
+                requestClientTokenValidation: false,
+                requestVaultedPaymentMethods: false)
         }
         .done {
             let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
@@ -73,26 +69,26 @@ public class PrimerHeadlessUniversalCheckout {
     
     private func continueValidateSession() -> Promise<Void> {
         return Promise { seal in
-            guard let clientToken = AppState.current.clientToken else {
+            guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token is nil"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
             
-            guard let decodedClientToken = clientToken.jwtTokenPayload else {
+            guard let decodedJWTToken = clientToken.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token cannot be decoded"], diagnosticsId: nil)
                 seal.reject(err)
                 return
             }
             
             do {
-                try decodedClientToken.validate()
+                try decodedJWTToken.validate()
             } catch {
                 seal.reject(error)
             }
             
-            guard let apiConfiguration = AppState.current.apiConfiguration else {
+            guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
                 let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 seal.reject(err)
                 return
@@ -110,27 +106,38 @@ public class PrimerHeadlessUniversalCheckout {
     
     internal func validateSession() -> Promise<Void> {
         return Promise { seal in
-            if AppState.current.clientToken == nil, let clientToken = PrimerHeadlessUniversalCheckout.current.clientToken {
-                firstly {
-                    ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: false)
-                }
-                .then({ () -> Promise<Void> in
-                    self.continueValidateSession()
-                })
-                .catch { error in
-                    seal.reject(error)
-                }
-            } else {
-                firstly {
-                    continueValidateSession()
-                }
-                .done({ () -> Void in
-                    seal.fulfill()
-                })
-                .catch { error in
-                    seal.reject(error)
-                }
+            guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token is nil"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
             }
+            
+            guard let decodedJWTToken = clientToken.decodedJWTToken else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token cannot be decoded"], diagnosticsId: nil)
+                seal.reject(err)
+                return
+            }
+            
+            do {
+                try decodedJWTToken.validate()
+            } catch {
+                seal.reject(error)
+            }
+            
+            guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
+                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                seal.reject(err)
+                return
+            }
+            
+            guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
+                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                seal.reject(err)
+                return
+            }
+            
+            seal.fulfill()
         }
     }
     
@@ -149,7 +156,7 @@ public class PrimerHeadlessUniversalCheckout {
         switch paymentMethodType {
         case PrimerPaymentMethodType.paymentCard.rawValue:
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
-            if let checkoutModule = AppState.current.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
+            if let checkoutModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
                let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
                 if options.cardHolderName == true {
                     requiredFields.append(.cardholderName)
