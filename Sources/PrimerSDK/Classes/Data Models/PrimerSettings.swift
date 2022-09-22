@@ -82,10 +82,12 @@ public class PrimerApplePayOptions: PrimerApplePayOptionsProtocol {
     
     let merchantIdentifier: String
     let merchantName: String
+    let isCaptureBillingAddressEnabled: Bool
     
-    public init(merchantIdentifier: String, merchantName: String) {
+    public init(merchantIdentifier: String, merchantName: String, isCaptureBillingAddressEnabled: Bool) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
+        self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
     }
 }
 
