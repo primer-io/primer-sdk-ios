@@ -11,22 +11,26 @@ import Foundation
 
 protocol Module {
     associatedtype T
+    init(url: URL, apiClient: PrimerAPIClientProtocol)
     func start() -> Promise<T>
+    func cancel()
 }
 
 class PollingModule: Module {
     
     internal let url: URL
+    private let apiClient: PrimerAPIClientProtocol
     internal private(set) var isCancelled: Bool = false
     internal var retryInterval: TimeInterval = 3
 
-    init(url: URL) {
+    required init(url: URL, apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
         self.url = url
+        self.apiClient = apiClient
     }
     
     func start() -> Promise<String> {
         return Promise { seal in
-            self.startPolling { (resumeToken, err) in
+            self.startPolling(apiClient: self.apiClient) { (resumeToken, err) in
                 if let err = err {
                     seal.reject(err)
                 } else if let resumeToken = resumeToken {
@@ -42,7 +46,7 @@ class PollingModule: Module {
         self.isCancelled = true
     }
     
-    private func startPolling(completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
+    private func startPolling(apiClient: PrimerAPIClientProtocol, completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
         
         if isCancelled {
             let err = PrimerError.cancelled(
@@ -61,13 +65,12 @@ class PollingModule: Module {
             return
         }
         
-        let client: PrimerAPIClientProtocol = PrimerAPIClient()
-        client.poll(clientToken: decodedJWTToken, url: self.url.absoluteString) { result in
+        apiClient.poll(clientToken: decodedJWTToken, url: self.url.absoluteString) { result in
             switch result {
             case .success(let res):
                 if res.status == .pending {
                     Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                        self.startPolling(completion: completion)
+                        self.startPolling(apiClient: apiClient, completion: completion)
                     }
                 } else if res.status == .complete {
                     completion(res.id, nil)
@@ -79,7 +82,7 @@ class PollingModule: Module {
                 ErrorHandler.handle(error: err)
                 // Retry
                 Timer.scheduledTimer(withTimeInterval: self.retryInterval, repeats: false) { _ in
-                    self.startPolling(completion: completion)
+                    self.startPolling(apiClient: apiClient, completion: completion)
                 }
             }
         }
