@@ -20,14 +20,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      # - uses: actions/checkout@v1
-      # - name: Danger
-      #   uses: danger/swift@3.3.0
-      #   with:
-      #       args: --failOnErrors --no-publish-check
-      #   env:
-      #     GITHUB_TOKEN: ${{ github.token }}
-
   build-and-upload:
     needs: danger
     runs-on: macos-latest
@@ -71,6 +63,16 @@ jobs:
           base64 -d -i firebase_credentials.json.b64 > firebase_credentials.json
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+
+      - name: Install Tuist.io
+        run: |
+          if [ ! -d ".tuist-bin" ]
+          then
+            curl -Ls https://install.tuist.io | bash
+          fi
+
+      - name: Create the Xcode project and workspace
+        run: sh ./Internal/Debug\ App/tuist-generate.sh is_ci
 
       - name: Distribute internally on Firebase, Browserstack and Appetize 🚀
         run: |

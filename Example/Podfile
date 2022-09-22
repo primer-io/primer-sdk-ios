@@ -1,13 +1,13 @@
-use_frameworks!
-
+# Uncomment the next line to define a global platform for your project
 platform :ios, '10.0'
 
-target 'PrimerSDK_Example' do
+target 'ExampleApp' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for ExampleApp
   pod 'PrimerSDK', :path => '../'
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
 
-  target 'PrimerSDK_Tests' do
-    inherit! :search_paths
-  end
 end
