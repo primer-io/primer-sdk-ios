@@ -123,7 +123,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             self.apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken, request: actionsRequest) { result in
                 switch result {
                 case .success(let configuration):
-                    PrimerAPIConfigurationModule.apiConfiguration = configuration
+                    PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
                     seal.fulfill()
                 case .failure(let err):
                     seal.reject(err)

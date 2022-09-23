@@ -3,6 +3,7 @@
 import Foundation
 
 internal protocol PayPalServiceProtocol {
+    init(apiClient: PrimerAPIClient)
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void)
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void)
@@ -12,9 +13,14 @@ internal protocol PayPalServiceProtocol {
 internal class PayPalService: PayPalServiceProtocol {
     
     private var paypalTokenId: String?
+    private let apiClient: PrimerAPIClient
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
+    required init(apiClient: PrimerAPIClient = PrimerAPIClient()) {
+        self.apiClient = apiClient
     }
 
     private func prepareUrlAndTokenAndId(path: String) -> (DecodedJWTToken, URL, String)? {
@@ -103,9 +109,7 @@ internal class PayPalService: PayPalServiceProtocol {
             cancelUrl: "\(urlScheme)://paypal-cancel"
         )
         
-        let api: PrimerAPIClientProtocol = PrimerAPIClient()
-
-        api.createPayPalOrderSession(clientToken: decodedJWTToken, payPalCreateOrderRequest: body) { result in
+        self.apiClient.createPayPalOrderSession(clientToken: decodedJWTToken, payPalCreateOrderRequest: body) { result in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -159,9 +163,7 @@ internal class PayPalService: PayPalServiceProtocol {
             cancelUrl: "\(urlScheme)://paypal-cancel"
         )
         
-        let api: PrimerAPIClientProtocol = PrimerAPIClient()
-
-        api.createPayPalBillingAgreementSession(clientToken: decodedJWTToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
+        self.apiClient.createPayPalBillingAgreementSession(clientToken: decodedJWTToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -208,9 +210,7 @@ internal class PayPalService: PayPalServiceProtocol {
 
         let body = Request.Body.PayPal.ConfirmBillingAgreement(paymentMethodConfigId: configId, tokenId: tokenId)
         
-        let api: PrimerAPIClientProtocol = PrimerAPIClient()
-
-        api.confirmPayPalBillingAgreement(clientToken: decodedJWTToken, payPalConfirmBillingAgreementRequest: body) { result in
+        self.apiClient.confirmPayPalBillingAgreement(clientToken: decodedJWTToken, payPalConfirmBillingAgreementRequest: body) { result in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -243,8 +243,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
         
-        let api: PrimerAPIClientProtocol = PrimerAPIClient()
-        api.fetchPayPalExternalPayerInfo(
+        self.apiClient.fetchPayPalExternalPayerInfo(
             clientToken: decodedJWTToken,
             payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)) { result in
                 switch result {

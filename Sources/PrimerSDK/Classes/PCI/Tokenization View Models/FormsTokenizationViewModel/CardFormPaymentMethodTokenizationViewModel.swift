@@ -275,8 +275,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     // MARK: - Init
     
-    required init(config: PrimerPaymentMethod) {
-        super.init(config: config)
+    required init(config: PrimerPaymentMethod, apiClient: PrimerAPIClient = PrimerAPIClient()) {
+        super.init(config: config, apiClient: apiClient)
                         
         self.cardComponentsManager = CardComponentsManager(
             cardnumberField: cardNumberField,
@@ -575,8 +575,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     private func startPolling(on url: URL, completion: @escaping (String?, Error?) -> Void) {
-        let client: PrimerAPIClientProtocol = PrimerAPIClient()
-        client.poll(clientToken: PrimerAPIConfigurationModule.decodedJWTToken, url: url.absoluteString) { result in
+        self.apiClient.poll(clientToken: PrimerAPIConfigurationModule.decodedJWTToken, url: url.absoluteString) { result in
             if self.webViewCompletion == nil {
                 let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)

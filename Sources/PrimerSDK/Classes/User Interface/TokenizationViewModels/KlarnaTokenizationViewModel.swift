@@ -341,10 +341,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 redirectUrl: settings.paymentMethodOptions.urlScheme,
                 totalAmount: nil,
                 orderItems: nil)
-            
-            let api: PrimerAPIClientProtocol = PrimerAPIClient()
-            
-            api.createKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
+                        
+            self.apiClient.createKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -389,10 +387,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 description: PrimerSettings.current.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
                 localeData: PrimerSettings.current.localeData
             )
-            
-            let api: PrimerAPIClientProtocol = PrimerAPIClient()
-            
-            api.createKlarnaCustomerToken(clientToken: decodedJWTToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
+                        
+            self.apiClient.createKlarnaCustomerToken(clientToken: decodedJWTToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -437,8 +433,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         let body = Request.Body.Klarna.FinalizePaymentSession(paymentMethodConfigId: configId, sessionId: sessionId)
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession")
         
-        let api: PrimerAPIClientProtocol = PrimerAPIClient()
-        api.finalizeKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
+        self.apiClient.finalizeKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {
             case .failure(let err):
                 completion(.failure(err))

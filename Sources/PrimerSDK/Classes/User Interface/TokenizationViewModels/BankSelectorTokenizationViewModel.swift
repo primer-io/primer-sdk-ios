@@ -226,12 +226,11 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                 break
             }
                     
-            let client: PrimerAPIClientProtocol = PrimerAPIClient()
             let request = Request.Body.Adyen.BanksList(
                 paymentMethodConfigId: config.id!,
                 parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
             
-            client.listAdyenBanks(clientToken: decodedJWTToken, request: request) { result in
+            self.apiClient.listAdyenBanks(clientToken: decodedJWTToken, request: request) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)

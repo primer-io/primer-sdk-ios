@@ -188,6 +188,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 seal.reject(err)
                 return
             }
+            
             let client: PrimerAPIClientProtocol = PrimerAPIClient()
             client.exchangePaymentMethodToken(clientToken: decodedJWTToken, paymentMethodId: paymentMethodToken.id!) { result in
                 DispatchQueue.main.async {
