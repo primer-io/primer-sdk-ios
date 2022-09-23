@@ -10,6 +10,10 @@
 @testable import PrimerSDK
 
 class MockPayPalService: PayPalServiceProtocol {
+    required init(apiClient: PrimerAPIClientProtocol) {
+        
+    }
+    
 
     var confirmBillingAgreementCalled = false
 

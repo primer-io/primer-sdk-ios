@@ -727,7 +727,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     paymentMethodType: config.type,
                     sessionInfo: sessionInfo)
                 
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: self.apiClient)
                 let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
                 firstly {
@@ -759,7 +759,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 
                 let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: self.apiClient)
                 firstly {
                     tokenizationService.tokenize(requestBody: requestBody)
                 }
@@ -796,7 +796,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     paymentMethodType: config.type,
                     sessionInfo: sessionInfo)
                 
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: self.apiClient)
                 let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
                 firstly {
@@ -828,7 +828,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 
                 let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
                 
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+                let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: self.apiClient)
                 firstly {
                     tokenizationService.tokenize(requestBody: requestBody)
                 }

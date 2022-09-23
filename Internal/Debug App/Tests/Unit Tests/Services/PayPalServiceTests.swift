@@ -26,7 +26,7 @@ class PayPalServiceTests: XCTestCase {
         MockLocator.registerDependencies()
 
 
-        let service = MockPayPalService()
+        let service = MockPayPalService(apiClient: MockPrimerAPIClient())
         service.startOrderSession({ result in
             switch result {
             case .failure:
@@ -112,7 +112,7 @@ class PayPalServiceTests: XCTestCase {
 
         MockLocator.registerDependencies()
 
-        let service = MockPayPalService()
+        let service = MockPayPalService(apiClient: MockPrimerAPIClient())
         let createOrderRes = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: approvalUrl)
         let createOrderData = try JSONEncoder().encode(createOrderRes)
 //        client.response = createOrderData

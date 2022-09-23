@@ -256,7 +256,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             productId: apayaWebViewResponse.productId,
             currencyCode: currencyStr)
         
-        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: self.apiClient)
         let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
         
         firstly {

@@ -359,8 +359,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var mockedNetworkDelay: TimeInterval = 2
     var validateClientTokenResult: (SuccessResponse?, Error?)?
     var fetchConfigurationResult: (Response.Body.Configuration?, Error?)?
+    var fetchConfigurationWithActionsResult: (Response.Body.Configuration?, Error?)?
     var fetchVaultedPaymentMethodsResult: (Response.Body.VaultedPaymentMethods?, Error?)?
     var pollingResults: [(PollingResponse?, Error?)]?
+    var tokenizePaymentMethodResult: (PrimerPaymentMethodTokenData?, Error?)?
+    var paymentResult: (Response.Body.Payment?, Error?)?
     
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
@@ -500,7 +503,20 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         tokenizationRequestBody: Request.Body.Tokenization,
         completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void
     ) {
+        guard let tokenizePaymentMethodResult = tokenizePaymentMethodResult,
+              (tokenizePaymentMethodResult.0 != nil || tokenizePaymentMethodResult.1 != nil)
+        else {
+            XCTAssert(false, "Set 'tokenizePaymentMethodResult' on your MockPrimerAPIClient")
+            return
+        }
         
+        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+            if let err = tokenizePaymentMethodResult.1 {
+                completion(.failure(err))
+            } else if let res = tokenizePaymentMethodResult.0 {
+                completion(.success(res))
+            }
+        }
     }
     
     func exchangePaymentMethodToken(
@@ -575,7 +591,20 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken, request: ClientSessionUpdateRequest, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
+        guard let fetchConfigurationWithActionsResult = fetchConfigurationWithActionsResult,
+              (fetchConfigurationWithActionsResult.0 != nil || fetchConfigurationWithActionsResult.1 != nil)
+        else {
+            XCTAssert(false, "Set 'fetchConfigurationWithActionsResult' on your MockPrimerAPIClient")
+            return
+        }
         
+        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+            if let err = fetchConfigurationWithActionsResult.1 {
+                completion(.failure(err))
+            } else if let res = fetchConfigurationWithActionsResult.0 {
+                completion(.success(res))
+            }
+        }
     }
     
     func sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void) {
@@ -593,7 +622,20 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         paymentRequestBody: Request.Body.Payment.Create,
         completion: @escaping (_ result: Result<Response.Body.Payment, Error>) -> Void
     ) {
+        guard let paymentResult = paymentResult,
+              (paymentResult.0 != nil || paymentResult.1 != nil)
+        else {
+            XCTAssert(false, "Set 'paymentResult' on your MockPrimerAPIClient")
+            return
+        }
         
+        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+            if let err = paymentResult.1 {
+                completion(.failure(err))
+            } else if let res = paymentResult.0 {
+                completion(.success(res))
+            }
+        }
     }
     
     func resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Result<Response.Body.Payment, Error>) -> Void) {

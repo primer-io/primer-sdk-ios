@@ -278,7 +278,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             return
         }
         
-        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: self.apiClient)
         let requestBody = Request.Body.Tokenization(
             paymentInstrument: OffSessionPaymentInstrument(
                 paymentMethodConfigId: self.config.id!,
