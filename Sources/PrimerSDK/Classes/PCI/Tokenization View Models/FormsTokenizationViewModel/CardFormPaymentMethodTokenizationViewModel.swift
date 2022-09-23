@@ -275,7 +275,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     // MARK: - Init
     
-    required init(config: PrimerPaymentMethod, apiClient: PrimerAPIClient = PrimerAPIClient()) {
+    required init(config: PrimerPaymentMethod, apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
         super.init(config: config, apiClient: apiClient)
                         
         self.cardComponentsManager = CardComponentsManager(

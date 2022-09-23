@@ -3,7 +3,7 @@
 import Foundation
 
 internal protocol PayPalServiceProtocol {
-    init(apiClient: PrimerAPIClient)
+    init(apiClient: PrimerAPIClientProtocol)
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void)
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void)
@@ -13,13 +13,13 @@ internal protocol PayPalServiceProtocol {
 internal class PayPalService: PayPalServiceProtocol {
     
     private var paypalTokenId: String?
-    private let apiClient: PrimerAPIClient
+    private let apiClient: PrimerAPIClientProtocol
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    required init(apiClient: PrimerAPIClient = PrimerAPIClient()) {
+    required init(apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
         self.apiClient = apiClient
     }
 

@@ -14,7 +14,7 @@ typealias TokenizationCompletion = ((PrimerPaymentMethodTokenData?, Error?) -> V
 typealias PaymentCompletion = ((PrimerCheckoutData?, Error?) -> Void)
 
 internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
-    init(config: PrimerPaymentMethod, apiClient: PrimerAPIClient)
+    init(config: PrimerPaymentMethod, apiClient: PrimerAPIClientProtocol)
     
     // UI
     var config: PrimerPaymentMethod { get set }
@@ -62,7 +62,7 @@ internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
 
     var config: PrimerPaymentMethod
-    var apiClient: PrimerAPIClient
+    var apiClient: PrimerAPIClientProtocol
     
     // Events
     let checkouEventsNotifierModule = CheckoutEventsNotifierModule()
@@ -84,7 +84,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         NotificationCenter.default.removeObserver(self)
     }
     
-    required init(config: PrimerPaymentMethod, apiClient: PrimerAPIClient = PrimerAPIClient()) {
+    required init(config: PrimerPaymentMethod, apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
         self.config = config
         self.apiClient = apiClient
         super.init()
