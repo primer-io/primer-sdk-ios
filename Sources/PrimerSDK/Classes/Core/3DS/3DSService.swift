@@ -461,53 +461,5 @@ class ThreeDSService: ThreeDSServiceProtocol {
     
 }
 
-class MockThreeDSService: ThreeDSServiceProtocol {
-    
-    func perform3DS(
-        paymentMethodTokenData: PrimerPaymentMethodTokenData,
-        protocolVersion: ThreeDS.ProtocolVersion,
-        beginAuthExtraData: ThreeDS.BeginAuthExtraData?,
-        sdkDismissed: (() -> Void)?,
-        completion: @escaping (Result<(PrimerPaymentMethodTokenData, ThreeDS.PostAuthResponse?), Error>) -> Void) {
-        
-    }
-    
-    
-    var response: Data?
-    let throwsError: Bool = false
-    var isCalled: Bool = false
-    
-    init(with response: Data? = nil) {
-        self.response = response
-    }
-    
-    func beginRemoteAuth(paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
-        }
-        
-        let api = MockPrimerAPIClient()
-        api.response = response
-        
-        api.begin3DSAuth(clientToken: decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: completion)
-    }
-    
-    func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {        
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
-        }
-        
-        let api = MockPrimerAPIClient()
-        api.response = response
-        api.continue3DSAuth(clientToken: decodedJWTToken, threeDSTokenId: threeDSTokenId, completion: completion)
-    }
-}
-
 #endif
 #endif
