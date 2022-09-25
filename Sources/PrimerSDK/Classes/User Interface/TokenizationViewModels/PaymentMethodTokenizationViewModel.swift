@@ -62,6 +62,7 @@ internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
 
     var config: PrimerPaymentMethod
+    static var apiClient: PrimerAPIClientProtocol?
     var apiClient: PrimerAPIClientProtocol
     
     // Events
@@ -86,7 +87,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     required init(config: PrimerPaymentMethod, apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
         self.config = config
-        self.apiClient = apiClient
+        self.apiClient = PaymentMethodTokenizationViewModel.apiClient ?? apiClient
         super.init()
         self.uiModule = UserInterfaceModule(paymentMethodTokenizationViewModel: self)
     }

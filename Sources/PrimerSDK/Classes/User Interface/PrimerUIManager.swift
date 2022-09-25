@@ -13,6 +13,7 @@ internal class PrimerUIManager {
     
     internal static var primerWindow: UIWindow?
     internal static var primerRootViewController: PrimerRootViewController?
+    internal static var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol?
     
     static func preparePresentation(
         clientToken: String,
@@ -49,7 +50,7 @@ internal class PrimerUIManager {
             }
             .then { () -> Promise<Void> in
                 let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
-                let apiConfigurationModule = PrimerAPIConfigurationModule()
+                let apiConfigurationModule = PrimerUIManager.apiConfigurationModule ?? PrimerAPIConfigurationModule()
                 
                 return apiConfigurationModule.setupSession(
                     forClientToken: clientToken,

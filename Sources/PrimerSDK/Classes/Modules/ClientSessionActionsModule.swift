@@ -32,7 +32,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 return
             }
             
-            if PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled == false {
+            if (PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled ?? false) == false {
                 seal.fulfill()
                 return
             }
@@ -73,7 +73,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 return
             }
             
-            if PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled == false {
+            if (PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled ?? false) == false {
                 seal.fulfill()
                 return
             }

@@ -24,6 +24,8 @@ public class PrimerHeadlessUniversalCheckout {
         PrimerPaymentMethodType.xfersPayNow.rawValue,
     ]
     
+    internal var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
+    
     fileprivate init() {}
     
     public func start(withClientToken clientToken: String, settings: PrimerSettings? = nil, delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil, completion: @escaping (_ paymentMethodTypes: [String]?, _ err: Error?) -> Void) {
@@ -38,10 +40,9 @@ public class PrimerHeadlessUniversalCheckout {
         }
         
         DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
-        let apiConfigurationModule = PrimerAPIConfigurationModule()
                 
         firstly {
-            apiConfigurationModule.setupSession(
+            self.apiConfigurationModule.setupSession(
                 forClientToken: clientToken,
                 requestDisplayMetadata: true,
                 requestClientTokenValidation: false,
