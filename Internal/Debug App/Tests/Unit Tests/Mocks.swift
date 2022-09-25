@@ -30,6 +30,120 @@ var mockSettings = PrimerSettings(
     )
 )
 
+class Mocks {
+    
+    static var settings = PrimerSettings(
+        paymentMethodOptions: PrimerPaymentMethodOptions(
+            urlScheme: "urlScheme",
+            applePayOptions: PrimerApplePayOptions(merchantIdentifier: "mid", merchantName: "name")
+        )
+    )
+    
+    static var decodedJWTToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil)
+    
+    static var primerPaymentMethodTokenData = PrimerPaymentMethodTokenData(
+        analyticsId: "mock_analytics_id",
+        id: "mock_payment_method_token_data_id",
+        isVaulted: false,
+        isAlreadyVaulted: false,
+        paymentInstrumentType: .unknown,
+        paymentMethodType: "MOCK_WEB_REDIRECT_PAYMENT_METHOD",
+        paymentInstrumentData: nil,
+        threeDSecureAuthentication: nil,
+        token: "mock_payment_method_token",
+        tokenType: .singleUse,
+        vaultData: nil)
+    
+    static var payment = Response.Body.Payment(
+        id: "mock_id",
+        paymentId: "mock_payment_id",
+        amount: 1000,
+        currencyCode: "EUR",
+        customer: nil,
+        customerId: "mock_customer_id",
+        dateStr: nil,
+        order: nil,
+        orderId: nil,
+        requiredAction: nil,
+        status: .settled,
+        paymentFailureReason: nil)
+    
+    
+    static func createMockAPIConfiguration(
+        clientSession: ClientSession.APIResponse?,
+        paymentMethods: [PrimerPaymentMethod]?
+    ) -> PrimerAPIConfiguration {
+        return PrimerAPIConfiguration(
+            coreUrl: "https://core.primer.io",
+            pciUrl: "https://pci.primer.io",
+            clientSession: clientSession,
+            paymentMethods: paymentMethods,
+            keys: nil,
+            checkoutModules: nil)
+    }
+    
+    static var apiConfiguration = PrimerAPIConfiguration(
+        coreUrl: "https://core.primer.io",
+        pciUrl: "https://pci.primer.io",
+        clientSession: nil,
+        paymentMethods: [],
+        keys: nil,
+        checkoutModules: nil)
+    
+    class Static {
+        
+        class Strings {
+            
+            static var webRedirectPaymentMethodId = "mock_web_redirect_payment_method_id"
+            static var adyenGiroPayRedirectPaymentMethodId = "mock_adyen_giropay_payment_method_id"
+            static var klarnaPaymentMethodId = "mock_klarna_payment_method_id"
+            
+            static var webRedirectPaymentMethodType = "MOCK_WEB_REDIRECT_PAYMENT_METHOD_TYPE"
+            static var adyenGiroPayRedirectPaymentMethodType = "MOCK_ADYEN_GIROPAY_PAYMENT_METHOD_TYPE"
+            static var klarnaPaymentMethodType = "MOCK_KLARNA_PAYMENT_METHOD_TYPE"
+            
+            static var webRedirectPaymentMethodName = "Mock Web Redirect Payment Method"
+            static var adyenGiroPayRedirectPaymentMethodName = "Mock Adyen GiroPay Payment Method"
+            static var klarnaPaymentMethodName = "Mock Klarna Payment Method"
+            
+            static var processorConfigId = "mock_processor_config_id"
+        }
+    }
+    
+    class PaymentMethods {
+        
+        static var webRedirectPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.webRedirectPaymentMethodId,
+            implementationType: .webRedirect,
+            type: Mocks.Static.Strings.webRedirectPaymentMethodType,
+            name: Mocks.Static.Strings.webRedirectPaymentMethodName,
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 99,
+            options: nil,
+            displayMetadata: nil)
+        
+        static var adyenGiroPayRedirectPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodId,
+            implementationType: .webRedirect,
+            type: Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodType,
+            name: Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodName,
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 199,
+            options: nil,
+            displayMetadata: nil)
+        
+        static var klarnaRedirectPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.klarnaPaymentMethodId,
+            implementationType: .nativeSdk,
+            type: Mocks.Static.Strings.klarnaPaymentMethodType,
+            name: Mocks.Static.Strings.klarnaPaymentMethodName,
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 299,
+            options: nil,
+            displayMetadata: nil)
+    }
+}
+
 class MockPrimerDelegate: PrimerDelegate {
     
     var token: String?
@@ -640,6 +754,77 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
     func resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Result<Response.Body.Payment, Error>) -> Void) {
         
+    }
+}
+
+class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
+    
+    static var clientToken: JWTToken? {
+        return PrimerAPIConfigurationModule.clientToken
+    }
+    
+    static var decodedJWTToken: DecodedJWTToken? {
+        return PrimerAPIConfigurationModule.decodedJWTToken
+    }
+    
+    static var apiConfiguration: PrimerAPIConfiguration? {
+        return PrimerAPIConfigurationModule.apiConfiguration
+    }
+    
+    static func resetSession() {
+        PrimerAPIConfigurationModule.resetSession()
+    }
+    
+    private var apiClient: PrimerAPIClientProtocol
+    
+    // MARK: - MOCKED PROPERTIES
+    
+    var mockedNetworkDelay: TimeInterval = 2
+    var mockedAPIConfiguration: PrimerAPIConfiguration?
+
+    required init(apiClient: PrimerAPIClientProtocol) {
+        self.apiClient = apiClient
+    }
+    
+    func setupSession(
+        forClientToken clientToken: String,
+        requestDisplayMetadata: Bool,
+        requestClientTokenValidation: Bool,
+        requestVaultedPaymentMethods: Bool
+    ) -> Promise<Void> {
+        return Promise { seal in
+            guard let mockedAPIConfiguration = mockedAPIConfiguration else {
+                XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
+                return
+            }
+            
+            Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+                PrimerAPIConfigurationModule.clientToken = clientToken
+                PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
+                seal.fulfill()
+            }
+        }
+    }
+    
+    func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
+        return Promise { seal in
+            guard let mockedAPIConfiguration = mockedAPIConfiguration else {
+                XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
+                return
+            }
+            
+            Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+                PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
+            }
+        }
+    }
+    
+    func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
+        return Promise { seal in
+            Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+                PrimerAPIConfigurationModule.clientToken = newClientToken
+            }
+        }
     }
 }
 
