@@ -125,7 +125,7 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
             clientSession: clientSession,
             paymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
                 
-        PrimerInternal.shared.configure(settings: settings, delegate: self)
+        PrimerInternal.shared.configure(settings: settings)
         PrimerInternal.shared.intent = .checkout
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
@@ -272,7 +272,7 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
             paymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
         
                 
-        PrimerInternal.shared.configure(settings: settings, delegate: self)
+        PrimerInternal.shared.configure(settings: settings)
         PrimerInternal.shared.intent = .vault
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
