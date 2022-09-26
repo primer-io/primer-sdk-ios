@@ -134,8 +134,9 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
         apiClient.tokenizePaymentMethodResult = (Mocks.primerPaymentMethodTokenData, nil)
         apiClient.paymentResult = (Mocks.payment, nil)
         apiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
+        PaymentMethodTokenizationViewModel.apiClient = apiClient
         
-        let tokenizationViewModel = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.webRedirectPaymentMethod, apiClient: apiClient)
+        let tokenizationViewModel = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.webRedirectPaymentMethod)
         tokenizationViewModel.start()
         
         if isAwaitingSDKDismiss {
@@ -275,8 +276,9 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
         apiClient.tokenizePaymentMethodResult = (Mocks.primerPaymentMethodTokenData, nil)
         apiClient.paymentResult = (Mocks.payment, nil)
         apiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
+        PaymentMethodTokenizationViewModel.apiClient = apiClient
         
-        let tokenizationViewModel = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.webRedirectPaymentMethod, apiClient: apiClient)
+        let tokenizationViewModel = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.webRedirectPaymentMethod)
         tokenizationViewModel.start()
         
         if isAwaitingSDKDismiss {

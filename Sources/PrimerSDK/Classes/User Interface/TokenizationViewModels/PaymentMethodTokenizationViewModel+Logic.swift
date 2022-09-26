@@ -367,7 +367,9 @@ extension PaymentMethodTokenizationViewModel {
 
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService(apiClient: self.apiClient)
+            let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService(apiClient: apiClient)
+            
             createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
                 guard error == nil else {
                     seal.reject(error!)

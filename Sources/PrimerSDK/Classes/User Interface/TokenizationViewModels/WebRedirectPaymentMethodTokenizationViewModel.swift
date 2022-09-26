@@ -87,7 +87,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
-                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule(apiClient: self.apiClient)
+                let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule(apiClient: apiClient)
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
@@ -186,7 +187,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 sessionInfo: sessionInfo)
                         
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: self.apiClient)
+            let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+            let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: apiClient)
             
             firstly {
                 tokenizationService.tokenize(requestBody: requestBody)
