@@ -309,6 +309,7 @@ internal enum InternalError: PrimerErrorProtocol {
 internal enum PrimerError: PrimerErrorProtocol {
     
     case generic(message: String, userInfo: [String: String]?, diagnosticsId: String?)
+    case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String?)
     case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String?)
     case missingPrimerDelegate(userInfo: [String: String]?, diagnosticsId: String?)
@@ -345,6 +346,8 @@ internal enum PrimerError: PrimerErrorProtocol {
         switch self {
         case .generic:
             return "primer-generic"
+        case .uninitializedSDKSession:
+            return "uninitialized-sdk-session"
         case .invalidClientToken:
             return "invalid-client-token"
         case .missingPrimerConfiguration:
@@ -413,6 +416,8 @@ internal enum PrimerError: PrimerErrorProtocol {
     var diagnosticsId: String {
         switch self {
         case .generic(_, _, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .uninitializedSDKSession(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .invalidClientToken(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
@@ -489,6 +494,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             } else {
                 return "[\(errorId)] Generic error | Message: \(message) (diagnosticsId: \(self.diagnosticsId)"
             }
+        case .uninitializedSDKSession:
+            return "[\(errorId)] SDK session has not been initialzed (diagnosticsId: \(self.diagnosticsId)"
         case .invalidClientToken:
             return "[\(errorId)] Client token is not valid (diagnosticsId: \(self.diagnosticsId)"
         case .missingPrimerConfiguration:
@@ -560,6 +567,7 @@ internal enum PrimerError: PrimerErrorProtocol {
         
         switch self {
         case .generic(_, let userInfo, _),
+                .uninitializedSDKSession(let userInfo, _),
                 .invalidClientToken(let userInfo, _),
                 .missingPrimerConfiguration(let userInfo, _),
                 .missingPrimerDelegate(let userInfo, _),
@@ -606,6 +614,8 @@ internal enum PrimerError: PrimerErrorProtocol {
         switch self {
         case .generic:
             return nil
+        case .uninitializedSDKSession:
+            return "Make sure you have provided the SDK with a client token."
         case .invalidClientToken:
             return "Check if the token you have provided is a valid token (not nil and not expired)."
         case .missingPrimerConfiguration:
