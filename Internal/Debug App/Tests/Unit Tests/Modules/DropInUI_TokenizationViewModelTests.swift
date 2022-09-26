@@ -24,49 +24,82 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
     // MARK: Auto Payment Handling
     
     func test_checkout_with_web_redirect_auto_payment_handling_include_surcharge_and_await_sdk_dismiss() throws {
-        try self.assess_checkout_with_web_redirect(intent: .checkout, paymentHandling: .auto, isAwaitingSDKDismiss: true, isSurchargeIncluded: true)
-    }
-    
-    func test_checkout_with_web_redirect_auto_payment_handling_do_not_include_surcharge_and_await_sdk_dismiss() throws {
-        try self.assess_checkout_with_web_redirect(intent: .checkout, paymentHandling: .auto, isAwaitingSDKDismiss: true, isSurchargeIncluded: false)
+        try self.assess_checkout_with_web_redirect(paymentHandling: .auto, isSurchargeIncluded: true, isAwaitingSDKDismiss: true)
     }
     
     func test_checkout_with_web_redirect_auto_payment_handling_include_surcharge_and_do_not_await_sdk_dismiss() throws {
-        try self.assess_checkout_with_web_redirect(intent: .checkout, paymentHandling: .auto, isAwaitingSDKDismiss: false, isSurchargeIncluded: true)
+        try self.assess_checkout_with_web_redirect(paymentHandling: .auto, isSurchargeIncluded: true, isAwaitingSDKDismiss: false)
+    }
+    
+    func test_checkout_with_web_redirect_auto_payment_handling_do_not_include_surcharge_and_await_sdk_dismiss() throws {
+        try self.assess_checkout_with_web_redirect(paymentHandling: .auto, isSurchargeIncluded: false, isAwaitingSDKDismiss: true)
     }
     
     func test_checkout_with_web_redirect_auto_payment_handling_do_not_include_surcharge_and_do_not_await_sdk_dismiss() throws {
-        try self.assess_checkout_with_web_redirect(intent: .checkout, paymentHandling: .auto, isAwaitingSDKDismiss: false, isSurchargeIncluded: false)
+        try self.assess_checkout_with_web_redirect(paymentHandling: .auto, isSurchargeIncluded: false, isAwaitingSDKDismiss: false)
     }
     
     // MARK: Manual Payment Handling
     
     func test_checkout_with_web_redirect_manual_payment_handling_include_surcharge_and_await_sdk_dismiss() throws {
-        try self.assess_checkout_with_web_redirect(intent: .checkout, paymentHandling: .manual, isAwaitingSDKDismiss: true, isSurchargeIncluded: true)
-    }
-    
-    func test_checkout_with_web_redirect_manual_payment_handling_do_not_include_surcharge_and_await_sdk_dismiss() throws {
-        try self.assess_checkout_with_web_redirect(intent: .checkout, paymentHandling: .manual, isAwaitingSDKDismiss: true, isSurchargeIncluded: false)
+        try self.assess_checkout_with_web_redirect(paymentHandling: .manual, isSurchargeIncluded: true, isAwaitingSDKDismiss: true)
     }
     
     func test_checkout_with_web_redirect_manual_payment_handling_include_surcharge_and_do_not_await_sdk_dismiss() throws {
-        try self.assess_checkout_with_web_redirect(intent: .checkout, paymentHandling: .manual, isAwaitingSDKDismiss: false, isSurchargeIncluded: true)
+        try self.assess_checkout_with_web_redirect(paymentHandling: .manual, isSurchargeIncluded: true, isAwaitingSDKDismiss: false)
+    }
+    
+    func test_checkout_with_web_redirect_manual_payment_handling_do_not_include_surcharge_and_await_sdk_dismiss() throws {
+        try self.assess_checkout_with_web_redirect(paymentHandling: .manual, isSurchargeIncluded: false, isAwaitingSDKDismiss: true)
     }
     
     func test_checkout_with_web_redirect_manual_payment_handling_do_not_include_surcharge_and_do_not_await_sdk_dismiss() throws {
-        try self.assess_checkout_with_web_redirect(intent: .checkout, paymentHandling: .manual, isAwaitingSDKDismiss: false, isSurchargeIncluded: false)
+        try self.assess_checkout_with_web_redirect(paymentHandling: .manual, isSurchargeIncluded: false, isAwaitingSDKDismiss: false)
     }
-    
-    
     
     // MARK: - VAULT MANAGER
     
+    // MARK: Auto Payment Handling
+    
+    func test_vault_with_web_redirect_auto_payment_handling_include_surcharge_and_await_sdk_dismiss() throws {
+        try self.assess_vault_with_web_redirect(paymentHandling: .auto, isSurchargeIncluded: true, isAwaitingSDKDismiss: true)
+    }
+    
+    func test_vault_with_web_redirect_auto_payment_handling_include_surcharge_and_do_not_await_sdk_dismiss() throws {
+        try self.assess_vault_with_web_redirect(paymentHandling: .auto, isSurchargeIncluded: true, isAwaitingSDKDismiss: false)
+    }
+    
+    func test_vault_with_web_redirect_auto_payment_handling_do_not_include_surcharge_and_await_sdk_dismiss() throws {
+        try self.assess_vault_with_web_redirect(paymentHandling: .auto, isSurchargeIncluded: false, isAwaitingSDKDismiss: true)
+    }
+    
+    func test_vault_with_web_redirect_auto_payment_handling_do_not_include_surcharge_and_do_not_await_sdk_dismiss() throws {
+        try self.assess_vault_with_web_redirect(paymentHandling: .auto, isSurchargeIncluded: true, isAwaitingSDKDismiss: false)
+    }
+    
+    // MARK: Manual Payment Handling
+    
+    func test_vault_with_web_redirect_manual_payment_handling_include_surcharge_and_await_sdk_dismiss() throws {
+        try self.assess_vault_with_web_redirect(paymentHandling: .manual, isSurchargeIncluded: true, isAwaitingSDKDismiss: true)
+    }
+    
+    func test_vault_with_web_redirect_manual_payment_handling_include_surcharge_and_do_not_await_sdk_dismiss() throws {
+        try self.assess_vault_with_web_redirect(paymentHandling: .manual, isSurchargeIncluded: true, isAwaitingSDKDismiss: false)
+    }
+    
+    func test_vault_with_web_redirect_manual_payment_handling_do_not_include_surcharge_and_await_sdk_dismiss() throws {
+        try self.assess_vault_with_web_redirect(paymentHandling: .manual, isSurchargeIncluded: false, isAwaitingSDKDismiss: true)
+    }
+    
+    func test_vault_with_web_redirect_manual_payment_handling_do_not_include_surcharge_and_do_not_await_sdk_dismiss() throws {
+        try self.assess_vault_with_web_redirect(paymentHandling: .manual, isSurchargeIncluded: true, isAwaitingSDKDismiss: false)
+    }
+    
     
     func assess_checkout_with_web_redirect(
-        intent: PrimerSessionIntent,
         paymentHandling: PrimerPaymentHandling,
-        isAwaitingSDKDismiss: Bool,
-        isSurchargeIncluded: Bool
+        isSurchargeIncluded: Bool,
+        isAwaitingSDKDismiss: Bool
     ) throws {
         let expectation = XCTestExpectation(description: "Successful UC Web Redirect Payment Method | Payment flow: \(paymentHandling) | Awaits SDK dismiss: \(isAwaitingSDKDismiss)")
         
@@ -79,7 +112,7 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
             uiOptions: isAwaitingSDKDismiss ? PrimerUIOptions(isInitScreenEnabled: false, isSuccessScreenEnabled: false, isErrorScreenEnabled: false, theme: nil) : nil
         )
         
-        self.isImplementingManualPaymentFlow = paymentHandling == .manual
+        self.isImplementingManualPaymentFlow = (paymentHandling == .manual)
                 
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock_client_session_id",
@@ -91,10 +124,9 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
         let apiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
             paymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
-        
                 
         PrimerInternal.shared.configure(settings: settings, delegate: self)
-        PrimerInternal.shared.intent = intent
+        PrimerInternal.shared.intent = .checkout
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
         
@@ -189,6 +221,83 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
                             XCTAssert(self.eventsCalled[0] == "primerWillCreatePaymentWithData", "Callback event should be 'primerWillCreatePaymentWithData' but was \(self.eventsCalled.count > 0 ? self.eventsCalled[0] : "nil")")
                             XCTAssert(self.eventsCalled[1] == "primerDidTokenizePaymentMethod", "Callback event should be 'primerDidTokenizePaymentMethod' but was \(self.eventsCalled.count > 1 ? self.eventsCalled[1] : "nil")")
                         }
+                        
+                        expectation.fulfill()
+                    } else {
+                        XCTAssert(false, "Payment method token id should be the one provided on the mocked API client.")
+                    }
+                }
+                
+            } else {
+                XCTAssert(false, "Should always receive checkout data or error")
+            }
+        }
+        
+        wait(for: [expectation], timeout: 60)
+    }
+    
+    func assess_vault_with_web_redirect(
+        paymentHandling: PrimerPaymentHandling,
+        isSurchargeIncluded: Bool,
+        isAwaitingSDKDismiss: Bool
+    ) throws {
+        let expectation = XCTestExpectation(description: "Successful UC Web Redirect Payment Method | Payment flow: \(paymentHandling) | Awaits SDK dismiss: \(isAwaitingSDKDismiss)")
+        
+        self.resetTestingEnvironment()
+                
+        let settings = PrimerSettings(
+            paymentHandling: paymentHandling,
+            paymentMethodOptions: PrimerPaymentMethodOptions(
+                urlScheme: "merchant://primer.io"),
+            uiOptions: isAwaitingSDKDismiss ? PrimerUIOptions(isInitScreenEnabled: false, isSuccessScreenEnabled: false, isErrorScreenEnabled: false, theme: nil) : nil
+        )
+        
+        self.isImplementingManualPaymentFlow = paymentHandling == .manual
+                
+        let clientSession = ClientSession.APIResponse(
+            clientSessionId: "mock_client_session_id",
+            paymentMethod: ClientSession.PaymentMethod(
+                vaultOnSuccess: false,
+                options: isSurchargeIncluded ? [["surcharge": 99]] : nil),
+            order: nil,
+            customer: nil)
+        let apiConfiguration = Mocks.createMockAPIConfiguration(
+            clientSession: clientSession,
+            paymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
+        
+                
+        PrimerInternal.shared.configure(settings: settings, delegate: self)
+        PrimerInternal.shared.intent = .vault
+        PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
+        PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
+        
+        let apiClient = MockPrimerAPIClient()
+        apiClient.tokenizePaymentMethodResult = (Mocks.primerPaymentMethodTokenData, nil)
+        apiClient.paymentResult = (Mocks.payment, nil)
+        apiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
+        
+        let tokenizationViewModel = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.webRedirectPaymentMethod, apiClient: apiClient)
+        tokenizationViewModel.start()
+        
+        if isAwaitingSDKDismiss {
+            self.dismissalCompletion = {
+                XCTAssert(self.eventsCalled[0] == "primerDidTokenizePaymentMethod", "Callback event should be 'primerDidTokenizePaymentMethod' but was \(self.eventsCalled.count > 0 ? self.eventsCalled[0] : "nil")")
+                XCTAssert(self.eventsCalled[1] == "primerDidDismiss", "Callback event should be 'primerDidDismiss' but was \(self.eventsCalled.count > 4 ? self.eventsCalled[1] : "nil")")
+                expectation.fulfill()
+            }
+        }
+        
+        self.paymentCompletion = { checkoutData, err in
+            XCTAssert(false, "'primerDidCompleteCheckoutWithData' delegate function should not be called when vaulting.")
+        }
+        
+        self.tokenizationCompletion = { paymentMethodTokenData, err in
+            if let err = err {
+                XCTAssert(false, "Failed with error \(err.localizedDescription) when it should have succeeded.")
+            } else if let paymentMethodTokenData = paymentMethodTokenData {
+                if !isAwaitingSDKDismiss {
+                    if paymentMethodTokenData.id == Mocks.primerPaymentMethodTokenData.id {
+                        XCTAssert(self.eventsCalled[0] == "primerDidTokenizePaymentMethod", "Callback event should be 'primerDidTokenizePaymentMethod' but was \(self.eventsCalled.count > 0 ? self.eventsCalled[0] : "nil")")
                         
                         expectation.fulfill()
                     } else {
