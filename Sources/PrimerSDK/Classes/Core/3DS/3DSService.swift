@@ -13,6 +13,9 @@ import Primer3DS
 import UIKit
 
 protocol ThreeDSServiceProtocol {
+    
+    static var apiClient: PrimerAPIClientProtocol? { get set }
+    
     func perform3DS(
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
         protocolVersion: ThreeDS.ProtocolVersion,
@@ -61,6 +64,7 @@ extension ThreeDS {
 class ThreeDSService: ThreeDSServiceProtocol {
     
     private var threeDSSDKWindow: UIWindow?
+    static var apiClient: PrimerAPIClientProtocol?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -428,9 +432,8 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return
         }
         
-        let api: PrimerAPIClientProtocol = PrimerAPIClient()
-        
-        api.begin3DSAuth(clientToken: decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
+        let apiClient = ThreeDSService.apiClient ?? PrimerAPIClient()
+        apiClient.begin3DSAuth(clientToken: decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -448,8 +451,8 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return
         }
         
-        let api: PrimerAPIClientProtocol = PrimerAPIClient()
-        api.continue3DSAuth(clientToken: decodedJWTToken, threeDSTokenId: threeDSTokenId) { result in
+        let apiClient = ThreeDSService.apiClient ?? PrimerAPIClient()
+        apiClient.continue3DSAuth(clientToken: decodedJWTToken, threeDSTokenId: threeDSTokenId) { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))

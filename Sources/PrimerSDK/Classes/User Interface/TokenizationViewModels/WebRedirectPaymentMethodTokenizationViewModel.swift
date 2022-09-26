@@ -88,7 +88,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             }
             .then { () -> Promise<Void> in
                 let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule(apiClient: apiClient)
+                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
