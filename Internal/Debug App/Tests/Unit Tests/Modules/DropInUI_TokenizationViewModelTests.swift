@@ -282,7 +282,7 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
         if isAwaitingSDKDismiss {
             self.dismissalCompletion = {
                 XCTAssert(self.eventsCalled[0] == "primerDidTokenizePaymentMethod", "Callback event should be 'primerDidTokenizePaymentMethod' but was \(self.eventsCalled.count > 0 ? self.eventsCalled[0] : "nil")")
-                XCTAssert(self.eventsCalled[1] == "primerDidDismiss", "Callback event should be 'primerDidDismiss' but was \(self.eventsCalled.count > 4 ? self.eventsCalled[1] : "nil")")
+                XCTAssert(self.eventsCalled[1] == "primerDidDismiss", "Callback event should be 'primerDidDismiss' but was \(self.eventsCalled.count > 1 ? self.eventsCalled[1] : "nil")")
                 expectation.fulfill()
             }
         }
