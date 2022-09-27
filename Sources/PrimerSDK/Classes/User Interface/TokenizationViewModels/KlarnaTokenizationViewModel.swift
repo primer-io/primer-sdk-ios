@@ -251,7 +251,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             }
             
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: self.apiClient)
+            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             
             firstly {
                 tokenizationService.tokenize(requestBody: requestBody)
@@ -341,8 +341,10 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 redirectUrl: settings.paymentMethodOptions.urlScheme,
                 totalAmount: nil,
                 orderItems: nil)
-                        
-            self.apiClient.createKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] (result) in
+            
+            let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+            
+            apiClient.createKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaCreatePaymentSessionAPIRequest: body) { (result) in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -388,7 +390,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 localeData: PrimerSettings.current.localeData
             )
                         
-            self.apiClient.createKlarnaCustomerToken(clientToken: decodedJWTToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
+            let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+            
+            apiClient.createKlarnaCustomerToken(clientToken: decodedJWTToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -433,7 +437,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         let body = Request.Body.Klarna.FinalizePaymentSession(paymentMethodConfigId: configId, sessionId: sessionId)
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession")
         
-        self.apiClient.finalizeKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
+        let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+        
+        apiClient.finalizeKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {
             case .failure(let err):
                 completion(.failure(err))

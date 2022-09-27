@@ -25,7 +25,8 @@ class PollingModuleTests: XCTestCase {
             (PollingResponse(status: .complete, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil)
         ]
         
-        let pollingModule = PollingModule(url: URL(string: "https://random.url")!, apiClient: mockApiClient)
+        PollingModule.apiClient = mockApiClient
+        let pollingModule = PollingModule(url: URL(string: "https://random.url")!)
         
         firstly {
             pollingModule.start()
@@ -54,7 +55,8 @@ class PollingModuleTests: XCTestCase {
             (PollingResponse(status: .complete, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil)
         ]
         
-        let pollingModule = PollingModule(url: URL(string: "https://random.url")!, apiClient: mockApiClient)
+        PollingModule.apiClient = mockApiClient
+        let pollingModule = PollingModule(url: URL(string: "https://random.url")!)
         
         firstly {
             pollingModule.start()
@@ -81,7 +83,8 @@ class PollingModuleTests: XCTestCase {
             (PollingResponse(status: .complete, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil)
         ]
         
-        let pollingModule = PollingModule(url: URL(string: "https://random.url")!, apiClient: mockApiClient)
+        PollingModule.apiClient = mockApiClient
+        let pollingModule = PollingModule(url: URL(string: "https://random.url")!)
         
         firstly {
             pollingModule.start()

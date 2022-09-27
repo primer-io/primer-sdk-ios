@@ -759,6 +759,8 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
 class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
     
+    static var apiClient: PrimerAPIClientProtocol?
+    
     static var clientToken: JWTToken? {
         return PrimerAPIConfigurationModule.clientToken
     }
@@ -775,16 +777,10 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
         PrimerAPIConfigurationModule.resetSession()
     }
     
-    private var apiClient: PrimerAPIClientProtocol
-    
     // MARK: - MOCKED PROPERTIES
     
     var mockedNetworkDelay: TimeInterval = 2
     var mockedAPIConfiguration: PrimerAPIConfiguration?
-
-    required init(apiClient: PrimerAPIClientProtocol) {
-        self.apiClient = apiClient
-    }
     
     func setupSession(
         forClientToken clientToken: String,

@@ -6,12 +6,12 @@ internal typealias JWTToken = String
 
 internal protocol PrimerAPIConfigurationModuleProtocol {
     
+    static var apiClient: PrimerAPIClientProtocol? { get set }
     static var clientToken: JWTToken? { get }
     static var decodedJWTToken: DecodedJWTToken? { get }
     static var apiConfiguration: PrimerAPIConfiguration? { get }
     static func resetSession()
 
-    init(apiClient: PrimerAPIClientProtocol)
     func setupSession(
         forClientToken clientToken: String,
         requestDisplayMetadata: Bool,
@@ -23,6 +23,8 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
 }
 
 internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
+    
+    static var apiClient: PrimerAPIClientProtocol?
     
     static var clientToken: JWTToken? {
         get {
@@ -69,13 +71,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         AppState.current.clientToken = nil
         AppState.current.apiConfiguration = nil
     }
-    
-    private let apiClient: PrimerAPIClientProtocol
-    
-    required init(apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
-        self.apiClient = apiClient
-    }
-    
+        
     func setupSession(
         forClientToken clientToken: String,
         requestDisplayMetadata: Bool = true,
@@ -120,7 +116,8 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 return
             }
 
-            self.apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken, request: actionsRequest) { result in
+            let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+            apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken, request: actionsRequest) { result in
                 switch result {
                 case .success(let configuration):
                     PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
@@ -235,7 +232,9 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     private func validateClientTokenRemotely(_ clientToken: JWTToken) -> Promise<Void> {
         return Promise { seal in
             let clientTokenRequest = Request.Body.ClientTokenValidation(clientToken: clientToken)
-            self.apiClient.validateClientToken(request: clientTokenRequest) { result in
+            
+            let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+            apiClient.validateClientToken(request: clientTokenRequest) { result in
                 switch result {
                 case .success:
                     seal.fulfill()
@@ -259,7 +258,8 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 skipPaymentMethodTypes: [],
                 requestDisplayMetadata: requestDisplayMetadata)
 
-            self.apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result) in
+            let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+            apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result) in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)

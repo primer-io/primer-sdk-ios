@@ -164,7 +164,9 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             currencyCode: currency.rawValue,
             phoneNumber: PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.mobileNumber)
         
-        self.apiClient.createApayaSession(clientToken: decodedJWTToken, request: body) { [weak self] result in
+        let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+        
+        apiClient.createApayaSession(clientToken: decodedJWTToken, request: body) { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
@@ -256,7 +258,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             productId: apayaWebViewResponse.productId,
             currencyCode: currencyStr)
         
-        let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: self.apiClient)
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
         let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
         
         firstly {

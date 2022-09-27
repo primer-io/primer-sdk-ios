@@ -130,13 +130,16 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
         
-        let apiClient = MockPrimerAPIClient()
-        apiClient.tokenizePaymentMethodResult = (Mocks.primerPaymentMethodTokenData, nil)
-        apiClient.paymentResult = (Mocks.payment, nil)
-        apiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
+        let mockApiClient = MockPrimerAPIClient()
+        mockApiClient.tokenizePaymentMethodResult = (Mocks.primerPaymentMethodTokenData, nil)
+        mockApiClient.paymentResult = (Mocks.payment, nil)
+        mockApiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
         
-        let tokenizationViewModel = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.webRedirectPaymentMethod, apiClient: apiClient)
-        tokenizationViewModel.start()
+        PrimerAPIConfigurationModule.apiClient = mockApiClient
+        PaymentMethodTokenizationViewModel.apiClient = mockApiClient
+        TokenizationService.apiClient = mockApiClient
+        PollingModule.apiClient = mockApiClient
+        CreateResumePaymentService.apiClient = mockApiClient
         
         if isAwaitingSDKDismiss {
             self.dismissalCompletion = {
@@ -233,7 +236,10 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
             }
         }
         
-        wait(for: [expectation], timeout: 60)
+        let tokenizationViewModel = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.webRedirectPaymentMethod)
+        tokenizationViewModel.start()
+        
+        wait(for: [expectation], timeout: 600)
     }
     
     func assess_vault_with_web_redirect(
@@ -271,12 +277,18 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
         
-        let apiClient = MockPrimerAPIClient()
-        apiClient.tokenizePaymentMethodResult = (Mocks.primerPaymentMethodTokenData, nil)
-        apiClient.paymentResult = (Mocks.payment, nil)
-        apiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
+        let mockApiClient = MockPrimerAPIClient()
+        mockApiClient.tokenizePaymentMethodResult = (Mocks.primerPaymentMethodTokenData, nil)
+        mockApiClient.paymentResult = (Mocks.payment, nil)
+        mockApiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
         
-        let tokenizationViewModel = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.webRedirectPaymentMethod, apiClient: apiClient)
+        PrimerAPIConfigurationModule.apiClient = mockApiClient
+        PaymentMethodTokenizationViewModel.apiClient = mockApiClient
+        TokenizationService.apiClient = mockApiClient
+        PollingModule.apiClient = mockApiClient
+        CreateResumePaymentService.apiClient = mockApiClient
+        
+        let tokenizationViewModel = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.webRedirectPaymentMethod)
         tokenizationViewModel.start()
         
         if isAwaitingSDKDismiss {

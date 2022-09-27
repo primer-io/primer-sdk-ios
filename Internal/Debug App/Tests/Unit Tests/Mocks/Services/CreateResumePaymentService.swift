@@ -10,7 +10,7 @@
 
 class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
     
-    private var apiClient: PrimerAPIClientProtocol
+    static var apiClient: PrimerAPIClientProtocol?
     private let rawPaymentResponse = """
         {
           "id": "AY6mjuo9111",
@@ -29,10 +29,6 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
     private let rawPaymentResumeRequest = """
 {"resumeToken":"AY6mjuo9111"}
 """
-    
-    required init(apiClient: PrimerAPIClientProtocol) {
-        self.apiClient = apiClient
-    }
 
     func createPayment(paymentRequest: Request.Body.Payment.Create, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
         guard let data = rawPaymentResponse.data(using: .utf8) else {

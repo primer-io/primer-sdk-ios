@@ -296,7 +296,7 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
             paymentMethodType: config.type,
             sessionInfo: sessionInfo)
         
-        let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: self.apiClient)
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
         let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
         
         firstly {

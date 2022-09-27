@@ -10,21 +10,17 @@
 import Foundation
 
 internal protocol CreateResumePaymentServiceProtocol {
-    init(apiClient: PrimerAPIClientProtocol)
+    static var apiClient: PrimerAPIClientProtocol? { get set }
     func createPayment(paymentRequest: Request.Body.Payment.Create, completion: @escaping (Response.Body.Payment?, Error?) -> Void)
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Response.Body.Payment?, Error?) -> Void)
 }
 
 internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     
-    private var apiClient: PrimerAPIClientProtocol
+    static var apiClient: PrimerAPIClientProtocol?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
-    required init(apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
-        self.apiClient = apiClient
     }
 
     func createPayment(paymentRequest: Request.Body.Payment.Create, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
@@ -34,8 +30,9 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             completion(nil, err)
             return
         }
-                
-        self.apiClient.createPayment(clientToken: clientToken, paymentRequestBody: paymentRequest) { result in
+        
+        let apiClient: PrimerAPIClientProtocol = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
+        apiClient.createPayment(clientToken: clientToken, paymentRequestBody: paymentRequest) { result in
             switch result {
             case .failure(let error):
                 completion(nil, error)
@@ -53,7 +50,8 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             return
         }
                 
-        self.apiClient.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest) { result in
+        let apiClient: PrimerAPIClientProtocol = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
+        apiClient.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest) { result in
             switch result {
             case .failure(let error):
                 completion(nil, error)

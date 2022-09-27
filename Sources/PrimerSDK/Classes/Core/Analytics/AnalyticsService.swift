@@ -148,8 +148,8 @@ extension Analytics {
                     function: #function,
                     line: #line)
                 
-                let client: PrimerAPIClientProtocol = PrimerAPIClient()
-                client.sendAnalyticsEvents(url: analyticsUrl, body: requestBody) { result in
+                let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
+                apiClient.sendAnalyticsEvents(url: analyticsUrl, body: requestBody) { result in
                     switch result {
                     case .success:
                         primerLogAnalytics(

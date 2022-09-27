@@ -12,7 +12,9 @@ import XCTest
 @testable import PrimerSDK
 
 class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
-
+    
+    static var apiClient: PrimerAPIClientProtocol?
+    
     var config: PrimerPaymentMethod
     var uiModule: UserInterfaceModule!
     var position: Int = 0
@@ -33,7 +35,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     var paymentCreationDecision: PrimerPaymentCreationDecision?
     var paymentResult: (PrimerCheckoutData?, Error?)?
     
-    required init(config: PrimerPaymentMethod, apiClient: PrimerAPIClientProtocol) {
+    required init(config: PrimerPaymentMethod) {
         self.config = config
         self.checkouEventsNotifierModule = CheckoutEventsNotifierModule()
     }
@@ -46,7 +48,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         paymentCreationDecision: PrimerPaymentCreationDecision,
         paymentResult: (PrimerCheckoutData?, Error?)
     ) {
-        self.init(config: config, apiClient: MockPrimerAPIClient())
+        self.init(config: config)
         PrimerInternal.shared.intent = intent
         self.validationError = validationError
         self.tokenizationResult = tokenizationResult
