@@ -470,7 +470,8 @@ extension PrimerHeadlessUniversalCheckout {
                             self.presentWeb3DS(with: redirectUrl)
                         }
                         .then { () -> Promise<String> in
-                            return self.startPolling(on: statusUrl)
+                            let pollingModule = PollingModule(url: statusUrl)
+                            return pollingModule.start()
                         }
                         .done { resumeToken in
                             seal.fulfill(resumeToken)
@@ -508,56 +509,6 @@ extension PrimerHeadlessUniversalCheckout {
                             seal.fulfill()
                         }
                     })
-                }
-            }
-        }
-        
-        private func startPolling(on url: URL) -> Promise<String> {
-            return Promise { seal in
-                self.startPolling(on: url) { resumeToken, err in
-                    if let err = err {
-                        seal.reject(err)
-                    } else if let resumeToken = resumeToken {
-                        seal.fulfill(resumeToken)
-                    } else {
-                        assert(true, "Completion handler should always return a value or an error")
-                    }
-                }
-            }
-        }
-        
-        private func startPolling(on url: URL, completion: @escaping (String?, Error?) -> Void) {
-            let client: PrimerAPIClientProtocol = PrimerAPIClient()
-            client.poll(clientToken: PrimerAPIConfigurationModule.decodedJWTToken, url: url.absoluteString) { result in
-                if self.webViewCompletion == nil {
-                    let err = PrimerError.cancelled(
-                        paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                        diagnosticsId: nil)
-                    
-                    ErrorHandler.handle(error: err)
-                    completion(nil, err)
-                    return
-                }
-                
-                switch result {
-                case .success(let res):
-                    if res.status == .pending {
-                        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                            self.startPolling(on: url, completion: completion)
-                        }
-                    } else if res.status == .complete {
-                        completion(res.id, nil)
-                    } else {
-                        let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                        ErrorHandler.handle(error: err)
-                    }
-                case .failure(let err):
-                    ErrorHandler.handle(error: err)
-                    // Retry
-                    Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
-                        self.startPolling(on: url, completion: completion)
-                    }
                 }
             }
         }
