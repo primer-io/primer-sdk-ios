@@ -309,11 +309,7 @@ internal extension PrimerAPI {
         case .createApayaSession(_, let request):
             return try? JSONEncoder().encode(request)
         case .tokenizePaymentMethod(_, let req):
-            if let req = req as? Request.Body.Tokenization {
-                return try? JSONEncoder().encode(req)
-            } else {
-                return nil
-            }
+            return try? JSONEncoder().encode(req)
         case .begin3DSRemoteAuth(_, _, let threeDSecureBeginAuthRequest):
             return try? JSONEncoder().encode(threeDSecureBeginAuthRequest)
         case .listAdyenBanks(_, let request):

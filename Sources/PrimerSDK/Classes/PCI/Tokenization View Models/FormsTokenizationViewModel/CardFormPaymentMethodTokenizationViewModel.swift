@@ -22,6 +22,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private var cardComponentsManagerTokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
     private var webViewController: SFSafariViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+    private var paymentMethodsRequiringCVVInput: [PrimerPaymentMethodType] = [.paymentCard]
+    private var isRequiringCVVInput: Bool {
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else { return false }
+        return paymentMethodsRequiringCVVInput.contains(paymentMethodType)
+    }
     var dataSource = CountryCode.allCases {
         didSet {
             tableView.reloadData()
@@ -266,9 +271,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     internal var formView: PrimerFormView {
         var formViews: [[UIView?]] = [
             [cardNumberContainerView],
-            [expiryDateContainerView, cvvContainerView],
+            [expiryDateContainerView],
             [cardholderNameContainerView],
         ]
+        if isRequiringCVVInput {
+            formViews[1].append(cvvContainerView)
+        }
         formViews.append(contentsOf: allVisibleBillingAddressFieldContainerViews)
         return PrimerFormView(frame: .zero, formViews: formViews)
     }
@@ -283,7 +291,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             expiryDateField: expiryDateField,
             cvvField: cvvField,
             cardholderNameField: cardholderNameField,
-            billingAddressFieldViews: allVisibleBillingAddressFieldViews
+            billingAddressFieldViews: allVisibleBillingAddressFieldViews,
+            paymentMethodType: self.config.type,
+            isRequiringCVVInput: isRequiringCVVInput
         )
         cardComponentsManager.delegate = self
     }
@@ -422,7 +432,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return Promise { seal in
             DispatchQueue.main.async {
                 switch self.config.type {
-                case PrimerPaymentMethodType.paymentCard.rawValue:
+                case PrimerPaymentMethodType.paymentCard.rawValue,
+                    PrimerPaymentMethodType.adyenBancontact.rawValue:
                     let pcfvc = PrimerCardFormViewController(viewModel: self)
                     PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
@@ -802,8 +813,11 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         var validations = [
             cardNumberField.isTextValid,
             expiryDateField.isTextValid,
-            cvvField.isTextValid
         ]
+        
+        if isRequiringCVVInput {
+            validations.append(cvvField.isTextValid)
+        }
         
         if isShowingBillingAddressFieldsRequired {
             validations.append(contentsOf: allVisibleBillingAddressFieldViews.map { $0.isTextValid })

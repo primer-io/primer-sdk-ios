@@ -10,6 +10,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     
     case adyenAlipay        = "ADYEN_ALIPAY"
     case adyenBlik          = "ADYEN_BLIK"
+    case adyenBancontact    = "ADYEN_BANCONTACT_CARD"
     case adyenDotPay        = "ADYEN_DOTPAY"
     case adyenGiropay       = "ADYEN_GIROPAY"
     case adyenIDeal         = "ADYEN_IDEAL"
@@ -72,6 +73,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
         switch self {
         case .adyenAlipay,
                 .adyenBlik,
+                .adyenBancontact,
                 .adyenDotPay,
                 .adyenGiropay,
                 .adyenIDeal,

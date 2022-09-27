@@ -11,6 +11,15 @@ import Foundation
 
 internal extension Date {
     
+    var yearComponentAsString: String {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year], from: self)
+        if let year = components.year {
+            return "\(year)"
+        }
+        return ""
+    }
+    
     var startOfMonth: Date {
         let calendar = Calendar(identifier: .gregorian)
         let components = calendar.dateComponents([.year, .month], from: self)

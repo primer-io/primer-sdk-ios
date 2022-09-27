@@ -86,7 +86,8 @@ class PrimerPaymentMethod: Codable {
             case PrimerPaymentMethodType.klarna.rawValue:
                 return KlarnaTokenizationViewModel(config: self)
                 
-            case PrimerPaymentMethodType.paymentCard.rawValue:
+            case PrimerPaymentMethodType.paymentCard.rawValue,
+                PrimerPaymentMethodType.adyenBancontact.rawValue:
                 return CardFormPaymentMethodTokenizationViewModel(config: self)
                 
             case PrimerPaymentMethodType.payPal.rawValue:
