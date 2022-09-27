@@ -28,6 +28,8 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         mockApiClient.validateClientTokenResult = (SuccessResponse(success: true), nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerAPIConfiguration, nil)
         
+        PrimerAPIConfigurationModule.apiClient = mockApiClient
+        
         let apiConfigurationModule = PrimerAPIConfigurationModule()
         
         firstly {
