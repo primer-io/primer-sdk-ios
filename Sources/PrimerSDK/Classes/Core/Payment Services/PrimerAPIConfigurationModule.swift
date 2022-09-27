@@ -116,7 +116,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 return
             }
 
-            let apiClient = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+            let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
             apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken, request: actionsRequest) { result in
                 switch result {
                 case .success(let configuration):
@@ -233,7 +233,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         return Promise { seal in
             let clientTokenRequest = Request.Body.ClientTokenValidation(clientToken: clientToken)
             
-            let apiClient = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+            let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
             apiClient.validateClientToken(request: clientTokenRequest) { result in
                 switch result {
                 case .success:
@@ -258,7 +258,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 skipPaymentMethodTypes: [],
                 requestDisplayMetadata: requestDisplayMetadata)
 
-            let apiClient = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+            let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
             apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result) in
                 switch result {
                 case .failure(let err):

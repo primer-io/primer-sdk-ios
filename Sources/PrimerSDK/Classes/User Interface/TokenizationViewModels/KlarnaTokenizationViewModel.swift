@@ -251,8 +251,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             }
             
-            let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: apiClient)
+            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             
             firstly {
                 tokenizationService.tokenize(requestBody: requestBody)
@@ -343,7 +342,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 totalAmount: nil,
                 orderItems: nil)
             
-            let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+            let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+            
             apiClient.createKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaCreatePaymentSessionAPIRequest: body) { (result) in
                 switch result {
                 case .failure(let err):
@@ -390,7 +390,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 localeData: PrimerSettings.current.localeData
             )
                         
-            let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+            let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+            
             apiClient.createKlarnaCustomerToken(clientToken: decodedJWTToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
                 switch result {
                 case .failure(let err):
@@ -436,7 +437,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         let body = Request.Body.Klarna.FinalizePaymentSession(paymentMethodConfigId: configId, sessionId: sessionId)
         log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession")
         
-        let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+        let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+        
         apiClient.finalizeKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {
             case .failure(let err):

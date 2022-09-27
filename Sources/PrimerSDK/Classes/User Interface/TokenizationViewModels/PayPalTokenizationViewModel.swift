@@ -414,8 +414,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         let requestBody = Request.Body.Tokenization(paymentInstrument: self.payPalInstrument)
-        let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-        let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: apiClient)
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
         return tokenizationService.tokenize(requestBody: requestBody)
     }
 }

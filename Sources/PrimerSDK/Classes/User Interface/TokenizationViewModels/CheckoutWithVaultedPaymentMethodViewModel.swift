@@ -11,6 +11,8 @@ import Foundation
 
 class CheckoutWithVaultedPaymentMethodViewModel {
     
+    static var apiClient: PrimerAPIClientProtocol?
+    
     var config: PrimerPaymentMethod
     var selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
     var paymentMethodTokenData: PrimerPaymentMethodTokenData!
@@ -189,8 +191,9 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 return
             }
             
-            let client: PrimerAPIClientProtocol = PrimerAPIClient()
-            client.exchangePaymentMethodToken(clientToken: decodedJWTToken, paymentMethodId: paymentMethodToken.id!) { result in
+            let apiClient: PrimerAPIClientProtocol = CheckoutWithVaultedPaymentMethodViewModel.apiClient ?? PrimerAPIClient()
+            
+            apiClient.exchangePaymentMethodToken(clientToken: decodedJWTToken, paymentMethodId: paymentMethodToken.id!) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let singleUsePaymentMethod):

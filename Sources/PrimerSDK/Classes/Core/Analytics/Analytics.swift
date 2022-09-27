@@ -12,6 +12,7 @@ import Foundation
 class Analytics {
     
     static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics")
+    static var apiClient: PrimerAPIClientProtocol?
     
     struct Event: Codable {
         // The variables below are used locally, and are getting deleted before sending them.

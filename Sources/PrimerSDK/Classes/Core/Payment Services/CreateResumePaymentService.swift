@@ -31,7 +31,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             return
         }
         
-        let apiClient = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
+        let apiClient: PrimerAPIClientProtocol = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
         apiClient.createPayment(clientToken: clientToken, paymentRequestBody: paymentRequest) { result in
             switch result {
             case .failure(let error):
@@ -50,7 +50,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             return
         }
                 
-        let apiClient = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
+        let apiClient: PrimerAPIClientProtocol = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
         apiClient.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest) { result in
             switch result {
             case .failure(let error):

@@ -147,9 +147,8 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             
             
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-            let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
             
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: apiClient)
+            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {
                 tokenizationService.tokenize(requestBody: requestBody)
             }

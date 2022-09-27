@@ -298,8 +298,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 sourceConfig: ApplePayPaymentInstrument.SourceConfig(source: "IN_APP", merchantId: merchantIdentifier),
                 token: self.applePayPaymentResponse.token)
 
-            let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: apiClient)
+            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             
             firstly {

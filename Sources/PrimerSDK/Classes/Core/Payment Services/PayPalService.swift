@@ -106,7 +106,7 @@ internal class PayPalService: PayPalServiceProtocol {
             cancelUrl: "\(urlScheme)://paypal-cancel"
         )
         
-        let apiClient = PayPalService.apiClient ?? PrimerAPIClient()
+        let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()
         apiClient.createPayPalOrderSession(clientToken: decodedJWTToken, payPalCreateOrderRequest: body) { result in
             switch result {
             case .failure(let err):
@@ -161,7 +161,7 @@ internal class PayPalService: PayPalServiceProtocol {
             cancelUrl: "\(urlScheme)://paypal-cancel"
         )
         
-        let apiClient = PayPalService.apiClient ?? PrimerAPIClient()
+        let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()
         apiClient.createPayPalBillingAgreementSession(clientToken: decodedJWTToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure(let err):
@@ -209,7 +209,7 @@ internal class PayPalService: PayPalServiceProtocol {
 
         let body = Request.Body.PayPal.ConfirmBillingAgreement(paymentMethodConfigId: configId, tokenId: tokenId)
         
-        let apiClient = PayPalService.apiClient ?? PrimerAPIClient()
+        let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()
         apiClient.confirmPayPalBillingAgreement(clientToken: decodedJWTToken, payPalConfirmBillingAgreementRequest: body) { result in
             switch result {
             case .failure(let err):
@@ -243,7 +243,7 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
         
-        let apiClient = PayPalService.apiClient ?? PrimerAPIClient()
+        let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()
         apiClient.fetchPayPalExternalPayerInfo(
             clientToken: decodedJWTToken,
             payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)) { result in

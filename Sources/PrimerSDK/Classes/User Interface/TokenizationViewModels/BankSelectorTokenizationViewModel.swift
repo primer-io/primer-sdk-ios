@@ -230,7 +230,8 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                 paymentMethodConfigId: config.id!,
                 parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
             
-            let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+            let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+            
             apiClient.listAdyenBanks(clientToken: decodedJWTToken, request: request) { result in
                 switch result {
                 case .failure(let err):
@@ -279,8 +280,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             return
         }
         
-        let apiClient = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-        let tokenizationService: TokenizationServiceProtocol = TokenizationService(apiClient: apiClient)
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
         let requestBody = Request.Body.Tokenization(
             paymentInstrument: OffSessionPaymentInstrument(
                 paymentMethodConfigId: self.config.id!,

@@ -432,7 +432,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return
         }
         
-        let apiClient = ThreeDSService.apiClient ?? PrimerAPIClient()
+        let apiClient: PrimerAPIClientProtocol = ThreeDSService.apiClient ?? PrimerAPIClient()
         apiClient.begin3DSAuth(clientToken: decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
             switch result {
             case .failure(let err):
@@ -451,7 +451,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return
         }
         
-        let apiClient = ThreeDSService.apiClient ?? PrimerAPIClient()
+        let apiClient: PrimerAPIClientProtocol = ThreeDSService.apiClient ?? PrimerAPIClient()
         apiClient.continue3DSAuth(clientToken: decodedJWTToken, threeDSTokenId: threeDSTokenId) { result in
             switch result {
             case .failure(let err):
