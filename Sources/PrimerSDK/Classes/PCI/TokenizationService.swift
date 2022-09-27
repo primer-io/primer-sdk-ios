@@ -9,6 +9,7 @@ internal protocol TokenizationServiceProtocol {
     var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
     
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData>
+    func exchangePaymentMethodToken(_ paymentMethodToken: PrimerPaymentMethodTokenData) -> Promise<PrimerPaymentMethodTokenData>
 }
 
 internal class TokenizationService: TokenizationServiceProtocol {
@@ -121,6 +122,30 @@ internal class TokenizationService: TokenizationServiceProtocol {
                         
                     } else {
                         seal.fulfill(paymentMethodTokenData)
+                    }
+                }
+            }
+        }
+    }
+    
+    func exchangePaymentMethodToken(_ paymentMethodToken: PrimerPaymentMethodTokenData) -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            let apiClient: PrimerAPIClientProtocol = CheckoutWithVaultedPaymentMethodViewModel.apiClient ?? PrimerAPIClient()
+            
+            apiClient.exchangePaymentMethodToken(clientToken: decodedJWTToken, paymentMethodId: paymentMethodToken.id!) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let singleUsePaymentMethod):
+                        seal.fulfill(singleUsePaymentMethod)
+                    case .failure(let error):
+                        seal.reject(error)
                     }
                 }
             }
