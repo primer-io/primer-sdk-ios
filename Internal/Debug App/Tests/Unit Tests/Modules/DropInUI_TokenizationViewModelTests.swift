@@ -104,16 +104,17 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Successful UC Web Redirect Payment Method | Payment flow: \(paymentHandling) | Awaits SDK dismiss: \(isAwaitingSDKDismiss)")
         
         self.resetTestingEnvironment()
-                
+        
         let settings = PrimerSettings(
             paymentHandling: paymentHandling,
             paymentMethodOptions: PrimerPaymentMethodOptions(
                 urlScheme: "merchant://primer.io"),
-            uiOptions: isAwaitingSDKDismiss ? PrimerUIOptions(isInitScreenEnabled: false, isSuccessScreenEnabled: false, isErrorScreenEnabled: false, theme: nil) : nil
-        )
+            uiOptions: isAwaitingSDKDismiss ? PrimerUIOptions(isInitScreenEnabled: false, isSuccessScreenEnabled: false, isErrorScreenEnabled: false, theme: nil) : nil)
+        
+        Primer.shared.configure(settings: settings, delegate: self)
         
         self.isImplementingManualPaymentFlow = (paymentHandling == .manual)
-                
+        
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock_client_session_id",
             paymentMethod: ClientSession.PaymentMethod(
@@ -124,8 +125,8 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
         let apiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
             paymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
-                
-        PrimerInternal.shared.configure(settings: settings)
+        
+        
         PrimerInternal.shared.intent = .checkout
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
@@ -255,8 +256,9 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
             paymentHandling: paymentHandling,
             paymentMethodOptions: PrimerPaymentMethodOptions(
                 urlScheme: "merchant://primer.io"),
-            uiOptions: isAwaitingSDKDismiss ? PrimerUIOptions(isInitScreenEnabled: false, isSuccessScreenEnabled: false, isErrorScreenEnabled: false, theme: nil) : nil
-        )
+            uiOptions: isAwaitingSDKDismiss ? PrimerUIOptions(isInitScreenEnabled: false, isSuccessScreenEnabled: false, isErrorScreenEnabled: false, theme: nil) : nil)
+        
+        Primer.shared.configure(settings: settings, delegate: self)
         
         self.isImplementingManualPaymentFlow = paymentHandling == .manual
                 
