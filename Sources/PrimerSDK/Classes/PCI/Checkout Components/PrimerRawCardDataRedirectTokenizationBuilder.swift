@@ -61,7 +61,7 @@ class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBui
     }
     
     var requiredInputElementTypes: [PrimerInputElementType] {
-        return [.cardNumber, .expiryDate, .cardholderName]
+        [.cardNumber, .expiryDate, .cardholderName]
     }
     
     required init(paymentMethodType: String) {
