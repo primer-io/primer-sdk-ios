@@ -9,7 +9,7 @@ extension Request.Body {
     }
 }
 
-struct DecodedClientToken: Codable {
+struct DecodedJWTToken: Codable {
     
     var accessToken: String?
     var analyticsUrl: String?
@@ -182,7 +182,7 @@ struct DecodedClientToken: Codable {
     }
 }
 
-extension DecodedClientToken {
+extension DecodedJWTToken {
     
     func validate() throws {
         if accessToken == nil {

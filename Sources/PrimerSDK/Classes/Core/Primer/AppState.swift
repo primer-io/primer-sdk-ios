@@ -8,6 +8,7 @@
 #if canImport(UIKit)
 
 internal protocol AppStateProtocol: AnyObject {
+    
     static var current: AppStateProtocol { get }
     var amount: Int? { get }
     var currency: Currency? { get }
@@ -16,8 +17,6 @@ internal protocol AppStateProtocol: AnyObject {
     var paymentMethods: [PrimerPaymentMethodTokenData] { get set }
     var selectedPaymentMethodId: String? { get set }
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? { get }
-    
-    static func resetAPIConfiguration()
 }
 
 internal class AppState: AppStateProtocol {
@@ -28,11 +27,11 @@ internal class AppState: AppStateProtocol {
     }
     
     var amount: Int? {
-        return AppState.current.apiConfiguration?.clientSession?.order?.merchantAmount ?? AppState.current.apiConfiguration?.clientSession?.order?.totalOrderAmount
+        return PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount ?? PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.totalOrderAmount
     }
     
     var currency: Currency? {
-        return AppState.current.apiConfiguration?.clientSession?.order?.currencyCode
+        return PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.currencyCode
     }
     
     var clientToken: String?
@@ -42,10 +41,6 @@ internal class AppState: AppStateProtocol {
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? {
         guard let selectedPaymentMethodToken = selectedPaymentMethodId else { return nil }
         return paymentMethods.first(where: { $0.id == selectedPaymentMethodToken })
-    }
-    
-    static func resetAPIConfiguration() {
-        AppState.current.apiConfiguration = nil
     }
 
     deinit {

@@ -35,7 +35,7 @@ class PrimerPostalCodeField: PrimerCardFormFieldProtocol {
 extension PrimerPostalCodeField {
     
     private static var localSamplePostalCode: String {
-        let countryCode = AppState.current.apiConfiguration?.clientSession?.order?.countryCode
+        let countryCode = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode
         return PostalCode.sample(for: countryCode)
     }
 }

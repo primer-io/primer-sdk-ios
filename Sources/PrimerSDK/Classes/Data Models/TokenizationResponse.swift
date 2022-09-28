@@ -16,7 +16,7 @@ extension Response.Body {
         public var analyticsId: String?
         public var id: String?
         public var isVaulted: Bool?
-        private var isAlreadyVaulted: Bool?
+        internal var isAlreadyVaulted: Bool?
         public var paymentInstrumentType: PaymentInstrumentType
         public var paymentMethodType: String?
         public var paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData?
@@ -24,6 +24,31 @@ extension Response.Body {
         public var token: String?
         public var tokenType: TokenType?
         public var vaultData: Response.Body.Tokenization.VaultData?
+        
+        init(
+            analyticsId: String?,
+            id: String?,
+            isVaulted: Bool?,
+            isAlreadyVaulted: Bool?,
+            paymentInstrumentType: PaymentInstrumentType,
+            paymentMethodType: String?,
+            paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData?,
+            threeDSecureAuthentication: ThreeDS.AuthenticationDetails?,
+            token: String?,
+            tokenType: TokenType?,
+            vaultData: Response.Body.Tokenization.VaultData?
+        ) {
+            self.analyticsId = analyticsId
+            self.id = id
+            self.isVaulted = isVaulted
+            self.isAlreadyVaulted = isAlreadyVaulted
+            self.paymentInstrumentType = paymentInstrumentType
+            self.paymentInstrumentData = paymentInstrumentData
+            self.threeDSecureAuthentication = threeDSecureAuthentication
+            self.token = token
+            self.tokenType = tokenType
+            self.vaultData = vaultData
+        }
     }
 }
 

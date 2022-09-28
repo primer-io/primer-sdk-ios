@@ -37,13 +37,13 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     override func validate() throws {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
         
-        guard decodedClientToken.pciUrl != nil else {
+        guard decodedJWTToken.pciUrl != nil else {
             let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
@@ -55,7 +55,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
         
-        guard AppState.current.apiConfiguration?.clientSession?.order?.countryCode != nil else {
+        guard PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode != nil else {
             let err = PrimerError.invalidSetting(name: "countryCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
@@ -169,27 +169,27 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     return
                 }
                             
-                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
                 
-                let countryCode = AppState.current.apiConfiguration!.clientSession!.order!.countryCode!
+                let countryCode = PrimerAPIConfigurationModule.apiConfiguration!.clientSession!.order!.countryCode!
                 let currency = AppState.current.currency!
                 let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions!.merchantIdentifier
 
                 var orderItems: [OrderItem]
                 
-                if let lineItems = AppState.current.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() }) {
+                if let lineItems = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() }) {
                     orderItems = lineItems
                 } else {
                     orderItems = [try! OrderItem(name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "", unitAmount: AppState.current.amount ?? 0, quantity: 1)]
                 }
                 
                 // Add fees, if present
-                if let fees = AppState.current.apiConfiguration?.clientSession?.order?.fees {
+                if let fees = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.fees {
                     for fee in fees {
                         let feeItem = try! OrderItem(name: fee.type.lowercased().capitalizingFirstLetter(), unitAmount: fee.amount, quantity: 1)
                         orderItems.append(feeItem)
@@ -279,7 +279,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return
             }
             
-            guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)

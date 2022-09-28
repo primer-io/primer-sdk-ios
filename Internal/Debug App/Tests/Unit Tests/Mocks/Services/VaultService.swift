@@ -11,6 +11,8 @@
 
 class MockVaultService: VaultServiceProtocol {
     
+    static var apiClient: PrimerAPIClientProtocol?
+    
     func fetchVaultedPaymentMethods() -> Promise<Void> {
         return Promise()
     }
