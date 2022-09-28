@@ -147,7 +147,7 @@ extension MerchantHUCRawCardDataViewController: PrimerCheckoutEventsDelegate, Pr
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
-    func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
         
         Networking.createPayment(with: paymentMethodTokenData) { (res, err) in
@@ -179,7 +179,7 @@ extension MerchantHUCRawCardDataViewController: PrimerCheckoutEventsDelegate, Pr
         }
     }
     
-    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void) {
         print("\n\n🤯🤯🤯 \(#function)\nresumeToken: \(resumeToken)")
         
         Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
@@ -187,10 +187,10 @@ extension MerchantHUCRawCardDataViewController: PrimerCheckoutEventsDelegate, Pr
                 self.hideLoadingOverlay()
             }
             
-            if let err = err {
-                decisionHandler(.fail(withErrorMessage: "Merchant App\nFailed to resume payment."))
+            if let newClientToken = res?.requiredAction?.clientToken {
+                decisionHandler(.continueWithNewClientToken(newClientToken))
             } else {
-                decisionHandler(.succeed())
+                // Handle sucess
             }
         }
     }
