@@ -205,18 +205,22 @@ public protocol PrimerInputElementDelegate: AnyObject {
 }
 
 @objc
-public protocol PrimerHeadlessUniversalCheckoutDelegate {
+public protocol PrimerUIEventsDelegate {
+    
+    @objc optional func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String)
+    @objc optional func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String)
+}
+
+@objc
+public protocol PrimerCheckoutEventsDelegate {
     
     @objc func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String])
-    @objc optional func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String)
     @objc optional func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String)
-    @objc optional func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String)
-    @objc optional func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
-    @objc optional func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
+    @objc optional func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)
+    @objc optional func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)
     @objc optional func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)
     @objc optional func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)
     @objc optional func primerHeadlessUniversalCheckoutDidFail(withError err: Error)
-    
     @objc func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData)
     @objc optional func primerHeadlessUniversalCheckoutClientSessionWillUpdate()
     @objc optional func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession)
