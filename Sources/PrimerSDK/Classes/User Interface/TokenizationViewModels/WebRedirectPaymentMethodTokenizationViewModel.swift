@@ -40,7 +40,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
     
     override func validate() throws {
-        if ClientTokenService.decodedClientToken?.isValid != true {
+        if PrimerAPIConfigurationModule.decodedJWTToken?.isValid != true {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
@@ -200,14 +200,14 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         }
     }
     
-    override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-            if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-                if let redirectUrlStr = decodedClientToken.redirectUrl,
+            if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+                if let redirectUrlStr = decodedJWTToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),
-                   let statusUrlStr = decodedClientToken.statusUrl,
+                   let statusUrlStr = decodedJWTToken.statusUrl,
                    let statusUrl = URL(string: statusUrlStr),
-                   decodedClientToken.intent != nil {
+                   decodedJWTToken.intent != nil {
                     
                     DispatchQueue.main.async {
                         UIApplication.shared.endIgnoringInteractionEvents()

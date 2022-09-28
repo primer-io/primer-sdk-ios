@@ -24,7 +24,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
     }
     
     override func validate() throws {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken, decodedClientToken.isValid else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
@@ -161,14 +161,14 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
         }
     }
     
-    override func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-            if let statusUrlStr = decodedClientToken.statusUrl,
+            if let statusUrlStr = decodedJWTToken.statusUrl,
                let statusUrl = URL(string: statusUrlStr),
-               decodedClientToken.intent != nil {
+               decodedJWTToken.intent != nil {
                 
                 self.statusUrl = statusUrl
-                self.qrCode = decodedClientToken.qrCode
+                self.qrCode = decodedJWTToken.qrCode
                 
                 firstly {
                     self.evaluateFireDidReceiveAdditionalInfoEvent()
@@ -266,22 +266,22 @@ extension QRCodeTokenizationViewModel {
             case PrimerPaymentMethodType.rapydPromptPay.rawValue,
                 PrimerPaymentMethodType.omisePromptPay.rawValue:
                 
-                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
                 
-                guard let expiresAt = decodedClientToken.expDate else {
-                    let err = PrimerError.invalidValue(key: "decodedClientToken.expiresAt", value: decodedClientToken.expiresAt, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                guard let expiresAt = decodedJWTToken.expDate else {
+                    let err = PrimerError.invalidValue(key: "decodedClientToken.expiresAt", value: decodedJWTToken.expiresAt, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
                 
-                guard let qrCodeString = decodedClientToken.qrCode else {
-                    let err = PrimerError.invalidValue(key: "decodedClientToken.qrCode", value: decodedClientToken.qrCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                guard let qrCodeString = decodedJWTToken.qrCode else {
+                    let err = PrimerError.invalidValue(key: "decodedClientToken.qrCode", value: decodedJWTToken.qrCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return

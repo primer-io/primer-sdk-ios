@@ -11,7 +11,7 @@ import Foundation
 
 extension PrimerAPIClient {
     
-    func fetchVaultedPaymentMethods(clientToken: DecodedClientToken) -> Promise<Response.Body.VaultedPaymentMethods> {
+    func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) -> Promise<Response.Body.VaultedPaymentMethods> {
         return Promise { [weak self] seal in
             self?.fetchVaultedPaymentMethods(clientToken: clientToken, completion: { result in
                 switch result {

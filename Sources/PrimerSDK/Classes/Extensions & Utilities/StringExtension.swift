@@ -233,12 +233,12 @@ internal extension String {
         return sum % 10 == 0
     }
     
-    var jwtTokenPayload: DecodedClientToken? {
+    var decodedJWTToken: DecodedJWTToken? {
         let components = self.split(separator: ".")
         if components.count < 2 { return nil }
         let segment = String(components[1]).base64IOSFormat
         guard !segment.isEmpty, let data = Data(base64Encoded: segment, options: .ignoreUnknownCharacters) else { return nil }
-        return try? JSONParser().parse(DecodedClientToken.self, from: data)
+        return try? JSONParser().parse(DecodedJWTToken.self, from: data)
     }
     
     var base64IOSFormat: Self {

@@ -20,7 +20,6 @@ internal class PrimerInternal {
     
     // MARK: - PROPERTIES
     
-    internal var delegate: PrimerDelegate?
     internal var intent: PrimerSessionIntent?
     internal private(set) var selectedPaymentMethodType: String?
     
@@ -92,9 +91,8 @@ internal class PrimerInternal {
      Configure SDK's settings
      */
     
-    internal func configure(settings: PrimerSettings? = nil, delegate: PrimerDelegate? = nil) {
+    internal func configure(settings: PrimerSettings? = nil) {
         DependencyContainer.register((settings ?? PrimerSettings()) as PrimerSettingsProtocol)
-        self.delegate = delegate
     }
     
     // MARK: - SHOW
@@ -201,7 +199,7 @@ internal class PrimerInternal {
         
         self.checkoutSessionId = nil
         self.selectedPaymentMethodType = nil
-        ClientTokenService.resetClientToken()
+        PrimerAPIConfigurationModule.resetSession()
         
         PrimerUIManager.dismissPrimerUI(animated: true) {
             PrimerDelegateProxy.primerDidDismiss()

@@ -110,7 +110,7 @@ extension Analytics {
         }
         
         internal static func sync(batchSize: UInt = 100) {
-            let analyticsUrlStr = ClientTokenService.decodedClientToken?.analyticsUrlV2 ?? "https://analytics.production.data.primer.io/sdk-logs"
+            let analyticsUrlStr = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2 ?? "https://analytics.production.data.primer.io/sdk-logs"
             guard let analyticsUrl = URL(string: analyticsUrlStr) else { return }
             
             primerLogAnalytics(
@@ -148,8 +148,8 @@ extension Analytics {
                     function: #function,
                     line: #line)
                 
-                let client: PrimerAPIClientProtocol = PrimerAPIClient()
-                client.sendAnalyticsEvents(url: analyticsUrl, body: requestBody) { result in
+                let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
+                apiClient.sendAnalyticsEvents(url: analyticsUrl, body: requestBody) { result in
                     switch result {
                     case .success:
                         primerLogAnalytics(
