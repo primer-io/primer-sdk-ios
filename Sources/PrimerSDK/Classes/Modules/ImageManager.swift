@@ -32,7 +32,7 @@ internal class ImageFile: File {
     static func getBundledImageFileName(
         forPaymentMethodType paymentMethodType: String,
         themeMode: PrimerTheme.Mode,
-        assetType: PrimerAsset.ImageType
+        assetType: PrimerPaymentMethodAsset.ImageType
     ) -> String? {
         
         var tmpPaymentMethodFileNameFirstComponent: String?
