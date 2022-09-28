@@ -15,6 +15,14 @@ class MerchantHUCPaymentMethodsViewController: UIViewController, PrimerHeadlessU
         let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHUCPaymentMethodsViewController") as! MerchantHUCPaymentMethodsViewController
         return mpmvc
     }
+
+    var amount: Int!
+    var currency: Currency!
+    var countryCode: CountryCode!
+    var availablePaymentMethods: [PrimerHeadlessUniversalCheckoutPaymentMethod] = []
+    var customerId: String?
+    var phoneNumber: String?
+    private var paymentId: String?
     
     var availablePaymentMethods: [String] = []
     var paymentId: String?
@@ -30,6 +38,7 @@ class MerchantHUCPaymentMethodsViewController: UIViewController, PrimerHeadlessU
         super.viewDidLoad()
         
         PrimerHeadlessUniversalCheckout.current.delegate = self
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = self
         
         self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
         self.view.addSubview(self.activityIndicator!)
@@ -91,7 +100,7 @@ extension MerchantHUCPaymentMethodsViewController: UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let paymentMethod = self.availablePaymentMethods[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "MerchantPaymentMethodCell", for: indexPath) as! MerchantPaymentMethodCell
-        cell.configure(paymentMethodType: paymentMethod)
+        cell.configure(paymentMethod: paymentMethod)
         return cell
     }
     
@@ -131,6 +140,7 @@ extension MerchantHUCPaymentMethodsViewController: UITableViewDataSource, UITabl
     }
 }
 
+extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate, PrimerUIEventsDelegate {
 
 // MARK: - PRIMER HEADLESS UNIVERSAL CHECKOUT DELEGATE
 
@@ -195,11 +205,10 @@ extension MerchantHUCPaymentMethodsViewController {
                 self.hideLoadingOverlay()
             }
             
-            if let err = err {
-                self.showErrorMessage(err.localizedDescription)
-                decisionHandler(.fail(withErrorMessage: "Merchant App\nFailed to resume payment."))
+            if let clientToken = res?.requiredAction?.clientToken {
+                decisionHandler(.continueWithNewClientToken(clientToken))
             } else {
-                decisionHandler(.succeed())
+                print("Payment has been resumed")
             }
             
             let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
@@ -277,17 +286,43 @@ class MerchantPaymentMethodCell: UITableViewCell {
     @IBOutlet weak var paymentMethodLabel: UILabel!
     @IBOutlet weak var buttonContainerView: UIView!
     
-    func configure(paymentMethodType: String) {
-        paymentMethodLabel.text = paymentMethodType
+    var paymentMethod: PrimerHeadlessUniversalCheckoutPaymentMethod!
+    
+    func configure(paymentMethod: PrimerHeadlessUniversalCheckoutPaymentMethod) {
+        self.paymentMethod = paymentMethod
+        paymentMethodLabel.text = paymentMethod.paymentMethodType
         
-        if let button = PrimerHeadlessUniversalCheckout.makeButton(for: paymentMethodType) {
-            buttonContainerView.addSubview(button)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            button.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-            button.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-            button.topAnchor.constraint(equalTo: topAnchor).isActive = true
-            button.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-            button.isUserInteractionEnabled = false
-        }
+        let paymentMethodAsset = try? PrimerAssetsManager.getPaymentMethodAsset(for: paymentMethod.paymentMethodType)
+        
+        let paymentMethodButton = UIButton()
+        buttonContainerView.addSubview(paymentMethodButton)
+        
+        paymentMethodButton.accessibilityIdentifier = paymentMethod.paymentMethodType
+        paymentMethodButton.clipsToBounds = true
+        paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 12,
+                                                           left: 16,
+                                                           bottom: 12,
+                                                           right: 16)
+        paymentMethodButton.contentMode = .scaleAspectFit
+        paymentMethodButton.imageView?.contentMode = .scaleAspectFit
+        paymentMethodButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
+        paymentMethodButton.layer.cornerRadius = 4
+        
+        paymentMethodButton.backgroundColor = paymentMethodAsset?.paymentMethodBackgroundColor.colored
+        paymentMethodButton.setTitle(paymentMethodAsset?.paymentMethodType, for: .normal)
+        paymentMethodButton.setImage(paymentMethodAsset?.paymentMethodLogo.colored, for: .normal)
+        paymentMethodButton.setTitleColor(.black, for: .normal)
+
+        paymentMethodButton.translatesAutoresizingMaskIntoConstraints = false
+        paymentMethodButton.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        paymentMethodButton.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        paymentMethodButton.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        paymentMethodButton.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        paymentMethodButton.addTarget(self, action: #selector(paymentButtonTapped), for: .touchUpInside)
+    }
+    
+    @IBAction func paymentButtonTapped(_ sender: UIButton) {
+        let redirectPaymentMethodManager = PrimerRedirectPaymentMethodManager(paymentMethodType: self.paymentMethod.paymentMethodType)
     }
 }
