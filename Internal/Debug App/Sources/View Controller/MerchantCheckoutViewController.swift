@@ -56,6 +56,7 @@ class MerchantCheckoutViewController: UIViewController {
     var countryCode: CountryCode = .gb
     var threeDSAlert: UIAlertController?
     var performPayment: Bool = false
+    var paymentId: String?
     
     var checkoutData: PrimerCheckoutData?
     
@@ -124,7 +125,29 @@ extension MerchantCheckoutViewController: PrimerDelegate {
     // Optional
     
     func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
-        decisionHandler(.succeed())
+        Networking.createPayment(with: paymentMethodTokenData) { (res, err) in
+            if let err = err {
+                decisionHandler(.fail(withErrorMessage: "Merchant error"))
+            } else if let res = res {
+                self.paymentId = res.id
+
+                if res.requiredAction?.clientToken != nil {
+                    decisionHandler(.continueWithNewClientToken(res.requiredAction!.clientToken))
+                } else {
+                    decisionHandler(.succeed())
+
+                    if let data = try? JSONEncoder().encode(res) {
+                        DispatchQueue.main.async {
+                            let rvc = HUCResultViewController.instantiate(data: [data])
+                            self.navigationController?.pushViewController(rvc, animated: true)
+                        }
+                    }
+                }
+
+            } else {
+                assert(true)
+            }
+        }
     }
     
     func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {

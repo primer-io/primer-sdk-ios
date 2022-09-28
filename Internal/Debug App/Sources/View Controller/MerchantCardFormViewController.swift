@@ -95,7 +95,7 @@ class MerchantCardFormViewController: UIViewController {
     }
 }
 
-extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegate {
+extension MerchantCardFormViewController: PrimerCheckoutEventsDelegate, PrimerUIEventsDelegate {
 
     func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
         print("🤯🤯🤯 \(#function)")

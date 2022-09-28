@@ -19,7 +19,7 @@ class MerchantAssetsViewController: UIViewController {
             self.collectionView.reloadData()
         }
     }
-    var assetType: PrimerAsset.ImageType = .logo {
+    var assetType: PrimerPaymentMethodAsset.ImageType = .logo {
         didSet {
             self.reloadImages()
         }
@@ -39,12 +39,8 @@ class MerchantAssetsViewController: UIViewController {
     }
     
     func reloadImages() {
-        var tmpAssets: [(name: String, image: UIImage?)] = []
-        let brands = PrimerAsset.Brand.allCases
-        for brand in brands {
-            tmpAssets.append((brand.rawValue, PrimerHeadlessUniversalCheckout.getAsset(for: brand, assetType: self.assetType)))
-        }
-        self.assets = tmpAssets
+        let paymentMethodAssets = (try? PrimerAssetsManager.getPaymentMethodAssets()) ?? []
+        self.assets = paymentMethodAssets.compactMap({ (name: $0.paymentMethodType, image: $0.paymentMethodLogo.colored) })
     }
     
     @IBAction func assetTypeSegmentedControlValueChanged(_ sender: UISegmentedControl) {

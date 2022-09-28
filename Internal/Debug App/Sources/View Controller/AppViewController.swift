@@ -12,7 +12,7 @@ import UIKit
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var metadataTestCase: String?
-var paymentHandling: PrimerPaymentHandling = .auto
+var paymentHandling: PrimerPaymentHandling = .manual
 
 class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
