@@ -187,6 +187,23 @@ class PrimerPaymentMethod: Codable {
         }
     }()
     
+    lazy var paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory]? = {
+        var categories: [PrimerPaymentMethodManagerCategory] = []
+        
+        if implementationType == .webRedirect {
+            categories.append(PrimerPaymentMethodManagerCategory.redirect)
+            return categories
+        }
+        
+        if self.type == PrimerPaymentMethodType.paymentCard.rawValue {
+            categories.append(PrimerPaymentMethodManagerCategory.cardComponents)
+            categories.append(PrimerPaymentMethodManagerCategory.raw)
+            return categories
+        }
+        
+        return nil
+    }()
+    
     private enum CodingKeys : String, CodingKey {
         case id,
              implementationType,
