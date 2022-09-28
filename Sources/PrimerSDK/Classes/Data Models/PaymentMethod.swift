@@ -19,7 +19,7 @@ extension PrimerTheme {
 class PrimerPaymentMethod: Codable {
     
     static func getPaymentMethod(withType type: String) -> PrimerPaymentMethod? {
-        return AppState.current.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
+        return PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
     }
     
     let id: String? // Will be nil for cards

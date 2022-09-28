@@ -106,7 +106,7 @@ public struct Apaya {
                 throw err
             }
             
-            guard ClientTokenService.decodedClientToken != nil else {
+            guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
                 let err = PrimerError.invalidClientToken(
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: nil)
@@ -114,7 +114,7 @@ public struct Apaya {
                 throw err
             }
             
-            guard let merchantAccountId = AppState.current.apiConfiguration?.getProductId(for: PrimerPaymentMethodType.apaya.rawValue) else {
+            guard let merchantAccountId = PrimerAPIConfigurationModule.apiConfiguration?.getProductId(for: PrimerPaymentMethodType.apaya.rawValue) else {
                 let err = PrimerError.invalidValue(
                     key: "apaya-merchantAccountId",
                     value: nil,

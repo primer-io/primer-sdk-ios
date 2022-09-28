@@ -72,7 +72,7 @@ extension FormPaymentMethodTokenizationViewModel {
         calendarImageView.contentMode = .scaleAspectFit
         dueAtContainerStackView.addArrangedSubview(calendarImageView)
         
-        if let expDate = ClientTokenService.decodedClientToken?.expDate {
+        if let expDate = PrimerAPIConfigurationModule.decodedJWTToken?.expDate {
             let dueAtPrefixLabel = UILabel()
             let dueDateAttributedString = NSMutableAttributedString()
             let prefix = NSAttributedString(
@@ -126,7 +126,7 @@ extension FormPaymentMethodTokenizationViewModel {
         accountNumberStackView.isLayoutMarginsRelativeArrangement = true
         accountNumberStackView.layer.cornerRadius = 8.0
         
-        if let accountNumber = ClientTokenService.decodedClientToken?.accountNumber {
+        if let accountNumber = PrimerAPIConfigurationModule.decodedJWTToken?.accountNumber {
             let accountNumberLabel = UILabel()
             accountNumberLabel.text = accountNumber
             accountNumberLabel.font = UIFont.boldSystemFont(ofSize: PrimerDimensions.Font.label)
@@ -225,7 +225,7 @@ extension FormPaymentMethodTokenizationViewModel {
         calendarImageView.contentMode = .scaleAspectFit
         expiresAtContainerStackView.addArrangedSubview(calendarImageView)
         
-        if let expDate = ClientTokenService.decodedClientToken?.expiresAt {
+        if let expDate = PrimerAPIConfigurationModule.decodedJWTToken?.expiresAt {
             let expiresAtPrefixLabel = UILabel()
             let expiresAtAttributedString = NSMutableAttributedString()
             let prefix = NSAttributedString(
@@ -352,7 +352,7 @@ extension FormPaymentMethodTokenizationViewModel {
     @objc
     func copyToClipboardTapped(_ sender: UIButton) {
         
-        UIPasteboard.general.string = ClientTokenService.decodedClientToken?.accountNumber
+        UIPasteboard.general.string = PrimerAPIConfigurationModule.decodedJWTToken?.accountNumber
         
         log(logLevel: .debug, message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
         

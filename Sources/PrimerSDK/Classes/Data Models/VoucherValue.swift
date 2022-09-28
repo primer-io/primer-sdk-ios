@@ -27,8 +27,8 @@ extension VoucherValue {
     static var currentVoucherValues: [VoucherValue] {
         
         var currentVaucherValues = [
-            VoucherValue(id: "entity", description: Strings.VoucherInfoPaymentView.entityLabelText, value: ClientTokenService.decodedClientToken?.entity),
-            VoucherValue(id: "reference", description: Strings.VoucherInfoPaymentView.referenceLabelText, value: ClientTokenService.decodedClientToken?.reference)
+            VoucherValue(id: "entity", description: Strings.VoucherInfoPaymentView.entityLabelText, value: PrimerAPIConfigurationModule.decodedJWTToken?.entity),
+            VoucherValue(id: "reference", description: Strings.VoucherInfoPaymentView.referenceLabelText, value: PrimerAPIConfigurationModule.decodedJWTToken?.reference)
         ]
         
         if let currency = AppState.current.currency, let amount = AppState.current.amount {
@@ -53,11 +53,11 @@ extension VoucherValue {
         var voucherSharableValues = ""
         
         var sharableVoucherValues = [
-            VoucherValue(id: "entity", description: Strings.VoucherInfoPaymentView.entityLabelText, value: ClientTokenService.decodedClientToken?.entity),
-            VoucherValue(id: "reference", description: Strings.VoucherInfoPaymentView.referenceLabelText, value: ClientTokenService.decodedClientToken?.reference)
+            VoucherValue(id: "entity", description: Strings.VoucherInfoPaymentView.entityLabelText, value: PrimerAPIConfigurationModule.decodedJWTToken?.entity),
+            VoucherValue(id: "reference", description: Strings.VoucherInfoPaymentView.referenceLabelText, value: PrimerAPIConfigurationModule.decodedJWTToken?.reference)
         ]
         
-        if let expirationDate = ClientTokenService.decodedClientToken?.expiresAt {
+        if let expirationDate = PrimerAPIConfigurationModule.decodedJWTToken?.expiresAt {
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
             formatter.timeStyle = .short

@@ -13,6 +13,7 @@ internal class PrimerUIManager {
     
     internal static var primerWindow: UIWindow?
     internal static var primerRootViewController: PrimerRootViewController?
+    internal static var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol?
     
     static func preparePresentation(
         clientToken: String,
@@ -43,31 +44,19 @@ internal class PrimerUIManager {
             
             events = [sdkEvent, connectivityEvent, timingEvent]
             Analytics.Service.record(events: events)
-            
-            let previousClientToken = AppState.current.clientToken
-            let needsAPIConfigurationCall = (AppState.current.apiConfiguration == nil) || (previousClientToken != clientToken)
-            
+                        
             firstly {
                 PrimerUIManager.prepareRootViewController()
             }
             .then { () -> Promise<Void> in
-                return ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: false)
-            }
-            .then { () -> Promise<Void> in
-                if !needsAPIConfigurationCall {
-                    // Client token is the same as before, therefore the config
-                    // request has already been made.
-                    return Promise()
-                } else {
-                    let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
-                    let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
-                    
-                    if isHeadlessCheckoutDelegateImplemented {
-                        return configurationService.fetchConfiguration()
-                    } else {
-                        return configurationService.fetchConfigurationAndVaultedPaymentMethods()
-                    }
-                }
+                let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
+                let apiConfigurationModule = PrimerUIManager.apiConfigurationModule ?? PrimerAPIConfigurationModule()
+                
+                return apiConfigurationModule.setupSession(
+                    forClientToken: clientToken,
+                    requestDisplayMetadata: true,
+                    requestClientTokenValidation: false,
+                    requestVaultedPaymentMethods: !isHeadlessCheckoutDelegateImplemented)
             }
             .then { () -> Promise<Void> in
                 return PrimerUIManager.validatePaymentUIPresentation()

@@ -39,41 +39,41 @@ enum PrimerAPI: Endpoint, Equatable {
     }
     
 
-    case exchangePaymentMethodToken(clientToken: DecodedClientToken, paymentMethodId: String)
-    case fetchConfiguration(clientToken: DecodedClientToken, requestParameters: Request.URLParameters.Configuration?)
-    case fetchVaultedPaymentMethods(clientToken: DecodedClientToken)
-    case deleteVaultedPaymentMethod(clientToken: DecodedClientToken, id: String)
+    case exchangePaymentMethodToken(clientToken: DecodedJWTToken, paymentMethodId: String)
+    case fetchConfiguration(clientToken: DecodedJWTToken, requestParameters: Request.URLParameters.Configuration?)
+    case fetchVaultedPaymentMethods(clientToken: DecodedJWTToken)
+    case deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String)
     
 //    case createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
-    case createPayPalOrderSession(clientToken: DecodedClientToken, payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder)
-    case createPayPalBillingAgreementSession(clientToken: DecodedClientToken, payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement)
-    case confirmPayPalBillingAgreement(clientToken: DecodedClientToken, payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement)
-    case createKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession)
-    case createKlarnaCustomerToken(clientToken: DecodedClientToken, klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken)
-    case finalizeKlarnaPaymentSession(clientToken: DecodedClientToken, klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession)
-    case createApayaSession(clientToken: DecodedClientToken, request: Request.Body.Apaya.CreateSession)
-    case tokenizePaymentMethod(clientToken: DecodedClientToken, tokenizationRequestBody: Request.Body.Tokenization)
-    case listAdyenBanks(clientToken: DecodedClientToken, request: Request.Body.Adyen.BanksList)
+    case createPayPalOrderSession(clientToken: DecodedJWTToken, payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder)
+    case createPayPalBillingAgreementSession(clientToken: DecodedJWTToken, payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement)
+    case confirmPayPalBillingAgreement(clientToken: DecodedJWTToken, payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement)
+    case createKlarnaPaymentSession(clientToken: DecodedJWTToken, klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession)
+    case createKlarnaCustomerToken(clientToken: DecodedJWTToken, klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken)
+    case finalizeKlarnaPaymentSession(clientToken: DecodedJWTToken, klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession)
+    case createApayaSession(clientToken: DecodedJWTToken, request: Request.Body.Apaya.CreateSession)
+    case tokenizePaymentMethod(clientToken: DecodedJWTToken, tokenizationRequestBody: Request.Body.Tokenization)
+    case listAdyenBanks(clientToken: DecodedJWTToken, request: Request.Body.Adyen.BanksList)
 
-    case requestPrimerConfigurationWithActions(clientToken: DecodedClientToken, request: ClientSessionUpdateRequest)
+    case requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken, request: ClientSessionUpdateRequest)
     
     // 3DS
-    case begin3DSRemoteAuth(clientToken: DecodedClientToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
-    case continue3DSRemoteAuth(clientToken: DecodedClientToken, threeDSTokenId: String)
+    case begin3DSRemoteAuth(clientToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
+    case continue3DSRemoteAuth(clientToken: DecodedJWTToken, threeDSTokenId: String)
     
     // Generic
-    case poll(clientToken: DecodedClientToken?, url: String)
+    case poll(clientToken: DecodedJWTToken?, url: String)
     
     case sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?)
     
-    case fetchPayPalExternalPayerInfo(clientToken: DecodedClientToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo)
+    case fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo)
 
     case validateClientToken(request: Request.Body.ClientTokenValidation)
     
     // Create - Resume Payment
     
-    case createPayment(clientToken: DecodedClientToken, paymentRequest: Request.Body.Payment.Create)
-    case resumePayment(clientToken: DecodedClientToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume)
+    case createPayment(clientToken: DecodedJWTToken, paymentRequest: Request.Body.Payment.Create)
+    case resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume)
 
 }
 
@@ -114,7 +114,7 @@ internal extension PrimerAPI {
             }
         
         case .validateClientToken(let request):
-            if let token = request.clientToken.jwtTokenPayload?.accessToken {
+            if let token = request.clientToken.decodedJWTToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
 
@@ -181,7 +181,7 @@ internal extension PrimerAPI {
         case .sendAnalyticsEvents(let url, _):
             return url.absoluteString
         case .validateClientToken(let request):
-            return request.clientToken.jwtTokenPayload?.pciUrl
+            return request.clientToken.decodedJWTToken?.pciUrl
         }
     }
     // MARK: Path

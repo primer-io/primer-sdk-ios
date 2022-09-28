@@ -254,10 +254,10 @@ extension PrimerHeadlessUniversalCheckout {
                 firstly {
                     self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
                 }
-                .done { decodedClientToken in
-                    if let decodedClientToken = decodedClientToken {
+                .done { decodedJWTToken in
+                    if let decodedJWTToken = decodedJWTToken {
                         firstly {
-                            self.handleDecodedClientTokenIfNeeded(decodedClientToken)
+                            self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
                         }
                         .done { resumeToken in
                             if let resumeToken = resumeToken {
@@ -323,7 +323,7 @@ extension PrimerHeadlessUniversalCheckout {
         //     - A decoded client token
         //     - nil for success
         //     - Reject with an error
-        func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedClientToken?> {
+        func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
             return Promise { seal in
                 if PrimerSettings.current.paymentHandling == .manual {
                     PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
@@ -332,21 +332,22 @@ extension PrimerHeadlessUniversalCheckout {
                             seal.fulfill(nil)
                             
                         case .continueWithNewClientToken(let newClientToken):
+                            let apiConfigurationModule = PrimerAPIConfigurationModule()
                             firstly {
-                                ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: true)
-                            }
-                            .then { () -> Promise<Void> in
-                                let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: false)
-                                return configurationService.fetchConfiguration()
+                                apiConfigurationModule.setupSession(
+                                    forClientToken: newClientToken,
+                                    requestDisplayMetadata: false,
+                                    requestClientTokenValidation: true,
+                                    requestVaultedPaymentMethods: false)
                             }
                             .done {
-                                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                                guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
                                 
-                                seal.fulfill(decodedClientToken)
+                                seal.fulfill(decodedJWTToken)
                             }
                             .catch { err in
                                 seal.reject(err)
@@ -384,17 +385,19 @@ extension PrimerHeadlessUniversalCheckout {
                         self.resumePaymentId = paymentResponse!.id
                         
                         if let requiredAction = paymentResponse!.requiredAction {
+                            let apiConfigurationModule = PrimerAPIConfigurationModule()
+                            
                             firstly {
-                                ClientTokenService.storeClientToken(requiredAction.clientToken, isAPIValidationEnabled: true)
+                                apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
                             }
-                            .done { checkoutData in
-                                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                            .done {
+                                guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
                                 
-                                seal.fulfill(decodedClientToken)
+                                seal.fulfill(decodedJWTToken)
                             }
                             .catch { err in
                                 seal.reject(err)
@@ -411,9 +414,9 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
+        func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
             return Promise { seal in
-                if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+                if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
         #if canImport(Primer3DS)
                     guard let paymentMethodTokenData = paymentMethodTokenData else {
                         let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -424,7 +427,7 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     
                     let threeDSService = ThreeDSService()
-                    threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+                    threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                         switch result {
                         case .success(let paymentMethodToken):
                             DispatchQueue.main.async {
@@ -452,12 +455,12 @@ extension PrimerHeadlessUniversalCheckout {
                     seal.reject(err)
         #endif
                     
-                } else if decodedClientToken.intent == RequiredActionName.processor3DS.rawValue {
-                    if let redirectUrlStr = decodedClientToken.redirectUrl,
+                } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
+                    if let redirectUrlStr = decodedJWTToken.redirectUrl,
                        let redirectUrl = URL(string: redirectUrlStr),
-                       let statusUrlStr = decodedClientToken.statusUrl,
+                       let statusUrlStr = decodedJWTToken.statusUrl,
                        let statusUrl = URL(string: statusUrlStr),
-                       decodedClientToken.intent != nil {
+                       decodedJWTToken.intent != nil {
                         
                         DispatchQueue.main.async {
                             UIApplication.shared.endIgnoringInteractionEvents()
@@ -467,7 +470,8 @@ extension PrimerHeadlessUniversalCheckout {
                             self.presentWeb3DS(with: redirectUrl)
                         }
                         .then { () -> Promise<String> in
-                            return self.startPolling(on: statusUrl)
+                            let pollingModule = PollingModule(url: statusUrl)
+                            return pollingModule.start()
                         }
                         .done { resumeToken in
                             seal.fulfill(resumeToken)
@@ -505,56 +509,6 @@ extension PrimerHeadlessUniversalCheckout {
                             seal.fulfill()
                         }
                     })
-                }
-            }
-        }
-        
-        private func startPolling(on url: URL) -> Promise<String> {
-            return Promise { seal in
-                self.startPolling(on: url) { resumeToken, err in
-                    if let err = err {
-                        seal.reject(err)
-                    } else if let resumeToken = resumeToken {
-                        seal.fulfill(resumeToken)
-                    } else {
-                        assert(true, "Completion handler should always return a value or an error")
-                    }
-                }
-            }
-        }
-        
-        private func startPolling(on url: URL, completion: @escaping (String?, Error?) -> Void) {
-            let client: PrimerAPIClientProtocol = PrimerAPIClient()
-            client.poll(clientToken: ClientTokenService.decodedClientToken, url: url.absoluteString) { result in
-                if self.webViewCompletion == nil {
-                    let err = PrimerError.cancelled(
-                        paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                        diagnosticsId: nil)
-                    
-                    ErrorHandler.handle(error: err)
-                    completion(nil, err)
-                    return
-                }
-                
-                switch result {
-                case .success(let res):
-                    if res.status == .pending {
-                        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                            self.startPolling(on: url, completion: completion)
-                        }
-                    } else if res.status == .complete {
-                        completion(res.id, nil)
-                    } else {
-                        let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                        ErrorHandler.handle(error: err)
-                    }
-                case .failure(let err):
-                    ErrorHandler.handle(error: err)
-                    // Retry
-                    Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
-                        self.startPolling(on: url, completion: completion)
-                    }
                 }
             }
         }
@@ -757,10 +711,11 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
     
     private func handle(_ clientToken: String) {
         
-        if PrimerHeadlessUniversalCheckout.current.clientToken != clientToken {
+        if PrimerAPIConfigurationModule.clientToken != clientToken {
+            let apiConfigurationModule = PrimerAPIConfigurationModule()
             
             firstly {
-                ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: true)
+                apiConfigurationModule.storeRequiredActionClientToken(clientToken)
             }
             .done {
                 DispatchQueue.main.async {
@@ -787,8 +742,8 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
     
     private func continueHandleNewClientToken(_ clientToken: String) {
         
-        if let decodedClientToken = ClientTokenService.decodedClientToken,
-           decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+        if let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
+           decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
             
 #if canImport(Primer3DS)
             guard let paymentMethod = paymentMethod else {
@@ -803,7 +758,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
             let threeDSService = ThreeDSService()
             PrimerInternal.shared.intent = .checkout
             
-            threeDSService.perform3DS(paymentMethodTokenData: paymentMethod, protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
+            threeDSService.perform3DS(paymentMethodTokenData: paymentMethod, protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                 switch result {
                 case .success(let paymentMethodToken):
                     DispatchQueue.main.async {

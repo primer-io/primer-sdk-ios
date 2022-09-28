@@ -10,6 +10,7 @@
 
 class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
     
+    static var apiClient: PrimerAPIClientProtocol?
     private let rawPaymentResponse = """
         {
           "id": "AY6mjuo9111",

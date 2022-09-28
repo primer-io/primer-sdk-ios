@@ -9,14 +9,7 @@ public class Primer {
     
     // MARK: - PROPERTIES
     
-    public weak var delegate: PrimerDelegate? {
-        set {
-            PrimerInternal.shared.delegate = newValue
-        }
-        get {
-            return PrimerInternal.shared.delegate
-        }
-    }
+    public weak var delegate: PrimerDelegate?
     public var intent: PrimerSessionIntent? {
         return PrimerInternal.shared.intent
     }
@@ -50,7 +43,8 @@ public class Primer {
      */
     
     public func configure(settings: PrimerSettings? = nil, delegate: PrimerDelegate? = nil) {
-        PrimerInternal.shared.configure(settings: settings, delegate: delegate)
+        self.delegate = delegate
+        PrimerInternal.shared.configure(settings: settings)
     }
     
     // MARK: - PRESENTATION
