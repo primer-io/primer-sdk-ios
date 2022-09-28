@@ -113,7 +113,7 @@ extension MerchantCardFormViewController: PrimerCheckoutEventsDelegate, PrimerUI
         print("🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
-    func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void) {
         print("🤯🤯🤯 \(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
         
         Networking.createPayment(with: paymentMethodTokenData) { (res, err) in
@@ -124,19 +124,12 @@ extension MerchantCardFormViewController: PrimerCheckoutEventsDelegate, PrimerUI
             }
 
             if let err = err {
-                // No need to handle anything
+                // Handle the error
             } else if let res = res {
                 self.paymentId = res.id
                 
                 if res.requiredAction?.clientToken != nil {
                     decisionHandler(.continueWithNewClientToken(res.requiredAction!.clientToken))
-                } else {
-                    if let data = try? JSONEncoder().encode(res) {
-//                        DispatchQueue.main.async {
-//                            let rvc = HUCResultViewController.instantiate(data: [data])
-//                            self.navigationController?.pushViewController(rvc, animated: true)
-//                        }
-                    }
                 }
 
             } else {
@@ -145,14 +138,27 @@ extension MerchantCardFormViewController: PrimerCheckoutEventsDelegate, PrimerUI
         }
     }
     
-    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void) {
         print("🤯🤯🤯 \(#function)\nresumeToken: \(resumeToken)")
         
         Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
+            DispatchQueue.main.async {
+                self.activityIndicator?.stopAnimating()
+                self.activityIndicator?.removeFromSuperview()
+                self.activityIndicator = nil
+            }
+
             if let err = err {
-                // ...
+                // Handle the error
+            } else if let res = res {
+                self.paymentId = res.id
+                
+                if res.requiredAction?.clientToken != nil {
+                    decisionHandler(.continueWithNewClientToken(res.requiredAction!.clientToken))
+                }
+
             } else {
-                decisionHandler(.succeed())
+                assert(true)
             }
         }
     }
