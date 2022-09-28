@@ -36,9 +36,9 @@ public class PrimerAssetsManager {
         }
         
         guard let paymentMethodBackgroundColor = PrimerPaymentMethodBackgroundColor(
-            colored: baseBackgroundColor.coloredHex,
-            light: baseBackgroundColor.lightHex,
-            dark: baseBackgroundColor.darkHex) else {
+            coloredStr: baseBackgroundColor.coloredHex,
+            lightStr: baseBackgroundColor.lightHex,
+            darkStr: baseBackgroundColor.darkHex) else {
             return nil
         }
         
@@ -67,14 +67,16 @@ public class PrimerAssetsManager {
             guard let paymentMethodLogo = PrimerPaymentMethodLogo(
                 colored: baseLogoImage.colored,
                 light: baseLogoImage.light,
-                dark: baseLogoImage.dark) else {
+                dark: baseLogoImage.dark)
+            else {
                 continue
             }
             
             guard let paymentMethodBackgroundColor = PrimerPaymentMethodBackgroundColor(
-                colored: baseBackgroundColor.coloredHex,
-                light: baseBackgroundColor.lightHex,
-                dark: baseBackgroundColor.darkHex) else {
+                coloredStr: baseBackgroundColor.coloredHex,
+                lightStr: baseBackgroundColor.lightHex,
+                darkStr: baseBackgroundColor.darkHex)
+            else {
                 continue
             }
             
@@ -92,22 +94,26 @@ public class PrimerAssetsManager {
 
 public class PrimerPaymentMethodAsset {
     
-    var paymentMethodType: String
-    var paymentMethodLogo: PrimerPaymentMethodLogo
-    var paymentMethodBackgroundColor: PrimerPaymentMethodBackgroundColor
+    public let paymentMethodType: String
+    public let paymentMethodLogo: PrimerPaymentMethodLogo
+    public let paymentMethodBackgroundColor: PrimerPaymentMethodBackgroundColor
     
     init(paymentMethodType: String, paymentMethodLogo: PrimerPaymentMethodLogo, paymentMethodBackgroundColor: PrimerPaymentMethodBackgroundColor) {
         self.paymentMethodType = paymentMethodType
         self.paymentMethodLogo = paymentMethodLogo
         self.paymentMethodBackgroundColor = paymentMethodBackgroundColor
     }
+    
+    public enum ImageType: String, CaseIterable, Equatable {
+        case logo, icon
+    }
 }
 
 public class PrimerPaymentMethodLogo {
     
-    var colored: UIImage?
-    var light: UIImage?
-    var dark: UIImage?
+    public var colored: UIImage?
+    public var light: UIImage?
+    public var dark: UIImage?
     
     init?(colored: UIImage?, light: UIImage?, dark: UIImage?) {
         if colored == nil, light == nil, dark == nil {
@@ -122,20 +128,32 @@ public class PrimerPaymentMethodLogo {
 
 public class PrimerPaymentMethodBackgroundColor {
     
-    var colored: String?
-    var light: String?
-    var dark: String?
+    public var colored: UIColor?
+    public var light: UIColor?
+    public var dark: UIColor?
     
-    init?(colored: String?, light: String?, dark: String?) {
-        if colored == nil, light == nil, dark == nil {
+    required init?(coloredStr: String?, lightStr: String?, darkStr: String?) {
+        if coloredStr == nil, lightStr == nil, darkStr == nil {
             return nil
         }
+                
+        if let coloredStr = coloredStr {
+            self.colored = PrimerColor(hex: coloredStr)
+        }
         
-        self.colored = colored
-        self.light = light
-        self.dark = dark
+        if let lightStr = lightStr {
+            self.light = PrimerColor(hex: lightStr)
+        }
+        
+        if let darkStr = darkStr {
+            self.dark = PrimerColor(hex: darkStr)
+        }
     }
     
+}
+
+public enum PrimerUserInterfaceStyle: CaseIterable, Hashable {
+    case dark, light
 }
 
 #endif
