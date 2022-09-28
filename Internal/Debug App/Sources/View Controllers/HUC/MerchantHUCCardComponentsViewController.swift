@@ -165,11 +165,6 @@ extension MerchantHUCCardComponentsViewController {
                 
                 if res.requiredAction?.clientToken != nil {
                     decisionHandler(.continueWithNewClientToken(res.requiredAction!.clientToken))
-                    
-                } else {
-                    self.hideLoadingOverlay()
-                    let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
-                    self.navigationController?.pushViewController(rvc, animated: true)
                 }
 
             } else {
@@ -191,7 +186,7 @@ extension MerchantHUCCardComponentsViewController {
                 self.showErrorMessage(err.localizedDescription)
                 decisionHandler(.fail(withErrorMessage: "Merchant App\nFailed to resume payment."))
             } else {
-                decisionHandler(.succeed())
+                assert(true)
             }
             
             let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
