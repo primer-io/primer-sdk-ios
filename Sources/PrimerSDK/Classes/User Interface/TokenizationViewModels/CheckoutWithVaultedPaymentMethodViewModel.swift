@@ -225,22 +225,33 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
                 PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
-                    switch resumeDecision.type {
-                    case .fail(let message):
-                        var merchantErr: Error!
-                        if let message = message {
-                            let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                            merchantErr = err
-                        } else {
-                            merchantErr = NSError.emptyDescriptionError
+                    if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
+                        switch resumeDecisionType {
+                        case .fail(let message):
+                            var merchantErr: Error!
+                            if let message = message {
+                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                merchantErr = err
+                            } else {
+                                merchantErr = NSError.emptyDescriptionError
+                            }
+                            seal.reject(merchantErr)
+
+                        case .succeed:
+                            seal.fulfill(nil)
+
+                        case .continueWithNewClientToken:
+                            seal.fulfill(nil)
                         }
-                        seal.reject(merchantErr)
-
-                    case .succeed:
-                        seal.fulfill(nil)
-
-                    case .continueWithNewClientToken:
-                        seal.fulfill(nil)
+                        
+                    } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
+                        switch resumeDecisionType {
+                        case .continueWithNewClientToken:
+                            seal.fulfill(nil)
+                        }
+                        
+                    } else {
+                      precondition(false)
                     }
                 }
                 
@@ -307,12 +318,13 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
                 PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
-                    switch resumeDecision.type {
-                    case .succeed:
-                        seal.fulfill(nil)
-                        
-                    case .continueWithNewClientToken(let newClientToken):
-                        let apiConfigurationModule = PrimerAPIConfigurationModule()
+                    if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
+                        switch resumeDecisionType {
+                        case .succeed:
+                            seal.fulfill(nil)
+                            
+                        case .continueWithNewClientToken(let newClientToken):
+                            let apiConfigurationModule = PrimerAPIConfigurationModule()
                         
                         firstly {
                             apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
@@ -326,19 +338,47 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                             
                             seal.fulfill(decodedJWTToken)
                         }
-                        .catch { err in
-                            seal.reject(err)
+                            .catch { err in
+                                seal.reject(err)
+                            }
+                            
+                        case .fail(let message):
+                            var merchantErr: Error!
+                            if let message = message {
+                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                merchantErr = err
+                            } else {
+                                merchantErr = NSError.emptyDescriptionError
+                            }
+                            seal.reject(merchantErr)
                         }
                         
-                    case .fail(let message):
-                        var merchantErr: Error!
-                        if let message = message {
-                            let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                            merchantErr = err
-                        } else {
-                            merchantErr = NSError.emptyDescriptionError
+                    } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
+                        switch resumeDecisionType {
+                        case .continueWithNewClientToken(let newClientToken):
+                            firstly {
+                                ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: false)
+                            }
+                            .then { () -> Promise<Void> in
+                                let configService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: false)
+                                return configService.fetchConfiguration()
+                            }
+                            .done {
+                                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                    ErrorHandler.handle(error: err)
+                                    throw err
+                                }
+                                
+                                seal.fulfill(decodedClientToken)
+                            }
+                            .catch { err in
+                                seal.reject(err)
+                            }
                         }
-                        seal.reject(merchantErr)
+                        
+                    } else {
+                      precondition(false)
                     }
                 }
 
