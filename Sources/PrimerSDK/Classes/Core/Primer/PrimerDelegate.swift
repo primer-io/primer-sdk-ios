@@ -43,26 +43,38 @@ public protocol PrimerDelegate {
 
 internal class PrimerDelegateProxy {
     
-    static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecisionProtocol) -> Void) {
         DispatchQueue.main.async {
-            if Primer.shared.delegate?.primerDidTokenizePaymentMethod != nil {
-                Primer.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
+            if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod != nil,
+               (decisionHandler as ((PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)?) != nil
+            {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod!(paymentMethodTokenData, decisionHandler: decisionHandler)
+                return
             }
             
-            if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod != nil {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod!(paymentMethodTokenData, decisionHandler: decisionHandler)
+            if PrimerInternal.shared.delegate?.primerDidTokenizePaymentMethod != nil,
+               (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil
+            {
+                PrimerInternal.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
+                return
             }
         }
     }
     
-    static func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    static func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecisionProtocol) -> Void) {
         DispatchQueue.main.async {
-            if Primer.shared.delegate?.primerDidResumeWith != nil {
-                Primer.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
+            if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith != nil,
+               (decisionHandler as ((PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)?) != nil
+            {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith!(resumeToken, decisionHandler: decisionHandler)
+                return
             }
             
-            if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith != nil {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith!(resumeToken, decisionHandler: decisionHandler)
+            if PrimerInternal.shared.delegate?.primerDidResumeWith != nil,
+               (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil
+            {
+                PrimerInternal.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
+                return
             }
         }
     }
@@ -188,7 +200,7 @@ internal class PrimerDelegateProxy {
     
     static func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationDidStart?(for: paymentMethodType)
+            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutPreparationDidStart?(for: paymentMethodType)
         }
     }
     
@@ -200,7 +212,7 @@ internal class PrimerDelegateProxy {
     
     static func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: paymentMethodType)
+            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: paymentMethodType)
         }
     }
 }
