@@ -240,12 +240,13 @@ extension PrimerHeadlessUniversalCheckout {
             return Promise { seal in
                 if PrimerSettings.current.paymentHandling == .manual {
                     PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
-                        switch resumeDecision.type {
-                        case .succeed:
-                            seal.fulfill(nil)
-                            
-                        case .continueWithNewClientToken(let newClientToken):
-                            let apiConfigurationModule = PrimerAPIConfigurationModule()
+                        if let resumeType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
+                            switch resumeType {
+                            case .succeed:
+                                seal.fulfill(nil)
+                                
+                            case .continueWithNewClientToken(let newClientToken):
+                                let apiConfigurationModule = PrimerAPIConfigurationModule()
                             
                             firstly {
                                 apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
@@ -259,19 +260,23 @@ extension PrimerHeadlessUniversalCheckout {
                                 
                                 seal.fulfill(decodedJWTToken)
                             }
-                            .catch { err in
-                                seal.reject(err)
+                                .catch { err in
+                                    seal.reject(err)
+                                }
+                                
+                            case .fail(let message):
+                                var merchantErr: Error!
+                                if let message = message {
+                                    let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                    merchantErr = err
+                                } else {
+                                    merchantErr = NSError.emptyDescriptionError
+                                }
+                                seal.reject(merchantErr)
                             }
                             
-                        case .fail(let message):
-                            var merchantErr: Error!
-                            if let message = message {
-                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                                merchantErr = err
-                            } else {
-                                merchantErr = NSError.emptyDescriptionError
-                            }
-                            seal.reject(merchantErr)
+                        } else {
+                            precondition(false)
                         }
                     }
                     
@@ -520,22 +525,33 @@ extension PrimerHeadlessUniversalCheckout {
             return Promise { seal in
                 if PrimerSettings.current.paymentHandling == .manual {
                     PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
-                        switch resumeDecision.type {
-                        case .fail(let message):
-                            var merchantErr: Error!
-                            if let message = message {
-                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                                merchantErr = err
-                            } else {
-                                merchantErr = NSError.emptyDescriptionError
+                        if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
+                            switch resumeDecisionType {
+                            case .fail(let message):
+                                var merchantErr: Error!
+                                if let message = message {
+                                    let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                    merchantErr = err
+                                } else {
+                                    merchantErr = NSError.emptyDescriptionError
+                                }
+                                seal.reject(merchantErr)
+                                
+                            case .succeed:
+                                seal.fulfill(nil)
+                                
+                            case .continueWithNewClientToken:
+                                seal.fulfill(nil)
                             }
-                            seal.reject(merchantErr)
                             
-                        case .succeed:
-                            seal.fulfill(nil)
+                        } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
+                            switch resumeDecisionType {
+                            case .continueWithNewClientToken:
+                                seal.fulfill(nil)
+                            }
                             
-                        case .continueWithNewClientToken:
-                            seal.fulfill(nil)
+                        } else {
+                          precondition(false)
                         }
                     }
                     
