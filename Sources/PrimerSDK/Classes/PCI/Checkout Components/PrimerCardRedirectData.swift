@@ -40,7 +40,6 @@ public class PrimerCardRedirectData: PrimerRawData {
         cardNumber: String,
         expiryMonth: String,
         expiryYear: String,
-        cvv: String,
         cardholderName: String
     ) {
         self.cardNumber = cardNumber
