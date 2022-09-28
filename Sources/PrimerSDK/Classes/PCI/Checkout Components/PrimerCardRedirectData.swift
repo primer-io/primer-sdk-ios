@@ -9,7 +9,9 @@
 
 import Foundation
 
-public class PrimerCardRedirectData: PrimerRawData {
+public class PrimerCardRedirectData: PrimerRawData {}
+
+public class PrimerBancontactCardRedirectData: PrimerCardRedirectData {
     
     public var cardNumber: String {
         didSet {

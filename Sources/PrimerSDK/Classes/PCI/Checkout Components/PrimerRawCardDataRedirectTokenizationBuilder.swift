@@ -11,9 +11,38 @@ import Foundation
 
 class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
     
+    var requiredInputElementTypes: [PrimerInputElementType]
+    
+    var paymentMethodType: String
+    
+    var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
+    
+    var isDataValid: Bool
+    
+    var rawData: PrimerRawData?
+    
+    required init(paymentMethodType: String) {
+        fatalError("\(#function) must be overriden")
+    }
+    
+    func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
+        fatalError("\(#function) must be overriden")
+    }
+    
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
+        fatalError("\(#function) must be overriden")
+    }
+    
+    func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
+        fatalError("\(#function) must be overriden")
+    }
+}
+
+class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
+    
     var rawData: PrimerRawData? {
         didSet {
-            if let rawCardData = self.rawData as? PrimerCardRedirectData {
+            if let rawCardData = self.rawData as? PrimerBancontactCardRedirectData {
                 rawCardData.onDataDidChange = {
                     _ = self.validateRawData(rawCardData)
                     
@@ -83,7 +112,7 @@ class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBui
                 return
             }
                         
-            guard let rawData = data as? PrimerCardRedirectData else {
+            guard let rawData = data as? PrimerBancontactCardRedirectData else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -107,7 +136,7 @@ class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBui
             
             var errors: [PrimerValidationError] = []
             
-            guard let rawData = data as? PrimerCardRedirectData, let rawDataManager = rawDataManager else {
+            guard let rawData = data as? PrimerBancontactCardRedirectData, let rawDataManager = rawDataManager else {
                 let err = PrimerValidationError.invalidRawData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 errors.append(err)
                 ErrorHandler.handle(error: err)

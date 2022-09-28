@@ -70,7 +70,7 @@ extension PrimerHeadlessUniversalCheckout {
                 self.rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType:PrimerPaymentMethodType.paymentCard.rawValue)
             
             case PrimerPaymentMethodType.adyenBancontact.rawValue:
-                self.rawDataTokenizationBuilder = PrimerRawCardDataRedirectTokenizationBuilder(paymentMethodType: paymentMethodType)
+                self.rawDataTokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: paymentMethodType)
                 
             case PrimerPaymentMethodType.xenditOvo.rawValue,
                 PrimerPaymentMethodType.adyenMBWay.rawValue:
