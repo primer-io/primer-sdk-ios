@@ -63,13 +63,6 @@ public class Primer {
     public func showVaultManager(clientToken: String, completion: ((Error?) -> Void)? = nil) {
         PrimerInternal.shared.showVaultManager(clientToken: clientToken, completion: completion)
     }
-    
-    /**
-     Show Primer Payment Method
-     */
-    public func showPaymentMethod(_ paymentMethodType: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
-        PrimerInternal.shared.showPaymentMethod(paymentMethodType, withIntent: intent, andClientToken: clientToken)
-    }
         
     /**
      Dismiss Primer UI
