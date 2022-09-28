@@ -382,7 +382,7 @@ extension PrimerHeadlessUniversalCheckout {
                         }
                         
                         firstly {
-                            self.presentWeb3DS(with: redirectUrl)
+                            self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                         }
                         .then { () -> Promise<String> in
                             let pollingModule = PollingModule(url: statusUrl)
@@ -530,7 +530,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func presentWeb3DS(with redirectUrl: URL) -> Promise<Void> {
+        private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
             return Promise { seal in
                 self.webViewController = SFSafariViewController(url: redirectUrl)
                 self.webViewController!.delegate = self

@@ -231,9 +231,18 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             return nil
         }
         
-        if isRequiringCVVInput,
-           let configId = AppState.current.apiConfiguration?.getConfigId(for: self.primerPaymentMethodType.rawValue),
-           let cardholderName = self.cardholderField?.cardholderName {
+        if isRequiringCVVInput {
+            
+            let cardPaymentInstrument = CardPaymentInstrument(number: self.cardnumberField.cardnumber,
+                                                              cvv: self.cvvField.cvv,
+                                                              expirationMonth: expiryMonth,
+                                                              expirationYear: cardExpirationYear,
+                                                              cardholderName: self.cardholderField?.cardholderName)
+            return cardPaymentInstrument
+            
+        } else if let configId = AppState.current.apiConfiguration?.getConfigId(for: self.primerPaymentMethodType.rawValue),
+                  let cardholderName = self.cardholderField?.cardholderName {
+            
             let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
                                                                                   paymentMethodType: self.primerPaymentMethodType.rawValue,
                                                                                   number: self.cardnumberField.cardnumber,
@@ -241,14 +250,9 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                                                                                   expirationYear: cardExpirationYear,
                                                                                   cardholderName: cardholderName)
             return cardOffSessionPaymentInstrument
-        } else {
-            let cardPaymentInstrument = CardPaymentInstrument(number: self.cardnumberField.cardnumber,
-                                                              cvv: self.cvvField.cvv,
-                                                              expirationMonth: expiryMonth,
-                                                              expirationYear: cardExpirationYear,
-                                                              cardholderName: self.cardholderField?.cardholderName)
-            return cardPaymentInstrument
         }
+        
+        return nil
     }
     
     public func tokenize() {

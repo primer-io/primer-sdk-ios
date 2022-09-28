@@ -468,7 +468,36 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-            if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+            
+            if decodedClientToken.intent?.contains("_REDIRECTION") == true {
+                if let redirectUrlStr = decodedClientToken.redirectUrl,
+                   let redirectUrl = URL(string: redirectUrlStr),
+                   let statusUrlStr = decodedClientToken.statusUrl,
+                   let statusUrl = URL(string: statusUrlStr),
+                   decodedClientToken.intent != nil {
+                    
+                    DispatchQueue.main.async {
+                        UIApplication.shared.endIgnoringInteractionEvents()
+                    }
+                    
+                    firstly {
+                        self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
+                    }
+                    .then { () -> Promise<String> in
+                        return PollingModule(url: statusUrl).start()
+                    }
+                    .done { resumeToken in
+                        seal.fulfill(resumeToken)
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                } else {
+                    let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    seal.reject(error)
+                }
+                
+            } else if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
     #if canImport(Primer3DS)
                 guard let paymentMethodTokenData = paymentMethodTokenData else {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -526,10 +555,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     }
                     
                     firstly {
-                        self.presentWeb3DS(with: redirectUrl)
+                        self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                     }
                     .then { () -> Promise<String> in
-                        return self.startPolling(on: statusUrl)
+                        return PollingModule(url: statusUrl).start()
                     }
                     .done { resumeToken in
                         seal.fulfill(resumeToken)
@@ -549,8 +578,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
         }
     }
-    
-    private func presentWeb3DS(with redirectUrl: URL) -> Promise<Void> {
+        
+    private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
         return Promise { seal in
             self.webViewController = SFSafariViewController(url: redirectUrl)
             self.webViewController!.delegate = self
@@ -567,53 +596,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                         seal.fulfill()
                     }
                 })
-            }
-        }
-    }
-    
-    private func startPolling(on url: URL) -> Promise<String> {
-        return Promise { seal in
-            self.startPolling(on: url) { resumeToken, err in
-                if let err = err {
-                    seal.reject(err)
-                } else if let resumeToken = resumeToken {
-                    seal.fulfill(resumeToken)
-                } else {
-                    assert(true, "Completion handler should always return a value or an error")
-                }
-            }
-        }
-    }
-    
-    private func startPolling(on url: URL, completion: @escaping (String?, Error?) -> Void) {
-        let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-        
-        apiClient.poll(clientToken: PrimerAPIConfigurationModule.decodedJWTToken, url: url.absoluteString) { result in
-            if self.webViewCompletion == nil {
-                let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                completion(nil, err)
-                return
-            }
-            
-            switch result {
-            case .success(let res):
-                if res.status == .pending {
-                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                        self.startPolling(on: url, completion: completion)
-                    }
-                } else if res.status == .complete {
-                    completion(res.id, nil)
-                } else {
-                    let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                }
-            case .failure(let err):
-                ErrorHandler.handle(error: err)
-                // Retry
-                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
-                    self.startPolling(on: url, completion: completion)
-                }
             }
         }
     }
@@ -671,7 +653,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             }
             
             let params: [String: Any] = [
-                "paymentMethodType": PrimerPaymentMethodType.paymentCard.rawValue,
+                "paymentMethodType": config.type,
                 "binData": [
                     "network": network,
                 ]
