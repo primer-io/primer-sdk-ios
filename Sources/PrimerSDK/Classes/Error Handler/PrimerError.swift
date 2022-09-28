@@ -100,7 +100,7 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
         case .invalidCvv:
             return "[\(errorId)] Invalid CVV"
         case .invalidExpiryDate:
-            return "[\(errorId)] Invalid expiry date"
+            return "[\(errorId)] Invalid expiry date. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year."
         case .invalidPostalCode:
             return "[\(errorId)] Invalid postal code"
         case .invalidFirstName:

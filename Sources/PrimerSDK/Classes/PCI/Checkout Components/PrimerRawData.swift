@@ -102,6 +102,38 @@ public class PrimerCardData: PrimerRawData {
         try container.encode(cvv, forKey: .cvv)
         try container.encode(cardholderName, forKey: .cardholderName)
     }
+    
+    internal func validate() throws {
+        var errors: [Error] = []
+        
+        if !self.cardNumber.isValidCardNumber {
+            errors.append(PrimerValidationError.invalidCardnumber(userInfo: nil, diagnosticsId: nil))
+        }
+        
+        let currentYear = Calendar.current.component(.year, from: Date())
+        if !(self.expiryYear.count == 4 && (Int(self.expiryYear) ?? 0) >= currentYear) {
+            errors.append(PrimerValidationError.invalidExpiryDate(userInfo: nil, diagnosticsId: nil))
+            
+        } else {
+            let expiryDate = "\(self.expiryMonth)/\(self.expiryYear.suffix(2))"
+            
+            if !expiryDate.isValidExpiryDate {
+                errors.append(PrimerValidationError.invalidExpiryDate(userInfo: nil, diagnosticsId: nil))
+            }
+        }
+        
+        let cardNetwork = CardNetwork(cardNumber: self.cardNumber)
+        
+        if !self.cvv.isValidCVV(cardNetwork: cardNetwork) {
+            errors.append(PrimerValidationError.invalidCvv(userInfo: nil, diagnosticsId: nil))
+        }
+        
+        if !errors.isEmpty {
+            let err = PrimerError.underlyingErrors(errors: errors, userInfo: nil, diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+    }
 }
 
 #endif
