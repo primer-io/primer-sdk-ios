@@ -10,7 +10,7 @@
 
 protocol UserInterfaceModuleProtocol {
     
-    var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol { get }
+    var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol! { get }
     var logo: UIImage? { get }
     var icon: UIImage? { get }
     var surchargeSectionText: String? { get }
@@ -28,7 +28,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     
     // MARK: - PROPERTIES
     
-    var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol
+    weak var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol!
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     var logo: UIImage? {
