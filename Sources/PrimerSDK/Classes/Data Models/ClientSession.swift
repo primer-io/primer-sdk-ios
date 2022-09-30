@@ -93,6 +93,7 @@ internal class ClientSession {
     // MARK: ClientSession.Customer
     
     internal struct Customer: Codable {
+        
         let id: String?
         let firstName: String?
         let lastName: String?
@@ -142,6 +143,7 @@ internal class ClientSession {
     // MARK: - ClientSession.Order
     
     internal struct Order: Codable {
+        
         let id: String?
         let merchantAmount: Int?
         let totalOrderAmount: Int?
@@ -184,6 +186,7 @@ internal class ClientSession {
         // MARK: ClientSession.Order.LineItem
         
         internal struct LineItem: Codable {
+            
             let itemId: String?
             let quantity: Int
             let amount: Int?
@@ -228,11 +231,17 @@ internal class ClientSession {
     // MARK: - ClientSession.PaymentMethod
     
     internal class PaymentMethod: Codable {
+        
         let vaultOnSuccess: Bool
         let options: [[String: Any]]?
         
         enum CodingKeys: String, CodingKey {
             case vaultOnSuccess, options
+        }
+        
+        init(vaultOnSuccess: Bool, options: [[String: Any]]?) {
+            self.vaultOnSuccess = vaultOnSuccess
+            self.options = options
         }
         
         required internal init(from decoder: Decoder) throws {
@@ -270,6 +279,18 @@ internal class ClientSession {
         
         enum CodingKeys: String, CodingKey {
             case clientSessionId, paymentMethod, order, customer // metadata
+        }
+        
+        init(
+            clientSessionId: String?,
+            paymentMethod: ClientSession.PaymentMethod?,
+            order: ClientSession.Order?,
+            customer: ClientSession.Customer?
+        ) {
+            self.clientSessionId = clientSessionId
+            self.paymentMethod = paymentMethod
+            self.order = order
+            self.customer = customer
         }
         
         required internal init(from decoder: Decoder) throws {

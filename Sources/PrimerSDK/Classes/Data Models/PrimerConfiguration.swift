@@ -80,16 +80,16 @@ extension Response.Body {
     struct Configuration: Codable {
         
         static var current: PrimerAPIConfiguration? {
-            return AppState.current.apiConfiguration
+            return PrimerAPIConfigurationModule.apiConfiguration
         }
         
         static var paymentMethodConfigs: [PrimerPaymentMethod]? {
-            return AppState.current.apiConfiguration?.paymentMethods
+            return PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods
         }
         
         var hasSurchargeEnabled: Bool {
-            let pmSurcharge = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { $0["surcharge"] as? Int != nil })
-            let cardSurcharge = AppState.current.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { (($0["networks"] as? [[String: Any]])?.first(where: { $0["surcharge"] as? Int != nil })) != nil  })
+            let pmSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { $0["surcharge"] as? Int != nil })
+            let cardSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { (($0["networks"] as? [[String: Any]])?.first(where: { $0["surcharge"] as? Int != nil })) != nil  })
             return pmSurcharge != nil || cardSurcharge != nil
         }
         
@@ -108,12 +108,12 @@ extension Response.Body {
                 }
             }
             
-            #if !canImport(PrimerKlarnaSDK)
+#if !canImport(PrimerKlarnaSDK)
             if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
                 viewModels.remove(at: klarnaViewModelIndex)
                 print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
             }
-            #endif
+#endif
             
             for (index, viewModel) in viewModels.enumerated() {
                 if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
@@ -124,7 +124,7 @@ extension Response.Body {
             for (index, viewModel) in viewModels.enumerated() {
                 viewModel.position = index
             }
-                    
+            
             return viewModels
         }
         

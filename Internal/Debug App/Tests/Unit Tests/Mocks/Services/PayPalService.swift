@@ -10,7 +10,9 @@
 @testable import PrimerSDK
 
 class MockPayPalService: PayPalServiceProtocol {
-
+    
+    static var apiClient: PrimerAPIClientProtocol?
+    
     var confirmBillingAgreementCalled = false
 
     func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void) {

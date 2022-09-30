@@ -14,10 +14,13 @@ typealias TokenizationCompletion = ((PrimerPaymentMethodTokenData?, Error?) -> V
 typealias PaymentCompletion = ((PrimerCheckoutData?, Error?) -> Void)
 
 internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
+    
+    static var apiClient: PrimerAPIClientProtocol? { get set }
+    
     init(config: PrimerPaymentMethod)
     
     // UI
-    var config: PrimerPaymentMethod { get set }
+    var config: PrimerPaymentMethod! { get set }
     var uiModule: UserInterfaceModule! { get }
     var position: Int { get set }
     
@@ -45,7 +48,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     func presentPaymentMethodUserInterface() -> Promise<Void>
     func awaitUserInput() -> Promise<Void>
     
-    func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?>
+    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?>
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
     func handleSuccessfulFlow()
     func handleFailureFlow(errorMessage: String?)
@@ -53,15 +56,18 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
 }
 
 internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
-    func cancel()
+    
     var tableView: UITableView { get set }
     var searchableTextField: PrimerSearchTextField { get set }
-    var config: PrimerPaymentMethod { get set }
+    var config: PrimerPaymentMethod! { get set }
+    
+    func cancel()
 }
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
 
-    var config: PrimerPaymentMethod
+    weak var config: PrimerPaymentMethod!
+    static var apiClient: PrimerAPIClientProtocol?
     
     // Events
     let checkouEventsNotifierModule = CheckoutEventsNotifierModule()
@@ -143,7 +149,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         fatalError("\(#function) must be overriden")
     }
     
-    func handleDecodedClientTokenIfNeeded(_ decodedClientToken: DecodedClientToken) -> Promise<String?> {
+    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         fatalError("\(#function) must be overriden")
     }
     

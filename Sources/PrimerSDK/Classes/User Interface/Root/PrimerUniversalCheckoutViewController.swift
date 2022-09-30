@@ -46,7 +46,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         renderSelectedPaymentInstrument()
         renderAvailablePaymentMethods()
         
-        guard ClientTokenService.decodedClientToken.exists else { return }
+        guard PrimerAPIConfigurationModule.decodedJWTToken.exists else { return }
         
         let vaultService: VaultServiceProtocol = VaultService()
         firstly {
@@ -117,12 +117,14 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             }
             
             let titleHorizontalStackView = UIStackView()
+            titleHorizontalStackView.translatesAutoresizingMaskIntoConstraints = false
             titleHorizontalStackView.axis = .horizontal
             titleHorizontalStackView.alignment = .fill
             titleHorizontalStackView.distribution = .fill
             titleHorizontalStackView.spacing = 8.0
             
             let savedPaymentMethodLabel = UILabel()
+            savedPaymentMethodLabel.translatesAutoresizingMaskIntoConstraints = false
             savedPaymentMethodLabel.text = Strings.VaultPaymentMethodViewContent.savedPaymentMethod
             savedPaymentMethodLabel.adjustsFontSizeToFitWidth = true
             savedPaymentMethodLabel.minimumScaleFactor = 0.8
@@ -143,6 +145,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             savedPaymentMethodStackView.addArrangedSubview(titleHorizontalStackView)
             
             let paymentMethodStackView = UIStackView()
+            paymentMethodStackView.translatesAutoresizingMaskIntoConstraints = false
             paymentMethodStackView.layer.cornerRadius = 4.0
             paymentMethodStackView.clipsToBounds = true
             paymentMethodStackView.backgroundColor = UIColor.black.withAlphaComponent(0.05)

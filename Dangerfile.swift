@@ -47,7 +47,7 @@ if swiftFilesNotContainingUIKitImport.count > 0 {
 
 // Raw check based on created / updated files containing `import XCTest`
 
-let swiftTestFilesContainChanges = sdkEditedFiles.filter {
+let swiftTestFilesContainChanges = allCreatedAndModifiedFiles.filter {
     $0.fileType == .swift &&
     danger.utils.readFile($0).contains("import XCTest")
 }

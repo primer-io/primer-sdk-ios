@@ -22,14 +22,14 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     override func validate() throws {
-        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
         
-        guard decodedClientToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+        guard decodedJWTToken.pciUrl != nil else {
+            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -40,16 +40,18 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
         
-        guard decodedClientToken.coreUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.coreUrl", value: decodedClientToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+        guard decodedJWTToken.coreUrl != nil else {
+            let err = PrimerError.invalidValue(key: "decodedClientToken.coreUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }
     }
     
     override func start() {
-        self.didPresentExternalView = {
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type)
+        self.didPresentExternalView = { [weak self] in
+            if let strongSelf = self {
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: strongSelf.config.type)
+            }
         }
         
         super.start()
@@ -225,7 +227,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let webAuthSession =  ASWebAuthenticationSession(
                     url: url,
                     callbackURLScheme: urlScheme,
-                    completionHandler: { (url, error) in
+                    completionHandler: { [weak self] (url, error) in
                         if let error = error {
                             seal.reject(error)
                             
@@ -233,7 +235,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                             seal.fulfill(url)
                         }
 
-                        (self.session as! ASWebAuthenticationSession).cancel()
+                        (self?.session as? ASWebAuthenticationSession)?.cancel()
                     }
                 )
                 session = webAuthSession
@@ -255,7 +257,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     }
                 )
 
-                (session as! SFAuthenticationSession).start()
+                (self.session as? SFAuthenticationSession)?.start()
             }
             
             didPresentExternalView?()
@@ -386,7 +388,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private func generateBillingAgreementConfirmation() -> Promise<Response.Body.PayPal.ConfirmBillingAgreement> {
         return Promise { seal in
-            self.generateBillingAgreementConfirmation { (billingAgreementRes, err) in
+            self.generateBillingAgreementConfirmation { [unowned self] (billingAgreementRes, err) in
                 if let err = err {
                     seal.reject(err)
                 } else if let billingAgreementRes = billingAgreementRes {

@@ -35,7 +35,7 @@ protocol CardComponentsManagerProtocol {
     var merchantIdentifier: String? { get }
     var amount: Int? { get }
     var currency: Currency? { get }
-    var decodedClientToken: DecodedClientToken? { get }
+    var decodedJWTToken: DecodedJWTToken? { get }
     var paymentMethodsConfig: PrimerAPIConfiguration? { get }
     
     func tokenize()
@@ -59,8 +59,8 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var merchantIdentifier: String?
     public var amount: Int?
     public var currency: Currency?
-    internal var decodedClientToken: DecodedClientToken? {
-        return ClientTokenService.decodedClientToken
+    internal var decodedJWTToken: DecodedJWTToken? {
+        return PrimerAPIConfigurationModule.decodedJWTToken
     }
     internal var paymentMethodsConfig: PrimerAPIConfiguration?
     private(set) public var isLoading: Bool = false
@@ -92,9 +92,8 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         delegate?.cardComponentsManager?(self, isLoading: isLoading)
     }
     
-    private func fetchClientToken() -> Promise<DecodedClientToken> {
+    private func fetchClientToken() -> Promise<DecodedJWTToken> {
         return Promise { seal in
-            
             guard let delegate = delegate else {
                 print("WARNING!\nDelegate has not been set")
                 let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -109,12 +108,17 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     return
                 }
                 
+                let apiConfigurationModule = PrimerAPIConfigurationModule()
                 firstly {
-                    ClientTokenService.storeClientToken(clientToken, isAPIValidationEnabled: false)
+                    apiConfigurationModule.setupSession(
+                        forClientToken: clientToken,
+                        requestDisplayMetadata: false,
+                        requestClientTokenValidation: false,
+                        requestVaultedPaymentMethods: false)
                 }
                 .done {
-                    if let decodedClientToken = self.decodedClientToken {
-                        seal.fulfill(decodedClientToken)
+                    if let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken {
+                        seal.fulfill(decodedJWTToken)
                     } else {
                         precondition(false, "Decoded client token should never be null at this point.")
                         let err = PrimerError.invalidValue(key: "self.decodedClientToken", value: nil, userInfo: nil, diagnosticsId: nil)
@@ -129,18 +133,18 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         }
     }
     
-    private func fetchClientTokenIfNeeded() -> Promise<DecodedClientToken> {
+    private func fetchClientTokenIfNeeded() -> Promise<DecodedJWTToken> {
         return Promise { seal in
             do {
-                if let decodedClientToken = decodedClientToken {
-                    try decodedClientToken.validate()
-                    seal.fulfill(decodedClientToken)
+                if let decodedJWTToken = decodedJWTToken {
+                    try decodedJWTToken.validate()
+                    seal.fulfill(decodedJWTToken)
                 } else {
                     firstly {
                         self.fetchClientToken()
                     }
-                    .done { decodedClientToken in
-                        seal.fulfill(decodedClientToken)
+                    .done { decodedJWTToken in
+                        seal.fulfill(decodedJWTToken)
                     }
                     .catch { err in
                         seal.reject(err)
@@ -153,8 +157,8 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     firstly {
                         self.fetchClientToken()
                     }
-                    .done { decodedClientToken in
-                        seal.fulfill(decodedClientToken)
+                    .done { decodedJWTToken in
+                        seal.fulfill(decodedJWTToken)
                     }
                     .catch { err in
                         seal.reject(err)
@@ -167,43 +171,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         }
     }
     
-    private func fetchPaymentMethodConfigIfNeeded() -> Promise<PrimerAPIConfiguration> {
-        return Promise { seal in
-            if let paymentMethodsConfig = paymentMethodsConfig {
-                seal.fulfill(paymentMethodsConfig)
-            } else {
-                guard let decodedClientToken = decodedClientToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
-                }
-                
-                do {
-                    try decodedClientToken.validate()
-                } catch {
-                    seal.reject(error)
-                    return
-                }
-                
-                let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: true)
-                
-                firstly {
-                    configurationService.fetchConfiguration()
-                }
-                .done {
-                    let primerAPIConfiguration = AppState.current.apiConfiguration!
-                    seal.fulfill(primerAPIConfiguration)
-                }
-                .catch { err in
-                    seal.reject(err)
-                }
-            }
-        }
-    }
-    
     private func validateCardComponents() throws {
-        
         var errors: [Error] = []
         
         if !cardnumberField.cardnumber.isValidCardNumber {
@@ -242,11 +210,8 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             firstly {
                 self.fetchClientTokenIfNeeded()
             }
-            .then { decodedClientToken -> Promise<PrimerAPIConfiguration> in
-                return self.fetchPaymentMethodConfigIfNeeded()
-            }
-            .done { paymentMethodsConfig in
-                self.paymentMethodsConfig = paymentMethodsConfig
+            .done { _ in
+                self.paymentMethodsConfig = PrimerAPIConfigurationModule.apiConfiguration
                 
                 let paymentInstrument = CardPaymentInstrument(
                     number: self.cardnumberField.cardnumber,
@@ -263,7 +228,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 }
                 .done { paymentMethodTokenData in
                     var isThreeDSEnabled: Bool = false
-                    if AppState.current.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
+                    if PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
                         isThreeDSEnabled = true
                     }
                     
@@ -290,7 +255,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                             return
                         }
                         
-                        guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                             ErrorHandler.handle(error: err)
                             self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
@@ -299,7 +264,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         
                         threeDSService.perform3DS(
                             paymentMethodTokenData: paymentMethodTokenData,
-                            protocolVersion: decodedClientToken.env == "PRODUCTION" ? .v1 : .v2,
+                            protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2,
                             beginAuthExtraData: beginAuthExtraData,
                             sdkDismissed: { () in
                                 
@@ -368,8 +333,8 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var currency: Currency?
     
-    var decodedClientToken: DecodedClientToken? {
-        return ClientTokenService.decodedClientToken
+    var decodedJWTToken: DecodedJWTToken? {
+        return PrimerAPIConfigurationModule.decodedJWTToken
     }
     
     var paymentMethodsConfig: PrimerAPIConfiguration?

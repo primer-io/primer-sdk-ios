@@ -10,7 +10,7 @@
 
 protocol UserInterfaceModuleProtocol {
     
-    var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol { get }
+    var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol! { get }
     var logo: UIImage? { get }
     var icon: UIImage? { get }
     var surchargeSectionText: String? { get }
@@ -28,7 +28,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     
     // MARK: - PROPERTIES
     
-    var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol
+    weak var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol!
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     var logo: UIImage? {
@@ -730,7 +730,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return Strings.CardFormView.additionalFeesTitle
         default:
             guard let currency = AppState.current.currency else { return nil }
-            guard let availablePaymentMethods = AppState.current.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
+            guard let availablePaymentMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
             guard let str = availablePaymentMethods.filter({ $0.type == paymentMethodTokenizationViewModel.config.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
             return "+\(str)"
         }
@@ -880,9 +880,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         ]
         
         let paymentMethodButton = PrimerButton()
+        paymentMethodButton.translatesAutoresizingMaskIntoConstraints = false
         paymentMethodButton.accessibilityIdentifier = paymentMethodTokenizationViewModel.config.type
         paymentMethodButton.clipsToBounds = true
-        paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
         let imagePadding: CGFloat = 20
         let leftPadding = UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0
         let defaultRightPadding = customPaddingSettingsCard.contains(paymentMethodTokenizationViewModel.config.type) ? imagePadding : 0
@@ -904,6 +904,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         paymentMethodButton.tintColor = buttonTintColor
         paymentMethodButton.layer.borderWidth = buttonBorderWidth
         paymentMethodButton.layer.borderColor = buttonBorderColor?.cgColor
+        paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
         paymentMethodButton.addTarget(self, action: #selector(paymentMethodButtonTapped(_:)), for: .touchUpInside)
         return paymentMethodButton
     }

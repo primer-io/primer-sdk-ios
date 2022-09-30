@@ -12,6 +12,7 @@ import Foundation
 class Analytics {
     
     static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics")
+    static var apiClient: PrimerAPIClientProtocol?
     
     struct Event: Codable {
         // The variables below are used locally, and are getting deleted before sending them.
@@ -34,10 +35,10 @@ class Analytics {
         init(eventType: Analytics.Event.EventType, properties: AnalyticsEventProperties?) {
             self.eventType = eventType
             self.properties = properties
-            self.analyticsUrl = ClientTokenService.decodedClientToken?.analyticsUrl
+            self.analyticsUrl = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrl
             self.checkoutSessionId = PrimerInternal.shared.checkoutSessionId
-            self.clientSessionId = AppState.current.apiConfiguration?.clientSession?.clientSessionId
-            self.customerId = AppState.current.apiConfiguration?.clientSession?.customer?.id
+            self.clientSessionId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId
+            self.customerId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id
             self.localId = String.randomString(length: 32)
             self.sdkSessionId = PrimerInternal.shared.sdkSessionId
         }

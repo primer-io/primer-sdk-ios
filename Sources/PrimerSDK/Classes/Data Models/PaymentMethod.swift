@@ -19,7 +19,7 @@ extension PrimerTheme {
 class PrimerPaymentMethod: Codable {
     
     static func getPaymentMethod(withType type: String) -> PrimerPaymentMethod? {
-        return AppState.current.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
+        return PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
     }
     
     let id: String? // Will be nil for cards
@@ -59,7 +59,7 @@ class PrimerPaymentMethod: Codable {
     }
     
     var hasUnknownSurcharge: Bool = false
-    var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
+    lazy var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? = {
         if implementationType == .webRedirect {
             return WebRedirectPaymentMethodTokenizationViewModel(config: self)
             
@@ -110,7 +110,7 @@ class PrimerPaymentMethod: Codable {
         log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD TYPE", message: type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
         
         return nil
-    }
+    }()
     
     var isCheckoutEnabled: Bool {
         if self.baseLogoImage == nil {
