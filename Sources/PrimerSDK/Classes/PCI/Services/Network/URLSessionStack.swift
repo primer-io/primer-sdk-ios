@@ -10,6 +10,7 @@
 import Foundation
 
 internal class URLSessionStack: NetworkService {
+    
     private let session: URLSession
     private let parser: Parser
     
@@ -24,6 +25,7 @@ internal class URLSessionStack: NetworkService {
     
     // swiftlint:disable function_body_length
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) {
+        
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         let id = String.randomString(length: 32)
         
@@ -208,10 +210,11 @@ internal class URLSessionStack: NetworkService {
                 }
             } catch {
                 if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments), let jsonDic = json as? [String: Any?],
-                   let primerErrorJSON = jsonDic["error"] as? [String: Any] {
-                    let statusCode = (response as! HTTPURLResponse).statusCode
+                   let primerErrorJSON = jsonDic["error"] as? [String: Any],
+                   let primerErrorObject = try? JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed),
+                   let statusCode = (response as? HTTPURLResponse)?.statusCode {
                     
-                    let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: try! JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed))
+                    let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: primerErrorObject)
                     
                     if resEvent != nil {
                         resEventProperties?.errorBody = "\(primerErrorJSON)"
