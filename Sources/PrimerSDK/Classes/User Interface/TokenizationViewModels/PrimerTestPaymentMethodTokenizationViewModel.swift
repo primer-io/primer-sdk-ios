@@ -13,12 +13,12 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     
     // MARK: - Properties
     
-    internal private(set) var decisions = PrimerTestPaymentMethodSessionInfo.FlowDecision.allCases
+    private let decisions = PrimerTestPaymentMethodSessionInfo.FlowDecision.allCases
     private var selectedDecision: PrimerTestPaymentMethodSessionInfo.FlowDecision!
     private var decisionSelectionCompletion: ((PrimerTestPaymentMethodSessionInfo.FlowDecision) -> Void)?
     private var payButtonTappedCompletion: (() -> Void)?
     private var lastSelectedIndexPath: IndexPath?
-    let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     var viewHeight: CGFloat {
         180+(CGFloat(decisions.count)*tableView.rowHeight)

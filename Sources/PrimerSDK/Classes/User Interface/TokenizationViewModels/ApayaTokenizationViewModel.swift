@@ -236,7 +236,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse, completion: @escaping (_ paymentMethod: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+        guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             completion(nil, err)

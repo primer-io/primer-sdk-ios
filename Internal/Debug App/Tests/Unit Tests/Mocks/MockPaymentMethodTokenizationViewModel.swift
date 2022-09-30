@@ -15,7 +15,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     
     static var apiClient: PrimerAPIClientProtocol?
     
-    var config: PrimerPaymentMethod
+    var config: PrimerPaymentMethod!
     var uiModule: UserInterfaceModule!
     var position: Int = 0
     var checkouEventsNotifierModule: CheckoutEventsNotifierModule

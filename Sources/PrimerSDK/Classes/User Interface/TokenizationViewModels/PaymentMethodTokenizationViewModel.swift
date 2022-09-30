@@ -20,7 +20,7 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     init(config: PrimerPaymentMethod)
     
     // UI
-    var config: PrimerPaymentMethod { get set }
+    var config: PrimerPaymentMethod! { get set }
     var uiModule: UserInterfaceModule! { get }
     var position: Int { get set }
     
@@ -56,15 +56,17 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
 }
 
 internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
-    func cancel()
+    
     var tableView: UITableView { get set }
     var searchableTextField: PrimerSearchTextField { get set }
-    var config: PrimerPaymentMethod { get set }
+    var config: PrimerPaymentMethod! { get set }
+    
+    func cancel()
 }
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
 
-    var config: PrimerPaymentMethod
+    weak var config: PrimerPaymentMethod!
     static var apiClient: PrimerAPIClientProtocol?
     
     // Events

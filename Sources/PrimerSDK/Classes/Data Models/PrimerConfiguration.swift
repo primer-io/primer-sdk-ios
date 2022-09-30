@@ -108,12 +108,12 @@ extension Response.Body {
                 }
             }
             
-            #if !canImport(PrimerKlarnaSDK)
+#if !canImport(PrimerKlarnaSDK)
             if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
                 viewModels.remove(at: klarnaViewModelIndex)
                 print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
             }
-            #endif
+#endif
             
             for (index, viewModel) in viewModels.enumerated() {
                 if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
@@ -124,7 +124,7 @@ extension Response.Body {
             for (index, viewModel) in viewModels.enumerated() {
                 viewModel.position = index
             }
-                    
+            
             return viewModels
         }
         
