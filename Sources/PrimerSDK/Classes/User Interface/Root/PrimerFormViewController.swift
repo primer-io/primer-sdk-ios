@@ -32,6 +32,7 @@ class PrimerFormViewController: PrimerViewController {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         let availablePaymentMethodsContainerStackView = UIStackView()
+        availablePaymentMethodsContainerStackView.translatesAutoresizingMaskIntoConstraints = false
         availablePaymentMethodsContainerStackView.axis = .vertical
         availablePaymentMethodsContainerStackView.alignment = .fill
         availablePaymentMethodsContainerStackView.distribution = .fill
@@ -74,6 +75,7 @@ class PrimerFormViewController: PrimerViewController {
             }
             
             let availablePaymentMethodsStackView = UIStackView()
+            availablePaymentMethodsStackView.translatesAutoresizingMaskIntoConstraints = false
             availablePaymentMethodsStackView.axis = .vertical
             availablePaymentMethodsStackView.alignment = .fill
             availablePaymentMethodsStackView.distribution = .fill
