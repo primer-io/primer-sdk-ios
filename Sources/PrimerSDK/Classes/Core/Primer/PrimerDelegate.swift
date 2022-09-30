@@ -124,8 +124,14 @@ internal class PrimerDelegateProxy {
                 decisionHandler(.fail(withErrorMessage: nil))
                 return
             }
-
-            if Primer.shared.delegate?.primerDidFailWithError != nil {
+            
+            if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail != nil {
+                DispatchQueue.main.async {
+                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail!(withError: exposedError)
+                    decisionHandler(.fail(withErrorMessage: nil))
+                }
+                
+            } else if Primer.shared.delegate?.primerDidFailWithError != nil {
                 Primer.shared.delegate?.primerDidFailWithError?(exposedError, data: data, decisionHandler: { errorDecision in
                     switch errorDecision.type {
                     case .fail(let message):
@@ -135,10 +141,6 @@ internal class PrimerDelegateProxy {
                     }
                 })
                 
-            }
-            
-            if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail != nil {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail!(withError: exposedError)
             }
         }
     }
