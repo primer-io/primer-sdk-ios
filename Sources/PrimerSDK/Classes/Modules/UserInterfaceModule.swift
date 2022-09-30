@@ -880,9 +880,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         ]
         
         let paymentMethodButton = PrimerButton()
+        paymentMethodButton.translatesAutoresizingMaskIntoConstraints = false
         paymentMethodButton.accessibilityIdentifier = paymentMethodTokenizationViewModel.config.type
         paymentMethodButton.clipsToBounds = true
-        paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
         let imagePadding: CGFloat = 20
         let leftPadding = UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0
         let defaultRightPadding = customPaddingSettingsCard.contains(paymentMethodTokenizationViewModel.config.type) ? imagePadding : 0
@@ -904,6 +904,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         paymentMethodButton.tintColor = buttonTintColor
         paymentMethodButton.layer.borderWidth = buttonBorderWidth
         paymentMethodButton.layer.borderColor = buttonBorderColor?.cgColor
+        paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
         paymentMethodButton.addTarget(self, action: #selector(paymentMethodButtonTapped(_:)), for: .touchUpInside)
         return paymentMethodButton
     }
