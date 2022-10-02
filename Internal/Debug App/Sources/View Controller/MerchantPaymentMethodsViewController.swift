@@ -121,7 +121,8 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
+            let redirectPaymentMethodManager = PrimerRedirectPaymentMethodManager(paymentMethodType: paymentMethodType)
+            try? redirectPaymentMethodManager.showPaymentMethod(intent: .checkout)
         }
     }
 }
@@ -276,7 +277,6 @@ class MerchantPaymentMethodCell: UITableViewCell {
         paymentMethodButton.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         paymentMethodButton.topAnchor.constraint(equalTo: topAnchor).isActive = true
         paymentMethodButton.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        paymentMethodButton.addTarget(self, action: #selector(paymentButtonTapped), for: .touchUpInside)
     }
     
     @IBAction func paymentButtonTapped(_ sender: UIButton) {
