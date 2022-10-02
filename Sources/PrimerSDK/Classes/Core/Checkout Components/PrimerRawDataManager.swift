@@ -92,22 +92,13 @@ extension PrimerHeadlessUniversalCheckout {
         }
                 
         public func submit() {
+            
             guard let rawData = rawData else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 self.delegate?.primerRawDataManager?(self, dataIsValid: false, errors: [err])
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
                 return
-            }
-            
-            if let rawCardData = rawData as? PrimerCardData {
-                do {
-                    try rawCardData.validate()
-                } catch {
-                    self.delegate?.primerRawDataManager?(self, dataIsValid: false, errors: [error])
-                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error)
-                    return
-                }
             }
             
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationDidStart(for: self.paymentMethodType)

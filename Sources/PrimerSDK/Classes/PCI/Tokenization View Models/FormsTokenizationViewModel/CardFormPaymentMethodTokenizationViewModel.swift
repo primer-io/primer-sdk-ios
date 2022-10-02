@@ -469,12 +469,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
             
-            if decodedClientToken.intent?.contains("_REDIRECTION") == true {
-                if let redirectUrlStr = decodedClientToken.redirectUrl,
+            if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+                if let redirectUrlStr = decodedJWTToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),
-                   let statusUrlStr = decodedClientToken.statusUrl,
+                   let statusUrlStr = decodedJWTToken.statusUrl,
                    let statusUrl = URL(string: statusUrlStr),
-                   decodedClientToken.intent != nil {
+                   decodedJWTToken.intent != nil {
                     
                     DispatchQueue.main.async {
                         UIApplication.shared.endIgnoringInteractionEvents()
@@ -497,7 +497,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     seal.reject(error)
                 }
                 
-            } else if decodedClientToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+            } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
     #if canImport(Primer3DS)
                 guard let paymentMethodTokenData = paymentMethodTokenData else {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)

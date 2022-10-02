@@ -64,10 +64,15 @@ class PrimerRawDataManagerTests: XCTestCase {
             cvv: "123",
             cardholderName: "John Smith")
         
-        do {
-            try rawCardData.validate()
+        let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+        
+        firstly {
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
             // Continue
-        } catch {
+        }
+        .catch { _ in
             XCTAssert(false, "Card data should pass validation")
         }
     }
@@ -80,37 +85,43 @@ class PrimerRawDataManagerTests: XCTestCase {
             cvv: "123",
             cardholderName: "John Smith")
         
-        do {
+        let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+        
+        firstly {
             rawCardData.cardNumber = "42424242424242421"
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
         
-        do {
+        firstly {
             rawCardData.cardNumber = "424242424242424211"
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
         
-        do {
+        firstly {
             rawCardData.cardNumber = "424242424242424212345"
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
         
-        do {
+        firstly {
             rawCardData.cardNumber = ""
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
     }
     
     func test_invalid_expiry_date_in_raw_card_data() throws {
@@ -121,85 +132,97 @@ class PrimerRawDataManagerTests: XCTestCase {
             cvv: "123",
             cardholderName: "John Smith")
         
-        do {
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
-        }
+        let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
         
-        do {
+        firstly {
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+        
+        firstly {
             rawCardData.expiryMonth = "a"
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
         
-        do {
+        firstly {
             rawCardData.expiryMonth = "1"
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
-        
-        do {
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+        firstly {
             rawCardData.expiryMonth = ""
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
-        
-        do {
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+        firstly {
             rawCardData.expiryMonth = "13"
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
-        
-        do {
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+        firstly {
             rawCardData.expiryMonth = "019"
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
-        
-        do {
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+        firstly {
             rawCardData.expiryMonth = "02"
-            rawCardData.expiryYear = ""
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            rawCardData.expiryYear  = ""
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
         
-        do {
-            rawCardData.expiryYear = "25"
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+        firstly {
+            rawCardData.expiryYear  = "25"
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
-        
-        do {
-            rawCardData.expiryYear = "2a5"
-            try rawCardData.validate()
+        .done { _ in
             XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
         }
-        
-        do {
-            rawCardData.expiryYear = "2019"
-            try rawCardData.validate()
+        .catch { _ in }
+
+        firstly {
+            rawCardData.expiryYear  = "2a5"
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
             XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
         }
+        .catch { _ in }
+
+        firstly {
+            rawCardData.expiryYear  = "2019"
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
     }
     
     func test_invalid_cvv_in_raw_card_data() throws {
@@ -209,49 +232,57 @@ class PrimerRawDataManagerTests: XCTestCase {
             expiryYear: "2040",
             cvv: "12345",
             cardholderName: "John Smith")
-        
-        do {
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
 
+        let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+
+        firstly {
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
         
-        do {
+        firstly {
             rawCardData.cardNumber = testCardNumbers[.visa]!.first!
             rawCardData.cvv = "1234"
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
-        
-        do {
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+
+        firstly {
             rawCardData.cardNumber = testCardNumbers[.visa]!.first!
             rawCardData.cvv = "1234"
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
-        
-        do {
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+        firstly {
             rawCardData.cardNumber = testCardNumbers[.masterCard]!.first!
             rawCardData.cvv = "1234"
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
-        
-        do {
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+        firstly {
             rawCardData.cardNumber = testCardNumbers[.amex]!.first!
             rawCardData.cvv = "123"
-            try rawCardData.validate()
-            XCTAssert(false, "Card data should not pass validation")
-        } catch {
-
+            return tokenizationBuilder.validateRawData(rawCardData)
         }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
     }
 }
 
