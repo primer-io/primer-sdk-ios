@@ -441,21 +441,23 @@ extension PrimerHeadlessUniversalCheckout {
                         } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                             switch resumeDecisionType {
                             case .continueWithNewClientToken(let newClientToken):
+                                let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
+                                
                                 firstly {
-                                    ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: true)
-                                }
-                                .then { () -> Promise<Void> in
-                                    let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: false)
-                                    return configurationService.fetchConfiguration()
+                                    apiConfigurationModule.setupSession(
+                                        forClientToken: newClientToken,
+                                        requestDisplayMetadata: false,
+                                        requestClientTokenValidation: true,
+                                        requestVaultedPaymentMethods: false)
                                 }
                                 .done {
-                                    guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                                    guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                                         let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                         ErrorHandler.handle(error: err)
                                         throw err
                                     }
                                     
-                                    seal.fulfill(decodedClientToken)
+                                    seal.fulfill(decodedJWTToken)
                                 }
                                 .catch { err in
                                     seal.reject(err)
@@ -463,10 +465,10 @@ extension PrimerHeadlessUniversalCheckout {
                             }
                             
                         } else {
-                          precondition(false)
+                            precondition(false)
                         }
                     }
-
+                    
                 } else {
                     guard let paymentMethodTokenString = paymentMethodTokenData.token else {
                         let paymentMethodTokenError = PrimerError.invalidValue(key: "resumePaymentId", value: "Payment method token not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -482,7 +484,7 @@ extension PrimerHeadlessUniversalCheckout {
                             let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                             throw err
                         }
-
+                        
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse!))
                         self.resumePaymentId = paymentResponse!.id
                         
@@ -519,7 +521,7 @@ extension PrimerHeadlessUniversalCheckout {
         func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
             return Promise { seal in
                 if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-        #if canImport(Primer3DS)
+#if canImport(Primer3DS)
                     guard let paymentMethodTokenData = paymentMethodTokenData else {
                         let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -551,11 +553,11 @@ extension PrimerHeadlessUniversalCheckout {
                             seal.reject(containerErr)
                         }
                     }
-        #else
+#else
                     let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
-        #endif
+#endif
                     
                 } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
                     if let redirectUrlStr = decodedJWTToken.redirectUrl,
@@ -681,7 +683,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         // Create payment with Payment method token
-
+        
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
             return Promise { seal in
                 let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
@@ -697,12 +699,12 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     
                     if let paymentFailureReason = paymentResponse?.paymentFailureReason,
-                    let paymentErrorCode = PrimerPaymentErrorCode(rawValue: paymentFailureReason),
+                       let paymentErrorCode = PrimerPaymentErrorCode(rawValue: paymentFailureReason),
                        let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
                         seal.reject(error)
                         return
                     }
-                                    
+                    
                     seal.fulfill(paymentResponse)
                 }
             }
@@ -723,10 +725,10 @@ extension PrimerHeadlessUniversalCheckout {
                                     merchantErr = NSError.emptyDescriptionError
                                 }
                                 seal.reject(merchantErr)
-
+                                
                             case .succeed:
                                 seal.fulfill(nil)
-
+                                
                             case .continueWithNewClientToken:
                                 seal.fulfill(nil)
                             }
@@ -738,7 +740,7 @@ extension PrimerHeadlessUniversalCheckout {
                             }
                             
                         } else {
-                          precondition(false)
+                            precondition(false)
                         }
                     }
                     
@@ -790,12 +792,12 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     
                     if let paymentFailureReason = paymentResponse?.paymentFailureReason,
-                    let paymentErrorCode = PrimerPaymentErrorCode(rawValue: paymentFailureReason),
+                       let paymentErrorCode = PrimerPaymentErrorCode(rawValue: paymentFailureReason),
                        let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
                         seal.reject(error)
                         return
                     }
-                                    
+                    
                     seal.fulfill(paymentResponse)
                 }
             }

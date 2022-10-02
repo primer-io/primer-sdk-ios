@@ -52,10 +52,10 @@ internal class PrimerDelegateProxy {
                 return
             }
             
-            if PrimerInternal.shared.delegate?.primerDidTokenizePaymentMethod != nil,
+            if Primer.shared.delegate?.primerDidTokenizePaymentMethod != nil,
                (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil
             {
-                PrimerInternal.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
+                Primer.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
                 return
             }
         }
@@ -70,10 +70,10 @@ internal class PrimerDelegateProxy {
                 return
             }
             
-            if PrimerInternal.shared.delegate?.primerDidResumeWith != nil,
+            if Primer.shared.delegate?.primerDidResumeWith != nil,
                (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil
             {
-                PrimerInternal.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
+                Primer.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
                 return
             }
         }
