@@ -233,21 +233,23 @@ extension PaymentMethodTokenizationViewModel {
                     } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                         switch resumeDecisionType {
                         case .continueWithNewClientToken(let newClientToken):
+                            let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
+                            
                             firstly {
-                                ClientTokenService.storeClientToken(newClientToken, isAPIValidationEnabled: true)
-                            }
-                            .then { () -> Promise<Void> in
-                                let configurationService: PrimerAPIConfigurationServiceProtocol = PrimerAPIConfigurationService(requestDisplayMetadata: false)
-                                return configurationService.fetchConfiguration()
+                                apiConfigurationModule.setupSession(
+                                    forClientToken: newClientToken,
+                                    requestDisplayMetadata: false,
+                                    requestClientTokenValidation: true,
+                                    requestVaultedPaymentMethods: false)
                             }
                             .done {
-                                guard let decodedClientToken = ClientTokenService.decodedClientToken else {
+                                guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
                                 
-                                seal.fulfill(decodedClientToken)
+                                seal.fulfill(decodedJWTToken)
                             }
                             .catch { err in
                                 seal.reject(err)
