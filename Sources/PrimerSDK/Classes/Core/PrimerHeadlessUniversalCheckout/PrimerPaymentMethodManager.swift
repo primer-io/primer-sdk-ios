@@ -26,8 +26,8 @@ public class PrimerRedirectPaymentMethodManager: PrimerPaymentMethodManager {
     }
     
     public func showPaymentMethod(intent: PrimerSessionIntent) throws {
-        guard let clientToken = AppState.current.clientToken,
-              AppState.current.apiConfiguration == nil
+        guard let clientToken = PrimerAPIConfigurationModule.clientToken,
+              PrimerAPIConfigurationModule.apiConfiguration != nil
         else {
             let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: nil)
             ErrorHandler.handle(error: err)
