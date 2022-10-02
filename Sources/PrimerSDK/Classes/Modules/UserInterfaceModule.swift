@@ -740,10 +740,15 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var buttonTitle: String? {
+        
         let metadataButtonText = paymentMethodTokenizationViewModel.config.displayMetadata?.button.text
             ?? self.localDisplayMetadata?.button.text
         
         switch paymentMethodTokenizationViewModel.config.type {
+        
+        case PrimerPaymentMethodType.adyenBancontact.rawValue:
+            return Strings.PaymentButton.payWithCard
+            
         case PrimerPaymentMethodType.apaya.rawValue:
             // Update with `metadataButtonText ?? Strings.PaymentButton.payByMobile` once we'll get localized strings
             return Strings.PaymentButton.payByMobile
