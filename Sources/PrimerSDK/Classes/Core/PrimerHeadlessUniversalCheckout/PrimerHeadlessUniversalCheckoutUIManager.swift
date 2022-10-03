@@ -74,7 +74,18 @@ extension PrimerHeadlessUniversalCheckout {
         
         private(set) public var paymentMethodType: String
         private let appState: AppStateProtocol = AppState.current
-        private(set) public var requiredInputElementTypes: [PrimerInputElementType] = []
+        public var requiredInputElementTypes: [PrimerInputElementType] {
+            var mutableRequiredInputElementTypes: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
+            
+            if let checkoutModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
+               let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
+                if options.cardHolderName == true {
+                    mutableRequiredInputElementTypes.append(.cardholderName)
+                }
+            }
+            
+            return mutableRequiredInputElementTypes
+        }
         public var inputElements: [PrimerInputElement] = [] {
             didSet {
                 var tmpInputElementsContainers: [Weak<PrimerInputElementDelegateContainer>] = []
@@ -132,7 +143,6 @@ extension PrimerHeadlessUniversalCheckout {
         public override init() {
             self.paymentMethodType = PrimerPaymentMethodType.paymentCard.rawValue
             super.init()
-            self.requiredInputElementTypes = PrimerHeadlessUniversalCheckout.current.listRequiredInputElementTypes(for: paymentMethodType) ?? []
         }
         
         public func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {

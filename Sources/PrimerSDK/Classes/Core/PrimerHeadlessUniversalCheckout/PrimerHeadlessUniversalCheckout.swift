@@ -218,24 +218,6 @@ public class PrimerHeadlessUniversalCheckout {
         }
         return paymentMethods?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
-    
-    public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType]? {
-        switch paymentMethodType {
-        case PrimerPaymentMethodType.paymentCard.rawValue:
-            var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
-            if let checkoutModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
-               let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
-                if options.cardHolderName == true {
-                    requiredFields.append(.cardholderName)
-                }
-            }
-            return requiredFields
-        case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
-            return [.cardNumber, .expiryDate, .cardholderName]
-        default:
-            return []
-        }
-    }
 }
 
 extension PrimerHeadlessUniversalCheckout {
