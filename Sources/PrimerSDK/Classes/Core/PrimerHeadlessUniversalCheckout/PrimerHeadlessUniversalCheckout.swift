@@ -27,9 +27,6 @@ public class PrimerHeadlessUniversalCheckout {
     ]
     
     internal var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
-    internal let sdkSessionId = UUID().uuidString
-    internal private(set) var checkoutSessionId: String?
-    internal private(set) var timingEventId: String?
     
     fileprivate init() {}
     
@@ -50,27 +47,7 @@ public class PrimerHeadlessUniversalCheckout {
             print("WARNING!\nPrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
         }
         
-        PrimerInternal.shared.sdkIntegrationType = .headless
-        PrimerInternal.shared.intent = .checkout
-        
-        self.checkoutSessionId = UUID().uuidString
-        self.timingEventId = UUID().uuidString
-        
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
-                ]))
-        
-        let timingStartEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .start,
-                id: self.timingEventId))
-        
-        Analytics.Service.record(events: [sdkEvent, timingStartEvent])
+        DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         settings.uiOptions.isInitScreenEnabled = false
@@ -238,54 +215,13 @@ public class PrimerHeadlessUniversalCheckout {
     
     internal func listAvailablePaymentMethodsTypes() -> [String]? {
         var paymentMethods = PrimerAPIConfiguration.paymentMethodConfigs
-        
-#if !canImport(PrimerKlarnaSDK)
         if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
-
+#if !canImport(PrimerKlarnaSDK)
             paymentMethods?.remove(at: klarnaIndex)
             print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
-        }
 #endif
-        
-#if !canImport(PrimerIPay88SDK)
-        if let iPay88ViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
-            paymentMethods?.remove(at: iPay88ViewModelIndex)
-            print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.\n\n")
         }
-#endif
-        
         return paymentMethods?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
-    }
-    
-    public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType]? {
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: [
-                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
-                ]))
-        
-        Analytics.Service.record(events: [sdkEvent])
-        
-        switch paymentMethodType {
-        case PrimerPaymentMethodType.paymentCard.rawValue:
-            var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
-            let cardInfoOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
-            if cardInfoOptions?.cardHolderName == false {
-                return requiredFields
-            }
-            requiredFields.append(.cardholderName)
-            return requiredFields
-        case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
-            return [.cardNumber, .expiryDate, .cardholderName]
-        case PrimerPaymentMethodType.xenditOvo.rawValue:
-            return [.phoneNumber]
-        case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
-            return [.retailer]
-        default:
-            return []
-        }
     }
 }
 
