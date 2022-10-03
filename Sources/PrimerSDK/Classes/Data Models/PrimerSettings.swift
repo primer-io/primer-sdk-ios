@@ -6,7 +6,7 @@ internal protocol PrimerSettingsProtocol {
     var paymentHandling: PrimerPaymentHandling { get }
     var localeData: PrimerLocaleData { get }
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
-    var uiOptions: PrimerUIOptions { get }
+    var uiOptions: PrimerUIOptions { get set }
     var debugOptions: PrimerDebugOptions { get }
 }
 
@@ -19,7 +19,7 @@ public class PrimerSettings: PrimerSettingsProtocol {
     let paymentHandling: PrimerPaymentHandling
     let localeData: PrimerLocaleData
     let paymentMethodOptions: PrimerPaymentMethodOptions
-    let uiOptions: PrimerUIOptions
+    var uiOptions: PrimerUIOptions
     let debugOptions: PrimerDebugOptions
     
     public init(
