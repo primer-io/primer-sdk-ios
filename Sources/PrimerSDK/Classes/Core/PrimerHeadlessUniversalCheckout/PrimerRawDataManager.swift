@@ -548,6 +548,8 @@ extension PrimerHeadlessUniversalCheckout {
                             switch resumeDecisionType {
                             case .continueWithNewClientToken:
                                 seal.fulfill(nil)
+                            case .complete:
+                                seal.fulfill(nil)
                             }
                             
                         } else {
