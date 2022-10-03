@@ -153,6 +153,7 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate, Pr
             if let err = err {
                 DispatchQueue.main.async {
                     self.hideLoadingOverlay()
+                    decisionHandler(.complete())
                 }
             } else if let res = res {
                 self.paymentId = res.id
@@ -170,6 +171,8 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate, Pr
                             self.navigationController?.pushViewController(rvc, animated: true)
                         }
                     }
+                    
+                    decisionHandler(.complete())
                 }
 
             } else {
@@ -190,6 +193,7 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate, Pr
                 decisionHandler(.continueWithNewClientToken(clientToken))
             } else {
                 print("Payment has been resumed")
+                decisionHandler(.complete())
             }
         }
     }

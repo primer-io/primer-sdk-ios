@@ -468,6 +468,9 @@ extension PrimerHeadlessUniversalCheckout {
                                 .catch { err in
                                     seal.reject(err)
                                 }
+                                
+                            case .complete:
+                                seal.fulfill(nil)
                             }
                             
                         } else {
@@ -677,6 +680,8 @@ extension PrimerHeadlessUniversalCheckout {
                         } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                             switch resumeDecisionType {
                             case .continueWithNewClientToken:
+                                seal.fulfill(nil)
+                            case .complete:
                                 seal.fulfill(nil)
                             }
                             
