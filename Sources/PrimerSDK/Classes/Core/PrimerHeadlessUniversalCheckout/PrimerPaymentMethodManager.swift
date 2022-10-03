@@ -15,6 +15,7 @@ public enum PrimerPaymentMethodManagerCategory {
 
 protocol PrimerPaymentMethodManager {
     var paymentMethodType: String { get }
+    func showPaymentMethod(intent: PrimerSessionIntent) throws
 }
 
 public class PrimerPaymentMethodNativeUIManager: PrimerPaymentMethodManager {
