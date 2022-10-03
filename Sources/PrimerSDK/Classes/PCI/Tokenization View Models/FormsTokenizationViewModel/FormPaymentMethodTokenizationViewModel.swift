@@ -25,17 +25,16 @@ internal class Input {
     var primerTextFieldView: PrimerTextFieldView?
 }
 
-class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     
     // MARK: - Properties
     
     var inputs: [Input] = []
+    private var didCancelPolling: (() -> Void)?
     
     private var cardComponentsManager: CardComponentsManager!
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
-    var didCancel: (() -> Void)?
-    
+        
     private static let countryCodeFlag = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.flag ?? ""
     private static let countryDialCode = CountryCode.phoneNumberCountryCodes.first(where: { $0.code == PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.rawValue})?.dialCode ?? ""
         
