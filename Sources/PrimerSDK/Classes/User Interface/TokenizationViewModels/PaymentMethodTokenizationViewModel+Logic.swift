@@ -139,24 +139,54 @@ extension PaymentMethodTokenizationViewModel {
     
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
-            firstly {
-                self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
+            var cancelledError: PrimerError?
+            self.didCancel = {
+                self.isCancelled = true
+                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: nil)
+                ErrorHandler.handle(error: cancelledError!)
+                seal.reject(cancelledError!)
+            }
+            
+            firstly { () -> Promise<DecodedJWTToken?> in
+                if let cancelledError = cancelledError {
+                    throw cancelledError
+                }
+                return self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
             }
             .done { decodedJWTToken in
+                if let cancelledError = cancelledError {
+                    throw cancelledError
+                }
+                
                 if let decodedJWTToken = decodedJWTToken {
-                    firstly {
-                        self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
+                    firstly { () -> Promise<String?> in
+                        if let cancelledError = cancelledError {
+                            throw cancelledError
+                        }
+                        return self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
                     }
                     .done { resumeToken in
+                        if let cancelledError = cancelledError {
+                            throw cancelledError
+                        }
+                        
                         if let resumeToken = resumeToken {
-                            firstly {
-                                self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+                            firstly { () -> Promise<PrimerCheckoutData?> in
+                                if let cancelledError = cancelledError {
+                                    throw cancelledError
+                                }
+                                return self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
                             }
                             .done { checkoutData in
+                                if let cancelledError = cancelledError {
+                                    throw cancelledError
+                                }
                                 seal.fulfill(checkoutData)
                             }
                             .catch { err in
-                                seal.reject(err)
+                                if cancelledError == nil {
+                                    seal.reject(err)
+                                }
                             }
                         } else if let checkoutData = self.paymentCheckoutData {
                             seal.fulfill(checkoutData)
@@ -165,14 +195,18 @@ extension PaymentMethodTokenizationViewModel {
                         }
                     }
                     .catch { err in
-                        seal.reject(err)
+                        if cancelledError == nil {
+                            seal.reject(err)
+                        }
                     }
                 } else {
                     seal.fulfill(self.paymentCheckoutData)
                 }
             }
             .catch { err in
-                seal.reject(err)
+                if cancelledError == nil {
+                    seal.reject(err)
+                }
             }
         }
     }
