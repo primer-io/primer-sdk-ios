@@ -315,11 +315,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         let apiConfigurationModule = PrimerAPIConfigurationModule()
                         
                         firstly {
-                            apiConfigurationModule.setupSession(
-                                forClientToken: newClientToken,
-                                requestDisplayMetadata: false,
-                                requestClientTokenValidation: true,
-                                requestVaultedPaymentMethods: false)
+                            apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
                         }
                         .done {
                             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
