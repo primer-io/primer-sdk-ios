@@ -35,6 +35,8 @@ class MerchantPaymentMethodsViewController: UIViewController {
     var phoneNumber: String?
     private var paymentId: String?
     
+    var redirectManager: PrimerPaymentMethodNativeUIManager?
+    
 
     @IBOutlet weak var tableView: UITableView!
     var activityIndicator: UIActivityIndicatorView?
@@ -121,8 +123,8 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            let redirectPaymentMethodManager = PrimerRedirectPaymentMethodManager(paymentMethodType: paymentMethodType)
-            try? redirectPaymentMethodManager.showPaymentMethod(intent: .checkout)
+            redirectManager = PrimerPaymentMethodNativeUIManager(paymentMethodType: paymentMethodType)
+            try? redirectManager?.showPaymentMethod(intent: .checkout)
         }
     }
 }
@@ -136,6 +138,7 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate, Pr
     func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)")
         self.showLoadingOverlay()
+//        redirectManager?.cancel()
     }
     
     func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
@@ -144,6 +147,7 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate, Pr
     
     func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
+//        redirectManager?.cancel()
     }
     
     func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void) {
@@ -166,10 +170,10 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate, Pr
                     }
                     
                     if let data = try? JSONEncoder().encode(res) {
-                        DispatchQueue.main.async {
-                            let rvc = HUCResultViewController.instantiate(data: [data])
-                            self.navigationController?.pushViewController(rvc, animated: true)
-                        }
+//                        DispatchQueue.main.async {
+//                            let rvc = HUCResultViewController.instantiate(data: [data])
+//                            self.navigationController?.pushViewController(rvc, animated: true)
+//                        }
                     }
                     
                     decisionHandler(.complete())
@@ -281,9 +285,5 @@ class MerchantPaymentMethodCell: UITableViewCell {
         paymentMethodButton.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         paymentMethodButton.topAnchor.constraint(equalTo: topAnchor).isActive = true
         paymentMethodButton.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-    }
-    
-    @IBAction func paymentButtonTapped(_ sender: UIButton) {
-        let redirectPaymentMethodManager = PrimerRedirectPaymentMethodManager(paymentMethodType: self.paymentMethod.paymentMethodType)
     }
 }
