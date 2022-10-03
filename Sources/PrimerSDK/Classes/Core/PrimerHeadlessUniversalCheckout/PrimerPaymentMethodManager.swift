@@ -10,14 +10,14 @@
 import Foundation
 
 public enum PrimerPaymentMethodManagerCategory {
-    case redirect, raw, cardComponents
+    case paymentMethodNativeUI, raw, cardComponents
 }
 
 protocol PrimerPaymentMethodManager {
     var paymentMethodType: String { get }
 }
 
-public class PrimerRedirectPaymentMethodManager: PrimerPaymentMethodManager {
+public class PrimerPaymentMethodNativeUIManager: PrimerPaymentMethodManager {
     
     public let paymentMethodType: String
     private var paymentMethod: PrimerPaymentMethod?
@@ -51,7 +51,7 @@ public class PrimerRedirectPaymentMethodManager: PrimerPaymentMethodManager {
         PrimerInternal.shared.showPaymentMethod(self.paymentMethodType, withIntent: intent, andClientToken: clientToken)
     }
     
-    public func cancel() {
+    private func cancel() {
         self.paymentMethod?.tokenizationViewModel?.cancel()
     }
 }
