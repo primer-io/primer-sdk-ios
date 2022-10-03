@@ -53,6 +53,8 @@ internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
     func handleSuccessfulFlow()
     func handleFailureFlow(errorMessage: String?)
     func submitButtonTapped()
+    
+    func cancel()
 }
 
 internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
@@ -77,6 +79,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var didPresentPaymentMethodUI: (() -> Void)?
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
+    var didCancel: (() -> Void)?
+    var isCancelled: Bool = false
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
     var paymentCheckoutData: PrimerCheckoutData?
     var successMessage: String?
@@ -123,20 +127,44 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            firstly {
-                self.performPreTokenizationSteps()
+            var cancelledError: PrimerError?
+            self.didCancel = {
+                self.isCancelled = true
+                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: nil)
+                ErrorHandler.handle(error: cancelledError!)
+                seal.reject(cancelledError!)
+            }
+            
+            firstly { () -> Promise<Void> in
+                if let cancelledError = cancelledError {
+                    throw cancelledError
+                }
+                return self.performPreTokenizationSteps()
             }
             .then { () -> Promise<Void> in
+                if let cancelledError = cancelledError {
+                    throw cancelledError
+                }
                 return self.performTokenizationStep()
             }
             .then { () -> Promise<Void> in
+                if let cancelledError = cancelledError {
+                    throw cancelledError
+                }
                 return self.performPostTokenizationSteps()
             }
             .done {
+                if let cancelledError = cancelledError {
+                    throw cancelledError
+                }
                 seal.fulfill(self.paymentMethodTokenData!)
             }
             .catch { err in
-                seal.reject(err)
+                if cancelledError == nil {
+                    seal.reject(err)
+                } else {
+                    // Cancelled error has already been thrown
+                }
             }
         }
     }
@@ -159,6 +187,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     
     func submitButtonTapped() {
         fatalError("\(#function) must be overriden")
+    }
+    
+    func cancel() {
+        self.didCancel?()
     }
 }
 
