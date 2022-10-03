@@ -28,6 +28,10 @@ class PollingModule: Module {
     internal let url: URL
     internal private(set) var isCancelled: Bool = false
     internal var retryInterval: TimeInterval = 3
+    
+    deinit {
+        self.cancel()
+    }
 
     required init(url: URL) {
         self.url = url

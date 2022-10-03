@@ -16,6 +16,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
     private var statusUrl: URL!
     internal var qrCode: String?
     private var resumeToken: String!
+    private var didCancelPolling: (() -> Void)?
     
     deinit {
         tokenizationService = nil
@@ -107,11 +108,11 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             let pollingModule = PollingModule(url: statusUrl)
-            self.didCancel = {
-                pollingModule.cancel()
-                return
-            }
             
+            self.didCancelPolling = {
+                pollingModule.cancel()
+            }
+
             firstly {
                 pollingModule.start()
             }
@@ -123,10 +124,6 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                 seal.reject(err)
             }
         }
-    }
-    
-    func cancel() {
-        didCancel?()
     }
     
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
@@ -190,6 +187,12 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                 seal.reject(error)
             }
         }
+    }
+    
+    override func cancel() {
+        self.didCancelPolling?()
+        self.didCancelPolling = nil
+        super.cancel()
     }
 }
 

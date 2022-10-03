@@ -74,10 +74,11 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    func cancel() {
+    override func cancel() {
         self.webViewController = nil
         self.webViewCompletion = nil
         self.tmpTokenizationCallback = nil
+        super.cancel()
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {

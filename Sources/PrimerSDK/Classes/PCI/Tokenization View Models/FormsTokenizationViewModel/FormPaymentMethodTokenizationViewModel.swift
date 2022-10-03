@@ -25,17 +25,16 @@ internal class Input {
     var primerTextFieldView: PrimerTextFieldView?
 }
 
-class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     
     // MARK: - Properties
     
     var inputs: [Input] = []
+    private var didCancelPolling: (() -> Void)?
     
     private var cardComponentsManager: CardComponentsManager!
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
-    var didCancel: (() -> Void)?
-    
+        
     private static let countryCodeFlag = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.flag ?? ""
     private static let countryDialCode = CountryCode.phoneNumberCountryCodes.first(where: { $0.code == PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.rawValue})?.dialCode ?? ""
         
@@ -570,9 +569,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     }
                     .then { () -> Promise<String> in
                         let pollingModule = PollingModule(url: statusUrl)
-                        self.didCancel = {
+                        
+                        self.didCancelPolling = {
                             pollingModule.cancel()
-                            return
                         }
                         
                         return pollingModule.start()
@@ -844,6 +843,12 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             fatalError("Payment method card should never end here.")
         }
     }
+    
+    override func cancel() {
+        self.didCancelPolling?()
+        self.didCancelPolling = nil
+        super.cancel()
+    }
 }
 
 extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
@@ -889,17 +894,6 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
             countryFieldView.validation = .valid
             countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
             PrimerUIManager.primerRootViewController?.popViewController()
-    }
-}
-
-extension FormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol {
-    
-    func cancel() {
-        didCancel?()
-        inputs = []
-        
-        let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-        ErrorHandler.handle(error: err)
     }
 }
 
