@@ -11,7 +11,7 @@ import Foundation
 import SafariServices
 import UIKit
 
-class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     
     // MARK: - Properties
     
@@ -27,6 +27,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else { return false }
         return paymentMethodsRequiringCVVInput.contains(paymentMethodType)
     }
+    private var didCancelPolling: (() -> Void)?
     var dataSource = CountryCode.allCases {
         didSet {
             tableView.reloadData()
@@ -547,7 +548,13 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                         self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                     }
                     .then { () -> Promise<String> in
-                        return PollingModule(url: statusUrl).start()
+                        let pollingModule = PollingModule(url: statusUrl)
+                        
+                        self.didCancelPolling = {
+                            pollingModule.cancel()
+                        }
+                        
+                        return pollingModule.start()
                     }
                     .done { resumeToken in
                         seal.fulfill(resumeToken)
@@ -629,6 +636,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         Analytics.Service.record(event: viewEvent)
         
         self.userInputCompletion?()
+    }
+    
+    override func cancel() {
+        self.didCancelPolling?()
+        self.didCancelPolling = nil
+        super.cancel()
     }
 }
 
@@ -872,13 +885,6 @@ extension CardFormPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
         }
         
         webViewCompletion = nil
-    }
-}
-
-extension CardFormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol {
-    
-    func cancel() {
-        
     }
 }
 
