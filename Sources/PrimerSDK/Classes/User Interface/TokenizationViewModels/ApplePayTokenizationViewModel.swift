@@ -29,7 +29,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var applePayReceiveDataCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?
     // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
     private var applePayControllerCompletion: ((PKPaymentAuthorizationResult) -> Void)?
-    private var isCancelled: Bool = false
     private var didTimeout: Bool = false
     
     deinit {
