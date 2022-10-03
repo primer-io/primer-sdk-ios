@@ -248,6 +248,8 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         switch resumeDecisionType {
                         case .continueWithNewClientToken:
                             seal.fulfill(nil)
+                        case .complete:
+                            seal.fulfill(nil)
                         }
                         
                     } else {
@@ -373,6 +375,9 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                             .catch { err in
                                 seal.reject(err)
                             }
+                            
+                        case .complete:
+                            seal.fulfill(nil)
                         }
                         
                     } else {
