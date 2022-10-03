@@ -22,7 +22,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
      must be set before presenting the webview and nullified once polling returns a result. At the same time the webview should be dismissed.
      */
     var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-    var didCancel: (() -> Void)?
+    private var didCancelPolling: (() -> Void)?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -162,8 +162,12 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 pollingModule.cancel(withError: err)
             }
             
-            firstly {
-                pollingModule.start()
+            firstly { () -> Promise<String> in
+                if self.isCancelled {
+                    let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: nil)
+                    throw err
+                }
+                return pollingModule.start()
             }
             .done { resumeToken in
                 self.resumeToken = resumeToken
@@ -244,13 +248,18 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             }
         }
     }
+    
+    override func cancel() {
+        self.didCancelPolling?()
+        self.didCancelPolling = nil
+        super.cancel()
+    }
 }
 
 extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        self.didCancel?()
-        self.didCancel = nil
+        self.cancel()
     }
     
     func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {
