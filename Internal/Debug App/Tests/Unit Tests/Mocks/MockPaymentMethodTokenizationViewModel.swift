@@ -226,6 +226,10 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         
     }
     
+    func cancel() {
+        
+    }
+    
     private func validateReturningPromise() -> Promise<Void> {
         return Promise { seal in
             do {
