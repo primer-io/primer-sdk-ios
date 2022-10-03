@@ -191,13 +191,18 @@ class PrimerPaymentMethod: Codable {
         var categories: [PrimerPaymentMethodManagerCategory] = []
         
         if implementationType == .webRedirect {
-            categories.append(PrimerPaymentMethodManagerCategory.redirect)
+            categories.append(PrimerPaymentMethodManagerCategory.paymentMethodNativeUI)
             return categories
         }
         
         if self.type == PrimerPaymentMethodType.paymentCard.rawValue {
             categories.append(PrimerPaymentMethodManagerCategory.cardComponents)
             categories.append(PrimerPaymentMethodManagerCategory.raw)
+            return categories
+        }
+        
+        if self.type == PrimerPaymentMethodType.klarna.rawValue {
+            categories.append(PrimerPaymentMethodManagerCategory.paymentMethodNativeUI)
             return categories
         }
         
