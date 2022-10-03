@@ -34,6 +34,11 @@ public class PrimerRedirectPaymentMethodManager: PrimerPaymentMethodManager {
             throw err
         }
         
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        settings.uiOptions.isInitScreenEnabled = false
+        settings.uiOptions.isSuccessScreenEnabled = false
+        settings.uiOptions.isErrorScreenEnabled = false
+        
         PrimerInternal.shared.showPaymentMethod(self.paymentMethodType, withIntent: intent, andClientToken: clientToken)
     }
 }
