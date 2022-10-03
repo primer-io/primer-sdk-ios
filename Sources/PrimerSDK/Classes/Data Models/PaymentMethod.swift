@@ -201,7 +201,9 @@ class PrimerPaymentMethod: Codable {
             return categories
         }
         
-        if self.type == PrimerPaymentMethodType.klarna.rawValue {
+        if self.type == PrimerPaymentMethodType.applePay.rawValue ||
+            self.type == PrimerPaymentMethodType.klarna.rawValue ||
+            self.type == PrimerPaymentMethodType.payPal.rawValue {
             categories.append(PrimerPaymentMethodManagerCategory.paymentMethodNativeUI)
             return categories
         }
