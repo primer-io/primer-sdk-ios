@@ -213,6 +213,7 @@ extension MerchantHUCPaymentMethodsViewController {
                 decisionHandler(.continueWithNewClientToken(clientToken))
             } else {
                 print("Payment has been resumed")
+                decisionHandler(.complete())
             }
             
             let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
