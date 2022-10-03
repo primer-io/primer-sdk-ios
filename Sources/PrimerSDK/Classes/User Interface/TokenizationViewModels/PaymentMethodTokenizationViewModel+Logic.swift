@@ -53,18 +53,20 @@ extension PaymentMethodTokenizationViewModel {
                     let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
                     
                     if let primerErr = err as? PrimerError,
-                       case .cancelled = primerErr,
-                       PrimerHeadlessUniversalCheckout.current.delegate == nil {
-                        
+                       case .cancelled = primerErr
+                    {
                         firstly {
                             clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         }
                         .done { merchantErrorMessage in
-                            if PrimerInternal.shared.selectedPaymentMethodType == nil {
-                                PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
-                            } else {
-                                PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+                            if PrimerHeadlessUniversalCheckout.current.delegate == nil {
+                                if PrimerInternal.shared.selectedPaymentMethodType == nil {
+                                    PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
+                                } else {
+                                    PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+                                }
                             }
+                            
                         }
                         // The above promises will never end up on error.
                         .catch { _ in }
