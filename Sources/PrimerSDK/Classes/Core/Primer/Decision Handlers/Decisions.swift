@@ -75,6 +75,7 @@ public extension PrimerResumeDecision {
     
     public enum DecisionType: PrimerResumeDecisionTypeProtocol {
         case continueWithNewClientToken(_ newClientToken: String)
+        case complete
     }
         
     public var type: PrimerResumeDecisionTypeProtocol
@@ -88,6 +89,10 @@ public extension PrimerHeadlessUniversalCheckoutResumeDecision {
     
     static func continueWithNewClientToken(_ newClientToken: String) -> PrimerHeadlessUniversalCheckoutResumeDecision {
         PrimerHeadlessUniversalCheckoutResumeDecision(type: .continueWithNewClientToken(newClientToken))
+    }
+    
+    static func complete() -> PrimerHeadlessUniversalCheckoutResumeDecision {
+        PrimerHeadlessUniversalCheckoutResumeDecision(type: .complete)
     }
 }
 
