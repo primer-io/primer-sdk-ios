@@ -221,7 +221,7 @@ public protocol PrimerUIEventsDelegate {
 @objc
 public protocol PrimerCheckoutEventsDelegate {
     
-    @objc func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String])
+    @objc func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckoutPaymentMethod])
     @objc optional func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String)
     @objc optional func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)
     @objc optional func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)
