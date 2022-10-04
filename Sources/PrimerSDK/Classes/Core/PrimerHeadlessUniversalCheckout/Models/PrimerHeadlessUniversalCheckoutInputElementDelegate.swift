@@ -13,11 +13,11 @@ extension PrimerHeadlessUniversalCheckout {
     
     internal class Delegate: NSObject, UITextFieldDelegate {
         
-        private var inputElement: PrimerInputElement
+        private var inputElement: PrimerHeadlessUniversalCheckoutInputElement
         private weak var inputElementDelegate: PrimerInputElementDelegate?
         private var detectedType: Any?
         
-        init(inputElement: PrimerInputElement, inputElementDelegate: PrimerInputElementDelegate) {
+        init(inputElement: PrimerHeadlessUniversalCheckoutInputElement, inputElementDelegate: PrimerInputElementDelegate) {
             self.inputElement = inputElement
             self.inputElementDelegate = inputElementDelegate
         }
