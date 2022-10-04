@@ -25,7 +25,7 @@ class MerchantCardFormViewController: UIViewController {
     var paymentButton: UIButton!
     var paymentId: String?
     
-    var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager?
+    var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardComponentsUIManager?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,7 +57,7 @@ class MerchantCardFormViewController: UIViewController {
 
         PrimerHeadlessUniversalCheckout.current.delegate = self
 
-        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardFormUIManager(paymentMethodType: "PAYMENT_CARD")
+        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardComponentsUIManager()
 
         var tmpInputElements: [PrimerInputElement] = []
         for inputElementType in self.cardFormUIManager!.requiredInputElementTypes {

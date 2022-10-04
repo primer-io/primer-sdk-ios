@@ -29,48 +29,12 @@ public protocol PrimerHeadlessUniversalCheckoutUIManager {
 }
 
 public protocol PrimerCardFormDelegate: AnyObject  {
-    func cardFormUIManager(_ cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager, isCardFormValid: Bool)
+    func cardFormUIManager(_ cardFormUIManager: PrimerHeadlessUniversalCheckout.CardComponentsUIManager, isCardFormValid: Bool)
 }
 
 extension PrimerHeadlessUniversalCheckout {
     
-    public class UIManager: PrimerHeadlessUniversalCheckoutUIManager {
-        
-        private(set) public var paymentMethodType: String
-        private let appState: AppStateProtocol = AppState.current
-        
-        required public init(paymentMethodType: String) throws {
-            guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() else {
-                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
-            
-            if availablePaymentMethodTypes.filter({ $0 == paymentMethodType }).isEmpty {
-                let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
-            
-            self.paymentMethodType = paymentMethodType
-        }
-        
-        public func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
-            
-            // TODO: Implement data handling
-            
-            //            guard let data = data else { return }
-            //
-            //            if let ibanData = data as? IBANData {
-            //
-            //            } else if let otpData = data as? OTPData {
-            //
-            //            }
-            //
-        }
-    }
-    
-    public final class CardFormUIManager: NSObject, PrimerInputElementDelegate {
+    public final class CardComponentsUIManager: NSObject, PrimerInputElementDelegate {
         
         private(set) public var paymentMethodType: String
         private let appState: AppStateProtocol = AppState.current
@@ -820,7 +784,7 @@ extension PrimerHeadlessUniversalCheckout {
     }
 }
 
-extension PrimerHeadlessUniversalCheckout.CardFormUIManager: ResumeHandlerProtocol {
+extension PrimerHeadlessUniversalCheckout.CardComponentsUIManager: ResumeHandlerProtocol {
     
     // MARK: - RESUME HANDLER
     
@@ -833,7 +797,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager: ResumeHandlerProtoc
     public func handleSuccess() {}
 }
 
-extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
+extension PrimerHeadlessUniversalCheckout.CardComponentsUIManager {
     
     private func handle(_ clientToken: String) {
         
@@ -935,7 +899,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
     }
 }
 
-extension PrimerHeadlessUniversalCheckout.CardFormUIManager: SFSafariViewControllerDelegate {
+extension PrimerHeadlessUniversalCheckout.CardComponentsUIManager: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         
