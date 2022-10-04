@@ -101,7 +101,7 @@ extension MerchantCardFormViewController: PrimerCheckoutEventsDelegate, PrimerUI
         print("🤯🤯🤯 \(#function) paymentMethodType: \(paymentMethodType)")
     }
     
-    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckoutPaymentMethod]) {
+    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
         print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
     }
     
