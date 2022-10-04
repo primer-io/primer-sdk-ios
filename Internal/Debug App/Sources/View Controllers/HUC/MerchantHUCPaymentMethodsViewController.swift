@@ -24,7 +24,7 @@ class MerchantHUCPaymentMethodsViewController: UIViewController, PrimerHeadlessU
     var phoneNumber: String?
     private var paymentId: String?
     
-    var redirectManager: PrimerPaymentMethodNativeUIManager?
+    var redirectManager: PrimerHeadlessUniversalCheckout.PaymentMethodNativeUIManager?
     
 
     @IBOutlet weak var tableView: UITableView!
@@ -134,7 +134,7 @@ extension MerchantHUCPaymentMethodsViewController: UITableViewDataSource, UITabl
             let vc = MerchantHUCRawPhoneNumberDataViewController.instantiate(paymentMethodType: paymentMethodType)
             self.navigationController?.pushViewController(vc, animated: true)
         } else {
-            redirectManager = try? PrimerPaymentMethodNativeUIManager(paymentMethodType: paymentMethodType)
+            redirectManager = try? PrimerHeadlessUniversalCheckout.PaymentMethodNativeUIManager(paymentMethodType: paymentMethodType)
             try? redirectManager?.showPaymentMethod(intent: .checkout)
         }
     }
