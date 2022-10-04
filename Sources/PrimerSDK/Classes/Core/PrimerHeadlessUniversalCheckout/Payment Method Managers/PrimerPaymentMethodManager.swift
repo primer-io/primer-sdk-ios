@@ -38,6 +38,7 @@ extension PrimerHeadlessUniversalCheckout {
             settings.uiOptions.isErrorScreenEnabled = false
         }
         
+        @discardableResult
         private func validatePaymentMethod(withType paymentMethodType: String) throws -> PrimerPaymentMethod {
             guard PrimerAPIConfigurationModule.decodedJWTToken != nil,
                   PrimerAPIConfigurationModule.apiConfiguration != nil
