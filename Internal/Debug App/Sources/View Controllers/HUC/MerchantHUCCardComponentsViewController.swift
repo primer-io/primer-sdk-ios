@@ -126,24 +126,12 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
 
 // MARK: - PRIMER HEADLESS UNIVERSAL CHECKOUT DELEGATE
 
-// MARK: Auto Payment Handling
-
-extension MerchantHUCCardComponentsViewController {
+    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
+        print("🤯🤯🤯 \(#function) paymentMethodType: \(paymentMethodType)")
+    }
     
-    func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
-        print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
-        self.logs.append(#function)
-        
-        if let checkoutDataDictionary = try? data.asDictionary(),
-           let jsonData = try? JSONSerialization.data(withJSONObject: checkoutDataDictionary, options: .prettyPrinted),
-           let jsonString = jsonData.prettyPrintedJSONString {
-            self.checkoutData.append(jsonString as String)
-        }
-        
-        self.hideLoadingOverlay()
-        
-        let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
-        self.navigationController?.pushViewController(rvc, animated: true)
+    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckoutPaymentMethod]) {
+        print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
     }
 }
 
