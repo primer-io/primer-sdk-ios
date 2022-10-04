@@ -123,31 +123,20 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            redirectManager = PrimerPaymentMethodNativeUIManager(paymentMethodType: paymentMethodType)
+            redirectManager = try? PrimerPaymentMethodNativeUIManager(paymentMethodType: paymentMethodType)
             try? redirectManager?.showPaymentMethod(intent: .checkout)
         }
     }
 }
 
-extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate, PrimerUIEventsDelegate {
+extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate {
 
-    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
-        print("\n\n🤯🤯🤯 \(#function)")
-    }
-    
-    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
-        print("\n\n🤯🤯🤯 \(#function)")
-        self.showLoadingOverlay()
-//        redirectManager?.cancel()
+    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckoutPaymentMethod]) {
+        print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
     }
     
     func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
-    }
-    
-    func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
-        print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
-//        redirectManager?.cancel()
     }
     
     func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void) {
@@ -244,6 +233,18 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate, Pr
     func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         print("\n\n🤯🤯🤯 \(#function)\ndata: \(data)")
         decisionHandler(.continuePaymentCreation())
+    }
+}
+
+extension MerchantPaymentMethodsViewController: PrimerUIEventsDelegate {
+    
+    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
+        print("\n\n🤯🤯🤯 \(#function)")
+        self.showLoadingOverlay()
+    }
+    
+    func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
+        print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
 }
 

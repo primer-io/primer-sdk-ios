@@ -130,8 +130,8 @@ class MerchantHUCRawCardDataViewController: UIViewController {
 
 extension MerchantHUCRawCardDataViewController: PrimerCheckoutEventsDelegate, PrimerUIEventsDelegate {
 
-    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
-        print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodTypes)")
+    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckoutPaymentMethod]) {
+        print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
     }
     
     func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
