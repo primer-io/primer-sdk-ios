@@ -131,24 +131,16 @@ extension MerchantHUCPaymentMethodsViewController: UITableViewDataSource, UITabl
             let vc = MerchantHUCRawRetailDataViewController.instantiate(paymentMethodType: paymentMethodType)
             self.navigationController?.pushViewController(vc, animated: true)
         } else {
-            redirectManager = PrimerPaymentMethodNativeUIManager(paymentMethodType: paymentMethodType)
+            redirectManager = try? PrimerPaymentMethodNativeUIManager(paymentMethodType: paymentMethodType)
             try? redirectManager?.showPaymentMethod(intent: .checkout)
         }
     }
 }
 
-extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate, PrimerUIEventsDelegate {
+extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate {
 
-// MARK: - PRIMER HEADLESS UNIVERSAL CHECKOUT DELEGATE
-
-// MARK: Auto Payment Handling
-
-extension MerchantHUCPaymentMethodsViewController {
-    
-    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
-        print("\n\n🤯🤯🤯 \(#function)")
-        self.showLoadingOverlay()
-//        redirectManager?.cancel()
+    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckoutPaymentMethod]) {
+        print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
     }
 }
 
@@ -158,11 +150,6 @@ extension MerchantHUCPaymentMethodsViewController {
     
     func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
-    }
-    
-    func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
-        print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
-//        redirectManager?.cancel()
     }
     
     func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void) {
@@ -283,6 +270,18 @@ extension MerchantHUCPaymentMethodsViewController {
         print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
         self.logs.append(#function)
         decisionHandler(.continuePaymentCreation())
+    }
+}
+
+extension MerchantPaymentMethodsViewController: PrimerUIEventsDelegate {
+    
+    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
+        print("\n\n🤯🤯🤯 \(#function)")
+        self.showLoadingOverlay()
+    }
+    
+    func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
+        print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
 }
 
