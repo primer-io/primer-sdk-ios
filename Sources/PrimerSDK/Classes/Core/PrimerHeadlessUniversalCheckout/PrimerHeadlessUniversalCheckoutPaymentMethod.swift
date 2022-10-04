@@ -9,7 +9,7 @@
 
 import Foundation
 
-public class PrimerHeadlessUniversalCheckoutPaymentMethod {
+public class PrimerHeadlessUniversalCheckoutPaymentMethod: NSObject {
     
     static var availablePaymentMethods: [PrimerHeadlessUniversalCheckoutPaymentMethod] {
         let availablePaymentMethods = PrimerAPIConfiguration.paymentMethodConfigs?
@@ -47,6 +47,8 @@ public class PrimerHeadlessUniversalCheckoutPaymentMethod {
         if PrimerPaymentMethodType.paymentCard.rawValue == paymentMethodType {
             requiredInputDataClass = PrimerCardData.self
         }
+        
+        super.init()
     }
 }
 
