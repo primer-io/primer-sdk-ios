@@ -125,7 +125,7 @@ class Mocks {
         static var adyenGiroPayRedirectPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodId,
             implementationType: .webRedirect,
-            type: Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodType,
+            type: "ADYEN_GIROPAY", // Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodType,
             name: Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodName,
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 199,
