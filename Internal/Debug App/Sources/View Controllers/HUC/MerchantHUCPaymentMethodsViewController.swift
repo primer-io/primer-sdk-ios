@@ -19,7 +19,7 @@ class MerchantHUCPaymentMethodsViewController: UIViewController, PrimerHeadlessU
     var amount: Int!
     var currency: Currency!
     var countryCode: CountryCode!
-    var availablePaymentMethods: [PrimerHeadlessUniversalCheckoutPaymentMethod] = []
+    var availablePaymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod] = []
     var customerId: String?
     var phoneNumber: String?
     private var paymentId: String?
@@ -142,7 +142,7 @@ extension MerchantHUCPaymentMethodsViewController: UITableViewDataSource, UITabl
 
 extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate {
 
-    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckoutPaymentMethod]) {
+    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
         print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
     }
 }
@@ -293,9 +293,9 @@ class MerchantPaymentMethodCell: UITableViewCell {
     @IBOutlet weak var paymentMethodLabel: UILabel!
     @IBOutlet weak var buttonContainerView: UIView!
     
-    var paymentMethod: PrimerHeadlessUniversalCheckoutPaymentMethod!
+    var paymentMethod: PrimerHeadlessUniversalCheckout.PaymentMethod!
     
-    func configure(paymentMethod: PrimerHeadlessUniversalCheckoutPaymentMethod) {
+    func configure(paymentMethod: PrimerHeadlessUniversalCheckout.PaymentMethod) {
         self.paymentMethod = paymentMethod
         paymentMethodLabel.text = paymentMethod.paymentMethodType
         

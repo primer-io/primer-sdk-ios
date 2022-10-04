@@ -11,10 +11,13 @@ import UIKit
 
 public class PrimerHeadlessUniversalCheckout {
     
+    public static let current = PrimerHeadlessUniversalCheckout()
+    
     public weak var delegate: PrimerCheckoutEventsDelegate?
     public weak var uiDelegate: PrimerUIEventsDelegate?
     private(set) public var clientToken: String?
-    public static let current = PrimerHeadlessUniversalCheckout()
+
+    private var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
     private let unsupportedPaymentMethodTypes: [String] = [
         PrimerPaymentMethodType.adyenBlik.rawValue,
         PrimerPaymentMethodType.adyenDotPay.rawValue,
@@ -26,8 +29,6 @@ public class PrimerHeadlessUniversalCheckout {
         PrimerPaymentMethodType.xfersPayNow.rawValue,
     ]
     
-    internal var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
-    
     fileprivate init() {}
     
     public func start(
@@ -35,7 +36,7 @@ public class PrimerHeadlessUniversalCheckout {
         settings: PrimerSettings? = nil,
         delegate: PrimerCheckoutEventsDelegate? = nil,
         uiDelegate: PrimerUIEventsDelegate? = nil,
-        completion: @escaping (_ paymentMethods: [PrimerHeadlessUniversalCheckoutPaymentMethod]?, _ err: Error?) -> Void
+        completion: @escaping (_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]?, _ err: Error?) -> Void
     ) {
         PrimerInternal.shared.intent = .checkout
         
@@ -71,7 +72,7 @@ public class PrimerHeadlessUniversalCheckout {
                 }
             } else {
                 DispatchQueue.main.async {
-                    let availablePaymentMethods = PrimerHeadlessUniversalCheckoutPaymentMethod.availablePaymentMethods
+                    let availablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
                     PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(availablePaymentMethods)
                     completion(availablePaymentMethods, nil)
                 }
