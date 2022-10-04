@@ -35,7 +35,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
     var phoneNumber: String?
     private var paymentId: String?
     
-    var redirectManager: PrimerPaymentMethodNativeUIManager?
+    var redirectManager: PrimerHeadlessUniversalCheckout.PaymentMethodNativeUIManager?
     
 
     @IBOutlet weak var tableView: UITableView!
@@ -123,7 +123,7 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            redirectManager = try? PrimerPaymentMethodNativeUIManager(paymentMethodType: paymentMethodType)
+            redirectManager = try? PrimerHeadlessUniversalCheckout.PaymentMethodNativeUIManager(paymentMethodType: paymentMethodType)
             try? redirectManager?.showPaymentMethod(intent: .checkout)
         }
     }
