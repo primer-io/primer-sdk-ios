@@ -15,7 +15,7 @@ app_xcode_proj = "Internal/Debug App/Primer.io Example App.xcodeproj"
 app_scheme = "ExampleApp"
 
 # Packages
-app_output_path = "/var/tmp/Primer.io\ Example\ App.xcarchive/Products/Applications/Primer.io Example\ App.app"
+app_output_path = "/var/tmp/Primer.io\ Example\ App.xcarchive/Products/Applications/Primer.io\ Example\ App.app"
 app_output_archive_path = "/var/tmp/Primer.io\ Example\ App.xcarchive"
 
 # Utils
