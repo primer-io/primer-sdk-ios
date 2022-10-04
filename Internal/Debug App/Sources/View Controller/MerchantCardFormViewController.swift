@@ -59,7 +59,7 @@ class MerchantCardFormViewController: UIViewController {
 
         self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardComponentsUIManager()
 
-        var tmpInputElements: [PrimerInputElement] = []
+        var tmpInputElements: [PrimerHeadlessUniversalCheckoutInputElement] = []
         for inputElementType in self.cardFormUIManager!.requiredInputElementTypes {
             let textField = PrimerInputTextField(type: inputElementType, frame: .zero)
             textField.borderStyle = .line
@@ -188,15 +188,15 @@ extension MerchantCardFormViewController: PrimerCheckoutEventsDelegate, PrimerUI
 
 extension MerchantCardFormViewController: PrimerInputElementDelegate {
     
-    func inputElementDidFocus(_ sender: PrimerInputElement) {
+    func inputElementDidFocus(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
 
     }
 
-    func inputElementDidBlur(_ sender: PrimerInputElement) {
+    func inputElementDidBlur(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
 
     }
 
-    func inputElementValueDidChange(_ sender: PrimerInputElement) {
+    func inputElementValueDidChange(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
 
     }
 }
