@@ -882,9 +882,11 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var paymentMethodButton: PrimerButton {
+        
         let customPaddingSettingsCard: [String] = [
             PrimerPaymentMethodType.coinbase.rawValue,
-            PrimerPaymentMethodType.paymentCard.rawValue
+            PrimerPaymentMethodType.paymentCard.rawValue,
+            PrimerPaymentMethodType.adyenBancontact.rawValue
         ]
         
         let paymentMethodButton = PrimerButton()

@@ -15,9 +15,13 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()    
     private let formPaymentMethodTokenizationViewModel: CardFormPaymentMethodTokenizationViewModel
     
-    init(viewModel: CardFormPaymentMethodTokenizationViewModel) {
+    init(navigationBarLogo: UIImage? = nil, viewModel: CardFormPaymentMethodTokenizationViewModel) {
         self.formPaymentMethodTokenizationViewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        self.titleImage = navigationBarLogo
+        if self.titleImage == nil {
+            title = Strings.PrimerCardFormView.title
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -51,7 +55,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
     }
     
     private func setupView() {
-        title = Strings.PrimerCardFormView.title
         view.backgroundColor = theme.view.backgroundColor
         verticalStackView.spacing = 6
         

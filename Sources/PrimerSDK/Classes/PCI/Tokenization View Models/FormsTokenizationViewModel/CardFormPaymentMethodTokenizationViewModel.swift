@@ -432,9 +432,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return Promise { seal in
             DispatchQueue.main.async {
                 switch self.config.type {
-                case PrimerPaymentMethodType.paymentCard.rawValue,
-                    PrimerPaymentMethodType.adyenBancontact.rawValue:
+                case PrimerPaymentMethodType.paymentCard.rawValue:
                     let pcfvc = PrimerCardFormViewController(viewModel: self)
+                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+                    seal.fulfill()
+                case PrimerPaymentMethodType.adyenBancontact.rawValue:
+                    let pcfvc = PrimerCardFormViewController(navigationBarLogo: self.uiModule.logo, viewModel: self)
                     PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
                 default:
