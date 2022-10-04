@@ -36,7 +36,7 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
     var primerError: Error?
     var logs: [String] = []
     
-    var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager?
+    var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardComponentsUIManager?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,7 +65,7 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
 
         PrimerHeadlessUniversalCheckout.current.delegate = self
 
-        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardFormUIManager(paymentMethodType: self.paymentMethodType)
+        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardComponentsUIManager()
 
         var tmpInputElements: [PrimerInputElement] = []
         for inputElementType in self.cardFormUIManager!.requiredInputElementTypes {
