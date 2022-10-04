@@ -53,16 +53,7 @@ platform :ios do
 
   lane :qa_release do
 
-    set_version_and_build_number
-
-    setup_signing(
-      match_type: "development"
-    )
-
-    cocoapods(
-      use_bundle_exec: true,
-      podfile: "Internal/Debug App/Podfile"
-    )
+    common_pre_build_action
 
     # Build for browserstack
     build_app(
@@ -89,18 +80,12 @@ platform :ios do
 
   end
 
-  ######################### PRIVATE LANES #########################
-
   desc 'This action builds the app and uplads it to Appetize'
-  private_lane :appetize_build_and_upload do
+  lane :appetize_build_and_upload do
 
-    clear_derived_data
+    common_pre_build_action
 
-    cocoapods(
-      clean_install: true,
-      use_bundle_exec: true,
-      podfile: "Internal/Debug App/Podfile"
-    )
+    # Build for appetize
 
     build_app(
       scheme: app_scheme,
@@ -140,6 +125,25 @@ platform :ios do
       api_token: appetize_api_token,
       public_key: public_key,
       note: sdk_version_name_source_branch
+    )
+
+  end
+
+  ######################### PRIVATE LANES #########################
+
+  desc 'Common build pre-action'
+  private_lane :common_pre_build_action do
+
+    set_version_and_build_number
+
+    setup_signing(
+      match_type: "development"
+    )
+
+    cocoapods(
+      clean_install: true,
+      use_bundle_exec: true,
+      podfile: "Internal/Debug App/Podfile"
     )
 
   end
