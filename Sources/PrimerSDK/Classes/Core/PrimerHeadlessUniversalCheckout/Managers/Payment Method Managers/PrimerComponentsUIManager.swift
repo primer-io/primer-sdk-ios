@@ -12,23 +12,7 @@ import SafariServices
 
 public protocol PrimerHeadlessUniversalCheckoutInputData{}
 
-extension PrimerHeadlessUniversalCheckout {
-    struct IBANData: PrimerHeadlessUniversalCheckoutInputData {
-        var iban: String
-        var name: String
-    }
-    
-    struct OTPData: PrimerHeadlessUniversalCheckoutInputData {
-        var otp: String
-    }
-}
-
-public protocol PrimerHeadlessUniversalCheckoutUIManager {
-    init(paymentMethodType: String) throws
-    func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData?)
-}
-
-public protocol PrimerCardFormDelegate: AnyObject  {
+public protocol PrimerHeadlessUniversalCheckoutCardComponentsUIManagerDelegate: AnyObject  {
     func cardFormUIManager(_ cardFormUIManager: PrimerHeadlessUniversalCheckout.CardComponentsUIManager, isCardFormValid: Bool)
 }
 
@@ -50,7 +34,7 @@ extension PrimerHeadlessUniversalCheckout {
             
             return mutableRequiredInputElementTypes
         }
-        public var inputElements: [PrimerInputElement] = [] {
+        public var inputElements: [PrimerHeadlessUniversalCheckoutInputElement] = [] {
             didSet {
                 var tmpInputElementsContainers: [Weak<PrimerInputElementDelegateContainer>] = []
                 inputElements.forEach { el in
@@ -65,11 +49,11 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         private var originalInputElementsContainers: [Weak<PrimerInputElementDelegateContainer>]? = []
-        public weak var cardFormUIManagerDelegate: PrimerCardFormDelegate?
+        public weak var cardComponentsUIManagerDelegate: PrimerHeadlessUniversalCheckoutCardComponentsUIManagerDelegate?
         private(set) public var isCardFormValid: Bool = false {
             didSet {
                 DispatchQueue.main.async {
-                    self.cardFormUIManagerDelegate?.cardFormUIManager(self, isCardFormValid: self.isCardFormValid)
+                    self.cardComponentsUIManagerDelegate?.cardFormUIManager(self, isCardFormValid: self.isCardFormValid)
                 }
             }
         }
@@ -777,7 +761,7 @@ extension PrimerHeadlessUniversalCheckout {
         
         // MARK: - INPUT ELEMENTS DELEGATE
         
-        public func inputElementShouldFocus(_ sender: PrimerInputElement) -> Bool {
+        public func inputElementShouldFocus(_ sender: PrimerHeadlessUniversalCheckoutInputElement) -> Bool {
             guard let senderTextField = sender as? PrimerInputTextField else { return true }
             guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return true }
             
@@ -788,13 +772,13 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        public func inputElementDidFocus(_ sender: PrimerInputElement) {
+        public func inputElementDidFocus(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
             guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
             inputElementContainer.value?.delegate.inputElementDidFocus?(sender)
         }
         
-        public func inputElementShouldBlur(_ sender: PrimerInputElement) -> Bool {
+        public func inputElementShouldBlur(_ sender: PrimerHeadlessUniversalCheckoutInputElement) -> Bool {
             guard let senderTextField = sender as? PrimerInputTextField else { return true }
             guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return true }
             
@@ -805,19 +789,19 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        public func inputElementDidBlur(_ sender: PrimerInputElement) {
+        public func inputElementDidBlur(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
             guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
             inputElementContainer.value?.delegate.inputElementDidBlur?(sender)
         }
         
-        public func inputElementValueDidChange(_ sender: PrimerInputElement) {
+        public func inputElementValueDidChange(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
             guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
             inputElementContainer.value?.delegate.inputElementValueDidChange?(sender)
         }
         
-        public func inputElementDidDetectType(_ sender: PrimerInputElement, type: Any?) {
+        public func inputElementDidDetectType(_ sender: PrimerHeadlessUniversalCheckoutInputElement, type: Any?) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
             guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
             
@@ -828,7 +812,7 @@ extension PrimerHeadlessUniversalCheckout {
             inputElementContainer.value?.delegate.inputElementDidDetectType?(sender, type: type)
         }
         
-        public func inputElementValueIsValid(_ sender: PrimerInputElement, isValid: Bool) {
+        public func inputElementValueIsValid(_ sender: PrimerHeadlessUniversalCheckoutInputElement, isValid: Bool) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
             guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
             inputElementContainer.value?.delegate.inputElementValueIsValid?(sender, isValid: isValid)
