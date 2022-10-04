@@ -71,7 +71,9 @@ public class PrimerHeadlessUniversalCheckout {
                 }
             } else {
                 DispatchQueue.main.async {
-                    completion(PrimerHeadlessUniversalCheckoutPaymentMethod.availablePaymentMethods, nil)
+                    let availablePaymentMethods = PrimerHeadlessUniversalCheckoutPaymentMethod.availablePaymentMethods
+                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(availablePaymentMethods)
+                    completion(availablePaymentMethods, nil)
                 }
             }
         }
