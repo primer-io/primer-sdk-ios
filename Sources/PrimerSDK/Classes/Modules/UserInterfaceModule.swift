@@ -35,6 +35,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         return paymentMethodTokenizationViewModel.config.logo
     }
     
+    var invertedLogo: UIImage? {
+        return paymentMethodTokenizationViewModel.config.invertedLogo
+    }
+    
     var icon: UIImage? {
         var fileName = paymentMethodTokenizationViewModel.config.type.lowercased().replacingOccurrences(of: "_", with: "-")
         fileName += "-icon"
