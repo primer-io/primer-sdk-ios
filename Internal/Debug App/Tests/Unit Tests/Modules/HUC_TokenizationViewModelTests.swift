@@ -307,7 +307,7 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             }
         }
         
-        let paymentMethodNativeUIManager = try? PrimerHeadlessUniversalCheckout.PaymentMethodNativeUIManager(paymentMethodType: "ADYEN_GIROPAY")
+        let paymentMethodNativeUIManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: "ADYEN_GIROPAY")
         
         do {
             try paymentMethodNativeUIManager?.showPaymentMethod(intent: .checkout)
@@ -338,18 +338,18 @@ class HUC_TokenizationViewModelTests: XCTestCase {
 
 // MARK: - PRIMER HEADLESS UNIVERSAL CHECKOUT DELEGATES
 
-extension HUC_TokenizationViewModelTests: PrimerCheckoutEventsDelegate {
+extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutDelegate {
     
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
         eventsCalled.append("primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods")
         self.availablePaymentMethodsLoadedCompletion?(paymentMethods, nil)
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
+    func primerHeadlessUniversalCheckoutWillUpdateClientSession() {
         eventsCalled.append("primerHeadlessUniversalCheckoutClientSessionWillUpdate")
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
+    func primerHeadlessUniversalCheckoutDidUpdateClientSession(_ clientSession: PrimerClientSession) {
         eventsCalled.append("primerHeadlessUniversalCheckoutClientSessionDidUpdate")
     }
     
@@ -367,7 +367,7 @@ extension HUC_TokenizationViewModelTests: PrimerCheckoutEventsDelegate {
         }
     }
     
-    func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
         eventsCalled.append("primerHeadlessUniversalCheckoutTokenizationDidStart")
     }
     
@@ -409,13 +409,13 @@ eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6ImNsaWVudC10b2tlbi1zaWduaW5nLWtleSJ9
     }
 }
 
-extension HUC_TokenizationViewModelTests: PrimerUIEventsDelegate {
+extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutUIDelegate {
     
-    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         eventsCalled.append("primerHeadlessUniversalCheckoutPreparationDidStart")
     }
     
-    func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String) {
         eventsCalled.append("primerHeadlessUniversalCheckoutPaymentMethodDidShow")
     }
 }
