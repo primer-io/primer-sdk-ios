@@ -12,25 +12,25 @@ import Foundation
 import UIKit
 
 @objc
-public protocol PrimerUIEventsDelegate {
+public protocol PrimerHeadlessUniversalCheckoutUIDelegate {
     
-    @objc optional func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String)
-    @objc optional func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String)
+    @objc optional func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String)
+    @objc optional func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String)
 }
 
 @objc
-public protocol PrimerCheckoutEventsDelegate {
+public protocol PrimerHeadlessUniversalCheckoutDelegate {
     
-    @objc func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod])
-    @objc optional func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String)
+    @objc optional func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod])
+    @objc optional func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String)
     @objc optional func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)
     @objc optional func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)
     @objc optional func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)
     @objc optional func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)
     @objc optional func primerHeadlessUniversalCheckoutDidFail(withError err: Error)
     @objc func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData)
-    @objc optional func primerHeadlessUniversalCheckoutClientSessionWillUpdate()
-    @objc optional func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession)
+    @objc optional func primerHeadlessUniversalCheckoutWillUpdateClientSession()
+    @objc optional func primerHeadlessUniversalCheckoutDidUpdateClientSession(_ clientSession: PrimerClientSession)
     @objc optional func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void)
 }
 
