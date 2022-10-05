@@ -5,20 +5,13 @@
 //  Created by Evangelos on 4/10/22.
 //
 
-//
-//  PrimerPaymentMethodManager.swift
-//  PrimerSDK
-//
-//  Created by Evangelos on 26/9/22.
-//
-
 #if canImport(UIKit)
 
 import Foundation
 
 extension PrimerHeadlessUniversalCheckout {
     
-    public class PaymentMethodNativeUIManager: PrimerPaymentMethodManager {
+    public class NativeUIManager: PrimerPaymentMethodManager {
         
         public let paymentMethodType: String
         private var paymentMethod: PrimerPaymentMethod?
@@ -78,7 +71,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw error
             }
 
-            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutPreparationDidStart?(for: self.paymentMethodType)
+            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidStartPreparation?(for: self.paymentMethodType)
             PrimerInternal.shared.showPaymentMethod(self.paymentMethodType, withIntent: intent, andClientToken: PrimerAPIConfigurationModule.clientToken!)
         }
         
