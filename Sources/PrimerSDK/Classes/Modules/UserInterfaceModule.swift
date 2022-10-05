@@ -901,9 +901,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         let leftPadding = UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0
         let defaultRightPadding = customPaddingSettingsCard.contains(paymentMethodTokenizationViewModel.config.type) ? imagePadding : 0
         let rightPadding = UILocalizableUtil.isRightToLeftLocale ? 0 : defaultRightPadding
-        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 12,
+        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 8,
                                                            left: leftPadding,
-                                                           bottom: 12,
+                                                           bottom: 8,
                                                            right: rightPadding)
         paymentMethodButton.contentMode = .scaleAspectFit
         paymentMethodButton.imageView?.contentMode = .scaleAspectFit

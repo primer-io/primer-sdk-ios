@@ -59,7 +59,7 @@ internal class ImageFile: File {
     }
     
     var cachedImage: UIImage? {
-        guard let data = self.data, let image = UIImage(data: data, scale: 1.0) else { return nil }
+        guard let data = self.data, let image = UIImage(data: data, scale: 2.0) else { return nil }
         return image
     }
     
