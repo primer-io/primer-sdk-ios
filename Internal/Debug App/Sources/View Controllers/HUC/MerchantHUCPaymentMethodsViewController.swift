@@ -24,7 +24,7 @@ class MerchantHUCPaymentMethodsViewController: UIViewController, PrimerHeadlessU
     var phoneNumber: String?
     private var paymentId: String?
     
-    var redirectManager: PrimerHeadlessUniversalCheckout.PaymentMethodNativeUIManager?
+    var redirectManager: PrimerHeadlessUniversalCheckout.NativeUIManager?
     
 
     @IBOutlet weak var tableView: UITableView!
@@ -131,13 +131,13 @@ extension MerchantHUCPaymentMethodsViewController: UITableViewDataSource, UITabl
             let vc = MerchantHUCRawRetailDataViewController.instantiate(paymentMethodType: paymentMethodType)
             self.navigationController?.pushViewController(vc, animated: true)
         } else {
-            redirectManager = try? PrimerHeadlessUniversalCheckout.PaymentMethodNativeUIManager(paymentMethodType: paymentMethodType)
+            redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
             try? redirectManager?.showPaymentMethod(intent: .checkout)
         }
     }
 }
 
-extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate {
+extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutDelegate {
 
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
         print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
@@ -148,7 +148,7 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate {
 
 extension MerchantHUCPaymentMethodsViewController {
     
-    func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
@@ -256,14 +256,12 @@ extension MerchantHUCPaymentMethodsViewController {
         self.hideLoadingOverlay()
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
-        print("\n\nMERCHANT APP\n\(#function)")
-        self.logs.append(#function)
+    func primerHeadlessUniversalCheckoutWillUpdateClientSession() {
+        print("\n\n🤯🤯🤯 \(#function)")
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
-        print("\n\nMERCHANT APP\n\(#function)\nclientSession: \(clientSession)")
-        self.logs.append(#function)
+    func primerHeadlessUniversalCheckoutDidUpdateClientSession(_ clientSession: PrimerClientSession) {
+        print("\n\n🤯🤯🤯 \(#function)\nclientSession: \(clientSession)")
     }
     
     func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
@@ -273,14 +271,14 @@ extension MerchantHUCPaymentMethodsViewController {
     }
 }
 
-extension MerchantPaymentMethodsViewController: PrimerUIEventsDelegate {
+extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutUIDelegate {
     
-    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)")
         self.showLoadingOverlay()
     }
     
-    func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
 }
@@ -296,7 +294,7 @@ class MerchantPaymentMethodCell: UITableViewCell {
         self.paymentMethod = paymentMethod
         paymentMethodLabel.text = paymentMethod.paymentMethodType
         
-        let paymentMethodAsset = try? PrimerAssetsManager.getPaymentMethodAsset(for: paymentMethod.paymentMethodType)
+        let paymentMethodAsset = try? PrimerHeadlessUniversalCheckout.AssetsManager.getPaymentMethodAsset(for: paymentMethod.paymentMethodType)
         
         let paymentMethodButton = UIButton()
         buttonContainerView.addSubview(paymentMethodButton)
