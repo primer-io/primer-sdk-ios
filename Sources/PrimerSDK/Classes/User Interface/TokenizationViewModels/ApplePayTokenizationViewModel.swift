@@ -122,7 +122,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return self.awaitUserInput()
             }
             .then { () -> Promise<Void> in
-                return self.updateBillingAddressViaClientSessionActionWithAddress(self.applePayPaymentResponse.billingAddress)
+                return self.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(self.applePayPaymentResponse.billingAddress)
             }
             .done {
                 seal.fulfill()
@@ -343,7 +343,7 @@ extension ApplePayTokenizationViewModel {
                                      countryCode: CountryCode(rawValue: postalAddress.isoCountryCode))
     }
     
-    private func updateBillingAddressViaClientSessionActionWithAddress(_ address: ClientSession.Address?) -> Promise<Void> {
+    private func updateBillingAddressViaClientSessionActionWithAddressIfNeeded(_ address: ClientSession.Address?) -> Promise<Void> {
         return Promise { seal in
             
             guard let unwrappedAddress = address, let billingAddress = try? unwrappedAddress.asDictionary() else {
