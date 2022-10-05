@@ -109,7 +109,20 @@ extension PrimerHeadlessUniversalCheckout {
             log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
         }
         
-        public init(paymentMethodType: String) {
+        public init(paymentMethodType: String) throws {
+            
+            guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() else {
+                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+            
+            if availablePaymentMethodTypes.filter({ $0 == paymentMethodType }).isEmpty {
+                let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+
             self.paymentMethodType = paymentMethodType
             super.init()
             self.requiredInputElementTypes = PrimerHeadlessUniversalCheckout.current.listRequiredInputElementTypes(for: paymentMethodType) ?? []
@@ -135,7 +148,7 @@ extension PrimerHeadlessUniversalCheckout {
                 self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
             }
             .then { () -> Promise<Request.Body.Tokenization> in
-                self.buildRequestBody()
+                try self.buildRequestBody()
             }
             .then { requestBody -> Promise<PrimerPaymentMethodTokenData> in
                 PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodType)
@@ -190,14 +203,16 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func buildRequestBody() -> Promise<Request.Body.Tokenization> {
+        private func buildRequestBody() throws -> Promise<Request.Body.Tokenization> {
             switch self.paymentMethodType {
             case PrimerPaymentMethodType.paymentCard.rawValue:
                 return makeCardRequestBody()
             case PrimerPaymentMethodType.adyenBancontact.rawValue:
                 return makeCardRedirectRequestBody()
             default:
-                fatalError()
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                throw err
             }
         }
                 
