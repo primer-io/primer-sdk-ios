@@ -57,7 +57,7 @@ class MerchantCardFormViewController: UIViewController {
 
         PrimerHeadlessUniversalCheckout.current.delegate = self
 
-        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardFormUIManager()
+        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardFormUIManager(paymentMethodType: "PAYMENT_CARD")
 
         var tmpInputElements: [PrimerInputElement] = []
         for inputElementType in self.cardFormUIManager!.requiredInputElementTypes {
