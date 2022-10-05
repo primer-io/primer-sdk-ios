@@ -13,8 +13,8 @@ public class PrimerHeadlessUniversalCheckout {
     
     public static let current = PrimerHeadlessUniversalCheckout()
     
-    public weak var delegate: PrimerCheckoutEventsDelegate?
-    public weak var uiDelegate: PrimerUIEventsDelegate?
+    public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate?
+    public weak var uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate?
     private(set) public var clientToken: String?
 
     private var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
@@ -34,8 +34,8 @@ public class PrimerHeadlessUniversalCheckout {
     public func start(
         withClientToken clientToken: String,
         settings: PrimerSettings? = nil,
-        delegate: PrimerCheckoutEventsDelegate? = nil,
-        uiDelegate: PrimerUIEventsDelegate? = nil,
+        delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil,
+        uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate? = nil,
         completion: @escaping (_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]?, _ err: Error?) -> Void
     ) {
         PrimerInternal.shared.intent = .checkout
@@ -73,7 +73,7 @@ public class PrimerHeadlessUniversalCheckout {
             } else {
                 DispatchQueue.main.async {
                     let availablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
-                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(availablePaymentMethods)
+                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(availablePaymentMethods)
                     completion(availablePaymentMethods, nil)
                 }
             }

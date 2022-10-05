@@ -20,10 +20,10 @@ extension PrimerHeadlessUniversalCheckout {
             return availablePaymentMethods ?? []
         }
         
-        public var paymentMethodType: String
-        public var supportedPrimerSessionIntents: [PrimerSessionIntent] = []
-        public var paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory]
-        public var requiredInputDataClass: PrimerRawData.Type?
+        public private(set) var paymentMethodType: String
+        public private(set) var supportedPrimerSessionIntents: [PrimerSessionIntent] = []
+        public private(set) var paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory]
+        public private(set) var requiredInputDataClass: PrimerRawData.Type?
         
         init?(paymentMethodType: String) {
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?.first(where: { $0.type == paymentMethodType }) else {
