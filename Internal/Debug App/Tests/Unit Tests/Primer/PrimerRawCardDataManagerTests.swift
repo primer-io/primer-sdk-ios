@@ -11,9 +11,9 @@
 import XCTest
 @testable import PrimerSDK
 
-class PrimerRawDataManagerTests: XCTestCase {
+class BaseRawCardData {
     
-    let testCardNumbers: [CardNetwork: [String]] = [
+    static let testCardNumbers: [CardNetwork: [String]] = [
         .amex: [
             "3700 0000 0000 002",
             "3700 0000 0100 018"
@@ -52,13 +52,18 @@ class PrimerRawDataManagerTests: XCTestCase {
             "4111 1111 1111 1111",
             "4444 3333 2222 1111",
             "4001 5900 0000 0001",
-            "4000 1800 0000 0002"
+            "4000 1800 0000 0002",
+            // Bancontact card
+            "4871 0499 9999 9910"
         ]
     ]
-    
+}
+
+class PrimerRawCardDataManagerTests: XCTestCase {
+        
     func test_valid_raw_card_data() throws {
         let rawCardData = PrimerCardData(
-            cardNumber: testCardNumbers[.visa]!.first!,
+            cardNumber: BaseRawCardData.testCardNumbers[.visa]!.first!,
             expiryMonth: "02",
             expiryYear: "2040",
             cvv: "123",
@@ -79,7 +84,7 @@ class PrimerRawDataManagerTests: XCTestCase {
     
     func test_invalid_cardnumber_in_raw_card_data() throws {
         let rawCardData = PrimerCardData(
-            cardNumber: testCardNumbers[.visa]!.first!,
+            cardNumber: BaseRawCardData.testCardNumbers[.visa]!.first!,
             expiryMonth: "02",
             expiryYear: "2040",
             cvv: "123",
@@ -126,7 +131,7 @@ class PrimerRawDataManagerTests: XCTestCase {
     
     func test_invalid_expiry_date_in_raw_card_data() throws {
         let rawCardData = PrimerCardData(
-            cardNumber: testCardNumbers[.visa]!.first!,
+            cardNumber: BaseRawCardData.testCardNumbers[.visa]!.first!,
             expiryMonth: "02",
             expiryYear: "2040",
             cvv: "123",
@@ -227,7 +232,7 @@ class PrimerRawDataManagerTests: XCTestCase {
     
     func test_invalid_cvv_in_raw_card_data() throws {
         let rawCardData = PrimerCardData(
-            cardNumber: testCardNumbers[.visa]!.first!,
+            cardNumber: BaseRawCardData.testCardNumbers[.visa]!.first!,
             expiryMonth: "99",
             expiryYear: "2040",
             cvv: "12345",
@@ -244,7 +249,7 @@ class PrimerRawDataManagerTests: XCTestCase {
         .catch { _ in }
         
         firstly {
-            rawCardData.cardNumber = testCardNumbers[.visa]!.first!
+            rawCardData.cardNumber = BaseRawCardData.testCardNumbers[.visa]!.first!
             rawCardData.cvv = "1234"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
@@ -255,7 +260,7 @@ class PrimerRawDataManagerTests: XCTestCase {
 
 
         firstly {
-            rawCardData.cardNumber = testCardNumbers[.visa]!.first!
+            rawCardData.cardNumber = BaseRawCardData.testCardNumbers[.visa]!.first!
             rawCardData.cvv = "1234"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
@@ -265,7 +270,7 @@ class PrimerRawDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly {
-            rawCardData.cardNumber = testCardNumbers[.masterCard]!.first!
+            rawCardData.cardNumber = BaseRawCardData.testCardNumbers[.masterCard]!.first!
             rawCardData.cvv = "1234"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
@@ -275,8 +280,200 @@ class PrimerRawDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly {
-            rawCardData.cardNumber = testCardNumbers[.amex]!.first!
+            rawCardData.cardNumber = BaseRawCardData.testCardNumbers[.amex]!.first!
             rawCardData.cvv = "123"
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+    }
+}
+
+class PrimerRawCardRedirectDataManagerTests: XCTestCase {
+    
+    func test_valid_raw_bancontact_card_data() throws {
+        let rawCardData = PrimerBancontactCardRedirectData(
+            cardNumber: BaseRawCardData.testCardNumbers[.visa]!.last!,
+            expiryMonth: "03",
+            expiryYear: "2030",
+            cardholderName: "John Smith")
+        
+        let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+        
+        firstly {
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            // Continue
+        }
+        .catch { _ in
+            XCTAssert(false, "Card data should pass validation")
+        }
+    }
+    
+    // We are making the below tests as well to make sure that the standards validation of simple card data passes
+        
+    func test_valid_raw_card_data() throws {
+        
+        let rawCardData = PrimerBancontactCardRedirectData(
+            cardNumber: BaseRawCardData.testCardNumbers[.visa]!.randomElement()!,
+            expiryMonth: "02",
+            expiryYear: "2040",
+            cardholderName: "John Smith")
+        
+        let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+        
+        firstly {
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            // Continue
+        }
+        .catch { _ in
+            XCTAssert(false, "Card data should pass validation")
+        }
+    }
+    
+    func test_invalid_cardnumber_in_raw_card_data() throws {
+        let rawCardData = PrimerBancontactCardRedirectData(
+            cardNumber: BaseRawCardData.testCardNumbers[.visa]!.first!,
+            expiryMonth: "02",
+            expiryYear: "2040",
+            cardholderName: "John Smith")
+        
+        let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+        
+        firstly {
+            rawCardData.cardNumber = "42424242424242421"
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+        
+        firstly {
+            rawCardData.cardNumber = "424242424242424211"
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+        
+        firstly {
+            rawCardData.cardNumber = "424242424242424212345"
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+        
+        firstly {
+            rawCardData.cardNumber = ""
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+    }
+    
+    func test_invalid_expiry_date_in_raw_card_data() throws {
+        let rawCardData = PrimerBancontactCardRedirectData(
+            cardNumber: BaseRawCardData.testCardNumbers[.visa]!.randomElement()!,
+            expiryMonth: "02",
+            expiryYear: "2040",
+            cardholderName: "John Smith")
+        
+        let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+        
+        firstly {
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+        
+        firstly {
+            rawCardData.expiryMonth = "a"
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+        
+        firstly {
+            rawCardData.expiryMonth = "1"
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+        firstly {
+            rawCardData.expiryMonth = ""
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+        firstly {
+            rawCardData.expiryMonth = "13"
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+        firstly {
+            rawCardData.expiryMonth = "019"
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+        firstly {
+            rawCardData.expiryMonth = "02"
+            rawCardData.expiryYear  = ""
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+        
+        firstly {
+            rawCardData.expiryYear  = "25"
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+        firstly {
+            rawCardData.expiryYear  = "2a5"
+            return tokenizationBuilder.validateRawData(rawCardData)
+        }
+        .done { _ in
+            XCTAssert(false, "Card data should not pass validation")
+        }
+        .catch { _ in }
+
+        firstly {
+            rawCardData.expiryYear  = "2019"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done { _ in
