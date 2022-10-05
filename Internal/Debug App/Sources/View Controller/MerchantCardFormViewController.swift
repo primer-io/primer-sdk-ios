@@ -10,7 +10,7 @@ import PrimerSDK
 import UIKit
 
 class MerchantCardFormViewController: UIViewController {
-    
+
     var stackView: UIStackView!
     
     var cardNumberTextField: PrimerInputTextField?
@@ -57,7 +57,7 @@ class MerchantCardFormViewController: UIViewController {
 
         PrimerHeadlessUniversalCheckout.current.delegate = self
 
-        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardComponentsUIManager()
+        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardComponentsUIManager(delegate: self)
 
         var tmpInputElements: [PrimerHeadlessUniversalCheckoutInputElement] = []
         for inputElementType in self.cardFormUIManager!.requiredInputElementTypes {
@@ -91,13 +91,13 @@ class MerchantCardFormViewController: UIViewController {
 
     @objc
     func paymentButtonTapped() {
-        self.cardFormUIManager?.tokenize()
+        self.cardFormUIManager?.submit()
     }
 }
 
-extension MerchantCardFormViewController: PrimerCheckoutEventsDelegate, PrimerUIEventsDelegate {
+extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegate, PrimerHeadlessUniversalCheckoutUIDelegate {
 
-    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         print("🤯🤯🤯 \(#function) paymentMethodType: \(paymentMethodType)")
     }
     
@@ -109,7 +109,7 @@ extension MerchantCardFormViewController: PrimerCheckoutEventsDelegate, PrimerUI
         print("🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
-    func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
         print("🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
@@ -171,11 +171,11 @@ extension MerchantCardFormViewController: PrimerCheckoutEventsDelegate, PrimerUI
         print("🤯🤯🤯 \(#function)\ndata: \(data)")
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
+    func primerHeadlessUniversalCheckoutWillUpdateClientSession() {
         print("🤯🤯🤯 \(#function)")
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
+    func primerHeadlessUniversalCheckoutDidUpdateClientSession(_ clientSession: PrimerClientSession) {
         print("🤯🤯🤯 \(#function)\nclientSession: \(clientSession)")
     }
     
@@ -198,5 +198,12 @@ extension MerchantCardFormViewController: PrimerInputElementDelegate {
 
     func inputElementValueDidChange(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
 
+    }
+}
+
+extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutCardComponentsUIManagerDelegate {
+    
+    func cardFormUIManager(_ cardFormUIManager: PrimerHeadlessUniversalCheckout.CardComponentsUIManager, isCardFormValid: Bool) {
+        
     }
 }

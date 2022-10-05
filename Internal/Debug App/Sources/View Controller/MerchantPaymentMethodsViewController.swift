@@ -35,7 +35,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
     var phoneNumber: String?
     private var paymentId: String?
     
-    var redirectManager: PrimerHeadlessUniversalCheckout.PaymentMethodNativeUIManager?
+    var redirectManager: PrimerHeadlessUniversalCheckout.NativeUIManager?
     
 
     @IBOutlet weak var tableView: UITableView!
@@ -123,19 +123,19 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            redirectManager = try? PrimerHeadlessUniversalCheckout.PaymentMethodNativeUIManager(paymentMethodType: paymentMethodType)
+            redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
             try? redirectManager?.showPaymentMethod(intent: .checkout)
         }
     }
 }
 
-extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate {
+extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutDelegate {
 
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
         print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
     }
     
-    func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
@@ -222,11 +222,11 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate {
         }
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
+    func primerHeadlessUniversalCheckoutWillUpdateClientSession() {
         print("\n\n🤯🤯🤯 \(#function)")
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
+    func primerHeadlessUniversalCheckoutDidUpdateClientSession(_ clientSession: PrimerClientSession) {
         print("\n\n🤯🤯🤯 \(#function)\nclientSession: \(clientSession)")
     }
     
@@ -236,14 +236,14 @@ extension MerchantPaymentMethodsViewController: PrimerCheckoutEventsDelegate {
     }
 }
 
-extension MerchantPaymentMethodsViewController: PrimerUIEventsDelegate {
+extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutUIDelegate {
     
-    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)")
         self.showLoadingOverlay()
     }
     
-    func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
 }
@@ -259,7 +259,7 @@ class MerchantPaymentMethodCell: UITableViewCell {
         self.paymentMethod = paymentMethod
         paymentMethodLabel.text = paymentMethod.paymentMethodType
         
-        let paymentMethodAsset = try? PrimerAssetsManager.getPaymentMethodAsset(for: paymentMethod.paymentMethodType)
+        let paymentMethodAsset = try? PrimerHeadlessUniversalCheckout.AssetsManager.getPaymentMethodAsset(for: paymentMethod.paymentMethodType)
         
         let paymentMethodButton = UIButton()
         buttonContainerView.addSubview(paymentMethodButton)

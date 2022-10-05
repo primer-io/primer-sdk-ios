@@ -49,18 +49,17 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         private var originalInputElementsContainers: [Weak<PrimerInputElementDelegateContainer>]? = []
-        public weak var cardComponentsUIManagerDelegate: PrimerHeadlessUniversalCheckoutCardComponentsUIManagerDelegate?
+        public weak var delegate: PrimerHeadlessUniversalCheckoutCardComponentsUIManagerDelegate?
         private(set) public var isCardFormValid: Bool = false {
             didSet {
                 DispatchQueue.main.async {
-                    self.cardComponentsUIManagerDelegate?.cardFormUIManager(self, isCardFormValid: self.isCardFormValid)
+                    self.delegate?.cardFormUIManager(self, isCardFormValid: self.isCardFormValid)
                 }
             }
         }
-        private(set) public var paymentMethod: PrimerPaymentMethodTokenData?
         private var resumePaymentId: String?
-        private var paymentMethodTokenData: PrimerPaymentMethodTokenData?
-        private var paymentCheckoutData: PrimerCheckoutData?
+        private(set) public var paymentMethodTokenData: PrimerPaymentMethodTokenData?
+        private(set) public var paymentCheckoutData: PrimerCheckoutData?
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
         
@@ -90,11 +89,12 @@ extension PrimerHeadlessUniversalCheckout {
         @available(*, deprecated, message: "This initiliazer supports `.paymentCard` as a payment method type only. Use the default `init(paymentMethodType: String)` to support multiple payment method types that requires card element inputs.")
         public override init() {
             self.paymentMethodType = PrimerPaymentMethodType.paymentCard.rawValue
+            self.delegate = delegate
             super.init()
         }
         
-        public func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationDidStart(for: self.paymentMethodType)
+        public func submit() {
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidStartPreparation(for: PrimerPaymentMethodType.paymentCard.rawValue)
             
             firstly {
                 PrimerHeadlessUniversalCheckout.current.validateSession()
@@ -820,7 +820,7 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsUIManager {
            decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
             
 #if canImport(Primer3DS)
-            guard let paymentMethod = paymentMethod else {
+            guard let paymentMethod = paymentMethodTokenData else {
                 DispatchQueue.main.async {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)

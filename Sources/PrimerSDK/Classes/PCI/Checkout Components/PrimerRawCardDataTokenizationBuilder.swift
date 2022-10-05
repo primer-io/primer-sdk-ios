@@ -48,7 +48,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     
     var isDataValid: Bool = false
     var paymentMethodType: String
-    var delegate: PrimerRawDataManagerDelegate?
+    var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
     
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {

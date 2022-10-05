@@ -70,8 +70,7 @@ class MerchantHUCRawCardDataViewController: UIViewController {
                     self.hideLoadingOverlay()
                     
                     do {
-                        let primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD")
-                        primerRawDataManager.delegate = self
+                        let primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD", delegate: self)
                         
                         self.rawCardData = PrimerCardData(
                             cardNumber: "42",
@@ -128,22 +127,22 @@ class MerchantHUCRawCardDataViewController: UIViewController {
     }
 }
 
-extension MerchantHUCRawCardDataViewController: PrimerCheckoutEventsDelegate, PrimerUIEventsDelegate {
+extension MerchantHUCRawCardDataViewController: PrimerHeadlessUniversalCheckoutDelegate, PrimerHeadlessUniversalCheckoutUIDelegate {
 
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
         print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
     }
     
-    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
         self.showLoadingOverlay()
     }
     
-    func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
-    func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
+    func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
@@ -211,11 +210,11 @@ extension MerchantHUCRawCardDataViewController: PrimerCheckoutEventsDelegate, Pr
         }
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
+    func primerHeadlessUniversalCheckoutWillUpdateClientSession() {
         print("\n\n🤯🤯🤯 \(#function)")
     }
     
-    func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
+    func primerHeadlessUniversalCheckoutDidUpdateClientSession(_ clientSession: PrimerClientSession) {
         print("\n\n🤯🤯🤯 \(#function)\nclientSession: \(clientSession)")
     }
     
@@ -225,7 +224,7 @@ extension MerchantHUCRawCardDataViewController: PrimerCheckoutEventsDelegate, Pr
     }
 }
 
-extension MerchantHUCRawCardDataViewController: PrimerRawDataManagerDelegate {
+extension MerchantHUCRawCardDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
     
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
         print(errors)

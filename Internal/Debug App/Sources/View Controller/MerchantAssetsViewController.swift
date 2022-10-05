@@ -39,7 +39,7 @@ class MerchantAssetsViewController: UIViewController {
     }
     
     func reloadImages() {
-        let paymentMethodAssets = (try? PrimerAssetsManager.getPaymentMethodAssets()) ?? []
+        let paymentMethodAssets = (try? PrimerHeadlessUniversalCheckout.AssetsManager.getPaymentMethodAssets()) ?? []
         self.assets = paymentMethodAssets.compactMap({ (name: $0.paymentMethodType, image: $0.paymentMethodLogo.colored) })
     }
     

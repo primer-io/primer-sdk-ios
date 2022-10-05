@@ -134,7 +134,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
 
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
@@ -242,7 +242,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         self.isCancelled = true
                         PrimerUIManager.primerRootViewController?.present(paymentVC, animated: true, completion: {
                             DispatchQueue.main.async {
-                                PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type)
+                                PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
                                 self.didPresentPaymentMethodUI?()
                                 seal.fulfill()
                             }

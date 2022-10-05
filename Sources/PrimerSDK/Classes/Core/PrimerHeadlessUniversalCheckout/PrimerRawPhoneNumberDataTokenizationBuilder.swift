@@ -32,7 +32,7 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
     }
     var isDataValid: Bool = false
     var paymentMethodType: String
-    var delegate: PrimerRawDataManagerDelegate?
+    var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
     
     var requiredInputElementTypes: [PrimerInputElementType] {
         [.phoneNumber]
