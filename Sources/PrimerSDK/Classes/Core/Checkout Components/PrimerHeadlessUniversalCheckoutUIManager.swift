@@ -207,7 +207,7 @@ extension PrimerHeadlessUniversalCheckout {
             switch self.paymentMethodType {
             case PrimerPaymentMethodType.paymentCard.rawValue:
                 return makeCardRequestBody()
-            case PrimerPaymentMethodType.adyenBancontact.rawValue:
+            case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
                 return makeCardRedirectRequestBody()
             default:
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)

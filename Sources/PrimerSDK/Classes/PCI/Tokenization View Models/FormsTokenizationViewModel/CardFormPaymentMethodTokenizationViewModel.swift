@@ -436,7 +436,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     let pcfvc = PrimerCardFormViewController(viewModel: self)
                     PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
-                case PrimerPaymentMethodType.adyenBancontact.rawValue:
+                case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
                     let pcfvc = PrimerCardFormViewController(navigationBarLogo: self.uiModule.logo, viewModel: self)
                     PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()

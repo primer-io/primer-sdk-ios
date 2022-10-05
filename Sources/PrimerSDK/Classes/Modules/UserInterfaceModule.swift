@@ -127,7 +127,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     text: nil,
                     textColor: nil))
         
-        case .adyenBancontact:
+        case .adyenBancontactCard:
             return nil
             
         case .adyenDotPay:
@@ -750,7 +750,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         
         switch paymentMethodTokenizationViewModel.config.type {
         
-        case PrimerPaymentMethodType.adyenBancontact.rawValue:
+        case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
             return Strings.PaymentButton.payWithCard
             
         case PrimerPaymentMethodType.apaya.rawValue:
@@ -890,7 +890,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         let customPaddingSettingsCard: [String] = [
             PrimerPaymentMethodType.coinbase.rawValue,
             PrimerPaymentMethodType.paymentCard.rawValue,
-            PrimerPaymentMethodType.adyenBancontact.rawValue
+            PrimerPaymentMethodType.adyenBancontactCard.rawValue
         ]
         
         let paymentMethodButton = PrimerButton()
@@ -958,7 +958,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         case PrimerPaymentMethodType.adyenMultibanco.rawValue:
             return makePrimerButtonWithTitleText(Strings.PaymentButton.confirmToPay, isEnabled: true)
         
-        case PrimerPaymentMethodType.adyenBancontact.rawValue:
+        case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
             return makePrimerButtonWithTitleText(Strings.PaymentButton.pay, isEnabled: false)
 
         default:
