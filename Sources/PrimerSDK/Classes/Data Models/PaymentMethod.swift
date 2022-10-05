@@ -197,7 +197,7 @@ class PrimerPaymentMethod: Codable {
         
         if self.type == PrimerPaymentMethodType.paymentCard.rawValue {
             categories.append(PrimerPaymentMethodManagerCategory.cardComponents)
-            categories.append(PrimerPaymentMethodManagerCategory.raw)
+            categories.append(PrimerPaymentMethodManagerCategory.rawData)
             return categories
         }
         

@@ -10,7 +10,7 @@
 import Foundation
 
 public enum PrimerPaymentMethodManagerCategory {
-    case nativeUI, raw, cardComponents
+    case nativeUI, rawData, cardComponents
 }
 
 internal protocol PrimerPaymentMethodManager {
