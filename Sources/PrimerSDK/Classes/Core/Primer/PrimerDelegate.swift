@@ -176,38 +176,38 @@ internal class PrimerDelegateProxy {
     static func primerClientSessionWillUpdate() {
         DispatchQueue.main.async {
             Primer.shared.delegate?.primerClientSessionWillUpdate?()
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutClientSessionWillUpdate?()
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutWillUpdateClientSession?()
         }
     }
     
     static func primerClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
         DispatchQueue.main.async {
             Primer.shared.delegate?.primerClientSessionDidUpdate?(clientSession)
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutClientSessionDidUpdate?(clientSession)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidUpdateClientSession?(clientSession)
         }
     }
     
     static func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(paymentMethods)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(paymentMethods)
         }
     }
     
-    static func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
+    static func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutPreparationDidStart?(for: paymentMethodType)
+            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidStartPreparation?(for: paymentMethodType)
         }
     }
     
-    static func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
+    static func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationDidStart?(for: paymentMethodType)
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidStartTokenization?(for: paymentMethodType)
         }
     }
     
-    static func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
+    static func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: paymentMethodType)
+            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: paymentMethodType)
         }
     }
 }
