@@ -341,7 +341,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                                     throw err
                                 }
                             
-=                               seal.fulfill(decodedJWTToken)
+                                seal.fulfill(decodedJWTToken)
                             }
                             .catch { err in
                                 seal.reject(err)
