@@ -22,6 +22,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private var cardComponentsManagerTokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
     private var webViewController: SFSafariViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+    private var paymentMethodsRequiringCVVInput: [PrimerPaymentMethodType] = [.paymentCard]
+    private var isRequiringCVVInput: Bool {
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else { return false }
+        return paymentMethodsRequiringCVVInput.contains(paymentMethodType)
+    }
     var dataSource = CountryCode.allCases {
         didSet {
             tableView.reloadData()
@@ -266,9 +271,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     internal var formView: PrimerFormView {
         var formViews: [[UIView?]] = [
             [cardNumberContainerView],
-            [expiryDateContainerView, cvvContainerView],
+            [expiryDateContainerView],
             [cardholderNameContainerView],
         ]
+        if isRequiringCVVInput {
+            formViews[1].append(cvvContainerView)
+        }
         formViews.append(contentsOf: allVisibleBillingAddressFieldContainerViews)
         return PrimerFormView(frame: .zero, formViews: formViews)
     }
@@ -283,7 +291,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             expiryDateField: expiryDateField,
             cvvField: cvvField,
             cardholderNameField: cardholderNameField,
-            billingAddressFieldViews: allVisibleBillingAddressFieldViews
+            billingAddressFieldViews: allVisibleBillingAddressFieldViews,
+            paymentMethodType: self.config.type,
+            isRequiringCVVInput: isRequiringCVVInput
         )
         cardComponentsManager.delegate = self
     }
@@ -426,6 +436,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     let pcfvc = PrimerCardFormViewController(viewModel: self)
                     PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
+                case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
+                    let pcfvc = PrimerCardFormViewController(navigationBarLogo: self.uiModule.logo, viewModel: self)
+                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+                    seal.fulfill()
                 default:
                     precondition(false, "Should never end up here")
                 }
@@ -457,7 +471,36 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-            if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+            
+            if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+                if let redirectUrlStr = decodedJWTToken.redirectUrl,
+                   let redirectUrl = URL(string: redirectUrlStr),
+                   let statusUrlStr = decodedJWTToken.statusUrl,
+                   let statusUrl = URL(string: statusUrlStr),
+                   decodedJWTToken.intent != nil {
+                    
+                    DispatchQueue.main.async {
+                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                    }
+                    
+                    firstly {
+                        self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
+                    }
+                    .then { () -> Promise<String> in
+                        return PollingModule(url: statusUrl).start()
+                    }
+                    .done { resumeToken in
+                        seal.fulfill(resumeToken)
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                } else {
+                    let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    seal.reject(error)
+                }
+                
+            } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
     #if canImport(Primer3DS)
                 guard let paymentMethodTokenData = paymentMethodTokenData else {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -511,14 +554,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                    decodedJWTToken.intent != nil {
                     
                     DispatchQueue.main.async {
-                        UIApplication.shared.endIgnoringInteractionEvents()
+                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                     }
                     
                     firstly {
-                        self.presentWeb3DS(with: redirectUrl)
+                        self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                     }
                     .then { () -> Promise<String> in
-                        return self.startPolling(on: statusUrl)
+                        return PollingModule(url: statusUrl).start()
                     }
                     .done { resumeToken in
                         seal.fulfill(resumeToken)
@@ -538,8 +581,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
         }
     }
-    
-    private func presentWeb3DS(with redirectUrl: URL) -> Promise<Void> {
+        
+    private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
         return Promise { seal in
             self.webViewController = SFSafariViewController(url: redirectUrl)
             self.webViewController!.delegate = self
@@ -556,53 +599,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                         seal.fulfill()
                     }
                 })
-            }
-        }
-    }
-    
-    private func startPolling(on url: URL) -> Promise<String> {
-        return Promise { seal in
-            self.startPolling(on: url) { resumeToken, err in
-                if let err = err {
-                    seal.reject(err)
-                } else if let resumeToken = resumeToken {
-                    seal.fulfill(resumeToken)
-                } else {
-                    assert(true, "Completion handler should always return a value or an error")
-                }
-            }
-        }
-    }
-    
-    private func startPolling(on url: URL, completion: @escaping (String?, Error?) -> Void) {
-        let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-        
-        apiClient.poll(clientToken: PrimerAPIConfigurationModule.decodedJWTToken, url: url.absoluteString) { result in
-            if self.webViewCompletion == nil {
-                let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                completion(nil, err)
-                return
-            }
-            
-            switch result {
-            case .success(let res):
-                if res.status == .pending {
-                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                        self.startPolling(on: url, completion: completion)
-                    }
-                } else if res.status == .complete {
-                    completion(res.id, nil)
-                } else {
-                    let err = PrimerError.generic(message: "Should never end up here", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                }
-            case .failure(let err):
-                ErrorHandler.handle(error: err)
-                // Retry
-                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
-                    self.startPolling(on: url, completion: completion)
-                }
             }
         }
     }
@@ -660,7 +656,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
             }
             
             let params: [String: Any] = [
-                "paymentMethodType": PrimerPaymentMethodType.paymentCard.rawValue,
+                "paymentMethodType": config.type,
                 "binData": [
                     "network": network,
                 ]
@@ -802,8 +798,11 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         var validations = [
             cardNumberField.isTextValid,
             expiryDateField.isTextValid,
-            cvvField.isTextValid
         ]
+        
+        if isRequiringCVVInput {
+            validations.append(cvvField.isTextValid)
+        }
         
         if isShowingBillingAddressFieldsRequired {
             validations.append(contentsOf: allVisibleBillingAddressFieldViews.map { $0.isTextValid })

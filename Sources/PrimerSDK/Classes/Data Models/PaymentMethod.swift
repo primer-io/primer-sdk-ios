@@ -58,6 +58,28 @@ class PrimerPaymentMethod: Codable {
         }
     }
     
+    var invertedLogo: UIImage? {
+        guard let baseLogoImage = baseLogoImage else { return nil }
+        
+        if UIScreen.isDarkModeEnabled {
+            if let lightImage = baseLogoImage.light {
+                return lightImage
+            } else if let coloredImage = baseLogoImage.colored {
+                return coloredImage
+            } else {
+                return nil
+            }
+        } else {
+            if let darkImage = baseLogoImage.dark {
+                return darkImage
+            } else if let coloredImage = baseLogoImage.colored {
+                return coloredImage
+            } else {
+                return nil
+            }
+        }
+    }
+    
     var hasUnknownSurcharge: Bool = false
     lazy var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? = {
         if implementationType == .webRedirect {
@@ -86,7 +108,8 @@ class PrimerPaymentMethod: Codable {
             case PrimerPaymentMethodType.klarna.rawValue:
                 return KlarnaTokenizationViewModel(config: self)
                 
-            case PrimerPaymentMethodType.paymentCard.rawValue:
+            case PrimerPaymentMethodType.paymentCard.rawValue,
+                PrimerPaymentMethodType.adyenBancontactCard.rawValue:
                 return CardFormPaymentMethodTokenizationViewModel(config: self)
                 
             case PrimerPaymentMethodType.payPal.rawValue:

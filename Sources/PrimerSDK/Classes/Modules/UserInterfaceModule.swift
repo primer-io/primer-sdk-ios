@@ -35,6 +35,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         return paymentMethodTokenizationViewModel.config.logo
     }
     
+    var invertedLogo: UIImage? {
+        return paymentMethodTokenizationViewModel.config.invertedLogo
+    }
+    
     var icon: UIImage? {
         var fileName = paymentMethodTokenizationViewModel.config.type.lowercased().replacingOccurrences(of: "_", with: "-")
         fileName += "-icon"
@@ -122,6 +126,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
+        
+        case .adyenBancontactCard:
+            return nil
             
         case .adyenDotPay:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -737,10 +744,15 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var buttonTitle: String? {
+        
         let metadataButtonText = paymentMethodTokenizationViewModel.config.displayMetadata?.button.text
             ?? self.localDisplayMetadata?.button.text
         
         switch paymentMethodTokenizationViewModel.config.type {
+        
+        case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
+            return Strings.PaymentButton.payWithCard
+            
         case PrimerPaymentMethodType.apaya.rawValue:
             // Update with `metadataButtonText ?? Strings.PaymentButton.payByMobile` once we'll get localized strings
             return Strings.PaymentButton.payByMobile
@@ -874,9 +886,11 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var paymentMethodButton: PrimerButton {
+        
         let customPaddingSettingsCard: [String] = [
             PrimerPaymentMethodType.coinbase.rawValue,
-            PrimerPaymentMethodType.paymentCard.rawValue
+            PrimerPaymentMethodType.paymentCard.rawValue,
+            PrimerPaymentMethodType.adyenBancontactCard.rawValue
         ]
         
         let paymentMethodButton = PrimerButton()
@@ -887,9 +901,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         let leftPadding = UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0
         let defaultRightPadding = customPaddingSettingsCard.contains(paymentMethodTokenizationViewModel.config.type) ? imagePadding : 0
         let rightPadding = UILocalizableUtil.isRightToLeftLocale ? 0 : defaultRightPadding
-        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 12,
+        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 8,
                                                            left: leftPadding,
-                                                           bottom: 12,
+                                                           bottom: 8,
                                                            right: rightPadding)
         paymentMethodButton.contentMode = .scaleAspectFit
         paymentMethodButton.imageView?.contentMode = .scaleAspectFit
@@ -930,64 +944,23 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 precondition(false, "Intent should have been set")
             }
             
-            let submitButton = PrimerButton()
-            submitButton.translatesAutoresizingMaskIntoConstraints = false
-            submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-            submitButton.isAccessibilityElement = true
-            submitButton.accessibilityIdentifier = "submit_btn"
-            submitButton.isEnabled = false
-            submitButton.setTitle(buttonTitle, for: .normal)
-            submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
-            submitButton.layer.cornerRadius = 4
-            submitButton.clipsToBounds = true
-            submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
-            return submitButton
+            return makePrimerButtonWithTitleText(buttonTitle, isEnabled: false)
             
         case PrimerPaymentMethodType.primerTestKlarna.rawValue,
             PrimerPaymentMethodType.primerTestPayPal.rawValue,
             PrimerPaymentMethodType.primerTestSofort.rawValue:
-            let submitButton = PrimerButton()
-            submitButton.translatesAutoresizingMaskIntoConstraints = false
-            submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-            submitButton.isAccessibilityElement = true
-            submitButton.accessibilityIdentifier = "submit_btn"
-            submitButton.isEnabled = false
-            submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-            submitButton.backgroundColor = theme.mainButton.color(for: .disabled)
-            submitButton.layer.cornerRadius = 4
-            submitButton.clipsToBounds = true
-            submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
-            return submitButton
+            return makePrimerButtonWithTitleText(Strings.PaymentButton.pay, isEnabled: false)
             
         case PrimerPaymentMethodType.adyenBlik.rawValue,
             PrimerPaymentMethodType.xfersPayNow.rawValue:
-            let btn = PrimerButton()
-            btn.isEnabled = false
-            btn.accessibilityIdentifier = "submit_btn"
-            btn.clipsToBounds = true
-            btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
-            btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-            btn.layer.cornerRadius = 4
-            btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
-            btn.setTitleColor(.white, for: .normal)
-            btn.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
-            btn.setTitle(Strings.PaymentButton.confirm, for: .normal)
-            return btn
+            return makePrimerButtonWithTitleText(Strings.PaymentButton.confirm, isEnabled: false)
         
         case PrimerPaymentMethodType.adyenMultibanco.rawValue:
-            let btn = PrimerButton()
-            btn.isEnabled = true
-            btn.clipsToBounds = true
-            btn.heightAnchor.constraint(equalToConstant: 45).isActive = true
-            btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-            btn.layer.cornerRadius = 4
-            btn.backgroundColor = btn.isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
-            btn.setTitleColor(.white, for: .normal)
-            btn.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
-            btn.setTitle(Strings.PaymentButton.confirmToPay, for: .normal)
-            return btn
-            
+            return makePrimerButtonWithTitleText(Strings.PaymentButton.confirmToPay, isEnabled: true)
+        
+        case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
+            return makePrimerButtonWithTitleText(Strings.PaymentButton.pay, isEnabled: false)
+
         default:
             return nil
         }
@@ -1004,6 +977,22 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     // MARK: - HELPERS
+    
+    private func makePrimerButtonWithTitleText(_ titleText: String, isEnabled: Bool) -> PrimerButton {
+        let submitButton = PrimerButton()
+        submitButton.translatesAutoresizingMaskIntoConstraints = false
+        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        submitButton.isAccessibilityElement = true
+        submitButton.accessibilityIdentifier = "submit_btn"
+        submitButton.isEnabled = isEnabled
+        submitButton.setTitle(titleText, for: .normal)
+        submitButton.backgroundColor = isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
+        submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
+        submitButton.layer.cornerRadius = 4
+        submitButton.clipsToBounds = true
+        submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
+        return submitButton
+    }
     
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView? {
         guard let logo = self.logo else { return nil }
@@ -1033,11 +1022,11 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         return imgView
     }
     
-    @IBAction func paymentMethodButtonTapped(_ sender: UIButton) {
+    @IBAction private func paymentMethodButtonTapped(_ sender: UIButton) {
         self.paymentMethodTokenizationViewModel.start()
     }
     
-    @IBAction func submitButtonTapped(_ sender: UIButton) {
+    @IBAction private func submitButtonTapped(_ sender: UIButton) {
         self.paymentMethodTokenizationViewModel.submitButtonTapped()
     }
 }

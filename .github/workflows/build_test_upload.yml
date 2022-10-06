@@ -20,11 +20,72 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-  build-and-upload:
+  build-and-upload-to-appetize:
     needs: danger
     runs-on: macos-latest
     timeout-minutes: 20
-    name: "Build and upload app"
+    name: "Build and upload app to Appetize"
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Git - Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Select Xcode Version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          name: id_rsa_github_actions
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.6"
+          bundler-cache: true
+
+      - name: Install Tuist.io
+        run: |
+          if [ ! -d ".tuist-bin" ]
+          then
+            curl -Ls https://install.tuist.io | bash
+          fi
+
+      - name: Create the Xcode project and workspace
+        run: sh ./Internal/Debug\ App/tuist-generate.sh is_ci
+
+      - name: Distribute internally on Firebase and upload to Browserstack 🚀
+        run: |
+          bundle exec fastlane appetize_build_and_upload
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
+          MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
+          SOURCE_BRANCH: ${{ github.head_ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+
+  build-and-upload-to-firebase-and-browserstack:
+    needs: danger
+    runs-on: macos-latest
+    timeout-minutes: 20
+    name: "Build and upload app to Firebase and Browserstack"
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@0.9.0
@@ -74,7 +135,7 @@ jobs:
       - name: Create the Xcode project and workspace
         run: sh ./Internal/Debug\ App/tuist-generate.sh is_ci
 
-      - name: Distribute internally on Firebase, Browserstack and Appetize 🚀
+      - name: Distribute internally on Firebase and upload to Browserstack 🚀
         run: |
           bundle exec fastlane qa_release
         env:
@@ -102,7 +163,7 @@ jobs:
 
   test-via-browserstack:
       runs-on: ubuntu-latest
-      needs: build-and-upload
+      needs: build-and-upload-to-firebase-and-browserstack
       name: "Browserstack test"
       steps:
         - name: Clone and launch Browserstack tests via Appium 🧪

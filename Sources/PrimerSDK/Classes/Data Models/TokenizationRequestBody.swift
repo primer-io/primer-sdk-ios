@@ -40,6 +40,8 @@ extension Request.Body {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
             }  else if let paymentInstrument = self.paymentInstrument as? PayPalPaymentInstrument {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
+            }  else if let paymentInstrument = self.paymentInstrument as? CardOffSessionPaymentInstrument {
+                try container.encode(paymentInstrument, forKey: .paymentInstrument)
             } else {
                 let err = InternalError.invalidValue(key: "PaymentInstrument", value: self.paymentInstrument, userInfo: nil, diagnosticsId: nil)
                 ErrorHandler.handle(error: err)

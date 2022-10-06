@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "bancontact-icon.png",
+      "filename" : "bancontact-logo-colored.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "bancontact-icon@2x.png",
+      "filename" : "bancontact-logo-colored@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "bancontact-icon@3x.png",
+      "filename" : "bancontact-logo-colored@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

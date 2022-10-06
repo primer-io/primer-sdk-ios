@@ -109,6 +109,26 @@ extension PrimerHeadlessUniversalCheckout {
             log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
         }
         
+        public init(paymentMethodType: String) throws {
+            
+            guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() else {
+                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+            
+            if availablePaymentMethodTypes.filter({ $0 == paymentMethodType }).isEmpty {
+                let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+
+            self.paymentMethodType = paymentMethodType
+            super.init()
+            self.requiredInputElementTypes = PrimerHeadlessUniversalCheckout.current.listRequiredInputElementTypes(for: paymentMethodType) ?? []
+        }
+        
+        @available(*, deprecated, message: "This initiliazer supports `.paymentCard` as a payment method type only. Use the default `init(paymentMethodType: String)` to support multiple payment method types that requires card element inputs.")
         public override init() {
             self.paymentMethodType = PrimerPaymentMethodType.paymentCard.rawValue
             super.init()
@@ -116,7 +136,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public func tokenize(withData data: PrimerHeadlessUniversalCheckoutInputData? = nil) {
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationDidStart(for: PrimerPaymentMethodType.paymentCard.rawValue)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationDidStart(for: self.paymentMethodType)
             
             firstly {
                 PrimerHeadlessUniversalCheckout.current.validateSession()
@@ -125,13 +145,13 @@ extension PrimerHeadlessUniversalCheckout {
                 self.validateInputData()
             }
             .then { () -> Promise<Void> in
-                self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: PrimerPaymentMethodType.paymentCard.rawValue))
+                self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
             }
             .then { () -> Promise<Request.Body.Tokenization> in
-                self.buildRequestBody()
+                try self.buildRequestBody()
             }
             .then { requestBody -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: PrimerPaymentMethodType.paymentCard.rawValue)
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodType)
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
                 return tokenizationService.tokenize(requestBody: requestBody)
             }
@@ -183,69 +203,125 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func buildRequestBody() -> Promise<Request.Body.Tokenization> {
+        private func buildRequestBody() throws -> Promise<Request.Body.Tokenization> {
+            switch self.paymentMethodType {
+            case PrimerPaymentMethodType.paymentCard.rawValue:
+                return makeCardRequestBody()
+            case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
+                return makeCardRedirectRequestBody()
+            default:
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+        }
+                
+        private func makeCardRedirectRequestBody() -> Promise<Request.Body.Tokenization> {
             return Promise { seal in
-                switch self.paymentMethodType {
-                case PrimerPaymentMethodType.paymentCard.rawValue:
-                    guard let cardnumberField = inputElements.filter({ $0.type == .cardNumber }).first as? PrimerInputTextField,
-                          let expiryDateField = inputElements.filter({ $0.type == .expiryDate }).first as? PrimerInputTextField,
-                          let cvvField = inputElements.filter({ $0.type == .cvv }).first as? PrimerInputTextField
-                    else {
-                        let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                        return
-                    }
-                    
-                    guard cardnumberField.isValid,
-                          expiryDateField.isValid,
-                          cvvField.isValid
-                    else {
-                        let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                        return
-                    }
-                    
-                    guard let cardNumber = cardnumberField._text,
-                          let expiryDate = expiryDateField._text,
-                          let cvv = cvvField._text
-                    else {
-                        let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                        return
-                    }
-                    
-                    let expiryArr = expiryDate.components(separatedBy: expiryDateField.type.delimiter!)
-                    let expiryMonth = expiryArr[0]
-                    let expiryYear = "20" + expiryArr[1]
-                    
-                    var cardholderName: String?
-                    if let cardholderNameField = inputElements.filter({ $0.type == .cardholderName }).first as? PrimerInputTextField {
-                        if !cardholderNameField.isValid {
-                            let err = PrimerError.invalidValue(key: "cardholder-name", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-                            return
-                        }
-                        
-                        cardholderName = cardholderNameField._text
-                    }
-                    
-                    let paymentInstrument = CardPaymentInstrument(
-                        number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as! String,
-                        cvv: cvv,
-                        expirationMonth: expiryMonth,
-                        expirationYear: expiryYear,
-                        cardholderName: cardholderName)
-                    
-                    let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-                    seal.fulfill(requestBody)
-                    
-                default:
-                    fatalError()
+                
+                guard let cardnumberField = inputElements.filter({ $0.type == .cardNumber }).first as? PrimerInputTextField,
+                      let expiryDateField = inputElements.filter({ $0.type == .expiryDate }).first as? PrimerInputTextField,
+                      let cardholderNameField = inputElements.filter({ $0.type == .cardholderName }).first as? PrimerInputTextField
+                else {
+                    let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
                 }
+                
+                guard cardnumberField.isValid,
+                      expiryDateField.isValid,
+                      cardholderNameField.isValid,
+                      let cardNumber = cardnumberField._text,
+                      let expiryDate = expiryDateField._text,
+                      let cardholderName = cardholderNameField._text
+                else {
+                    let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                let expiryArr = expiryDate.components(separatedBy: expiryDateField.type.delimiter!)
+                let currentYearAsString = Date().yearComponentAsString
+                let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2))
+
+                let expiryMonth = expiryArr[0]
+                let expiryYear = "\(milleniumAndCenturyOfCurrentYearAsString)\(expiryArr[1])"
+
+                guard let configId = AppState.current.apiConfiguration?.getConfigId(for: paymentMethodType) else {
+                    let err = PrimerError.missingPrimerConfiguration(
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
+                                                                                   paymentMethodType: paymentMethodType,
+                                                                                   number: cardNumber,
+                                                                                   expirationMonth: expiryMonth,
+                                                                                   expirationYear: expiryYear,
+                                                                                   cardholderName: cardholderName)
+                
+                seal.fulfill(Request.Body.Tokenization(paymentInstrument: cardOffSessionPaymentInstrument))
+            }
+        }
+        
+        private func makeCardRequestBody() -> Promise<Request.Body.Tokenization> {
+            return Promise { seal in
+                
+                guard let cardnumberField = inputElements.filter({ $0.type == .cardNumber }).first as? PrimerInputTextField,
+                      let expiryDateField = inputElements.filter({ $0.type == .expiryDate }).first as? PrimerInputTextField,
+                      let cvvField = inputElements.filter({ $0.type == .cvv }).first as? PrimerInputTextField
+                else {
+                    let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                guard cardnumberField.isValid,
+                      expiryDateField.isValid,
+                      cvvField.isValid,
+                      let cardNumber = cardnumberField._text,
+                      let expiryDate = expiryDateField._text,
+                      let cvv = cvvField._text
+                else {
+                    let err = PrimerError.invalidValue(key: "input-element", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                                
+                let expiryArr = expiryDate.components(separatedBy: expiryDateField.type.delimiter!)
+                let currentYearAsString = Date().yearComponentAsString
+                let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2))
+
+                let expiryMonth = expiryArr[0]
+                let expiryYear = "\(milleniumAndCenturyOfCurrentYearAsString)\(expiryArr[1])"
+                
+                var cardholderName: String?
+                if let cardholderNameField = inputElements.filter({ $0.type == .cardholderName }).first as? PrimerInputTextField {
+                    if !cardholderNameField.isValid {
+                        let err = PrimerError.invalidValue(key: "cardholder-name", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                        return
+                    }
+                    
+                    cardholderName = cardholderNameField._text
+                }
+                
+                let paymentInstrument = CardPaymentInstrument(
+                    number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as! String,
+                    cvv: cvv,
+                    expirationMonth: expiryMonth,
+                    expirationYear: expiryYear,
+                    cardholderName: cardholderName)
+                
+                seal.fulfill(Request.Body.Tokenization(paymentInstrument: paymentInstrument))
             }
         }
         
@@ -460,11 +536,11 @@ extension PrimerHeadlessUniversalCheckout {
                        decodedJWTToken.intent != nil {
                         
                         DispatchQueue.main.async {
-                            UIApplication.shared.endIgnoringInteractionEvents()
+                            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                         }
                         
                         firstly {
-                            self.presentWeb3DS(with: redirectUrl)
+                            self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                         }
                         .then { () -> Promise<String> in
                             let pollingModule = PollingModule(url: statusUrl)
@@ -489,7 +565,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func presentWeb3DS(with redirectUrl: URL) -> Promise<Void> {
+        private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
             return Promise { seal in
                 self.webViewController = SFSafariViewController(url: redirectUrl)
                 self.webViewController!.delegate = self
@@ -813,7 +889,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager: SFSafariViewControl
         if let webViewCompletion = webViewCompletion {
             // Cancelled
             let err = PrimerError.cancelled(
-                paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
+                paymentMethodType: self.paymentMethodType,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
             

@@ -82,7 +82,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     
     override func performPreTokenizationSteps() -> Promise<Void> {
         DispatchQueue.main.async {
-            UIApplication.shared.endIgnoringInteractionEvents()
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
         }
         
         let event = Analytics.Event(

@@ -67,7 +67,10 @@ extension PrimerHeadlessUniversalCheckout {
             switch paymentMethodType {
                 
             case PrimerPaymentMethodType.paymentCard.rawValue:
-                self.rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue)
+                self.rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType:PrimerPaymentMethodType.paymentCard.rawValue)
+            
+            case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
+                self.rawDataTokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: paymentMethodType)
                 
             case PrimerPaymentMethodType.xenditOvo.rawValue,
                 PrimerPaymentMethodType.adyenMBWay.rawValue:
@@ -89,22 +92,13 @@ extension PrimerHeadlessUniversalCheckout {
         }
                 
         public func submit() {
+            
             guard let rawData = rawData else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 self.delegate?.primerRawDataManager?(self, dataIsValid: false, errors: [err])
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
                 return
-            }
-            
-            if let rawCardData = rawData as? PrimerCardData {
-                do {
-                    try rawCardData.validate()
-                } catch {
-                    self.delegate?.primerRawDataManager?(self, dataIsValid: false, errors: [error])
-                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error)
-                    return
-                }
             }
             
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutPreparationDidStart(for: self.paymentMethodType)
@@ -375,11 +369,11 @@ extension PrimerHeadlessUniversalCheckout {
                        decodedJWTToken.intent != nil {
                         
                         DispatchQueue.main.async {
-                            UIApplication.shared.endIgnoringInteractionEvents()
+                            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                         }
                         
                         firstly {
-                            self.presentWeb3DS(with: redirectUrl)
+                            self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                         }
                         .then { () -> Promise<String> in
                             let pollingModule = PollingModule(url: statusUrl)
@@ -527,7 +521,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        private func presentWeb3DS(with redirectUrl: URL) -> Promise<Void> {
+        private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
             return Promise { seal in
                 self.webViewController = SFSafariViewController(url: redirectUrl)
                 self.webViewController!.delegate = self
