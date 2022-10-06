@@ -67,7 +67,7 @@ jobs:
       - name: Create the Xcode project and workspace
         run: sh ./Internal/Debug\ App/tuist-generate.sh is_ci
 
-      - name: Distribute internally on Firebase and upload to Browserstack 🚀
+      - name: Distribute app to Appetize 🚀
         run: |
           bundle exec fastlane appetize_build_and_upload
         env:
@@ -85,7 +85,7 @@ jobs:
     needs: danger
     runs-on: macos-latest
     timeout-minutes: 20
-    name: "Build and upload app to Firebase and Browserstack"
+    name: "Distribute app to Firebase and Browserstack"
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@0.9.0
