@@ -480,7 +480,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                    decodedJWTToken.intent != nil {
                     
                     DispatchQueue.main.async {
-                        UIApplication.shared.endIgnoringInteractionEvents()
+                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                     }
                     
                     firstly {
@@ -554,7 +554,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                    decodedJWTToken.intent != nil {
                     
                     DispatchQueue.main.async {
-                        UIApplication.shared.endIgnoringInteractionEvents()
+                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                     }
                     
                     firstly {

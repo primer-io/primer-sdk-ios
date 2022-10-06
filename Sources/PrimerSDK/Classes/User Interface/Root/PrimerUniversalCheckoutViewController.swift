@@ -299,6 +299,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         .ensure {
             self.enableView(true)
         }
+        .catch { _ in }
     }
     
 }

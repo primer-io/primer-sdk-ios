@@ -44,7 +44,7 @@ extension PaymentMethodTokenizationViewModel {
                     self.handleSuccessfulFlow()
                 }
                 .ensure {
-                    UIApplication.shared.endIgnoringInteractionEvents()
+                    PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                 }
                 .catch { err in
                     self.didFinishPayment?(err)
@@ -93,7 +93,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
         .ensure {
-            UIApplication.shared.endIgnoringInteractionEvents()
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
         }
         .catch { err in
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
