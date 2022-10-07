@@ -16,11 +16,11 @@ public class PrimerSettings: PrimerSettingsProtocol {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         return settings as! PrimerSettings
     }
-    let paymentHandling: PrimerPaymentHandling
-    let localeData: PrimerLocaleData
-    let paymentMethodOptions: PrimerPaymentMethodOptions
-    var uiOptions: PrimerUIOptions
-    let debugOptions: PrimerDebugOptions
+    public let paymentHandling: PrimerPaymentHandling
+    public let localeData: PrimerLocaleData
+    public let paymentMethodOptions: PrimerPaymentMethodOptions
+    public internal(set) var uiOptions: PrimerUIOptions
+    public let debugOptions: PrimerDebugOptions
     
     public init(
         paymentHandling: PrimerPaymentHandling = .auto,
