@@ -139,7 +139,7 @@ internal class PrimerDelegateProxy {
             
             if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail != nil {
                 DispatchQueue.main.async {
-                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail!(withError: exposedError)
+                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail!(withError: exposedError, checkoutData: data)
                     decisionHandler(.fail(withErrorMessage: nil))
                 }
                 

@@ -99,7 +99,7 @@ extension PrimerHeadlessUniversalCheckout {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 self.delegate?.primerRawDataManager?(self, dataIsValid: false, errors: [err])
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err, checkoutData: self.paymentCheckoutData)
                 return
             }
             
@@ -108,7 +108,7 @@ extension PrimerHeadlessUniversalCheckout {
                     try rawCardData.validate()
                 } catch {
                     self.delegate?.primerRawDataManager?(self, dataIsValid: false, errors: [error])
-                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error)
+                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error, checkoutData: self.paymentCheckoutData)
                     return
                 }
             }
@@ -143,7 +143,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
             .catch { error in
                 ErrorHandler.handle(error: error)
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error, checkoutData: self.paymentCheckoutData)
             }
         }
         
