@@ -118,13 +118,14 @@ extension PrimerHeadlessUniversalCheckout {
                 return self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
             }
             .done { checkoutData in
+                self.paymentCheckoutData = checkoutData
                 if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
                     PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
             }
             .catch { error in
                 ErrorHandler.handle(error: error)
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error, checkoutData: self.paymentCheckoutData)
             }
         }
         
@@ -923,7 +924,7 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsUIManager {
             ErrorHandler.handle(error: err)
             
             DispatchQueue.main.async {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err, checkoutData: self.paymentCheckoutData)
             }
         }
     }
