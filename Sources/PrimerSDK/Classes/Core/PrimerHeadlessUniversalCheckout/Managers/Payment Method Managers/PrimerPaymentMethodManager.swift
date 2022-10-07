@@ -9,8 +9,10 @@
 
 import Foundation
 
-public enum PrimerPaymentMethodManagerCategory {
-    case nativeUI, rawData, cardComponents
+public enum PrimerPaymentMethodManagerCategory: String {
+    case nativeUI       = "NATIVE_UI"
+    case rawData        = "RAW_DATA"
+    case cardComponents = "CARD_COMPONENTS"
 }
 
 internal protocol PrimerPaymentMethodManager {
