@@ -34,8 +34,6 @@ extension Request.Body {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
             } else if let paymentInstrument = self.paymentInstrument as? KlarnaCustomerTokenPaymentInstrument {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
-            } else if let paymentInstrument = self.paymentInstrument as? KlarnaPaymentSessionPaymentInstrument {
-                try container.encode(paymentInstrument, forKey: .paymentInstrument)
             } else if let paymentInstrument = self.paymentInstrument as? OffSessionPaymentInstrument {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
             }  else if let paymentInstrument = self.paymentInstrument as? PayPalPaymentInstrument {
