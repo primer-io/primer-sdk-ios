@@ -234,22 +234,25 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            var requestBody: Request.Body.Tokenization
-            
-            if PrimerInternal.shared.intent == .vault {
-                let paymentInstrument = KlarnaPaymentSessionPaymentInstrument(
-                    klarnaAuthorizationToken: self.authorizationToken!,
-                    sessionData: self.klarnaCustomerTokenAPIResponse!.sessionData)
-                
-                requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-                
-            } else {
-                let paymentInstrument = KlarnaCustomerTokenPaymentInstrument(
-                    klarnaCustomerToken: self.klarnaCustomerTokenAPIResponse!.customerTokenId,
-                    sessionData: self.klarnaCustomerTokenAPIResponse!.sessionData)
-                
-                requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+            guard let klarnaCustomerToken = self.klarnaCustomerTokenAPIResponse?.customerTokenId else {
+                let err = PrimerError.invalidValue(key: "tokenization.klarnaCustomerToken", value: nil, userInfo: nil, diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
             }
+            
+            guard let sessionData = self.klarnaCustomerTokenAPIResponse?.sessionData else {
+                let err = PrimerError.invalidValue(key: "tokenization.sessionData", value: nil, userInfo: nil, diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            let paymentInstrument = KlarnaCustomerTokenPaymentInstrument(
+                klarnaCustomerToken: klarnaCustomerToken,
+                sessionData: sessionData)
+            
+            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             
