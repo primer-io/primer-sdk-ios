@@ -72,7 +72,6 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
     var isDataValid: Bool = false
     var paymentMethodType: String
-    var delegate: PrimerRawDataManagerDelegate?
     
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
