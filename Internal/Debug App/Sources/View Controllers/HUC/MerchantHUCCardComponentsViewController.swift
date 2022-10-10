@@ -65,8 +65,9 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
 
         PrimerHeadlessUniversalCheckout.current.delegate = self
 
-        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardComponentsUIManager(delegate: self)
-
+        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardComponentsUIManager()
+        self.cardFormUIManager!.delegate = self
+        
         var tmpInputElements: [PrimerHeadlessUniversalCheckoutInputElement] = []
         for inputElementType in self.cardFormUIManager!.requiredInputElementTypes {
             let textField = PrimerInputTextField(type: inputElementType, frame: .zero)
