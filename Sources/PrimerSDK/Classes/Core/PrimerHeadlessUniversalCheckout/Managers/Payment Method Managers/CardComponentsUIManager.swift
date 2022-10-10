@@ -68,7 +68,6 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public init(paymentMethodType: String) throws {
-            
             guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() else {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -83,13 +82,11 @@ extension PrimerHeadlessUniversalCheckout {
 
             self.paymentMethodType = paymentMethodType
             super.init()
-            self.requiredInputElementTypes = PrimerHeadlessUniversalCheckout.current.listRequiredInputElementTypes(for: paymentMethodType) ?? []
         }
         
         @available(*, deprecated, message: "This initiliazer supports `.paymentCard` as a payment method type only. Use the default `init(paymentMethodType: String)` to support multiple payment method types that requires card element inputs.")
         public override init() {
             self.paymentMethodType = PrimerPaymentMethodType.paymentCard.rawValue
-            self.delegate = delegate
             super.init()
         }
         
@@ -109,7 +106,7 @@ extension PrimerHeadlessUniversalCheckout {
                 try self.buildRequestBody()
             }
             .then { requestBody -> Promise<PrimerPaymentMethodTokenData> in
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodType)
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.paymentMethodType)
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
                 return tokenizationService.tokenize(requestBody: requestBody)
             }
