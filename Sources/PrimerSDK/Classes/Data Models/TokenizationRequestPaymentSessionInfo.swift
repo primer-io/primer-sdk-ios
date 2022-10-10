@@ -13,6 +13,13 @@ import Foundation
 
 protocol OffSessionPaymentSessionInfo: Encodable {}
 
+struct CardOffSessionInfo: Encodable {
+    var locale: String = PrimerSettings.current.localeData.localeCode
+    var platform: String = "IOS"
+    var browserInfo: [String: String] = ["userAgent": UserAgent.userAgentAsString]
+    var redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
+}
+
 struct BankSelectorSessionInfo: OffSessionPaymentSessionInfo {
     var issuer: String?
     var locale: String = "en_US"

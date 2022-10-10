@@ -26,7 +26,7 @@ var mockClientToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeInte
 var mockSettings = PrimerSettings(
     paymentMethodOptions: PrimerPaymentMethodOptions(
         urlScheme: "urlScheme",
-        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "mid", merchantName: "name")
+        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "mid", merchantName: "name", isCaptureBillingAddressEnabled: false)
     )
 )
 

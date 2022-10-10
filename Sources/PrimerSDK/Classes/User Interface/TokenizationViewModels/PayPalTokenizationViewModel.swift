@@ -58,6 +58,11 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {
+        
+        DispatchQueue.main.async {
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
+        }
+
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -258,9 +263,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 )
 
                 (self.session as? SFAuthenticationSession)?.start()
-            }
-            
-            didPresentExternalView?()
+            }            
         }
     }
     

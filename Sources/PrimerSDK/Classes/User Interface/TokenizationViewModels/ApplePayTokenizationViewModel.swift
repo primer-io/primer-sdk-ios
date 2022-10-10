@@ -121,6 +121,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.awaitUserInput()
             }
+            .then { () -> Promise<Void> in
+                return self.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(self.applePayPaymentResponse.billingAddress)
+            }
             .done {
                 seal.fulfill()
             }
@@ -214,6 +217,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
                 if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
                     let request = PKPaymentRequest()
+                    let isBillingContactFieldsRequired = PrimerSettings.current.paymentMethodOptions.applePayOptions?.isCaptureBillingAddressEnabled == true
+                    request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
                     request.currencyCode = applePayRequest.currency.rawValue
                     request.countryCode = applePayRequest.countryCode.rawValue
                     request.merchantIdentifier = merchantIdentifier
@@ -315,6 +320,53 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 }
 
 @available(iOS 11.0, *)
+extension ApplePayTokenizationViewModel {
+    
+    private func clientSessionBillingAddressFromApplePayBillingContact(_ billingContact: PKContact?) -> ClientSession.Address? {
+        
+        guard let postalAddress = billingContact?.postalAddress else {
+            return nil
+        }
+        
+        // From: https://developer.apple.com/documentation/contacts/cnpostaladdress/1403414-street
+        let addressLines = postalAddress.street.components(separatedBy: "\n")
+        let addressLine1 = addressLines.first
+        let addressLine2 = addressLines.count > 1 ? addressLines[1] : nil
+        
+        return ClientSession.Address(firstName: billingContact?.name?.givenName,
+                                     lastName: billingContact?.name?.familyName,
+                                     addressLine1: addressLine1,
+                                     addressLine2: addressLine2,
+                                     city: postalAddress.city,
+                                     postalCode: postalAddress.postalCode,
+                                     state: postalAddress.state,
+                                     countryCode: CountryCode(rawValue: postalAddress.isoCountryCode))
+    }
+    
+    private func updateBillingAddressViaClientSessionActionWithAddressIfNeeded(_ address: ClientSession.Address?) -> Promise<Void> {
+        return Promise { seal in
+            
+            guard let unwrappedAddress = address, let billingAddress = try? unwrappedAddress.asDictionary() else {
+                seal.fulfill()
+                return
+            }
+            
+            let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+            
+            firstly {
+                clientSessionActionsModule.dispatch(actions: [billingAddressAction])
+            }.done {
+                seal.fulfill()
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+}
+
+@available(iOS 11.0, *)
 extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDelegate {
     
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
@@ -355,6 +407,9 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         
         do {
             let tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self, from: payment.token.paymentData)
+            
+            let billingAddress = clientSessionBillingAddressFromApplePayBillingContact(payment.billingContact)
+            
             let applePayPaymentResponse = ApplePayPaymentResponse(
                 token: ApplePayPaymentInstrument.PaymentResponseToken(
                     paymentMethod: ApplePayPaymentResponsePaymentMethod(
@@ -364,8 +419,8 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
                     ),
                     transactionIdentifier: payment.token.transactionIdentifier,
                     paymentData: tokenPaymentData
-                )
-            )
+                ), billingAddress: billingAddress)
+            
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
             controller.dismiss(animated: true, completion: nil)
             applePayReceiveDataCompletion?(.success(applePayPaymentResponse))

@@ -61,10 +61,11 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {
-        DispatchQueue.main.async {
-            UIApplication.shared.beginIgnoringInteractionEvents()
-        }
         
+        DispatchQueue.main.async {
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
+        }
+
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -210,7 +211,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                    decodedJWTToken.intent != nil {
                     
                     DispatchQueue.main.async {
-                        UIApplication.shared.endIgnoringInteractionEvents()
+                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                     }
                     
                     self.redirectUrl = redirectUrl

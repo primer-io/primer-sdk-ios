@@ -46,6 +46,17 @@ struct CardPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var cardholderName: String?
 }
 
+struct CardOffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
+    var sessionInfo = CardOffSessionInfo()
+    var type: PaymentInstrumentType = .cardOffSession
+    var paymentMethodConfigId: String
+    var paymentMethodType: String
+    var number: String
+    var expirationMonth: String
+    var expirationYear: String
+    var cardholderName: String
+}
+
 struct KlarnaCustomerTokenPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var klarnaCustomerToken: String?
     var sessionData: Response.Body.Klarna.SessionData?
@@ -61,7 +72,7 @@ class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var paymentMethodConfigId: String
     var paymentMethodType: String
     var sessionInfo: OffSessionPaymentSessionInfo
-    var type: String = "OFF_SESSION_PAYMENT"
+    var type: PaymentInstrumentType = .offSession
     
     private enum CodingKeys : String, CodingKey {
         case paymentMethodConfigId, paymentMethodType, sessionInfo, type
@@ -139,18 +150,20 @@ struct PayPalPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
 
 public enum PaymentInstrumentType: String, Codable {
     
-    case paymentCard = "PAYMENT_CARD"
-    case payPalOrder = "PAYPAL_ORDER"
+    case paymentCard            = "PAYMENT_CARD"
+    case offSession             = "OFF_SESSION_PAYMENT"
+    case cardOffSession         = "CARD_OFF_SESSION_PAYMENT"
+    case payPalOrder            = "PAYPAL_ORDER"
     case payPalBillingAgreement = "PAYPAL_BILLING_AGREEMENT"
-    case applePay = "APPLE_PAY"
-    case googlePay = "GOOGLE_PAY"
-    case goCardlessMandate = "GOCARDLESS_MANDATE"
-    case klarna = "KLARNA_AUTHORIZATION_TOKEN"
-    case klarnaPaymentSession = "KLARNA_PAYMENT_SESSION"
-    case klarnaCustomerToken = "KLARNA_CUSTOMER_TOKEN"
-    case apayaToken = "APAYA"
-    case hoolah = "HOOLAH"
-    case unknown = "UNKNOWN"
+    case applePay               = "APPLE_PAY"
+    case googlePay              = "GOOGLE_PAY"
+    case goCardlessMandate      = "GOCARDLESS_MANDATE"
+    case klarna                 = "KLARNA_AUTHORIZATION_TOKEN"
+    case klarnaPaymentSession   = "KLARNA_PAYMENT_SESSION"
+    case klarnaCustomerToken    = "KLARNA_CUSTOMER_TOKEN"
+    case apayaToken             = "APAYA"
+    case hoolah                 = "HOOLAH"
+    case unknown                = "UNKNOWN"
 
     public init(from decoder: Decoder) throws {
         self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown

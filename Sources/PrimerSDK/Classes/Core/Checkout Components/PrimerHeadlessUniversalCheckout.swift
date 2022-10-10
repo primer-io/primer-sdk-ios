@@ -165,6 +165,8 @@ public class PrimerHeadlessUniversalCheckout {
                 }
             }
             return requiredFields
+        case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
+            return [.cardNumber, .expiryDate, .cardholderName]
         default:
             return []
         }

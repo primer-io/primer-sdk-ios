@@ -53,7 +53,8 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     public var cvvField: PrimerCVVFieldView
     public var cardholderField: PrimerCardholderNameFieldView?
     public var billingAddressFieldViews: [PrimerTextFieldView]?
-    
+    public var isRequiringCVVInput: Bool
+    public var paymentMethodType: String
     public var delegate: CardComponentsManagerDelegate?
     public var customerId: String?
     public var merchantIdentifier: String?
@@ -63,6 +64,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         return PrimerAPIConfigurationModule.decodedJWTToken
     }
     internal var paymentMethodsConfig: PrimerAPIConfiguration?
+    internal var primerPaymentMethodType: PrimerPaymentMethodType
     private(set) public var isLoading: Bool = false
     internal private(set) var paymentMethod: PrimerPaymentMethodTokenData?
     
@@ -76,13 +78,23 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,
         cardholderNameField: PrimerCardholderNameFieldView?,
-        billingAddressFieldViews: [PrimerTextFieldView]?
+        billingAddressFieldViews: [PrimerTextFieldView]?,
+        paymentMethodType: String? = nil,
+        isRequiringCVVInput: Bool = true
     ) {
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
         self.cardholderField = cardholderNameField
         self.billingAddressFieldViews = billingAddressFieldViews
+        if let paymentMethodType = paymentMethodType, let primerPaymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) {
+            self.primerPaymentMethodType = primerPaymentMethodType
+            self.paymentMethodType = primerPaymentMethodType.rawValue
+        } else {
+            self.primerPaymentMethodType = .paymentCard
+            self.paymentMethodType = self.primerPaymentMethodType.rawValue
+        }
+        self.isRequiringCVVInput = isRequiringCVVInput
         super.init()
     }
     
@@ -182,7 +194,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
         }
         
-        if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
+        if isRequiringCVVInput && !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
             errors.append(PrimerValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
         }
         
@@ -201,6 +213,48 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         }
     }
     
+    /// Gets the first two digits of a year component
+    /// e.g.
+    /// current year = "2022"
+    /// first two digits = "20"
+    private var cardExpirationYear: String? {
+        guard let expiryYear = self.expiryDateField.expiryYear else { return nil }
+        let currentYearAsString = Date().yearComponentAsString
+        let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2))
+        return "\(milleniumAndCenturyOfCurrentYearAsString)\(expiryYear)"
+    }
+    
+    private var tokenizationPaymentInstrument: TokenizationRequestBodyPaymentInstrument? {
+        
+        guard let cardExpirationYear = cardExpirationYear,
+              let expiryMonth = self.expiryDateField.expiryMonth else {
+            return nil
+        }
+        
+        if isRequiringCVVInput {
+            
+            let cardPaymentInstrument = CardPaymentInstrument(number: self.cardnumberField.cardnumber,
+                                                              cvv: self.cvvField.cvv,
+                                                              expirationMonth: expiryMonth,
+                                                              expirationYear: cardExpirationYear,
+                                                              cardholderName: self.cardholderField?.cardholderName)
+            return cardPaymentInstrument
+            
+        } else if let configId = AppState.current.apiConfiguration?.getConfigId(for: self.primerPaymentMethodType.rawValue),
+                  let cardholderName = self.cardholderField?.cardholderName {
+            
+            let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
+                                                                                  paymentMethodType: self.primerPaymentMethodType.rawValue,
+                                                                                  number: self.cardnumberField.cardnumber,
+                                                                                  expirationMonth: expiryMonth,
+                                                                                  expirationYear: cardExpirationYear,
+                                                                                  cardholderName: cardholderName)
+            return cardOffSessionPaymentInstrument
+        }
+        
+        return nil
+    }
+    
     public func tokenize() {
         do {
             setIsLoading(true)
@@ -211,17 +265,17 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 self.fetchClientTokenIfNeeded()
             }
             .done { _ in
+                
+                guard let tokenizationPaymentInstrument = self.tokenizationPaymentInstrument else {
+                    let err = PrimerError.invalidValue(key: "Payment Instrument",value: self.tokenizationPaymentInstrument, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
+                    return
+                }
+                
                 self.paymentMethodsConfig = PrimerAPIConfigurationModule.apiConfiguration
-                
-                let paymentInstrument = CardPaymentInstrument(
-                    number: self.cardnumberField.cardnumber,
-                    cvv: self.cvvField.cvv,
-                    expirationMonth: self.expiryDateField.expiryMonth!,
-                    expirationYear: "20" + self.expiryDateField.expiryYear!,
-                    cardholderName: self.cardholderField?.cardholderName)
-                
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-                let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+                let requestBody = Request.Body.Tokenization(paymentInstrument: tokenizationPaymentInstrument)
                 
                 firstly {
                     return tokenizationService.tokenize(requestBody: requestBody)
