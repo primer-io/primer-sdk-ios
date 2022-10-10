@@ -64,6 +64,20 @@ public class PrimerCardData: PrimerRawData {
         try container.encode(cvv, forKey: .cvv)
         try container.encode(cardholderName, forKey: .cardholderName)
     }
+    
+//    internal func validate() throws {
+//        var errors: [PrimerValidationError] = []
+//        
+//        let cardNetwork = CardNetwork(cardNumber: self.cardNumber)
+//        
+//        if !self.cardNumber.isValidCardNumber {
+//            errors.append(PrimerValidationError.invalidCardnumber(userInfo: nil, diagnosticsId: nil))
+//        }
+//        
+//        if !self.cardNumber.isValidCardNumber {
+//            errors.append(PrimerValidationError.invalidCardnumber(userInfo: nil, diagnosticsId: nil))
+//        }
+//    }
 }
 
 #endif
