@@ -103,16 +103,6 @@ extension PrimerHeadlessUniversalCheckout {
                 return
             }
             
-            if let rawCardData = rawData as? PrimerCardData {
-                do {
-                    try rawCardData.validate()
-                } catch {
-                    self.delegate?.primerRawDataManager?(self, dataIsValid: false, errors: [error])
-                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error, checkoutData: self.paymentCheckoutData)
-                    return
-                }
-            }
-            
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidStartPreparation(for: self.paymentMethodType)
             
             firstly {
