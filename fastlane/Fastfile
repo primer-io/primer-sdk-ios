@@ -117,7 +117,7 @@ platform :ios do
 
     # Appetize needs the .app to be zipped
 
-    zip_path = "./PrimerSDK_Example.zip"
+    zip_path = "./PrimerSDK_Debug_Build.zip"
 
     zip(
       path: app_output_path,
@@ -138,6 +138,8 @@ platform :ios do
       public_key: public_key,
       note: sdk_version_name_source_branch
     )
+
+    save_simulator_app(app_path: zip_path)
 
   end
 
@@ -219,6 +221,20 @@ platform :ios do
     UI.message("Saving #{browserstack_id_to_save} into #{browserstack_id_file}")
 
     File.open(browserstack_id_file, 'w') { |file| file.write(options[:browserstack_id]) }
+
+  end
+
+  desc 'Store the Appetize generated .app file'
+  private_lane :save_simulator_app do |options|
+
+    app_path = options[:app_path]
+
+    UI.message("Storing the simulator app: #{app_path}")
+
+    copy_artifacts(
+      target_path: "/var/tmp/",
+      artifacts: [app_path]
+    )
 
   end
 

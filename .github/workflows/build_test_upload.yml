@@ -81,6 +81,14 @@ jobs:
           SOURCE_BRANCH: ${{ github.head_ref }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
 
+      - name: Save Simulator app
+        uses: actions/upload-artifact@v3
+        id: save_simulator_app_id_step
+        with:
+          name: PrimerSDK_Debug_Build
+          path: /var/tmp/PrimerSDK_Debug_Build.zip
+          if-no-files-found: error
+
   build-and-upload-to-firebase-and-browserstack:
     needs: danger
     runs-on: macos-latest
@@ -192,7 +200,6 @@ jobs:
             BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
           run: |
             export BROWSERSTACK_APP_ID=$(cat /var/tmp/browserstack_id.txt)
-            echo $BROWSERSTACK_APP_ID
             npx wdio config/wdio.ios.bs.conf.js
 
   pod-lint:
