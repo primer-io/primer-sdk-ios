@@ -71,7 +71,7 @@ extension PrimerHeadlessUniversalCheckout {
                 
             case PrimerPaymentMethodType.paymentCard.rawValue:
                 self.rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType:PrimerPaymentMethodType.paymentCard.rawValue)
-            
+                
             case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
                 self.rawDataTokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: paymentMethodType)
                 
@@ -96,7 +96,7 @@ extension PrimerHeadlessUniversalCheckout {
         public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType] {
             return self.rawDataTokenizationBuilder.requiredInputElementTypes
         }
-                
+        
         public func submit() {
             
             guard let rawData = rawData else {
@@ -249,19 +249,19 @@ extension PrimerHeadlessUniversalCheckout {
                                 
                             case .continueWithNewClientToken(let newClientToken):
                                 let apiConfigurationModule = PrimerAPIConfigurationModule()
-                            
-                            firstly {
-                                apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
-                            }
-                            .done {
-                                guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                                    ErrorHandler.handle(error: err)
-                                    throw err
-                                }
                                 
-                                seal.fulfill(decodedJWTToken)
-                            }
+                                firstly {
+                                    apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
+                                }
+                                .done {
+                                    guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+                                        let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                        ErrorHandler.handle(error: err)
+                                        throw err
+                                    }
+                                    
+                                    seal.fulfill(decodedJWTToken)
+                                }
                                 .catch { err in
                                     seal.reject(err)
                                 }
@@ -275,6 +275,31 @@ extension PrimerHeadlessUniversalCheckout {
                                     merchantErr = NSError.emptyDescriptionError
                                 }
                                 seal.reject(merchantErr)
+                            }
+                            
+                        } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
+                            switch resumeDecisionType {
+                            case .continueWithNewClientToken(let newClientToken):
+                                let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
+                                
+                                firstly {
+                                    apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
+                                }
+                                .done {
+                                    guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+                                        let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                        ErrorHandler.handle(error: err)
+                                        throw err
+                                    }
+                                    
+                                    seal.fulfill(decodedJWTToken)
+                                }
+                                .catch { err in
+                                    seal.reject(err)
+                                }
+                                
+                            case .complete:
+                                seal.fulfill(nil)
                             }
                             
                         } else {
@@ -548,14 +573,15 @@ extension PrimerHeadlessUniversalCheckout {
                             
                         } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                             switch resumeDecisionType {
-                            case .continueWithNewClientToken:
-                                seal.fulfill(nil)
+                            case .continueWithNewClientToken(_):
+                                seal.fulfill(self.paymentCheckoutData)
+                                
                             case .complete:
-                                seal.fulfill(nil)
+                                seal.fulfill(self.paymentCheckoutData)
                             }
                             
                         } else {
-                          precondition(false)
+                            precondition(false)
                         }
                     }
                     
