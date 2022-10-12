@@ -97,14 +97,17 @@ class Mocks {
             static var webRedirectPaymentMethodId = "mock_web_redirect_payment_method_id"
             static var adyenGiroPayRedirectPaymentMethodId = "mock_adyen_giropay_payment_method_id"
             static var klarnaPaymentMethodId = "mock_klarna_payment_method_id"
+            static var paymentCardPaymentMethodId = "mock_payment_card_payment_method_id"
             
             static var webRedirectPaymentMethodType = "MOCK_WEB_REDIRECT_PAYMENT_METHOD_TYPE"
             static var adyenGiroPayRedirectPaymentMethodType = "MOCK_ADYEN_GIROPAY_PAYMENT_METHOD_TYPE"
             static var klarnaPaymentMethodType = "MOCK_KLARNA_PAYMENT_METHOD_TYPE"
+            static var paymentCardPaymentMethodType = "MOCK_PAYMENT_CARD_PAYMENT_METHOD_TYPE"
             
             static var webRedirectPaymentMethodName = "Mock Web Redirect Payment Method"
             static var adyenGiroPayRedirectPaymentMethodName = "Mock Adyen GiroPay Payment Method"
             static var klarnaPaymentMethodName = "Mock Klarna Payment Method"
+            static var paymentCardPaymentMethodName = "Mock Payment Card Payment Method"
             
             static var processorConfigId = "mock_processor_config_id"
         }
@@ -119,6 +122,16 @@ class Mocks {
             name: Mocks.Static.Strings.webRedirectPaymentMethodName,
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 99,
+            options: nil,
+            displayMetadata: nil)
+        
+        static var paymentCardPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.paymentCardPaymentMethodId,
+            implementationType: .nativeSdk,
+            type: "PAYMENT_CARD", // Mocks.Static.Strings.paymentCardPaymentMethodType,
+            name: Mocks.Static.Strings.paymentCardPaymentMethodName,
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 0,
             options: nil,
             displayMetadata: nil)
         
