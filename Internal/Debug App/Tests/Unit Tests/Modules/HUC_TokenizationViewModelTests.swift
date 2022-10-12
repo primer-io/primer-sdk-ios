@@ -20,10 +20,10 @@ class HUC_TokenizationViewModelTests: XCTestCase {
     private var isImplementingManualPaymentFlow: Bool = false
     private var eventsCalled: [String] = []
     
-    private var isImplementingRedirectPaymentMethod = false
+    private var isImplementingPaymentMethodWithRequiredAction = false
     private var abortPayment = false
     
-    // MARK: - UNIVERSAL CHECKOUT
+    // MARK: - HEADLESS UNIVERSAL CHECKOUT
         
     func test_huc_start() throws {
         let expectation = XCTestExpectation(description: "Successful HUC initialization")
@@ -71,86 +71,156 @@ class HUC_TokenizationViewModelTests: XCTestCase {
     
     // MARK: - CREATE PAYMENT
     
-    // MARK: Payment Handling: Auto
+    // MARK: PAYMENT HANDLING: AUTO
     
-    func test_huc_web_redirect_with_auto_payment_handling_and_no_surcharge() throws {
+    // MARK: Native UI Manager
+    
+    func test_native_ui_manager_with_auto_payment_handling_and_no_surcharge() throws {
         try self.assess_huc_payment_method(
             Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
             paymentHandling: .auto,
             isSurchargeIncluded: false,
-            isImplementingRedirectPaymentMethod: true,
+            isImplementingPaymentMethodWithRequiredAction: true,
             abortPayment: false)
     }
     
-    func test_huc_web_redirect_with_auto_payment_handling_and_surcharge() throws {
+    func test_native_ui_manager_with_auto_payment_handling_and_surcharge() throws {
         try self.assess_huc_payment_method(
             Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
             paymentHandling: .auto,
             isSurchargeIncluded: true,
-            isImplementingRedirectPaymentMethod: true,
+            isImplementingPaymentMethodWithRequiredAction: true,
             abortPayment: false)
     }
     
-    // MARK: Payment Handling: Manual
+    // MARK: Raw Data Manager
     
-    func test_huc_web_redirect_with_manual_payment_handling_and_no_surcharge() throws {
+    func test_raw_data_manager_with_auto_payment_handling_and_no_surcharge() throws {
+        try self.assess_huc_payment_method(
+            Mocks.PaymentMethods.paymentCardPaymentMethod,
+            paymentHandling: .auto,
+            isSurchargeIncluded: false,
+            isImplementingPaymentMethodWithRequiredAction: false,
+            abortPayment: false)
+    }
+    
+//    func test_raw_data_manager_with_auto_payment_handling_and_surcharge() throws {
+//        try self.assess_huc_payment_method(
+//            Mocks.PaymentMethods.paymentCardPaymentMethod,
+//            paymentHandling: .auto,
+//            isSurchargeIncluded: true,
+//            isImplementingPaymentMethodWithRequiredAction: false,
+//            abortPayment: false)
+//    }
+    
+    // MARK: PAYMENT HANDLING: MANUAL
+    
+    // MARK: Native UI Manager
+    
+    func test_native_ui_manager_with_manual_payment_handling_and_no_surcharge() throws {
         try self.assess_huc_payment_method(
             Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
             paymentHandling: .manual,
             isSurchargeIncluded: false,
-            isImplementingRedirectPaymentMethod: true,
+            isImplementingPaymentMethodWithRequiredAction: true,
             abortPayment: false)
     }
     
-    func test_huc_web_redirect_with_manual_payment_handling_and_surcharge() throws {
+    func test_native_ui_manager_with_manual_payment_handling_and_surcharge() throws {
         try self.assess_huc_payment_method(
             Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
             paymentHandling: .manual,
             isSurchargeIncluded: true,
-            isImplementingRedirectPaymentMethod: true,
+            isImplementingPaymentMethodWithRequiredAction: true,
             abortPayment: false)
     }
+    
+    // MARK: Raw Data Manager
+    
+    func test_raw_data_manager_with_manual_payment_handling_and_no_surcharge() throws {
+        try self.assess_huc_payment_method(
+            Mocks.PaymentMethods.paymentCardPaymentMethod,
+            paymentHandling: .manual,
+            isSurchargeIncluded: false,
+            isImplementingPaymentMethodWithRequiredAction: false,
+            abortPayment: false)
+    }
+    
+//    func test_raw_data_manager_with_manual_payment_handling_and_surcharge() throws {
+//        try self.assess_huc_payment_method(
+//            Mocks.PaymentMethods.paymentCardPaymentMethod,
+//            paymentHandling: .manual,
+//            isSurchargeIncluded: true,
+//            isImplementingPaymentMethodWithRequiredAction: true,
+//            abortPayment: false)
+//    }
     
     
     // MARK: - ABORT PAYMENT
     
-    // MARK: Payment Handling: Auto
+    // MARK: PAYMENT HANDLING: AUTO
     
-    func test_huc_web_redirect_with_auto_payment_handling_and_no_surcharge_and_abort() throws {
+    // MARK: Native UI Manager
+    
+    func test_native_ui_manager_with_auto_payment_handling_and_no_surcharge_and_abort() throws {
         try self.assess_huc_payment_method(
             Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
             paymentHandling: .auto,
             isSurchargeIncluded: false,
-            isImplementingRedirectPaymentMethod: true,
+            isImplementingPaymentMethodWithRequiredAction: true,
             abortPayment: true)
     }
     
-    func test_huc_web_redirect_with_auto_payment_handling_and_surcharge_and_abort() throws {
+    func test_native_ui_manager_with_auto_payment_handling_and_surcharge_and_abort() throws {
         try self.assess_huc_payment_method(
             Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
             paymentHandling: .auto,
             isSurchargeIncluded: true,
-            isImplementingRedirectPaymentMethod: true,
+            isImplementingPaymentMethodWithRequiredAction: true,
             abortPayment: true)
     }
     
-    // MARK: Payment Handling: Manual
+    // MARK: Raw Data Manager
     
-    func test_huc_web_redirect_with_manual_payment_handling_and_no_surcharge_and_abort() throws {
+    func test_raw_data_manager_with_auto_payment_handling_and_no_surcharge_and_abort() throws {
+        try self.assess_huc_payment_method(
+            Mocks.PaymentMethods.paymentCardPaymentMethod,
+            paymentHandling: .auto,
+            isSurchargeIncluded: false,
+            isImplementingPaymentMethodWithRequiredAction: false,
+            abortPayment: true)
+    }
+    
+    // MARK: PAYMENT HANDLING: MANUAL
+    
+    // MARK: Native UI Manager
+    
+    func test_native_ui_manager_with_manual_payment_handling_and_no_surcharge_and_abort() throws {
         try self.assess_huc_payment_method(
             Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
             paymentHandling: .manual,
             isSurchargeIncluded: false,
-            isImplementingRedirectPaymentMethod: true,
+            isImplementingPaymentMethodWithRequiredAction: true,
             abortPayment: true)
     }
     
-    func test_huc_web_redirect_with_manual_payment_handling_and_surcharge_and_abort() throws {
+    func test_native_ui_manager_with_manual_payment_handling_and_surcharge_and_abort() throws {
         try self.assess_huc_payment_method(
             Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
             paymentHandling: .manual,
             isSurchargeIncluded: true,
-            isImplementingRedirectPaymentMethod: true,
+            isImplementingPaymentMethodWithRequiredAction: true,
+            abortPayment: true)
+    }
+    
+    // MARK: Raw Data Manager
+    
+    func test_raw_data_manager_with_manual_payment_handling_and_no_surcharge_and_abort() throws {
+        try self.assess_huc_payment_method(
+            Mocks.PaymentMethods.paymentCardPaymentMethod,
+            paymentHandling: .manual,
+            isSurchargeIncluded: false,
+            isImplementingPaymentMethodWithRequiredAction: false,
             abortPayment: true)
     }
     
@@ -160,7 +230,7 @@ class HUC_TokenizationViewModelTests: XCTestCase {
         _ paymentMethod: PrimerPaymentMethod,
         paymentHandling: PrimerPaymentHandling,
         isSurchargeIncluded: Bool,
-        isImplementingRedirectPaymentMethod: Bool,
+        isImplementingPaymentMethodWithRequiredAction: Bool,
         abortPayment: Bool
     ) throws {
         let expectation = XCTestExpectation(description: "Successful HUC initialization")
@@ -168,7 +238,7 @@ class HUC_TokenizationViewModelTests: XCTestCase {
         self.resetTestingEnvironment()
                 
         self.isImplementingManualPaymentFlow = (paymentHandling == .manual)
-        self.isImplementingRedirectPaymentMethod = isImplementingRedirectPaymentMethod
+        self.isImplementingPaymentMethodWithRequiredAction = isImplementingPaymentMethodWithRequiredAction
         self.abortPayment = abortPayment
         
         let settings = PrimerSettings(paymentHandling: paymentHandling)
@@ -209,16 +279,33 @@ class HUC_TokenizationViewModelTests: XCTestCase {
         PrimerHeadlessUniversalCheckout.current.delegate = self
         PrimerHeadlessUniversalCheckout.current.uiDelegate = self
         
-        let paymentMethod = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.first(where: {$0.type == "ADYEN_GIROPAY"})
+        guard let paymentMethod = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.first(where: {$0.type == paymentMethod.type}) else {
+            XCTAssert(false, "Failed to find payment method \(paymentMethod.type) in mocked API configuration response")
+            return
+        }
+        
         // Hack to override not having image URLs to download PM logos when mocking
-        paymentMethod?.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
+        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         
         if self.isImplementingManualPaymentFlow {
             self.tokenizationCompletion = { paymentMethodTokenData, err in
                 if let err = err {
                     XCTAssert(false, "SDK failed with error \(err.localizedDescription) while it should have succeeded.")
                 } else if paymentMethodTokenData != nil {
-                    XCTAssert(true)
+                    if !isImplementingPaymentMethodWithRequiredAction {
+                        if !isSurchargeIncluded {
+                            XCTAssert(self.eventsCalled.count == 4, "4 events should have been called.")
+                            XCTAssert(self.eventsCalled[0] == "primerHeadlessUniversalCheckoutPreparationDidStart", "'\(self.eventsCalled[0])' called instead if 'primerHeadlessUniversalCheckoutPreparationDidStart'.")
+                            XCTAssert(self.eventsCalled[1] == "primerHeadlessUniversalCheckoutWillCreatePaymentWithData", "'\(self.eventsCalled[1])' called instead if 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData'.")
+                            XCTAssert(self.eventsCalled[2] == "primerHeadlessUniversalCheckoutTokenizationDidStart", "'\(self.eventsCalled[2])' called instead if 'primerHeadlessUniversalCheckoutTokenizationDidStart'.")
+                            XCTAssert(self.eventsCalled[3] == "primerHeadlessUniversalCheckoutDidTokenizePaymentMethod", "'\(self.eventsCalled[3])' called instead if 'primerHeadlessUniversalCheckoutDidTokenizePaymentMethod'.")
+                            
+                        } else {
+                            
+                        }
+                        
+                        expectation.fulfill()
+                    }
                 } else {
                     XCTAssert(false, "SDK should have returned an error or payment methods.")
                 }
@@ -307,13 +394,35 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             }
         }
         
-        let paymentMethodNativeUIManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: "ADYEN_GIROPAY")
-        
-        do {
-            try paymentMethodNativeUIManager?.showPaymentMethod(intent: .checkout)
-        } catch {
-            XCTAssert(false, error.localizedDescription)
-            expectation.fulfill()
+        if paymentMethod.paymentMethodManagerCategories?.contains(.nativeUI) == true {
+            do {
+                let paymentMethodNativeUIManager = try PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethod.type)
+                try paymentMethodNativeUIManager.showPaymentMethod(intent: .checkout)
+                
+            } catch {
+                XCTAssert(false, error.localizedDescription)
+                expectation.fulfill()
+            }
+            
+        } else if paymentMethod.paymentMethodManagerCategories?.contains(.rawData) == true {
+            do {
+                let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethod.type, delegate: self)
+                
+                let rawCardData = PrimerCardData(
+                    cardNumber: "4111 1111 1111 1111",
+                    expiryMonth: "03",
+                    expiryYear: "2030",
+                    cvv: "123",
+                    cardholderName: "John Smith")
+                
+                rawDataManager.rawData = rawCardData
+                
+                rawDataManager.submit()
+                
+            } catch {
+                XCTAssert(false, error.localizedDescription)
+                expectation.fulfill()
+            }
         }
         
         wait(for: [expectation], timeout: 600)
@@ -330,7 +439,7 @@ class HUC_TokenizationViewModelTests: XCTestCase {
         self.tokenizationCompletion = nil
         self.resumeCompletion = nil
         self.isImplementingManualPaymentFlow = false
-        self.isImplementingRedirectPaymentMethod = false
+        self.isImplementingPaymentMethodWithRequiredAction = false
         self.abortPayment = false
         self.eventsCalled = []
     }
@@ -382,7 +491,7 @@ eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6ImNsaWVudC10b2tlbi1zaWduaW5nLWtleSJ9
 """
         
         if isImplementingManualPaymentFlow {
-            if self.isImplementingRedirectPaymentMethod {
+            if self.isImplementingPaymentMethodWithRequiredAction {
                 decisionHandler(.continueWithNewClientToken(testClientToken))
             } else {
                 decisionHandler(.complete())
@@ -417,6 +526,17 @@ extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutUIDeleg
     
     func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String) {
         eventsCalled.append("primerHeadlessUniversalCheckoutPaymentMethodDidShow")
+    }
+}
+
+extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+    
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String : Any]?) {
+        
+    }
+    
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
+        
     }
 }
 
