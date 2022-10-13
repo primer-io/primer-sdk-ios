@@ -195,7 +195,9 @@ class PrimerPaymentMethod: Codable {
             return categories
         }
         
-        if self.type == PrimerPaymentMethodType.paymentCard.rawValue {
+        if self.type == PrimerPaymentMethodType.paymentCard.rawValue ||
+            self.type == PrimerPaymentMethodType.adyenBancontactCard.rawValue
+        {
             categories.append(PrimerPaymentMethodManagerCategory.cardComponents)
             categories.append(PrimerPaymentMethodManagerCategory.rawData)
             return categories
@@ -203,7 +205,8 @@ class PrimerPaymentMethod: Codable {
         
         if self.type == PrimerPaymentMethodType.applePay.rawValue ||
             self.type == PrimerPaymentMethodType.klarna.rawValue ||
-            self.type == PrimerPaymentMethodType.payPal.rawValue {
+            self.type == PrimerPaymentMethodType.payPal.rawValue
+        {
             categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
             return categories
         }
@@ -291,7 +294,7 @@ extension PrimerPaymentMethod {
         
         case nativeSdk = "NATIVE_SDK"
         case webRedirect = "WEB_REDIRECT"
-
+        
         var isEnabled: Bool {
             return true
         }
