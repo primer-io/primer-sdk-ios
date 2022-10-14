@@ -154,7 +154,12 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         return Promise { seal in
             let pollingModule = PollingModule(url: self.statusUrl)
             self.didCancel = {
-                pollingModule.cancel()
+                let err = PrimerError.cancelled(
+                    paymentMethodType: self.config.type,
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                pollingModule.cancel(withError: err)
             }
             
             firstly {
@@ -255,7 +260,6 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
     }
     
     func safariViewController(_ controller: SFSafariViewController, initialLoadDidRedirectTo URL: URL) {
-        print(URL.absoluteString)
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
             self.webViewController?.dismiss(animated: true)
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
