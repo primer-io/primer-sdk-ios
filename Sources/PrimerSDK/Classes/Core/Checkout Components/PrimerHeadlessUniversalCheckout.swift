@@ -40,6 +40,11 @@ public class PrimerHeadlessUniversalCheckout {
         }
         
         DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
+        
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        settings.uiOptions.isInitScreenEnabled = false
+        settings.uiOptions.isSuccessScreenEnabled = false
+        settings.uiOptions.isErrorScreenEnabled = false
                 
         firstly {
             self.apiConfigurationModule.setupSession(
