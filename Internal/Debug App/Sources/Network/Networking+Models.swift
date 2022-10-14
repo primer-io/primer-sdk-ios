@@ -11,7 +11,13 @@ import PrimerSDK
 
 extension Networking {
     
-    func clientSessionRequestBodyWithCurrency(_ customerId: String, phoneNumber: String?, countryCode: CountryCode?, currency: Currency?, amount: Int?) -> ClientSessionRequestBody {
+    static func createClientSessionRequestBodyWithParameters(
+        amount: Int?,
+        currency: Currency?,
+        customerId: String,
+        phoneNumber: String?,
+        countryCode: CountryCode?
+    ) -> ClientSessionRequestBody {
         
         var metadataTestCaseDict: [String : Any]? = nil
         if let metadataTestCaseStringValue = metadataTestCase {

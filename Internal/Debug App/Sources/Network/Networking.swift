@@ -34,6 +34,16 @@ enum NetworkError: Error {
 
 class Networking {
     
+    var endpoint: String {
+        get {
+            if environment == .local {
+                return "https://primer-mock-back-end.herokuapp.com"
+            } else {
+                return "https://us-central1-primerdemo-8741b.cloudfunctions.net"
+            }
+        }
+    }
+    
     func request(
         apiVersion: APIVersion?,
         url: URL,
