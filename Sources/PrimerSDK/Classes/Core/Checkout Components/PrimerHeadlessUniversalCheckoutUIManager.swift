@@ -260,7 +260,7 @@ extension PrimerHeadlessUniversalCheckout {
                 
                 let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
                                                                                    paymentMethodType: paymentMethodType,
-                                                                                   number: cardNumber,
+                                                                                   number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as! String,
                                                                                    expirationMonth: expiryMonth,
                                                                                    expirationYear: expiryYear,
                                                                                    cardholderName: cardholderName)
