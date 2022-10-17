@@ -234,9 +234,7 @@ extension MerchantCheckoutViewController {
             self.present(threeDSAlert, animated: true, completion: nil)
         }
         
-        if !self.checkoutData.isEmpty {
-            let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
-            self.navigationController?.pushViewController(rvc, animated: true)
-        }
+        let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
+        self.navigationController?.pushViewController(rvc, animated: true)
     }
 }
