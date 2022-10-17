@@ -44,6 +44,7 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
         self.view.backgroundColor = .white
 
         self.paymentButton = UIButton()
+        self.paymentButton.accessibilityIdentifier = "submit_btn"
         self.paymentButton.backgroundColor = .black
         self.paymentButton.setTitle("Pay now", for: .normal)
         self.paymentButton.setTitleColor(.white, for: .normal)
@@ -82,15 +83,19 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
 
             if inputElementType == .cardNumber {
                 self.cardNumberTextField = textField
+                self.cardNumberTextField?.accessibilityIdentifier = "card_txt_fld"
                 self.cardNumberTextField?.placeholder = "Card number"
             } else if inputElementType == .expiryDate {
                 self.expiryTextField = textField
+                self.expiryTextField?.accessibilityIdentifier = "expiry_txt_fld"
                 self.expiryTextField?.placeholder = "Expiry"
             } else if inputElementType == .cvv {
                 self.cvvTextField = textField
+                self.cvvTextField?.accessibilityIdentifier = "cvc_txt_fld"
                 self.cvvTextField?.placeholder = "CVV"
             } else if inputElementType == .cardholderName {
                 self.cardHolderNameTextField = textField
+                self.cardHolderNameTextField?.accessibilityIdentifier = "card_holder_txt_fld"
                 self.cardHolderNameTextField?.placeholder = "Cardholder"
             }
 

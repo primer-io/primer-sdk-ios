@@ -46,6 +46,7 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
         self.stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         
         self.cardnumberTextField = UITextField(frame: .zero)
+        self.cardnumberTextField.accessibilityIdentifier = "card_txt_fld"
         self.cardnumberTextField.borderStyle = .line
         self.cardnumberTextField.layer.borderColor = UIColor.black.cgColor
         self.stackView.addArrangedSubview(self.cardnumberTextField)
@@ -54,6 +55,7 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
         self.cardnumberTextField.placeholder = "4242 4242 4242 4242"
         
         self.expiryDateTextField = UITextField(frame: .zero)
+        self.expiryDateTextField.accessibilityIdentifier = "expiry_txt_fld"
         self.expiryDateTextField.borderStyle = .line
         self.expiryDateTextField.layer.borderColor = UIColor.black.cgColor
         self.stackView.addArrangedSubview(self.expiryDateTextField)
@@ -63,6 +65,7 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
         
         if paymentMethodType == "PAYMENT_CARD" {
             self.cvvTextField = UITextField(frame: .zero)
+            self.cvvTextField.accessibilityIdentifier = "cvc_txt_fld"
             self.cvvTextField.borderStyle = .line
             self.cvvTextField.layer.borderColor = UIColor.black.cgColor
             self.stackView.addArrangedSubview(self.cvvTextField)
@@ -72,6 +75,7 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
         }
         
         self.cardholderNameTextField = UITextField(frame: .zero)
+        self.cardnumberTextField.accessibilityIdentifier = "card_holder_txt_fld"
         self.cardholderNameTextField.borderStyle = .line
         self.cardholderNameTextField.layer.borderColor = UIColor.black.cgColor
         self.stackView.addArrangedSubview(self.cardholderNameTextField)
@@ -81,6 +85,7 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
         
         self.payButton = UIButton(frame: .zero)
         self.stackView.addArrangedSubview(self.payButton)
+        self.payButton.accessibilityIdentifier = "submit_btn"
         self.payButton.translatesAutoresizingMaskIntoConstraints = false
         self.payButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
         self.payButton.setTitle("Pay", for: .normal)

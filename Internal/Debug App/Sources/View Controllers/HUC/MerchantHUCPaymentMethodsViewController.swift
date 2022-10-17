@@ -15,14 +15,14 @@ class MerchantHUCPaymentMethodsViewController: UIViewController, PrimerHeadlessU
         let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHUCPaymentMethodsViewController") as! MerchantHUCPaymentMethodsViewController
         return mpmvc
     }
-
+    
     var availablePaymentMethods: [String] = []
     var paymentId: String?
     
     var checkoutData: [String] = []
     var primerError: Error?
     var logs: [String] = []
-
+    
     @IBOutlet weak var tableView: UITableView!
     var activityIndicator: UIActivityIndicatorView?
     
@@ -101,18 +101,26 @@ extension MerchantHUCPaymentMethodsViewController: UITableViewDataSource, UITabl
             paymentMethodType == "ADYEN_BANCONTACT_CARD"
         {
             let alert = UIAlertController(title: "", message: "Select Implementation", preferredStyle: .actionSheet)
-                alert.addAction(UIAlertAction(title: "Card Components", style: .default , handler:{ (UIAlertAction)in
-                    let vc = MerchantHUCCardComponentsViewController.instantiate(paymentMethodType: paymentMethodType)
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }))
-                
-                alert.addAction(UIAlertAction(title: "Raw Data", style: .default , handler:{ (UIAlertAction)in
-                    let vc = MerchantHUCRawDataViewController.instantiate(paymentMethodType: paymentMethodType)
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }))
-                
-                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-                self.present(alert, animated: true, completion: nil)
+            
+            let rawDataAlertAction = UIAlertAction(title: "Raw Data", style: .default , handler:{ (UIAlertAction)in
+                let vc = MerchantHUCRawDataViewController.instantiate(paymentMethodType: paymentMethodType)
+                self.navigationController?.pushViewController(vc, animated: true)
+            })
+            rawDataAlertAction.accessibilityIdentifier = "raw_data_huc_alert_action"
+            
+            let cardComponentsAlertAction = UIAlertAction(title: "Card Components", style: .default , handler:{ (UIAlertAction)in
+                let vc = MerchantHUCCardComponentsViewController.instantiate(paymentMethodType: paymentMethodType)
+                self.navigationController?.pushViewController(vc, animated: true)
+            })
+            cardComponentsAlertAction.accessibilityIdentifier = "card_components_huc_data_alert_action"
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            cancelAction.accessibilityIdentifier = "cancel_huc_alert_action"
+            
+            alert.addAction(cardComponentsAlertAction)
+            alert.addAction(rawDataAlertAction)
+            alert.addAction(cancelAction)
+            self.present(alert, animated: true, completion: nil)
             
         } else {
             PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
@@ -156,7 +164,7 @@ extension MerchantHUCPaymentMethodsViewController {
             if let err = err {
                 self.showErrorMessage(err.localizedDescription)
                 self.hideLoadingOverlay()
-
+                
             } else if let res = res {
                 self.paymentId = res.id
                 
@@ -168,7 +176,7 @@ extension MerchantHUCPaymentMethodsViewController {
                     let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
                     self.navigationController?.pushViewController(rvc, animated: true)
                 }
-
+                
             } else {
                 assert(true)
             }
@@ -200,7 +208,7 @@ extension MerchantHUCPaymentMethodsViewController {
 // MARK: Common
 
 extension MerchantHUCPaymentMethodsViewController {
-
+    
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
         print("\n\nMERCHANT APP\n\(#function)")
         self.logs.append(#function)
