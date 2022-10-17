@@ -55,10 +55,6 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
         self.view.addSubview(self.stackView)
 
         self.paymentButton.translatesAutoresizingMaskIntoConstraints = false
-        self.paymentButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-        self.paymentButton.topAnchor.constraint(greaterThanOrEqualTo: self.stackView.bottomAnchor, constant: 30).isActive = true
-        self.paymentButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        self.paymentButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
         self.paymentButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         self.paymentButton.addTarget(self, action: #selector(paymentButtonTapped), for: .touchUpInside)
 
@@ -103,6 +99,7 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
         }
 
         self.cardFormUIManager?.inputElements = tmpInputElements
+        self.stackView.addArrangedSubview(self.paymentButton)
     }
 
     @objc
