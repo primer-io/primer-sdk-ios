@@ -15,14 +15,14 @@ class MerchantHUCPaymentMethodsViewController: UIViewController, PrimerHeadlessU
         let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHUCPaymentMethodsViewController") as! MerchantHUCPaymentMethodsViewController
         return mpmvc
     }
-
+    
     var availablePaymentMethods: [String] = []
     var paymentId: String?
     
     var checkoutData: [String] = []
     var primerError: Error?
     var logs: [String] = []
-
+    
     @IBOutlet weak var tableView: UITableView!
     var activityIndicator: UIActivityIndicatorView?
     
