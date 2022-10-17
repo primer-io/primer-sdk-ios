@@ -75,7 +75,7 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
         }
         
         self.cardholderNameTextField = UITextField(frame: .zero)
-        self.cardnumberTextField.accessibilityIdentifier = "card_holder_txt_fld"
+        self.cardholderNameTextField.accessibilityIdentifier = "card_holder_txt_fld"
         self.cardholderNameTextField.borderStyle = .line
         self.cardholderNameTextField.layer.borderColor = UIColor.black.cgColor
         self.stackView.addArrangedSubview(self.cardholderNameTextField)
