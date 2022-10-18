@@ -128,11 +128,11 @@ class KlarnaTokenizationModule: TokenizationModule {
             .then { () -> Promise<Response.Body.Klarna.CreatePaymentSession> in
                 return self.createPaymentSession()
             }
-            .then { () -> Promise<Void> in
-                return self.paymentMethodModule.checkouEventsNotifierModule.fireWillPresentPaymentMethodUI()
-            }
             .then { session -> Promise<Void> in
                 self.klarnaPaymentSession = session
+                return self.paymentMethodModule.checkouEventsNotifierModule.fireWillPresentPaymentMethodUI()
+            }
+            .then { () -> Promise<Void> in
                 return self.presentPaymentMethodUserInterface()
             }
             .then { () -> Promise<Void> in
