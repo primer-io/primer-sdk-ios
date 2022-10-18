@@ -117,17 +117,11 @@ class MerchantHUCRawRetailDataViewController: UIViewController, PrimerHeadlessUn
     }
     
     @IBAction func issueVoucherButtonTapped(_ sender: UIButton) {
-        do {
-            
-            if paymentMethodType == "XENDIT_RETAIL_OUTLETS" {
-                self.rawData = PrimerRawRetailerData(id: selectedOutletIdentifier)
-                primerRawDataManager.rawData = self.rawData!
-                primerRawDataManager.submit()
-                self.showLoadingOverlay()
-            }
-            
-        } catch {
-            self.showErrorMessage(error.localizedDescription)
+        if paymentMethodType == "XENDIT_RETAIL_OUTLETS" {
+            self.rawData = PrimerRawRetailerData(id: selectedOutletIdentifier)
+            primerRawDataManager.rawData = self.rawData!
+            primerRawDataManager.submit()
+            self.showLoadingOverlay()
         }
     }
     
