@@ -83,6 +83,12 @@ protocol PrimerAPIClientProtocol {
         request: Request.Body.Adyen.BanksList,
         completion: @escaping (_ result: Result<[Response.Body.Adyen.Bank], Error>) -> Void)
     
+    // Retail Outlets
+    func listRetailOutlets(
+        clientToken: DecodedJWTToken,
+        paymentMethodId: String,
+        completion: @escaping (_ result: Result<[RetailOutletsRetail], Error>) -> Void)
+
     func poll(clientToken: DecodedJWTToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
     
     func requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken, request: ClientSessionUpdateRequest, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
@@ -388,6 +394,21 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             case .success(let res):
                 let banks = res.result
                 completion(.success(banks))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func listRetailOutlets(clientToken: DecodedJWTToken,
+                           paymentMethodId: String,
+                           completion: @escaping (Result<[RetailOutletsRetail], Error>) -> Void) {
+        let endpoint = PrimerAPI.listRetailOutlets(clientToken: clientToken, paymentMethodId: paymentMethodId)
+        networkService.request(endpoint) { (result: Result<RetailOutletsListSessionResponse, Error>) in
+            switch result {
+            case .success(let res):
+                let retailOutlets = res.result
+                completion(.success(retailOutlets))
             case .failure(let err):
                 completion(.failure(err))
             }

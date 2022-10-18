@@ -26,6 +26,7 @@ enum PrimerAPI: Endpoint, Equatable {
             (.createApayaSession, .createApayaSession),
             (.tokenizePaymentMethod, .tokenizePaymentMethod),
             (.listAdyenBanks, .listAdyenBanks),
+            (.listRetailOutlets, .listRetailOutlets),
             (.begin3DSRemoteAuth, .begin3DSRemoteAuth),
             (.continue3DSRemoteAuth, .continue3DSRemoteAuth),
             (.poll, .poll),
@@ -54,6 +55,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case createApayaSession(clientToken: DecodedJWTToken, request: Request.Body.Apaya.CreateSession)
     case tokenizePaymentMethod(clientToken: DecodedJWTToken, tokenizationRequestBody: Request.Body.Tokenization)
     case listAdyenBanks(clientToken: DecodedJWTToken, request: Request.Body.Adyen.BanksList)
+    case listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String)
 
     case requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken, request: ClientSessionUpdateRequest)
     
@@ -105,6 +107,7 @@ internal extension PrimerAPI {
                 .continue3DSRemoteAuth(let clientToken, _),
                 .createApayaSession(let clientToken, _),
                 .listAdyenBanks(let clientToken, _),
+                .listRetailOutlets(let clientToken, _),
                 .requestPrimerConfigurationWithActions(let clientToken, _),
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
                 .createPayment(let clientToken, _),
@@ -159,6 +162,7 @@ internal extension PrimerAPI {
                 .finalizeKlarnaPaymentSession(let clientToken, _),
                 .createApayaSession(let clientToken, _),
                 .listAdyenBanks(let clientToken, _),
+                .listRetailOutlets(let clientToken, _),
                 .fetchPayPalExternalPayerInfo(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
@@ -220,6 +224,8 @@ internal extension PrimerAPI {
             return "/session-token"
         case .listAdyenBanks:
             return "/adyen/checkout"
+        case .listRetailOutlets(_, let paymentMethodId):
+            return "/payment-method-options/\(paymentMethodId)/retail-outlets"
         case .requestPrimerConfigurationWithActions:
             return "/client-session/actions"
         case .poll:
@@ -251,7 +257,8 @@ internal extension PrimerAPI {
         case .deleteVaultedPaymentMethod:
             return .delete
         case .fetchConfiguration,
-                .fetchVaultedPaymentMethods:
+                .fetchVaultedPaymentMethods,
+                .listRetailOutlets:
             return .get
         case .createPayPalOrderSession,
                 .createPayPalBillingAgreementSession,
@@ -320,7 +327,8 @@ internal extension PrimerAPI {
                 .exchangePaymentMethodToken,
                 .fetchVaultedPaymentMethods,
                 .continue3DSRemoteAuth,
-                .poll:
+                .poll,
+                .listRetailOutlets:
             return nil
         case .sendAnalyticsEvents(_, let body):
             return try? JSONEncoder().encode(body)

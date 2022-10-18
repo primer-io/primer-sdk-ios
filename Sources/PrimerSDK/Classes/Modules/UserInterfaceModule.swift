@@ -709,6 +709,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     text: nil,
                     textColor: nil))
 
+        case .xenditRetailOutlets:
+            return nil
+            
         case .xfersPayNow:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
