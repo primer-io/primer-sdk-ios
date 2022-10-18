@@ -13,19 +13,19 @@ internal class BankSelectorViewController: PrimerFormViewController {
     
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    private var viewModel: BankSelectorTokenizationViewModel!
+    private var tokenizationModule: BankSelectorTokenizationModule!
     internal private(set) var subtitle: String?
     
     deinit {
-        viewModel.cancel()
-        viewModel = nil
+        tokenizationModule.paymentMethodModule.cancel()
+        tokenizationModule = nil
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(viewModel: BankSelectorTokenizationViewModel) {
-        self.viewModel = viewModel
+    init(tokenizationModule: BankSelectorTokenizationModule) {
+        self.tokenizationModule = tokenizationModule
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.uiModule.invertedLogo
+        self.titleImage = self.tokenizationModule.paymentMethodModule.userInterfaceModule.invertedLogo
     }
     
     required init?(coder: NSCoder) {
@@ -41,7 +41,7 @@ internal class BankSelectorViewController: PrimerFormViewController {
                 action: .view,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.viewModel.config.type,
+                    paymentMethodType: self.tokenizationModule.paymentMethodModule.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .view,
@@ -52,8 +52,8 @@ internal class BankSelectorViewController: PrimerFormViewController {
 
         view.backgroundColor = theme.view.backgroundColor
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.heightAnchor.constraint(equalToConstant: 120+(CGFloat(viewModel.banks.count)*viewModel.tableView.rowHeight)).isActive = true
-        viewModel.tableView.isScrollEnabled = false
+        view.heightAnchor.constraint(equalToConstant: 120+(CGFloat(tokenizationModule.banks.count)*tokenizationModule.tableView.rowHeight)).isActive = true
+        tokenizationModule.tableView.isScrollEnabled = false
                 
         verticalStackView.spacing = 5
         
@@ -73,7 +73,7 @@ internal class BankSelectorViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(bankSubtitleLabel)
         }
         
-        verticalStackView.addArrangedSubview(viewModel.searchBankTextField!)
+        verticalStackView.addArrangedSubview(tokenizationModule.searchBankTextField!)
         
         let separator2 = UIView()
         separator2.translatesAutoresizingMaskIntoConstraints = false

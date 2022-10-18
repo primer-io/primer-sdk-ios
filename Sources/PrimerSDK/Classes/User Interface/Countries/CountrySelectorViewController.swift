@@ -2,22 +2,32 @@
 
 import UIKit
 
+internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
+    
+    var tableView: UITableView { get set }
+    var searchableTextField: PrimerSearchTextField { get set }
+    
+    func cancel()
+}
+
 internal class CountrySelectorViewController: PrimerFormViewController {
     
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    private var viewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol!
+    private var delegate: SearchableItemsPaymentMethodTokenizationViewModelProtocol!
     private let countries = CountryCode.allCases
     internal private(set) var subtitle: String?
+    private var paymentMethod: PrimerPaymentMethod
     
     deinit {
-        viewModel.cancel()
-        viewModel = nil
+        delegate.cancel()
+        delegate = nil
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(viewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol) {
-        self.viewModel = viewModel
+    init(delegate: SearchableItemsPaymentMethodTokenizationViewModelProtocol, paymentMethod: PrimerPaymentMethod) {
+        self.delegate = delegate
+        self.paymentMethod = paymentMethod
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -34,7 +44,7 @@ internal class CountrySelectorViewController: PrimerFormViewController {
                 action: .view,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.viewModel.config.type,
+                    paymentMethodType: self.paymentMethod.type,
                     url: nil),
                 extra: nil,
                 objectType: .view,
@@ -45,8 +55,8 @@ internal class CountrySelectorViewController: PrimerFormViewController {
 
         view.backgroundColor = theme.view.backgroundColor
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.heightAnchor.constraint(equalToConstant: 120+(CGFloat(countries.count)*viewModel.tableView.rowHeight)).isActive = true
-        viewModel.tableView.isScrollEnabled = false
+        view.heightAnchor.constraint(equalToConstant: 120+(CGFloat(countries.count)*delegate.tableView.rowHeight)).isActive = true
+        delegate.tableView.isScrollEnabled = false
                 
         verticalStackView.spacing = 5
         
@@ -58,7 +68,7 @@ internal class CountrySelectorViewController: PrimerFormViewController {
         countryTitleLabel.textColor = theme.text.title.color
         verticalStackView.addArrangedSubview(countryTitleLabel)
         
-        verticalStackView.addArrangedSubview(viewModel.searchableTextField)
+        verticalStackView.addArrangedSubview(delegate.searchableTextField)
                 
         let separator = UIView()
         separator.translatesAutoresizingMaskIntoConstraints = false

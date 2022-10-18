@@ -149,7 +149,7 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     internal func listAvailablePaymentMethodsTypes() -> [String]? {
-        var paymentMethods = PrimerAPIConfiguration.paymentMethodConfigs
+        var paymentMethods = PrimerAPIConfiguration.paymentMethodConfigurations
         if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
 #if !canImport(PrimerKlarnaSDK)
             paymentMethods?.remove(at: klarnaIndex)
@@ -181,9 +181,9 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     public static func makeButton(for paymentMethodType: String) -> UIButton? {
-        guard let paymentMethodConfigs = PrimerAPIConfiguration.paymentMethodConfigs else { return nil }
-        guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
-        return paymentMethodConfig.tokenizationViewModel?.uiModule.paymentMethodButton
+        guard let paymentMethodConfigurations = PrimerAPIConfiguration.paymentMethodConfigurations else { return nil }
+        guard let paymentMethodConfig = paymentMethodConfigurations.filter({ $0.type == paymentMethodType }).first else { return nil }
+        return paymentMethodConfig.paymentMethodModule?.userInterfaceModule.paymentMethodButton
     }
     
     public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
