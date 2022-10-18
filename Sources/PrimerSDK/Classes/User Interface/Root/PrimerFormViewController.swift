@@ -28,7 +28,7 @@ class PrimerFormViewController: PrimerViewController {
         verticalStackView.pin(view: view, leading: 20, top: 20, trailing: -20, bottom: -20)
     }
     
-    static func renderPaymentMethods(_ paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol], on stackView: UIStackView) {
+    static func renderPaymentMethods(_ paymentMethodModules: [PaymentMethodModuleProtocol], on stackView: UIStackView) {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
         let availablePaymentMethodsContainerStackView = UIStackView()
@@ -39,7 +39,7 @@ class PrimerFormViewController: PrimerViewController {
         availablePaymentMethodsContainerStackView.spacing = 5.0
         
         // No PMs to be rendered.
-        if paymentMethodTokenizationViewModels.isEmpty { return }
+        if paymentMethodModules.isEmpty { return }
         
         let otherPaymentMethodsTitleLabel = UILabel()
         otherPaymentMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -51,24 +51,24 @@ class PrimerFormViewController: PrimerViewController {
         availablePaymentMethodsContainerStackView.addArrangedSubview(otherPaymentMethodsTitleLabel)
         
         if PrimerInternal.shared.intent == .vault {
-            for viewModel in paymentMethodTokenizationViewModels {
-                availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.uiModule.paymentMethodButton)
+            for paymentMethodModule in paymentMethodModules {
+                availablePaymentMethodsContainerStackView.addArrangedSubview(paymentMethodModule.userInterfaceModule.paymentMethodButton)
             }
             stackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
             
         } else {
             // No surcharge fee
-            let noAdditionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.hasUnknownSurcharge == false && ($0.config.surcharge ?? 0) == 0 })
+            let noAdditionalFeePaymentMethodModules = paymentMethodModules.filter({ $0.paymentMethodConfiguration.hasUnknownSurcharge == false && ($0.paymentMethodConfiguration.surcharge ?? 0) == 0 })
             // With surcharge fee
-            let additionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.hasUnknownSurcharge == false && ($0.config.surcharge ?? 0) != 0 })
+            let additionalFeePaymentMethodModules = paymentMethodModules.filter({ $0.paymentMethodConfiguration.hasUnknownSurcharge == false && ($0.paymentMethodConfiguration.surcharge ?? 0) != 0 })
             // Unknown surcharge fee
-            let unknownFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.hasUnknownSurcharge == true })
+            let unknownFeePaymentMethodsViewModels = paymentMethodModules.filter({ $0.paymentMethodConfiguration.hasUnknownSurcharge == true })
             
-            if !noAdditionalFeePaymentMethodsViewModels.isEmpty,
-                additionalFeePaymentMethodsViewModels.isEmpty,
+            if !noAdditionalFeePaymentMethodModules.isEmpty,
+                additionalFeePaymentMethodModules.isEmpty,
                 unknownFeePaymentMethodsViewModels.isEmpty {
-                for viewModel in noAdditionalFeePaymentMethodsViewModels {
-                    availablePaymentMethodsContainerStackView.addArrangedSubview(viewModel.uiModule.paymentMethodButton)
+                for paymentMethodModule in paymentMethodModules {
+                    availablePaymentMethodsContainerStackView.addArrangedSubview(paymentMethodModule.userInterfaceModule.paymentMethodButton)
                 }
                 stackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
                 return
@@ -82,20 +82,20 @@ class PrimerFormViewController: PrimerViewController {
             availablePaymentMethodsStackView.spacing = 10.0
             
             
-            if !noAdditionalFeePaymentMethodsViewModels.isEmpty {
+            if !noAdditionalFeePaymentMethodModules.isEmpty {
                 let noAdditionalFeesContainerView = PaymentMethodsGroupView(
                     title: Strings.CardFormView.noAdditionalFeesTitle,
-                    paymentMethodTokenizationViewModels: noAdditionalFeePaymentMethodsViewModels)
+                    paymentMethodModules: noAdditionalFeePaymentMethodModules)
                 noAdditionalFeesContainerView.accessibilityIdentifier = "no_additional_fees_surcharge_group_view"
                 noAdditionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
                 availablePaymentMethodsStackView.addArrangedSubview(noAdditionalFeesContainerView)
             }
             
-            if !additionalFeePaymentMethodsViewModels.isEmpty {
-                for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
-                    let title = additionalFeePaymentMethodsViewModel.uiModule.surchargeSectionText
-                    let additionalFeesContainerView = PaymentMethodsGroupView(title: title, paymentMethodTokenizationViewModels: [additionalFeePaymentMethodsViewModel])
-                    additionalFeesContainerView.accessibilityIdentifier = "\(additionalFeePaymentMethodsViewModel.config.type.lowercased())_surcharge_group_view"
+            if !additionalFeePaymentMethodModules.isEmpty {
+                for additionalFeePaymentMethodModule in additionalFeePaymentMethodModules {
+                    let title = additionalFeePaymentMethodModule.userInterfaceModule.surchargeSectionText
+                    let additionalFeesContainerView = PaymentMethodsGroupView(title: title, paymentMethodModules: [additionalFeePaymentMethodModule])
+                    additionalFeesContainerView.accessibilityIdentifier = "\(additionalFeePaymentMethodModule.paymentMethodConfiguration.type.lowercased())_surcharge_group_view"
                     additionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                     availablePaymentMethodsStackView.addArrangedSubview(additionalFeesContainerView)
                 }
@@ -104,7 +104,7 @@ class PrimerFormViewController: PrimerViewController {
             if !unknownFeePaymentMethodsViewModels.isEmpty {
                 let unknownFeesContainerView = PaymentMethodsGroupView(
                     title: Strings.CardFormView.additionalFeesTitle,
-                    paymentMethodTokenizationViewModels: unknownFeePaymentMethodsViewModels)
+                    paymentMethodModules: unknownFeePaymentMethodsViewModels)
                 unknownFeesContainerView.accessibilityIdentifier = "additional_fees_surcharge_group_view"
                 
                 unknownFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)

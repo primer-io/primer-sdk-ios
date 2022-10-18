@@ -11,22 +11,22 @@ import UIKit
 
 internal class QRCodeViewController: PrimerFormViewController {
     
-    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    private var paymentMethodType: String
+    private var qrCode: String
     
-    private var viewModel: QRCodeTokenizationViewModel!
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private var amountLabel: UILabel! = UILabel()
     internal private(set) var subtitle: String?
     
     deinit {
-        viewModel.cancel()
-        viewModel = nil
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(viewModel: QRCodeTokenizationViewModel) {
-        self.viewModel = viewModel
+    init(paymentMethodType: String, logo: UIImage?, qrCode: String) {
+        self.paymentMethodType = paymentMethodType
+        self.qrCode = qrCode
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.uiModule.logo
+        self.titleImage = logo
     }
     
     required init?(coder: NSCoder) {
@@ -42,7 +42,7 @@ internal class QRCodeViewController: PrimerFormViewController {
                 action: .view,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.viewModel.config.type,
+                    paymentMethodType: self.paymentMethodType,
                     url: nil),
                 extra: nil,
                 objectType: .view,
@@ -96,17 +96,15 @@ internal class QRCodeViewController: PrimerFormViewController {
     }
     
     private func renderQRCode() {
-        guard let qrCodeStr = viewModel.qrCode else { return }
-        
         let separatorView = PrimerView()
         verticalStackView.addArrangedSubview(separatorView)
         separatorView.translatesAutoresizingMaskIntoConstraints = false
         separatorView.heightAnchor.constraint(equalToConstant: 10).isActive = true
         
         var qrCodeImageView = PrimerImageView()
-        if qrCodeStr.isHttpOrHttpsURL == true, let qrCodeURL = URL(string: qrCodeStr) {
+        if self.qrCode.isHttpOrHttpsURL == true, let qrCodeURL = URL(string: self.qrCode) {
             qrCodeImageView = PrimerImageView(from: qrCodeURL)
-        } else if let qrCodeImg = convertBase64StringToImage(qrCodeStr) {
+        } else if let qrCodeImg = convertBase64StringToImage(self.qrCode) {
             qrCodeImageView.image = qrCodeImg
         }
         qrCodeImageView.accessibilityIdentifier = "qrCode"

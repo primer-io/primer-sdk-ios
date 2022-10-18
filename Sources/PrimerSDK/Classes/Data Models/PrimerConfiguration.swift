@@ -8,7 +8,6 @@
 #if canImport(UIKit)
 
 import Foundation
-import PassKit
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
 
@@ -83,7 +82,7 @@ extension Response.Body {
             return PrimerAPIConfigurationModule.apiConfiguration
         }
         
-        static var paymentMethodConfigs: [PrimerPaymentMethod]? {
+        static var paymentMethodConfigurations: [PrimerPaymentMethod]? {
             return PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods
         }
         
@@ -91,41 +90,6 @@ extension Response.Body {
             let pmSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { $0["surcharge"] as? Int != nil })
             let cardSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { (($0["networks"] as? [[String: Any]])?.first(where: { $0["surcharge"] as? Int != nil })) != nil  })
             return pmSurcharge != nil || cardSurcharge != nil
-        }
-        
-        static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
-            var viewModels = PrimerAPIConfiguration.paymentMethodConfigs?
-                .filter({ $0.isEnabled })
-                .filter({ $0.baseLogoImage != nil })
-                .compactMap({ $0.tokenizationViewModel })
-            ?? []
-            
-            let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
-            if !PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
-                if let applePayViewModel = viewModels.filter({ $0.config.type == PrimerPaymentMethodType.applePay.rawValue }).first,
-                   let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
-                    viewModels.remove(at: applePayViewModelIndex)
-                }
-            }
-            
-#if !canImport(PrimerKlarnaSDK)
-            if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
-                viewModels.remove(at: klarnaViewModelIndex)
-                print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
-            }
-#endif
-            
-            for (index, viewModel) in viewModels.enumerated() {
-                if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
-                    viewModels.swapAt(0, index)
-                }
-            }
-            
-            for (index, viewModel) in viewModels.enumerated() {
-                viewModel.position = index
-            }
-            
-            return viewModels
         }
         
         let coreUrl: String?

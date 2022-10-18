@@ -11,15 +11,15 @@ import UIKit
 
 internal class PrimerPaymentPendingInfoViewController: PrimerFormViewController {
         
-    private let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
+    private let formPaymentModule: FormPaymentModule
     private let infoView: PrimerFormView
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel, infoView: PrimerFormView) {
-        self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
+    init(formPaymentModule: FormPaymentModule, infoView: PrimerFormView) {
+        self.formPaymentModule = formPaymentModule
         self.infoView = infoView
         super.init(nibName: nil, bundle: nil)
     }

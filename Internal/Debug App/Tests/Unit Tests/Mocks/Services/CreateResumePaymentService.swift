@@ -8,7 +8,7 @@
 
 @testable import PrimerSDK
 
-class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
+class MockCreateResumePaymentService: PaymentServiceProtocol {
     
     static var apiClient: PrimerAPIClientProtocol?
     private let rawPaymentResponse = """

@@ -4,6 +4,7 @@
 //
 //  Created by Dario Carlomagno on 24/05/22.
 //
+
 #if canImport(UIKit)
 
 import UIKit
@@ -11,17 +12,18 @@ import UIKit
 class PrimerTestPaymentMethodViewController: PrimerFormViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private var viewModel: PrimerTestPaymentMethodTokenizationViewModel!
+    private var paymentMethodModule: PaymentMethodModuleProtocol
+    
+    
     
     deinit {
-        viewModel = nil
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(viewModel: PrimerTestPaymentMethodTokenizationViewModel) {
-        self.viewModel = viewModel
+    init(paymentMethodModule: PaymentMethodModuleProtocol) {
+        self.paymentMethodModule = paymentMethodModule
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.uiModule.invertedLogo
+        self.titleImage = paymentMethodModule.userInterfaceModule.invertedLogo
     }
     
     required init?(coder: NSCoder) {
@@ -37,7 +39,7 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
                 action: .view,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.viewModel.config.type,
+                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .view,
@@ -53,14 +55,18 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
 extension PrimerTestPaymentMethodViewController {
     
     private func setupView() {
+        guard let primerTestPaymentMethodModule = self.paymentMethodModule as? PrimerTestPaymentMethodTokenizationModule else {
+            return
+        }
+        
         view.backgroundColor = theme.view.backgroundColor
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.heightAnchor.constraint(equalToConstant: viewModel.viewHeight).isActive = true
-        viewModel.tableView.isScrollEnabled = false
+        view.heightAnchor.constraint(equalToConstant: primerTestPaymentMethodModule.viewHeight).isActive = true
+        primerTestPaymentMethodModule.tableView.isScrollEnabled = false
         verticalStackView.removeConstraints(verticalStackView.constraints)
         verticalStackView.pin(view: view, leading: 20, top: 0, trailing: -20, bottom: -20)
-        verticalStackView.addArrangedSubview(viewModel.tableView)
-        viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
+        verticalStackView.addArrangedSubview(primerTestPaymentMethodModule.tableView)
+        primerTestPaymentMethodModule.tableView.translatesAutoresizingMaskIntoConstraints = false
     }
 }
 
