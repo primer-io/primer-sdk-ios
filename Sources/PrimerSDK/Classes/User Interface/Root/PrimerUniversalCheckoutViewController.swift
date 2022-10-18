@@ -17,7 +17,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var payButton: PrimerButton!
     private var selectedPaymentMethod: PrimerPaymentMethodTokenData?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private let paymentMethodConfigViewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
+    private let paymentMethodModules = PrimerAPIConfigurationModule.paymentMethodModules
     private var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     private var singleUsePaymentMethod: PrimerPaymentMethodTokenData?
     private var resumePaymentId: String?
@@ -242,7 +242,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     }
     
     private func renderAvailablePaymentMethods() {
-        PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
+        PrimerFormViewController.renderPaymentMethods(paymentMethodModules, on: verticalStackView)
     }
     
     @objc
@@ -270,7 +270,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     func payButtonTapped() {
         guard let selectedPaymentMethod = selectedPaymentMethod else { return }
         guard let selectedPaymentMethodType = selectedPaymentMethod.paymentMethodType else { return }
-        guard let config = PrimerAPIConfiguration.paymentMethodConfigs?.filter({ $0.type == selectedPaymentMethodType }).first else {
+        guard let config = PrimerAPIConfiguration.paymentMethodConfigurations?.filter({ $0.type == selectedPaymentMethodType }).first else {
             return
         }
         
@@ -292,14 +292,14 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         enableView(false)
         payButton.startAnimating()
         
-        let checkoutWithVaultedPaymentMethodViewModel = CheckoutWithVaultedPaymentMethodViewModel(configuration: config, selectedPaymentMethodTokenData: selectedPaymentMethod)
-        firstly {
-            checkoutWithVaultedPaymentMethodViewModel.start()
-        }
-        .ensure {
-            self.enableView(true)
-        }
-        .catch { _ in }
+//        let checkoutWithVaultedPaymentMethodViewModel = VaultedPaymentMethodPaymentModule(paymentMethodModule: config)
+//        firstly {
+//            checkoutWithVaultedPaymentMethodViewModel.start()
+//        }
+//        .ensure {
+//            self.enableView(true)
+//        }
+//        .catch { _ in }
     }
     
 }

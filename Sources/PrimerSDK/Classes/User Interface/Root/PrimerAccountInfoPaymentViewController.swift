@@ -11,14 +11,14 @@ import UIKit
 
 internal class PrimerAccountInfoPaymentViewController: PrimerFormViewController {
         
-    let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
+    let formTokenizationModule: FormTokenizationModule
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(navigationBarLogo: UIImage?, formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel) {
-        self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
+    init(navigationBarLogo: UIImage?, formTokenizationModule: FormTokenizationModule) {
+        self.formTokenizationModule = formTokenizationModule
         super.init(nibName: nil, bundle: nil)
         self.titleImage = navigationBarLogo
     }
@@ -32,11 +32,11 @@ internal class PrimerAccountInfoPaymentViewController: PrimerFormViewController 
                 
         verticalStackView.spacing = 16
                 
-        if let infoView = self.formPaymentMethodTokenizationViewModel.infoView {
+        if let infoView = self.formTokenizationModule.infoView {
             verticalStackView.addArrangedSubview(infoView)
         }
         
-        if let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton {
+        if let submitButton = self.formTokenizationModule.paymentMethodModule.userInterfaceModule.submitButton {
             verticalStackView.addArrangedSubview(submitButton)
         }
     }

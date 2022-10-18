@@ -31,7 +31,7 @@ class PaymentMethodConfigServiceTests: XCTestCase {
         Primer.shared.showUniversalCheckout(clientToken: "")
 
         XCTAssertEqual(state.apiConfiguration?.coreUrl, "coreUrl")
-        XCTAssertEqual(PrimerAPIConfiguration.paymentMethodConfigViewModels.count, 1)
+        XCTAssertEqual(PrimerAPIConfigurationModule.paymentMethodModules.count, 1)
     }
 }
 

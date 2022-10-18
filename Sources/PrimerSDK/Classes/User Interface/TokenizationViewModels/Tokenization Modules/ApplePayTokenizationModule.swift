@@ -1,89 +1,77 @@
+//
+//  ApplePayTokenizationModule.swift
+//  PrimerSDK
+//
+//  Created by Evangelos on 17/10/22.
+//
+
 #if canImport(UIKit)
 
 import Foundation
 import PassKit
 import UIKit
 
-internal extension PKPaymentMethodType {
-    var primerValue: String? {
-        switch self {
-        case .credit:
-            return "credit"
-        case .debit:
-            return "debit"
-        case .prepaid:
-            return "prepaid"
-        default:
-            return nil
-        }
-    }
-}
-
 @available(iOS 11.0, *)
-class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class ApplePayTokenizationModule: TokenizationModule {
     
-    private var applePayWindow: UIWindow?
-    private var request: PKPaymentRequest!
-    private var applePayPaymentResponse: ApplePayPaymentResponse!
     // This is the completion handler that notifies that the necessary data were received.
     private var applePayReceiveDataCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?
     // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
+    private var applePayPaymentResponse: ApplePayPaymentResponse!
     private var applePayControllerCompletion: ((PKPaymentAuthorizationResult) -> Void)?
     private var isCancelled: Bool = false
     private var didTimeout: Bool = false
     
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
-    override func validate() throws {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-        
-        guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-        
-        guard config.id != nil else {
-            let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-        
-        guard PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode != nil else {
-            let err = PrimerError.invalidSetting(name: "countryCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-        
-        guard AppState.current.currency != nil else {
-            let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-        
-        guard PrimerSettings.current.paymentMethodOptions.applePayOptions != nil else {
-            let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-    }
-    
-    override func start() {
-        self.didFinishPayment = { err in
-            if let err = err {
-                self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .failure, errors: nil))
-            } else {
-                self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .success, errors: nil))
+    override func validate() -> Promise<Void> {
+        return Promise { seal in
+            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            guard decodedJWTToken.pciUrl != nil else {
+                let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            guard self.paymentMethodModule.paymentMethodConfiguration.id != nil else {
+                let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            guard PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode != nil else {
+                let err = PrimerError.invalidSetting(name: "countryCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            guard AppState.current.currency != nil else {
+                let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            guard PrimerSettings.current.paymentMethodOptions.applePayOptions != nil else {
+                let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
             }
         }
+    }
+    
+    override func start() -> Promise<PrimerPaymentMethodTokenData> {
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.urlSchemeRedirect, object: nil)
         
-        super.start()
+        return super.start()
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {
@@ -93,7 +81,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type,
+                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -102,21 +90,27 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.paymentMethodModule.userInterfaceModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
-                self.validateReturningPromise()
+                self.validate()
             }
             .then { () -> Promise<Void> in
                 let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
+                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodModule.paymentMethodConfiguration.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
-                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodModule.paymentMethodConfiguration.type))
+            }
+            .then { () -> Promise<Void> in
+                return self.paymentMethodModule.checkouEventsNotifierModule.fireWillPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
                 return self.presentPaymentMethodUserInterface()
+            }
+            .then { () -> Promise<Void> in
+                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
                 return self.awaitUserInput()
@@ -135,20 +129,63 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodModule.paymentMethodConfiguration.type)
 
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.paymentMethodModule.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            guard let applePayConfigId = self.paymentMethodModule.paymentMethodConfiguration.id else {
+                let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            guard let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantIdentifier else {
+                let err = PrimerError.invalidValue(key: "settings.paymentMethodOptions.applePayOptions?.merchantIdentifier", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            let paymentInstrument = ApplePayPaymentInstrument(
+                paymentMethodConfigId: applePayConfigId,
+                sourceConfig: ApplePayPaymentInstrument.SourceConfig(source: "IN_APP", merchantId: merchantIdentifier),
+                token: self.applePayPaymentResponse.token)
+
+            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+            
+            firstly {
+                tokenizationService.tokenize(requestBody: requestBody)
+            }
+            .done { paymentMethodTokenData in
+                seal.fulfill(paymentMethodTokenData)
             }
             .catch { err in
                 seal.reject(err)
@@ -162,7 +199,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    override func presentPaymentMethodUserInterface() -> Promise<Void> {
+    // MARK: - APPLE PAY SPECIFIC FUNCTIONALITY
+    
+    private func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
                 if PrimerInternal.shared.intent == .vault {
@@ -239,12 +278,12 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     paymentVC.delegate = self
                     
                     DispatchQueue.main.async {
-                        self.willPresentPaymentMethodUI?()
+//                        self.willPresentPaymentMethodUI?()
                         self.isCancelled = true
                         PrimerUIManager.primerRootViewController?.present(paymentVC, animated: true, completion: {
                             DispatchQueue.main.async {
-                                PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type)
-                                self.didPresentPaymentMethodUI?()
+                                PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.paymentMethodModule.paymentMethodConfiguration.type)
+//                                self.didPresentPaymentMethodUI?()
                                 seal.fulfill()
                             }
                         })
@@ -260,7 +299,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-    override func awaitUserInput() -> Promise<Void> {
+    private func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.applePayReceiveDataCompletion = { result in
                 switch result {
@@ -273,74 +312,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 }
             }
         }
-    }
-    
-    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
-        return Promise { seal in
-            guard let applePayConfigId = self.config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: self.config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
-            }
-            
-            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
-            }
-            
-            guard let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantIdentifier else {
-                let err = PrimerError.invalidValue(key: "settings.paymentMethodOptions.applePayOptions?.merchantIdentifier", value: self.config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
-            }
-            
-            let paymentInstrument = ApplePayPaymentInstrument(
-                paymentMethodConfigId: applePayConfigId,
-                sourceConfig: ApplePayPaymentInstrument.SourceConfig(source: "IN_APP", merchantId: merchantIdentifier),
-                token: self.applePayPaymentResponse.token)
-
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-            
-            firstly {
-                tokenizationService.tokenize(requestBody: requestBody)
-            }
-            .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-}
-
-@available(iOS 11.0, *)
-extension ApplePayTokenizationViewModel {
-    
-    private func clientSessionBillingAddressFromApplePayBillingContact(_ billingContact: PKContact?) -> ClientSession.Address? {
-        
-        guard let postalAddress = billingContact?.postalAddress else {
-            return nil
-        }
-        
-        // From: https://developer.apple.com/documentation/contacts/cnpostaladdress/1403414-street
-        let addressLines = postalAddress.street.components(separatedBy: "\n")
-        let addressLine1 = addressLines.first
-        let addressLine2 = addressLines.count > 1 ? addressLines[1] : nil
-        
-        return ClientSession.Address(firstName: billingContact?.name?.givenName,
-                                     lastName: billingContact?.name?.familyName,
-                                     addressLine1: addressLine1,
-                                     addressLine2: addressLine2,
-                                     city: postalAddress.city,
-                                     postalCode: postalAddress.postalCode,
-                                     state: postalAddress.state,
-                                     countryCode: CountryCode(rawValue: postalAddress.isoCountryCode))
     }
     
     private func updateBillingAddressViaClientSessionActionWithAddressIfNeeded(_ address: ClientSession.Address?) -> Promise<Void> {
@@ -364,10 +335,31 @@ extension ApplePayTokenizationViewModel {
             }
         }
     }
+    
+    private func clientSessionBillingAddressFromApplePayBillingContact(_ billingContact: PKContact?) -> ClientSession.Address? {
+        
+        guard let postalAddress = billingContact?.postalAddress else {
+            return nil
+        }
+        
+        // From: https://developer.apple.com/documentation/contacts/cnpostaladdress/1403414-street
+        let addressLines = postalAddress.street.components(separatedBy: "\n")
+        let addressLine1 = addressLines.first
+        let addressLine2 = addressLines.count > 1 ? addressLines[1] : nil
+        
+        return ClientSession.Address(firstName: billingContact?.name?.givenName,
+                                     lastName: billingContact?.name?.familyName,
+                                     addressLine1: addressLine1,
+                                     addressLine2: addressLine2,
+                                     city: postalAddress.city,
+                                     postalCode: postalAddress.postalCode,
+                                     state: postalAddress.state,
+                                     countryCode: CountryCode(rawValue: postalAddress.isoCountryCode))
+    }
 }
 
 @available(iOS 11.0, *)
-extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDelegate {
+extension ApplePayTokenizationModule: PKPaymentAuthorizationViewControllerDelegate {
     
     func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
         if self.isCancelled {
@@ -430,6 +422,21 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
             controller.dismiss(animated: true, completion: nil)
             applePayReceiveDataCompletion?(.failure(error))
             applePayReceiveDataCompletion = nil
+        }
+    }
+}
+
+internal extension PKPaymentMethodType {
+    var primerValue: String? {
+        switch self {
+        case .credit:
+            return "credit"
+        case .debit:
+            return "debit"
+        case .prepaid:
+            return "prepaid"
+        default:
+            return nil
         }
     }
 }

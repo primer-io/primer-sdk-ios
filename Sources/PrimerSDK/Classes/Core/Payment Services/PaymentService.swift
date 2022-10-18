@@ -9,13 +9,13 @@
 
 import Foundation
 
-internal protocol CreateResumePaymentServiceProtocol {
+internal protocol PaymentServiceProtocol {
     static var apiClient: PrimerAPIClientProtocol? { get set }
     func createPayment(paymentRequest: Request.Body.Payment.Create, completion: @escaping (Response.Body.Payment?, Error?) -> Void)
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Response.Body.Payment?, Error?) -> Void)
 }
 
-internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
+internal class PaymentService: PaymentServiceProtocol {
     
     static var apiClient: PrimerAPIClientProtocol?
     
@@ -31,7 +31,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             return
         }
         
-        let apiClient: PrimerAPIClientProtocol = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
+        let apiClient: PrimerAPIClientProtocol = PaymentService.apiClient ?? PrimerAPIClient()
         apiClient.createPayment(clientToken: clientToken, paymentRequestBody: paymentRequest) { result in
             switch result {
             case .failure(let error):
@@ -50,7 +50,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             return
         }
                 
-        let apiClient: PrimerAPIClientProtocol = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
+        let apiClient: PrimerAPIClientProtocol = PaymentService.apiClient ?? PrimerAPIClient()
         apiClient.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest) { result in
             switch result {
             case .failure(let error):

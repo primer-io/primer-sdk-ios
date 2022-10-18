@@ -81,58 +81,9 @@ class PrimerPaymentMethod: Codable {
     }
     
     var hasUnknownSurcharge: Bool = false
-    lazy var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? = {
-        if implementationType == .webRedirect {
-            return WebRedirectPaymentMethodTokenizationViewModel(config: self)
-            
-        } else {
-            switch self.type {
-            case PrimerPaymentMethodType.adyenBlik.rawValue,
-                PrimerPaymentMethodType.rapydFast.rawValue,
-                PrimerPaymentMethodType.adyenMBWay.rawValue,
-                PrimerPaymentMethodType.adyenMultibanco.rawValue:
-                return FormPaymentMethodTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.adyenDotPay.rawValue,
-                PrimerPaymentMethodType.adyenIDeal.rawValue:
-                return BankSelectorTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.apaya.rawValue:
-                return ApayaTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.applePay.rawValue:
-                if #available(iOS 11.0, *) {
-                    return ApplePayTokenizationViewModel(config: self)
-                }
-                
-            case PrimerPaymentMethodType.klarna.rawValue:
-                return KlarnaTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.paymentCard.rawValue,
-                PrimerPaymentMethodType.adyenBancontactCard.rawValue:
-                return CardFormPaymentMethodTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.payPal.rawValue:
-                return PayPalTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.primerTestKlarna.rawValue,
-                PrimerPaymentMethodType.primerTestPayPal.rawValue,
-                PrimerPaymentMethodType.primerTestSofort.rawValue:
-                return PrimerTestPaymentMethodTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.xfersPayNow.rawValue,
-                PrimerPaymentMethodType.rapydPromptPay.rawValue,
-                PrimerPaymentMethodType.omisePromptPay.rawValue:
-                return QRCodeTokenizationViewModel(config: self)
-                
-            default:
-                break
-            }
-        }
-        
-        log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD TYPE", message: type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
-        
-        return nil
+
+    lazy var paymentMethodModule: PaymentMethodModule? = {
+        return PaymentMethodModule(paymentMethodConfiguration: self, userInterfaceModule: nil, tokenizationModule: nil, paymentModule: nil)
     }()
     
     var isCheckoutEnabled: Bool {
