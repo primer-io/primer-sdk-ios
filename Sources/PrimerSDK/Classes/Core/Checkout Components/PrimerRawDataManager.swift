@@ -459,7 +459,6 @@ extension PrimerHeadlessUniversalCheckout {
 
                 } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
                     
-                    let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
                     var additionalInfo: PrimerCheckoutAdditionalInfo?
                     
                     switch self.paymentMethodType {
@@ -488,7 +487,7 @@ extension PrimerHeadlessUniversalCheckout {
                         }
                         
                         let formatter = DateFormatter().withExpirationDisplayDateFormat()
-                        additionalInfo = XenditRetailOutletsCheckoutAdditionalInfo(expiresAt: formatter.string(from: decodedExpiresAt),
+                        additionalInfo = XenditCheckoutVoucherAdditionalInfo(expiresAt: formatter.string(from: decodedExpiresAt),
                                                                                    couponCode: decodedVoucherReference,
                                                                                    retailerName: selectedRetailerName)
                         
