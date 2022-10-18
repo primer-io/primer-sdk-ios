@@ -55,6 +55,7 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
                 completion(nil, err)
             case .success(let res):
                 let retailOutletsList = RetailOutletsList(result: res)
+                self.initializationData = retailOutletsList
                 completion(retailOutletsList, nil)
             }
         }
