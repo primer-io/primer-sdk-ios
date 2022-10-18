@@ -8,35 +8,36 @@
 
 #if canImport(UIKit)
 
-protocol UserInterfaceModuleProtocol {
-    
-    var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol! { get }
-    var logo: UIImage? { get }
-    var icon: UIImage? { get }
-    var surchargeSectionText: String? { get }
-    var paymentMethodButton: PrimerButton { get }
-    var submitButton: PrimerButton? { get }
-    
-    init(paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol)
-    func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
-    func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView?
-}
-
 import UIKit
 
-class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
+//protocol UserInterfaceModuleProtocol {
+//
+//    var paymentMethodModule: PaymentMethodModuleProtocol! { get }
+//    var logo: UIImage? { get }
+//    var invertedLogo: UIImage? { get }
+//    var icon: UIImage? { get }
+//    var surchargeSectionText: String? { get }
+//    var paymentMethodButton: PrimerButton { get }
+//    var submitButton: PrimerButton? { get }
+//
+//    init(paymentMethodModule: PaymentMethodModuleProtocol)
+//    func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
+//    func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView?
+//}
+
+class UserInterfaceModule: NSObject {
     
     // MARK: - PROPERTIES
     
-    weak var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol!
+    weak var paymentMethodModule: PaymentMethodModuleProtocol!
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     var logo: UIImage? {
-        return paymentMethodTokenizationViewModel.config.logo
+        return paymentMethodModule.paymentMethodConfiguration.logo
     }
     
     var invertedLogo: UIImage? {
-        return paymentMethodTokenizationViewModel.config.invertedLogo
+        return paymentMethodModule.paymentMethodConfiguration.invertedLogo
     }
     
     var navigationBarLogo: UIImage? {
@@ -56,7 +57,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var icon: UIImage? {
-        var fileName = paymentMethodTokenizationViewModel.config.type.lowercased().replacingOccurrences(of: "_", with: "-")
+        var fileName = paymentMethodModule.paymentMethodConfiguration.type.lowercased().replacingOccurrences(of: "_", with: "-")
         fileName += "-icon"
         
         switch self.themeMode {
@@ -72,7 +73,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var themeMode: PrimerTheme.Mode {
-        if let baseLogoImage = paymentMethodTokenizationViewModel.config.baseLogoImage {
+        if let baseLogoImage = paymentMethodModule.paymentMethodConfiguration.baseLogoImage {
             if UIScreen.isDarkModeEnabled {
                 if baseLogoImage.dark != nil {
                     return .dark
@@ -100,7 +101,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var localDisplayMetadata: PrimerPaymentMethod.DisplayMetadata? {
-        guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodTokenizationViewModel.config.type) else { return nil }
+        guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodModule.paymentMethodConfiguration.type) else { return nil }
         
         switch internaPaymentMethodType {
         case .adyenAlipay:
@@ -751,23 +752,23 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var surchargeSectionText: String? {
-        switch paymentMethodTokenizationViewModel.config.type {
+        switch paymentMethodModule.paymentMethodConfiguration.type {
         case PrimerPaymentMethodType.paymentCard.rawValue:
             return Strings.CardFormView.additionalFeesTitle
         default:
             guard let currency = AppState.current.currency else { return nil }
             guard let availablePaymentMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
-            guard let str = availablePaymentMethods.filter({ $0.type == paymentMethodTokenizationViewModel.config.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
+            guard let str = availablePaymentMethods.filter({ $0.type == paymentMethodModule.paymentMethodConfiguration.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
             return "+\(str)"
         }
     }
     
     var buttonTitle: String? {
         
-        let metadataButtonText = paymentMethodTokenizationViewModel.config.displayMetadata?.button.text
+        let metadataButtonText = paymentMethodModule.paymentMethodConfiguration.displayMetadata?.button.text
             ?? self.localDisplayMetadata?.button.text
         
-        switch paymentMethodTokenizationViewModel.config.type {
+        switch paymentMethodModule.paymentMethodConfiguration.type {
         
         case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
             return Strings.PaymentButton.payWithCard
@@ -800,14 +801,14 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }()
     
     var buttonCornerRadius: CGFloat? {
-        let cornerRadius = paymentMethodTokenizationViewModel.config.displayMetadata?.button.cornerRadius
+        let cornerRadius = paymentMethodModule.paymentMethodConfiguration.displayMetadata?.button.cornerRadius
             ?? self.localDisplayMetadata?.button.cornerRadius
         guard cornerRadius != nil else { return 4.0 }
         return CGFloat(cornerRadius!)
     }
     
     var buttonColor: UIColor? {
-        let baseBackgroundColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.backgroundColor
+        let baseBackgroundColor = paymentMethodModule.paymentMethodConfiguration.displayMetadata?.button.backgroundColor
             ?? localDisplayMetadata?.button.backgroundColor
         
         guard baseBackgroundColor != nil else {
@@ -833,7 +834,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var buttonTitleColor: UIColor? {
-        let baseTextColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.textColor
+        let baseTextColor = paymentMethodModule.paymentMethodConfiguration.displayMetadata?.button.textColor
             ?? self.localDisplayMetadata?.button.textColor
         
         guard baseTextColor != nil else {
@@ -859,7 +860,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var buttonBorderWidth: CGFloat {
-        let baseBorderWidth = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderWidth
+        let baseBorderWidth = paymentMethodModule.paymentMethodConfiguration.displayMetadata?.button.borderWidth
             ?? self.localDisplayMetadata?.button.borderWidth
         guard baseBorderWidth != nil else {
             return 0.0
@@ -876,7 +877,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var buttonBorderColor: UIColor? {
-        let baseBorderColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderColor
+        let baseBorderColor = paymentMethodModule.paymentMethodConfiguration.displayMetadata?.button.borderColor
             ?? self.localDisplayMetadata?.button.borderColor
         guard baseBorderColor != nil else {
             return nil
@@ -914,11 +915,11 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         
         let paymentMethodButton = PrimerButton()
         paymentMethodButton.translatesAutoresizingMaskIntoConstraints = false
-        paymentMethodButton.accessibilityIdentifier = paymentMethodTokenizationViewModel.config.type
+        paymentMethodButton.accessibilityIdentifier = paymentMethodModule.paymentMethodConfiguration.type
         paymentMethodButton.clipsToBounds = true
         let imagePadding: CGFloat = 20
         let leftPadding = UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0
-        let defaultRightPadding = customPaddingSettingsCard.contains(paymentMethodTokenizationViewModel.config.type) ? imagePadding : 0
+        let defaultRightPadding = customPaddingSettingsCard.contains(paymentMethodModule.paymentMethodConfiguration.type) ? imagePadding : 0
         let rightPadding = UILocalizableUtil.isRightToLeftLocale ? 0 : defaultRightPadding
         paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 8,
                                                            left: leftPadding,
@@ -945,7 +946,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     lazy var submitButton: PrimerButton? = {
         var buttonTitle: String = ""
         
-        switch self.paymentMethodTokenizationViewModel.config.type {
+        switch self.paymentMethodModule.paymentMethodConfiguration.type {
         case PrimerPaymentMethodType.paymentCard.rawValue,
             PrimerPaymentMethodType.adyenMBWay.rawValue:
             switch PrimerInternal.shared.intent {
@@ -991,8 +992,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     
     // MARK: - INITIALIZATION
     
-    required init(paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol) {
-        self.paymentMethodTokenizationViewModel = paymentMethodTokenizationViewModel
+    required init(paymentMethodModule: PaymentMethodModuleProtocol) {
+        self.paymentMethodModule = paymentMethodModule
     }
     
     // MARK: - HELPERS
@@ -1042,11 +1043,173 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     @IBAction private func paymentMethodButtonTapped(_ sender: UIButton) {
-        self.paymentMethodTokenizationViewModel.start()
+        self.paymentMethodModule.tokenizeAndPayIfNeeded()
     }
     
     @IBAction private func submitButtonTapped(_ sender: UIButton) {
-        self.paymentMethodTokenizationViewModel.submitButtonTapped()
+//        self.paymentMethodTokenizationViewModel.submitButtonTapped()
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // MARK: Adyen MBWay PhoneNumber prefix view
+    
+    var prefixSelectorButton: PrimerButton = {
+        let countryCodeFlag = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.flag ?? ""
+        let countryDialCode = CountryCode.phoneNumberCountryCodes.first(where: { $0.code == PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.rawValue})?.dialCode ?? ""
+        
+        let prefixSelectorButton = PrimerButton()
+        prefixSelectorButton.isAccessibilityElement = true
+        prefixSelectorButton.accessibilityIdentifier = "prefix_selector_btn"
+        prefixSelectorButton.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
+        prefixSelectorButton.setTitle("\(countryCodeFlag) \(countryDialCode)", for: .normal)
+        prefixSelectorButton.setTitleColor(.black, for: .normal)
+        prefixSelectorButton.clipsToBounds = true
+        prefixSelectorButton.isUserInteractionEnabled = false
+        prefixSelectorButton.translatesAutoresizingMaskIntoConstraints = false
+        prefixSelectorButton.widthAnchor.constraint(equalToConstant: 80.0).isActive = true
+        prefixSelectorButton.contentVerticalAlignment = .top
+        return prefixSelectorButton
+    }()
+    
+    // MARK: Adyen MBWay Input View
+    
+    var mbwayTopLabelView: UILabel = {
+        let label = UILabel()
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        label.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
+        label.text = Strings.MBWay.inputTopPlaceholder
+        label.textColor = theme.text.system.color
+        return label
+    }()
+    
+    var mbwayInputView: Input = {
+        let input1 = Input()
+        input1.keyboardType = .numberPad
+        input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
+        input1.isValid = { text in
+            return text.isNumeric && text.count >= 8
+        }
+        return input1
+    }()
+    
+    // MARK: Adyen Blik Input View
+    
+    var adyenBlikInputView: Input = {
+        let input1 = Input()
+        input1.name = "OTP"
+        input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
+        input1.textFieldPlaceholder = Strings.Blik.inputTextFieldPlaceholder
+        input1.keyboardType = .numberPad
+        input1.descriptor = Strings.Blik.inputDescriptor
+        input1.allowedCharacterSet = CharacterSet.decimalDigits
+        input1.maxCharactersAllowed = 6
+        input1.isValid = { text in
+            return text.isNumeric && text.count >= 6
+        }
+        
+        return input1
+    }()
+    
+    func createInputTextFieldsStackViews(inputs: [Input], textFieldsDelegate: PrimerTextFieldViewDelegate) -> [UIStackView] {
+        var stackViews: [UIStackView] = []
+        
+        for input in inputs {
+            let stackView = UIStackView()
+            stackView.spacing = 2
+            stackView.axis = .horizontal
+            stackView.alignment = .fill
+            stackView.distribution = .fillProportionally
+            
+            let inputStackView = UIStackView()
+            inputStackView.spacing = 2
+            inputStackView.axis = .vertical
+            inputStackView.alignment = .fill
+            inputStackView.distribution = .fill
+            
+            let inputTextFieldView = PrimerGenericFieldView()
+            inputTextFieldView.delegate = textFieldsDelegate
+            inputTextFieldView.translatesAutoresizingMaskIntoConstraints = false
+            inputTextFieldView.heightAnchor.constraint(equalToConstant: 35).isActive = true
+            inputTextFieldView.textField.keyboardType = input.keyboardType ?? .default
+            inputTextFieldView.allowedCharacterSet = input.allowedCharacterSet
+            inputTextFieldView.maxCharactersAllowed = input.maxCharactersAllowed
+            inputTextFieldView.isValid = input.isValid
+            inputTextFieldView.shouldMaskText = false
+            input.primerTextFieldView = inputTextFieldView
+            
+            let inputContainerView = PrimerCustomFieldView()
+            inputContainerView.fieldView = inputTextFieldView
+            inputContainerView.placeholderText = input.topPlaceholder
+            inputContainerView.setup()
+            inputContainerView.tintColor = .systemBlue
+            inputStackView.addArrangedSubview(inputContainerView)
+            
+            if let descriptor = input.descriptor {
+                let lbl = UILabel()
+                lbl.font = UIFont.systemFont(ofSize: 12)
+                lbl.translatesAutoresizingMaskIntoConstraints = false
+                lbl.text = descriptor
+                inputStackView.addArrangedSubview(lbl)
+            }
+            
+            if self.paymentMethodModule.paymentMethodConfiguration.type == PrimerPaymentMethodType.adyenMBWay.rawValue {
+                let phoneNumberLabelStackView = UIStackView()
+                phoneNumberLabelStackView.spacing = 2
+                phoneNumberLabelStackView.axis = .vertical
+                phoneNumberLabelStackView.alignment = .fill
+                phoneNumberLabelStackView.distribution = .fill
+                phoneNumberLabelStackView.addArrangedSubview(self.paymentMethodModule.userInterfaceModule.mbwayTopLabelView)
+                inputTextFieldView.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
+                stackViews.insert(phoneNumberLabelStackView, at: 0)
+                stackView.addArrangedSubview(self.paymentMethodModule.userInterfaceModule.prefixSelectorButton)
+            }
+            
+            stackView.addArrangedSubview(inputStackView)
+            stackViews.append(stackView)
+        }
+        
+        return stackViews
+    }
+    
+    func createCountriesTableView(dataSource: UITableViewDataSource, delegate: UITableViewDelegate) -> UITableView {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
+        let tableView = UITableView()
+        tableView.showsVerticalScrollIndicator = false
+        tableView.showsHorizontalScrollIndicator = false
+        tableView.backgroundColor = theme.view.backgroundColor
+        
+        if #available(iOS 11.0, *) {
+            tableView.contentInsetAdjustmentBehavior = .never
+        }
+        
+        tableView.rowHeight = 41
+        tableView.register(CountryTableViewCell.self, forCellReuseIdentifier: CountryTableViewCell.className)
+        
+        tableView.dataSource = dataSource
+        tableView.delegate = delegate
+        return tableView
+    }
+    
+    func createSearchableTextFiel(delegate: UITextFieldDelegate) -> PrimerSearchTextField {
+        let textField = PrimerSearchTextField(frame: .zero)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        textField.delegate = delegate
+        textField.borderStyle = .none
+        textField.layer.cornerRadius = 3.0
+        textField.font = UIFont.systemFont(ofSize: 16.0)
+        textField.placeholder = Strings.CountrySelector.searchCountryTitle
+        textField.rightViewMode = .always
+        return textField
     }
 }
 

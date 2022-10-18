@@ -140,7 +140,7 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
         PaymentMethodTokenizationViewModel.apiClient = mockApiClient
         TokenizationService.apiClient = mockApiClient
         PollingModule.apiClient = mockApiClient
-        CreateResumePaymentService.apiClient = mockApiClient
+        PaymentService.apiClient = mockApiClient
         
         if isAwaitingSDKDismiss {
             self.dismissalCompletion = {
@@ -288,7 +288,7 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
         PaymentMethodTokenizationViewModel.apiClient = mockApiClient
         TokenizationService.apiClient = mockApiClient
         PollingModule.apiClient = mockApiClient
-        CreateResumePaymentService.apiClient = mockApiClient
+        PaymentService.apiClient = mockApiClient
         
         let tokenizationViewModel = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.webRedirectPaymentMethod)
         tokenizationViewModel.start()

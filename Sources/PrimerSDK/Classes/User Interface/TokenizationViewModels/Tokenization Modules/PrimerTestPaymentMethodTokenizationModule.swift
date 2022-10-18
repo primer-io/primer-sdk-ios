@@ -1,17 +1,15 @@
 //
-//  PrimerTestPaymentMethodTokenizationViewModel.swift
+//  PrimerTestPaymentMethodTokenizationModule.swift
 //  PrimerSDK
 //
-//  Created by Dario Carlomagno on 25/05/22.
+//  Created by Evangelos on 17/10/22.
 //
 
 #if canImport(UIKit)
 
-import UIKit
+import Foundation
 
-class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
-    
-    // MARK: - Properties
+class PrimerTestPaymentMethodTokenizationModule: TokenizationModule {
     
     private let decisions = PrimerTestPaymentMethodSessionInfo.FlowDecision.allCases
     private var selectedDecision: PrimerTestPaymentMethodSessionInfo.FlowDecision!
@@ -20,10 +18,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     private var lastSelectedIndexPath: IndexPath?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
-    var viewHeight: CGFloat {
-        180+(CGFloat(decisions.count)*tableView.rowHeight)
-    }
-    
+    // FIXME: Remove UI elements
     internal lazy var tableView: UITableView = {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
@@ -34,7 +29,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         tableView.backgroundColor = theme.view.backgroundColor
         if #available(iOS 11.0, *) {
             tableView.contentInsetAdjustmentBehavior = .never
-        }        
+        }
         tableView.register(FlowDecisionTableViewCell.self, forCellReuseIdentifier: FlowDecisionTableViewCell.identifier)
         tableView.register(HeaderFooterLabelView.self, forHeaderFooterViewReuseIdentifier: "header")
         tableView.dataSource = self
@@ -42,37 +37,26 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         return tableView
     }()
     
-    // MARK: - Deinit
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    var viewHeight: CGFloat {
+        180+(CGFloat(decisions.count)*tableView.rowHeight)
     }
     
-    // MARK: - Overrides
+    override func validate() -> Promise<Void> {
+        return Promise { seal in
+            if PrimerAPIConfigurationModule.decodedJWTToken?.isValid != true {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+            } else {
+                seal.fulfill()
+            }
+        }
+    }
     
-    override func start() {
+    override func start() -> Promise<PrimerPaymentMethodTokenData> {
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.urlSchemeRedirect, object: nil)
         
-        self.checkouEventsNotifierModule.didStartTokenization = {
-            self.uiModule.submitButton?.startAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = false
-        }
-        
-        self.checkouEventsNotifierModule.didFinishTokenization = {
-            self.uiModule.submitButton?.stopAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = true
-        }
-        
-        self.didStartPayment = {
-            self.uiModule.submitButton?.startAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = false
-        }
-        
-        self.didFinishPayment = { err in
-            self.uiModule.submitButton?.stopAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = true
-        }
-        
-        super.start()
+        return super.start()
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {
@@ -82,7 +66,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: config.type,
+                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -93,32 +77,35 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         
         return Promise { seal in
             firstly {
-                self.validateReturningPromise()
+                self.validate()
             }
             .then { () -> Promise<Void> in
-                self.willPresentPaymentMethodUI?()
+                return self.paymentMethodModule.checkouEventsNotifierModule.fireWillPresentPaymentMethodUI()
+            }
+            .then { () -> Promise<Void> in
                 return self.presentPaymentMethodUserInterface()
+            }
+            .then { () -> Promise<Void> in
+                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
                 return self.awaitUserInput()
             }
             .then { () -> Promise<Void> in
-                self.didStartPayment?()
-                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodModule.paymentMethodConfiguration.type))
             }
             .done {
-                self.willDismissPaymentMethodUI?()
                 seal.fulfill()
             }
             .ensure { [unowned self] in
                 DispatchQueue.main.async {
-                    self.didDismissPaymentMethodUI?()
-                    self.didFinishPayment?(nil)
+//                    self.didDismissPaymentMethodUI?()
+//                    self.didFinishPayment?(nil)
                 }
             }
             .catch { err in
                 DispatchQueue.main.async {
-                    self.didFinishPayment?(err)
+//                    self.didFinishPayment?(err)
                 }
                 seal.reject(err)
             }
@@ -128,14 +115,14 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.paymentMethodModule.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()
@@ -145,50 +132,6 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
             }
         }
     }
-    
-    override func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-    
-    override func presentPaymentMethodUserInterface() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async {
-                let testPaymentMethodsVC = PrimerTestPaymentMethodViewController(viewModel: self)
-                
-                self.willPresentPaymentMethodUI?()
-                PrimerUIManager.primerRootViewController?.show(viewController: testPaymentMethodsVC)
-                self.didPresentPaymentMethodUI?()
-                seal.fulfill()
-            }
-        }
-    }
-    
-    override func awaitUserInput() -> Promise<Void> {
-        return Promise { seal in
-            self.didPresentPaymentMethodUI?()
-            
-            firstly {
-                self.awaitUserSelection()
-            }
-            .then { () -> Promise<Void> in
-                return self.awaitPayButtonTappedUponDecisionSelection()
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-    
-    override func validate() throws {
-        
-    }
-    
-    // MARK: - Tokenize
     
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
@@ -204,83 +147,6 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         }
     }
     
-    // MARK: - Pay Action
-    
-    override func submitButtonTapped() {
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: config.type,
-                    url: nil),
-                extra: nil,
-                objectType: .button,
-                objectId: .submit,
-                objectClass: "\(Self.self)",
-                place: .cardForm))
-        Analytics.Service.record(event: viewEvent)
-        
-        payButtonTappedCompletion?()
-    }
-}
-
-extension PrimerTestPaymentMethodTokenizationViewModel {
-    
-    // MARK: - UI Helpers
-    
-    func updateButtonUI() {
-        if let amount = AppState.current.amount {
-            self.configurePayButton(amount: amount)
-        }
-    }
-    
-    private func configurePayButton(amount: Int) {
-        var title = Strings.PaymentButton.pay
-        if PrimerInternal.shared.intent == .checkout {
-            if let currency = AppState.current.currency {
-                title += " \(amount.toCurrencyString(currency: currency))"
-            }
-            self.uiModule.submitButton?.setTitle(title, for: .normal)
-        }
-    }
-    
-    private func enableSubmitButtonIfNeeded() {
-        if lastSelectedIndexPath != nil {
-            self.uiModule.submitButton?.isEnabled = true
-            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
-        } else {
-            self.uiModule.submitButton?.isEnabled = false
-            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
-        }
-    }
-}
-
-extension PrimerTestPaymentMethodTokenizationViewModel {
-    
-    // MARK: - Flow Promises
-    
-    private func awaitUserSelection() -> Promise<Void> {
-        return Promise { seal in
-            self.decisionSelectionCompletion = { decision in
-                self.selectedDecision = decision
-                seal.fulfill()
-            }
-        }
-    }
-    
-    private func awaitPayButtonTappedUponDecisionSelection() -> Promise<Void> {
-        return Promise { seal in
-            self.payButtonTappedCompletion = {
-                seal.fulfill()
-            }
-        }
-    }
-}
-
-extension PrimerTestPaymentMethodTokenizationViewModel {
-    
     private func tokenize(decision: PrimerTestPaymentMethodSessionInfo.FlowDecision, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -292,8 +158,8 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
         let sessionInfo = PrimerTestPaymentMethodSessionInfo(flowDecision: selectedDecision)
         
         let paymentInstrument = OffSessionPaymentInstrument(
-            paymentMethodConfigId: config.id!,
-            paymentMethodType: config.type,
+            paymentMethodConfigId: self.paymentMethodModule.paymentMethodConfiguration.id!,
+            paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
             sessionInfo: sessionInfo)
         
         let tokenizationService: TokenizationServiceProtocol = TokenizationService()
@@ -311,9 +177,89 @@ extension PrimerTestPaymentMethodTokenizationViewModel {
         }
     }
     
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
+        }
+    }
+    
+    private func presentPaymentMethodUserInterface() -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async {
+                let testPaymentMethodsVC = PrimerTestPaymentMethodViewController(paymentMethodModule: self.paymentMethodModule)
+                
+//                self.willPresentPaymentMethodUI?()
+                PrimerUIManager.primerRootViewController?.show(viewController: testPaymentMethodsVC)
+//                self.didPresentPaymentMethodUI?()
+                seal.fulfill()
+            }
+        }
+    }
+    
+    private func awaitUserInput() -> Promise<Void> {
+        return Promise { seal in
+//            self.didPresentPaymentMethodUI?()
+            
+            firstly {
+                self.awaitUserSelection()
+            }
+            .then { () -> Promise<Void> in
+                return self.awaitPayButtonTappedUponDecisionSelection()
+            }
+            .done {
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    private func awaitUserSelection() -> Promise<Void> {
+        return Promise { seal in
+            self.decisionSelectionCompletion = { decision in
+                self.selectedDecision = decision
+                seal.fulfill()
+            }
+        }
+    }
+    
+    private func awaitPayButtonTappedUponDecisionSelection() -> Promise<Void> {
+        return Promise { seal in
+            self.payButtonTappedCompletion = {
+                seal.fulfill()
+            }
+        }
+    }
+    
+    func updateButtonUI() {
+        if let amount = AppState.current.amount {
+            self.configurePayButton(amount: amount)
+        }
+    }
+    
+    private func configurePayButton(amount: Int) {
+        var title = Strings.PaymentButton.pay
+        if PrimerInternal.shared.intent == .checkout {
+            if let currency = AppState.current.currency {
+                title += " \(amount.toCurrencyString(currency: currency))"
+            }
+            self.paymentMethodModule.userInterfaceModule.submitButton?.setTitle(title, for: .normal)
+        }
+    }
+    
+    private func enableSubmitButtonIfNeeded() {
+        if lastSelectedIndexPath != nil {
+            self.paymentMethodModule.userInterfaceModule.submitButton?.isEnabled = true
+            self.paymentMethodModule.userInterfaceModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
+        } else {
+            self.paymentMethodModule.userInterfaceModule.submitButton?.isEnabled = false
+            self.paymentMethodModule.userInterfaceModule.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
+        }
+    }
 }
 
-extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
+extension PrimerTestPaymentMethodTokenizationModule: UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - Table View delegate methods
     
@@ -341,7 +287,7 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         updateButtonUI()
-        let stackView = UIStackView(arrangedSubviews: [uiModule.submitButton!])
+        let stackView = UIStackView(arrangedSubviews: [self.paymentMethodModule.userInterfaceModule.submitButton!])
         stackView.alignment = .center
         stackView.spacing = 16
         return stackView
