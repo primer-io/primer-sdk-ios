@@ -1,6 +1,7 @@
 #if canImport(UIKit)
 
 import Foundation
+import PassKit
 
 internal typealias JWTToken = String
 
@@ -55,6 +56,41 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 PrimerAPIConfigurationModule.resetSession()
             }
         }
+    }
+    
+    static var paymentMethodModules: [PaymentMethodModule] {
+        var paymentMethodModules = PrimerAPIConfiguration.paymentMethodConfigurations?
+            .filter({ $0.isEnabled })
+            .filter({ $0.baseLogoImage != nil })
+            .compactMap({ $0.paymentMethodModule })
+        ?? []
+        
+        let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
+        if !PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
+            if let applePayPaymentModule = paymentMethodModules.filter({ $0.paymentMethodConfiguration.type == PrimerPaymentMethodType.applePay.rawValue }).first,
+               let applePayPaymentModuleIndex = paymentMethodModules.firstIndex(where: { $0 == applePayPaymentModule }) {
+                paymentMethodModules.remove(at: applePayPaymentModuleIndex)
+            }
+        }
+        
+#if !canImport(PrimerKlarnaSDK)
+        if let klarnaPaymentMethodModuleIndex = paymentMethodModules.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
+            paymentMethodModules.remove(at: klarnaPaymentMethodModuleIndex)
+            print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
+        }
+#endif
+        
+        for (index, paymentMethodModule) in paymentMethodModules.enumerated() {
+            if paymentMethodModule.paymentMethodConfiguration.type == PrimerPaymentMethodType.applePay.rawValue {
+                paymentMethodModules.swapAt(0, index)
+            }
+        }
+        
+        for (index, paymentMethodModule) in paymentMethodModules.enumerated() {
+            paymentMethodModule.position = index
+        }
+        
+        return paymentMethodModules
     }
     
     static var decodedJWTToken: DecodedJWTToken? {

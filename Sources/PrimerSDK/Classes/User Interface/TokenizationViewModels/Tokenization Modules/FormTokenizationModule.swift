@@ -1,14 +1,13 @@
 //
-//  PrimerAccountInfoPaymentViewController.swift
+//  FormTokenizationModule.swift
 //  PrimerSDK
 //
-//  Copyright © 2022 Primer API ltd. All rights reserved.
+//  Created by Evangelos on 18/10/22.
 //
 
 #if canImport(UIKit)
 
 import Foundation
-import UIKit
 
 internal class Input {
     var name: String?
@@ -25,7 +24,7 @@ internal class Input {
     var primerTextFieldView: PrimerTextFieldView?
 }
 
-class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class FormTokenizationModule: TokenizationModule, SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     
     // MARK: - Properties
     
@@ -36,125 +35,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     var didCancel: (() -> Void)?
     
-    private static let countryCodeFlag = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.flag ?? ""
-    private static let countryDialCode = CountryCode.phoneNumberCountryCodes.first(where: { $0.code == PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.rawValue})?.dialCode ?? ""
-        
-    var inputTextFieldsStackViews: [UIStackView] {
-        var stackViews: [UIStackView] = []
-        
-        for input in self.inputs {
-            
-            let stackView = UIStackView()
-            stackView.spacing = 2
-            stackView.axis = .horizontal
-            stackView.alignment = .fill
-            stackView.distribution = .fillProportionally
-            
-            let inputStackView = UIStackView()
-            inputStackView.spacing = 2
-            inputStackView.axis = .vertical
-            inputStackView.alignment = .fill
-            inputStackView.distribution = .fill
-            
-            let inputTextFieldView = PrimerGenericFieldView()
-            inputTextFieldView.delegate = self
-            inputTextFieldView.translatesAutoresizingMaskIntoConstraints = false
-            inputTextFieldView.heightAnchor.constraint(equalToConstant: 35).isActive = true
-            inputTextFieldView.textField.keyboardType = input.keyboardType ?? .default
-            inputTextFieldView.allowedCharacterSet = input.allowedCharacterSet
-            inputTextFieldView.maxCharactersAllowed = input.maxCharactersAllowed
-            inputTextFieldView.isValid = input.isValid
-            inputTextFieldView.shouldMaskText = false
-            input.primerTextFieldView = inputTextFieldView
-            
-            let inputContainerView = PrimerCustomFieldView()
-            inputContainerView.fieldView = inputTextFieldView
-            inputContainerView.placeholderText = input.topPlaceholder
-            inputContainerView.setup()
-            inputContainerView.tintColor = .systemBlue
-            inputStackView.addArrangedSubview(inputContainerView)
-            
-            if let descriptor = input.descriptor {
-                let lbl = UILabel()
-                lbl.font = UIFont.systemFont(ofSize: 12)
-                lbl.translatesAutoresizingMaskIntoConstraints = false
-                lbl.text = descriptor
-                inputStackView.addArrangedSubview(lbl)
-            }
-            
-            if self.config.type == PrimerPaymentMethodType.adyenMBWay.rawValue {
-                let phoneNumberLabelStackView = UIStackView()
-                phoneNumberLabelStackView.spacing = 2
-                phoneNumberLabelStackView.axis = .vertical
-                phoneNumberLabelStackView.alignment = .fill
-                phoneNumberLabelStackView.distribution = .fill
-                phoneNumberLabelStackView.addArrangedSubview(mbwayTopLabelView)
-                inputTextFieldView.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
-                stackViews.insert(phoneNumberLabelStackView, at: 0)
-                stackView.addArrangedSubview(prefixSelectorButton)
-            }
-            
-            stackView.addArrangedSubview(inputStackView)
-            stackViews.append(stackView)
-        }
-        
-        return stackViews
-    }
-    
-    // MARK: Adyen MBWay PhoneNumber prefix view
-    
-    var prefixSelectorButton: PrimerButton = {
-        let prefixSelectorButton = PrimerButton()
-        prefixSelectorButton.isAccessibilityElement = true
-        prefixSelectorButton.accessibilityIdentifier = "prefix_selector_btn"
-        prefixSelectorButton.titleLabel?.font = UIFont.systemFont(ofSize: 17.0, weight: .regular)
-        prefixSelectorButton.setTitle("\(FormPaymentMethodTokenizationViewModel.countryCodeFlag) \(FormPaymentMethodTokenizationViewModel.countryDialCode)", for: .normal)
-        prefixSelectorButton.setTitleColor(.black, for: .normal)
-        prefixSelectorButton.clipsToBounds = true
-        prefixSelectorButton.isUserInteractionEnabled = false
-        prefixSelectorButton.translatesAutoresizingMaskIntoConstraints = false
-        prefixSelectorButton.widthAnchor.constraint(equalToConstant: 80.0).isActive = true
-        prefixSelectorButton.contentVerticalAlignment = .top
-        return prefixSelectorButton
-    }()
-    
-    // MARK: Adyen MBWay Input View
-    
-    var mbwayTopLabelView: UILabel = {
-        let label = UILabel()
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        label.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
-        label.text = Strings.MBWay.inputTopPlaceholder
-        label.textColor = theme.text.system.color
-        return label
-    }()
-    
-    var mbwayInputView: Input = {
-        let input1 = Input()
-        input1.keyboardType = .numberPad
-        input1.allowedCharacterSet = CharacterSet(charactersIn: "0123456789")
-        input1.isValid = { text in
-            return text.isNumeric && text.count >= 8
-        }
-        return input1
-    }()
-    
-    // MARK: Adyen Blik Input View
-    
-    var adyenBlikInputView: Input = {
-        let input1 = Input()
-        input1.name = "OTP"
-        input1.topPlaceholder = Strings.Blik.inputTopPlaceholder
-        input1.textFieldPlaceholder = Strings.Blik.inputTextFieldPlaceholder
-        input1.keyboardType = .numberPad
-        input1.descriptor = Strings.Blik.inputDescriptor
-        input1.allowedCharacterSet = CharacterSet.decimalDigits
-        input1.maxCharactersAllowed = 6
-        input1.isValid = { text in
-            return text.isNumeric && text.count >= 6
-        }
-        return input1
-    }()
     
     var countriesDataSource = CountryCode.allCases {
         didSet {
@@ -171,37 +51,16 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     var phoneNumberCountryCodes = CountryCode.phoneNumberCountryCodes
     var countries = CountryCode.allCases
     
+    lazy var inputTextFieldsStackViews: [UIStackView] = {
+        return self.paymentMethodModule.userInterfaceModule.createInputTextFieldsStackViews(inputs: inputs, textFieldsDelegate: self)
+    }()
+    
     internal lazy var tableView: UITableView = {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
-        let tableView = UITableView()
-        tableView.showsVerticalScrollIndicator = false
-        tableView.showsHorizontalScrollIndicator = false
-        tableView.backgroundColor = theme.view.backgroundColor
-        
-        if #available(iOS 11.0, *) {
-            tableView.contentInsetAdjustmentBehavior = .never
-        }
-        
-        tableView.rowHeight = 41
-        tableView.register(CountryTableViewCell.self, forCellReuseIdentifier: CountryTableViewCell.className)
-        
-        tableView.dataSource = self
-        tableView.delegate = self
-        return tableView
+        return self.paymentMethodModule.userInterfaceModule.createCountriesTableView(dataSource: self, delegate: self)
     }()
     
     internal lazy var searchableTextField: PrimerSearchTextField = {
-        let textField = PrimerSearchTextField(frame: .zero)
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        textField.delegate = self
-        textField.borderStyle = .none
-        textField.layer.cornerRadius = 3.0
-        textField.font = UIFont.systemFont(ofSize: 16.0)
-        textField.placeholder = Strings.CountrySelector.searchCountryTitle
-        textField.rightViewMode = .always
-        return textField
+        return self.paymentMethodModule.userInterfaceModule.createSearchableTextFiel(delegate: self)
     }()
     
     var cardNetwork: CardNetwork? {
@@ -216,7 +75,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
     
     internal lazy var countrySelectorViewController: CountrySelectorViewController = {
-        CountrySelectorViewController(viewModel: self)
+        CountrySelectorViewController(delegate: self, paymentMethod: self.paymentMethodModule.paymentMethodConfiguration)
     }()
     
     // MARK: - Card number field
@@ -416,15 +275,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         return PrimerFormView(frame: .zero, formViews: formViews)
     }
     
-    // MARK: Input Payment Methods Array
-    
-    /// Array containing the payment method types expecting some input step to be performed
-    let inputPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenBlik, .adyenMBWay]
-    
-    // MARK: Voucher Info Payment Methods Array
-    
-    /// Array containing the payment method types issuing a voucher
-    let voucherPaymentMethodTypes: [PrimerPaymentMethodType] = [.adyenMultibanco]
     
     // MARK: Account Info Payment Methods Array
     
@@ -448,38 +298,221 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     /// Input completion block callback
     var userInputCompletion: (() -> Void)?
     
-    // MARK: - Init
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    var voucherConfirmationInfoView: PrimerFormView {
+        
+        // Complete your payment
+        
+        let confirmationTitleLabel = UILabel()
+        confirmationTitleLabel.text = Strings.VoucherInfoConfirmationSteps.confirmationStepTitle
+        confirmationTitleLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.title)
+        confirmationTitleLabel.textColor = theme.text.title.color
+        
+        // Confirmation steps
+        
+        let confirmationStepContainerStackView = PrimerStackView()
+        confirmationStepContainerStackView.axis = .vertical
+        confirmationStepContainerStackView.spacing = 16.0
+        confirmationStepContainerStackView.isLayoutMarginsRelativeArrangement = true
+        
+        let stepsTexts = [Strings.VoucherInfoConfirmationSteps.confirmationStep1LabelText,
+                          Strings.VoucherInfoConfirmationSteps.confirmationStep2LabelText,
+                          Strings.VoucherInfoConfirmationSteps.confirmationStep3LabelText]
+        
+        for stepsText in stepsTexts {
+            
+            let confirmationStepLabel = UILabel()
+            confirmationStepLabel.textColor = .gray600
+            confirmationStepLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
+            confirmationStepLabel.numberOfLines = 0
+            confirmationStepLabel.text = stepsText
+            
+            confirmationStepContainerStackView.addArrangedSubview(confirmationStepLabel)
+        }
+        
+        let views = [[confirmationTitleLabel],
+                     [confirmationStepContainerStackView]]
+        
+        return PrimerFormView(formViews: views)
     }
     
-    override func validate() throws {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            throw err
+    // MARK: Voucher Info View
+    
+    var voucherInfoView: PrimerFormView {
+        
+        // Complete your payment
+        
+        let completeYourPaymentLabel = UILabel()
+        completeYourPaymentLabel.text = Strings.VoucherInfoPaymentView.completeYourPayment
+        completeYourPaymentLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.title)
+        completeYourPaymentLabel.textColor = theme.text.title.color
+        
+        let descriptionLabel = UILabel()
+        descriptionLabel.textColor = .gray600
+        descriptionLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.body)
+        descriptionLabel.numberOfLines = 0
+        descriptionLabel.text = Strings.VoucherInfoPaymentView.descriptionLabel
+        
+        // Expires at
+        
+        let expiresAtContainerStackView = UIStackView()
+        expiresAtContainerStackView.axis = .horizontal
+        expiresAtContainerStackView.spacing = 8.0
+        
+        let calendarImage = UIImage(named: "calendar", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        let calendarImageView = UIImageView(image: calendarImage)
+        calendarImageView.tintColor = .gray600
+        calendarImageView.clipsToBounds = true
+        calendarImageView.contentMode = .scaleAspectFit
+        expiresAtContainerStackView.addArrangedSubview(calendarImageView)
+        
+        if let expDate = PrimerAPIConfigurationModule.decodedJWTToken?.expiresAt {
+            let expiresAtPrefixLabel = UILabel()
+            let expiresAtAttributedString = NSMutableAttributedString()
+            let prefix = NSAttributedString(
+                string: Strings.VoucherInfoPaymentView.expiresAt,
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray600])
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .short
+            let expiresAtDate = NSAttributedString(
+                string: formatter.string(from: expDate),
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
+            expiresAtAttributedString.append(prefix)
+            expiresAtAttributedString.append(NSAttributedString(string: " ", attributes: nil))
+            expiresAtAttributedString.append(expiresAtDate)
+            expiresAtPrefixLabel.attributedText = expiresAtAttributedString
+            expiresAtPrefixLabel.numberOfLines = 0
+            expiresAtPrefixLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.body)
+            expiresAtContainerStackView.addArrangedSubview(expiresAtPrefixLabel)
         }
         
-        guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            throw err
+        // Voucher info container Stack View
+        
+        let voucherInfoContainerStackView = PrimerStackView()
+        voucherInfoContainerStackView.axis = .vertical
+        voucherInfoContainerStackView.spacing = 12.0
+        voucherInfoContainerStackView.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
+        voucherInfoContainerStackView.layer.cornerRadius = PrimerDimensions.cornerRadius / 2
+        voucherInfoContainerStackView.layer.borderColor = UIColor.gray200.cgColor
+        voucherInfoContainerStackView.layer.borderWidth = 2.0
+        voucherInfoContainerStackView.isLayoutMarginsRelativeArrangement = true
+        voucherInfoContainerStackView.layer.cornerRadius = 8.0
+                        
+        for voucherValue in VoucherValue.currentVoucherValues {
+            
+            if voucherValue.value != nil {
+                
+                let voucherValueStackView = PrimerStackView()
+                voucherValueStackView.axis = .horizontal
+                voucherValueStackView.spacing = 12.0
+                voucherValueStackView.distribution = .fillProportionally
+                
+                let voucherValueLabel = UILabel()
+                voucherValueLabel.text = voucherValue.description
+                voucherValueLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
+                voucherValueLabel.textColor = .gray600
+                voucherValueStackView.addArrangedSubview(voucherValueLabel)
+                
+                let voucherValueText = UILabel()
+                voucherValueText.text = voucherValue.value
+                voucherValueText.font = UIFont.boldSystemFont(ofSize: PrimerDimensions.Font.label)
+                voucherValueText.textColor = theme.text.title.color
+                voucherValueText.setContentHuggingPriority(.required, for: .horizontal)
+                voucherValueText.setContentCompressionResistancePriority(.required, for: .horizontal)
+                voucherValueStackView.addArrangedSubview(voucherValueText)
+                                
+                voucherInfoContainerStackView.addArrangedSubview(voucherValueStackView)
+                
+                if let lastValue = VoucherValue.currentVoucherValues.last, voucherValue != lastValue  {
+                    // Separator view
+                    let separatorView = PrimerView()
+                    separatorView.backgroundColor = .gray200
+                    separatorView.translatesAutoresizingMaskIntoConstraints = false
+                    separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+                    voucherInfoContainerStackView.addArrangedSubview(separatorView)
+                }
+            }
         }
         
-        if PrimerInternal.shared.intent == .checkout {
-            if AppState.current.amount == nil {
-                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+        //        let copyToClipboardImage = UIImage(named: "copy-to-clipboard", in: Bundle.primerResources, compatibleWith: nil)
+        //        let copiedToClipboardImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)
+        //        let copyToClipboardButton = UIButton(type: .custom)
+        //        copyToClipboardButton.setImage(copyToClipboardImage, for: .normal)
+        //        copyToClipboardButton.setImage(copiedToClipboardImage, for: .selected)
+        //        copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
+        //        copyToClipboardButton.addTarget(self, action: #selector(copyToClipboardTapped), for: .touchUpInside)
+        //        entityStackView.addArrangedSubview(copyToClipboardButton)
+        
+//        self.paymentMethodModule.userInterfaceModule.submitButton = nil
+        
+        let views = [[completeYourPaymentLabel],
+                     [expiresAtContainerStackView],
+                     [voucherInfoContainerStackView]]
+        
+        return PrimerFormView(formViews: views)
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    override func validate() -> Promise<Void> {
+        return Promise { seal in
+            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
-                throw err
+                seal.reject(err)
+                return
             }
             
-            if AppState.current.currency == nil {
-                let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            guard decodedJWTToken.pciUrl != nil else {
+                let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
-                throw err
+                seal.reject(err)
+                return
             }
+            
+            if PrimerInternal.shared.intent == .checkout {
+                if AppState.current.amount == nil {
+                    let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+                
+                if AppState.current.currency == nil {
+                    let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
+                }
+            }
+            
+            seal.fulfill()
         }
+    }
+    
+    override func start() -> Promise<PrimerPaymentMethodTokenData> {
+//        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.urlSchemeRedirect, object: nil)
+        
+        return super.start()
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {
@@ -489,7 +522,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.config.type,
+                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -498,24 +531,41 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 place: .cardForm))
         Analytics.Service.record(event: event)
         
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.paymentMethodModule.userInterfaceModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
-                self.validateReturningPromise()
+                self.validate()
             }
             .then { () -> Promise<Void> in
                 let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
+                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodModule.paymentMethodConfiguration.type, cardNetwork: nil)
+            }
+            .then { () -> Promise<Void> in
+                return self.paymentMethodModule.checkouEventsNotifierModule.fireWillPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
                 return self.presentPaymentMethodUserInterface()
             }
             .then { () -> Promise<Void> in
-                return self.evaluatePaymentMethodNeedingFurtherUserActions()
+                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
-                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+                guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodModule.paymentMethodConfiguration.type) else {
+                    return Promise()
+                }
+                
+                switch paymentMethodType {
+                case .adyenBlik,
+                        .adyenMBWay,
+                        .adyenMultibanco:
+                    return self.awaitUserInput()
+                default:
+                    return Promise()
+                }
+            }
+            .then { () -> Promise<Void> in
+                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodModule.paymentMethodConfiguration.type))
             }
             .done {
                 seal.fulfill()
@@ -528,17 +578,17 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodModule.paymentMethodConfiguration.type)
             
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.paymentMethodModule.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()
@@ -549,157 +599,13 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    override func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-    
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
-        return Promise { seal in
-            if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
-                if let statusUrlStr = decodedJWTToken.statusUrl,
-                   let statusUrl = URL(string: statusUrlStr),
-                   decodedJWTToken.intent != nil {
-                    
-                    let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type)
-                    let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary.first { $0.key == paymentMethodType } != nil) == true
-                    
-                    firstly {
-                        self.presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: isPaymentMethodNeedingExternalCompletion)
-                    }
-                    .then { () -> Promise<String> in
-                        let pollingModule = PollingModule(url: statusUrl)
-                        self.didCancel = {
-                            let err = PrimerError.cancelled(
-                                paymentMethodType: self.config.type,
-                                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                                diagnosticsId: nil)
-                            ErrorHandler.handle(error: err)
-                            pollingModule.cancel(withError: err)
-                            return
-                        }
-                        
-                        return pollingModule.start()
-                    }
-                    .done { resumeToken in
-                        seal.fulfill(resumeToken)
-                    }
-                    .catch { err in
-                        seal.reject(err)
-                    }
-                } else {
-                    let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    seal.reject(error)
-                }
-            } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
-                
-                let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
-                var additionalInfo: PrimerCheckoutAdditionalInfo?
-                
-                switch self.config.type {
-                case PrimerPaymentMethodType.adyenMultibanco.rawValue:
-                    
-                    let formatter = DateFormatter().withExpirationDisplayDateFormat()
-                    
-                    var expiresAtAdditionalInfo: String?
-                    if let unwrappedExpiresAt = decodedJWTToken.expiresAt {
-                        expiresAtAdditionalInfo = formatter.string(from: unwrappedExpiresAt)
-                    }
-
-                    additionalInfo = MultibancoCheckoutAdditionalInfo(expiresAt: expiresAtAdditionalInfo,
-                                                                      entity: decodedJWTToken.entity,
-                                                                      reference: decodedJWTToken.reference)
-                    
-                    if self.paymentCheckoutData == nil {
-                        self.paymentCheckoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
-                    } else {
-                        self.paymentCheckoutData?.additionalInfo = additionalInfo
-                    }
-                    
-                default:
-                    log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.config.type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
-                    break
-                }
-                
-                if isManualPaymentHandling {
-                    PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
-                    seal.fulfill(nil)
-                } else {
-                    seal.fulfill(nil)
-                }
-            }
-        }
-    }
-    
-    private func evaluatePaymentMethodNeedingFurtherUserActions() -> Promise<Void> {
-        
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), (inputPaymentMethodTypes.contains(paymentMethodType) || voucherPaymentMethodTypes.contains(paymentMethodType)) else {
-            return Promise()
-        }
-        
-        return self.awaitUserInput()
-    }
-    
-    override func presentPaymentMethodUserInterface() -> Promise<Void> {
-        
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), (inputPaymentMethodTypes.contains(paymentMethodType) || voucherPaymentMethodTypes.contains(paymentMethodType)) else {
-            return Promise()
-        }
-        
-        return self.presentPaymentMethodAppropriateViewController()
-    }
-    
-    override func awaitUserInput() -> Promise<Void> {
-        return Promise { seal in
-            self.userInputCompletion = {
-                seal.fulfill()
-            }
-        }
-    }
-    
-    fileprivate func enableSubmitButton(_ flag: Bool) {
-        self.uiModule.submitButton?.isEnabled = flag
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        self.uiModule.submitButton?.backgroundColor = flag ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
-    }
-    
-    override func submitButtonTapped() {
-        
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: self.config.type,
-                    url: nil),
-                extra: nil,
-                objectType: .button,
-                objectId: .submit,
-                objectClass: "\(Self.self)",
-                place: .cardForm))
-        Analytics.Service.record(event: viewEvent)
-        
-        switch config.type {
-        case PrimerPaymentMethodType.adyenBlik.rawValue,
-            PrimerPaymentMethodType.adyenMBWay.rawValue,
-            PrimerPaymentMethodType.adyenMultibanco.rawValue:
-            self.uiModule.submitButton?.startAnimating()
-            self.userInputCompletion?()
-            
-        default:
-            fatalError("Must be overridden")
-        }
-    }
-    
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
-        switch config.type {
+        switch self.paymentMethodModule.paymentMethodConfiguration.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             return Promise { seal in
                 
-                guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                guard let configId = self.paymentMethodModule.paymentMethodConfiguration.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -718,7 +624,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 
                 let paymentInstrument = OffSessionPaymentInstrument(
                     paymentMethodConfigId: configId,
-                    paymentMethodType: config.type,
+                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
                     sessionInfo: sessionInfo)
                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
@@ -737,8 +643,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             
         case PrimerPaymentMethodType.rapydFast.rawValue:
             return Promise { seal in
-                guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                guard let configId = self.paymentMethodModule.paymentMethodConfiguration.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -748,7 +654,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 
                 let paymentInstrument = OffSessionPaymentInstrument(
                     paymentMethodConfigId: configId,
-                    paymentMethodType: config.type,
+                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
                     sessionInfo: sessionInfo)
                 
                 let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
@@ -769,8 +675,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         case PrimerPaymentMethodType.adyenMBWay.rawValue:
             return Promise { seal in
                 
-                guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                guard let configId = self.paymentMethodModule.paymentMethodConfiguration.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -783,11 +689,12 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     return
                 }
                 
-                let sessionInfo = InputPhonenumberSessionInfo(phoneNumber: "\(FormPaymentMethodTokenizationViewModel.countryDialCode)\(phoneNumber)")
+                let countryDialCode = CountryCode.phoneNumberCountryCodes.first(where: { $0.code == PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.rawValue})?.dialCode ?? ""
+                let sessionInfo = InputPhonenumberSessionInfo(phoneNumber: "\(countryDialCode)\(phoneNumber)")
                 
                 let paymentInstrument = OffSessionPaymentInstrument(
                     paymentMethodConfigId: configId,
-                    paymentMethodType: config.type,
+                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
                     sessionInfo: sessionInfo)
                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
@@ -806,8 +713,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             
         case PrimerPaymentMethodType.adyenMultibanco.rawValue:
             return Promise { seal in
-                guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                guard let configId = self.paymentMethodModule.paymentMethodConfiguration.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -817,7 +724,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 
                 let paymentInstrument = OffSessionPaymentInstrument(
                     paymentMethodConfigId: configId,
-                    paymentMethodType: config.type,
+                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
                     sessionInfo: sessionInfo)
                 
                 let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
@@ -839,23 +746,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
     
-    override func handleSuccessfulFlow() {
-        
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else {
-            return
-        }
-        
-        if voucherPaymentMethodTypes.contains(paymentMethodType) {
-            
-            presentVoucherInfoViewController()
-            
-        } else if accountInfoPaymentMethodTypes.contains(paymentMethodType) {
-            
-            presentAccountInfoViewController()
-            
-        } else {
-            
-            super.handleSuccessfulFlow()
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
         }
     }
 }
@@ -863,27 +756,112 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
     
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {}
+    // MARK: - FORM SPECIFIC FUNCTIONALITY
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
         let isTextsValid = inputs.allSatisfy { $0.primerTextFieldView?.isTextValid == true }
         isTextsValid ? enableSubmitButton(true) : enableSubmitButton(false)
+    private func presentPaymentMethodUserInterface() -> Promise<Void> {
+//        [.adyenBlik, .adyenMBWay, .adyenMultibanco]
+        
+        switch self.paymentMethodModule.paymentMethodConfiguration.type {
+        case PrimerPaymentMethodType.adyenBlik.rawValue,
+            PrimerPaymentMethodType.adyenMBWay.rawValue:
+            return presentInputViewController()
+            
+        case PrimerPaymentMethodType.adyenMultibanco.rawValue:
+            return presentVoucherInfoConfirmationStepViewController()
+            
+        default:
+            return Promise()
+        }
     }
     
     func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool {
         true
+    func presentInputViewController() -> Promise<Void> {
+        return Promise { seal in
+            let pcfvc = PrimerInputViewController(
+                navigationBarLogo: self.paymentMethodModule.userInterfaceModule.invertedLogo,
+                formTokenizationModule: self,
+                inputsDistribution: .horizontal)
+            inputs.append(contentsOf: makeInputViews())
+            PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+            seal.fulfill()
+        }
     }
     
     func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool {
         true
+    func presentVoucherInfoConfirmationStepViewController() -> Promise<Void> {
+        return Promise { seal in
+            let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: self.paymentMethodModule.userInterfaceModule.invertedLogo, formTokenizationModule: self)
+            infoView = voucherConfirmationInfoView
+            PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+            seal.fulfill()
+        }
     }
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {}
+    func makeInputViews() -> [Input] {
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodModule.paymentMethodConfiguration.type) else { return [] }
+        
+        switch paymentMethodType {
+        case .adyenBlik:
+            return [self.paymentMethodModule.userInterfaceModule.adyenBlikInputView]
+        case .adyenMBWay:
+            return [self.paymentMethodModule.userInterfaceModule.mbwayInputView]
+        default:
+            return []
+        }
+    }
     
     func primerTextFieldViewDidEndEditing(_ primerTextFieldView: PrimerTextFieldView) {}
+    func enableSubmitButton(_ flag: Bool) {
+        self.paymentMethodModule.userInterfaceModule.submitButton?.isEnabled = flag
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        self.paymentMethodModule.userInterfaceModule.submitButton?.backgroundColor = flag ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
+    }
+    
+    func awaitUserInput() -> Promise<Void> {
+        return Promise { seal in
+            self.userInputCompletion = {
+                seal.fulfill()
+            }
+        }
+    }
+    
+    @objc
+    override func submitButtonTapped() {
+        let viewEvent = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .submit,
+                objectClass: "\(Self.self)",
+                place: .cardForm))
+        Analytics.Service.record(event: viewEvent)
+        
+        switch self.paymentMethodModule.paymentMethodConfiguration.type {
+        case PrimerPaymentMethodType.adyenBlik.rawValue,
+            PrimerPaymentMethodType.adyenMBWay.rawValue,
+            PrimerPaymentMethodType.adyenMultibanco.rawValue:
+            self.paymentMethodModule.userInterfaceModule.submitButton?.startAnimating()
+            self.userInputCompletion?()
+            
+        default:
+            fatalError("Must be overridden")
+        }
+    }
 }
 
-
-extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
+extension FormTokenizationModule: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return countriesDataSource.count
@@ -906,18 +884,7 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
     }
 }
 
-extension FormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol {
-    
-    func cancel() {
-        didCancel?()
-        inputs = []
-        
-        let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-        ErrorHandler.handle(error: err)
-    }
-}
-
-extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
+extension FormTokenizationModule: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
@@ -950,7 +917,6 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
         
         countriesDataSource = countryResults
         
-        
         return true
     }
     
@@ -960,4 +926,27 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
     }
 }
 
+extension FormTokenizationModule: PrimerTextFieldViewDelegate {
+    
+    func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {}
+    
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
+        let isTextsValid = inputs.allSatisfy { $0.primerTextFieldView?.isTextValid == true }
+        isTextsValid ? enableSubmitButton(true) : enableSubmitButton(false)
+    }
+    
+    func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool {
+        true
+    }
+    
+    func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool {
+        true
+    }
+    
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {}
+    
+    func primerTextFieldViewDidEndEditing(_ primerTextFieldView: PrimerTextFieldView) {}
+}
+
 #endif
+
