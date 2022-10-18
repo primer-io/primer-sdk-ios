@@ -380,7 +380,7 @@ extension PrimerHeadlessUniversalCheckout {
                         }
                         .then { () -> Promise<String> in
                             self.webViewCompletion = { (id, err) in
-                                if let err = err {
+                                if let err = err as? PrimerError {
                                     pollingModule?.cancel(withError: err)
                                     pollingModule = nil
                                 }
@@ -428,7 +428,7 @@ extension PrimerHeadlessUniversalCheckout {
                         }
                         .then { () -> Promise<String> in
                             self.webViewCompletion = { (id, err) in
-                                if let err = err {
+                                if let err = err as? PrimerError {
                                     pollingModule?.cancel(withError: err)
                                     pollingModule = nil
                                 }
