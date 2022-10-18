@@ -11,7 +11,7 @@ import UIKit
 
 internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
         
-    let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
+    let formPaymentModule: FormPaymentModule
     let textToShare: String?
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
@@ -30,8 +30,8 @@ internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController 
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(navigationBarLogo: UIImage?, formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel, shouldShareVoucherInfoWithText textToShare: String? = nil) {
-        self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
+    init(navigationBarLogo: UIImage?, formPaymentModule: FormPaymentModule, shouldShareVoucherInfoWithText textToShare: String? = nil) {
+        self.formPaymentModule = formPaymentModule
         self.textToShare = textToShare
         super.init(nibName: nil, bundle: nil)
         self.titleImage = navigationBarLogo
@@ -46,11 +46,11 @@ internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController 
                 
         verticalStackView.spacing = 16
                 
-        if let infoView = self.formPaymentMethodTokenizationViewModel.infoView {
+        if let infoView = self.formPaymentModule.infoView {
             verticalStackView.addArrangedSubview(infoView)
         }
         
-        if let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton {
+        if let submitButton = self.formPaymentModule.paymentMethodModule.userInterfaceModule.submitButton {
             verticalStackView.addArrangedSubview(submitButton)
         }
     }
