@@ -57,7 +57,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case omisePromptPay         = "OMISE_PROMPTPAY"
     case twoCtwoP               = "TWOC2P"
     case xenditOvo              = "XENDIT_OVO"
-    case xenditRetailOutlets          = "XENDIT_RETAIL_OUTLETS"
+    case xenditRetailOutlets    = "XENDIT_RETAIL_OUTLETS"
     case xfersPayNow            = "XFERS_PAYNOW"
     
     var isEnabled: Bool {

@@ -624,7 +624,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 
                 if isManualPaymentHandling {
                     PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
-                    seal.fulfill(nil)
                 } else {
                     
                     firstly {
@@ -639,6 +638,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     let checkoutData = PrimerCheckoutData(payment: checkoutPayment, additionalInfo: additionalInfo)
                     PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
+                
+                seal.fulfill(nil)
             }
         }
     }

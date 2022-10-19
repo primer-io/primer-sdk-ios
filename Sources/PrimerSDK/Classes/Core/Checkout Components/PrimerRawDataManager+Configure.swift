@@ -11,6 +11,14 @@ import Foundation
 
 extension PrimerHeadlessUniversalCheckout.RawDataManager {
     
+    /// The provided function provides additional data after initializing a Raw Data Manager.
+    ///
+    /// Some payment methods needs additional data to perform a correct flow.
+    /// The function needs to be called after `public init(paymentMethodType: String) throws` if additonal data is needed.
+    ///
+    /// - Parameters:
+    ///     - completion: the completion block returning either `PrimerInitializationData` or `Error`
+
     public func configure(completion: @escaping (PrimerInitializationData?, Error?) -> Void) {
 
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) else {
@@ -24,9 +32,7 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
         case .xenditRetailOutlets:
             fetchRetailOutlets { data, error in completion(data, error) }
         default:
-            let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType.rawValue, userInfo: nil, diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            completion(nil, err)
+            completion(nil, nil)
         }
     }
 }
@@ -34,7 +40,7 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
 extension PrimerHeadlessUniversalCheckout.RawDataManager {
     
     // Fetching Xendit Retail Outlets
-    func fetchRetailOutlets(completion: @escaping (PrimerInitializationData?, Error?) -> Void) {
+    private func fetchRetailOutlets(completion: @escaping (PrimerInitializationData?, Error?) -> Void) {
         
         guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
             let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: nil)
