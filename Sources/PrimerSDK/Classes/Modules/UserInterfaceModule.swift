@@ -937,7 +937,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
                 buttonTitle = Strings.PaymentButton.pay
                 if let amountStr = universalCheckoutViewModel.amountStr {
-                    buttonTitle += " \(amountStr))"
+                    buttonTitle += " \(amountStr)"
                 }
                 
             case .vault:
