@@ -1,5 +1,5 @@
 //
-//  PrimerCheckoutRetailOutletInfo.swift
+//  PrimerCheckoutVoucherAdditionalInfo.swift
 //  PrimerSDK
 //
 //  Created by Dario Carlomagno on 18/10/22.
