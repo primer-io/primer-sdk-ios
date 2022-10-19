@@ -77,6 +77,9 @@ extension PrimerHeadlessUniversalCheckout {
                 PrimerPaymentMethodType.adyenMBWay.rawValue:
                 self.rawDataTokenizationBuilder = PrimerRawPhoneNumberDataTokenizationBuilder(paymentMethodType: paymentMethodType)
                 
+            case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
+                self.rawDataTokenizationBuilder = PrimerRawRetailerDataTokenizationBuilder(paymentMethodType: paymentMethodType)
+                
             default:
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: nil)
                 ErrorHandler.handle(error: err)

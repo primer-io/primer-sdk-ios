@@ -5,6 +5,8 @@
 //  Created by Dario Carlomagno on 15/10/22.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 extension PrimerHeadlessUniversalCheckout.RawDataManager {
@@ -61,3 +63,5 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
         }
     }
 }
+
+#endif

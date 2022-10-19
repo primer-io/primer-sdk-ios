@@ -17,7 +17,6 @@ class MerchantHUCRawRetailDataViewController: UIViewController, PrimerHeadlessUn
         return mpmvc
     }
     
-    var stackView: UIStackView!
     var paymentMethodType: String!
     var paymentId: String?
     var activityIndicator: UIActivityIndicatorView?
@@ -41,7 +40,11 @@ class MerchantHUCRawRetailDataViewController: UIViewController, PrimerHeadlessUn
     
     var selectedOutletIdentifier: String!
     var payButton: UIButton!
-    var retailers: [RetailOutletsRetail] = []
+    var retailers: [RetailOutletsRetail] = [] {
+        didSet {
+            self.tableView.reloadData()
+        }
+    }
     
     var checkoutData: [String] = []
     var primerError: Error?
@@ -51,29 +54,26 @@ class MerchantHUCRawRetailDataViewController: UIViewController, PrimerHeadlessUn
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.stackView = UIStackView()
-        self.stackView.axis = .vertical
-        self.stackView.spacing = 6
-        self.view.addSubview(self.stackView)
-        self.stackView.translatesAutoresizingMaskIntoConstraints = false
-        self.stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-        self.stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
-        self.stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        
-        self.stackView.addArrangedSubview(tableView)
-        
+        self.view.addSubview(tableView)
+        self.tableView.translatesAutoresizingMaskIntoConstraints = false
+        self.tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        self.tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        self.tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        self.tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
+
         self.payButton = UIButton(frame: .zero)
-        self.stackView.addArrangedSubview(self.payButton)
         self.payButton.accessibilityIdentifier = "submit_btn"
         self.payButton.translatesAutoresizingMaskIntoConstraints = false
         self.payButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        self.payButton.widthAnchor.constraint(equalToConstant: 400).isActive = true
         self.payButton.setTitle("Issue voucher", for: .normal)
         self.payButton.titleLabel?.adjustsFontSizeToFitWidth = true
         self.payButton.titleLabel?.minimumScaleFactor = 0.7
         self.payButton.backgroundColor = .black
         self.payButton.setTitleColor(.white, for: .normal)
         self.payButton.addTarget(self, action: #selector(issueVoucherButtonTapped), for: .touchUpInside)
-        
+        self.tableView.tableFooterView = self.payButton
+
         PrimerHeadlessUniversalCheckout.current.delegate = self
         
         self.showLoadingOverlay()
@@ -224,18 +224,20 @@ extension MerchantHUCRawRetailDataViewController {
 
 extension MerchantHUCRawRetailDataViewController: UITableViewDataSource, UITableViewDelegate {
     
+    // MARK: - Table View delegate methods
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+        let retailer = retailers[indexPath.row]
+        selectedOutletIdentifier = retailer.id
     }
-    
-    
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         tableView.cellForRow(at: indexPath)?.accessoryType = .none
     }
     
     // MARK: - Table View data source methods
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return retailers.count
     }
