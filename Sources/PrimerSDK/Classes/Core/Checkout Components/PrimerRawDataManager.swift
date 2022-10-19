@@ -461,10 +461,7 @@ extension PrimerHeadlessUniversalCheckout {
                     }
 
                 } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
-                    
-                    var additionalInfo: PrimerCheckoutAdditionalInfo?
-                    let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
-
+                                        
                     switch self.paymentMethodType {
                     case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
 
@@ -491,7 +488,7 @@ extension PrimerHeadlessUniversalCheckout {
                         }
                         
                         let formatter = DateFormatter().withExpirationDisplayDateFormat()
-                        additionalInfo = XenditCheckoutVoucherAdditionalInfo(expiresAt: formatter.string(from: decodedExpiresAt),
+                        let additionalInfo = XenditCheckoutVoucherAdditionalInfo(expiresAt: formatter.string(from: decodedExpiresAt),
                                                                                    couponCode: decodedVoucherReference,
                                                                                    retailerName: selectedRetailerName)
                         
@@ -501,20 +498,16 @@ extension PrimerHeadlessUniversalCheckout {
                             self.paymentCheckoutData?.additionalInfo = additionalInfo
                         }
                         
-                    default:
-                        log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.paymentMethodType, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
-                        break
-                    }
-                    
-                    if isManualPaymentHandling {
-                        PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
-                    } else {
                         let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
                         let checkoutPayment = PrimerCheckoutDataPayment(id: nil, orderId: clientSession?.order?.id, paymentFailureReason: nil)
                         let checkoutData = PrimerCheckoutData(payment: checkoutPayment, additionalInfo: additionalInfo)
                         PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                        
+                    default:
+                        log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.paymentMethodType, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
+                        break
                     }
-                    
+                                        
                     seal.fulfill(nil)
                     
                 } else {
