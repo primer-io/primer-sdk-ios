@@ -108,7 +108,12 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
         return Promise { seal in
             let pollingModule = PollingModule(url: statusUrl)
             self.didCancel = {
-                pollingModule.cancel()
+                let err = PrimerError.cancelled(
+                    paymentMethodType: self.config.type,
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                pollingModule.cancel(withError: err)
                 return
             }
             
