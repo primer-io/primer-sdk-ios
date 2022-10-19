@@ -39,6 +39,7 @@ class MerchantHUCRawRetailDataViewController: UIViewController, PrimerHeadlessUn
     }()
     
     var selectedOutletIdentifier: String!
+    var selectedIndexPath: IndexPath?
     var payButton: UIButton!
     var retailers: [RetailOutletsRetail] = [] {
         didSet {
@@ -62,10 +63,8 @@ class MerchantHUCRawRetailDataViewController: UIViewController, PrimerHeadlessUn
         self.tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
 
         self.payButton = UIButton(frame: .zero)
+        
         self.payButton.accessibilityIdentifier = "submit_btn"
-        self.payButton.translatesAutoresizingMaskIntoConstraints = false
-        self.payButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        self.payButton.widthAnchor.constraint(equalToConstant: 400).isActive = true
         self.payButton.setTitle("Issue voucher", for: .normal)
         self.payButton.titleLabel?.adjustsFontSizeToFitWidth = true
         self.payButton.titleLabel?.minimumScaleFactor = 0.7
@@ -73,6 +72,7 @@ class MerchantHUCRawRetailDataViewController: UIViewController, PrimerHeadlessUn
         self.payButton.setTitleColor(.white, for: .normal)
         self.payButton.addTarget(self, action: #selector(issueVoucherButtonTapped), for: .touchUpInside)
         self.tableView.tableFooterView = self.payButton
+        self.tableView.tableFooterView?.frame.size.height = 45
 
         PrimerHeadlessUniversalCheckout.current.delegate = self
         
@@ -97,10 +97,7 @@ class MerchantHUCRawRetailDataViewController: UIViewController, PrimerHeadlessUn
                 })
             }
         }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        
         do {
             self.primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType)
             primerRawDataManager.delegate = self
@@ -110,6 +107,7 @@ class MerchantHUCRawRetailDataViewController: UIViewController, PrimerHeadlessUn
                     return
                 }
                 self?.retailers = (data as? RetailOutletsList)?.result ?? []
+                self?.hideLoadingOverlay()
             }
         } catch {
             
@@ -129,10 +127,12 @@ class MerchantHUCRawRetailDataViewController: UIViewController, PrimerHeadlessUn
     
     private func showLoadingOverlay() {
         DispatchQueue.main.async {
-            self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
-            self.view.addSubview(self.activityIndicator!)
-            self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
-            self.activityIndicator?.color = .black
+            if self.activityIndicator == nil {
+                self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
+                self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
+                self.activityIndicator?.color = .black
+                self.view.addSubview(self.activityIndicator!)
+            }
             self.activityIndicator?.startAnimating()
         }
     }
@@ -163,7 +163,6 @@ extension MerchantHUCRawRetailDataViewController {
         }
         
         self.hideLoadingOverlay()
-        
         let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
         self.navigationController?.pushViewController(rvc, animated: true)
     }
@@ -227,13 +226,18 @@ extension MerchantHUCRawRetailDataViewController: UITableViewDataSource, UITable
     // MARK: - Table View delegate methods
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+        if selectedIndexPath != nil {
+            self.tableView.cellForRow(at: selectedIndexPath!)?.accessoryType = .none
+        }
+        selectedIndexPath = indexPath
+        self.tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         let retailer = retailers[indexPath.row]
         selectedOutletIdentifier = retailer.id
+        self.tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        tableView.cellForRow(at: indexPath)?.accessoryType = .none
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Select a retailer"
     }
     
     // MARK: - Table View data source methods
@@ -245,6 +249,7 @@ extension MerchantHUCRawRetailDataViewController: UITableViewDataSource, UITable
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let retailer = retailers[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
+        tableView.cellForRow(at: indexPath)?.accessoryType = selectedIndexPath == indexPath ? .checkmark : .none
         if #available(iOS 14.0, *) {
             var content = cell.defaultContentConfiguration()
             content.text = retailer.name
@@ -294,15 +299,18 @@ extension MerchantHUCRawRetailDataViewController {
     func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(additionalInfo)")
         self.logs.append(#function)
-        self.hideLoadingOverlay()
+        DispatchQueue.main.async {
+            self.hideLoadingOverlay()
+        }
     }
     
     func primerHeadlessUniversalCheckoutDidFail(withError err: Error) {
         print("\n\nMERCHANT APP\n\(#function)\nerror: \(err)")
         self.logs.append(#function)
-        
         self.primerError = err
-        self.hideLoadingOverlay()
+        DispatchQueue.main.async {
+            self.hideLoadingOverlay()
+        }
     }
     
     func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
