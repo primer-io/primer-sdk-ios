@@ -9,7 +9,7 @@
 
 import Foundation
 
-public class RetailOutletsRetail: Decodable {
+@objc public class RetailOutletsRetail: NSObject, Codable {
     
     // MARK: - Public Properties
     

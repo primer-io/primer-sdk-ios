@@ -30,21 +30,23 @@ internal struct RetailOutletTokenizationSessionRequestParameters: OffSessionPaym
     let retailOutlet: String
 }
 
-internal struct RetailOutletsListSessionResponse: Decodable {
-    let result: [RetailOutletsRetail]
-}
-
 @objc public class RetailOutletsList: PrimerInitializationData {
     
     public let result: [RetailOutletsRetail]
     
-    public init(result: [RetailOutletsRetail]) {
-        self.result = result
-        super.init()
+    private enum CodingKeys : String, CodingKey {
+        case result
     }
     
     required init(from decoder: Decoder) throws {
-        fatalError("init(from:) has not been implemented")
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        result = try container.decode([RetailOutletsRetail].self, forKey: .result)
+        super.init()
+    }
+    
+    public override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(result, forKey: .result)
     }
 }
 

@@ -87,7 +87,7 @@ protocol PrimerAPIClientProtocol {
     func listRetailOutlets(
         clientToken: DecodedJWTToken,
         paymentMethodId: String,
-        completion: @escaping (_ result: Result<[RetailOutletsRetail], Error>) -> Void)
+        completion: @escaping (_ result: Result<RetailOutletsList, Error>) -> Void)
 
     func poll(clientToken: DecodedJWTToken?, url: String, completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
     
@@ -402,13 +402,12 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     
     func listRetailOutlets(clientToken: DecodedJWTToken,
                            paymentMethodId: String,
-                           completion: @escaping (Result<[RetailOutletsRetail], Error>) -> Void) {
+                           completion: @escaping (Result<RetailOutletsList, Error>) -> Void) {
         let endpoint = PrimerAPI.listRetailOutlets(clientToken: clientToken, paymentMethodId: paymentMethodId)
-        networkService.request(endpoint) { (result: Result<RetailOutletsListSessionResponse, Error>) in
+        networkService.request(endpoint) { (result: Result<RetailOutletsList, Error>) in
             switch result {
             case .success(let res):
-                let retailOutlets = res.result
-                completion(.success(retailOutlets))
+                completion(.success(res))
             case .failure(let err):
                 completion(.failure(err))
             }

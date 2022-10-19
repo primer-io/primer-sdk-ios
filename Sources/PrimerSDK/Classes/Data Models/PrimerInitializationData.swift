@@ -9,6 +9,6 @@
 
 import Foundation
 
-public class PrimerInitializationData: NSObject, Encodable {}
+@objc public class PrimerInitializationData: NSObject, Codable {}
 
 #endif
