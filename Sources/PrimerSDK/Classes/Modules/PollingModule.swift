@@ -18,7 +18,7 @@ protocol Module {
     init(url: URL)
     
     func start() -> Promise<T>
-    func cancel()
+    func cancel(withError err: PrimerError)
 }
 
 class PollingModule: Module {
@@ -26,8 +26,8 @@ class PollingModule: Module {
     static var apiClient: PrimerAPIClientProtocol?
     
     internal let url: URL
-    internal private(set) var isCancelled: Bool = false
     internal var retryInterval: TimeInterval = 3
+    internal private(set) var cancellationError: PrimerError?
 
     required init(url: URL) {
         self.url = url
@@ -47,18 +47,13 @@ class PollingModule: Module {
         }
     }
     
-    func cancel() {
-        self.isCancelled = true
+    func cancel(withError err: PrimerError) {
+        self.cancellationError = err
     }
     
     private func startPolling(completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
-        if isCancelled {
-            let err = PrimerError.cancelled(
-                paymentMethodType: "WEB_REDIRECT",
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            completion(nil, err)
+        if let cancellationError = cancellationError {
+            completion(nil, cancellationError)
             return
         }
         

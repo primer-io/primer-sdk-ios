@@ -19,17 +19,9 @@ extension UIViewController {
         self.present(alert, animated: true)
     }
     
-    internal func addSpinner(_ child: SpinnerViewController) {
-        addChild(child)
-        child.view.frame = view.frame
-        view.addSubview(child.view)
-        child.didMove(toParent: self)
+    func showErrorMessage(_ errorMessage: String) {
+        let alert = UIAlertController(title: "Error", message: errorMessage, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
     }
-    
-    internal func removeSpinner(_ child: SpinnerViewController) {
-        child.willMove(toParent: nil)
-        child.view.removeFromSuperview()
-        child.removeFromParent()
-    }
-    
 }

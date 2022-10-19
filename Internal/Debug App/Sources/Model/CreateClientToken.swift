@@ -153,6 +153,7 @@ public struct PaymentMethod: Codable {
 }
 
 struct ClientSessionRequestBody {
+    
     let customerId: String?
     let orderId: String?
     let currencyCode: Currency?

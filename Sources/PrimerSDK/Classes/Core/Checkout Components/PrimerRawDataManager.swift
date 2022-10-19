@@ -52,7 +52,7 @@ extension PrimerHeadlessUniversalCheckout {
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
         public private(set) var isDataValid: Bool = false
         private var webViewController: SFSafariViewController?
-        private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+        private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         
         required public init(paymentMethodType: String) throws {
             
@@ -372,38 +372,85 @@ extension PrimerHeadlessUniversalCheckout {
                             PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                         }
                         
+                        var pollingModule: PollingModule? = PollingModule(url: statusUrl)
+                        
                         firstly {
                             self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                         }
                         .then { () -> Promise<String> in
-                            let pollingModule = PollingModule(url: statusUrl)
-                            return pollingModule.start()
+                            self.webViewCompletion = { (id, err) in
+                                if let err = err {
+                                    pollingModule?.cancel(withError: err)
+                                    pollingModule = nil
+                                }
+                            }
+                            return pollingModule!.start()
                         }
                         .done { resumeToken in
                             seal.fulfill(resumeToken)
                         }
                         .catch { err in
+                            if let primerErr = err as? PrimerError {
+                                pollingModule?.cancel(withError: primerErr)
+                            } else {
+                                let err = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+                                ErrorHandler.handle(error: err)
+                                pollingModule?.cancel(withError: err)
+                            }
+                            
+                            pollingModule = nil
                             seal.reject(err)
+                            PrimerInternal.shared.dismiss()
                         }
+                        
                     } else {
                         let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
                     }
+                    
                 } else if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
-                    if let statusUrlStr = decodedJWTToken.statusUrl,
+                    if let redirectUrlStr = decodedJWTToken.redirectUrl,
+                       let redirectUrl = URL(string: redirectUrlStr),
+                       let statusUrlStr = decodedJWTToken.statusUrl,
                        let statusUrl = URL(string: statusUrlStr),
                        decodedJWTToken.intent != nil {
-                                                                       
+                        
+                        DispatchQueue.main.async {
+                            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                        }
+                        
+                        var pollingModule: PollingModule? = PollingModule(url: statusUrl)
+                        
                         firstly {
-                            return PollingModule(url: statusUrl).start()
+                            self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
+                        }
+                        .then { () -> Promise<String> in
+                            self.webViewCompletion = { (id, err) in
+                                if let err = err {
+                                    pollingModule?.cancel(withError: err)
+                                    pollingModule = nil
+                                }
+                            }
+                            return pollingModule!.start()
                         }
                         .done { resumeToken in
                             seal.fulfill(resumeToken)
                         }
                         .catch { err in
+                            if let primerErr = err as? PrimerError {
+                                pollingModule?.cancel(withError: primerErr)
+                            } else {
+                                let err = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+                                ErrorHandler.handle(error: err)
+                                pollingModule?.cancel(withError: err)
+                            }
+                            
+                            pollingModule = nil
                             seal.reject(err)
+                            PrimerInternal.shared.dismiss()
                         }
+                        
                     } else {
                         let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         seal.reject(error)
@@ -533,11 +580,26 @@ extension PrimerHeadlessUniversalCheckout {
                 }
                 
                 DispatchQueue.main.async {
-                    PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
-                        DispatchQueue.main.async {
-                            seal.fulfill()
+                    if PrimerUIManager.primerRootViewController == nil {
+                        firstly {
+                            PrimerUIManager.prepareRootViewController()
                         }
-                    })
+                        .done {
+                            PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                                DispatchQueue.main.async {
+                                    seal.fulfill()
+                                }
+                            })
+                        }
+                        .catch { _ in }
+                    } else {
+                        PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                            DispatchQueue.main.async {
+                                seal.fulfill()
+                            }
+                        })
+                    }
+                    
                 }
             }
         }
@@ -546,15 +608,21 @@ extension PrimerHeadlessUniversalCheckout {
 
 extension PrimerHeadlessUniversalCheckout.RawDataManager: SFSafariViewControllerDelegate {
     
-    private func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+    public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion = webViewCompletion {
             // Cancelled
             let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)
         }
-        
+
         self.webViewCompletion = nil
+    }
+    
+    public func safariViewController(_ controller: SFSafariViewController, initialLoadDidRedirectTo URL: URL) {
+        if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
+            PrimerUIManager.dismissPrimerUI(animated: true)
+        }
     }
 }
 

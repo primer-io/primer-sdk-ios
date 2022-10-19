@@ -13,6 +13,8 @@ var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var metadataTestCase: String?
 var paymentHandling: PrimerPaymentHandling = .auto
+var clientSessionRequestBody: ClientSessionRequestBody!
+var performPaymentAfterVaulting: Bool = true
 
 class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
@@ -26,6 +28,14 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     @IBOutlet weak var currencyTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
     @IBOutlet weak var performPaymentSwitch: UISwitch!
+    
+    var amount: Int? {
+        if let amountStr = amountTextField.text {
+            return Int(amountStr)
+        } else {
+            return nil
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,7 +59,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         amountTextField.placeholder = "In minor units (type 100 for 1.00)"
         amountTextField.text = "101"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
-        performPaymentSwitch.isOn = true
+        performPaymentSwitch.isOn = performPaymentAfterVaulting
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
         
         let countryPicker = UIPickerView()
@@ -83,72 +93,38 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         }
     }
     
-    @IBAction func initializePrimerButtonTapped(_ sender: Any) {
-        var amount: Int?
-        if let amountStr = amountTextField.text {
-            amount = Int(amountStr)
-        }
-        
+    @IBAction func preformPaymentValueChanged(_ sender: UISwitch) {
+        performPaymentAfterVaulting = sender.isOn
+    }
+    
+    @IBAction func primerSDKButtonTapped(_ sender: Any) {
         self.evaluateCustomDefinedApiKey()
         self.evaluateMetadataTestCase()
         
-        if paymentHandling == .manual {
-            let mpmcvc = ManualPaymentMerchantCheckoutViewController.instantiate(
-                customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
-                phoneNumber: phoneNumberTextField.text,
-                countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
-                currency: Currency(rawValue: currencyTextField.text ?? ""),
-                amount: amount,
-                performPayment: performPaymentSwitch.isOn)
-            navigationController?.pushViewController(mpmcvc, animated: true)
-        } else {
-            let mcvc = MerchantCheckoutViewController.instantiate(
-                customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
-                phoneNumber: phoneNumberTextField.text,
-                countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
-                currency: Currency(rawValue: currencyTextField.text ?? ""),
-                amount: amount,
-                performPayment: performPaymentSwitch.isOn)
-            navigationController?.pushViewController(mcvc, animated: true)
-        }
+        clientSessionRequestBody = Networking.createClientSessionRequestBodyWithParameters(
+            amount: amount,
+            currency: Currency(rawValue: currencyTextField.text ?? ""),
+            customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
+            phoneNumber: phoneNumberTextField.text,
+            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""))
+        
+        let vc = MerchantCheckoutViewController.instantiate()
+        navigationController?.pushViewController(vc, animated: true)
     }
     
-    @IBAction func checkoutComponentsButtonTapped(_ sender: Any) {
-        var amount: Int?
-        if let amountStr = amountTextField.text {
-            amount = Int(amountStr)
-        }
-        
-        let mcfvc = MerchantPaymentMethodsViewController.instantiate(
-            amount: amount ?? 1000,
-            currency: Currency(rawValue: currencyTextField.text ?? "")!,
-            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? "")!,
-            customerId: customerIdTextField.text,
-            phoneNumber: phoneNumberTextField.text)
-        
-        mcfvc.view.translatesAutoresizingMaskIntoConstraints = false
-        mcfvc.view.heightAnchor.constraint(equalToConstant: self.view.bounds.height).isActive = true
-        mcfvc.view.widthAnchor.constraint(equalToConstant: self.view.bounds.width).isActive = true
-        
+    @IBAction func hucButtonTapped(_ sender: Any) {
         self.evaluateCustomDefinedApiKey()
         self.evaluateMetadataTestCase()
-        self.navigationController?.pushViewController(mcfvc, animated: true)
-    }
-    
-    @IBAction func hucRawCardDataButtonTapped(_ sender: Any) {
-        var amount: Int?
-        if let amountStr = amountTextField.text {
-            amount = Int(amountStr)
-        }
         
-        let rcdvc = MerchantHUCRawCardDataViewController.instantiate(
-            amount: amount ?? 1000,
-            currency: Currency(rawValue: currencyTextField.text ?? "")!,
-            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? "")!,
-            customerId: customerIdTextField.text,
-            phoneNumber: phoneNumberTextField.text)
+        clientSessionRequestBody = Networking.createClientSessionRequestBodyWithParameters(
+            amount: amount,
+            currency: Currency(rawValue: currencyTextField.text ?? ""),
+            customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
+            phoneNumber: phoneNumberTextField.text,
+            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""))
         
-        self.navigationController?.pushViewController(rcdvc, animated: true)
+        let vc = MerchantHUCPaymentMethodsViewController.instantiate()
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {

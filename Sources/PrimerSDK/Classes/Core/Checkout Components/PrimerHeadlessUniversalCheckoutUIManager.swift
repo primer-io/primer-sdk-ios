@@ -103,7 +103,7 @@ extension PrimerHeadlessUniversalCheckout {
         private var paymentMethodTokenData: PrimerPaymentMethodTokenData?
         private var paymentCheckoutData: PrimerCheckoutData?
         private var webViewController: SFSafariViewController?
-        private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+        private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         
         deinit {
             log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -260,7 +260,7 @@ extension PrimerHeadlessUniversalCheckout {
                 
                 let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
                                                                                    paymentMethodType: paymentMethodType,
-                                                                                   number: cardNumber,
+                                                                                   number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as! String,
                                                                                    expirationMonth: expiryMonth,
                                                                                    expirationYear: expiryYear,
                                                                                    cardholderName: cardholderName)
@@ -557,6 +557,56 @@ extension PrimerHeadlessUniversalCheckout {
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
                     }
+                    
+                } else if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+                    if let redirectUrlStr = decodedJWTToken.redirectUrl,
+                       let redirectUrl = URL(string: redirectUrlStr),
+                       let statusUrlStr = decodedJWTToken.statusUrl,
+                       let statusUrl = URL(string: statusUrlStr),
+                       decodedJWTToken.intent != nil {
+                        
+                        DispatchQueue.main.async {
+                            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                        }
+                        
+                        var pollingModule: PollingModule? = PollingModule(url: statusUrl)
+                        
+                        firstly {
+                            self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
+                        }
+                        .then { () -> Promise<String> in
+                            self.webViewCompletion = { (id, err) in
+                                if let err = err {
+                                    pollingModule?.cancel(withError: err)
+                                    pollingModule = nil
+                                }
+                            }
+                            return pollingModule!.start()
+                        }
+                        .done { resumeToken in
+                            seal.fulfill(resumeToken)
+                        }
+                        .ensure {
+                            PrimerInternal.shared.dismiss()
+                        }
+                        .catch { err in
+                            if let primerErr = err as? PrimerError {
+                                pollingModule?.cancel(withError: primerErr)
+                            } else {
+                                let err = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+                                ErrorHandler.handle(error: err)
+                                pollingModule?.cancel(withError: err)
+                            }
+                            
+                            pollingModule = nil
+                            seal.reject(err)
+                        }
+                        
+                    } else {
+                        let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                        seal.reject(error)
+                    }
+
                 } else {
                     let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
@@ -577,11 +627,26 @@ extension PrimerHeadlessUniversalCheckout {
                 }
                 
                 DispatchQueue.main.async {
-                    PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
-                        DispatchQueue.main.async {
-                            seal.fulfill()
+                    if PrimerUIManager.primerRootViewController == nil {
+                        firstly {
+                            PrimerUIManager.prepareRootViewController()
                         }
-                    })
+                        .done {
+                            PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                                DispatchQueue.main.async {
+                                    seal.fulfill()
+                                }
+                            })
+                        }
+                        .catch { _ in }
+                    } else {
+                        PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                            DispatchQueue.main.async {
+                                seal.fulfill()
+                            }
+                        })
+                    }
+                    
                 }
             }
         }
@@ -884,8 +949,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
 
 extension PrimerHeadlessUniversalCheckout.CardFormUIManager: SFSafariViewControllerDelegate {
     
-    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        
+    public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion = webViewCompletion {
             // Cancelled
             let err = PrimerError.cancelled(
