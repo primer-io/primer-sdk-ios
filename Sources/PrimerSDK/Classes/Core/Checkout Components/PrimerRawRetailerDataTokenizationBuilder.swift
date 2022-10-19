@@ -88,7 +88,7 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
                 return
             }
             
-            if !rawData.id.isEmpty {
+            if rawData.id.isEmpty {
                 errors.append(PrimerValidationError.invalidRawData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
             }
             

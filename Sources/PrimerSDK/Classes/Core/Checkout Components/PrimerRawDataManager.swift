@@ -509,6 +509,7 @@ extension PrimerHeadlessUniversalCheckout {
                     let checkoutPayment = PrimerCheckoutDataPayment(id: nil, orderId: clientSession?.order?.id, paymentFailureReason: nil)
                     let checkoutData = PrimerCheckoutData(payment: checkoutPayment, additionalInfo: additionalInfo)
                     PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                    seal.fulfill(nil)
                     
                 } else {
                     let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
