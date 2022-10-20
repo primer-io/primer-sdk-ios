@@ -624,22 +624,19 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 
                 if isManualPaymentHandling {
                     PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
+                    seal.fulfill(nil)
                 } else {
                     
                     firstly {
                         presentVoucherInfoViewController()
                     }
+                    .done {
+                        seal.fulfill(nil)
+                    }
                     .catch { error in
                         seal.reject(error)
                     }
-                    
-                    let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
-                    let checkoutPayment = PrimerCheckoutDataPayment(id: nil, orderId: clientSession?.order?.id, paymentFailureReason: nil)
-                    let checkoutData = PrimerCheckoutData(payment: checkoutPayment, additionalInfo: additionalInfo)
-                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
-                
-                seal.fulfill(nil)
             }
         }
     }

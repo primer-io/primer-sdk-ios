@@ -461,7 +461,10 @@ extension PrimerHeadlessUniversalCheckout {
                     }
 
                 } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
-                                        
+                    
+                    let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
+                    var additionalInfo: PrimerCheckoutAdditionalInfo?
+
                     switch self.paymentMethodType {
                     case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
 
@@ -497,9 +500,14 @@ extension PrimerHeadlessUniversalCheckout {
                         log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.paymentMethodType, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
                         break
                     }
-                                        
-                    seal.fulfill(nil)
                     
+                    if isManualPaymentHandling {
+                        PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
+                        seal.fulfill(nil)
+                    } else {
+                        seal.fulfill(nil)
+                    }
+
                 } else {
                     let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
