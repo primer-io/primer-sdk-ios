@@ -52,7 +52,7 @@ extension PrimerHeadlessUniversalCheckout {
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
         public private(set) var isDataValid: Bool = false
         private var webViewController: SFSafariViewController?
-        private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+        private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         var initializationData: PrimerInitializationData?
         
         required public init(paymentMethodType: String) throws {
@@ -205,7 +205,7 @@ extension PrimerHeadlessUniversalCheckout {
                                     seal.reject(err)
                                 }
                             } else {
-                                seal.fulfill(nil)
+                                seal.fulfill(self.paymentCheckoutData)
                             }
                         }
                         .catch { err in
@@ -383,7 +383,7 @@ extension PrimerHeadlessUniversalCheckout {
                         }
                         .then { () -> Promise<String> in
                             self.webViewCompletion = { (id, err) in
-                                if let err = err as? PrimerError {
+                                if let err = err {
                                     pollingModule?.cancel(withError: err)
                                     pollingModule = nil
                                 }
@@ -431,7 +431,7 @@ extension PrimerHeadlessUniversalCheckout {
                         }
                         .then { () -> Promise<String> in
                             self.webViewCompletion = { (id, err) in
-                                if let err = err as? PrimerError {
+                                if let err = err {
                                     pollingModule?.cancel(withError: err)
                                     pollingModule = nil
                                 }
@@ -491,17 +491,7 @@ extension PrimerHeadlessUniversalCheckout {
                         let additionalInfo = XenditCheckoutVoucherAdditionalInfo(expiresAt: formatter.string(from: decodedExpiresAt),
                                                                                    couponCode: decodedVoucherReference,
                                                                                    retailerName: selectedRetailerName)
-                        
-                        if self.paymentCheckoutData == nil {
-                            self.paymentCheckoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
-                        } else {
-                            self.paymentCheckoutData?.additionalInfo = additionalInfo
-                        }
-                        
-                        let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
-                        let checkoutPayment = PrimerCheckoutDataPayment(id: nil, orderId: clientSession?.order?.id, paymentFailureReason: nil)
-                        let checkoutData = PrimerCheckoutData(payment: checkoutPayment, additionalInfo: additionalInfo)
-                        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                        self.paymentCheckoutData?.additionalInfo = additionalInfo
                         
                     default:
                         log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.paymentMethodType, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
