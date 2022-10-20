@@ -53,6 +53,7 @@ extension PrimerHeadlessUniversalCheckout {
         public private(set) var isDataValid: Bool = false
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
+        var initializationData: PrimerInitializationData?
         
         required public init(paymentMethodType: String) throws {
             
@@ -75,6 +76,9 @@ extension PrimerHeadlessUniversalCheckout {
             case PrimerPaymentMethodType.xenditOvo.rawValue,
                 PrimerPaymentMethodType.adyenMBWay.rawValue:
                 self.rawDataTokenizationBuilder = PrimerRawPhoneNumberDataTokenizationBuilder(paymentMethodType: paymentMethodType)
+                
+            case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
+                self.rawDataTokenizationBuilder = PrimerRawRetailerDataTokenizationBuilder(paymentMethodType: paymentMethodType)
                 
             default:
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: nil)
@@ -201,7 +205,7 @@ extension PrimerHeadlessUniversalCheckout {
                                     seal.reject(err)
                                 }
                             } else {
-                                seal.fulfill(nil)
+                                seal.fulfill(self.paymentCheckoutData)
                             }
                         }
                         .catch { err in
@@ -454,6 +458,54 @@ extension PrimerHeadlessUniversalCheckout {
                     } else {
                         let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         seal.reject(error)
+                    }
+
+                } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
+                    
+                    let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
+                    var additionalInfo: PrimerCheckoutAdditionalInfo?
+
+                    switch self.paymentMethodType {
+                    case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
+
+                        guard let decodedExpiresAt = decodedJWTToken.expiresAt else {
+                            let err = PrimerError.invalidValue(key: "decodedJWTToken.expiresAt", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                            ErrorHandler.handle(error: err)
+                            seal.reject(err)
+                            return
+                        }
+                        
+                        guard let decodedVoucherReference = decodedJWTToken.reference else {
+                            let err = PrimerError.invalidValue(key: "decodedJWTToken.reference", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                            ErrorHandler.handle(error: err)
+                            seal.reject(err)
+                            return
+                        }
+
+                        guard let selectedRetailer = rawData as? PrimerRawRetailerData,
+                              let selectedRetailerName = (initializationData as? RetailOutletsList)?.result.first(where: { $0.id == selectedRetailer.id })?.name else {
+                            let err = PrimerError.invalidValue(key: "rawData.id", value: "Invalid Retailer Identifier", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                            ErrorHandler.handle(error: err)
+                            seal.reject(err)
+                            return
+                        }
+                        
+                        let formatter = DateFormatter().withExpirationDisplayDateFormat()
+                        additionalInfo = XenditCheckoutVoucherAdditionalInfo(expiresAt: formatter.string(from: decodedExpiresAt),
+                                                                                   couponCode: decodedVoucherReference,
+                                                                                   retailerName: selectedRetailerName)
+                        self.paymentCheckoutData?.additionalInfo = additionalInfo
+                        
+                    default:
+                        log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.paymentMethodType, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
+                        break
+                    }
+                    
+                    if isManualPaymentHandling {
+                        PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
+                        seal.fulfill(nil)
+                    } else {
+                        seal.fulfill(nil)
                     }
 
                 } else {

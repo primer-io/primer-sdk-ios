@@ -1,12 +1,14 @@
 # Uncomment the next line to define a global platform for your project
 platform :ios, '10.0'
+workspace "../Primer.io Example App.xcworkspace"
+project "../Primer.io Example App.xcodeproj"
 
 target 'ExampleApp' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
   # Pods for ExampleApp
-  pod 'PrimerSDK', :path => '../../'
+  pod 'PrimerSDK', :path => '../../../'
 
   target 'ExampleAppTests' do
     inherit! :search_paths

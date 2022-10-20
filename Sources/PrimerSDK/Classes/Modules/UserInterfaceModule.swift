@@ -709,6 +709,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     text: nil,
                     textColor: nil))
 
+        case .xenditRetailOutlets:
+            return nil
+            
         case .xfersPayNow:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -934,7 +937,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
                 buttonTitle = Strings.PaymentButton.pay
                 if let amountStr = universalCheckoutViewModel.amountStr {
-                    buttonTitle += " \(amountStr))"
+                    buttonTitle += " \(amountStr)"
                 }
                 
             case .vault:

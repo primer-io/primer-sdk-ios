@@ -148,6 +148,12 @@ struct DecodedJWTToken: Codable {
             let dateFormatter = DateFormatter().withVoucherExpirationDateFormat()
             self.expiresAt = dateFormatter.date(from: dateString)
         }
+        // Voucher info date returned in ISO8601
+        if let dateString = try? container.decode(String.self, forKey: .expiresAt) {
+            let dateFormatter = ISO8601DateFormatter()
+            dateFormatter.formatOptions = .withFullDate
+            self.expiresAt = dateFormatter.date(from: dateString)
+        }
         self.reference = try? container.decode(String.self, forKey: .reference)
         self.entity = try? container.decode(String.self, forKey: .entity)
     }
