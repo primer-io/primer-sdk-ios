@@ -14,7 +14,6 @@ internal class PrimerAccountInfoPaymentViewController: PrimerFormViewController 
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
     
     deinit {
-        self.formPaymentMethodTokenizationViewModel.cancel()
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     

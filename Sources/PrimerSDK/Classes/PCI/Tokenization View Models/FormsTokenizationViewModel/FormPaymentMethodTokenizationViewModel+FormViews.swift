@@ -389,11 +389,7 @@ extension FormPaymentMethodTokenizationViewModel {
         if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) {
             return presentInputViewController()
         }
-        
-        if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), accountInfoPaymentMethodTypes.contains(paymentMethodType) {
-            return presentAccountInfoViewController()
-        }
-        
+                
         if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), voucherPaymentMethodTypes.contains(paymentMethodType) {
             return presentVoucherInfoConfirmationStepViewController()
         }
@@ -403,37 +399,30 @@ extension FormPaymentMethodTokenizationViewModel {
     
     func presentVoucherInfoConfirmationStepViewController() -> Promise<Void> {
         return Promise { seal in
-            let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: self.uiModule.buttonImage, formPaymentMethodTokenizationViewModel: self)
+            let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo, formPaymentMethodTokenizationViewModel: self)
             infoView = voucherConfirmationInfoView
             PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
             seal.fulfill()
         }
     }
     
-    func presentVoucherInfoViewController() -> Promise<Void> {
-        return Promise { seal in
-            
-            let pcfvc = PrimerVoucherInfoPaymentViewController(navigationBarLogo: self.uiModule.buttonImage,
-                                                               formPaymentMethodTokenizationViewModel: self,
-                                                               shouldShareVoucherInfoWithText: VoucherValue.sharableVoucherValuesText)
-            infoView = voucherInfoView
-            PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
-            seal.fulfill()
-        }
+    func presentVoucherInfoViewController() {
+        let pcfvc = PrimerVoucherInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo,
+                                                           formPaymentMethodTokenizationViewModel: self,
+                                                           shouldShareVoucherInfoWithText: VoucherValue.sharableVoucherValuesText)
+        infoView = voucherInfoView
+        PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
     }
     
-    func presentAccountInfoViewController() -> Promise<Void> {
-        return Promise { seal in
-            let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: self.uiModule.buttonImage, formPaymentMethodTokenizationViewModel: self)
-            infoView = makeAccountInfoPaymentView()
-            PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
-            seal.fulfill()
-        }
+    func presentAccountInfoViewController() {
+        let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo, formPaymentMethodTokenizationViewModel: self)
+        infoView = makeAccountInfoPaymentView()
+        PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
     }
     
     func presentInputViewController() -> Promise<Void> {
         return Promise { seal in
-            let pcfvc = PrimerInputViewController(navigationBarLogo: uiModule.buttonImage, formPaymentMethodTokenizationViewModel: self, inputsDistribution: .horizontal)
+            let pcfvc = PrimerInputViewController(navigationBarLogo: uiModule.navigationBarLogo, formPaymentMethodTokenizationViewModel: self, inputsDistribution: .horizontal)
             inputs.append(contentsOf: makeInputViews())
             PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
             seal.fulfill()

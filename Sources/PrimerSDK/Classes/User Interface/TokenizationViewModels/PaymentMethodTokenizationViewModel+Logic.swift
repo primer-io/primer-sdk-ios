@@ -203,11 +203,7 @@ extension PaymentMethodTokenizationViewModel {
                         let apiConfigurationModule = PrimerAPIConfigurationModule()
                         
                         firstly {
-                            apiConfigurationModule.setupSession(
-                                forClientToken: newClientToken,
-                                requestDisplayMetadata: false,
-                                requestClientTokenValidation: true,
-                                requestVaultedPaymentMethods: false)
+                            apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
                         }
                         .done {
                             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -334,9 +330,6 @@ extension PaymentMethodTokenizationViewModel {
         }
     }
     
-    func handleSuccessfulFlow() {
-        PrimerUIManager.dismissOrShowResultScreen(type: .success, withMessage: self.successMessage)
-    }
     
     func handleFailureFlow(errorMessage: String?) {
         PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)

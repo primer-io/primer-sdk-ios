@@ -141,6 +141,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         }
     }
     
+    func handleSuccessfulFlow() {
+        PrimerUIManager.dismissOrShowResultScreen(type: .success, withMessage: self.successMessage)
+    }
+    
     func presentPaymentMethodUserInterface() -> Promise<Void> {
         fatalError("\(#function) must be overriden")
     }

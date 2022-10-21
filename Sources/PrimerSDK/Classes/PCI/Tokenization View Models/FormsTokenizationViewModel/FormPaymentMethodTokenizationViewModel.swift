@@ -626,16 +626,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
                     seal.fulfill(nil)
                 } else {
-                    
-                    firstly {
-                        presentVoucherInfoViewController()
-                    }
-                    .done {
-                        seal.fulfill(nil)
-                    }
-                    .catch { error in
-                        seal.reject(error)
-                    }
+                    seal.fulfill(nil)
                 }
             }
         }
@@ -845,6 +836,26 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             
         default:
             fatalError("Payment method card should never end here.")
+        }
+    }
+    
+    override func handleSuccessfulFlow() {
+        
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else {
+            return
+        }
+        
+        if voucherPaymentMethodTypes.contains(paymentMethodType) {
+            
+            presentVoucherInfoViewController()
+            
+        } else if accountInfoPaymentMethodTypes.contains(paymentMethodType) {
+            
+            presentAccountInfoViewController()
+            
+        } else {
+            
+            super.handleSuccessfulFlow()
         }
     }
 }
