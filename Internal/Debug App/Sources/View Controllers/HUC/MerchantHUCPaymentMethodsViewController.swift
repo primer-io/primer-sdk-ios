@@ -23,9 +23,11 @@ class MerchantHUCPaymentMethodsViewController: UIViewController, PrimerHeadlessU
     var customerId: String?
     var phoneNumber: String?
     private var paymentId: String?
+    var checkoutData: PrimerCheckoutData?
+    var primerError: Error?
     
     var redirectManager: PrimerHeadlessUniversalCheckout.NativeUIManager?
-    
+    var logs: [String] = []
 
     @IBOutlet weak var tableView: UITableView!
     var activityIndicator: UIActivityIndicatorView?
@@ -101,7 +103,7 @@ extension MerchantHUCPaymentMethodsViewController: UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let paymentMethodType = self.availablePaymentMethods[indexPath.row]
+        let paymentMethodType = self.availablePaymentMethods[indexPath.row].paymentMethodType
         if paymentMethodType == "PAYMENT_CARD" ||
             paymentMethodType == "ADYEN_BANCONTACT_CARD"
         {
@@ -140,16 +142,13 @@ extension MerchantHUCPaymentMethodsViewController: UITableViewDataSource, UITabl
     }
 }
 
-extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutDelegate {
-
-    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
-        print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
-    }
-}
-
 // MARK: Manual Payment Handling
 
 extension MerchantHUCPaymentMethodsViewController {
+    
+    func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
+        
+    }
     
     func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
@@ -190,23 +189,23 @@ extension MerchantHUCPaymentMethodsViewController {
         }
     }
     
-    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\nresumeToken: \(resumeToken)")
         self.logs.append(#function)
-        
+
         Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
             DispatchQueue.main.async {
                 self.hideLoadingOverlay()
             }
-            
+
             if let clientToken = res?.requiredAction?.clientToken {
                 decisionHandler(.continueWithNewClientToken(clientToken))
             } else {
                 print("Payment has been resumed")
                 decisionHandler(.complete())
             }
-            
-            let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
+
+            let rvc = MerchantResultViewController.instantiate(checkoutData: nil, error: self.primerError, logs: self.logs)
             self.navigationController?.pushViewController(rvc, animated: true)
         }
     }
@@ -274,7 +273,7 @@ extension MerchantHUCPaymentMethodsViewController {
     }
 }
 
-extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutUIDelegate {
+extension MerchantHUCPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutUIDelegate {
     
     func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         print("\n\n🤯🤯🤯 \(#function)")
