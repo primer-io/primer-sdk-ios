@@ -960,6 +960,12 @@ extension Strings {
             value: "Get the code from your banking app.",
             comment: "Get the code from your banking app - Blik descriptor")
         
+        static let completeYourPayment = NSLocalizedString(
+            "completeYourPaymentInTheBlikApp",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Complete your payment in Blik app",
+            comment: "Info message suggesting the user to open the Blik app to complete the payment")
     }
     
     enum MBWay {
