@@ -11,16 +11,16 @@ import UIKit
 
 internal class PrimerAccountInfoPaymentViewController: PrimerFormViewController {
         
-    let formTokenizationModule: FormTokenizationModule
+    let userInterfaceModule: UserInterfaceModule
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(navigationBarLogo: UIImage?, formTokenizationModule: FormTokenizationModule) {
-        self.formTokenizationModule = formTokenizationModule
+    init(userInterfaceModule: UserInterfaceModule) {
+        self.userInterfaceModule = userInterfaceModule
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = navigationBarLogo
+        self.titleImage = userInterfaceModule.invertedLogo
     }
     
     required init?(coder: NSCoder) {
@@ -32,11 +32,11 @@ internal class PrimerAccountInfoPaymentViewController: PrimerFormViewController 
                 
         verticalStackView.spacing = 16
                 
-        if let infoView = self.formTokenizationModule.infoView {
-            verticalStackView.addArrangedSubview(infoView)
+        if let inputView = self.userInterfaceModule.inputView {
+            verticalStackView.addArrangedSubview(inputView)
         }
         
-        if let submitButton = self.formTokenizationModule.paymentMethodModule.userInterfaceModule.submitButton {
+        if let submitButton = self.userInterfaceModule.submitButton {
             verticalStackView.addArrangedSubview(submitButton)
         }
     }
