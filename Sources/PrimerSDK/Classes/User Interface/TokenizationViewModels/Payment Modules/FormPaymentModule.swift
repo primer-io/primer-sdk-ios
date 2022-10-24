@@ -11,230 +11,6 @@ import Foundation
 
 class FormPaymentModule: PaymentModule {
     
-    let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    /// Generic info view
-    var infoView: PrimerFormView?
-    
-    // MARK: Voucher Info View
-    
-    var voucherInfoView: PrimerFormView {
-        
-        // Complete your payment
-        
-        let completeYourPaymentLabel = UILabel()
-        completeYourPaymentLabel.text = Strings.VoucherInfoPaymentView.completeYourPayment
-        completeYourPaymentLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.title)
-        completeYourPaymentLabel.textColor = theme.text.title.color
-        
-        let descriptionLabel = UILabel()
-        descriptionLabel.textColor = .gray600
-        descriptionLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.body)
-        descriptionLabel.numberOfLines = 0
-        descriptionLabel.text = Strings.VoucherInfoPaymentView.descriptionLabel
-        
-        // Expires at
-        
-        let expiresAtContainerStackView = UIStackView()
-        expiresAtContainerStackView.axis = .horizontal
-        expiresAtContainerStackView.spacing = 8.0
-        
-        let calendarImage = UIImage(named: "calendar", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        let calendarImageView = UIImageView(image: calendarImage)
-        calendarImageView.tintColor = .gray600
-        calendarImageView.clipsToBounds = true
-        calendarImageView.contentMode = .scaleAspectFit
-        expiresAtContainerStackView.addArrangedSubview(calendarImageView)
-        
-        if let expDate = PrimerAPIConfigurationModule.decodedJWTToken?.expiresAt {
-            let expiresAtPrefixLabel = UILabel()
-            let expiresAtAttributedString = NSMutableAttributedString()
-            let prefix = NSAttributedString(
-                string: Strings.VoucherInfoPaymentView.expiresAt,
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray600])
-            let formatter = DateFormatter()
-            formatter.dateStyle = .medium
-            formatter.timeStyle = .short
-            let expiresAtDate = NSAttributedString(
-                string: formatter.string(from: expDate),
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
-            expiresAtAttributedString.append(prefix)
-            expiresAtAttributedString.append(NSAttributedString(string: " ", attributes: nil))
-            expiresAtAttributedString.append(expiresAtDate)
-            expiresAtPrefixLabel.attributedText = expiresAtAttributedString
-            expiresAtPrefixLabel.numberOfLines = 0
-            expiresAtPrefixLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.body)
-            expiresAtContainerStackView.addArrangedSubview(expiresAtPrefixLabel)
-        }
-        
-        // Voucher info container Stack View
-        
-        let voucherInfoContainerStackView = PrimerStackView()
-        voucherInfoContainerStackView.axis = .vertical
-        voucherInfoContainerStackView.spacing = 12.0
-        voucherInfoContainerStackView.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
-        voucherInfoContainerStackView.layer.cornerRadius = PrimerDimensions.cornerRadius / 2
-        voucherInfoContainerStackView.layer.borderColor = UIColor.gray200.cgColor
-        voucherInfoContainerStackView.layer.borderWidth = 2.0
-        voucherInfoContainerStackView.isLayoutMarginsRelativeArrangement = true
-        voucherInfoContainerStackView.layer.cornerRadius = 8.0
-                        
-        for voucherValue in VoucherValue.currentVoucherValues {
-            
-            if voucherValue.value != nil {
-                
-                let voucherValueStackView = PrimerStackView()
-                voucherValueStackView.axis = .horizontal
-                voucherValueStackView.spacing = 12.0
-                voucherValueStackView.distribution = .fillProportionally
-                
-                let voucherValueLabel = UILabel()
-                voucherValueLabel.text = voucherValue.description
-                voucherValueLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
-                voucherValueLabel.textColor = .gray600
-                voucherValueStackView.addArrangedSubview(voucherValueLabel)
-                
-                let voucherValueText = UILabel()
-                voucherValueText.text = voucherValue.value
-                voucherValueText.font = UIFont.boldSystemFont(ofSize: PrimerDimensions.Font.label)
-                voucherValueText.textColor = theme.text.title.color
-                voucherValueText.setContentHuggingPriority(.required, for: .horizontal)
-                voucherValueText.setContentCompressionResistancePriority(.required, for: .horizontal)
-                voucherValueStackView.addArrangedSubview(voucherValueText)
-                                
-                voucherInfoContainerStackView.addArrangedSubview(voucherValueStackView)
-                
-                if let lastValue = VoucherValue.currentVoucherValues.last, voucherValue != lastValue  {
-                    // Separator view
-                    let separatorView = PrimerView()
-                    separatorView.backgroundColor = .gray200
-                    separatorView.translatesAutoresizingMaskIntoConstraints = false
-                    separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-                    voucherInfoContainerStackView.addArrangedSubview(separatorView)
-                }
-            }
-        }
-        
-        //        let copyToClipboardImage = UIImage(named: "copy-to-clipboard", in: Bundle.primerResources, compatibleWith: nil)
-        //        let copiedToClipboardImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)
-        //        let copyToClipboardButton = UIButton(type: .custom)
-        //        copyToClipboardButton.setImage(copyToClipboardImage, for: .normal)
-        //        copyToClipboardButton.setImage(copiedToClipboardImage, for: .selected)
-        //        copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
-        //        copyToClipboardButton.addTarget(self, action: #selector(copyToClipboardTapped), for: .touchUpInside)
-        //        entityStackView.addArrangedSubview(copyToClipboardButton)
-        
-//        self.uiModule.submitButton = nil
-        
-        let views = [[completeYourPaymentLabel],
-                     [expiresAtContainerStackView],
-                     [voucherInfoContainerStackView]]
-        
-        return PrimerFormView(formViews: views)
-    }
-    
-    
-    // MARK: Rapyd Fast Input View
-    
-    var rapydFastAccountInfoView: PrimerFormView {
-        // Complete your payment
-        
-        let completeYourPaymentLabel = UILabel()
-        completeYourPaymentLabel.text = Strings.AccountInfoPaymentView.completeYourPayment
-        completeYourPaymentLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.title)
-        completeYourPaymentLabel.textColor = theme.text.title.color
-        
-        // Due at
-        
-        let dueAtContainerStackView = UIStackView()
-        dueAtContainerStackView.axis = .horizontal
-        dueAtContainerStackView.spacing = 8.0
-        
-        let calendarImage = UIImage(named: "calendar", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        let calendarImageView = UIImageView(image: calendarImage)
-        calendarImageView.tintColor = .gray600
-        calendarImageView.clipsToBounds = true
-        calendarImageView.contentMode = .scaleAspectFit
-        dueAtContainerStackView.addArrangedSubview(calendarImageView)
-        
-        if let expDate = PrimerAPIConfigurationModule.decodedJWTToken?.expDate {
-            let dueAtPrefixLabel = UILabel()
-            let dueDateAttributedString = NSMutableAttributedString()
-            let prefix = NSAttributedString(
-                string: Strings.AccountInfoPaymentView.dueAt,
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray600])
-            let formatter = DateFormatter().withExpirationDisplayDateFormat()
-            let dueAtDate = NSAttributedString(
-                string: formatter.string(from: expDate),
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
-            dueDateAttributedString.append(prefix)
-            dueDateAttributedString.append(NSAttributedString(string: " ", attributes: nil))
-            dueDateAttributedString.append(dueAtDate)
-            dueAtPrefixLabel.attributedText = dueDateAttributedString
-            dueAtPrefixLabel.numberOfLines = 0
-            dueAtPrefixLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.body)
-            dueAtContainerStackView.addArrangedSubview(dueAtPrefixLabel)
-        }
-        
-        // Account number
-        
-        let accountNumberInfoContainerStackView = PrimerStackView()
-        accountNumberInfoContainerStackView.axis = .vertical
-        accountNumberInfoContainerStackView.spacing = 12.0
-        accountNumberInfoContainerStackView.addBackground(color: .gray100)
-        accountNumberInfoContainerStackView.layoutMargins = UIEdgeInsets(top: PrimerDimensions.StackViewSpacing.default,
-                                                                         left: PrimerDimensions.StackViewSpacing.default,
-                                                                         bottom: PrimerDimensions.StackViewSpacing.default,
-                                                                         right: PrimerDimensions.StackViewSpacing.default)
-        accountNumberInfoContainerStackView.isLayoutMarginsRelativeArrangement = true
-        accountNumberInfoContainerStackView.layer.cornerRadius = PrimerDimensions.cornerRadius
-        
-        let transferFundsLabel = UILabel()
-        transferFundsLabel.text = Strings.AccountInfoPaymentView.pleaseTransferFunds
-        transferFundsLabel.numberOfLines = 0
-        transferFundsLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
-        transferFundsLabel.textColor = theme.text.title.color
-        accountNumberInfoContainerStackView.addArrangedSubview(transferFundsLabel)
-        
-        let accountNumberStackView = PrimerStackView()
-        accountNumberStackView.axis = .horizontal
-        accountNumberStackView.spacing = 12.0
-        accountNumberStackView.heightAnchor.constraint(equalToConstant: 56.0).isActive = true
-        accountNumberStackView.addBackground(color: .white)
-        accountNumberStackView.layoutMargins = UIEdgeInsets(top: PrimerDimensions.StackViewSpacing.default,
-                                                            left: PrimerDimensions.StackViewSpacing.default,
-                                                            bottom: PrimerDimensions.StackViewSpacing.default,
-                                                            right: PrimerDimensions.StackViewSpacing.default)
-        accountNumberStackView.layer.cornerRadius = PrimerDimensions.cornerRadius / 2
-        accountNumberStackView.layer.borderColor = UIColor.gray200.cgColor
-        accountNumberStackView.layer.borderWidth = 2.0
-        accountNumberStackView.isLayoutMarginsRelativeArrangement = true
-        accountNumberStackView.layer.cornerRadius = 8.0
-        
-        if let accountNumber = PrimerAPIConfigurationModule.decodedJWTToken?.accountNumber {
-            let accountNumberLabel = UILabel()
-            accountNumberLabel.text = accountNumber
-            accountNumberLabel.font = UIFont.boldSystemFont(ofSize: PrimerDimensions.Font.label)
-            accountNumberLabel.textColor = theme.text.title.color
-            accountNumberStackView.addArrangedSubview(accountNumberLabel)
-        }
-        
-        let copyToClipboardImage = UIImage(named: "copy-to-clipboard", in: Bundle.primerResources, compatibleWith: nil)
-        let copiedToClipboardImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)
-        let copyToClipboardButton = UIButton(type: .custom)
-        copyToClipboardButton.setImage(copyToClipboardImage, for: .normal)
-        copyToClipboardButton.setImage(copiedToClipboardImage, for: .selected)
-        copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
-        copyToClipboardButton.addTarget(self, action: #selector(copyToClipboardTapped), for: .touchUpInside)
-        accountNumberStackView.addArrangedSubview(copyToClipboardButton)
-        
-        accountNumberInfoContainerStackView.addArrangedSubview(accountNumberStackView)
-        
-        let views = [[completeYourPaymentLabel],
-                     [dueAtContainerStackView],
-                     [accountNumberInfoContainerStackView]]
-        
-        return PrimerFormView(formViews: views)
-    }
     
     override func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
@@ -246,7 +22,7 @@ class FormPaymentModule: PaymentModule {
                     // Only Adyen MBWay should end up here
                     
                     firstly {
-                        self.presentAdyenMBWayPendingViewController(message: Strings.MBWay.completeYourPayment)
+                        self.presentPendingResumeViewController()
                     }
                     .then { () -> Promise<String> in
                         let pollingModule = PollingModule(url: statusUrl)
@@ -269,6 +45,7 @@ class FormPaymentModule: PaymentModule {
                     let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     seal.reject(error)
                 }
+                
             } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
                 
                 let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
@@ -301,91 +78,43 @@ class FormPaymentModule: PaymentModule {
                 
                 if isManualPaymentHandling {
                     PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
-                    seal.fulfill(nil)
-                } else {
+                }
+                
+                seal.fulfill(nil)
+                
+                firstly {
+                    // MUltibanco
+                    self.presentResultViewController()
+                }
+                .done {
                     
-                    firstly {
-                        presentVoucherInfoViewController()
-                    }
-                    .catch { error in
-                        seal.reject(error)
-                    }
-                    
-                    let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
-                    let checkoutPayment = PrimerCheckoutDataPayment(id: nil, orderId: clientSession?.order?.id, paymentFailureReason: nil)
-                    let checkoutData = PrimerCheckoutData(payment: checkoutPayment, additionalInfo: additionalInfo)
-                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                }
+                .catch { error in
+                    seal.reject(error)
                 }
             }
         }
     }
     
-    
-    func presentVoucherInfoViewController() -> Promise<Void> {
+    /// This should be used when the payment is pending but we don't await any response.
+    func presentResultViewController() -> Promise<Void> {
         return Promise { seal in
-            
-            let pcfvc = PrimerVoucherInfoPaymentViewController(
-                navigationBarLogo: self.paymentMethodModule.userInterfaceModule.buttonImage,
-                formPaymentModule: self,
-                shouldShareVoucherInfoWithText: VoucherValue.sharableVoucherValuesText)
-            
-            infoView = voucherInfoView
-            PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
-            seal.fulfill()
-        }
-    }
-    
-    func presentAdyenMBWayPendingViewController(message: String) -> Promise<Void> {
-        let infoView = makePaymentPendingInfoView(message: message)
-        let paymentPendingInfoView = PrimerPaymentPendingInfoViewController(
-            formPaymentModule: self,
-            infoView: infoView)
-        
-        PrimerUIManager.primerRootViewController?.show(viewController: paymentPendingInfoView)
-        return Promise()
-    }
-    
-    @objc
-    func copyToClipboardTapped(_ sender: UIButton) {
-        
-        UIPasteboard.general.string = PrimerAPIConfigurationModule.decodedJWTToken?.accountNumber
-        
-        log(logLevel: .debug, message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
-        
-        DispatchQueue.main.async {
-            sender.isSelected = true
-        }
-        Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { timer in
             DispatchQueue.main.async {
-                sender.isSelected = false
+                let pcfvc = PrimerVoucherInfoPaymentViewController(
+                    userInterfaceModule: self.paymentMethodModule.userInterfaceModule,
+                    shouldShareVoucherInfoWithText: VoucherValue.sharableVoucherValuesText)
+                
+                PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+                seal.fulfill()
             }
-            timer.invalidate()
         }
     }
     
-    func makePaymentPendingInfoView(logo: UIImage? = nil, message: String) -> PrimerFormView {
-        
-        // The top logo
-        
-        let logoImageView = UIImageView(image: logo ?? self.paymentMethodModule.userInterfaceModule.logo)
-        logoImageView.translatesAutoresizingMaskIntoConstraints = false
-        logoImageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        logoImageView.clipsToBounds = true
-        logoImageView.contentMode = .scaleAspectFit
-        
-        // Message string
-        
-        let completeYourPaymentLabel = UILabel()
-        completeYourPaymentLabel.numberOfLines = 0
-        completeYourPaymentLabel.textAlignment = .center
-        completeYourPaymentLabel.text = message
-        completeYourPaymentLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
-        completeYourPaymentLabel.textColor = theme.text.title.color
-        
-        let views = [[logoImageView],
-                     [completeYourPaymentLabel]]
-        
-        return PrimerFormView(formViews: views)
+    /// This should be used when the payment is pending and we're awaiting a polling response.
+    func presentPendingResumeViewController() -> Promise<Void> {
+        let vc = PrimerPaymentPendingInfoViewController(userInterfaceModule: self.paymentMethodModule.userInterfaceModule)
+        PrimerUIManager.primerRootViewController?.show(viewController: vc)
+        return Promise()
     }
 }
 

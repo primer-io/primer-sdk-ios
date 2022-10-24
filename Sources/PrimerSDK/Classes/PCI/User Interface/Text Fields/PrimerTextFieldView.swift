@@ -42,6 +42,7 @@ public extension PrimerTextFieldViewDelegate {
 public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     
     @IBOutlet internal weak var textField: PrimerTextField!
+    
     internal var isValid: ((_ text: String) -> Bool?)?
     internal(set) public var isTextValid: Bool = false
     internal var editingAnalyticsObjectId: Analytics.Event.Property.ObjectId?

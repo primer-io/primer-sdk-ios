@@ -89,10 +89,10 @@ class KlarnaTokenizationModule: TokenizationModule {
         }
     }
     
-    override func start() -> Promise<PrimerPaymentMethodTokenData> {
+    override func startFlow() -> Promise<PrimerPaymentMethodTokenData> {
 //        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.urlSchemeRedirect, object: nil)
         
-        return super.start()
+        return super.startFlow()
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {

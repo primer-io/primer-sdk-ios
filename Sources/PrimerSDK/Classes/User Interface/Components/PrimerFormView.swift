@@ -34,9 +34,11 @@ class PrimerFormView: PrimerView {
 extension PrimerFormView {
     
     convenience init(frame: CGRect = .zero,
-                     formViews:  [[UIView?]]?,
+                     formViews: [[UIView?]]?,
                      verticalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default,
-                     horizontalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default) {
+                     horizontalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default,
+                     horizontalStackDistribution: UIStackView.Distribution = .fillEqually
+    ) {
         self.init(frame: frame)
         self.formViews = formViews
         self.verticalStackSpacing = verticalStackSpacing
@@ -51,16 +53,6 @@ extension PrimerFormView {
         addSubview(verticalStackView)
         setupVerticalStackView()
         evaluateAddViewsToStackView()
-    }
-    
-    private func makeHorizontalStackViewWithViews(_ views: [UIView]) -> UIStackView {
-        let horizontalStackView = UIStackView()
-        horizontalStackView.axis = .horizontal
-        horizontalStackView.alignment = .fill
-        horizontalStackView.distribution = .fillEqually
-        horizontalStackView.spacing = horizontalStackSpacing
-        views.forEach { horizontalStackView.addArrangedSubview($0) }
-        return horizontalStackView
     }
     
     private func setupVerticalStackView() {
@@ -93,6 +85,16 @@ extension PrimerFormView {
                 verticalStackView.addArrangedSubview(makeHorizontalStackViewWithViews($0.compactMap { $0 }))
             }
         }
+    }
+    
+    private func makeHorizontalStackViewWithViews(_ views: [UIView]) -> UIStackView {
+        let horizontalStackView = UIStackView()
+        horizontalStackView.axis = .horizontal
+        horizontalStackView.alignment = .fill
+        horizontalStackView.distribution = .fillProportionally
+        horizontalStackView.spacing = horizontalStackSpacing
+        views.forEach { horizontalStackView.addArrangedSubview($0) }
+        return horizontalStackView
     }
 }
 
