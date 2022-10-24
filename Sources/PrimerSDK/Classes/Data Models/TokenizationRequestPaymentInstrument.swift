@@ -95,6 +95,8 @@ class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
             try container.encode(sessionInfo, forKey: .sessionInfo)
         } else if let sessionInfo = sessionInfo as? WebRedirectSessionInfo {
             try container.encode(sessionInfo, forKey: .sessionInfo)
+        } else if let sessionInfo = sessionInfo as? RetailOutletTokenizationSessionRequestParameters {
+            try container.encode(sessionInfo, forKey: .sessionInfo)
         } else {
             let err = InternalError.invalidValue(key: "SessionInfo", value: self.sessionInfo, userInfo: nil, diagnosticsId: nil)
             ErrorHandler.handle(error: err)

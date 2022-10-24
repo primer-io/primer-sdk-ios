@@ -21,6 +21,7 @@ public enum PrimerInputElementType: Int {
     case otp
     case postalCode
     case phoneNumber
+    case retailer
     case unknown
     
     public var stringValue: String {
@@ -39,6 +40,8 @@ public enum PrimerInputElementType: Int {
             return "POSTAL_CODE"
         case .phoneNumber:
             return "PHONE_NUMBER"
+        case .retailer:
+            return "RETAILER"
         case .unknown:
             return "UNKNOWN"
         }
@@ -77,6 +80,10 @@ public enum PrimerInputElementType: Int {
         case .phoneNumber:
             guard let text = value as? String else { return false }
             return text.isNumeric
+        
+        case .retailer:
+            guard let text = value as? String else { return false }
+            return !text.isEmpty
             
         default:
             return true

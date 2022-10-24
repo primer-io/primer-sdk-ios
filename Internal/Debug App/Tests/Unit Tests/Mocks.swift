@@ -477,6 +477,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var fetchVaultedPaymentMethodsResult: (Response.Body.VaultedPaymentMethods?, Error?)?
     var pollingResults: [(PollingResponse?, Error?)]?
     var tokenizePaymentMethodResult: (PrimerPaymentMethodTokenData?, Error?)?
+    var listRetailOutletsResult: (RetailOutletsList?, Error?)?
     var paymentResult: (Response.Body.Payment?, Error?)?
     
     func validateClientToken(
@@ -668,6 +669,24 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<[Response.Body.Adyen.Bank], Error>) -> Void
     ) {
         
+    }
+    
+    // Retail Outlets List
+    func listRetailOutlets(clientToken: PrimerSDK.DecodedJWTToken, paymentMethodId: String, completion: @escaping (Result<PrimerSDK.RetailOutletsList, Error>) -> Void) {
+        guard let listRetailOutletsResult = listRetailOutletsResult,
+              (listRetailOutletsResult.0 != nil || listRetailOutletsResult.1 != nil)
+        else {
+            XCTAssert(false, "Set 'listRetailOutletsResult' on your MockPrimerAPIClient")
+            return
+        }
+        
+        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+            if let err = listRetailOutletsResult.1 {
+                completion(.failure(err))
+            } else if let res = listRetailOutletsResult.0 {
+                completion(.success(res))
+            }
+        }
     }
     
     private var pollingIteration: Int = 0

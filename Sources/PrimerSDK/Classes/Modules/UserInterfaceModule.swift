@@ -39,6 +39,22 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         return paymentMethodTokenizationViewModel.config.invertedLogo
     }
     
+    var navigationBarLogo: UIImage? {
+        
+        guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodTokenizationViewModel.config.type) else {
+            return logo
+        }
+        
+        switch internaPaymentMethodType {
+        case .adyenBlik:
+            return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "blik-logo-light", in: Bundle.primerResources, compatibleWith: nil)
+        case .adyenMultibanco:
+            return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "multibanco-logo-light", in: Bundle.primerResources, compatibleWith: nil)
+        default:
+            return logo
+        }
+    }
+    
     var icon: UIImage? {
         var fileName = paymentMethodTokenizationViewModel.config.type.lowercased().replacingOccurrences(of: "_", with: "-")
         fileName += "-icon"
@@ -709,6 +725,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     text: nil,
                     textColor: nil))
 
+        case .xenditRetailOutlets:
+            return nil
+            
         case .xfersPayNow:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -934,7 +953,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
                 buttonTitle = Strings.PaymentButton.pay
                 if let amountStr = universalCheckoutViewModel.amountStr {
-                    buttonTitle += " \(amountStr))"
+                    buttonTitle += " \(amountStr)"
                 }
                 
             case .vault:
