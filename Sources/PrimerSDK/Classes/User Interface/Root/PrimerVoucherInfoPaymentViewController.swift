@@ -11,7 +11,7 @@ import UIKit
 
 internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
         
-    let formPaymentModule: FormPaymentModule
+    let userInterfaceModule: UserInterfaceModule
     let textToShare: String?
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
@@ -30,11 +30,11 @@ internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController 
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(navigationBarLogo: UIImage?, formPaymentModule: FormPaymentModule, shouldShareVoucherInfoWithText textToShare: String? = nil) {
-        self.formPaymentModule = formPaymentModule
+    init(userInterfaceModule: UserInterfaceModule, shouldShareVoucherInfoWithText textToShare: String? = nil) {
+        self.userInterfaceModule = userInterfaceModule
         self.textToShare = textToShare
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = navigationBarLogo
+        self.titleImage = userInterfaceModule.invertedLogo
     }
     
     required init?(coder: NSCoder) {
@@ -46,13 +46,13 @@ internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController 
                 
         verticalStackView.spacing = 16
                 
-        if let infoView = self.formPaymentModule.infoView {
-            verticalStackView.addArrangedSubview(infoView)
+        if let resultView = self.userInterfaceModule.resultView {
+            verticalStackView.addArrangedSubview(resultView)
         }
-        
-        if let submitButton = self.formPaymentModule.paymentMethodModule.userInterfaceModule.submitButton {
-            verticalStackView.addArrangedSubview(submitButton)
-        }
+//        
+//        if let submitButton = self.userInterfaceModule.submitButton {
+//            verticalStackView.addArrangedSubview(submitButton)
+//        }
     }
     
     override func viewWillAppear(_ animated: Bool) {

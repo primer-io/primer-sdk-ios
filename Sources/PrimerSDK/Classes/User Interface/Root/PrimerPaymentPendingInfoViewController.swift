@@ -11,16 +11,14 @@ import UIKit
 
 internal class PrimerPaymentPendingInfoViewController: PrimerFormViewController {
         
-    private let formPaymentModule: FormPaymentModule
-    private let infoView: PrimerFormView
+    private let userInterfaceModule: UserInterfaceModule
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(formPaymentModule: FormPaymentModule, infoView: PrimerFormView) {
-        self.formPaymentModule = formPaymentModule
-        self.infoView = infoView
+    init(userInterfaceModule: UserInterfaceModule) {
+        self.userInterfaceModule = userInterfaceModule
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -30,7 +28,10 @@ internal class PrimerPaymentPendingInfoViewController: PrimerFormViewController 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        verticalStackView.addArrangedSubview(infoView)
+        
+        if let resultView = self.userInterfaceModule.resultView {
+            self.verticalStackView.addArrangedSubview(resultView)
+        }
     }
 }
 

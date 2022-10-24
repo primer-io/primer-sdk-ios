@@ -74,7 +74,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         }
         
 #if !canImport(PrimerKlarnaSDK)
-        if let klarnaPaymentMethodModuleIndex = paymentMethodModules.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
+        if let klarnaPaymentMethodModuleIndex = paymentMethodModules.firstIndex(where: { $0.paymentMethodConfiguration.type == PrimerPaymentMethodType.klarna.rawValue }) {
             paymentMethodModules.remove(at: klarnaPaymentMethodModuleIndex)
             print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
         }

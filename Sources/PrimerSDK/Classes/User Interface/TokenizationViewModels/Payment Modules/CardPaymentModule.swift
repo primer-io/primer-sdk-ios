@@ -16,12 +16,14 @@ class CardPaymentModule: PaymentModule {
     private var redirectUrl: URL!
     private var statusUrl: URL!
     private var webViewController: SFSafariViewController!
-    private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+    private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
     private var resumeToken: String?
     
     override func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-            if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+            if decodedJWTToken.intent?.contains("_REDIRECTION") == true ||
+                decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue
+            {
                 if let redirectUrlStr = decodedJWTToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),
                    let statusUrlStr = decodedJWTToken.statusUrl,
@@ -36,10 +38,25 @@ class CardPaymentModule: PaymentModule {
                     }
                     
                     firstly {
-                        self.presentProcessor3DSWebViewController()
+                        self.presentWebViewController()
                     }
                     .then { () -> Promise<String> in
-                        return PollingModule(url: statusUrl).start()
+                        let pollingModule = PollingModule(url: statusUrl)
+                        
+                        self.didCancel = { [weak self] in
+                            guard let strongSelf = self else { return }
+                            let err = PrimerError.cancelled(
+                                paymentMethodType: strongSelf.paymentMethodModule.paymentMethodConfiguration.type,
+                                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                diagnosticsId: nil)
+                            ErrorHandler.handle(error: err)
+                            pollingModule.cancel(withError: err)
+                            strongSelf.webViewCompletion = nil
+                            strongSelf.webViewCompletion = nil
+                            strongSelf.didCancel = nil
+                        }
+                        
+                        return pollingModule.start()
                     }
                     .done { resumeToken in
                         self.resumeToken = resumeToken
@@ -98,47 +115,49 @@ class CardPaymentModule: PaymentModule {
                 seal.reject(err)
     #endif
                 
-            } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
-                if let redirectUrlStr = decodedJWTToken.redirectUrl,
-                   let redirectUrl = URL(string: redirectUrlStr),
-                   let statusUrlStr = decodedJWTToken.statusUrl,
-                   let statusUrl = URL(string: statusUrlStr),
-                   decodedJWTToken.intent != nil {
-                    
-                    self.redirectUrl = redirectUrl
-                    self.statusUrl = statusUrl
-                    
-                    DispatchQueue.main.async {
-                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
-                    }
-                    
-                    firstly {
-                        self.presentProcessor3DSWebViewController()
-                    }
-                    .then { () -> Promise<String> in
-                        let pollingModule = PollingModule(url: statusUrl)
-                        
-                        self.didCancel = {
-                            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                            ErrorHandler.handle(error: err)
-                            pollingModule.cancel(withError: err)
-                        }
-                        
-                        return pollingModule.start()
-                    }
-                    .done { resumeToken in
-                        self.resumeToken = resumeToken
-                        seal.fulfill(resumeToken)
-                    }
-                    .catch { err in
-                        seal.reject(err)
-                    }
-                } else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                }
-            } else {
+            }
+//            else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
+//                if let redirectUrlStr = decodedJWTToken.redirectUrl,
+//                   let redirectUrl = URL(string: redirectUrlStr),
+//                   let statusUrlStr = decodedJWTToken.statusUrl,
+//                   let statusUrl = URL(string: statusUrlStr),
+//                   decodedJWTToken.intent != nil {
+//
+//                    self.redirectUrl = redirectUrl
+//                    self.statusUrl = statusUrl
+//
+//                    DispatchQueue.main.async {
+//                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+//                    }
+//
+//                    firstly {
+//                        self.presentWebViewController()
+//                    }
+//                    .then { () -> Promise<String> in
+//                        let pollingModule = PollingModule(url: statusUrl)
+//
+//                        self.didCancel = {
+//                            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+//                            ErrorHandler.handle(error: err)
+//                            pollingModule.cancel(withError: err)
+//                        }
+//
+//                        return pollingModule.start()
+//                    }
+//                    .done { resumeToken in
+//                        self.resumeToken = resumeToken
+//                        seal.fulfill(resumeToken)
+//                    }
+//                    .catch { err in
+//                        seal.reject(err)
+//                    }
+//                } else {
+//                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+//                    ErrorHandler.handle(error: err)
+//                    seal.reject(err)
+//                }
+//            }
+            else {
                 let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -146,9 +165,11 @@ class CardPaymentModule: PaymentModule {
         }
     }
     
-    private func presentProcessor3DSWebViewController() -> Promise<Void> {
+    private func presentWebViewController() -> Promise<Void> {
         return Promise { seal in
             self.webViewController = SFSafariViewController(url: self.redirectUrl)
+            self.presentedViewController = self.webViewController
+            
             self.webViewController!.delegate = self
             
             self.webViewCompletion = { (id, err) in
@@ -171,14 +192,7 @@ class CardPaymentModule: PaymentModule {
 extension CardPaymentModule: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        if let webViewCompletion = self.webViewCompletion {
-            // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-            ErrorHandler.handle(error: err)
-            webViewCompletion(nil, err)
-        }
-        
-        self.webViewCompletion = nil
+        self.didCancel?()
     }
 }
 

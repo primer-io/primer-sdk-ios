@@ -9,7 +9,7 @@
 
 import Foundation
 
-protocol PaymentMethodModuleProtocol: PaymentMethodModule {
+protocol PaymentMethodModuleProtocol: NSObjectProtocol {
     
     static var apiClient: PrimerAPIClientProtocol? { get set }
     
@@ -26,7 +26,7 @@ protocol PaymentMethodModuleProtocol: PaymentMethodModule {
         tokenizationModule: TokenizationModuleProtocol?,
         paymentModule: PaymentModuleProtocol?
     )
-    func tokenizeAndPayIfNeeded()
+    func startFlow()
     func cancel()
 }
 
@@ -34,6 +34,9 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
     
     static var apiClient: PrimerAPIClientProtocol?
     
+    lazy var paymentMethodType: PrimerPaymentMethodType? = {
+        PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type)
+    }()
     var paymentMethodConfiguration: PrimerPaymentMethod
     var checkouEventsNotifierModule: CheckoutEventsNotifierModule
     var userInterfaceModule: UserInterfaceModule!
@@ -60,55 +63,47 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
         } else {
             if self.paymentMethodConfiguration.implementationType == .webRedirect {
                 self.tokenizationModule = WebRedirectTokenizationModule(paymentMethodModule: self)
-
+                
             } else {
-                switch self.paymentMethodConfiguration.type {
-                case PrimerPaymentMethodType.adyenBancontactCard.rawValue,
-                    PrimerPaymentMethodType.paymentCard.rawValue:
+                switch self.paymentMethodType {
+                case .adyenBancontactCard,
+                        .paymentCard:
                     self.tokenizationModule = CardTokenizationModule(paymentMethodModule: self)
-                    self.userInterfaceModule.submitButton?.addTarget(
-                        self.tokenizationModule,
-                        action: #selector(CardTokenizationModule.submitButtonTapped),
-                        for: .touchUpInside)
                     
-                case PrimerPaymentMethodType.adyenBlik.rawValue,
-                    PrimerPaymentMethodType.rapydFast.rawValue,
-                    PrimerPaymentMethodType.adyenMBWay.rawValue,
-                    PrimerPaymentMethodType.adyenMultibanco.rawValue:
+                case .adyenBlik,
+                        .adyenMBWay,
+                        .adyenMultibanco,
+                        .rapydFast:
                     self.tokenizationModule = FormTokenizationModule(paymentMethodModule: self)
-                    self.userInterfaceModule.submitButton?.addTarget(
-                        self.tokenizationModule,
-                        action: #selector(FormTokenizationModule.submitButtonTapped),
-                        for: .touchUpInside)
-
-                case PrimerPaymentMethodType.adyenDotPay.rawValue,
-                    PrimerPaymentMethodType.adyenIDeal.rawValue:
+                    
+                case .adyenDotPay,
+                        .adyenIDeal:
                     self.tokenizationModule = BankSelectorTokenizationModule(paymentMethodModule: self)
-
-                case PrimerPaymentMethodType.apaya.rawValue:
+                    
+                case .apaya:
                     self.tokenizationModule = ApayaTokenizationModule(paymentMethodModule: self)
-
-                case PrimerPaymentMethodType.applePay.rawValue:
+                    
+                case .applePay:
                     if #available(iOS 11.0, *) {
                         self.tokenizationModule = ApplePayTokenizationModule(paymentMethodModule: self)
                     }
-
-                case PrimerPaymentMethodType.klarna.rawValue:
+                    
+                case .klarna:
                     self.tokenizationModule = KlarnaTokenizationModule(paymentMethodModule: self)
-
-                case PrimerPaymentMethodType.payPal.rawValue:
+                    
+                case .payPal:
                     self.tokenizationModule = PayPalTokenizationModule(paymentMethodModule: self)
-
-                case PrimerPaymentMethodType.primerTestKlarna.rawValue,
-                    PrimerPaymentMethodType.primerTestPayPal.rawValue,
-                    PrimerPaymentMethodType.primerTestSofort.rawValue:
+                    
+                case .primerTestKlarna,
+                        .primerTestPayPal,
+                        .primerTestSofort:
                     self.tokenizationModule = PrimerTestPaymentMethodTokenizationModule(paymentMethodModule: self)
-
-                case PrimerPaymentMethodType.xfersPayNow.rawValue,
-                    PrimerPaymentMethodType.rapydPromptPay.rawValue,
-                    PrimerPaymentMethodType.omisePromptPay.rawValue:
+                    
+                case .xfersPayNow,
+                        .rapydPromptPay,
+                        .omisePromptPay:
                     self.tokenizationModule = QRCodeTokenizationModule(paymentMethodModule: self)
-
+                    
                 default:
                     return nil
                 }
@@ -121,47 +116,47 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
         } else {
             if self.paymentMethodConfiguration.implementationType == .webRedirect {
                 self.paymentModule = WebRedirectPaymentModule(paymentMethodModule: self)
-
+                
             } else {
-                switch self.paymentMethodConfiguration.type {
-                case PrimerPaymentMethodType.adyenBlik.rawValue,
-                    PrimerPaymentMethodType.rapydFast.rawValue,
-                    PrimerPaymentMethodType.adyenMBWay.rawValue,
-                    PrimerPaymentMethodType.adyenMultibanco.rawValue:
+                switch self.paymentMethodType {
+                case .adyenBlik,
+                        .rapydFast,
+                        .adyenMBWay,
+                        .adyenMultibanco:
                     self.paymentModule = FormPaymentModule(paymentMethodModule: self)
-
-                case PrimerPaymentMethodType.adyenDotPay.rawValue,
-                    PrimerPaymentMethodType.adyenIDeal.rawValue:
+                    
+                case .adyenDotPay,
+                        .adyenIDeal:
                     self.paymentModule = BankSelectorPaymentModule(paymentMethodModule: self)
-
-                case PrimerPaymentMethodType.apaya.rawValue:
+                    
+                case .apaya:
                     self.paymentModule = ApayaPaymentModule(paymentMethodModule: self)
-
-                case PrimerPaymentMethodType.applePay.rawValue:
+                    
+                case .applePay:
                     if #available(iOS 11.0, *) {
                         self.paymentModule = ApplePayPaymentModule(paymentMethodModule: self)
                     }
-
-                case PrimerPaymentMethodType.klarna.rawValue:
+                    
+                case .klarna:
                     self.paymentModule = KlarnaPaymentModule(paymentMethodModule: self)
-
-                case PrimerPaymentMethodType.paymentCard.rawValue,
-                    PrimerPaymentMethodType.adyenBancontactCard.rawValue:
+                    
+                case .paymentCard,
+                        .adyenBancontactCard:
                     self.paymentModule = CardPaymentModule(paymentMethodModule: self)
-
-                case PrimerPaymentMethodType.payPal.rawValue:
+                    
+                case .payPal:
                     self.paymentModule = PayPalPaymentModule(paymentMethodModule: self)
-
-                case PrimerPaymentMethodType.primerTestKlarna.rawValue,
-                    PrimerPaymentMethodType.primerTestPayPal.rawValue,
-                    PrimerPaymentMethodType.primerTestSofort.rawValue:
+                    
+                case .primerTestKlarna,
+                        .primerTestPayPal,
+                        .primerTestSofort:
                     self.paymentModule =  PrimerTestPaymentMethodPaymentModule(paymentMethodModule: self)
-
-                case PrimerPaymentMethodType.xfersPayNow.rawValue,
-                    PrimerPaymentMethodType.rapydPromptPay.rawValue,
-                    PrimerPaymentMethodType.omisePromptPay.rawValue:
+                    
+                case .xfersPayNow,
+                        .rapydPromptPay,
+                        .omisePromptPay:
                     self.paymentModule = QRCodePaymentModule(paymentMethodModule: self)
-
+                    
                 default:
                     return nil
                 }
@@ -175,9 +170,9 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
     }
     
     @objc
-    func tokenizeAndPayIfNeeded() {
+    func startFlow() {
         firstly {
-            self.tokenizationModule.start()
+            self.tokenizationModule.startFlow()
         }
         .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
             if PrimerInternal.shared.intent == .vault {
@@ -204,6 +199,8 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
             if let primerErr = err as? PrimerError,
                case .cancelled = primerErr,
                PrimerHeadlessUniversalCheckout.current.delegate == nil {
+                
+                PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
                 
                 firstly {
                     clientSessionActionsModule.unselectPaymentMethodIfNeeded()
@@ -248,7 +245,22 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
     }
     
     func handleSuccessfulFlow() {
-        PrimerUIManager.dismissOrShowResultScreen(type: .success, withMessage: nil)
+        guard let paymentMethodType = self.paymentMethodType else {
+            PrimerUIManager.dismissOrShowResultScreen(type: .success, withMessage: nil)
+            return
+        }
+        
+        if paymentMethodType == .adyenMultibanco {
+            (self.paymentModule as? FormPaymentModule)?.presentResultViewController()
+            
+        }
+//        else if accountInfoPaymentMethodTypes.contains(paymentMethodType) {
+//            presentAccountInfoViewController()
+//
+//        }
+        else {
+            PrimerUIManager.dismissOrShowResultScreen(type: .success, withMessage: nil)
+        }
     }
     
     func handleFailureFlow(errorMessage: String?) {

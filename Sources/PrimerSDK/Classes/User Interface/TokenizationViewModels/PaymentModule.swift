@@ -9,7 +9,7 @@
 
 import Foundation
 
-protocol PaymentModuleProtocol {
+protocol PaymentModuleProtocol: NSObjectProtocol {
     
     var paymentMethodModule: PaymentMethodModuleProtocol! { get }
     var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
@@ -31,6 +31,7 @@ class PaymentModule: NSObject, PaymentModuleProtocol {
     var paymentId: String?
     var paymentCheckoutData: PrimerCheckoutData?
     var didCancel: (() -> Void)?
+    var presentedViewController: UIViewController?
     
     required init(paymentMethodModule: PaymentMethodModuleProtocol) {
         self.paymentMethodModule = paymentMethodModule
@@ -41,6 +42,10 @@ class PaymentModule: NSObject, PaymentModuleProtocol {
         self.paymentMethodTokenData = paymentMethodTokenData
         
         return Promise { seal in
+            DispatchQueue.main.async {
+                PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
+            }
+            
             firstly {
                 self.createPayment(with: paymentMethodTokenData)
             }
@@ -51,6 +56,15 @@ class PaymentModule: NSObject, PaymentModuleProtocol {
                     }
                     .done { resumeToken in
                         if let resumeToken = resumeToken {
+                            DispatchQueue.main.async {
+                                PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+                                
+                                if self.presentedViewController != nil {
+                                    self.presentedViewController!.dismiss(animated: true)
+                                    self.presentedViewController = nil
+                                }
+                            }
+                            
                             firstly {
                                 self.resumePayment(with: resumeToken)
                             }
@@ -60,10 +74,8 @@ class PaymentModule: NSObject, PaymentModuleProtocol {
                             .catch { err in
                                 seal.reject(err)
                             }
-                        } else if let checkoutData = self.paymentCheckoutData {
-                            seal.fulfill(checkoutData)
                         } else {
-                            seal.fulfill(nil)
+                            seal.fulfill(self.paymentCheckoutData)
                         }
                     }
                     .catch { err in
@@ -71,6 +83,11 @@ class PaymentModule: NSObject, PaymentModuleProtocol {
                     }
                 } else {
                     seal.fulfill(self.paymentCheckoutData)
+                }
+            }
+            .ensure {
+                DispatchQueue.main.async {
+                    PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                 }
             }
             .catch { err in

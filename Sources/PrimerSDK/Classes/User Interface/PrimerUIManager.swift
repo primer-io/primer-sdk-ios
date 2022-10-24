@@ -117,7 +117,7 @@ internal class PrimerUIManager {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         
-        paymentMethodTokenizationViewModel?.tokenizeAndPayIfNeeded()
+        paymentMethodTokenizationViewModel?.startFlow()
     }
     
     static func prepareRootViewController()  -> Promise<Void> {
