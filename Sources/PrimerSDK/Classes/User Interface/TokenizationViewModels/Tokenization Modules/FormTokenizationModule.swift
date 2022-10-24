@@ -27,7 +27,7 @@ internal class Input {
 class FormTokenizationModule: TokenizationModule {
     
     // MARK: - Properties
-        
+    
     var didCancel: (() -> Void)?
     var userInputCompletion: (() -> Void)?
     
@@ -68,7 +68,7 @@ class FormTokenizationModule: TokenizationModule {
     }
     
     override func startFlow() -> Promise<PrimerPaymentMethodTokenData> {
-//        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.urlSchemeRedirect, object: nil)
+        //        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.urlSchemeRedirect, object: nil)
         
         return super.startFlow()
     }
@@ -309,17 +309,8 @@ class FormTokenizationModule: TokenizationModule {
             seal.fulfill()
         }
     }
-}
-
-extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
     
-    func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {}
-    // MARK: - FORM SPECIFIC FUNCTIONALITY
-    
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        let isTextsValid = inputs.allSatisfy { $0.primerTextFieldView?.isTextValid == true }
-        isTextsValid ? enableSubmitButton(true) : enableSubmitButton(false)
-    private func presentPaymentMethodUserInterface() -> Promise<Void> {
+    func presentPaymentMethodUserInterface() -> Promise<Void> {
         //        [.adyenBlik, .adyenMBWay, .adyenMultibanco]
         return Promise { seal in
             DispatchQueue.main.async {
