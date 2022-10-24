@@ -9,19 +9,19 @@
 
 import Foundation
 
-protocol TokenizationModuleProtocol {
+protocol TokenizationModuleProtocol: NSObjectProtocol {
     
     var paymentMethodModule: PaymentMethodModuleProtocol! { get }
     var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
     
     init(paymentMethodModule: PaymentMethodModuleProtocol)
-    func start() -> Promise<PrimerPaymentMethodTokenData>
+    func startFlow() -> Promise<PrimerPaymentMethodTokenData>
     func validate() -> Promise<Void>
     func performPreTokenizationSteps() -> Promise<Void>
     func performTokenizationStep() -> Promise<Void>
     func tokenize() -> Promise<PrimerPaymentMethodTokenData>
     func performPostTokenizationSteps() -> Promise<Void>
-    func submitButtonTapped()
+    func submitTokenizationData()
     func cancel()
 }
 
@@ -35,7 +35,7 @@ class TokenizationModule: NSObject, TokenizationModuleProtocol {
         super.init()
     }
     
-    func start() -> Promise<PrimerPaymentMethodTokenData> {
+    func startFlow() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             firstly {
                 self.performPreTokenizationSteps()
@@ -75,7 +75,7 @@ class TokenizationModule: NSObject, TokenizationModuleProtocol {
         fatalError("\(#function) must be overriden")
     }
     
-    func submitButtonTapped() {
+    func submitTokenizationData() {
         // Only applies on PMs that need a submit buton
         fatalError("\(#function) must be overriden")
     }
