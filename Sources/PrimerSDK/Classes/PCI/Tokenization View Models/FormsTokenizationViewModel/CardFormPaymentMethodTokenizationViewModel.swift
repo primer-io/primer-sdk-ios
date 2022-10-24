@@ -27,7 +27,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else { return false }
         return paymentMethodsRequiringCVVInput.contains(paymentMethodType)
     }
-    private var didCancelPolling: (() -> Void)?
     var dataSource = CountryCode.allCases {
         didSet {
             tableView.reloadData()
@@ -550,8 +549,13 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     .then { () -> Promise<String> in
                         let pollingModule = PollingModule(url: statusUrl)
                         
-                        self.didCancelPolling = {
-                            pollingModule.cancel()
+                        self.didCancel = {
+                            let err = PrimerError.cancelled(
+                                paymentMethodType: self.config.type,
+                                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                diagnosticsId: nil)
+                            ErrorHandler.handle(error: err)
+                            pollingModule.cancel(withError: err)
                         }
                         
                         return pollingModule.start()
@@ -639,8 +643,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     
     override func cancel() {
-        self.didCancelPolling?()
-        self.didCancelPolling = nil
+        self.didCancel?()
+        self.didCancel = nil
         super.cancel()
     }
 }

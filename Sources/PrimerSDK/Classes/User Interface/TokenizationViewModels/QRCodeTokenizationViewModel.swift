@@ -118,10 +118,6 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                 return
             }
             
-            self.didCancelPolling = {
-                pollingModule.cancel()
-            }
-
             firstly {
                 pollingModule.start()
             }
