@@ -51,7 +51,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        _ = self.cardTokenizationModule.cardNumberField.becomeFirstResponder()
+        _ = self.cardTokenizationModule.paymentMethodModule.userInterfaceModule.cardNumberField.becomeFirstResponder()
     }
     
     private func setupView() {
@@ -59,7 +59,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
         verticalStackView.spacing = 6
         
         // Card and billing address fields
-        renderCardAndBillingAddressFields()
+        renderInputView()
         
         // Separator view
         let separatorView = PrimerView()
@@ -71,8 +71,8 @@ class PrimerCardFormViewController: PrimerFormViewController {
         renderSubmitButton()
     }
     
-    private func renderCardAndBillingAddressFields() {
-        verticalStackView.addArrangedSubview(self.cardTokenizationModule.formView)
+    private func renderInputView() {
+        verticalStackView.addArrangedSubview(self.cardTokenizationModule.paymentMethodModule.userInterfaceModule.inputView!)
     }
     
     private func renderSubmitButton() {

@@ -10,20 +10,29 @@
 import UIKit
 
 internal class PrimerInputViewController: PrimerFormViewController {
-        
-    let formTokenizationModule: FormTokenizationModule
+    
+    let userInterfaceModule: UserInterfaceModule
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(navigationBarLogo: UIImage?,
-         formTokenizationModule: FormTokenizationModule,
+    init(paymentMethodType: String,
+         userInterfaceModule: UserInterfaceModule,
          inputsDistribution: NSLayoutConstraint.Axis = .vertical) {
-        self.formTokenizationModule = formTokenizationModule
+        self.userInterfaceModule = userInterfaceModule
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = navigationBarLogo
-
+        
+        let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType)
+        
+        switch paymentMethodType {
+        case .adyenMBWay,
+                .adyenMultibanco:
+            self.titleImage = userInterfaceModule.logo
+            
+        default:
+            self.titleImage = userInterfaceModule.invertedLogo
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -32,17 +41,16 @@ internal class PrimerInputViewController: PrimerFormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        
         verticalStackView.spacing = 16
         
-        for inputStackView in formTokenizationModule.inputTextFieldsStackViews {
-            verticalStackView.addArrangedSubview(inputStackView)
+        if let inputView = self.userInterfaceModule.inputView {
+            verticalStackView.addArrangedSubview(inputView)
         }
         
-        guard let submitButton = self.formTokenizationModule.paymentMethodModule.userInterfaceModule.submitButton else { return }
+        guard let submitButton = self.userInterfaceModule.submitButton else { return }
         verticalStackView.addArrangedSubview(submitButton)
     }
-
 }
 
 #endif
