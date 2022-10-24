@@ -26,10 +26,10 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
     var cardHolderNameTextField: PrimerInputTextField?
     var activityIndicator: UIActivityIndicatorView?
     var paymentButton: UIButton!
-
+    
     var paymentId: String?
     var resumePaymentId: String?
-
+    
     var threeDSAlert: UIAlertController?
     
     var checkoutData: [String] = []
@@ -40,9 +40,9 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.view.backgroundColor = .white
-
+        
         self.paymentButton = UIButton()
         self.paymentButton.accessibilityIdentifier = "submit_btn"
         self.paymentButton.backgroundColor = .black
@@ -53,18 +53,18 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
         self.stackView.axis = .vertical
         self.stackView.spacing = 6
         self.view.addSubview(self.stackView)
-
+        
         self.paymentButton.translatesAutoresizingMaskIntoConstraints = false
         self.paymentButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         self.paymentButton.addTarget(self, action: #selector(paymentButtonTapped), for: .touchUpInside)
-
+        
         self.stackView.translatesAutoresizingMaskIntoConstraints = false
         self.stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         self.stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         self.stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-
+        
         PrimerHeadlessUniversalCheckout.current.delegate = self
-
+        
         self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardComponentsUIManager()
         self.cardFormUIManager!.delegate = self
         
@@ -77,7 +77,7 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
             self.stackView.addArrangedSubview(textField)
             textField.translatesAutoresizingMaskIntoConstraints = false
             textField.heightAnchor.constraint(equalToConstant: 50).isActive = true
-
+            
             if inputElementType == .cardNumber {
                 self.cardNumberTextField = textField
                 self.cardNumberTextField?.accessibilityIdentifier = "card_txt_fld"
@@ -95,14 +95,14 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
                 self.cardHolderNameTextField?.accessibilityIdentifier = "card_holder_txt_fld"
                 self.cardHolderNameTextField?.placeholder = "Cardholder"
             }
-
+            
             tmpInputElements.append(textField)
         }
-
+        
         self.cardFormUIManager?.inputElements = tmpInputElements
         self.stackView.addArrangedSubview(self.paymentButton)
     }
-
+    
     @objc
     func paymentButtonTapped() {
         self.cardFormUIManager?.submit()
@@ -125,8 +125,16 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
     }
 }
 
-// MARK: - PRIMER HEADLESS UNIVERSAL CHECKOUT DELEGATE
+// MARK: Manual Payment Handling
 
+extension MerchantHUCCardComponentsViewController {
+    
+    func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
+        
+    }
+    
+    // MARK: - PRIMER HEADLESS UNIVERSAL CHECKOUT DELEGATE
+    
     func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         print("🤯🤯🤯 \(#function) paymentMethodType: \(paymentMethodType)")
     }
@@ -134,11 +142,6 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
         print("🤯🤯🤯 \(#function)\npaymentMethods: \(paymentMethods)")
     }
-}
-
-// MARK: Manual Payment Handling
-
-extension MerchantHUCCardComponentsViewController {
     
     func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {
         print("🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
@@ -155,14 +158,14 @@ extension MerchantHUCCardComponentsViewController {
             if let err = err {
                 self.showErrorMessage(err.localizedDescription)
                 self.hideLoadingOverlay()
-
+                
             } else if let res = res {
                 self.paymentId = res.id
                 
                 if res.requiredAction?.clientToken != nil {
                     decisionHandler(.continueWithNewClientToken(res.requiredAction!.clientToken))
                 }
-
+                
             } else {
                 assert(true)
             }
@@ -194,7 +197,7 @@ extension MerchantHUCCardComponentsViewController {
 // MARK: Common
 
 extension MerchantHUCCardComponentsViewController {
-
+    
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
         print("\n\nMERCHANT APP\n\(#function)")
         self.logs.append(#function)
@@ -256,19 +259,19 @@ extension MerchantHUCCardComponentsViewController {
 extension MerchantHUCCardComponentsViewController: PrimerInputElementDelegate {
     
     func inputElementDidFocus(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
-
+        
     }
-
+    
     func inputElementDidBlur(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
-
+        
     }
-
+    
     func inputElementValueDidChange(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
-
+        
     }
 }
 
-extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutCardComponentsUIManagerDelegate {
+extension MerchantHUCCardComponentsViewController: PrimerHeadlessUniversalCheckoutCardComponentsUIManagerDelegate {
     
     func cardFormUIManager(_ cardFormUIManager: PrimerHeadlessUniversalCheckout.CardComponentsUIManager, isCardFormValid: Bool) {
         
