@@ -322,7 +322,7 @@ extension FormPaymentMethodTokenizationViewModel {
         
         // The top logo
         
-        let logoImageView = UIImageView(image: logo ?? uiModule.logo)
+        let logoImageView = UIImageView(image: logo ?? uiModule.navigationBarLogo)
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         logoImageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
         logoImageView.clipsToBounds = true

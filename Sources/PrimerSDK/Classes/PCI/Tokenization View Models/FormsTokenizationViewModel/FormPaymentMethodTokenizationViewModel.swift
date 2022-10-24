@@ -436,7 +436,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     /// Dictionary containing the payment method types expecting to show a view with the Payment Logo and a message
     /// informing the user to complete the payment outside of the current Application context
-    let needingExternalCompletionPaymentMethodDictionary: [PrimerPaymentMethodType: String] = [.adyenMBWay: Strings.MBWay.completeYourPayment]
+    let needingExternalCompletionPaymentMethodDictionary: [PrimerPaymentMethodType: String] = [.adyenMBWay: Strings.MBWay.completeYourPayment,
+                                                                                               .adyenBlik: Strings.Blik.completeYourPayment]
     
     // MARK: Account Info Payment
     
