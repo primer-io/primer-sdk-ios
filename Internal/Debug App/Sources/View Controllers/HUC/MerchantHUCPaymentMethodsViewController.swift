@@ -313,9 +313,8 @@ class MerchantPaymentMethodCell: UITableViewCell {
         paymentMethodButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
         paymentMethodButton.layer.cornerRadius = 4
         
-        paymentMethodButton.backgroundColor = paymentMethodAsset?.paymentMethodBackgroundColor.colored
-        paymentMethodButton.setTitle(paymentMethodAsset?.paymentMethodType, for: .normal)
-        paymentMethodButton.setImage(paymentMethodAsset?.paymentMethodLogo.colored, for: .normal)
+        paymentMethodButton.backgroundColor = paymentMethodAsset?.paymentMethodBackgroundColor.colored ?? paymentMethodAsset?.paymentMethodBackgroundColor.light
+        paymentMethodButton.setImage(paymentMethodAsset?.paymentMethodLogo.colored ?? paymentMethodAsset?.paymentMethodLogo.light, for: .normal)
         paymentMethodButton.setTitleColor(.black, for: .normal)
 
         paymentMethodButton.translatesAutoresizingMaskIntoConstraints = false
