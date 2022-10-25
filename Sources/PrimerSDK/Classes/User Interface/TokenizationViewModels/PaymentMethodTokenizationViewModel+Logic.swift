@@ -55,6 +55,10 @@ extension PaymentMethodTokenizationViewModel {
                     if let primerErr = err as? PrimerError,
                        case .cancelled = primerErr
                     {
+                        if PrimerHeadlessUniversalCheckout.current.delegate != nil {
+                            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: primerErr, checkoutData: self.paymentCheckoutData)
+                        }
+                        
                         firstly {
                             clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         }
