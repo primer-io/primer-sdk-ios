@@ -170,6 +170,10 @@ public class PrimerHeadlessUniversalCheckout {
             return requiredFields
         case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
             return [.cardNumber, .expiryDate, .cardholderName]
+        case PrimerPaymentMethodType.xenditOvo.rawValue:
+            return [.phoneNumber]
+        case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
+            return [.retailer]
         default:
             return []
         }
