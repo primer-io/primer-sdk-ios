@@ -21,7 +21,7 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
     var paymentMethodType: String!
     var paymentId: String?
     var activityIndicator: UIActivityIndicatorView?
-    var rawData: PrimerRawData?
+    var rawCardData = PrimerCardData(cardNumber: "", expiryMonth: "", expiryYear: "", cvv: "", cardholderName: "")
     
     var cardnumberTextField: UITextField!
     var expiryDateTextField: UITextField!
@@ -45,57 +45,6 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
         self.stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         self.stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         
-        self.cardnumberTextField = UITextField(frame: .zero)
-        self.cardnumberTextField.accessibilityIdentifier = "card_txt_fld"
-        self.cardnumberTextField.borderStyle = .line
-        self.cardnumberTextField.layer.borderColor = UIColor.black.cgColor
-        self.stackView.addArrangedSubview(self.cardnumberTextField)
-        self.cardnumberTextField.translatesAutoresizingMaskIntoConstraints = false
-        self.cardnumberTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        self.cardnumberTextField.placeholder = "4242 4242 4242 4242"
-        
-        self.expiryDateTextField = UITextField(frame: .zero)
-        self.expiryDateTextField.accessibilityIdentifier = "expiry_txt_fld"
-        self.expiryDateTextField.borderStyle = .line
-        self.expiryDateTextField.layer.borderColor = UIColor.black.cgColor
-        self.stackView.addArrangedSubview(self.expiryDateTextField)
-        self.expiryDateTextField.translatesAutoresizingMaskIntoConstraints = false
-        self.expiryDateTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        self.expiryDateTextField.placeholder = "03/30"
-        
-        if paymentMethodType == "PAYMENT_CARD" {
-            self.cvvTextField = UITextField(frame: .zero)
-            self.cvvTextField.accessibilityIdentifier = "cvc_txt_fld"
-            self.cvvTextField.borderStyle = .line
-            self.cvvTextField.layer.borderColor = UIColor.black.cgColor
-            self.stackView.addArrangedSubview(self.cvvTextField)
-            self.cvvTextField.translatesAutoresizingMaskIntoConstraints = false
-            self.cvvTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
-            self.cvvTextField.placeholder = "123"
-        }
-        
-        self.cardholderNameTextField = UITextField(frame: .zero)
-        self.cardholderNameTextField.accessibilityIdentifier = "card_holder_txt_fld"
-        self.cardholderNameTextField.borderStyle = .line
-        self.cardholderNameTextField.layer.borderColor = UIColor.black.cgColor
-        self.stackView.addArrangedSubview(self.cardholderNameTextField)
-        self.cardholderNameTextField.translatesAutoresizingMaskIntoConstraints = false
-        self.cardholderNameTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        self.cardholderNameTextField.placeholder = "John Smith"
-        
-        self.payButton = UIButton(frame: .zero)
-        self.stackView.addArrangedSubview(self.payButton)
-        self.payButton.accessibilityIdentifier = "submit_btn"
-        self.payButton.translatesAutoresizingMaskIntoConstraints = false
-        self.payButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        self.payButton.setTitle("Pay", for: .normal)
-        self.payButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        self.payButton.titleLabel?.minimumScaleFactor = 0.7
-        self.payButton.backgroundColor = .black
-        self.payButton.setTitleColor(.white, for: .normal)
-        self.payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
-        
-        
         PrimerHeadlessUniversalCheckout.current.delegate = self
         
         self.showLoadingOverlay()
@@ -115,53 +64,116 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
                 
                 PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, completion: { (pms, err) in
                     self.hideLoadingOverlay()
+                    self.renderInputs()
                 })
             }
         }
     }
     
-    @IBAction func payButtonTapped(_ sender: UIButton) {
+    var primerRawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
+    
+    func renderInputs() {
         do {
-            guard expiryDateTextField.text?.count == 5,
-                  let expiryComponents = expiryDateTextField.text?.split(separator: "/") else {
-                self.showErrorMessage("Please write expiry date in format MM/YY")
-                return
+            self.primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType, delegate: self)
+            let inputElementTypes = self.primerRawDataManager!.listRequiredInputElementTypes(for: self.paymentMethodType)
+            
+            for inputElementType in inputElementTypes {
+                switch inputElementType {
+                case .cardNumber:
+                    self.cardnumberTextField = UITextField(frame: .zero)
+                    self.cardnumberTextField.accessibilityIdentifier = "card_txt_fld"
+                    self.cardnumberTextField.borderStyle = .line
+                    self.cardnumberTextField.layer.borderColor = UIColor.black.cgColor
+                    self.stackView.addArrangedSubview(self.cardnumberTextField)
+                    self.cardnumberTextField.translatesAutoresizingMaskIntoConstraints = false
+                    self.cardnumberTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
+                    self.cardnumberTextField.delegate = self
+                    self.cardnumberTextField.placeholder = "4242 4242 4242 4242"
+                    
+                case .expiryDate:
+                    self.expiryDateTextField = UITextField(frame: .zero)
+                    self.expiryDateTextField.accessibilityIdentifier = "expiry_txt_fld"
+                    self.expiryDateTextField.borderStyle = .line
+                    self.expiryDateTextField.layer.borderColor = UIColor.black.cgColor
+                    self.stackView.addArrangedSubview(self.expiryDateTextField)
+                    self.expiryDateTextField.translatesAutoresizingMaskIntoConstraints = false
+                    self.expiryDateTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
+                    self.expiryDateTextField.delegate = self
+                    self.expiryDateTextField.placeholder = "03/30"
+                    
+                case .cvv:
+                    self.cvvTextField = UITextField(frame: .zero)
+                    self.cvvTextField.accessibilityIdentifier = "cvc_txt_fld"
+                    self.cvvTextField.borderStyle = .line
+                    self.cvvTextField.layer.borderColor = UIColor.black.cgColor
+                    self.stackView.addArrangedSubview(self.cvvTextField)
+                    self.cvvTextField.translatesAutoresizingMaskIntoConstraints = false
+                    self.cvvTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
+                    self.cvvTextField.delegate = self
+                    self.cvvTextField.placeholder = "123"
+                    
+                case .cardholderName:
+                    self.cardholderNameTextField = UITextField(frame: .zero)
+                    self.cardholderNameTextField.accessibilityIdentifier = "card_holder_txt_fld"
+                    self.cardholderNameTextField.borderStyle = .line
+                    self.cardholderNameTextField.layer.borderColor = UIColor.black.cgColor
+                    self.stackView.addArrangedSubview(self.cardholderNameTextField)
+                    self.cardholderNameTextField.translatesAutoresizingMaskIntoConstraints = false
+                    self.cardholderNameTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
+                    self.cardholderNameTextField.delegate = self
+                    self.cardholderNameTextField.placeholder = "John Smith"
+                    
+                case .otp:
+                    break
+                    
+                case .postalCode:
+                    break
+                    
+                case .phoneNumber:
+                    break
+                    
+                case .retailer:
+                    break
+                    
+                case .unknown:
+                    break
+                }
             }
             
-            if expiryComponents.count != 2 {
-                self.showErrorMessage("Please write expiry date in format MM/YY")
-                return
-            }
-            
-            let primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType)
-            primerRawDataManager.delegate = self
-            
-            if paymentMethodType == "PAYMENT_CARD" {
-                self.rawData = PrimerCardData(
-                    cardNumber: self.cardnumberTextField.text ?? "",
-                    expiryMonth: String(expiryComponents[0]),
-                    expiryYear: "20\(String(expiryComponents[1]))",
-                    cvv: self.cvvTextField.text ?? "",
-                    cardholderName: self.cardholderNameTextField.text)
-                
-                primerRawDataManager.rawData = self.rawData!
-                primerRawDataManager.submit()
-                self.showLoadingOverlay()
-                
-            } else if paymentMethodType == "ADYEN_BANCONTACT_CARD" {
-                self.rawData = PrimerBancontactCardRedirectData(
-                    cardNumber: self.cardnumberTextField.text ?? "",
-                    expiryMonth: String(expiryComponents[0]),
-                    expiryYear: "20\(String(expiryComponents[1]))",
-                    cardholderName: self.cardholderNameTextField.text ?? "")
-                
-                primerRawDataManager.rawData = self.rawData!
-                primerRawDataManager.submit()
-                self.showLoadingOverlay()
-            }
+            self.payButton = UIButton(frame: .zero)
+            self.stackView.addArrangedSubview(self.payButton)
+            self.payButton.accessibilityIdentifier = "submit_btn"
+            self.payButton.translatesAutoresizingMaskIntoConstraints = false
+            self.payButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
+            self.payButton.setTitle("Pay", for: .normal)
+            self.payButton.titleLabel?.adjustsFontSizeToFitWidth = true
+            self.payButton.titleLabel?.minimumScaleFactor = 0.7
+            self.payButton.backgroundColor = .lightGray
+            self.payButton.setTitleColor(.white, for: .normal)
+            self.payButton.isEnabled = false
+            self.payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
             
         } catch {
-            self.showErrorMessage(error.localizedDescription)
+            
+        }
+    }
+    
+    @IBAction func payButtonTapped(_ sender: UIButton) {
+        guard expiryDateTextField.text?.count == 5,
+              let expiryComponents = expiryDateTextField.text?.split(separator: "/") else {
+            self.showErrorMessage("Please write expiry date in format MM/YY")
+            return
+        }
+        
+        if expiryComponents.count != 2 {
+            self.showErrorMessage("Please write expiry date in format MM/YY")
+            return
+        }
+        
+        if paymentMethodType == "PAYMENT_CARD" {
+            self.primerRawDataManager!.submit()
+            self.showLoadingOverlay()
+            
         }
     }
     
@@ -183,6 +195,44 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
             self.activityIndicator?.removeFromSuperview()
             self.activityIndicator = nil
         }
+    }
+}
+
+extension MerchantHUCRawDataViewController: UITextFieldDelegate {
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        var newText: String?
+        
+        if let text = textField.text,
+           let textRange = Range(range, in: text) {
+            newText = text.replacingCharacters(in: textRange, with: string)
+            
+            if newText!.count == 0 {
+                newText = nil
+            }
+        }
+        
+        if textField == self.cardnumberTextField {
+            self.rawCardData.cardNumber = (newText ?? "").replacingOccurrences(of: " ", with: "")
+            
+        } else if textField == self.expiryDateTextField,
+                  newText?.count == 5,
+                  let expiryComponents = newText?.split(separator: "/"),
+                  expiryComponents.count == 2
+        {
+            self.rawCardData.expiryMonth = String(expiryComponents[0])
+            self.rawCardData.expiryYear = "20\(String(expiryComponents[1]))"
+            
+        } else if textField == self.cvvTextField {
+            self.rawCardData.cvv = newText ?? ""
+            
+        } else if textField == self.cardholderNameTextField {
+            self.rawCardData.cardholderName = newText
+        }
+        
+        self.primerRawDataManager?.rawData = self.rawCardData
+        
+        return true
     }
 }
 
@@ -331,6 +381,8 @@ extension MerchantHUCRawDataViewController: PrimerHeadlessUniversalCheckoutRawDa
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
         print("\n\nMERCHANT APP\n\(#function)\ndataIsValid: \(isValid)")
         self.logs.append(#function)
+        self.payButton.backgroundColor = isValid ? .black : .lightGray
+        self.payButton.isEnabled = isValid
     }
     
     
