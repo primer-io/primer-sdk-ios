@@ -123,10 +123,10 @@ internal protocol PrimerCardPaymentOptionsProtocol {
     var is3DSOnVaultingEnabled: Bool { get }
 }
 
-@available(*, obsoleted: 5.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
+@available(*, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
 public class PrimerCardPaymentOptions: PrimerCardPaymentOptionsProtocol {
     
-    @available(*, obsoleted: 5.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
+    @available(*, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     let is3DSOnVaultingEnabled: Bool
     
     public init(is3DSOnVaultingEnabled: Bool? = nil) {
