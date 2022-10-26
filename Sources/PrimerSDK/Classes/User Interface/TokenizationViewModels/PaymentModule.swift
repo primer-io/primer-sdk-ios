@@ -217,7 +217,7 @@ class PaymentModule: NSObject, PaymentModuleProtocol {
                         seal.reject(merchantErr)
 
                     case .succeed:
-                        seal.fulfill(nil)
+                        seal.fulfill(self.paymentCheckoutData)
 
                     case .continueWithNewClientToken:
                         seal.fulfill(nil)
