@@ -293,52 +293,10 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
                     if paymentMethodTokenData.paymentInstrumentType == .paymentCard,
                        PrimerInternal.shared.intent == .vault,
-                       PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.is3DSOnVaultingEnabled,
                        paymentMethodTokenData.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
                        isThreeDSEnabled {
-#if canImport(Primer3DS)
-                        let threeDSService: ThreeDSServiceProtocol = ThreeDSService()
-                        DependencyContainer.register(threeDSService)
-                        
-                        var beginAuthExtraData: ThreeDS.BeginAuthExtraData
-                        do {
-                            beginAuthExtraData = try ThreeDSService.buildBeginAuthExtraData()
-                        } catch {
-                            self.paymentMethod = paymentMethodTokenData
-                            self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
-                            return
-                        }
-                        
-                        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                            ErrorHandler.handle(error: err)
-                            self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
-                            return
-                        }
-                        
-                        threeDSService.perform3DS(
-                            paymentMethodTokenData: paymentMethodTokenData,
-                            protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2,
-                            beginAuthExtraData: beginAuthExtraData,
-                            sdkDismissed: { () in
-                                
-                            }, completion: { result in
-                                switch result {
-                                case .success(let res):
-                                    self.delegate?.cardComponentsManager(self, onTokenizeSuccess: res.0)
-                                    
-                                case .failure(let err):
-                                    // Even if 3DS fails, continue...
-                                    log(logLevel: .error, message: "3DS failed with error: \(err as NSError), continue without 3DS")
-                                    self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
-                                    
-                                }
-                            })
-                        
-#else
-                        print("\nWARNING!\nCannot perform 3DS, Primer3DS SDK is missing. Continue without 3DS\n")
+                        print("\nWARNING!\nCannot perform 3DS when vaulting, operation will continue without 3DS\n")
                         self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
-#endif
                         
                     } else {
                         self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)

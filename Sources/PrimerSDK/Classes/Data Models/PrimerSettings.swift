@@ -50,15 +50,27 @@ internal protocol PrimerPaymentMethodOptionsProtocol {
     var urlScheme: String? { get }
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
-    var cardPaymentOptions: PrimerCardPaymentOptions { get }
 }
 
 public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol {
+    
     let urlScheme: String?
     let applePayOptions: PrimerApplePayOptions?
     var klarnaOptions: PrimerKlarnaOptions?
-    let cardPaymentOptions: PrimerCardPaymentOptions
+    @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
+    let cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions(is3DSOnVaultingEnabled: false)
     
+    public init(
+        urlScheme: String? = nil,
+        applePayOptions: PrimerApplePayOptions? = nil,
+        klarnaOptions: PrimerKlarnaOptions? = nil
+    ) {
+        self.urlScheme = urlScheme
+        self.applePayOptions = applePayOptions
+        self.klarnaOptions = klarnaOptions
+    }
+    
+    @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     public init(
         urlScheme: String? = nil,
         applePayOptions: PrimerApplePayOptions? = nil,
@@ -68,7 +80,6 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol {
         self.urlScheme = urlScheme
         self.applePayOptions = applePayOptions
         self.klarnaOptions = klarnaOptions
-        self.cardPaymentOptions = cardPaymentOptions ?? PrimerCardPaymentOptions()
     }
 }
 
@@ -112,8 +123,10 @@ internal protocol PrimerCardPaymentOptionsProtocol {
     var is3DSOnVaultingEnabled: Bool { get }
 }
 
+@available(*, obsoleted: 5.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
 public class PrimerCardPaymentOptions: PrimerCardPaymentOptionsProtocol {
     
+    @available(*, obsoleted: 5.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     let is3DSOnVaultingEnabled: Bool
     
     public init(is3DSOnVaultingEnabled: Bool? = nil) {
