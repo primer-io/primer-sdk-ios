@@ -106,27 +106,6 @@ class PrimerTestPaymentMethodTokenizationModule: TokenizationModule {
         }
     }
     
-    override func performTokenizationStep() -> Promise<Void> {
-        return Promise { seal in
-            firstly {
-                self.paymentMethodModule.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
-            }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.tokenize()
-            }
-            .then { paymentMethodTokenData -> Promise<Void> in
-                self.paymentMethodTokenData = paymentMethodTokenData
-                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-    
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.tokenize(decision: self.selectedDecision!) { paymentMethodTokenData, err in
