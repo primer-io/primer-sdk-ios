@@ -134,12 +134,6 @@ class BankSelectorTokenizationModule: TokenizationModule {
         }
     }
     
-    override func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-    
     // MARK: - BANK SELECTOR SPECIFIC FUNCTIONALITY
     
     private func fetchBanks() -> Promise<[AdyenBank]> {

@@ -187,12 +187,6 @@ class ApplePayTokenizationModule: TokenizationModule {
         }
     }
     
-    override func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-    
     // MARK: - APPLE PAY SPECIFIC FUNCTIONALITY
     
     private func presentPaymentMethodUserInterface() -> Promise<Void> {
