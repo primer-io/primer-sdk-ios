@@ -805,41 +805,6 @@ class UserInterfaceModule: NSObject {
             banks: banks)
         return bsvc
     }
-    
-    
-    
-//    func createCountriesTableView(dataSource: UITableViewDataSource, delegate: UITableViewDelegate) -> UITableView {
-//        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-//
-//        let tableView = UITableView()
-//        tableView.showsVerticalScrollIndicator = false
-//        tableView.showsHorizontalScrollIndicator = false
-//        tableView.backgroundColor = theme.view.backgroundColor
-//
-//        if #available(iOS 11.0, *) {
-//            tableView.contentInsetAdjustmentBehavior = .never
-//        }
-//
-//        tableView.rowHeight = 41
-//        tableView.register(CountryTableViewCell.self, forCellReuseIdentifier: CountryTableViewCell.className)
-//
-//        tableView.dataSource = dataSource
-//        tableView.delegate = delegate
-//        return tableView
-//    }
-//
-//    func createSearchableTextField(delegate: UITextFieldDelegate) -> PrimerSearchTextField {
-//        let textField = PrimerSearchTextField(frame: .zero)
-//        textField.translatesAutoresizingMaskIntoConstraints = false
-//        textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-//        textField.delegate = delegate
-//        textField.borderStyle = .none
-//        textField.layer.cornerRadius = 3.0
-//        textField.font = UIFont.systemFont(ofSize: 16.0)
-//        textField.placeholder = Strings.CountrySelector.searchCountryTitle
-//        textField.rightViewMode = .always
-//        return textField
-//    }
 }
 
 #endif
