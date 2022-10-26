@@ -27,12 +27,6 @@ class BankSelectorTokenizationModule: TokenizationModule {
         }
     }
     
-    override func startFlow() -> Promise<PrimerPaymentMethodTokenData> {
-//        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.urlSchemeRedirect, object: nil)
-        
-        return super.startFlow()
-    }
-    
     override func performPreTokenizationSteps() -> Promise<Void> {
         DispatchQueue.main.async {
             PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
