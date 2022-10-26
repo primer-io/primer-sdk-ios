@@ -128,29 +128,6 @@ class FormTokenizationModule: TokenizationModule {
         }
     }
     
-    override func performTokenizationStep() -> Promise<Void> {
-        return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodModule.paymentMethodConfiguration.type)
-            
-            firstly {
-                self.paymentMethodModule.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
-            }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.tokenize()
-            }
-            .then { paymentMethodTokenData -> Promise<Void> in
-                self.paymentMethodTokenData = paymentMethodTokenData
-                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-    
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         switch self.paymentMethodModule.paymentMethodConfiguration.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
