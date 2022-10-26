@@ -204,6 +204,10 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
                case .cancelled = primerErr,
                PrimerHeadlessUniversalCheckout.current.delegate == nil {
                 
+                if PrimerHeadlessUniversalCheckout.current.delegate != nil {
+                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: primerErr)
+                }
+                
                 PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
                 
                 firstly {
