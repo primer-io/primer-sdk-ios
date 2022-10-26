@@ -163,15 +163,17 @@ public class PrimerHeadlessUniversalCheckout {
         switch paymentMethodType {
         case PrimerPaymentMethodType.paymentCard.rawValue:
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
-            if let checkoutModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
-               let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
-                if options.cardHolderName == true {
-                    requiredFields.append(.cardholderName)
-                }
+            let cardInfoOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
+            if cardInfoOptions?.cardHolderName != false {
+                requiredFields.append(.cardholderName)
             }
             return requiredFields
         case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
             return [.cardNumber, .expiryDate, .cardholderName]
+        case PrimerPaymentMethodType.xenditOvo.rawValue:
+            return [.phoneNumber]
+        case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
+            return [.retailer]
         default:
             return []
         }
