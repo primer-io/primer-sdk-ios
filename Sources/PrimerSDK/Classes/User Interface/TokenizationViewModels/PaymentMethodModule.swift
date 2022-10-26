@@ -187,6 +187,9 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
         .done { checkoutData in
             if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
                 PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                
+            } else if PrimerInternal.shared.intent == .vault {
+                PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.tokenizationModule.paymentMethodTokenData!) { _ in }
             }
             
             self.handleSuccessfulFlow()

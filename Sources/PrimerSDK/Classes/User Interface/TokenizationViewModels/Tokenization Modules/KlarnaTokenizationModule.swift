@@ -220,12 +220,6 @@ class KlarnaTokenizationModule: TokenizationModule {
         }
     }
     
-    override func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-    
     // MARK: - KLARNA SPECIFIC FUNCTIONALITY
     
     private func createPaymentSession() -> Promise<Response.Body.Klarna.CreatePaymentSession> {

@@ -47,6 +47,8 @@ class TokenizationModule: NSObject, TokenizationModuleProtocol {
                 return self.performPostTokenizationSteps()
             }
             .done {
+                /// We can safely unwrap the **paymentMethodTokenData** since it has been
+                /// checked on **performPostTokenizationSteps()**
                 seal.fulfill(self.paymentMethodTokenData!)
             }
             .catch { err in
@@ -72,7 +74,16 @@ class TokenizationModule: NSObject, TokenizationModuleProtocol {
     }
     
     func performPostTokenizationSteps() -> Promise<Void> {
-        fatalError("\(#function) must be overriden")
+        return Promise { seal in
+            guard let paymentMethodTokenData = self.paymentMethodTokenData else {
+                let err = PrimerError.invalidValue(key: "paymentMethodTokenData", value: nil, userInfo: nil, diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+
+            seal.fulfill()
+        }
     }
     
     func submitTokenizationData() {

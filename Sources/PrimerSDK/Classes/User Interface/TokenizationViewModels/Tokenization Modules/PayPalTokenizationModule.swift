@@ -136,12 +136,6 @@ class PayPalTokenizationModule: TokenizationModule {
         return tokenizationService.tokenize(requestBody: requestBody)
     }
     
-    override func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-    
     // MARK: - PAYPAL SPECIFIC FUNCTIONALITY
     
     private func presentPaymentMethodUserInterface() -> Promise<Void> {
