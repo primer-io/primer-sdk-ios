@@ -27,6 +27,7 @@ protocol PaymentMethodModuleProtocol: NSObjectProtocol {
         paymentModule: PaymentModuleProtocol?
     )
     func startFlow()
+    func payWithVaultedPaymentMethodTokenData(_ paymentMethodTokenData: PrimerPaymentMethodTokenData)
     func cancel()
 }
 
@@ -182,6 +183,72 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
             } else {
                 return self.paymentModule.pay(with: paymentMethodTokenData)
             }
+        }
+        .done { checkoutData in
+            if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
+                PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+            }
+            
+            self.handleSuccessfulFlow()
+        }
+        .ensure {
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+        }
+        .catch { err in
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+            
+            if let primerErr = err as? PrimerError,
+               case .cancelled = primerErr,
+               PrimerHeadlessUniversalCheckout.current.delegate == nil {
+                
+                PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+                
+                firstly {
+                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                }
+                .done { merchantErrorMessage in
+                    if PrimerInternal.shared.selectedPaymentMethodType == nil {
+                        PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
+                    } else {
+                        PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
+                    }
+                }
+                // The above promises will never end up on error.
+                .catch { _ in }
+                
+            } else {
+                firstly {
+                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                }
+                .then { () -> Promise<String?> in
+                    var primerErr: PrimerError!
+                    if let error = err as? PrimerError {
+                        primerErr = error
+                    } else {
+                        primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: nil)
+                    }
+                    
+                    return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: nil)
+                }
+                .done { merchantErrorMessage in
+                    self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                }
+                // The above promises will never end up on error.
+                .catch { _ in }
+            }
+        }
+    }
+    
+    func payWithVaultedPaymentMethodTokenData(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
+        
+        let vaultedPaymentMethodTokenizationModule = VaultedPaymentMethodTokenizationModule(paymentMethodModule: self, selectedPaymentMethodTokenData: paymentMethodTokenData)
+        let vaultedPaymentMethodPaymentModule = VaultedPaymentMethodPaymentModule(paymentMethodModule: self)
+        
+        firstly {
+            vaultedPaymentMethodTokenizationModule.startFlow()
+        }
+        .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
+            return vaultedPaymentMethodPaymentModule.pay(with: paymentMethodTokenData)
         }
         .done { checkoutData in
             if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
