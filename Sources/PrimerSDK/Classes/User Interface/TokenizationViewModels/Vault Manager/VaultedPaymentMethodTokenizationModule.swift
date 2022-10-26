@@ -11,7 +11,7 @@ import Foundation
 
 class VaultedPaymentMethodTokenizationModule: TokenizationModule {
     
-    var selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
+    private(set) var selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
     
     init(paymentMethodModule: PaymentMethodModuleProtocol, selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData) {
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
@@ -34,19 +34,35 @@ class VaultedPaymentMethodTokenizationModule: TokenizationModule {
         }
     }
     
-    override func startFlow() -> Promise<PrimerPaymentMethodTokenData> {
-//        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.urlSchemeRedirect, object: nil)
-        
-        return super.startFlow()
-    }
-    
     override func performPreTokenizationSteps() -> Promise<Void> {
+        DispatchQueue.main.async {
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
+        }
+
+        let event = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .select,
+                objectClass: "\(Self.self)",
+                place: .vaultManager))
+        Analytics.Service.record(event: event)
+        
         return Promise { seal in
             firstly {
-                self.dispatchActions(config: self.paymentMethodModule.paymentMethodConfiguration, selectedPaymentMethod: self.selectedPaymentMethodTokenData)
+                self.validate()
             }
             .then { () -> Promise<Void> in
-                self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodModule.paymentMethodConfiguration.type))
+                return self.dispatchActions()
+            }
+            .then { () -> Promise<Void> in
+                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodModule.paymentMethodConfiguration.type))
             }
             .done {
                 seal.fulfill()
@@ -59,6 +75,8 @@ class VaultedPaymentMethodTokenizationModule: TokenizationModule {
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodModule.paymentMethodConfiguration.type)
+            
             firstly {
                 self.paymentMethodModule.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
@@ -89,11 +107,11 @@ class VaultedPaymentMethodTokenizationModule: TokenizationModule {
         }
     }
     
-    private func dispatchActions(config: PrimerPaymentMethod, selectedPaymentMethod: PrimerPaymentMethodTokenData) -> Promise<Void> {
+    private func dispatchActions() -> Promise<Void> {
         return Promise { seal in
             var network: String?
-            if config.type == PrimerPaymentMethodType.paymentCard.rawValue {
-                network = selectedPaymentMethod.paymentInstrumentData?.network?.uppercased()
+            if self.paymentMethodModule.paymentMethodConfiguration.type == PrimerPaymentMethodType.paymentCard.rawValue {
+                network = self.selectedPaymentMethodTokenData.paymentInstrumentData?.network?.uppercased()
                 if network == nil || network == "UNKNOWN" {
                     network = "OTHER"
                 }
