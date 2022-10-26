@@ -298,12 +298,6 @@ class FormTokenizationModule: TokenizationModule {
         }
     }
     
-    override func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-    
     func presentPaymentMethodUserInterface() -> Promise<Void> {
         //        [.adyenBlik, .adyenMBWay, .adyenMultibanco]
         return Promise { seal in

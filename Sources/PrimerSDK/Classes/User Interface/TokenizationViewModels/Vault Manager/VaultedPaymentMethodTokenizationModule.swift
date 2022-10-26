@@ -101,12 +101,6 @@ class VaultedPaymentMethodTokenizationModule: TokenizationModule {
         return tokenizationService.exchangePaymentMethodToken(self.selectedPaymentMethodTokenData)
     }
     
-    override func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-    
     private func dispatchActions() -> Promise<Void> {
         return Promise { seal in
             var network: String?

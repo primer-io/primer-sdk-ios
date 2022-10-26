@@ -180,12 +180,6 @@ class ApayaTokenizationModule: TokenizationModule {
         }
     }
     
-    override func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
-    
     // MARK: - APAYA SPECIFIC FUNCTIONALITY
     
     private func generateWebViewUrl() -> Promise<Void> {
