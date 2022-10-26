@@ -270,9 +270,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     func payButtonTapped() {
         guard let selectedPaymentMethod = selectedPaymentMethod else { return }
         guard let selectedPaymentMethodType = selectedPaymentMethod.paymentMethodType else { return }
-        guard let config = PrimerAPIConfiguration.paymentMethodConfigurations?.filter({ $0.type == selectedPaymentMethodType }).first else {
+        guard let selectedPaymentMethodConfiguration = PrimerAPIConfiguration.paymentMethodConfigurations?.first(where: { $0.type == selectedPaymentMethodType }) else {
             return
         }
+        guard let selectedPaymentMethodModule = PrimerAPIConfigurationModule.paymentMethodModules.first(where: { $0.paymentMethodType?.rawValue == selectedPaymentMethodType }) else { return }
         
         let viewEvent = Analytics.Event(
             eventType: .ui,
@@ -280,7 +281,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: config.type,
+                    paymentMethodType: selectedPaymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -292,14 +293,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         enableView(false)
         payButton.startAnimating()
         
-//        let checkoutWithVaultedPaymentMethodViewModel = VaultedPaymentMethodPaymentModule(paymentMethodModule: config)
-//        firstly {
-//            checkoutWithVaultedPaymentMethodViewModel.start()
-//        }
-//        .ensure {
-//            self.enableView(true)
-//        }
-//        .catch { _ in }
+        selectedPaymentMethodModule.payWithVaultedPaymentMethodTokenData(selectedPaymentMethod)
     }
     
 }
