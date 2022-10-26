@@ -67,12 +67,6 @@ class FormTokenizationModule: TokenizationModule {
         }
     }
     
-    override func startFlow() -> Promise<PrimerPaymentMethodTokenData> {
-        //        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.urlSchemeRedirect, object: nil)
-        
-        return super.startFlow()
-    }
-    
     override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
