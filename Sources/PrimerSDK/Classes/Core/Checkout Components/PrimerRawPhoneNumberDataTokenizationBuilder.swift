@@ -25,7 +25,7 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
         }
     }
     
-    var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
+    weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
     var isDataValid: Bool = false
     var paymentMethodType: String
     var delegate: PrimerRawDataManagerDelegate?
