@@ -281,26 +281,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     return tokenizationService.tokenize(requestBody: requestBody)
                 }
                 .done { paymentMethodTokenData in
-                    var isThreeDSEnabled: Bool = false
-                    if PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.filter({ ($0.options as? CardOptions)?.threeDSecureEnabled == true }).count ?? 0 > 0 {
-                        isThreeDSEnabled = true
-                    }
-                    
-                    /// 3DS requirements on tokenization are:
-                    ///     - The payment method has to be a card
-                    ///     - It has to be a vault flow
-                    ///     - is3DSOnVaultingEnabled has to be enabled by the developer
-                    ///     - 3DS has to be enabled int he payment methods options in the config object (returned by the config API call)
-                    if paymentMethodTokenData.paymentInstrumentType == .paymentCard,
-                       PrimerInternal.shared.intent == .vault,
-                       paymentMethodTokenData.threeDSecureAuthentication?.responseCode != ThreeDS.ResponseCode.authSuccess,
-                       isThreeDSEnabled {
-                        print("\nWARNING!\nCannot perform 3DS when vaulting, operation will continue without 3DS\n")
-                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
-                        
-                    } else {
-                        self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
-                    }
+                    self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                 }
                 .catch { err in
                     let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
