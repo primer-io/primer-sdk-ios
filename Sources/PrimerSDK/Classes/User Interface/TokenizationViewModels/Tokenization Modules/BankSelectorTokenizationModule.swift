@@ -38,7 +38,7 @@ class BankSelectorTokenizationModule: TokenizationModule {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -52,7 +52,7 @@ class BankSelectorTokenizationModule: TokenizationModule {
                 self.validate()
             }
             .then { () -> Promise<Void> in
-                return self.paymentMethodModule.checkouEventsNotifierModule.fireWillPresentPaymentMethodUI()
+                return self.checkoutEventsNotifier.fireWillPresentPaymentMethodUI()
             }
             .then { () -> Promise<[AdyenBank]> in
                 self.fetchBanks()
@@ -62,7 +62,7 @@ class BankSelectorTokenizationModule: TokenizationModule {
                 return self.presentPaymentMethodUserInterface()
             }
             .then { () -> Promise<Void> in
-                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidPresentPaymentMethodUI()
+                return self.checkoutEventsNotifier.fireDidPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
                 return self.awaitUserInput()
@@ -70,10 +70,10 @@ class BankSelectorTokenizationModule: TokenizationModule {
             .then { () -> Promise<Void> in
                 DispatchQueue.main.async {
                     PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(
-                        imageView: self.paymentMethodModule.userInterfaceModule.makeIconImageView(withDimension: 24.0),
+                        imageView: self.userInterfaceModule.makeIconImageView(withDimension: 24.0),
                         message: nil)
                 }
-                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodModule.paymentMethodConfiguration.type))
+                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodConfiguration.type))
             }
             .done {
                 seal.fulfill()
@@ -96,15 +96,14 @@ class BankSelectorTokenizationModule: TokenizationModule {
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             let requestBody = Request.Body.Tokenization(
                 paymentInstrument: OffSessionPaymentInstrument(
-                    paymentMethodConfigId: self.paymentMethodModule.paymentMethodConfiguration.id!,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodConfigId: self.paymentMethodConfiguration.id!,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     sessionInfo: BankSelectorSessionInfo(issuer: self.selectedBank!.id)))
             
             firstly {
                 tokenizationService.tokenize(requestBody: requestBody)
             }
             .done { paymentMethodTokenData in
-                self.paymentMethodTokenData = paymentMethodTokenData
                 seal.fulfill(paymentMethodTokenData)
             }
             .catch { err in
@@ -125,7 +124,7 @@ class BankSelectorTokenizationModule: TokenizationModule {
             }
             
             var paymentMethodRequestValue: String = ""
-            switch self.paymentMethodModule.paymentMethodConfiguration.type {
+            switch self.paymentMethodConfiguration.type {
             case PrimerPaymentMethodType.adyenDotPay.rawValue:
                 paymentMethodRequestValue = "dotpay"
             case PrimerPaymentMethodType.adyenIDeal.rawValue:
@@ -135,7 +134,7 @@ class BankSelectorTokenizationModule: TokenizationModule {
             }
                     
             let request = Request.Body.Adyen.BanksList(
-                paymentMethodConfigId: self.paymentMethodModule.paymentMethodConfiguration.id!,
+                paymentMethodConfigId: self.paymentMethodConfiguration.id!,
                 parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
             
             let apiClient: PrimerAPIClientProtocol = PaymentMethodModule.apiClient ?? PrimerAPIClient()
@@ -155,7 +154,7 @@ class BankSelectorTokenizationModule: TokenizationModule {
     private func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
-                let bsvc = self.paymentMethodModule.userInterfaceModule.createBanksSelectorViewController(with: self.banks)
+                let bsvc = self.userInterfaceModule.createBanksSelectorViewController(with: self.banks)
                 
                 bsvc.didSelectBank = { [weak self] bank in
                     self?.selectedBank = bank

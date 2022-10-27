@@ -74,7 +74,7 @@ class FormTokenizationModule: TokenizationModule {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -83,7 +83,7 @@ class FormTokenizationModule: TokenizationModule {
                 place: .cardForm))
         Analytics.Service.record(event: event)
         
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.paymentMethodModule.userInterfaceModule.makeIconImageView(withDimension: 24.0), message: nil)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.userInterfaceModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
@@ -91,19 +91,19 @@ class FormTokenizationModule: TokenizationModule {
             }
             .then { () -> Promise<Void> in
                 let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodModule.paymentMethodConfiguration.type, cardNetwork: nil)
+                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodConfiguration.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
-                return self.paymentMethodModule.checkouEventsNotifierModule.fireWillPresentPaymentMethodUI()
+                return self.checkoutEventsNotifier.fireWillPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
                 return self.presentPaymentMethodUserInterface()
             }
             .then { () -> Promise<Void> in
-                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidPresentPaymentMethodUI()
+                return self.checkoutEventsNotifier.fireDidPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
-                guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodModule.paymentMethodConfiguration.type) else {
+                guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else {
                     return Promise()
                 }
                 
@@ -117,7 +117,7 @@ class FormTokenizationModule: TokenizationModule {
                 }
             }
             .then { () -> Promise<Void> in
-                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodModule.paymentMethodConfiguration.type))
+                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodConfiguration.type))
             }
             .done {
                 seal.fulfill()
@@ -129,18 +129,18 @@ class FormTokenizationModule: TokenizationModule {
     }
     
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
-        switch self.paymentMethodModule.paymentMethodConfiguration.type {
+        switch self.paymentMethodConfiguration.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             return Promise { seal in
                 
-                guard let configId = self.paymentMethodModule.paymentMethodConfiguration.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                guard let configId = self.paymentMethodConfiguration.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
                 
-                guard let blikCode = self.paymentMethodModule.userInterfaceModule.inputs?.first?.text else {
+                guard let blikCode = self.userInterfaceModule.inputs?.first?.text else {
                     let err = PrimerError.invalidValue(key: "blikCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -153,7 +153,7 @@ class FormTokenizationModule: TokenizationModule {
                 
                 let paymentInstrument = OffSessionPaymentInstrument(
                     paymentMethodConfigId: configId,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     sessionInfo: sessionInfo)
                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
@@ -172,8 +172,8 @@ class FormTokenizationModule: TokenizationModule {
             
         case PrimerPaymentMethodType.rapydFast.rawValue:
             return Promise { seal in
-                guard let configId = self.paymentMethodModule.paymentMethodConfiguration.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                guard let configId = self.paymentMethodConfiguration.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -183,7 +183,7 @@ class FormTokenizationModule: TokenizationModule {
                 
                 let paymentInstrument = OffSessionPaymentInstrument(
                     paymentMethodConfigId: configId,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     sessionInfo: sessionInfo)
                 
                 let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
@@ -204,14 +204,14 @@ class FormTokenizationModule: TokenizationModule {
         case PrimerPaymentMethodType.adyenMBWay.rawValue:
             return Promise { seal in
                 
-                guard let configId = self.paymentMethodModule.paymentMethodConfiguration.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                guard let configId = self.paymentMethodConfiguration.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
                 
-                guard let phoneNumber = self.paymentMethodModule.userInterfaceModule.inputs?.first?.text else {
+                guard let phoneNumber = self.userInterfaceModule.inputs?.first?.text else {
                     let err = PrimerError.invalidValue(key: "phoneNumber", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -223,7 +223,7 @@ class FormTokenizationModule: TokenizationModule {
                 
                 let paymentInstrument = OffSessionPaymentInstrument(
                     paymentMethodConfigId: configId,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     sessionInfo: sessionInfo)
                 
                 let tokenizationService: TokenizationServiceProtocol = TokenizationService()
@@ -242,8 +242,8 @@ class FormTokenizationModule: TokenizationModule {
             
         case PrimerPaymentMethodType.adyenMultibanco.rawValue:
             return Promise { seal in
-                guard let configId = self.paymentMethodModule.paymentMethodConfiguration.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                guard let configId = self.paymentMethodConfiguration.id else {
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -253,7 +253,7 @@ class FormTokenizationModule: TokenizationModule {
                 
                 let paymentInstrument = OffSessionPaymentInstrument(
                     paymentMethodConfigId: configId,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     sessionInfo: sessionInfo)
                 
                 let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
@@ -279,20 +279,20 @@ class FormTokenizationModule: TokenizationModule {
         //        [.adyenBlik, .adyenMBWay, .adyenMultibanco]
         return Promise { seal in
             DispatchQueue.main.async {
-                switch self.paymentMethodModule.paymentMethodConfiguration.type {
+                switch self.paymentMethodConfiguration.type {
                 case PrimerPaymentMethodType.adyenBlik.rawValue,
                     PrimerPaymentMethodType.adyenMBWay.rawValue:
                     
                     let pcfvc = PrimerInputViewController(
-                        paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
-                        userInterfaceModule: self.paymentMethodModule.userInterfaceModule,
+                        paymentMethodType: self.paymentMethodConfiguration.type,
+                        userInterfaceModule: self.userInterfaceModule,
                         inputsDistribution: .horizontal)
                     PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
                     
                     
                 case PrimerPaymentMethodType.adyenMultibanco.rawValue:
-                    let pcfvc = PrimerAccountInfoPaymentViewController(userInterfaceModule: self.paymentMethodModule.userInterfaceModule)
+                    let pcfvc = PrimerAccountInfoPaymentViewController(userInterfaceModule: self.userInterfaceModule)
                     PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
                     
@@ -319,7 +319,7 @@ class FormTokenizationModule: TokenizationModule {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -328,11 +328,11 @@ class FormTokenizationModule: TokenizationModule {
                 place: .cardForm))
         Analytics.Service.record(event: viewEvent)
         
-        switch self.paymentMethodModule.paymentMethodConfiguration.type {
+        switch self.paymentMethodConfiguration.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue,
             PrimerPaymentMethodType.adyenMBWay.rawValue,
             PrimerPaymentMethodType.adyenMultibanco.rawValue:
-            self.paymentMethodModule.userInterfaceModule.submitButton?.startAnimating()
+            self.userInterfaceModule.submitButton?.startAnimating()
             self.userInputCompletion?()
             
         default:
