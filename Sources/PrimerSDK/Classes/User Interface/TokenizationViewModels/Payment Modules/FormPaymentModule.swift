@@ -27,7 +27,7 @@ class FormPaymentModule: PaymentModule {
                     .then { () -> Promise<String> in
                         let pollingModule = PollingModule(url: statusUrl)
                         self.didCancel = {
-                            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodConfiguration.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                             ErrorHandler.handle(error: err)
                             pollingModule.cancel(withError: err)
                             return
@@ -51,7 +51,7 @@ class FormPaymentModule: PaymentModule {
                 let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
                 var additionalInfo: PrimerCheckoutAdditionalInfo?
                 
-                switch self.paymentMethodModule.paymentMethodConfiguration.type {
+                switch self.paymentMethodConfiguration.type {
                 case PrimerPaymentMethodType.adyenMultibanco.rawValue:
                     
                     let formatter = DateFormatter().withExpirationDisplayDateFormat()
@@ -72,7 +72,7 @@ class FormPaymentModule: PaymentModule {
                     }
                     
                 default:
-                    log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.paymentMethodModule.paymentMethodConfiguration.type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
+                    log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.paymentMethodConfiguration.type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
                     break
                 }
                 
@@ -101,7 +101,7 @@ class FormPaymentModule: PaymentModule {
         return Promise { seal in
             DispatchQueue.main.async {
                 let pcfvc = PrimerVoucherInfoPaymentViewController(
-                    userInterfaceModule: self.paymentMethodModule.userInterfaceModule,
+                    userInterfaceModule: self.userInterfaceModule,
                     shouldShareVoucherInfoWithText: VoucherValue.sharableVoucherValuesText)
                 
                 PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
@@ -112,7 +112,7 @@ class FormPaymentModule: PaymentModule {
     
     /// This should be used when the payment is pending and we're awaiting a polling response.
     func presentPendingResumeViewController() -> Promise<Void> {
-        let vc = PrimerPaymentPendingInfoViewController(userInterfaceModule: self.paymentMethodModule.userInterfaceModule)
+        let vc = PrimerPaymentPendingInfoViewController(userInterfaceModule: self.userInterfaceModule)
         PrimerUIManager.primerRootViewController?.show(viewController: vc)
         return Promise()
     }

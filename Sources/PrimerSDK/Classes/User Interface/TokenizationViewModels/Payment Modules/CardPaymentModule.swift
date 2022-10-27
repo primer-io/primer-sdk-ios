@@ -46,7 +46,7 @@ class CardPaymentModule: PaymentModule {
                         self.didCancel = { [weak self] in
                             guard let strongSelf = self else { return }
                             let err = PrimerError.cancelled(
-                                paymentMethodType: strongSelf.paymentMethodModule.paymentMethodConfiguration.type,
+                                paymentMethodType: strongSelf.paymentMethodConfiguration.type,
                                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                                 diagnosticsId: nil)
                             ErrorHandler.handle(error: err)
@@ -92,7 +92,7 @@ class CardPaymentModule: PaymentModule {
                                 
                                 if let threeDSecureAuthenticationDetails = (paymentMethodToken.0 as PrimerPaymentMethodTokenData).threeDSecureAuthentication,
                                    threeDSecureAuthenticationDetails.reasonCode == "PAYMENT_CANCELED" {
-                                    err = PrimerError.cancelled(paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                    err = PrimerError.cancelled(paymentMethodType: self.paymentMethodConfiguration.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                                 }
                                 
                                 ErrorHandler.handle(error: err)

@@ -11,12 +11,13 @@ import Foundation
 
 protocol PaymentModuleProtocol: NSObjectProtocol {
     
-    var paymentMethodModule: PaymentMethodModuleProtocol! { get }
-    var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
-    var paymentId: String? { get set }
     var paymentCheckoutData: PrimerCheckoutData? { get set }
     
-    init(paymentMethodModule: PaymentMethodModuleProtocol)
+    init(
+        paymentMethodConfiguration: PrimerPaymentMethod,
+        userInterfaceModule: UserInterfaceModule,
+        checkoutEventsNotifier: CheckoutEventsNotifierModule)
+    
     func pay(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?>
     func createPayment(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?>
     func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?>
@@ -26,15 +27,24 @@ protocol PaymentModuleProtocol: NSObjectProtocol {
 
 class PaymentModule: NSObject, PaymentModuleProtocol {
     
-    weak var paymentMethodModule: PaymentMethodModuleProtocol!
+    weak var paymentMethodConfiguration: PrimerPaymentMethod!
+    weak var userInterfaceModule: UserInterfaceModule!
+    weak var checkoutEventsNotifier: CheckoutEventsNotifierModule!
+    
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
     var paymentId: String?
     var paymentCheckoutData: PrimerCheckoutData?
     var didCancel: (() -> Void)?
     var presentedViewController: UIViewController?
     
-    required init(paymentMethodModule: PaymentMethodModuleProtocol) {
-        self.paymentMethodModule = paymentMethodModule
+    required init(
+        paymentMethodConfiguration: PrimerPaymentMethod,
+        userInterfaceModule: UserInterfaceModule,
+        checkoutEventsNotifier: CheckoutEventsNotifierModule
+    ) {
+        self.paymentMethodConfiguration = paymentMethodConfiguration
+        self.userInterfaceModule = userInterfaceModule
+        self.checkoutEventsNotifier = checkoutEventsNotifier
         super.init()
     }
     
