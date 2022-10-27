@@ -35,13 +35,13 @@ class WebRedirectPaymentModule: PaymentModule {
                     self.statusUrl = statusUrl
                     
                     firstly {
-                        self.paymentMethodModule.checkouEventsNotifierModule.fireWillPresentPaymentMethodUI()
+                        self.checkoutEventsNotifier.fireWillPresentPaymentMethodUI()
                     }
                     .then { () -> Promise<Void> in
                         return self.presentPaymentMethodUserInterface()
                     }
                     .then { () -> Promise<Void> in
-                        return self.paymentMethodModule.checkouEventsNotifierModule.fireDidPresentPaymentMethodUI()
+                        return self.checkoutEventsNotifier.fireDidPresentPaymentMethodUI()
                     }
                     .then { () -> Promise<Void> in
                         return self.awaitUserInput()
@@ -71,7 +71,7 @@ class WebRedirectPaymentModule: PaymentModule {
                 
                 PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
-                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.paymentMethodModule.paymentMethodConfiguration.type)
+                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.paymentMethodConfiguration.type)
                         seal.fulfill(())
                     }
                 })
@@ -86,7 +86,7 @@ class WebRedirectPaymentModule: PaymentModule {
                 
                 self.didCancel = {
                     let err = PrimerError.cancelled(
-                        paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                        paymentMethodType: self.paymentMethodConfiguration.type,
                         userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                         diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
@@ -98,6 +98,9 @@ class WebRedirectPaymentModule: PaymentModule {
             .done { resumeToken in
                 self.resumeToken = resumeToken
                 seal.fulfill()
+            }
+            .ensure {
+                self.webViewController?.dismiss(animated: true)
             }
             .catch { err in
                 seal.reject(err)

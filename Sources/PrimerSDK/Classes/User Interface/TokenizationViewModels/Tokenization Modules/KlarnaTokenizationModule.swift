@@ -107,56 +107,44 @@ class KlarnaTokenizationModule: TokenizationModule {
         
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.userInterfaceModule.makeIconImageView(withDimension: 24.0), message: nil)
 #if canImport(PrimerKlarnaSDK)
-        return Promise()
-//        return Promise { seal in
-//
-//            firstly {
-//                self.validate()
-//            }
-//            .then { () -> Promise<Void> in
-//                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-//                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodConfiguration.type, cardNetwork: nil)
-//            }
-//            .then { () -> Promise<Void> in
-//                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodConfiguration.type))
-//            }
-//            .then { () -> Promise<Response.Body.Klarna.CreatePaymentSession> in
-//                return self.createPaymentSession()
-//            }
-//            .then { session -> Promise<Void> in
-//                self.klarnaPaymentSession = session
-//                return self.paymentMethodModule.checkouEventsNotifierModule.fireWillPresentPaymentMethodUI()
-//            }
-//            .then { () -> Promise<Void> in
-//                return self.presentPaymentMethodUserInterface()
-//            }
-//            .then { () -> Promise<Void> in
-//                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidPresentPaymentMethodUI()
-//            }
-//            .then { () -> Promise<Void> in
-//                return self.awaitUserInput()
-//            }
-//            .then { () -> Promise<Response.Body.Klarna.CustomerToken> in
-//                return self.authorizePaymentSession(authorizationToken: self.authorizationToken!)
-//            }
-//            .done { klarnaCustomerTokenAPIResponse in
-//                self.klarnaCustomerTokenAPIResponse = klarnaCustomerTokenAPIResponse
-//                DispatchQueue.main.async {
-////                    self.willDismissExternalView?()
-//                }
-//
-//                seal.fulfill()
-//            }
-//            .ensure {
-////                self.willDismissExternalView?()
-//                self.klarnaViewController?.dismiss(animated: true, completion: {
-////                    self.didDismissExternalView?()
-//                })
-//            }
-//            .catch { err in
-//                seal.reject(err)
-//            }
-//        }
+        return Promise { seal in
+            firstly {
+                self.validate()
+            }
+            .then { () -> Promise<Void> in
+                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodConfiguration.type, cardNetwork: nil)
+            }
+            .then { () -> Promise<Void> in
+                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodConfiguration.type))
+            }
+            .then { () -> Promise<Response.Body.Klarna.CreatePaymentSession> in
+                return self.createPaymentSession()
+            }
+            .then { session -> Promise<Void> in
+                self.klarnaPaymentSession = session
+                return self.checkoutEventsNotifier.fireWillPresentPaymentMethodUI()
+            }
+            .then { () -> Promise<Void> in
+                return self.presentPaymentMethodUserInterface()
+            }
+            .then { () -> Promise<Void> in
+                return self.checkoutEventsNotifier.fireDidPresentPaymentMethodUI()
+            }
+            .then { () -> Promise<Void> in
+                return self.awaitUserInput()
+            }
+            .then { () -> Promise<Response.Body.Klarna.CustomerToken> in
+                return self.authorizePaymentSession(authorizationToken: self.authorizationToken!)
+            }
+            .done { klarnaCustomerTokenAPIResponse in
+                self.klarnaCustomerTokenAPIResponse = klarnaCustomerTokenAPIResponse
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
 #else
         return Promise { seal in
             let err = PrimerError.failedToFindModule(name: "PrimerKlarnaSDK", userInfo: nil, diagnosticsId: nil)

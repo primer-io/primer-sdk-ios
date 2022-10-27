@@ -85,7 +85,7 @@ class QRCodePaymentModule: PaymentModule {
             /// So we'll fulFill the promise directly, leaving the rest of the logic as clean as possible to proceed with almost
             /// only happy path
             
-            guard self.paymentMethodModule.paymentMethodConfiguration.type != PrimerPaymentMethodType.xfersPayNow.rawValue else {
+            guard self.paymentMethodConfiguration.type != PrimerPaymentMethodType.xfersPayNow.rawValue else {
                 seal.fulfill()
                 return
             }
@@ -93,7 +93,7 @@ class QRCodePaymentModule: PaymentModule {
             
             var additionalInfo: PrimerCheckoutAdditionalInfo?
             
-            switch self.paymentMethodModule.paymentMethodConfiguration.type {
+            switch self.paymentMethodConfiguration.type {
             case PrimerPaymentMethodType.rapydPromptPay.rawValue,
                 PrimerPaymentMethodType.omisePromptPay.rawValue:
                 
@@ -133,7 +133,7 @@ class QRCodePaymentModule: PaymentModule {
                 }
                 
             default:
-                log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.paymentMethodModule.paymentMethodConfiguration.type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
+                log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.paymentMethodConfiguration.type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
                 break
             }
                         
@@ -164,8 +164,8 @@ class QRCodePaymentModule: PaymentModule {
             
             DispatchQueue.main.async {
                 let qrcvc = QRCodeViewController(
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
-                    logo: self.paymentMethodModule.userInterfaceModule.logo,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
+                    logo: self.userInterfaceModule.logo,
                     qrCode: self.qrCode)
 //                self.willPresentPaymentMethodUI?()
                 PrimerUIManager.primerRootViewController?.show(viewController: qrcvc)
@@ -182,7 +182,7 @@ class QRCodePaymentModule: PaymentModule {
                 
                 self.didCancel = {
                     let err = PrimerError.cancelled(
-                        paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                        paymentMethodType: self.paymentMethodConfiguration.type,
                         userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                         diagnosticsId: nil)
                     ErrorHandler.handle(error: err)

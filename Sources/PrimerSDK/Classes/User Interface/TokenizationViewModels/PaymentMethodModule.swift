@@ -152,7 +152,10 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
             
         } else {
             if self.paymentMethodConfiguration.implementationType == .webRedirect {
-                self.paymentModule = WebRedirectPaymentModule(paymentMethodModule: self)
+                self.paymentModule = WebRedirectPaymentModule(
+                    paymentMethodConfiguration: self.paymentMethodConfiguration,
+                    userInterfaceModule: self.userInterfaceModule,
+                    checkoutEventsNotifier: self.checkouEventsNotifierModule)
                 
             } else {
                 switch self.paymentMethodType {
@@ -160,39 +163,66 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
                         .rapydFast,
                         .adyenMBWay,
                         .adyenMultibanco:
-                    self.paymentModule = FormPaymentModule(paymentMethodModule: self)
+                    self.paymentModule = FormPaymentModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .adyenDotPay,
                         .adyenIDeal:
-                    self.paymentModule = BankSelectorPaymentModule(paymentMethodModule: self)
+                    self.paymentModule = BankSelectorPaymentModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .apaya:
-                    self.paymentModule = ApayaPaymentModule(paymentMethodModule: self)
+                    self.paymentModule = ApayaPaymentModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .applePay:
                     if #available(iOS 11.0, *) {
-                        self.paymentModule = ApplePayPaymentModule(paymentMethodModule: self)
+                        self.paymentModule = ApplePayPaymentModule(
+                            paymentMethodConfiguration: self.paymentMethodConfiguration,
+                            userInterfaceModule: self.userInterfaceModule,
+                            checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     }
                     
                 case .klarna:
-                    self.paymentModule = KlarnaPaymentModule(paymentMethodModule: self)
+                    self.paymentModule = KlarnaPaymentModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .paymentCard,
                         .adyenBancontactCard:
-                    self.paymentModule = CardPaymentModule(paymentMethodModule: self)
+                    self.paymentModule = CardPaymentModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .payPal:
-                    self.paymentModule = PayPalPaymentModule(paymentMethodModule: self)
+                    self.paymentModule = PayPalPaymentModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .primerTestKlarna,
                         .primerTestPayPal,
                         .primerTestSofort:
-                    self.paymentModule =  PrimerTestPaymentMethodPaymentModule(paymentMethodModule: self)
+                    self.paymentModule =  PrimerTestPaymentMethodPaymentModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .xfersPayNow,
                         .rapydPromptPay,
                         .omisePromptPay:
-                    self.paymentModule = QRCodePaymentModule(paymentMethodModule: self)
+                    self.paymentModule = QRCodePaymentModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 default:
                     return nil
@@ -291,7 +321,10 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
             checkoutEventsNotifier: self.checkouEventsNotifierModule,
             selectedPaymentMethodTokenData: paymentMethodTokenData)
         
-        let vaultedPaymentMethodPaymentModule = VaultedPaymentMethodPaymentModule(paymentMethodModule: self)
+        let vaultedPaymentMethodPaymentModule = VaultedPaymentMethodPaymentModule(
+            paymentMethodConfiguration: self.paymentMethodConfiguration,
+            userInterfaceModule: self.userInterfaceModule,
+            checkoutEventsNotifier: self.checkouEventsNotifierModule)
         
         firstly {
             vaultedPaymentMethodTokenizationModule.startFlow()
