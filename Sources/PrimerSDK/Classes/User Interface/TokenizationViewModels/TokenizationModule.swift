@@ -10,15 +10,16 @@
 import Foundation
 
 protocol TokenizationModuleProtocol: NSObjectProtocol {
+        
+    init(
+        paymentMethodConfiguration: PrimerPaymentMethod,
+        userInterfaceModule: UserInterfaceModule,
+        checkoutEventsNotifier: CheckoutEventsNotifierModule)
     
-    var paymentMethodModule: PaymentMethodModuleProtocol! { get }
-    var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
-    
-    init(paymentMethodModule: PaymentMethodModuleProtocol)
     func startFlow() -> Promise<PrimerPaymentMethodTokenData>
     func validate() -> Promise<Void>
     func performPreTokenizationSteps() -> Promise<Void>
-    func performTokenizationStep() -> Promise<Void>
+    func performTokenizationStep() -> Promise<PrimerPaymentMethodTokenData>
     func tokenize() -> Promise<PrimerPaymentMethodTokenData>
     func performPostTokenizationSteps() -> Promise<Void>
     func submitTokenizationData()
@@ -26,30 +27,38 @@ protocol TokenizationModuleProtocol: NSObjectProtocol {
 }
 
 class TokenizationModule: NSObject, TokenizationModuleProtocol {
-
-    weak var paymentMethodModule: PaymentMethodModuleProtocol!
-    internal var paymentMethodTokenData: PrimerPaymentMethodTokenData?
     
-    required init(paymentMethodModule: PaymentMethodModuleProtocol) {
-        self.paymentMethodModule = paymentMethodModule
+    weak var paymentMethodConfiguration: PrimerPaymentMethod!
+    weak var userInterfaceModule: UserInterfaceModule!
+    weak var checkoutEventsNotifier: CheckoutEventsNotifierModule!
+    
+    required init(
+        paymentMethodConfiguration: PrimerPaymentMethod,
+        userInterfaceModule: UserInterfaceModule,
+        checkoutEventsNotifier: CheckoutEventsNotifierModule
+    ) {
+        self.paymentMethodConfiguration = paymentMethodConfiguration
+        self.userInterfaceModule = userInterfaceModule
+        self.checkoutEventsNotifier = checkoutEventsNotifier
         super.init()
     }
     
     func startFlow() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
+            var tmpPaymentMethodTokenData: PrimerPaymentMethodTokenData!
+            
             firstly {
                 self.performPreTokenizationSteps()
             }
-            .then { () -> Promise<Void> in
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.performTokenizationStep()
             }
-            .then { () -> Promise<Void> in
+            .then { paymentMethodTokenData -> Promise<Void> in
+                tmpPaymentMethodTokenData = paymentMethodTokenData
                 return self.performPostTokenizationSteps()
             }
             .done {
-                /// We can safely unwrap the **paymentMethodTokenData** since it has been
-                /// checked on **performPostTokenizationSteps()**
-                seal.fulfill(self.paymentMethodTokenData!)
+                seal.fulfill(tmpPaymentMethodTokenData)
             }
             .catch { err in
                 seal.reject(err)
@@ -65,22 +74,24 @@ class TokenizationModule: NSObject, TokenizationModuleProtocol {
         fatalError("\(#function) must be overriden")
     }
     
-    func performTokenizationStep() -> Promise<Void> {
+    func performTokenizationStep() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodModule.paymentMethodConfiguration.type)
+            var tmpPaymentMethodTokenData: PrimerPaymentMethodTokenData!
+            
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.paymentMethodConfiguration.type)
             
             firstly {
-                self.paymentMethodModule.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.checkoutEventsNotifier.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
-                self.paymentMethodTokenData = paymentMethodTokenData
-                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                tmpPaymentMethodTokenData = paymentMethodTokenData
+                return self.checkoutEventsNotifier.fireDidFinishTokenizationEvent()
             }
             .done {
-                seal.fulfill()
+                seal.fulfill(tmpPaymentMethodTokenData)
             }
             .catch { err in
                 seal.reject(err)
@@ -94,13 +105,6 @@ class TokenizationModule: NSObject, TokenizationModuleProtocol {
     
     func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
-            guard let paymentMethodTokenData = self.paymentMethodTokenData else {
-                let err = PrimerError.invalidValue(key: "paymentMethodTokenData", value: nil, userInfo: nil, diagnosticsId: nil)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
-            }
-
             seal.fulfill()
         }
     }

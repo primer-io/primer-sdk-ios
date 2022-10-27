@@ -180,27 +180,41 @@ extension UserInterfaceModule {
     }
     
     internal func enableSubmitButtonIfNeeded() {
-        var validations = [
-            cardNumberField.isTextValid,
-            expiryDateField.isTextValid,
-        ]
-        
-        if isRequiringCVVInput {
-            validations.append(cvvField.isTextValid)
-        }
-        
-        if isShowingBillingAddressFieldsRequired {
-            validations.append(contentsOf: allVisibleBillingAddressFieldViews.map { $0.isTextValid })
-        }
-        
-        if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
-        
-        if validations.allSatisfy({ $0 == true }) {
-            self.submitButton?.isEnabled = true
-            self.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
-        } else {
-            self.submitButton?.isEnabled = false
-            self.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
+        switch self.paymentMethodModule.paymentMethodConfiguration.type {
+        case PrimerPaymentMethodType.primerTestKlarna.rawValue,
+            PrimerPaymentMethodType.primerTestPayPal.rawValue,
+            PrimerPaymentMethodType.primerTestSofort.rawValue:
+            if lastSelectedIndexPath != nil {
+                self.submitButton?.isEnabled = true
+                self.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
+            } else {
+                self.submitButton?.isEnabled = false
+                self.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
+            }
+            
+        default:
+            var validations = [
+                cardNumberField.isTextValid,
+                expiryDateField.isTextValid,
+            ]
+            
+            if isRequiringCVVInput {
+                validations.append(cvvField.isTextValid)
+            }
+            
+            if isShowingBillingAddressFieldsRequired {
+                validations.append(contentsOf: allVisibleBillingAddressFieldViews.map { $0.isTextValid })
+            }
+            
+            if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
+            
+            if validations.allSatisfy({ $0 == true }) {
+                self.submitButton?.isEnabled = true
+                self.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
+            } else {
+                self.submitButton?.isEnabled = false
+                self.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
+            }
         }
     }
     
@@ -224,8 +238,7 @@ extension UserInterfaceModule {
     
     internal func configurePayButton(amount: Int) {
         DispatchQueue.main.async {
-            guard PrimerInternal.shared.intent == .checkout,
-                  let currency = AppState.current.currency else {
+            guard PrimerInternal.shared.intent == .checkout, let currency = AppState.current.currency else {
                 return
             }
             

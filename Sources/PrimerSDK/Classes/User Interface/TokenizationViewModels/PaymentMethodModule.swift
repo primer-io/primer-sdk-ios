@@ -18,6 +18,9 @@ protocol PaymentMethodModuleProtocol: NSObjectProtocol {
     var userInterfaceModule: UserInterfaceModule! { get }
     var tokenizationModule: TokenizationModuleProtocol! { get }
     var paymentModule: PaymentModuleProtocol! { get }
+    
+    var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
+    
     var position: Int { get set }
     
     init?(
@@ -43,6 +46,9 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
     var userInterfaceModule: UserInterfaceModule!
     var tokenizationModule: TokenizationModuleProtocol!
     var paymentModule: PaymentModuleProtocol!
+    
+    var paymentMethodTokenData: PrimerPaymentMethodTokenData?
+    
     var position: Int = 0
     
     required init?(
@@ -63,47 +69,77 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
             
         } else {
             if self.paymentMethodConfiguration.implementationType == .webRedirect {
-                self.tokenizationModule = WebRedirectTokenizationModule(paymentMethodModule: self)
+                self.tokenizationModule = WebRedirectTokenizationModule(
+                    paymentMethodConfiguration: self.paymentMethodConfiguration,
+                    userInterfaceModule: self.userInterfaceModule,
+                    checkoutEventsNotifier: self.checkouEventsNotifierModule)
                 
             } else {
                 switch self.paymentMethodType {
                 case .adyenBancontactCard,
                         .paymentCard:
-                    self.tokenizationModule = CardTokenizationModule(paymentMethodModule: self)
+                    self.tokenizationModule = CardTokenizationModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .adyenBlik,
                         .adyenMBWay,
                         .adyenMultibanco,
                         .rapydFast:
-                    self.tokenizationModule = FormTokenizationModule(paymentMethodModule: self)
+                    self.tokenizationModule = FormTokenizationModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .adyenDotPay,
                         .adyenIDeal:
-                    self.tokenizationModule = BankSelectorTokenizationModule(paymentMethodModule: self)
+                    self.tokenizationModule = BankSelectorTokenizationModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .apaya:
-                    self.tokenizationModule = ApayaTokenizationModule(paymentMethodModule: self)
+                    self.tokenizationModule = ApayaTokenizationModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .applePay:
                     if #available(iOS 11.0, *) {
-                        self.tokenizationModule = ApplePayTokenizationModule(paymentMethodModule: self)
+                        self.tokenizationModule = ApplePayTokenizationModule(
+                            paymentMethodConfiguration: self.paymentMethodConfiguration,
+                            userInterfaceModule: self.userInterfaceModule,
+                            checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     }
                     
                 case .klarna:
-                    self.tokenizationModule = KlarnaTokenizationModule(paymentMethodModule: self)
+                    self.tokenizationModule = KlarnaTokenizationModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .payPal:
-                    self.tokenizationModule = PayPalTokenizationModule(paymentMethodModule: self)
+                    self.tokenizationModule = PayPalTokenizationModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .primerTestKlarna,
                         .primerTestPayPal,
                         .primerTestSofort:
-                    self.tokenizationModule = PrimerTestPaymentMethodTokenizationModule(paymentMethodModule: self)
+                    self.tokenizationModule = PrimerTestPaymentMethodTokenizationModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 case .xfersPayNow,
                         .rapydPromptPay,
                         .omisePromptPay:
-                    self.tokenizationModule = QRCodeTokenizationModule(paymentMethodModule: self)
+                    self.tokenizationModule = QRCodeTokenizationModule(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule,
+                        checkoutEventsNotifier: self.checkouEventsNotifierModule)
                     
                 default:
                     return nil
@@ -176,6 +212,8 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
             self.tokenizationModule.startFlow()
         }
         .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
+            self.paymentMethodTokenData = paymentMethodTokenData
+            
             if PrimerInternal.shared.intent == .vault {
                 return Promise<PrimerCheckoutData?> { seal in
                     seal.fulfill(nil)
@@ -189,7 +227,7 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
                 PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 
             } else if PrimerInternal.shared.intent == .vault {
-                PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.tokenizationModule.paymentMethodTokenData!) { _ in }
+                PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
             }
             
             self.handleSuccessfulFlow()
@@ -247,8 +285,12 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
     }
     
     func payWithVaultedPaymentMethodTokenData(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
+        let vaultedPaymentMethodTokenizationModule = VaultedPaymentMethodTokenizationModule(
+            paymentMethodConfiguration: self.paymentMethodConfiguration,
+            userInterfaceModule: self.userInterfaceModule,
+            checkoutEventsNotifier: self.checkouEventsNotifierModule,
+            selectedPaymentMethodTokenData: paymentMethodTokenData)
         
-        let vaultedPaymentMethodTokenizationModule = VaultedPaymentMethodTokenizationModule(paymentMethodModule: self, selectedPaymentMethodTokenData: paymentMethodTokenData)
         let vaultedPaymentMethodPaymentModule = VaultedPaymentMethodPaymentModule(paymentMethodModule: self)
         
         firstly {

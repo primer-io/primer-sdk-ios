@@ -15,17 +15,24 @@ class CardTokenizationModule: TokenizationModule {
     private var userInputCompletion: (() -> Void)?
     private var cardComponentsManagerTokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
     
-    required init(paymentMethodModule: PaymentMethodModuleProtocol) {
-        super.init(paymentMethodModule: paymentMethodModule)
+    required init(
+        paymentMethodConfiguration: PrimerPaymentMethod,
+        userInterfaceModule: UserInterfaceModule,
+        checkoutEventsNotifier: CheckoutEventsNotifierModule)
+    {
+        super.init(
+            paymentMethodConfiguration: paymentMethodConfiguration,
+            userInterfaceModule: userInterfaceModule,
+            checkoutEventsNotifier: checkoutEventsNotifier)
         
         self.cardComponentsManager = CardComponentsManager(
-            cardnumberField: self.paymentMethodModule.userInterfaceModule.cardNumberField,
-            expiryDateField: self.paymentMethodModule.userInterfaceModule.expiryDateField,
-            cvvField: self.paymentMethodModule.userInterfaceModule.cvvField,
-            cardholderNameField: self.paymentMethodModule.userInterfaceModule.cardholderNameField,
-            billingAddressFieldViews: self.paymentMethodModule.userInterfaceModule.allVisibleBillingAddressFieldViews,
-            paymentMethodType: paymentMethodModule.paymentMethodConfiguration.type,
-            isRequiringCVVInput: self.paymentMethodModule.userInterfaceModule.isRequiringCVVInput
+            cardnumberField: self.userInterfaceModule.cardNumberField,
+            expiryDateField: self.userInterfaceModule.expiryDateField,
+            cvvField: self.userInterfaceModule.cvvField,
+            cardholderNameField: self.userInterfaceModule.cardholderNameField,
+            billingAddressFieldViews: self.userInterfaceModule.allVisibleBillingAddressFieldViews,
+            paymentMethodType: self.paymentMethodConfiguration.type,
+            isRequiringCVVInput: self.userInterfaceModule.isRequiringCVVInput
         )
         
         cardComponentsManager.delegate = self
@@ -74,7 +81,7 @@ class CardTokenizationModule: TokenizationModule {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -88,13 +95,13 @@ class CardTokenizationModule: TokenizationModule {
                 self.validate()
             }
             .then { () -> Promise<Void> in
-                return self.paymentMethodModule.checkouEventsNotifierModule.fireWillPresentPaymentMethodUI()
+                return self.checkoutEventsNotifier.fireWillPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
                 return self.presentPaymentMethodUserInterface()
             }
             .then { () -> Promise<Void> in
-                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidPresentPaymentMethodUI()
+                return self.checkoutEventsNotifier.fireDidPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
                 return self.awaitUserInput()
@@ -103,7 +110,7 @@ class CardTokenizationModule: TokenizationModule {
                 return self.dispatchActions()
             }
             .then { () -> Promise<Void> in
-                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodModule.paymentMethodConfiguration.type))
+                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodConfiguration.type))
             }
             .done {
                 seal.fulfill()
@@ -134,16 +141,18 @@ class CardTokenizationModule: TokenizationModule {
     private func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
-                switch self.paymentMethodModule.paymentMethodConfiguration.type {
+                switch self.paymentMethodConfiguration.type {
                 case PrimerPaymentMethodType.paymentCard.rawValue:
-                    let pcfvc = PrimerCardFormViewController(cardTokenizationModule: self)
+                    let pcfvc = PrimerCardFormViewController(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule)
                     PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
                     
                 case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
                     let pcfvc = PrimerCardFormViewController(
-                        navigationBarLogo: self.paymentMethodModule.userInterfaceModule.logo,
-                        cardTokenizationModule: self)
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self.userInterfaceModule)
                     PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
                     
@@ -164,13 +173,13 @@ class CardTokenizationModule: TokenizationModule {
     
     private func dispatchActions() -> Promise<Void> {
         return Promise { seal in
-            var network = self.paymentMethodModule.userInterfaceModule.cardNetwork?.rawValue.uppercased()
+            var network = self.userInterfaceModule.cardNetwork?.rawValue.uppercased()
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
             }
             
             let params: [String: Any] = [
-                "paymentMethodType": self.paymentMethodModule.paymentMethodConfiguration.type,
+                "paymentMethodType": self.paymentMethodConfiguration.type,
                 "binData": [
                     "network": network,
                 ]
@@ -178,16 +187,16 @@ class CardTokenizationModule: TokenizationModule {
             
             var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
             
-            if (self.paymentMethodModule.userInterfaceModule.isShowingBillingAddressFieldsRequired) {
+            if (self.userInterfaceModule.isShowingBillingAddressFieldsRequired) {
                 let updatedBillingAddress = ClientSession.Address(
-                    firstName: self.paymentMethodModule.userInterfaceModule.firstNameFieldView.firstName,
-                    lastName: self.paymentMethodModule.userInterfaceModule.lastNameFieldView.lastName,
-                    addressLine1: self.paymentMethodModule.userInterfaceModule.addressLine1FieldView.addressLine1,
-                    addressLine2: self.paymentMethodModule.userInterfaceModule.addressLine2FieldView.addressLine2,
-                    city: self.paymentMethodModule.userInterfaceModule.cityFieldView.city,
-                    postalCode: self.paymentMethodModule.userInterfaceModule.postalCodeFieldView.postalCode,
-                    state: self.paymentMethodModule.userInterfaceModule.stateFieldView.state,
-                    countryCode: self.paymentMethodModule.userInterfaceModule.countryFieldView.countryCode)
+                    firstName: self.userInterfaceModule.firstNameFieldView.firstName,
+                    lastName: self.userInterfaceModule.lastNameFieldView.lastName,
+                    addressLine1: self.userInterfaceModule.addressLine1FieldView.addressLine1,
+                    addressLine2: self.userInterfaceModule.addressLine2FieldView.addressLine2,
+                    city: self.userInterfaceModule.cityFieldView.city,
+                    postalCode: self.userInterfaceModule.postalCodeFieldView.postalCode,
+                    state: self.userInterfaceModule.stateFieldView.state,
+                    countryCode: self.userInterfaceModule.countryFieldView.countryCode)
                 
                 if let billingAddress = try? updatedBillingAddress.asDictionary() {
                     let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
@@ -216,7 +225,7 @@ class CardTokenizationModule: TokenizationModule {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -254,7 +263,7 @@ extension CardTokenizationModule: CardComponentsManagerDelegate {
     }
     
     func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
-        isLoading ? self.paymentMethodModule.userInterfaceModule.submitButton?.startAnimating() : self.paymentMethodModule.userInterfaceModule.submitButton?.stopAnimating()
+        isLoading ? self.userInterfaceModule.submitButton?.startAnimating() : self.userInterfaceModule.submitButton?.stopAnimating()
         PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = !isLoading
     }
 }
