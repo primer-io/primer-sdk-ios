@@ -35,8 +35,8 @@ class PayPalTokenizationModule: TokenizationModule {
                 return
             }
             
-            guard self.paymentMethodModule.paymentMethodConfiguration.id != nil else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            guard self.paymentMethodConfiguration.id != nil else {
+                let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -64,7 +64,7 @@ class PayPalTokenizationModule: TokenizationModule {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -73,7 +73,7 @@ class PayPalTokenizationModule: TokenizationModule {
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.paymentMethodModule.userInterfaceModule.makeIconImageView(withDimension: 24.0), message: nil)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.userInterfaceModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
@@ -81,19 +81,19 @@ class PayPalTokenizationModule: TokenizationModule {
             }
             .then { () -> Promise<Void> in
                 let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodModule.paymentMethodConfiguration.type, cardNetwork: nil)
+                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodConfiguration.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
-                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodModule.paymentMethodConfiguration.type))
+                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodConfiguration.type))
             }
             .then { () -> Promise<Void> in
-                return self.paymentMethodModule.checkouEventsNotifierModule.fireWillPresentPaymentMethodUI()
+                return self.checkoutEventsNotifier.fireWillPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
                 self.presentPaymentMethodUserInterface()
             }
             .then { () -> Promise<Void> in
-                return self.paymentMethodModule.checkouEventsNotifierModule.fireDidPresentPaymentMethodUI()
+                return self.checkoutEventsNotifier.fireDidPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
                 return self.awaitUserInput()

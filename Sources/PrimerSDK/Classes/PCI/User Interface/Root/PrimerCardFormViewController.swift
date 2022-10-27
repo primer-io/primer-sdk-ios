@@ -13,12 +13,18 @@ import UIKit
 class PrimerCardFormViewController: PrimerFormViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()    
-    private let cardTokenizationModule: CardTokenizationModule
+    private weak var paymentMethodConfiguration: PrimerPaymentMethod!
+    private weak var userInterfaceModule: UserInterfaceModule!
     
-    init(navigationBarLogo: UIImage? = nil, cardTokenizationModule: CardTokenizationModule) {
-        self.cardTokenizationModule = cardTokenizationModule
+    init(
+        paymentMethodConfiguration: PrimerPaymentMethod,
+        userInterfaceModule: UserInterfaceModule
+    ) {
+        self.paymentMethodConfiguration = paymentMethodConfiguration
+        self.userInterfaceModule = userInterfaceModule
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = navigationBarLogo
+        
+        self.titleImage = userInterfaceModule.invertedLogo
         if self.titleImage == nil {
             title = Strings.PrimerCardFormView.title
         }
@@ -37,7 +43,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
                 action: .view,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.cardTokenizationModule.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .view,
@@ -51,7 +57,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        _ = self.cardTokenizationModule.paymentMethodModule.userInterfaceModule.cardNumberField.becomeFirstResponder()
+        _ = self.userInterfaceModule.cardNumberField.becomeFirstResponder()
     }
     
     private func setupView() {
@@ -72,11 +78,11 @@ class PrimerCardFormViewController: PrimerFormViewController {
     }
     
     private func renderInputView() {
-        verticalStackView.addArrangedSubview(self.cardTokenizationModule.paymentMethodModule.userInterfaceModule.inputView!)
+        verticalStackView.addArrangedSubview(self.userInterfaceModule.inputView!)
     }
     
     private func renderSubmitButton() {
-        guard let submitButton = self.cardTokenizationModule.paymentMethodModule.userInterfaceModule.submitButton else { return }
+        guard let submitButton = self.userInterfaceModule.submitButton else { return }
         verticalStackView.addArrangedSubview(submitButton)
     }
 }

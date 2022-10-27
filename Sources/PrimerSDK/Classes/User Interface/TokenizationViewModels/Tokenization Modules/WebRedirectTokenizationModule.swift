@@ -34,7 +34,7 @@ class WebRedirectTokenizationModule: TokenizationModule {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -43,7 +43,7 @@ class WebRedirectTokenizationModule: TokenizationModule {
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
         
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.paymentMethodModule.userInterfaceModule.makeIconImageView(withDimension: 24.0), message: nil)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.userInterfaceModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
             firstly {
@@ -51,10 +51,10 @@ class WebRedirectTokenizationModule: TokenizationModule {
             }
             .then { () -> Promise<Void> in
                 let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodModule.paymentMethodConfiguration.type, cardNetwork: nil)
+                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodConfiguration.type, cardNetwork: nil)
             }
             .then { () -> Promise<Void> in
-                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodModule.paymentMethodConfiguration.type))
+                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodConfiguration.type))
             }
             .done {
                 seal.fulfill()
@@ -67,8 +67,8 @@ class WebRedirectTokenizationModule: TokenizationModule {
     
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            guard let configId = self.paymentMethodModule.paymentMethodConfiguration.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            guard let configId = self.paymentMethodConfiguration.id else {
+                let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -78,7 +78,7 @@ class WebRedirectTokenizationModule: TokenizationModule {
             
             let paymentInstrument = OffSessionPaymentInstrument(
                 paymentMethodConfigId: configId,
-                paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                paymentMethodType: self.paymentMethodConfiguration.type,
                 sessionInfo: sessionInfo)
                         
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)

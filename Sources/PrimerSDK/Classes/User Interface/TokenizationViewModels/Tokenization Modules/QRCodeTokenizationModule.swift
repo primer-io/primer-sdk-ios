@@ -30,7 +30,7 @@ class QRCodeTokenizationModule: TokenizationModule {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -44,7 +44,7 @@ class QRCodeTokenizationModule: TokenizationModule {
                 self.validate()
             }
             .then { () -> Promise<Void> in
-                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodModule.paymentMethodConfiguration.type))
+                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodConfiguration.type))
             }
             .done {
                 seal.fulfill()
@@ -57,8 +57,8 @@ class QRCodeTokenizationModule: TokenizationModule {
     
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            guard let configId = self.paymentMethodModule.paymentMethodConfiguration.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodModule.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            guard let configId = self.paymentMethodConfiguration.id else {
+                let err = PrimerError.invalidValue(key: "configuration.id", value: self.paymentMethodConfiguration.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -68,7 +68,7 @@ class QRCodeTokenizationModule: TokenizationModule {
             
             let paymentInstrument = OffSessionPaymentInstrument(
                 paymentMethodConfigId: configId,
-                paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                paymentMethodType: self.paymentMethodConfiguration.type,
                 sessionInfo: sessionInfo)
             
             

@@ -13,13 +13,21 @@ class VaultedPaymentMethodTokenizationModule: TokenizationModule {
     
     private(set) var selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
     
-    init(paymentMethodModule: PaymentMethodModuleProtocol, selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData) {
+    init(
+        paymentMethodConfiguration: PrimerPaymentMethod,
+        userInterfaceModule: UserInterfaceModule,
+        checkoutEventsNotifier: CheckoutEventsNotifierModule,
+        selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) {
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
-        super.init(paymentMethodModule: paymentMethodModule)
+        super.init(
+            paymentMethodConfiguration: paymentMethodConfiguration,
+            userInterfaceModule: userInterfaceModule,
+            checkoutEventsNotifier: checkoutEventsNotifier)
     }
     
-    required init(paymentMethodModule: PaymentMethodModuleProtocol) {
-        fatalError("init(paymentMethodModule:) has not been implemented")
+    required init(paymentMethodConfiguration: PrimerPaymentMethod, userInterfaceModule: UserInterfaceModule, checkoutEventsNotifier: CheckoutEventsNotifierModule) {
+        fatalError("init(paymentMethodConfiguration:userInterfaceModule:checkoutEventsNotifier:) has not been implemented")
     }
     
     override func validate() -> Promise<Void> {
@@ -45,7 +53,7 @@ class VaultedPaymentMethodTokenizationModule: TokenizationModule {
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
+                    paymentMethodType: self.paymentMethodConfiguration.type,
                     url: nil),
                 extra: nil,
                 objectType: .button,
@@ -62,7 +70,7 @@ class VaultedPaymentMethodTokenizationModule: TokenizationModule {
                 return self.dispatchActions()
             }
             .then { () -> Promise<Void> in
-                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodModule.paymentMethodConfiguration.type))
+                return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodConfiguration.type))
             }
             .done {
                 seal.fulfill()
@@ -81,7 +89,7 @@ class VaultedPaymentMethodTokenizationModule: TokenizationModule {
     private func dispatchActions() -> Promise<Void> {
         return Promise { seal in
             var network: String?
-            if self.paymentMethodModule.paymentMethodConfiguration.type == PrimerPaymentMethodType.paymentCard.rawValue {
+            if self.paymentMethodConfiguration.type == PrimerPaymentMethodType.paymentCard.rawValue {
                 network = self.selectedPaymentMethodTokenData.paymentInstrumentData?.network?.uppercased()
                 if network == nil || network == "UNKNOWN" {
                     network = "OTHER"
@@ -91,7 +99,7 @@ class VaultedPaymentMethodTokenizationModule: TokenizationModule {
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
             
             firstly {
-                clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodModule.paymentMethodConfiguration.type, cardNetwork: network)
+                clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodConfiguration.type, cardNetwork: network)
             }.done {
                 seal.fulfill()
             }

@@ -805,6 +805,91 @@ class UserInterfaceModule: NSObject {
             banks: banks)
         return bsvc
     }
+    
+    // FIXME: Remove UI elements
+    private let decisions = PrimerTestPaymentMethodSessionInfo.FlowDecision.allCases
+    var lastSelectedIndexPath: IndexPath?
+    var decisionSelectionCompletion: ((PrimerTestPaymentMethodSessionInfo.FlowDecision) -> Void)?
+    
+    internal lazy var tableView: UITableView = {
+        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+        
+        let tableView = UITableView()
+        tableView.showsVerticalScrollIndicator = false
+        tableView.showsHorizontalScrollIndicator = false
+        tableView.rowHeight = 56
+        tableView.backgroundColor = theme.view.backgroundColor
+        if #available(iOS 11.0, *) {
+            tableView.contentInsetAdjustmentBehavior = .never
+        }
+        tableView.register(FlowDecisionTableViewCell.self, forCellReuseIdentifier: FlowDecisionTableViewCell.identifier)
+        tableView.register(HeaderFooterLabelView.self, forHeaderFooterViewReuseIdentifier: "header")
+        tableView.dataSource = self
+        tableView.delegate = self
+        return tableView
+    }()
+    
+    var viewHeight: CGFloat {
+        180+(CGFloat(decisions.count)*tableView.rowHeight)
+    }
+}
+
+extension UserInterfaceModule: UITableViewDataSource, UITableViewDelegate {
+    
+    // MARK: - Table View delegate methods
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+        return 8
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header") as? HeaderFooterLabelView
+        header?.configure(text: Strings.PrimerTest.headerViewText)
+        return header
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 66
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        updateButtonUI()
+        let stackView = UIStackView(arrangedSubviews: [self.submitButton!])
+        stackView.alignment = .center
+        stackView.spacing = 16
+        return stackView
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let lastSelectedIndexPath = lastSelectedIndexPath {
+            tableView.deselectRow(at: lastSelectedIndexPath, animated: true)
+        }
+        lastSelectedIndexPath = indexPath
+        decisionSelectionCompletion?(decisions[indexPath.row])
+        enableSubmitButtonIfNeeded()
+    }
+
+    
+    // MARK: - Table View data source methods
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return decisions.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let decision = decisions[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "FlowDecisionTableViewCell", for: indexPath) as! FlowDecisionTableViewCell
+        cell.configure(decision: decision)
+        return cell
+    }
 }
 
 #endif
