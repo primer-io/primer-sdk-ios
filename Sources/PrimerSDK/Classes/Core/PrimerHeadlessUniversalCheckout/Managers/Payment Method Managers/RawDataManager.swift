@@ -470,45 +470,60 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     
                 } else if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
-                    if let redirectUrlStr = decodedJWTToken.redirectUrl,
-                       let redirectUrl = URL(string: redirectUrlStr),
-                       let statusUrlStr = decodedJWTToken.statusUrl,
+                    if let statusUrlStr = decodedJWTToken.statusUrl,
                        let statusUrl = URL(string: statusUrlStr),
                        decodedJWTToken.intent != nil {
                         
-                        DispatchQueue.main.async {
-                            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
-                        }
-                        
-                        var pollingModule: PollingModule? = PollingModule(url: statusUrl)
-                        
-                        firstly {
-                            self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
-                        }
-                        .then { () -> Promise<String> in
-                            self.webViewCompletion = { (id, err) in
-                                if let err = err {
-                                    pollingModule?.cancel(withError: err)
-                                    pollingModule = nil
-                                }
-                            }
-                            return pollingModule!.start()
-                        }
-                        .done { resumeToken in
-                            seal.fulfill(resumeToken)
-                        }
-                        .catch { err in
-                            if let primerErr = err as? PrimerError {
-                                pollingModule?.cancel(withError: primerErr)
-                            } else {
-                                let err = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
-                                ErrorHandler.handle(error: err)
-                                pollingModule?.cancel(withError: err)
+                        if let redirectUrlStr = decodedJWTToken.redirectUrl,
+                           let redirectUrl = URL(string: redirectUrlStr) {
+                            DispatchQueue.main.async {
+                                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                             }
                             
-                            pollingModule = nil
-                            seal.reject(err)
-                            PrimerInternal.shared.dismiss()
+                            var pollingModule: PollingModule? = PollingModule(url: statusUrl)
+                            
+                            firstly {
+                                self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
+                            }
+                            .then { () -> Promise<String> in
+                                self.webViewCompletion = { (id, err) in
+                                    if let err = err {
+                                        pollingModule?.cancel(withError: err)
+                                        pollingModule = nil
+                                    }
+                                }
+                                return pollingModule!.start()
+                            }
+                            .done { resumeToken in
+                                seal.fulfill(resumeToken)
+                            }
+                            .catch { err in
+                                if let primerErr = err as? PrimerError {
+                                    pollingModule?.cancel(withError: primerErr)
+                                } else {
+                                    let err = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+                                    ErrorHandler.handle(error: err)
+                                    pollingModule?.cancel(withError: err)
+                                }
+                                
+                                pollingModule = nil
+                                seal.reject(err)
+                                PrimerInternal.shared.dismiss()
+                            }
+                            
+                        } else {
+                            let pollingModule: PollingModule? = PollingModule(url: statusUrl)
+                            
+                            firstly {
+                                pollingModule!.start()
+                            }
+                            .done { resumeToken in
+                                seal.fulfill(resumeToken)
+                            }
+                            .catch { err in
+                                seal.reject(err)
+                                PrimerInternal.shared.dismiss()
+                            }
                         }
                         
                     } else {
