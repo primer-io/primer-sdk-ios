@@ -13,6 +13,16 @@ extension PrimerHeadlessUniversalCheckout {
     
     public class AssetsManager {
         
+        public static func getCardNetworkImage(for cardNetwork: CardNetwork) throws -> UIImage? {
+            if AppState.current.apiConfiguration == nil {
+                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+            
+            return UIImage(named: "\(cardNetwork.rawValue)-logo-colored", in: Bundle.primerResources, compatibleWith: nil)
+        }
+        
         public static func getPaymentMethodAsset(for paymentMethodType: String) throws -> PrimerPaymentMethodAsset? {
             if AppState.current.apiConfiguration == nil {
                 let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: nil)
