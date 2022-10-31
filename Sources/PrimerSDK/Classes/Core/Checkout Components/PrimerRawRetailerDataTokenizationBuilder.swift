@@ -25,11 +25,7 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
         }
     }
     
-    var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? {
-        didSet {
-            self.delegate = rawDataManager?.delegate
-        }
-    }
+    weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
     var isDataValid: Bool = false
     var paymentMethodType: String
     var delegate: PrimerRawDataManagerDelegate?
@@ -95,11 +91,11 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
             if !errors.isEmpty {
                 let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 self.isDataValid = false
-                delegate?.primerRawDataManager?(rawDataManager, dataIsValid: false, errors: errors)
+                self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: false, errors: errors)
                 seal.reject(err)
             } else {
                 self.isDataValid = true
-                delegate?.primerRawDataManager?(rawDataManager, dataIsValid: true, errors: nil)
+                self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: true, errors: nil)
                 seal.fulfill()
             }
         }
