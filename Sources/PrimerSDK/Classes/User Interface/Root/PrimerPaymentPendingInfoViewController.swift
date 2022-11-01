@@ -11,13 +11,13 @@ import UIKit
 
 internal class PrimerPaymentPendingInfoViewController: PrimerFormViewController {
         
-    private let userInterfaceModule: UserInterfaceModule
+    private let userInterfaceModule: NewUserInterfaceModule
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(userInterfaceModule: UserInterfaceModule) {
+    init(userInterfaceModule: NewUserInterfaceModule) {
         self.userInterfaceModule = userInterfaceModule
         super.init(nibName: nil, bundle: nil)
     }

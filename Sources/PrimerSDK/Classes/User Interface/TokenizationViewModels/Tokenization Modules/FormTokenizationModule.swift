@@ -283,17 +283,17 @@ class FormTokenizationModule: TokenizationModule {
                 case PrimerPaymentMethodType.adyenBlik.rawValue,
                     PrimerPaymentMethodType.adyenMBWay.rawValue:
                     
-                    let pcfvc = PrimerInputViewController(
-                        paymentMethodType: self.paymentMethodConfiguration.type,
-                        userInterfaceModule: self.userInterfaceModule,
-                        inputsDistribution: .horizontal)
-                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+//                    let pcfvc = PrimerInputViewController(
+//                        paymentMethodType: self.paymentMethodConfiguration.type,
+//                        userInterfaceModule: self.userInterfaceModule,
+//                        inputsDistribution: .horizontal)
+//                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
                     
                     
                 case PrimerPaymentMethodType.adyenMultibanco.rawValue:
-                    let pcfvc = PrimerAccountInfoPaymentViewController(userInterfaceModule: self.userInterfaceModule)
-                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+//                    let pcfvc = PrimerAccountInfoPaymentViewController(userInterfaceModule: self.userInterfaceModule)
+//                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
                     
                 default:

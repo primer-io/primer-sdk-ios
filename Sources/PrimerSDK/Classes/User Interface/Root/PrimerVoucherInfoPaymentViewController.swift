@@ -1,5 +1,5 @@
 //
-//  PrimerAccountInfoPaymentViewController.swift
+//  PrimerVoucherInfoPaymentViewController.swift
 //  PrimerSDK
 //
 //  Copyright © 2022 Primer API ltd. All rights reserved.
@@ -11,7 +11,7 @@ import UIKit
 
 internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
         
-    let userInterfaceModule: UserInterfaceModule
+    let userInterfaceModule: NewUserInterfaceModule
     let textToShare: String?
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
@@ -30,11 +30,11 @@ internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController 
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(userInterfaceModule: UserInterfaceModule, shouldShareVoucherInfoWithText textToShare: String? = nil) {
+    init(userInterfaceModule: NewUserInterfaceModule, shouldShareVoucherInfoWithText textToShare: String? = nil) {
         self.userInterfaceModule = userInterfaceModule
         self.textToShare = textToShare
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = userInterfaceModule.invertedLogo
+        self.titleImage = userInterfaceModule.navigationBarLogo
     }
     
     required init?(coder: NSCoder) {
@@ -49,10 +49,6 @@ internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController 
         if let resultView = self.userInterfaceModule.resultView {
             verticalStackView.addArrangedSubview(resultView)
         }
-//        
-//        if let submitButton = self.userInterfaceModule.submitButton {
-//            verticalStackView.addArrangedSubview(submitButton)
-//        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
