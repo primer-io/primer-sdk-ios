@@ -1,5 +1,5 @@
 //
-//  PrimerAccountInfoPaymentViewController.swift
+//  VoucherValue.swift
 //  PrimerSDK
 //
 //  Copyright © 2022 Primer API ltd. All rights reserved.

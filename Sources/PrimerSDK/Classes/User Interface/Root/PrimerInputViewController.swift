@@ -11,28 +11,18 @@ import UIKit
 
 internal class PrimerInputViewController: PrimerFormViewController {
     
-    let userInterfaceModule: UserInterfaceModule
+    let userInterfaceModule: NewUserInterfaceModule
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(paymentMethodType: String,
-         userInterfaceModule: UserInterfaceModule,
+         userInterfaceModule: NewUserInterfaceModule,
          inputsDistribution: NSLayoutConstraint.Axis = .vertical) {
         self.userInterfaceModule = userInterfaceModule
         super.init(nibName: nil, bundle: nil)
-        
-        let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType)
-        
-        switch paymentMethodType {
-        case .adyenMBWay,
-                .adyenMultibanco:
-            self.titleImage = userInterfaceModule.logo
-            
-        default:
-            self.titleImage = userInterfaceModule.invertedLogo
-        }
+        self.titleImage = userInterfaceModule.navigationBarLogo
     }
     
     required init?(coder: NSCoder) {

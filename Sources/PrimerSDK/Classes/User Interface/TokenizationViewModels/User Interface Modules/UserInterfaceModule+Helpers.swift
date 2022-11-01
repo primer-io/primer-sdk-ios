@@ -277,6 +277,23 @@ extension UserInterfaceModule {
         
         return PrimerFormView(formViews: views)
     }
+    
+    @objc
+    internal func copyToClipboardTapped(_ sender: UIButton) {
+        UIPasteboard.general.string = PrimerAPIConfigurationModule.decodedJWTToken?.accountNumber
+        
+        log(logLevel: .debug, message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
+        
+        DispatchQueue.main.async {
+            sender.isSelected = true
+        }
+        Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { timer in
+            DispatchQueue.main.async {
+                sender.isSelected = false
+            }
+            timer.invalidate()
+        }
+    }
 }
 
 #endif

@@ -15,7 +15,7 @@ protocol PaymentMethodModuleProtocol: NSObjectProtocol {
     
     var paymentMethodConfiguration: PrimerPaymentMethod { get }
     var checkouEventsNotifierModule: CheckoutEventsNotifierModule { get }
-    var userInterfaceModule: UserInterfaceModule! { get }
+    var userInterfaceModule: NewUserInterfaceModule! { get }
     var tokenizationModule: TokenizationModuleProtocol! { get }
     var paymentModule: PaymentModuleProtocol! { get }
     
@@ -25,7 +25,7 @@ protocol PaymentMethodModuleProtocol: NSObjectProtocol {
     
     init?(
         paymentMethodConfiguration: PrimerPaymentMethod,
-        userInterfaceModule: UserInterfaceModule?,
+        userInterfaceModule: NewUserInterfaceModule?,
         tokenizationModule: TokenizationModuleProtocol?,
         paymentModule: PaymentModuleProtocol?
     )
@@ -43,7 +43,7 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
     }()
     var paymentMethodConfiguration: PrimerPaymentMethod
     var checkouEventsNotifierModule: CheckoutEventsNotifierModule
-    var userInterfaceModule: UserInterfaceModule!
+    var userInterfaceModule: NewUserInterfaceModule!
     var tokenizationModule: TokenizationModuleProtocol!
     var paymentModule: PaymentModuleProtocol!
     
@@ -53,7 +53,7 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
     
     required init?(
         paymentMethodConfiguration: PrimerPaymentMethod,
-        userInterfaceModule: UserInterfaceModule?,
+        userInterfaceModule: NewUserInterfaceModule?,
         tokenizationModule: TokenizationModuleProtocol?,
         paymentModule: PaymentModuleProtocol?
     ) {
@@ -62,7 +62,9 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
         
         super.init()
         
-        self.userInterfaceModule = userInterfaceModule ?? UserInterfaceModule(paymentMethodModule: self)
+        self.userInterfaceModule = userInterfaceModule ?? NewUserInterfaceModule(paymentMethodConfiguration: self.paymentMethodConfiguration,
+                                                                                 tokenizationModule: self.tokenizationModule,
+                                                                                 paymentModule: self.paymentModule)
         
         if let tokenizationModule = tokenizationModule {
             self.tokenizationModule = tokenizationModule
@@ -400,7 +402,12 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
         }
         
         if paymentMethodType == .adyenMultibanco {
-            (self.paymentModule as? FormPaymentModule)?.presentResultViewController()
+            firstly {
+                (self.paymentModule as? FormPaymentModule)?.userInterfaceModule.presentResultViewControllerIfNeeded() ?? Promise()
+            }
+            .done { _ in }
+            .catch { _ in }
+            
             
         }
 //        else if accountInfoPaymentMethodTypes.contains(paymentMethodType) {

@@ -15,7 +15,7 @@ protocol PaymentModuleProtocol: NSObjectProtocol {
     
     init(
         paymentMethodConfiguration: PrimerPaymentMethod,
-        userInterfaceModule: UserInterfaceModule,
+        userInterfaceModule: NewUserInterfaceModule,
         checkoutEventsNotifier: CheckoutEventsNotifierModule)
     
     func pay(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?>
@@ -28,7 +28,7 @@ protocol PaymentModuleProtocol: NSObjectProtocol {
 class PaymentModule: NSObject, PaymentModuleProtocol {
     
     weak var paymentMethodConfiguration: PrimerPaymentMethod!
-    weak var userInterfaceModule: UserInterfaceModule!
+    weak var userInterfaceModule: NewUserInterfaceModule!
     weak var checkoutEventsNotifier: CheckoutEventsNotifierModule!
     
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
@@ -39,7 +39,7 @@ class PaymentModule: NSObject, PaymentModuleProtocol {
     
     required init(
         paymentMethodConfiguration: PrimerPaymentMethod,
-        userInterfaceModule: UserInterfaceModule,
+        userInterfaceModule: NewUserInterfaceModule,
         checkoutEventsNotifier: CheckoutEventsNotifierModule
     ) {
         self.paymentMethodConfiguration = paymentMethodConfiguration

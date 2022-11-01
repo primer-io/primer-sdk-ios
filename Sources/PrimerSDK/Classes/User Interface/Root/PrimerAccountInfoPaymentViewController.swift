@@ -11,16 +11,16 @@ import UIKit
 
 internal class PrimerAccountInfoPaymentViewController: PrimerFormViewController {
         
-    let userInterfaceModule: UserInterfaceModule
+    let userInterfaceModule: NewUserInterfaceModule
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(userInterfaceModule: UserInterfaceModule) {
+    init(userInterfaceModule: NewUserInterfaceModule) {
         self.userInterfaceModule = userInterfaceModule
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = userInterfaceModule.invertedLogo
+        self.titleImage = userInterfaceModule.navigationBarLogo
     }
     
     required init?(coder: NSCoder) {

@@ -10,20 +10,126 @@
 
 import UIKit
 
-//protocol UserInterfaceModuleProtocol {
-//
-//    var paymentMethodModule: PaymentMethodModuleProtocol! { get }
-//    var logo: UIImage? { get }
-//    var invertedLogo: UIImage? { get }
-//    var icon: UIImage? { get }
-//    var surchargeSectionText: String? { get }
-//    var paymentMethodButton: PrimerButton { get }
-//    var submitButton: PrimerButton? { get }
-//
-//    init(paymentMethodModule: PaymentMethodModuleProtocol)
-//    func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
-//    func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView?
-//}
+protocol UserInterfaceModuleProtocol {
+    
+    var logo: UIImage? { get }
+    var navigationBarLogo: UIImage? { get }
+    var icon: UIImage? { get }
+    var surchargeSectionText: String? { get }
+    var paymentMethodButton: PrimerButton? { get }
+    var submitButton: PrimerButton? { get }
+    
+    init(paymentMethodConfiguration: PrimerPaymentMethod,
+         tokenizationModule: TokenizationModuleProtocol,
+         paymentModule: PaymentModuleProtocol)
+    
+    func presentPreTokenizationViewControllerIfNeeded() -> Promise<Void>
+    func presentPostPaymentViewControllerIfNeeded() -> Promise<Void>
+    func presentResultViewControllerIfNeeded() -> Promise<Void>
+    
+    func dismisPresentedViewControllerIfNeeded() -> Promise<Void>
+}
+
+class NewUserInterfaceModule: UserInterfaceModuleProtocol {
+    
+    let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+
+    var logo: UIImage? {
+        paymentMethodConfiguration.logo
+    }
+    
+    var navigationBarLogo: UIImage? {
+        logo
+    }
+    
+    var icon: UIImage? {
+        var fileName = paymentMethodConfiguration.type.lowercased().replacingOccurrences(of: "_", with: "-")
+        fileName += "-icon"
+        
+        switch self.themeMode {
+        case .colored:
+            fileName += "-colored"
+        case .dark:
+            fileName += "-dark"
+        case .light:
+            fileName += "-colored"
+        }
+        
+        return UIImage(named: fileName, in: Bundle.primerResources, compatibleWith: nil)
+    }
+    
+    var surchargeSectionText: String? {
+        guard let currency = AppState.current.currency else { return nil }
+        guard let availablePaymentMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
+        guard let str = availablePaymentMethods.filter({ $0.type == self.paymentMethodConfiguration.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
+        return "+\(str)"
+    }
+    
+    var resultView: PrimerView?
+    var inputView: PrimerView?
+    
+    var paymentMethodButton: PrimerButton?
+    var submitButton: PrimerButton?
+    
+    var presentedViewController: UIViewController?
+    
+    var themeMode: PrimerTheme.Mode {
+        if let baseLogoImage = paymentMethodConfiguration.baseLogoImage {
+            if UIScreen.isDarkModeEnabled {
+                if baseLogoImage.dark != nil {
+                    return .dark
+                } else if baseLogoImage.colored != nil {
+                    return .colored
+                } else if baseLogoImage.light != nil {
+                    return .light
+                }
+            } else {
+                if baseLogoImage.colored != nil {
+                    return .colored
+                } else if baseLogoImage.light != nil {
+                    return .light
+                } else if baseLogoImage.dark != nil {
+                    return .dark
+                }
+            }
+        }
+        
+        if UIScreen.isDarkModeEnabled {
+            return .dark
+        } else {
+            return .colored
+        }
+    }
+    
+    weak var paymentMethodConfiguration: PrimerPaymentMethod!
+    weak var tokenizationModule: TokenizationModuleProtocol!
+    weak var paymentModule: PaymentModuleProtocol!
+    
+    required init(paymentMethodConfiguration: PrimerPaymentMethod, tokenizationModule: TokenizationModuleProtocol, paymentModule: PaymentModuleProtocol) {
+        self.paymentMethodConfiguration = paymentMethodConfiguration
+        self.tokenizationModule = tokenizationModule
+        self.paymentModule = paymentModule
+    }
+        
+    func presentPreTokenizationViewControllerIfNeeded() -> Promise<Void> {
+        fatalError("presentPreTokenizationViewControllerIfNeeded() has not been implemented")
+    }
+        
+    func presentPostPaymentViewControllerIfNeeded() -> Promise<Void> {
+        fatalError("presentPostPaymentViewControllerIfNeeded() has not been implemented")
+    }
+    
+    func presentResultViewControllerIfNeeded() -> Promise<Void> {
+        fatalError("presentResultViewControllerIfNeeded() has not been implemented")
+    }
+    
+    func dismisPresentedViewControllerIfNeeded() -> Promise<Void> {
+        return Promise { seal in
+            self.presentedViewController?.dismiss(animated: true)
+            seal.fulfill()
+        }
+    }
+}
 
 class UserInterfaceModule: NSObject {
     
@@ -108,24 +214,7 @@ class UserInterfaceModule: NSObject {
     
     @IBAction internal func submitButtonTapped(_ sender: UIButton) {
         self.paymentMethodModule.tokenizationModule.submitTokenizationData()
-//        self.paymentMethodModule.tokenizationModule.submitButtonTapped()
-    }
-    
-    @objc
-    internal func copyToClipboardTapped(_ sender: UIButton) {
-        UIPasteboard.general.string = PrimerAPIConfigurationModule.decodedJWTToken?.accountNumber
-        
-        log(logLevel: .debug, message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
-        
-        DispatchQueue.main.async {
-            sender.isSelected = true
-        }
-        Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { timer in
-            DispatchQueue.main.async {
-                sender.isSelected = false
-            }
-            timer.invalidate()
-        }
+        //        self.paymentMethodModule.tokenizationModule.submitButtonTapped()
     }
     
     // MARK: - IMAGES
@@ -302,9 +391,9 @@ class UserInterfaceModule: NSObject {
     internal lazy var cardNumberContainerView: PrimerCustomFieldView = {
         PrimerCardNumberField.cardNumberContainerViewWithFieldView(cardNumberField)
     }()
-
+    
     // MARK: Cardholder name
-
+    
     internal lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
         if !PrimerCardholderNameField.isCardholderNameFieldEnabled { return nil }
         return PrimerCardholderNameField.cardholderNameFieldViewWithDelegate(self)
@@ -314,7 +403,7 @@ class UserInterfaceModule: NSObject {
         if !PrimerCardholderNameField.isCardholderNameFieldEnabled { return nil }
         return PrimerCardholderNameField.cardholderNameContainerViewFieldView(cardholderNameField)
     }()
-        
+    
     // MARK: Expiry date
     
     internal lazy var expiryDateField: PrimerExpiryDateFieldView = {
@@ -324,13 +413,13 @@ class UserInterfaceModule: NSObject {
     internal lazy var expiryDateContainerView: PrimerCustomFieldView = {
         return PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
     }()
-
+    
     // MARK: CVV
     
     internal lazy var cvvField: PrimerCVVFieldView = {
         PrimerCVVField.cvvFieldViewWithDelegate(self)
     }()
-        
+    
     internal lazy var cvvContainerView: PrimerCustomFieldView = {
         PrimerCVVField.cvvContainerViewFieldView(cvvField)
     }()
@@ -353,17 +442,17 @@ class UserInterfaceModule: NSObject {
     }
     
     // MARK: Billing address
-        
+    
     internal var countryField: BillingAddressField {
         (countryFieldView, countryFieldContainerView, billingAddressCheckoutModuleOptions?.countryCode == false)
     }
-        
+    
     // MARK: First name
     
     internal lazy var firstNameFieldView: PrimerFirstNameFieldView = {
         PrimerFirstNameField.firstNameFieldViewWithDelegate(self)
     }()
-        
+    
     internal lazy var firstNameContainerView: PrimerCustomFieldView = {
         PrimerFirstNameField.firstNameFieldContainerViewFieldView(firstNameFieldView)
     }()
@@ -377,7 +466,7 @@ class UserInterfaceModule: NSObject {
     internal lazy var lastNameFieldView: PrimerLastNameFieldView = {
         PrimerLastNameField.lastNameFieldViewWithDelegate(self)
     }()
-            
+    
     internal lazy var lastNameContainerView: PrimerCustomFieldView = {
         PrimerLastNameField.lastNameFieldContainerViewFieldView(lastNameFieldView)
     }()
@@ -387,11 +476,11 @@ class UserInterfaceModule: NSObject {
     }
     
     // MARK: Address Line 1
-
+    
     internal lazy var addressLine1FieldView: PrimerAddressLine1FieldView = {
         PrimerAddressLine1Field.addressLine1FieldViewWithDelegate(self)
     }()
-            
+    
     internal lazy var addressLine1ContainerView: PrimerCustomFieldView = {
         PrimerAddressLine1Field.addressLine1ContainerViewFieldView(addressLine1FieldView)
     }()
@@ -399,13 +488,13 @@ class UserInterfaceModule: NSObject {
     internal var addressLine1Field: BillingAddressField {
         (addressLine1FieldView, addressLine1ContainerView, billingAddressCheckoutModuleOptions?.addressLine1 == false)
     }
-
+    
     // MARK: Address Line 2
-
+    
     internal lazy var addressLine2FieldView: PrimerAddressLine2FieldView = {
         PrimerAddressLine2Field.addressLine2FieldViewWithDelegate(self)
     }()
-            
+    
     internal lazy var addressLine2ContainerView: PrimerCustomFieldView = {
         PrimerAddressLine2Field.addressLine2ContainerViewFieldView(addressLine2FieldView)
     }()
@@ -419,7 +508,7 @@ class UserInterfaceModule: NSObject {
     internal lazy var postalCodeFieldView: PrimerPostalCodeFieldView = {
         PrimerPostalCodeField.postalCodeViewWithDelegate(self)
     }()
-        
+    
     internal lazy var postalCodeContainerView: PrimerCustomFieldView = {
         PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeFieldView)
     }()
@@ -429,11 +518,11 @@ class UserInterfaceModule: NSObject {
     }
     
     // MARK: City
-
+    
     internal lazy var cityFieldView: PrimerCityFieldView = {
         PrimerCityField.cityFieldViewWithDelegate(self)
     }()
-            
+    
     internal lazy var cityContainerView: PrimerCustomFieldView = {
         PrimerCityField.cityFieldContainerViewFieldView(cityFieldView)
     }()
@@ -443,11 +532,11 @@ class UserInterfaceModule: NSObject {
     }
     
     // MARK: State
-
+    
     internal lazy var stateFieldView: PrimerStateFieldView = {
         PrimerStateField.stateFieldViewWithDelegate(self)
     }()
-            
+    
     internal lazy var stateContainerView: PrimerCustomFieldView = {
         PrimerStateField.stateFieldContainerViewFieldView(stateFieldView)
     }()
@@ -457,11 +546,11 @@ class UserInterfaceModule: NSObject {
     }
     
     // MARK: Country
-        
+    
     internal lazy var countryFieldView: PrimerCountryFieldView = {
         PrimerCountryField.countryFieldViewWithDelegate(self)
     }()
-
+    
     internal lazy var countryFieldContainerView: PrimerCustomFieldView = {
         PrimerCountryField.countryContainerViewFieldView(countryFieldView, openCountriesListPressed: {
             DispatchQueue.main.async {
@@ -488,7 +577,7 @@ class UserInterfaceModule: NSObject {
         
         return input1
     }()
-        
+    
     // MARK: - Adyen MBWay Input View
     
     internal var mbwayTopLabelView: UILabel = {
@@ -534,31 +623,31 @@ class UserInterfaceModule: NSObject {
         guard let paymentMethodType = self.paymentMethodType, paymentMethodType == .adyenMultibanco else { return nil }
         
         // Complete your payment
-
+        
         let completeYourPaymentLabel = UILabel()
         completeYourPaymentLabel.text = Strings.VoucherInfoPaymentView.completeYourPayment
         completeYourPaymentLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.title)
         completeYourPaymentLabel.textColor = theme.text.title.color
-
+        
         let descriptionLabel = UILabel()
         descriptionLabel.textColor = .gray600
         descriptionLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.body)
         descriptionLabel.numberOfLines = 0
         descriptionLabel.text = Strings.VoucherInfoPaymentView.descriptionLabel
-
+        
         // Expires at
-
+        
         let expiresAtContainerStackView = UIStackView()
         expiresAtContainerStackView.axis = .horizontal
         expiresAtContainerStackView.spacing = 8.0
-
+        
         let calendarImage = UIImage(named: "calendar", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         let calendarImageView = UIImageView(image: calendarImage)
         calendarImageView.tintColor = .gray600
         calendarImageView.clipsToBounds = true
         calendarImageView.contentMode = .scaleAspectFit
         expiresAtContainerStackView.addArrangedSubview(calendarImageView)
-
+        
         if let expDate = PrimerAPIConfigurationModule.decodedJWTToken?.expiresAt {
             let expiresAtPrefixLabel = UILabel()
             let expiresAtAttributedString = NSMutableAttributedString()
@@ -579,9 +668,9 @@ class UserInterfaceModule: NSObject {
             expiresAtPrefixLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.body)
             expiresAtContainerStackView.addArrangedSubview(expiresAtPrefixLabel)
         }
-
+        
         // Voucher info container Stack View
-
+        
         let voucherInfoContainerStackView = PrimerStackView()
         voucherInfoContainerStackView.axis = .vertical
         voucherInfoContainerStackView.spacing = 12.0
@@ -591,22 +680,22 @@ class UserInterfaceModule: NSObject {
         voucherInfoContainerStackView.layer.borderWidth = 2.0
         voucherInfoContainerStackView.isLayoutMarginsRelativeArrangement = true
         voucherInfoContainerStackView.layer.cornerRadius = 8.0
-
+        
         for voucherValue in VoucherValue.currentVoucherValues {
-
+            
             if voucherValue.value != nil {
-
+                
                 let voucherValueStackView = PrimerStackView()
                 voucherValueStackView.axis = .horizontal
                 voucherValueStackView.spacing = 12.0
                 voucherValueStackView.distribution = .fillProportionally
-
+                
                 let voucherValueLabel = UILabel()
                 voucherValueLabel.text = voucherValue.description
                 voucherValueLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
                 voucherValueLabel.textColor = .gray600
                 voucherValueStackView.addArrangedSubview(voucherValueLabel)
-
+                
                 let voucherValueText = UILabel()
                 voucherValueText.text = voucherValue.value
                 voucherValueText.font = UIFont.boldSystemFont(ofSize: PrimerDimensions.Font.label)
@@ -614,9 +703,9 @@ class UserInterfaceModule: NSObject {
                 voucherValueText.setContentHuggingPriority(.required, for: .horizontal)
                 voucherValueText.setContentCompressionResistancePriority(.required, for: .horizontal)
                 voucherValueStackView.addArrangedSubview(voucherValueText)
-
+                
                 voucherInfoContainerStackView.addArrangedSubview(voucherValueStackView)
-
+                
                 if let lastValue = VoucherValue.currentVoucherValues.last, voucherValue != lastValue  {
                     // Separator view
                     let separatorView = PrimerView()
@@ -627,22 +716,22 @@ class UserInterfaceModule: NSObject {
                 }
             }
         }
-
-//                let copyToClipboardImage = UIImage(named: "copy-to-clipboard", in: Bundle.primerResources, compatibleWith: nil)
-//                let copiedToClipboardImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)
-//                let copyToClipboardButton = UIButton(type: .custom)
-//                copyToClipboardButton.setImage(copyToClipboardImage, for: .normal)
-//                copyToClipboardButton.setImage(copiedToClipboardImage, for: .selected)
-//                copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
-//                copyToClipboardButton.addTarget(self, action: #selector(copyToClipboardTapped), for: .touchUpInside)
-//                entityStackView.addArrangedSubview(copyToClipboardButton)
-
-//        self.uiModule.submitButton = nil
-
+        
+        //                let copyToClipboardImage = UIImage(named: "copy-to-clipboard", in: Bundle.primerResources, compatibleWith: nil)
+        //                let copiedToClipboardImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)
+        //                let copyToClipboardButton = UIButton(type: .custom)
+        //                copyToClipboardButton.setImage(copyToClipboardImage, for: .normal)
+        //                copyToClipboardButton.setImage(copiedToClipboardImage, for: .selected)
+        //                copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
+        //                copyToClipboardButton.addTarget(self, action: #selector(copyToClipboardTapped), for: .touchUpInside)
+        //                entityStackView.addArrangedSubview(copyToClipboardButton)
+        
+        //        self.uiModule.submitButton = nil
+        
         let views = [[completeYourPaymentLabel],
                      [expiresAtContainerStackView],
                      [voucherInfoContainerStackView]]
-
+        
         return PrimerFormView(formViews: views)
     }
     
@@ -801,7 +890,7 @@ class UserInterfaceModule: NSObject {
     internal func createBanksSelectorViewController(with banks: [AdyenBank]) -> BankSelectorViewController {
         let bsvc = BankSelectorViewController(
             paymentMethodType: self.paymentMethodModule.paymentMethodConfiguration.type,
-            navigationBarImage: self.paymentMethodModule.userInterfaceModule.invertedLogo,
+            navigationBarImage: self.paymentMethodModule.userInterfaceModule.navigationBarLogo,
             banks: banks)
         return bsvc
     }
@@ -876,10 +965,10 @@ extension UserInterfaceModule: UITableViewDataSource, UITableViewDelegate {
         decisionSelectionCompletion?(decisions[indexPath.row])
         enableSubmitButtonIfNeeded()
     }
-
+    
     
     // MARK: - Table View data source methods
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return decisions.count
     }

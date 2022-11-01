@@ -11,7 +11,6 @@ import Foundation
 
 class FormPaymentModule: PaymentModule {
     
-    
     override func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
@@ -22,7 +21,7 @@ class FormPaymentModule: PaymentModule {
                     // Only Adyen MBWay should end up here
                     
                     firstly {
-                        self.presentPendingResumeViewController()
+                        self.userInterfaceModule.presentPostPaymentViewControllerIfNeeded()
                     }
                     .then { () -> Promise<String> in
                         let pollingModule = PollingModule(url: statusUrl)
@@ -83,8 +82,7 @@ class FormPaymentModule: PaymentModule {
                 seal.fulfill(nil)
                 
                 firstly {
-                    // MUltibanco
-                    self.presentResultViewController()
+                    self.userInterfaceModule.presentResultViewControllerIfNeeded()
                 }
                 .done {
                     
@@ -94,27 +92,6 @@ class FormPaymentModule: PaymentModule {
                 }
             }
         }
-    }
-    
-    /// This should be used when the payment is pending but we don't await any response.
-    func presentResultViewController() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async {
-                let pcfvc = PrimerVoucherInfoPaymentViewController(
-                    userInterfaceModule: self.userInterfaceModule,
-                    shouldShareVoucherInfoWithText: VoucherValue.sharableVoucherValuesText)
-                
-                PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
-                seal.fulfill()
-            }
-        }
-    }
-    
-    /// This should be used when the payment is pending and we're awaiting a polling response.
-    func presentPendingResumeViewController() -> Promise<Void> {
-        let vc = PrimerPaymentPendingInfoViewController(userInterfaceModule: self.userInterfaceModule)
-        PrimerUIManager.primerRootViewController?.show(viewController: vc)
-        return Promise()
     }
 }
 

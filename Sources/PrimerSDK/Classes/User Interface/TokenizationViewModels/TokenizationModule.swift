@@ -13,7 +13,7 @@ protocol TokenizationModuleProtocol: NSObjectProtocol {
         
     init(
         paymentMethodConfiguration: PrimerPaymentMethod,
-        userInterfaceModule: UserInterfaceModule,
+        userInterfaceModule: NewUserInterfaceModule,
         checkoutEventsNotifier: CheckoutEventsNotifierModule)
     
     func startFlow() -> Promise<PrimerPaymentMethodTokenData>
@@ -29,12 +29,12 @@ protocol TokenizationModuleProtocol: NSObjectProtocol {
 class TokenizationModule: NSObject, TokenizationModuleProtocol {
     
     weak var paymentMethodConfiguration: PrimerPaymentMethod!
-    weak var userInterfaceModule: UserInterfaceModule!
+    weak var userInterfaceModule: NewUserInterfaceModule!
     weak var checkoutEventsNotifier: CheckoutEventsNotifierModule!
     
     required init(
         paymentMethodConfiguration: PrimerPaymentMethod,
-        userInterfaceModule: UserInterfaceModule,
+        userInterfaceModule: NewUserInterfaceModule,
         checkoutEventsNotifier: CheckoutEventsNotifierModule
     ) {
         self.paymentMethodConfiguration = paymentMethodConfiguration
