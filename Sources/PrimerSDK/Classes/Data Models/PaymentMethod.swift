@@ -203,6 +203,11 @@ class PrimerPaymentMethod: Codable {
             return categories
         }
         
+        if self.type == PrimerPaymentMethodType.xenditRetailOutlets.rawValue {
+            categories.append(PrimerPaymentMethodManagerCategory.rawData)
+            return categories
+        }
+        
         if self.type == PrimerPaymentMethodType.applePay.rawValue ||
             self.type == PrimerPaymentMethodType.klarna.rawValue ||
             self.type == PrimerPaymentMethodType.payPal.rawValue
