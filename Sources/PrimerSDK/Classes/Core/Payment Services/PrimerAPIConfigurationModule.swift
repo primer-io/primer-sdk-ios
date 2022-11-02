@@ -292,7 +292,8 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
 
             let requestParameters = Request.URLParameters.Configuration(
                 skipPaymentMethodTypes: [],
-                requestDisplayMetadata: requestDisplayMetadata)
+                requestDisplayMetadata: requestDisplayMetadata,
+                mockMode: true)
 
             let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
             apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result) in

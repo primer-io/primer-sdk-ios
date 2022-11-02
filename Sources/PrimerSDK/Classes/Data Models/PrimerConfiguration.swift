@@ -17,21 +17,25 @@ extension Request.URLParameters {
         
         let skipPaymentMethodTypes: [String]?
         let requestDisplayMetadata: Bool?
+        let mockMode: Bool?
         
         private enum CodingKeys: String, CodingKey {
             case skipPaymentMethodTypes = "skipPaymentMethods"
             case requestDisplayMetadata = "withDisplayMetadata"
+            case mockMode = "mockMode"
         }
         
-        init(skipPaymentMethodTypes: [String]?, requestDisplayMetadata: Bool?) {
+        init(skipPaymentMethodTypes: [String]?, requestDisplayMetadata: Bool?, mockMode: Bool?) {
             self.skipPaymentMethodTypes = skipPaymentMethodTypes
             self.requestDisplayMetadata = requestDisplayMetadata
+            self.mockMode = mockMode
         }
         
         required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.skipPaymentMethodTypes = (try? container.decode([String]?.self, forKey: .skipPaymentMethodTypes)) ?? nil
             self.requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
+            self.mockMode = (try? container.decode(Bool?.self, forKey: .mockMode)) ?? nil
             
             if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
                 throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
@@ -52,6 +56,10 @@ extension Request.URLParameters {
             if let requestDisplayMetadata = requestDisplayMetadata {
                 try container.encode(requestDisplayMetadata, forKey: .requestDisplayMetadata)
             }
+            
+            if let mockMode = mockMode {
+                try container.encode(mockMode, forKey: .mockMode)
+            }
         }
         
         func toDictionary() -> [String: String]? {
@@ -67,6 +75,10 @@ extension Request.URLParameters {
                 if let requestDisplayMetadata = requestDisplayMetadata {
                     dict[CodingKeys.requestDisplayMetadata.rawValue] = requestDisplayMetadata ? "true" : "false"
                 }
+            }
+            
+            if let mockMode = mockMode {
+                dict[CodingKeys.mockMode.rawValue] = mockMode ? "true" : "false"
             }
                         
             return dict.keys.isEmpty ? nil : dict
