@@ -32,6 +32,10 @@ class PrimerPaymentMethod: Codable {
     var displayMetadata: PrimerPaymentMethod.DisplayMetadata?
     var baseLogoImage: PrimerTheme.BaseImage?
     
+    lazy var internalPaymentMethodType: PrimerPaymentMethodType? = {
+        return PrimerPaymentMethodType(rawValue: self.type)
+    }()
+    
     var logo: UIImage? {
         guard let baseLogoImage = baseLogoImage else { return nil }
         
@@ -85,47 +89,47 @@ class PrimerPaymentMethod: Codable {
         if implementationType == .webRedirect {
             return WebRedirectPaymentMethodTokenizationViewModel(config: self)
             
-        } else {
-            switch self.type {
-            case PrimerPaymentMethodType.adyenBlik.rawValue,
-                PrimerPaymentMethodType.rapydFast.rawValue,
-                PrimerPaymentMethodType.adyenMBWay.rawValue,
-                PrimerPaymentMethodType.adyenMultibanco.rawValue:
+        } else if let internalPaymentMethodType = internalPaymentMethodType {
+            switch internalPaymentMethodType {
+            case PrimerPaymentMethodType.adyenBlik,
+                PrimerPaymentMethodType.rapydFast,
+                PrimerPaymentMethodType.adyenMBWay,
+                PrimerPaymentMethodType.adyenMultibanco:
                 return FormPaymentMethodTokenizationViewModel(config: self)
                 
-            case PrimerPaymentMethodType.adyenDotPay.rawValue,
-                PrimerPaymentMethodType.adyenIDeal.rawValue:
+            case PrimerPaymentMethodType.adyenDotPay,
+                PrimerPaymentMethodType.adyenIDeal:
                 return BankSelectorTokenizationViewModel(config: self)
                 
-            case PrimerPaymentMethodType.apaya.rawValue:
+            case PrimerPaymentMethodType.apaya:
                 return ApayaTokenizationViewModel(config: self)
                 
-            case PrimerPaymentMethodType.applePay.rawValue:
+            case PrimerPaymentMethodType.applePay:
                 if #available(iOS 11.0, *) {
                     return ApplePayTokenizationViewModel(config: self)
                 }
                 
-            case PrimerPaymentMethodType.iPay88Card.rawValue:
+            case PrimerPaymentMethodType.iPay88Card:
                 return IPay88TokenizationViewModel(config: self)
                 
-            case PrimerPaymentMethodType.klarna.rawValue:
+            case PrimerPaymentMethodType.klarna:
                 return KlarnaTokenizationViewModel(config: self)
                 
-            case PrimerPaymentMethodType.paymentCard.rawValue,
-                PrimerPaymentMethodType.adyenBancontactCard.rawValue:
+            case PrimerPaymentMethodType.paymentCard,
+                PrimerPaymentMethodType.adyenBancontactCard:
                 return CardFormPaymentMethodTokenizationViewModel(config: self)
                 
-            case PrimerPaymentMethodType.payPal.rawValue:
+            case PrimerPaymentMethodType.payPal:
                 return PayPalTokenizationViewModel(config: self)
                 
-            case PrimerPaymentMethodType.primerTestKlarna.rawValue,
-                PrimerPaymentMethodType.primerTestPayPal.rawValue,
-                PrimerPaymentMethodType.primerTestSofort.rawValue:
+            case PrimerPaymentMethodType.primerTestKlarna,
+                PrimerPaymentMethodType.primerTestPayPal,
+                PrimerPaymentMethodType.primerTestSofort:
                 return PrimerTestPaymentMethodTokenizationViewModel(config: self)
                 
-            case PrimerPaymentMethodType.xfersPayNow.rawValue,
-                PrimerPaymentMethodType.rapydPromptPay.rawValue,
-                PrimerPaymentMethodType.omisePromptPay.rawValue:
+            case PrimerPaymentMethodType.xfersPayNow,
+                PrimerPaymentMethodType.rapydPromptPay,
+                PrimerPaymentMethodType.omisePromptPay:
                 return QRCodeTokenizationViewModel(config: self)
                 
             default:
@@ -143,10 +147,14 @@ class PrimerPaymentMethod: Codable {
             return false
         }
         
-        switch self.type {
-        case PrimerPaymentMethodType.apaya.rawValue,
-            PrimerPaymentMethodType.goCardless.rawValue,
-            PrimerPaymentMethodType.googlePay.rawValue:
+        guard let internalPaymentMethodType = internalPaymentMethodType else {
+            return true
+        }
+
+        switch internalPaymentMethodType {
+        case PrimerPaymentMethodType.apaya,
+            PrimerPaymentMethodType.goCardless,
+            PrimerPaymentMethodType.googlePay:
             return false
         default:
             return true
@@ -163,10 +171,10 @@ class PrimerPaymentMethod: Codable {
         }
         
         switch self.type {
-        case PrimerPaymentMethodType.applePay.rawValue,
-            PrimerPaymentMethodType.goCardless.rawValue,
-            PrimerPaymentMethodType.googlePay.rawValue,
-            PrimerPaymentMethodType.iPay88Card.rawValue:
+        case PrimerPaymentMethodType.applePay,
+            PrimerPaymentMethodType.goCardless,
+            PrimerPaymentMethodType.googlePay,
+            PrimerPaymentMethodType.iPay88Card:
             return false
         default:
             return true
@@ -195,28 +203,42 @@ class PrimerPaymentMethod: Codable {
             return categories
         }
         
-        if self.type == PrimerPaymentMethodType.paymentCard.rawValue ||
-            self.type == PrimerPaymentMethodType.adyenBancontactCard.rawValue
-        {
+        guard let internalPaymentMethodType = self.internalPaymentMethodType else {
+            return nil
+        }
+        
+        switch internalPaymentMethodType {
+        case .adyenBancontactCard:
             categories.append(PrimerPaymentMethodManagerCategory.cardComponents)
             categories.append(PrimerPaymentMethodManagerCategory.rawData)
-            return categories
-        }
-        
-        if self.type == PrimerPaymentMethodType.xenditRetailOutlets.rawValue {
+            
+        case .adyenMBWay:
             categories.append(PrimerPaymentMethodManagerCategory.rawData)
-            return categories
-        }
-        
-        if self.type == PrimerPaymentMethodType.applePay.rawValue ||
-            self.type == PrimerPaymentMethodType.klarna.rawValue ||
-            self.type == PrimerPaymentMethodType.payPal.rawValue
-        {
+            
+        case .applePay:
             categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
-            return categories
+            
+        case .klarna:
+            categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
+            
+        case .paymentCard:
+            categories.append(PrimerPaymentMethodManagerCategory.cardComponents)
+            categories.append(PrimerPaymentMethodManagerCategory.rawData)
+            
+        case .payPal:
+            categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
+            
+        case .xenditOvo:
+            categories.append(PrimerPaymentMethodManagerCategory.rawData)
+            
+        case .xenditRetailOutlets:
+            categories.append(PrimerPaymentMethodManagerCategory.rawData)
+
+        default:
+            break
         }
         
-        return nil
+        return categories.isEmpty ? nil : categories
     }()
     
     private enum CodingKeys : String, CodingKey {
