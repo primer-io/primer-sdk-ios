@@ -31,6 +31,7 @@ protocol ThreeDSServiceProtocol {
 }
 
 extension ThreeDS {
+    
     class Cer: Primer3DSCertificate {
         var cardScheme: String
         var encryptionKey: String
@@ -181,6 +182,51 @@ class ThreeDSService: ThreeDSServiceProtocol {
     }
     
     var primer3DS: Primer3DS?
+    
+    func perform3DS(
+        paymentMethodTokenData: PrimerPaymentMethodTokenData,
+        protocolVersion: ThreeDS.ProtocolVersion,
+        beginAuthExtraData: ThreeDS.BeginAuthExtraData? = nil,
+        sdkDismissed: (() -> Void)?
+    ) -> Promise<(PrimerPaymentMethodTokenData, ThreeDS.PostAuthResponse?)> {
+        return Promise { seal in
+            var hasBeen3DSChallenged = false
+            
+            firstly {
+                self.perform3DSPreAuth(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: protocolVersion)
+            }
+            .then { threeDSServerAuthData -> Promise<Primer3DSCompletion> in
+                hasBeen3DSChallenged = true
+                return self.perform3DSChallenge(serverAuthData: threeDSServerAuthData)
+            }
+            .then { primer3DSCompletion -> Promise<ThreeDS.PostAuthResponse> in
+                sdkDismissed?()
+                return self.perform3DSPostAuth(paymentMethodTokenData: paymentMethodTokenData)
+            }
+            .done { threeDSPostAuthResponse in
+                seal.fulfill((paymentMethodTokenData, threeDSPostAuthResponse))
+            }
+            .catch { err in
+                if let primerError = err as? PrimerError, case .cancelled = primerError {
+                    paymentMethodTokenData.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(
+                        responseCode: .skipped,
+                        reasonCode: "PAYMENT_CANCELED",
+                        reasonText: err.localizedDescription,
+                        protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue,
+                        challengeIssued: hasBeen3DSChallenged)
+                } else {
+                    paymentMethodTokenData.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(
+                        responseCode: .skipped,
+                        reasonCode: "CLIENT_ERROR",
+                        reasonText: err.localizedDescription,
+                        protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue,
+                        challengeIssued: true)
+                }
+                
+                seal.fulfill((paymentMethodTokenData, nil))
+            }
+        }
+    }
     
     // swiftlint:disable function_body_length
     func perform3DS(
@@ -462,6 +508,193 @@ class ThreeDSService: ThreeDSServiceProtocol {
         }
     }
     
+    
+    func perform3DSPreAuth(
+        paymentMethodTokenData: PrimerPaymentMethodTokenData,
+        protocolVersion: ThreeDS.ProtocolVersion
+    ) -> Promise<ThreeDS.ServerAuthData> {
+        return Promise { seal in
+            let state = AppState.current
+            
+            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            let env = Environment(rawValue: decodedJWTToken.env ?? "")
+            
+            guard let apiConfiguration = state.apiConfiguration else {
+                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            guard let licenseKey = apiConfiguration.keys?.netceteraLicenseKey else {
+                let err = PrimerError.invalid3DSKey(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodTokenData.paymentInstrumentData?.network ?? "")
+            
+            guard let directoryServerId = cardNetwork.directoryServerId else {
+                let err = PrimerError.invalidValue(key: "cardNetwork.directoryServerId", value: cardNetwork.directoryServerId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+            
+            switch env {
+            case .production:
+                primer3DS = Primer3DS(environment: .production)
+            case .staging:
+                primer3DS = Primer3DS(environment: .staging)
+            default:
+                primer3DS = Primer3DS(environment: .sandbox)
+            }
+            
+            var certs: [Primer3DSCertificate] = []
+            for certificate in apiConfiguration.keys?.threeDSecureIoCertificates ?? [] {
+                let cer = ThreeDS.Cer(cardScheme: certificate.cardNetwork, rootCertificate: certificate.rootCertificate, encryptionKey: certificate.encryptionKey)
+                certs.append(cer)
+            }
+            
+            var data: Primer3DSSDKGeneratedAuthData!
+            
+            do {
+                let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodTokenData.paymentInstrumentData?.network ?? "")
+
+                try primer3DS!.initializeSDK(licenseKey: licenseKey, certificates: certs)
+                data = try primer3DS!.createTransaction(directoryServerId: directoryServerId, protocolVersion: protocolVersion.rawValue)
+            } catch {
+                ErrorHandler.shared.handle(error: error)
+                seal.reject(error)
+                return
+            }
+            
+            let threeDSecureAuthData = ThreeDS.SDKAuthData(sdkAppId: data.sdkAppId,
+                                                           sdkTransactionId: data.sdkTransactionId,
+                                                           sdkTimeout: data.sdkTimeout,
+                                                           sdkEncData: data.sdkEncData,
+                                                           sdkEphemPubKey: data.sdkEphemPubKey,
+                                                           sdkReferenceNumber: data.sdkReferenceNumber)
+            
+            var threeDSecureBeginAuthRequest = ThreeDS.BeginAuthRequest(maxProtocolVersion: env == .production ? .v1 : .v2,
+                                                                        challengePreference: .requestedByRequestor,
+                                                                        device: threeDSecureAuthData,
+                                                                        amount: nil,
+                                                                        currencyCode: nil,
+                                                                        orderId: nil,
+                                                                        customer: nil,
+                                                                        billingAddress: nil,
+                                                                        shippingAddress: nil,
+                                                                        customerAccount: nil)
+            
+            do {
+                try ThreeDSService.validate3DSParameters()
+            } catch {
+                ErrorHandler.shared.handle(error: error)
+                seal.reject(error)
+                return
+            }
+            
+            let customer = PrimerAPIConfigurationModule.apiConfiguration!.clientSession!.customer!
+            
+            let threeDSCustomer = ThreeDS.Customer(name: "\(customer.firstName) \(customer.lastName)",
+                                            email: customer.emailAddress!,
+                                            homePhone: nil,
+                                            mobilePhone: customer.mobileNumber,
+                                            workPhone: nil)
+            
+            let threeDSAddress = ThreeDS.Address(title: nil,
+                                                 firstName: customer.firstName,
+                                                 lastName: customer.lastName,
+                                                 email: customer.emailAddress,
+                                                 phoneNumber: customer.mobileNumber,
+                                                 addressLine1: customer.billingAddress!.addressLine1!,
+                                                 addressLine2: customer.billingAddress!.addressLine2,
+                                                 addressLine3: nil,
+                                                 city: customer.billingAddress!.city!,
+                                                 state: nil,
+                                                 countryCode: CountryCode(rawValue: customer.billingAddress!.countryCode!.rawValue)!,
+                                                 postalCode: customer.billingAddress!.postalCode!)
+            
+            threeDSecureBeginAuthRequest.amount = AppState.current.amount
+            threeDSecureBeginAuthRequest.currencyCode = AppState.current.currency
+            threeDSecureBeginAuthRequest.orderId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.id
+            threeDSecureBeginAuthRequest.customer = threeDSCustomer
+            threeDSecureBeginAuthRequest.billingAddress = threeDSAddress
+            
+            firstly {
+                self.beginRemoteAuth(paymentMethodTokenData: paymentMethodTokenData, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
+            }
+            .done { beginAuthResponse in
+                let serverAuthData = ThreeDS.ServerAuthData(acsReferenceNumber: beginAuthResponse.authentication.acsReferenceNumber,
+                                                 acsSignedContent: beginAuthResponse.authentication.acsSignedContent,
+                                                 acsTransactionId: beginAuthResponse.authentication.acsTransactionId,
+                                                 responseCode: beginAuthResponse.authentication.responseCode.rawValue,
+                                                 transactionId: beginAuthResponse.authentication.transactionId)
+                seal.fulfill(serverAuthData)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    func perform3DSChallenge(serverAuthData: ThreeDS.ServerAuthData) -> Promise<Primer3DSCompletion> {
+        return Promise { seal in
+            if #available(iOS 13.0, *) {
+                if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                    self.threeDSSDKWindow = UIWindow(windowScene: windowScene)
+                } else {
+                    // Not opted-in in UISceneDelegate
+                    self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
+                }
+            } else {
+                // Fallback on earlier versions
+                self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
+            }
+
+            self.threeDSSDKWindow!.rootViewController = ClearViewController()
+            self.threeDSSDKWindow!.backgroundColor = UIColor.clear
+            self.threeDSSDKWindow!.windowLevel = UIWindow.Level.normal
+            self.threeDSSDKWindow!.makeKeyAndVisible()
+            
+            firstly {
+                self.performChallenge(with: serverAuthData, urlScheme: nil, presentOn: self.threeDSSDKWindow!.rootViewController!)
+            }
+            .done { primer3DSCompletion in
+                seal.fulfill(primer3DSCompletion)
+            }
+            .ensure {
+                self.threeDSSDKWindow?.isHidden = true
+                self.threeDSSDKWindow = nil
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+            
+        }
+    }
+    
+    func perform3DSPostAuth(paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<ThreeDS.PostAuthResponse> {
+        return Promise { seal in
+            firstly {
+                self.continueRemoteAuth(threeDSTokenId: paymentMethodTokenData.token!)
+            }
+            .done { postAuthResponse in
+                seal.fulfill(postAuthResponse)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
 }
 
 #endif
