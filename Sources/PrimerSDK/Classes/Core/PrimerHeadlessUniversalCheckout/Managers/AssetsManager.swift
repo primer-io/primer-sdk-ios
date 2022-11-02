@@ -67,9 +67,13 @@ extension PrimerHeadlessUniversalCheckout {
                 throw err
             }
             
+            let hucAvailablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods.compactMap({ $0.paymentMethodType })
+            
             var paymentMethodAssets: [PrimerPaymentMethodAsset] = []
             
             for paymentMethod in (PrimerAPIConfiguration.paymentMethodConfigs ?? []) {
+                if !hucAvailablePaymentMethods.contains(paymentMethod.type) { continue }
+                
                 guard let baseLogoImage = paymentMethod.baseLogoImage,
                       let baseBackgroundColor = paymentMethod.displayMetadata?.button.backgroundColor
                 else {
