@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - qa-sonar-migration
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
