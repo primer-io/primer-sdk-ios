@@ -1,4 +1,4 @@
-name: IOS Tests
+name: Build app
 
 on:
   pull_request:
