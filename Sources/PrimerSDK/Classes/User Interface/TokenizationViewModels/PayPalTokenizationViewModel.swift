@@ -16,6 +16,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var session: Any!
     private var orderId: String?
     private var confirmBillingAgreementResponse: Response.Body.PayPal.ConfirmBillingAgreement?
+    private lazy var paypalService: PayPalServiceProtocol = {
+        PayPalService()
+    }()
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -171,7 +174,6 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private func fetchOAuthURL() -> Promise<URL> {
         return Promise { seal in
-            let paypalService: PayPalServiceProtocol = PayPalService()
             
             switch PrimerInternal.shared.intent {
             case .checkout:
@@ -263,13 +265,12 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 )
 
                 (self.session as? SFAuthenticationSession)?.start()
-            }            
+            }
         }
     }
     
     func fetchPayPalExternalPayerInfo(orderId: String) -> Promise<Response.Body.PayPal.PayerInfo> {
         return Promise { seal in
-            let paypalService: PayPalServiceProtocol = PayPalService()
             paypalService.fetchPayPalExternalPayerInfo(orderId: orderId) { result in
                 switch result {
                 case .success(let response):
@@ -403,7 +404,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     private func generateBillingAgreementConfirmation(_ completion: @escaping (Response.Body.PayPal.ConfirmBillingAgreement?, Error?) -> Void) {
-        let paypalService: PayPalServiceProtocol = PayPalService()
+        
         paypalService.confirmBillingAgreement({ result in
             switch result {
             case .failure(let err):
