@@ -52,7 +52,9 @@ class PrimerFormViewController: PrimerViewController {
         
         if PrimerInternal.shared.intent == .vault {
             for paymentMethodModule in paymentMethodModules {
-                availablePaymentMethodsContainerStackView.addArrangedSubview(paymentMethodModule.userInterfaceModule.paymentMethodButton)
+                if let paymentMethodButton = paymentMethodModule.userInterfaceModule.paymentMethodButton {
+                    availablePaymentMethodsContainerStackView.addArrangedSubview(paymentMethodButton)
+                }
             }
             stackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
             
@@ -68,7 +70,9 @@ class PrimerFormViewController: PrimerViewController {
                 additionalFeePaymentMethodModules.isEmpty,
                 unknownFeePaymentMethodsViewModels.isEmpty {
                 for paymentMethodModule in paymentMethodModules {
-                    availablePaymentMethodsContainerStackView.addArrangedSubview(paymentMethodModule.userInterfaceModule.paymentMethodButton)
+                    if let paymentMethodButton = paymentMethodModule.userInterfaceModule.paymentMethodButton {
+                        availablePaymentMethodsContainerStackView.addArrangedSubview(paymentMethodButton)
+                    }
                 }
                 stackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
                 return

@@ -106,7 +106,8 @@ class PrimerTestPaymentMethodTokenizationModule: TokenizationModule {
     private func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
-                self.userInterfaceModule.decisionSelectionCompletion = { decision in
+                
+                (self.userInterfaceModule as? InputAndResultUserInterfaceModule)?.decisionSelectionCompletion = { decision in
                     self.selectedDecision = decision
                 }
                 

@@ -67,7 +67,9 @@ class PaymentMethodsGroupView: PrimerView {
         }
         
         for paymentMethodModule in self.paymentMethodModules {
-            verticalStackView.addArrangedSubview(paymentMethodModule.userInterfaceModule.paymentMethodButton)
+            if let paymentMethodButton = paymentMethodModule.userInterfaceModule.paymentMethodButton {
+                verticalStackView.addArrangedSubview(paymentMethodButton)
+            }
         }
     }
     

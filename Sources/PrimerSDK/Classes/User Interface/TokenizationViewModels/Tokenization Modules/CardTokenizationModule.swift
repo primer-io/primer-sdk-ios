@@ -25,14 +25,18 @@ class CardTokenizationModule: TokenizationModule {
             userInterfaceModule: userInterfaceModule,
             checkoutEventsNotifier: checkoutEventsNotifier)
         
+        guard let userInterfaceModule = self.userInterfaceModule as? InputPostPaymentAndResultUserInterfaceModule else {
+            return
+        }
+        
         self.cardComponentsManager = CardComponentsManager(
-            cardnumberField: self.userInterfaceModule.cardNumberField,
-            expiryDateField: self.userInterfaceModule.expiryDateField,
-            cvvField: self.userInterfaceModule.cvvField,
-            cardholderNameField: self.userInterfaceModule.cardholderNameField,
-            billingAddressFieldViews: self.userInterfaceModule.allVisibleBillingAddressFieldViews,
-            paymentMethodType: self.paymentMethodConfiguration.type,
-            isRequiringCVVInput: self.userInterfaceModule.isRequiringCVVInput
+            cardnumberField: userInterfaceModule.cardNumberField,
+            expiryDateField: userInterfaceModule.expiryDateField,
+            cvvField: userInterfaceModule.cvvField,
+            cardholderNameField: userInterfaceModule.cardholderNameField,
+            billingAddressFieldViews: userInterfaceModule.allVisibleBillingAddressFieldViews,
+            paymentMethodType: paymentMethodConfiguration.type,
+            isRequiringCVVInput: true
         )
         
         cardComponentsManager.delegate = self
@@ -173,7 +177,7 @@ class CardTokenizationModule: TokenizationModule {
     
     private func dispatchActions() -> Promise<Void> {
         return Promise { seal in
-            var network = self.userInterfaceModule.cardNetwork?.rawValue.uppercased()
+            var network = (self.userInterfaceModule as? InputAndResultUserInterfaceModule)?.cardNetwork?.rawValue.uppercased()
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
             }
@@ -187,16 +191,16 @@ class CardTokenizationModule: TokenizationModule {
             
             var actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
             
-            if (self.userInterfaceModule.isShowingBillingAddressFieldsRequired) {
+            if let userInterfaceModule = self.userInterfaceModule as? InputPostPaymentAndResultUserInterfaceModule, userInterfaceModule.isShowingBillingAddressFieldsRequired == true {
                 let updatedBillingAddress = ClientSession.Address(
-                    firstName: self.userInterfaceModule.firstNameFieldView.firstName,
-                    lastName: self.userInterfaceModule.lastNameFieldView.lastName,
-                    addressLine1: self.userInterfaceModule.addressLine1FieldView.addressLine1,
-                    addressLine2: self.userInterfaceModule.addressLine2FieldView.addressLine2,
-                    city: self.userInterfaceModule.cityFieldView.city,
-                    postalCode: self.userInterfaceModule.postalCodeFieldView.postalCode,
-                    state: self.userInterfaceModule.stateFieldView.state,
-                    countryCode: self.userInterfaceModule.countryFieldView.countryCode)
+                    firstName: userInterfaceModule.firstNameFieldView.firstName,
+                    lastName: userInterfaceModule.lastNameFieldView.lastName,
+                    addressLine1: userInterfaceModule.addressLine1FieldView.addressLine1,
+                    addressLine2: userInterfaceModule.addressLine2FieldView.addressLine2,
+                    city: userInterfaceModule.cityFieldView.city,
+                    postalCode: userInterfaceModule.postalCodeFieldView.postalCode,
+                    state: userInterfaceModule.stateFieldView.state,
+                    countryCode: userInterfaceModule.countryFieldView.countryCode)
                 
                 if let billingAddress = try? updatedBillingAddress.asDictionary() {
                     let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
