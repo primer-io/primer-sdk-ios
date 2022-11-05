@@ -106,6 +106,7 @@ class KlarnaTokenizationModule: TokenizationModule {
         Analytics.Service.record(event: event)
         
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.userInterfaceModule.makeIconImageView(withDimension: 24.0), message: nil)
+        
 #if canImport(PrimerKlarnaSDK)
         return Promise { seal in
             firstly {

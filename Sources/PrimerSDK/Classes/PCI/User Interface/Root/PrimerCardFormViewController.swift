@@ -14,17 +14,17 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()    
     private weak var paymentMethodConfiguration: PrimerPaymentMethod!
-    private weak var userInterfaceModule: UserInterfaceModule!
+    private weak var userInterfaceModule: NewUserInterfaceModule!
     
     init(
         paymentMethodConfiguration: PrimerPaymentMethod,
-        userInterfaceModule: UserInterfaceModule
+        userInterfaceModule: NewUserInterfaceModule
     ) {
         self.paymentMethodConfiguration = paymentMethodConfiguration
         self.userInterfaceModule = userInterfaceModule
         super.init(nibName: nil, bundle: nil)
         
-        self.titleImage = userInterfaceModule.invertedLogo
+        self.titleImage = userInterfaceModule.navigationBarLogo
         if self.titleImage == nil {
             title = Strings.PrimerCardFormView.title
         }
@@ -57,7 +57,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        _ = self.userInterfaceModule.cardNumberField.becomeFirstResponder()
+//        _ = self.userInterfaceModule.cardNumberField.becomeFirstResponder()
     }
     
     private func setupView() {

@@ -13,17 +13,17 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private weak var paymentMethodConfiguration: PrimerPaymentMethod!
-    private weak var userInterfaceModule: UserInterfaceModule!
+    private weak var userInterfaceModule: NewUserInterfaceModule!
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(paymentMethodConfiguration: PrimerPaymentMethod, userInterfaceModule: UserInterfaceModule) {
+    init(paymentMethodConfiguration: PrimerPaymentMethod, userInterfaceModule: NewUserInterfaceModule) {
         super.init(nibName: nil, bundle: nil)
         self.paymentMethodConfiguration = paymentMethodConfiguration
         self.userInterfaceModule = userInterfaceModule
-        self.titleImage = userInterfaceModule.invertedLogo
+        self.titleImage = userInterfaceModule.navigationBarLogo
     }
     
     required init?(coder: NSCoder) {
@@ -55,14 +55,19 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
 extension PrimerTestPaymentMethodViewController {
     
     private func setupView() {
+        
+        guard let inputAndResultInterfaceModule = userInterfaceModule as? InputAndResultUserInterfaceModule else {
+            return
+        }
+        
         view.backgroundColor = theme.view.backgroundColor
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.heightAnchor.constraint(equalToConstant: self.userInterfaceModule.viewHeight).isActive = true
-        self.userInterfaceModule.tableView.isScrollEnabled = false
+        view.heightAnchor.constraint(equalToConstant: inputAndResultInterfaceModule.viewHeight).isActive = true
+        inputAndResultInterfaceModule.tableView.isScrollEnabled = false
         verticalStackView.removeConstraints(verticalStackView.constraints)
         verticalStackView.pin(view: view, leading: 20, top: 0, trailing: -20, bottom: -20)
-        verticalStackView.addArrangedSubview(self.userInterfaceModule.tableView)
-        self.userInterfaceModule.tableView.translatesAutoresizingMaskIntoConstraints = false
+        verticalStackView.addArrangedSubview(inputAndResultInterfaceModule.tableView)
+        inputAndResultInterfaceModule.tableView.translatesAutoresizingMaskIntoConstraints = false
     }
 }
 

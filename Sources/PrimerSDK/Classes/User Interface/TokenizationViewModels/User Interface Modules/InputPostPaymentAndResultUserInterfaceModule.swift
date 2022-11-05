@@ -10,6 +10,42 @@
 
 class InputPostPaymentAndResultUserInterfaceModule: NewUserInterfaceModule {
     
+    // MARK: -
+    
+    override var inputView: PrimerView? {
+        get { _inputView }
+        set { _inputView = newValue }
+    }
+        
+    private lazy var _inputView: PrimerView? = {
+        
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else {
+            return nil
+        }
+        
+        switch paymentMethodType {
+        case .paymentCard:
+            
+            var formViews: [[UIView?]] = [
+                [cardNumberContainerView],
+                [cvvContainerView],
+                [expiryDateContainerView],
+                [cardholderNameContainerView]
+            ]
+            
+            formViews.append(contentsOf: allVisibleBillingAddressFieldContainerViews)
+            
+            return PrimerFormView(frame: .zero, formViews: formViews)
+            
+        default:
+            return nil
+        }
+    }()
+    
+    // MARK: -
+    
+    // MARK: Card Network
+    
     var cardNetwork: CardNetwork? {
         didSet {
             cvvField.cardNetwork = cardNetwork ?? .unknown
@@ -207,8 +243,8 @@ extension InputPostPaymentAndResultUserInterfaceModule: PrimerTextFieldViewDeleg
 
         switch paymentMethodType {
         case .paymentCard:
-//            autofocusToNextFieldIfNeeded(for: primerTextFieldView, isValid: isValid)
-//            showTexfieldViewErrorIfNeeded(for: primerTextFieldView, isValid: isValid)
+            autofocusToNextFieldIfNeeded(for: primerTextFieldView, isValid: isValid)
+            showTexfieldViewErrorIfNeeded(for: primerTextFieldView, isValid: isValid)
 //            enableSubmitButtonIfNeeded()
             
         default:
@@ -271,16 +307,102 @@ extension InputPostPaymentAndResultUserInterfaceModule {
         guard let billingAddressModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
         return (billingAddressModule.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode == true
     }
-    
-    internal var isRequiringCVVInput: Bool {
-        guard let paymentMethodType = self.paymentMethodType else { return false }
-        return paymentMethodType == .paymentCard
-    }
-    
+        
     internal var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
         return PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
     }
+}
 
+extension InputPostPaymentAndResultUserInterfaceModule {
+    
+    internal func createCountrySelectorViewController() -> CountrySelectorViewController {
+        let csvc = CountrySelectorViewController(paymentMethodType: self.paymentMethodConfiguration.type)
+        csvc.didSelectCountryCode = { countryCode in
+            self.countryFieldView.textField.text = "\(countryCode.flag) \(countryCode.country)"
+            self.countryFieldView.countryCode = countryCode
+            self.countryFieldView.validation = .valid
+            self.countryFieldView.textFieldDidEndEditing(self.countryFieldView.textField)
+            PrimerUIManager.primerRootViewController?.popViewController()
+        }
+        return csvc
+    }
+}
+
+extension InputPostPaymentAndResultUserInterfaceModule {
+    
+    internal func showTexfieldViewErrorIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
+        if isValid == false {
+            // We know for sure that the text is not valid, even if the user hasn't finished typing.
+            if primerTextFieldView is PrimerCardNumberFieldView, !primerTextFieldView.isEmpty {
+                cardNumberContainerView.errorText = Strings.CardFormView.CardNumber.invalidErrorMessage
+            } else if primerTextFieldView is PrimerExpiryDateFieldView, !primerTextFieldView.isEmpty {
+                expiryDateContainerView.errorText = Strings.CardFormView.ExpiryDate.invalidErrorMessage
+            } else if primerTextFieldView is PrimerCVVFieldView, !primerTextFieldView.isEmpty {
+                cvvContainerView.errorText = Strings.CardFormView.CVV.invalidErrorMessage
+            } else if primerTextFieldView is PrimerCardholderNameFieldView, !primerTextFieldView.isEmpty {
+                cardholderNameContainerView?.errorText = Strings.CardFormView.Cardholder.invalidErrorMessage
+            } else if primerTextFieldView is PrimerPostalCodeFieldView {
+                postalCodeContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.PostalCode.isRequiredErrorMessage : Strings.CardFormView.PostalCode.invalidErrorMessage
+            } else if primerTextFieldView is PrimerCountryFieldView {
+                countryFieldContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.CountryCode.isRequiredErrorMessage : Strings.CardFormView.CountryCode.invalidErrorMessage
+            } else if primerTextFieldView is PrimerFirstNameFieldView {
+                firstNameContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.FirstName.isRequiredErrorMessage :  Strings.CardFormView.FirstName.invalidErrorMessage
+            } else if primerTextFieldView is PrimerLastNameFieldView {
+                lastNameContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.LastName.isRequiredErrorMessage :  Strings.CardFormView.LastName.invalidErrorMessage
+            } else if primerTextFieldView is PrimerCityFieldView {
+                cityContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.City.isRequiredErrorMessage :  Strings.CardFormView.City.invalidErrorMessage
+            } else if primerTextFieldView is PrimerStateFieldView {
+                stateContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.State.isRequiredErrorMessage :  Strings.CardFormView.State.invalidErrorMessage
+            } else if primerTextFieldView is PrimerAddressLine1FieldView {
+                addressLine1ContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.AddressLine1.isRequiredErrorMessage :  Strings.CardFormView.AddressLine1.invalidErrorMessage
+            } else if primerTextFieldView is PrimerAddressLine2FieldView {
+                addressLine2ContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.AddressLine2.isRequiredErrorMessage :  Strings.CardFormView.AddressLine2.invalidErrorMessage
+            }
+        } else {
+            // We don't know for sure if the text is valid
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                cardNumberContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                expiryDateContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                cvvContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+                cardholderNameContainerView?.errorText = nil
+            } else if primerTextFieldView is PrimerPostalCodeFieldView {
+                postalCodeContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerCountryFieldView {
+                countryFieldContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerFirstNameFieldView {
+                firstNameContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerLastNameFieldView {
+                lastNameContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerCityFieldView {
+                cityContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerStateFieldView {
+                stateContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerAddressLine1FieldView {
+                addressLine1ContainerView.errorText = nil
+            } else if primerTextFieldView is PrimerAddressLine2FieldView {
+                addressLine2ContainerView.errorText = nil
+            }
+        }
+    }
+}
+
+extension InputPostPaymentAndResultUserInterfaceModule {
+    
+    internal func autofocusToNextFieldIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
+        if isValid == true {
+            if primerTextFieldView is PrimerCardNumberFieldView {
+                _ = expiryDateField.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerExpiryDateFieldView {
+                _ = cvvField.becomeFirstResponder()
+            } else if primerTextFieldView is PrimerCVVFieldView {
+                _ = cardholderNameField?.becomeFirstResponder()
+            }
+        }
+    }
+    
 }
 
 #endif

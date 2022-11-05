@@ -140,7 +140,7 @@ class FormTokenizationModule: TokenizationModule {
                     return
                 }
                 
-                guard let blikCode = self.userInterfaceModule.inputs?.first?.text else {
+                guard let blikCode = (self.userInterfaceModule as? InputAndResultUserInterfaceModule)?.inputs.first?.text else {
                     let err = PrimerError.invalidValue(key: "blikCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -211,7 +211,7 @@ class FormTokenizationModule: TokenizationModule {
                     return
                 }
                 
-                guard let phoneNumber = self.userInterfaceModule.inputs?.first?.text else {
+                guard let phoneNumber = (self.userInterfaceModule as? InputAndResultUserInterfaceModule)?.inputs.first?.text else {
                     let err = PrimerError.invalidValue(key: "phoneNumber", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
