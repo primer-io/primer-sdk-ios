@@ -502,17 +502,8 @@ extension PrimerHeadlessUniversalCheckout {
                     let threeDSService = ThreeDSService()
                     threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                         switch result {
-                        case .success(let paymentMethodToken):
+                        case .success(let resumeToken):
                             DispatchQueue.main.async {
-                                guard let threeDSPostAuthResponse = paymentMethodToken.1,
-                                      let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                                    let decoderError = InternalError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                                    let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                                    ErrorHandler.handle(error: err)
-                                    seal.reject(err)
-                                    return
-                                }
-                                
                                 seal.fulfill(resumeToken)
                             }
                             
@@ -898,20 +889,10 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
             
             threeDSService.perform3DS(paymentMethodTokenData: paymentMethod, protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                 switch result {
-                case .success(let paymentMethodToken):
+                case .success(let resumeToken):
                     DispatchQueue.main.async {
-                        guard let threeDSPostAuthResponse = paymentMethodToken.1,
-                              let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                            DispatchQueue.main.async {
-                                let decoderError = InternalError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                                let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                                self.handle(error: err)
-                            }
-                            return
-                        }
-                        
                         PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
-                            // FIXME:
+
                         }
                     }
                     
@@ -921,7 +902,7 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
                     ErrorHandler.handle(error: containerErr)
                     DispatchQueue.main.async {
                         PrimerDelegateProxy.primerDidFailWithError(containerErr, data: nil) { errorDecision in
-                            // FIXME:
+
                         }
                     }
                 }
