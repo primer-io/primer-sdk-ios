@@ -21,22 +21,19 @@ public class PrimerSettings: PrimerSettingsProtocol {
     let paymentMethodOptions: PrimerPaymentMethodOptions
     let uiOptions: PrimerUIOptions
     let debugOptions: PrimerDebugOptions
-    let isReactNativeIntegration: Bool
     
     public init(
         paymentHandling: PrimerPaymentHandling = .auto,
         localeData: PrimerLocaleData? = nil,
         paymentMethodOptions: PrimerPaymentMethodOptions? = nil,
         uiOptions: PrimerUIOptions? = nil,
-        debugOptions: PrimerDebugOptions? = nil,
-        isReactNativeIntegration: Bool = false
+        debugOptions: PrimerDebugOptions? = nil
     ) {
         self.paymentHandling = paymentHandling
         self.localeData = localeData ?? PrimerLocaleData()
         self.paymentMethodOptions = paymentMethodOptions ?? PrimerPaymentMethodOptions()
         self.uiOptions = uiOptions ?? PrimerUIOptions()
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
-        self.isReactNativeIntegration = isReactNativeIntegration
     }
 }
 
