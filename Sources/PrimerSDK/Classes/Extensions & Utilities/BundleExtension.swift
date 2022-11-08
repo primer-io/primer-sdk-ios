@@ -30,6 +30,9 @@ internal extension Bundle {
     }
     
     var releaseVersionNumber: String? {
+        if let reactNativeVersion = Primer.shared.integrationOptions?.reactNativeVersion {
+            return reactNativeVersion
+        }
         return infoDictionary?["CFBundleShortVersionString"] as? String
     }
     

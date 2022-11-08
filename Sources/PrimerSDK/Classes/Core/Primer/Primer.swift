@@ -16,6 +16,7 @@ public class Primer {
     public var selectedPaymentMethodType: String? {
         return PrimerInternal.shared.selectedPaymentMethodType
     }
+    public var integrationOptions: PrimerIntegrationOptions?
     
     // MARK: - INITIALIZATION
     

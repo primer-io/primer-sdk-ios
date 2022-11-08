@@ -5,22 +5,26 @@
 //  Created by Dario Carlomagno on 25/04/22.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
-@objc public class PrimerSource: NSObject {
+class PrimerSource {
     
-    public static var defaultSourceType: String = "IOS_NATIVE"
+    static var defaultSourceType: String = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
 
     private(set) var sourceType: String
     
-    public init(sourceType: String) {
+    init(sourceType: String) {
         self.sourceType = sourceType
     }
 }
 
 extension PrimerSource {
     
-    public static var iOSNative: PrimerSource {
+    static var sdkSourceType: PrimerSource {
         PrimerSource(sourceType: PrimerSource.defaultSourceType)
     }
 }
+
+#endif
