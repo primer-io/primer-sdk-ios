@@ -29,7 +29,7 @@ class Analytics {
         var primerAccountId: String?
         var properties: AnalyticsEventProperties? = nil
         var sdkSessionId: String
-        var sdkType: String = PrimerSource.iOSNative.sourceType
+        var sdkType: String = PrimerSource.sdkSourceType.sourceType
         var sdkVersion = Bundle.primerFramework.releaseVersionNumber
         
         init(eventType: Analytics.Event.EventType, properties: AnalyticsEventProperties?) {

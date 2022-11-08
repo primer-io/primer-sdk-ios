@@ -21,7 +21,7 @@ protocol ThreeDSServiceProtocol {
         protocolVersion: ThreeDS.ProtocolVersion,
         beginAuthExtraData: ThreeDS.BeginAuthExtraData?,
         sdkDismissed: (() -> Void)?,
-        completion: @escaping (_ result: Result<(PrimerPaymentMethodTokenData, ThreeDS.PostAuthResponse?), Error>) -> Void
+        completion: @escaping (_ result: Result<String, Error>) -> Void
     )
     
     func beginRemoteAuth(paymentMethodTokenData: PrimerPaymentMethodTokenData,
@@ -188,7 +188,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         protocolVersion: ThreeDS.ProtocolVersion,
         beginAuthExtraData: ThreeDS.BeginAuthExtraData? = nil,
         sdkDismissed: (() -> Void)?,
-        completion: @escaping (_ result: Result<(PrimerPaymentMethodTokenData, ThreeDS.PostAuthResponse?), Error>) -> Void
+        completion: @escaping (_ result: Result<String, Error>) -> Void
     ) {
         let state = AppState.current
         
@@ -311,25 +311,57 @@ class ThreeDSService: ThreeDSServiceProtocol {
         .done { beginAuthResponse in
             switch beginAuthResponse.authentication.responseCode {
             case .authSuccess:
-                // Frictionless pass
-                // Frictionless attempt
-                completion(.success((beginAuthResponse.token, nil)))
+                // Frictionless pass or frictionless attempt
+                guard let resumeToken = beginAuthResponse.resumeToken else {
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    completion(.failure(err))
+                    return
+                }
+                
+                completion(.success(resumeToken))
                 return
+                
             case .notPerformed:
                 // Not enough data to perform 3DS. Won't be returned.
-                break
+                guard let resumeToken = beginAuthResponse.resumeToken else {
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    completion(.failure(err))
+                    return
+                }
+                
+                completion(.success(resumeToken))
+                return
+                
             case .skipped:
                 // Skipped because of a technical failure.
-                completion(.success((beginAuthResponse.token, nil)))
+                guard let resumeToken = beginAuthResponse.resumeToken else {
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    completion(.failure(err))
+                    return
+                }
+                
+                completion(.success(resumeToken))
                 return
+                
             case .authFailed:
-                // Frictionless fail
-                // Frictionless not authenticated
-                completion(.success((beginAuthResponse.token, nil)))
+                // Frictionless fail or frictionless not authenticated
+                guard let resumeToken = beginAuthResponse.resumeToken else {
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    completion(.failure(err))
+                    return
+                }
+                
+                completion(.success(resumeToken))
                 return
+                
             case .challenge:
                 // Continue to present the challenge
                 break
+                
             case .METHOD:
                 // Only applies on the web
                 break
@@ -365,29 +397,27 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 self.continueRemoteAuth(threeDSTokenId: paymentMethodTokenData.token!)
             }
             .done { postAuthResponse in
-                completion(.success((postAuthResponse.token, postAuthResponse)))
+                guard let resumeToken = beginAuthResponse.resumeToken else {
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    completion(.failure(err))
+                    return
+                }
+                
+                completion(.success(resumeToken))
+
             }
             .ensure {
                 self.threeDSSDKWindow?.isHidden = true
                 self.threeDSSDKWindow = nil
             }
             .catch { err in
-                let token = paymentMethodTokenData
-                token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue, challengeIssued: true)
-                if let primerError = err as? PrimerError,
-                   case .cancelled = primerError {
-                    token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "PAYMENT_CANCELED", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue, challengeIssued: true)
-                }
-                completion(.success((token, nil)))
+                completion(.failure(err))
             }
             
         }
         .catch { err in
-            let token = paymentMethodTokenData
-            token.threeDSecureAuthentication = ThreeDS.AuthenticationDetails(responseCode: .skipped, reasonCode: "CLIENT_ERROR", reasonText: err.localizedDescription, protocolVersion: ThreeDS.ProtocolVersion.v2.rawValue, challengeIssued: false)
-            completion(.success((token, nil)))
-            self.threeDSSDKWindow?.isHidden = true
-            self.threeDSSDKWindow = nil
+            completion(.failure(err))
         }
     }
     
