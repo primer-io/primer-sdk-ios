@@ -190,8 +190,9 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     public static func getAsset(for paymentMethodType: String, assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
-        let tmpPaymentMethodType = paymentMethodType.lowercased().replacingOccurrences(of: "_", with: "-")
-        guard let brand = PrimerAsset.Brand(rawValue: tmpPaymentMethodType) else { return nil }
+        let paymentMethodIdentifier = PrimerPaymentMethodType(rawValue: paymentMethodType)?.paymentMethodIdentifier
+        guard let tmpPaymentMethodType = paymentMethodIdentifier?.lowercased().replacingOccurrences(of: "_", with: "-"),
+              let brand = PrimerAsset.Brand(rawValue: tmpPaymentMethodType) else { return nil }
         return PrimerAsset.getAsset(for: brand, assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
     
@@ -325,7 +326,7 @@ public struct PrimerAsset {
         case masterCard = "mastercard", mbway = "mb-way", mercadoPago = "mercado-pago", metamask, mobilePay = "mobilepay", mollie
         case neonomics, netSuite = "netsuite", nexi, nuvei
         case opennode
-        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, payTrail = "paytrail", payshop, poli, promptPay = "promptpay"
+        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, payTrail = "paytrail", payshop, poli, promptPay = "promptpay", paymentCard = "payment-card"
         case ravelin, riskified
         case seon, sepa, sift, signifyd, sofort, stitch, stripe, swish
         case tableau, taxjar, telserv, tink, trilo, trueLayer = "truelayer", trueMoney = "truemoney", trustly, twillio, twint, twoCtwoP = "twoc2p"
