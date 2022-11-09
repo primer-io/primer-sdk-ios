@@ -287,7 +287,7 @@ extension CountryCode {
         Locale.current.languageCode ?? "en"
     }
     
-    private struct LocalizedCountries: Decodable {
+    struct DecodableLocalizedCountries: Decodable {
         let locale: String
         var countries: [CountryCode.RawValue: String]
         
@@ -314,16 +314,19 @@ extension CountryCode {
         }
     }
     
-    private var loadedCountriesBasedOnLocale: LocalizedCountries? {
-        let jsonParser = JSONParser()
-        guard let localizedCountriesData = jsonParser.loadJsonData(fileName: CountryCode.languageCode) else {
-            return nil
-        }
-        return try? jsonParser.parse(LocalizedCountries.self, from: localizedCountriesData)
-    }
+    struct LocalizedCountries {
+        
+        static var loadedCountriesBasedOnLocale: DecodableLocalizedCountries? = {
+            let jsonParser = JSONParser()
+            guard let localizedCountriesData = jsonParser.loadJsonData(fileName: CountryCode.languageCode) else {
+                return nil
+            }
+            return try? jsonParser.parse(DecodableLocalizedCountries.self, from: localizedCountriesData)
+        }()
+    }    
     
     private var localizedCountryName: String {
-        return loadedCountriesBasedOnLocale?.countries.first { $0.key == self.rawValue }?.value ?? "N/A"
+        return LocalizedCountries.loadedCountriesBasedOnLocale?.countries.first { $0.key == self.rawValue }?.value ?? "N/A"
     }
 }
 
