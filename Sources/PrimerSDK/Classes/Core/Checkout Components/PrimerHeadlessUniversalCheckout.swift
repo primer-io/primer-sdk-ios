@@ -190,7 +190,10 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     public static func getAsset(for paymentMethodType: String, assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
-        let paymentMethodIdentifier = PrimerPaymentMethodType(rawValue: paymentMethodType)?.paymentMethodIdentifier
+        var paymentMethodIdentifier = PrimerPaymentMethodType(rawValue: paymentMethodType)?.paymentMethodIdentifier
+        if paymentMethodIdentifier == nil {
+           paymentMethodIdentifier = paymentMethodType.components(separatedBy: "_").last
+        }
         guard let tmpPaymentMethodType = paymentMethodIdentifier?.lowercased().replacingOccurrences(of: "_", with: "-"),
               let brand = PrimerAsset.Brand(rawValue: tmpPaymentMethodType) else { return nil }
         return PrimerAsset.getAsset(for: brand, assetType: assetType, userInterfaceStyle: userInterfaceStyle)
