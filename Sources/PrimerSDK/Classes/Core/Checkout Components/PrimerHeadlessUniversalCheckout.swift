@@ -191,8 +191,9 @@ public class PrimerHeadlessUniversalCheckout {
     
     public static func getAsset(for paymentMethodType: String, assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
         var paymentMethodIdentifier = PrimerPaymentMethodType(rawValue: paymentMethodType)?.paymentMethodIdentifier
-        if paymentMethodIdentifier == nil {
-           paymentMethodIdentifier = paymentMethodType.components(separatedBy: "_").last
+        if paymentMethodIdentifier == nil,
+           let provider = paymentMethodType.components(separatedBy: "_").first {
+            paymentMethodIdentifier = paymentMethodType.replacingOccurrences(of: "\(provider)_", with: "")
         }
         guard let tmpPaymentMethodType = paymentMethodIdentifier?.lowercased().replacingOccurrences(of: "_", with: "-"),
               let brand = PrimerAsset.Brand(rawValue: tmpPaymentMethodType) else { return nil }
@@ -315,7 +316,7 @@ public struct PrimerAsset {
     public enum Brand: String, CaseIterable {
         
         case adyen, afterPay = "afterpay", aliPay = "alipay", alma, amazonPay = "amazonpay", amex, apaya, applePay = "apple-pay", atome
-        case bancontact, banked, bizum, blik, bolt, boost, braintree, bridge, buckaroo
+        case bancontact = "bancontact-card", banked, bizum, blik, bolt, boost, braintree, bridge, buckaroo
         case change, checkoutCom = "checkout", clearPay = "clearpay", coinBase = "coinbase", coinPayments = "coinpayments"
         case dLocal = "dlocal", directDebit = "direct-debit", discover, dotPay = "dotpay", eMerchantPay = "emerchantpay", eps, fintecture, fonoa, forter, fpx
         case gCash = "gcash", giroPay = "giropay", globalPayments = "globalpayments", goCardless = "gocardless", googlePay = "google-pay", grabPay = "grabpay"
