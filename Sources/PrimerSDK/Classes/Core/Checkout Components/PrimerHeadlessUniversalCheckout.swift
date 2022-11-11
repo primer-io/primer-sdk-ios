@@ -190,8 +190,13 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     public static func getAsset(for paymentMethodType: String, assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
-        let tmpPaymentMethodType = paymentMethodType.lowercased().replacingOccurrences(of: "_", with: "-")
-        guard let brand = PrimerAsset.Brand(rawValue: tmpPaymentMethodType) else { return nil }
+        var paymentMethodIdentifier = PrimerPaymentMethodType(rawValue: paymentMethodType)?.paymentMethodIdentifier
+        if paymentMethodIdentifier == nil,
+           let provider = paymentMethodType.components(separatedBy: "_").first {
+            paymentMethodIdentifier = paymentMethodType.replacingOccurrences(of: "\(provider)_", with: "")
+        }
+        guard let tmpPaymentMethodType = paymentMethodIdentifier?.lowercased().replacingOccurrences(of: "_", with: "-"),
+              let brand = PrimerAsset.Brand(rawValue: tmpPaymentMethodType) else { return nil }
         return PrimerAsset.getAsset(for: brand, assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
     
@@ -311,7 +316,7 @@ public struct PrimerAsset {
     public enum Brand: String, CaseIterable {
         
         case adyen, afterPay = "afterpay", aliPay = "alipay", alma, amazonPay = "amazonpay", amex, apaya, applePay = "apple-pay", atome
-        case bancontact, banked, bizum, blik, bolt, boost, braintree, bridge, buckaroo
+        case bancontact = "bancontact-card", banked, bizum, blik, bolt, boost, braintree, bridge, buckaroo
         case change, checkoutCom = "checkout", clearPay = "clearpay", coinBase = "coinbase", coinPayments = "coinpayments"
         case dLocal = "dlocal", directDebit = "direct-debit", discover, dotPay = "dotpay", eMerchantPay = "emerchantpay", eps, fintecture, fonoa, forter, fpx
         case gCash = "gcash", giroPay = "giropay", globalPayments = "globalpayments", goCardless = "gocardless", googlePay = "google-pay", grabPay = "grabpay"
@@ -325,7 +330,7 @@ public struct PrimerAsset {
         case masterCard = "mastercard", mbway = "mb-way", mercadoPago = "mercado-pago", metamask, mobilePay = "mobilepay", mollie
         case neonomics, netSuite = "netsuite", nexi, nuvei
         case opennode
-        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, payTrail = "paytrail", payshop, poli, promptPay = "promptpay"
+        case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, payTrail = "paytrail", payshop, poli, promptPay = "promptpay", paymentCard = "payment-card"
         case ravelin, riskified
         case seon, sepa, sift, signifyd, sofort, stitch, stripe, swish
         case tableau, taxjar, telserv, tink, trilo, trueLayer = "truelayer", trueMoney = "truemoney", trustly, twillio, twint, twoCtwoP = "twoc2p"
