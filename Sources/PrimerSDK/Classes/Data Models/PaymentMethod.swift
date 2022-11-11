@@ -24,6 +24,7 @@ class PrimerPaymentMethod: Codable {
     
     let id: String? // Will be nil for cards
     let implementationType: PrimerPaymentMethod.ImplementationType
+    let implementation: PMF?
     let type: String
     var name: String?
     let processorConfigId: String?
@@ -137,6 +138,7 @@ class PrimerPaymentMethod: Codable {
     private enum CodingKeys : String, CodingKey {
         case id,
              implementationType,
+             implementation,
              type,
              name,
              processorConfigId,
@@ -148,6 +150,7 @@ class PrimerPaymentMethod: Codable {
     init(
         id: String?,
         implementationType: PrimerPaymentMethod.ImplementationType,
+        implementation: PMF?,
         type: String,
         name: String?,
         processorConfigId: String?,
@@ -157,6 +160,7 @@ class PrimerPaymentMethod: Codable {
     ) {
         self.id = id
         self.implementationType = implementationType
+        self.implementation = implementation
         self.type = type
         self.name = name
         self.processorConfigId = processorConfigId
@@ -170,6 +174,7 @@ class PrimerPaymentMethod: Codable {
         
         id = (try? container.decode(String?.self, forKey: .id)) ?? nil
         implementationType = try container.decode(PrimerPaymentMethod.ImplementationType.self, forKey: .implementationType)
+        implementation = try container.decode(PMF?.self, forKey: .implementation)
         type = try container.decode(String.self, forKey: .type)
         name = (try? container.decode(String?.self, forKey: .name)) ?? nil
         processorConfigId = (try? container.decode(String?.self, forKey: .processorConfigId)) ?? nil
@@ -192,6 +197,7 @@ class PrimerPaymentMethod: Codable {
         
         try container.encode(id, forKey: .id)
         try container.encode(implementationType, forKey: .implementationType)
+        try container.encode(implementation, forKey: .implementation)
         try container.encode(type, forKey: .type)
         try container.encode(name, forKey: .name)
         try container.encode(processorConfigId, forKey: .processorConfigId)
@@ -214,6 +220,7 @@ extension PrimerPaymentMethod {
         
         case nativeSdk = "NATIVE_SDK"
         case webRedirect = "WEB_REDIRECT"
+        case custom = "CUSTOM"
 
         var isEnabled: Bool {
             return true

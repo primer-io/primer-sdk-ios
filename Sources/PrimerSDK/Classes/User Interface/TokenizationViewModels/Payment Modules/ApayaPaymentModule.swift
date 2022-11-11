@@ -11,7 +11,7 @@ import Foundation
 
 class ApayaPaymentModule: PaymentModule {
     
-    override func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func awaitDecodedJWTTokenHandlingIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         precondition(false, "ApayaPaymentModule does not need to handle required actions.")
         return Promise { seal in
             let err = PrimerError.generic(message: "ApayaPaymentModule failed to handle decoded client token", userInfo: nil, diagnosticsId: nil)

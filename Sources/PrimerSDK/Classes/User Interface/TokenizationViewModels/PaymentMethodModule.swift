@@ -74,6 +74,12 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
                     userInterfaceModule: self.userInterfaceModule,
                     checkoutEventsNotifier: self.checkouEventsNotifierModule)
                 
+            } else if self.paymentMethodConfiguration.implementationType == .custom {
+                self.tokenizationModule = CustomTokenizationModule(
+                    paymentMethodConfiguration: self.paymentMethodConfiguration,
+                    userInterfaceModule: self.userInterfaceModule,
+                    checkoutEventsNotifier: self.checkouEventsNotifierModule)
+                
             } else {
                 switch self.paymentMethodType {
                 case .adyenBancontactCard,
@@ -149,6 +155,12 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
         
         if let paymentModule = paymentModule {
             self.paymentModule = paymentModule
+            
+        } else if self.paymentMethodConfiguration.implementationType == .custom {
+            self.paymentModule = CustomPaymentModule(
+                paymentMethodConfiguration: self.paymentMethodConfiguration,
+                userInterfaceModule: self.userInterfaceModule,
+                checkoutEventsNotifier: self.checkouEventsNotifierModule)
             
         } else {
             if self.paymentMethodConfiguration.implementationType == .webRedirect {
@@ -229,11 +241,45 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
                 }
             }
         }
+        
+        self.configurePMFEvents()
     }
     
     @objc
     func receivedNotification(_ notification: Notification) {
         // Use it to handle notifications, if they apply on this tokenization module
+    }
+    
+    func configurePMFEvents() {
+        if self.paymentMethodConfiguration.implementationType == .custom,
+           let events = self.paymentMethodConfiguration.implementation?.events,
+           let customPaymentModule = self.paymentModule as? CustomPaymentModule
+        {
+            for event in events {
+                switch event.type {
+                case .onStart:
+                    break
+                case .onAdditionalDataReceived:
+                    customPaymentModule.onAdditionalDataReceived = { checkoutAdditionalInfo in
+                        customPaymentModule.presentResultViewController()
+                    }
+//                    if isManualPaymentHandling {
+//                        PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
+//                    }
+                    customPaymentModule.onRequiredActionReceived = { decodedJWTToken in
+                        customPaymentModule.onHandleDecodedJWTToken?(decodedJWTToken)
+                    }
+                    
+                case .onRequiredActionReceived:
+                    customPaymentModule.onRequiredActionReceived = { decodedJWTToken in
+                        customPaymentModule.onHandleDecodedJWTToken?(decodedJWTToken)
+                    }
+                    
+                case .onError:
+                    break
+                }
+            }
+        }
     }
     
     @objc

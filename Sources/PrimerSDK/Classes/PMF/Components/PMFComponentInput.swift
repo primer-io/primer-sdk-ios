@@ -16,7 +16,7 @@ extension PMF.Component {
         var allowedCharacters: String?
         var keyboardType: String
         var placeholder: String?
-        var style: PMF.Component.ViewStyle
+        var style: PMF.Component.Style?
         var validation: String?
         
         private enum CodingKeys : String, CodingKey {
@@ -28,7 +28,7 @@ extension PMF.Component {
             self.allowedCharacters = try container.decode(String?.self, forKey: .allowedCharacters)
             self.keyboardType = try container.decode(String.self, forKey: .keyboardType)
             self.placeholder = try container.decode(String?.self, forKey: .placeholder)
-            self.style = try container.decode(PMF.Component.ViewStyle.self, forKey: .style)
+            self.style = (try? container.decode(PMF.Component.Style?.self, forKey: .style)) ?? nil
             self.validation = try container.decode(String?.self, forKey: .validation)
         }
         

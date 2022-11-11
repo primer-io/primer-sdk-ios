@@ -21,7 +21,7 @@ extension PMF.Event {
     internal class Action: Codable {
         
         var `type`: PMF.Event.Action.`Type`
-        var screenId: String
+        var screenId: String?
     }
 }
 

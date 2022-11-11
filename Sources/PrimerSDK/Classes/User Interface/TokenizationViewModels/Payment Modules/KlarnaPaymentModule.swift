@@ -11,7 +11,7 @@ import Foundation
 
 class KlarnaPaymentModule: PaymentModule {
     
-    override func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func awaitDecodedJWTTokenHandlingIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         precondition(false, "KlarnaPaymentModule does not need to handle required actions.")
         return Promise { seal in
             let err = PrimerError.generic(message: "KlarnaPaymentModule failed to handle decoded client token", userInfo: nil, diagnosticsId: nil)

@@ -18,7 +18,7 @@ class WebRedirectPaymentModule: PaymentModule {
     private var webViewController: SFSafariViewController!
     private var resumeToken: String?
     
-    override func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func awaitDecodedJWTTokenHandlingIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
                 if let redirectUrlStr = decodedJWTToken.redirectUrl,

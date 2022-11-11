@@ -11,7 +11,7 @@ import Foundation
 
 class VaultedPaymentMethodPaymentModule: PaymentModule {
     
-    override func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func awaitDecodedJWTTokenHandlingIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
 #if canImport(Primer3DS)

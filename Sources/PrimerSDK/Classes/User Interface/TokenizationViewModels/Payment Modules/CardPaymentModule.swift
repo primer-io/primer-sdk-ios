@@ -19,7 +19,7 @@ class CardPaymentModule: PaymentModule {
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
     private var resumeToken: String?
     
-    override func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func awaitDecodedJWTTokenHandlingIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent?.contains("_REDIRECTION") == true ||
                 decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue

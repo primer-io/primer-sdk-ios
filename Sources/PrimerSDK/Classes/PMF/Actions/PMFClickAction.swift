@@ -17,7 +17,7 @@ extension PMF.Component {
 extension PMF.Component.Click.Action {
     
     internal enum `Type`: String, Codable {
-        case startFlow = "START_FLOW"
+        case startPaymentFlow = "START_PAYMENT_FLOW"
         case dismiss = "DISMISS"
     }
 }

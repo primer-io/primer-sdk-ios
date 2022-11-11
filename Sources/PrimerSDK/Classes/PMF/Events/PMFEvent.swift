@@ -14,8 +14,9 @@ extension PMF.Event {
     internal enum `Type`: String, Codable {
         
         case onStart = "ON_START"
-        case onAdditionalDataReceived = "ON_ADDITIONAL_DATA_RECEIVED"
         case onError = "ON_ERROR"
+        case onAdditionalDataReceived = "ON_ADDITIONAL_DATA_RECEIVED"
+        case onRequiredActionReceived = "ON_REQUIRED_ACTION_RECEIVED"
     }
 }
 

@@ -13,6 +13,7 @@ internal class PMF: Codable {
     
     var events: [PMF.Event]
     var screens: [PMF.Screen]
+    var headless: PMF.Headless
 }
 
 #endif

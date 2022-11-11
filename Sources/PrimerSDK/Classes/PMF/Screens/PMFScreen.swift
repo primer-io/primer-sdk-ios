@@ -23,12 +23,14 @@ extension PMF {
         
         var id: String
         var isBackButtonEnabled: Bool
+        var isShareButtonEnabled: Bool
         var orientation: PMF.Screen.Orientation
         var components: [PMF.Component]
         
         private enum CodingKeys : String, CodingKey {
             case id
             case isBackButtonEnabled
+            case isShareButtonEnabled
             case orientation
             case components
         }
@@ -36,9 +38,27 @@ extension PMF {
         required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.id = try container.decode(String.self, forKey: .id)
-            self.isBackButtonEnabled = try container.decode(Bool.self, forKey: .isBackButtonEnabled)
+            
+            if let isBackButtonEnabled = try? container.decode(Bool.self, forKey: .isBackButtonEnabled) {
+                self.isBackButtonEnabled = isBackButtonEnabled
+            } else {
+                self.isBackButtonEnabled = true
+            }
+            
+            if let isShareButtonEnabled = try? container.decode(Bool.self, forKey: .isShareButtonEnabled) {
+                self.isShareButtonEnabled = isShareButtonEnabled
+            } else {
+                self.isShareButtonEnabled = false
+            }
+                        
             self.orientation = try container.decode(PMF.Screen.Orientation.self, forKey: .orientation)
-            self.components = try container.decode([PMF.Component].self, forKey: .components)
+            
+            do {
+                self.components = try container.decode([PMF.Component].self, forKey: .components)
+            } catch {
+                throw error
+            }
+            
         }
         
         func encode(to encoder: Encoder) throws {

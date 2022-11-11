@@ -13,6 +13,7 @@ extension PMF.Component {
     
     internal enum ComponentType: String, Codable {
         case button = "BUTTON"
+        case container = "CONTAINER"
         case text = "TEXT"
         case textInput = "TEXT_INPUT"
     }
@@ -23,6 +24,7 @@ extension PMF {
     internal enum Component {
         
         case button(PMF.Component.Button)
+        case container(PMF.Component.Container)
         case text(PMF.Component.Text)
         case textInput(PMF.Component.TextInput)
     }
@@ -44,6 +46,10 @@ extension PMF.Component: Codable {
             let buttonComponent = try singleContainer.decode(PMF.Component.Button.self)
             self = .button(buttonComponent)
             
+        case ComponentType.container.rawValue:
+            let containerComponent = try singleContainer.decode(PMF.Component.Container.self)
+            self = .container(containerComponent)
+            
         case ComponentType.text.rawValue:
             let textComponent = try singleContainer.decode(PMF.Component.Text.self)
             self = .text(textComponent)
@@ -63,6 +69,8 @@ extension PMF.Component: Codable {
         switch self {
         case .button(let buttonComponent):
             try singleContainer.encode(buttonComponent)
+        case .container(let containerComponent):
+            try singleContainer.encode(containerComponent)
         case .text(let textComponent):
             try singleContainer.encode(textComponent)
         case .textInput(let textInputComponent):

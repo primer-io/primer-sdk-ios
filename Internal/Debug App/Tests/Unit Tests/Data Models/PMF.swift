@@ -163,7 +163,7 @@ class PMFTests: XCTestCase {
                 
             XCTAssert(startScreenButtonComponent != nil, "Multibanco's start screen should have 1 button component.")
             
-            XCTAssert(multibancoPMF.screens.first(where: { $0.id == "voucher_screen" }) != nil, "Multibanco PMF's screens should contain 1 'voucher_screen' screen.")
+            XCTAssert(multibancoPMF.screens.filter({ $0.id == "voucher_screen" }).count == 1, "Multibanco PMF's screens should contain 1 'voucher_screen' screen.")
             
             let voucherScreen = multibancoPMF.screens.first(where: { $0.id == "voucher_screen" })!
             

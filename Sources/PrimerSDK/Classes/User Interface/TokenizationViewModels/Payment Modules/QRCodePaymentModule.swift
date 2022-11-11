@@ -15,7 +15,7 @@ class QRCodePaymentModule: PaymentModule {
     private var qrCode: String!
     private var resumeToken: String?
     
-    override func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func awaitDecodedJWTTokenHandlingIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
             if let statusUrlStr = decodedJWTToken.statusUrl,
                let statusUrl = URL(string: statusUrlStr),

@@ -11,28 +11,61 @@ import Foundation
 
 extension PMF.Component {
     
-    internal class ViewStyle: Codable {
-        var margin: PMF.Component.ViewStyle.Margin?
-        var textStyle: PMF.Component.Text.Style?
-    }
-}
-
-extension PMF.Component.ViewStyle {
-    
-    internal class Margin: Codable {
+    internal class Style: Codable {
         
-        var leading: CGFloat?
-        var top: CGFloat?
-        var trailing: CGFloat?
-        var bottom: CGFloat?
+        // View props
+        var aspectRatio: CGFloat?
+        var backgroundColor: PMF.Component.Style.Color?
+        var contentMode: PMF.Component.Style.ContentMode?
+        var cornerRadius: CGFloat?
+        var margin: CGFloat?
+        var marginBottom: CGFloat?
+        var marginEnd: CGFloat?
+        var marginHorizontal: CGFloat?
+        var marginStart: CGFloat?
+        var marginTop: CGFloat?
+        var marginVertical: CGFloat?
+        var padding: CGFloat?
+        var paddingBottom: CGFloat?
+        var paddingEnd: CGFloat?
+        var paddingHorizontal: CGFloat?
+        var paddingStart: CGFloat?
+        var paddingTop: CGFloat?
+        var paddingVertical: CGFloat?
+        var height: CGFloat?
+        var width: CGFloat?
+        
+        // Text props
+        var fontFamily: String?
+        var fontSize: CGFloat?
+        var fontWeight: CGFloat?
+        var letterSpacing: CGFloat?
+        var textAlignment: PMF.Component.Style.TextAlignment?
+        var textColor: PMF.Component.Style.Color?
     }
 }
 
-extension PMF.Component.Text {
+extension PMF.Component.Style {
     
-    internal enum Style: String, Codable {
-        case title = "TITLE"
-        case subtitle = "SUBTITLE"
+    class Color: Codable {
+        
+        let dark: String
+        let light: String
+    }
+    
+    enum ContentMode: String, Codable {
+        
+        case center = "CENTER"
+        case fit = "FIT"
+        case stretch = "STRETCH"
+    }
+    
+    enum TextAlignment: String, Codable {
+        
+        case center = "CENTER"
+        case end = "END"
+        case justify = "JUSTIFY"
+        case start = "START"
     }
 }
 

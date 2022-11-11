@@ -235,6 +235,10 @@ internal class PrimerRootViewController: PrimerViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is PrimerVoucherInfoPaymentViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
+        } else if let pmfViewController = viewController as? PMF.ViewController {
+            if !pmfViewController.screen.isBackButtonEnabled {
+                cvc.mockedNavigationBar.hidesBackButton = true
+            }
         } else if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is PrimerLoadingViewController {
@@ -275,6 +279,10 @@ internal class PrimerRootViewController: PrimerViewController {
                 
                 if viewController is PrimerPaymentPendingInfoViewController {
                     cvc.mockedNavigationBar.hidesBackButton = true
+                } else if let pmfViewController = viewController as? PMF.ViewController {
+                    if !pmfViewController.screen.isBackButtonEnabled {
+                        cvc.mockedNavigationBar.hidesBackButton = true
+                    }
                 } else if viewController is PrimerVoucherInfoPaymentViewController {
                     cvc.mockedNavigationBar.hidesBackButton = true
                 } else if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {

@@ -20,7 +20,7 @@ protocol PaymentModuleProtocol: NSObjectProtocol {
     
     func pay(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?>
     func createPayment(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?>
-    func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?>
+    func awaitDecodedJWTTokenHandlingIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?>
     func resumePayment(with resumeToken: String) -> Promise<PrimerCheckoutData?>
     func cancel()
 }
@@ -62,7 +62,7 @@ class PaymentModule: NSObject, PaymentModuleProtocol {
             .done { decodedJWTToken in
                 if let decodedJWTToken = decodedJWTToken {
                     firstly {
-                        self.handleDecodedJWTTokenIfNeeded(decodedJWTToken)
+                        self.awaitDecodedJWTTokenHandlingIfNeeded(decodedJWTToken)
                     }
                     .done { resumeToken in
                         if let resumeToken = resumeToken {
@@ -207,7 +207,7 @@ class PaymentModule: NSObject, PaymentModuleProtocol {
         }
     }
     
-    func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    func awaitDecodedJWTTokenHandlingIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         fatalError("\(#function) must be overriden")
     }
     
