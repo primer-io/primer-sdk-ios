@@ -135,7 +135,7 @@ The payment’s data will be returned on `primerDidCompleteCheckoutWithData(:)`.
 
 ## Contributing guidelines:
 
-[Contributing doc](CONTRIBUTING.md)
+[Contributing doc](Contributing.md)
 
 ## Example app:
 
