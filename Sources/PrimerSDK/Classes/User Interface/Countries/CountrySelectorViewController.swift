@@ -52,11 +52,11 @@ internal class CountrySelectorViewController: PrimerFormViewController {
         
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
-        let bankTitleLabel = UILabel()
-        bankTitleLabel.text = Strings.CountrySelector.selectCountryTitle
-        bankTitleLabel.font = UIFont.systemFont(ofSize: 20)
-        bankTitleLabel.textColor = theme.text.title.color
-        verticalStackView.addArrangedSubview(bankTitleLabel)
+        let countryTitleLabel = UILabel()
+        countryTitleLabel.text = Strings.CountrySelector.selectCountryTitle
+        countryTitleLabel.font = UIFont.systemFont(ofSize: 20)
+        countryTitleLabel.textColor = theme.text.title.color
+        verticalStackView.addArrangedSubview(countryTitleLabel)
         
         verticalStackView.addArrangedSubview(viewModel.searchableTextField)
                 
@@ -65,8 +65,16 @@ internal class CountrySelectorViewController: PrimerFormViewController {
         separator.heightAnchor.constraint(equalToConstant: 5).isActive = true
         verticalStackView.addArrangedSubview(separator)
         
-        self.verticalStackView.addArrangedSubview(self.viewModel.tableView)
-        self.viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if self.viewModel.tableView.superview == nil {
+            let lastView = self.verticalStackView.arrangedSubviews.last!
+            self.verticalStackView.removeArrangedSubview(lastView)
+            self.verticalStackView.addArrangedSubview(self.viewModel.tableView)
+            self.viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
+        }
     }
 }
 
