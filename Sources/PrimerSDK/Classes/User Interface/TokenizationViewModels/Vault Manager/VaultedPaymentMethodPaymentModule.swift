@@ -14,7 +14,7 @@ class VaultedPaymentMethodPaymentModule: PaymentModule {
     override func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-#if canImport(Primer3DS)
+    #if canImport(Primer3DS)
                 guard let paymentMethodTokenData = self.paymentMethodTokenData else {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -26,17 +26,8 @@ class VaultedPaymentMethodPaymentModule: PaymentModule {
                 let threeDSService = ThreeDSService()
                 threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
                     switch result {
-                    case .success(let paymentMethodToken):
+                    case .success(let resumeToken):
                         DispatchQueue.main.async {
-                            guard let threeDSPostAuthResponse = paymentMethodToken.1,
-                                  let resumeToken = threeDSPostAuthResponse.resumeToken else {
-                                let decoderError = InternalError.failedToDecode(message: "Failed to decode the threeDSPostAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                                let err = PrimerError.failedToPerform3DS(error: decoderError, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
-                                ErrorHandler.handle(error: err)
-                                seal.reject(err)
-                                return
-                            }
-                            
                             seal.fulfill(resumeToken)
                         }
                         
@@ -46,11 +37,11 @@ class VaultedPaymentMethodPaymentModule: PaymentModule {
                         seal.reject(containerErr)
                     }
                 }
-#else
+    #else
                 let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
-#endif
+    #endif
                 
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -59,8 +50,6 @@ class VaultedPaymentMethodPaymentModule: PaymentModule {
             }
         }
     }
-    
-    
 }
 
 #endif

@@ -109,12 +109,72 @@ internal class CountrySelectorViewController: PrimerFormViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if self.viewModel.tableView.superview == nil {
+        if self.tableView.superview == nil {
             let lastView = self.verticalStackView.arrangedSubviews.last!
             self.verticalStackView.removeArrangedSubview(lastView)
-            self.verticalStackView.addArrangedSubview(self.viewModel.tableView)
-            self.viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
+            self.verticalStackView.addArrangedSubview(self.tableView)
+            self.tableView.translatesAutoresizingMaskIntoConstraints = false
         }
+    }
+}
+
+extension CountrySelectorViewController: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return dataSource.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let country = dataSource[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as! CountryTableViewCell
+        cell.configure(viewModel: country)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let countryCode = self.dataSource[indexPath.row]
+        self.didSelectCountryCode?(countryCode)
+    }
+}
+
+extension CountrySelectorViewController: UITextFieldDelegate {
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if string == "\n" {
+            // Keyboard's return button tapoped
+            textField.resignFirstResponder()
+            return false
+        }
+        
+        var query: String
+        
+        if string.isEmpty {
+            query = String((textField.text ?? "").dropLast())
+        } else {
+            query = (textField.text ?? "") + string
+        }
+        
+        if query.isEmpty {
+            dataSource = countries
+            return true
+        }
+        
+        var countryResults: [CountryCode] = []
+        
+        for country in countries {
+            if country.country.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
+                countryResults.append(country)
+            }
+        }
+        
+        dataSource = countryResults
+        
+        return true
+    }
+    
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        dataSource = countries
+        return true
     }
 }
 
