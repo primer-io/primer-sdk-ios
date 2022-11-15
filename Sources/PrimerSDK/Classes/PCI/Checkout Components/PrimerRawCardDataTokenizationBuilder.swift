@@ -59,9 +59,8 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         if self.paymentMethodType == PrimerPaymentMethodType.paymentCard.rawValue {
             var mutableRequiredInputElementTypes: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
             
-            if let checkoutModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
-               let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
-                if options.cardHolderName == true {
+            if let checkoutModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first {
+                if (checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions)?.cardHolderName != false {
                     mutableRequiredInputElementTypes.append(.cardholderName)
                 }
             }
@@ -80,7 +79,6 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
     }
-    
     
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
