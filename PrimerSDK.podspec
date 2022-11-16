@@ -17,7 +17,8 @@ Pod::Spec.new do |s|
     s.ios.frameworks  = 'Foundation', 'UIKit'
         
     s.xcconfig = {
-       'MARKETING_VERSION' => s.version
+       'MARKETING_VERSION' => s.version,
+       'GENERATE_INFOPLIST_FILE' => true
     }
 
     s.subspec 'Core' do |ss|
