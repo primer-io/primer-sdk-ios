@@ -9,7 +9,7 @@
 
 import UIKit
 
-extension UserInterfaceModule {
+extension NewUserInterfaceModule {
     
     internal var isSubmitButtonAnimating: Bool {
         submitButton?.isAnimating == true
@@ -94,7 +94,7 @@ extension UserInterfaceModule {
         self.submitButton?.backgroundColor = flag ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
     }
     
-    internal func makePaymentPendingInfoView(logo: UIImage, message: String) -> PrimerFormView {
+    internal func makePaymentPendingInfoView(logo: UIImage?, message: String) -> PrimerFormView {
         
         // The top logo
         
