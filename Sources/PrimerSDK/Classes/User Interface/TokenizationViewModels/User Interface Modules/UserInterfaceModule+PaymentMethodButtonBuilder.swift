@@ -9,7 +9,7 @@
 
 import UIKit
 
-extension UserInterfaceModule {
+extension NewUserInterfaceModule {
     
     class PaymentMethodButtonBuilder {
         

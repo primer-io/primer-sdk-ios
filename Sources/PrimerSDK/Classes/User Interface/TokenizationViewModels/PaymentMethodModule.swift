@@ -396,25 +396,21 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
     }
     
     func handleSuccessfulFlow() {
+        
         guard let paymentMethodType = self.paymentMethodType else {
             PrimerUIManager.dismissOrShowResultScreen(type: .success, withMessage: nil)
             return
         }
         
-        if paymentMethodType == .adyenMultibanco {
+        if paymentMethodType == .adyenMultibanco ||
+            paymentMethodType == .rapydFast {
             firstly {
                 (self.paymentModule as? FormPaymentModule)?.userInterfaceModule.presentResultViewControllerIfNeeded() ?? Promise()
             }
             .done { _ in }
             .catch { _ in }
             
-            
-        }
-//        else if accountInfoPaymentMethodTypes.contains(paymentMethodType) {
-//            presentAccountInfoViewController()
-//
-//        }
-        else {
+        } else {
             PrimerUIManager.dismissOrShowResultScreen(type: .success, withMessage: nil)
         }
     }
