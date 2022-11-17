@@ -164,9 +164,10 @@ public class PrimerHeadlessUniversalCheckout {
         case PrimerPaymentMethodType.paymentCard.rawValue:
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
             let cardInfoOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
-            if cardInfoOptions?.cardHolderName != false {
-                requiredFields.append(.cardholderName)
+            if cardInfoOptions?.cardHolderName == false {
+                return requiredFields
             }
+            requiredFields.append(.cardholderName)
             return requiredFields
         case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
             return [.cardNumber, .expiryDate, .cardholderName]
