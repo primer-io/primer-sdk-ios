@@ -9,5 +9,5 @@ if [[ $1 = "is_ci" ]]; then
   tuist generate --path "$internal_app_path" --no-open
 else
   tuist generate --path "$internal_app_path"
-  (cd "$internal_app_path" && pod install)
+  (cd "$internal_app_path" && pod update)
 fi

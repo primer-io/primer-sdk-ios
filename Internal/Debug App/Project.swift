@@ -2,7 +2,7 @@ import ProjectDescription
 
 enum BaseSettings {
 
-    static let appName = "ExampleApp"
+    static let appName = "Debug App"
 
     static let settingsDictionary: [String: SettingValue] = [
         "DEVELOPMENT_TEAM": .string("N8UN9TR5DY"),
@@ -35,7 +35,7 @@ enum TestAppSettings {
 }
 
 let project = Project(
-    name: "Primer.io Example App",
+    name: "Primer.io Debug App",
     organizationName: "Primer API Ltd",
     targets: [
         Target(
@@ -50,26 +50,26 @@ let project = Project(
             settings: AppSettings.settings
         ),
         Target(
-            name: "ExampleAppTests",
+            name: "Debug App Tests",
             platform: .iOS,
             product: .unitTests,
             bundleId: "com.primerapi.PrimerSDKExampleTests",
             infoPlist: .default,
             sources: ["Tests/Unit Tests/**"],
             dependencies: [
-                .target(name: "ExampleApp")
+                .target(name: BaseSettings.appName)
             ],
             settings: TestAppSettings.settings
         ),
         Target(
-            name: "ExampleAppUITests",
+            name: "Debug App UITests",
             platform: .iOS,
             product: .uiTests,
             bundleId: "com.primer.PrimerSDKExample-UITests",
             infoPlist: .default,
             sources: ["Tests/UI Tests/**"],
             dependencies: [
-                .target(name: "ExampleApp")
+                .target(name: BaseSettings.appName)
             ],
             settings: TestAppSettings.settings
         )
