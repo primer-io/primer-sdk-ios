@@ -80,16 +80,6 @@ class FormPaymentModule: PaymentModule {
                 }
                 
                 seal.fulfill(nil)
-                
-                firstly {
-                    self.userInterfaceModule.presentResultViewControllerIfNeeded()
-                }
-                .done {
-                    
-                }
-                .catch { error in
-                    seal.reject(error)
-                }
             }
         }
     }

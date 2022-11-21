@@ -83,7 +83,7 @@ class WebRedirectPaymentModule: PaymentModule {
                 seal.fulfill()
             }
             .ensure {
-                self.userInterfaceModule.presentedViewController?.dismiss(animated: true)
+                self.userInterfaceModule.dismisPresentedViewControllerIfNeeded()
             }
             .catch { err in
                 seal.reject(err)
@@ -107,7 +107,7 @@ extension WebRedirectPaymentModule: SFSafariViewControllerDelegate {
     
     func safariViewController(_ controller: SFSafariViewController, initialLoadDidRedirectTo URL: URL) {
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
-            self.userInterfaceModule.presentedViewController?.dismiss(animated: true)
+            self.userInterfaceModule.dismisPresentedViewControllerIfNeeded()
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
     }

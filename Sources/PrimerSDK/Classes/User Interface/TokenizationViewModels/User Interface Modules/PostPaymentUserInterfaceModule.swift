@@ -19,9 +19,9 @@ class PostPaymentUserInterfaceModule: NewUserInterfaceModule {
             DispatchQueue.main.async { [unowned self] in
                 let safariVC = SFSafariViewController(url: (self.paymentModule as! WebRedirectPaymentModule).redirectUrl)
                 safariVC.delegate = self.paymentModule as! WebRedirectPaymentModule
-                
                 PrimerUIManager.primerRootViewController?.present(safariVC, animated: true, completion: {
                     DispatchQueue.main.async {
+                        self.presentedViewController = safariVC
                         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.paymentMethodConfiguration.type)
                         seal.fulfill(())
                     }

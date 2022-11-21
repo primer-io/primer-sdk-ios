@@ -43,7 +43,9 @@ class InputAndPostPaymentUserInterfaceModule: NewUserInterfaceModule {
             switch self.paymentMethodConfiguration.type {
             case PrimerPaymentMethodType.adyenDotPay.rawValue,
                 PrimerPaymentMethodType.adyenIDeal.rawValue:
-                PrimerUIManager.primerRootViewController?.show(viewController: self.makeBanksSelectorViewController(with: banks))
+                let banksVC = self.makeBanksSelectorViewController(with: banks)
+                PrimerUIManager.primerRootViewController?.show(viewController: banksVC)
+                self.presentedViewController = banksVC
                 seal.fulfill()
             default:
                 seal.fulfill()

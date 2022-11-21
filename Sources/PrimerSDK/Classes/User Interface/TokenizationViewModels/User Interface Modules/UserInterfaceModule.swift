@@ -89,7 +89,8 @@ class NewUserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }()
     
     private lazy var _paymentMethodButton: PrimerButton? = {
-        let paymentMethodButtonBuilder = NewUserInterfaceModule.PaymentMethodButtonBuilder(paymentMethodConfiguration: self.paymentMethodConfiguration)
+        let paymentMethodButtonBuilder = PaymentMethodButtonBuilder(paymentMethodConfiguration: self.paymentMethodConfiguration,
+                                                                    accessibilityIdentifier: .paymentMethodType(self.paymentMethodConfiguration.type))
         paymentMethodButtonBuilder.button.addTarget(self, action: #selector(paymentMethodButtonTapped(_:)), for: .touchUpInside)
         return paymentMethodButtonBuilder.button
     }()
@@ -117,7 +118,8 @@ class NewUserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 precondition(false, "Intent should have been set")
             }
 
-            return makePrimerButtonWithTitleText(title, isEnabled: false)
+            return PaymentMethodButtonBuilder(paymentMethodConfiguration: self.paymentMethodConfiguration,
+                                              accessibilityIdentifier: .paymentMethodType(self.paymentMethodConfiguration.type)).button
 
         default:
             return nil
@@ -194,21 +196,6 @@ class NewUserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     @IBAction internal func submitButtonTapped(_ sender: UIButton) {
         self.tokenizationModule.submitTokenizationData()
     }
-}
-
-extension NewUserInterfaceModule {
-        
-    internal func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView? {
-        guard let squareLogo = self.icon else { return nil }
-        let imgView = UIImageView()
-        imgView.image = squareLogo
-        imgView.contentMode = .scaleAspectFit
-        imgView.translatesAutoresizingMaskIntoConstraints = false
-        imgView.heightAnchor.constraint(equalToConstant: dimension).isActive = true
-        imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
-        return imgView
-    }
-
 }
 
 #endif
