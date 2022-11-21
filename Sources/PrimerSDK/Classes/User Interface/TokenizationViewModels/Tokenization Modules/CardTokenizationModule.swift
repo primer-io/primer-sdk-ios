@@ -102,7 +102,7 @@ class CardTokenizationModule: TokenizationModule {
                 return self.checkoutEventsNotifier.fireWillPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
-                return self.presentPaymentMethodUserInterface()
+                return (self.userInterfaceModule as? InputPostPaymentAndResultUserInterfaceModule)?.presentPreTokenizationViewControllerIfNeeded() ?? Promise()
             }
             .then { () -> Promise<Void> in
                 return self.checkoutEventsNotifier.fireDidPresentPaymentMethodUI()
@@ -142,31 +142,6 @@ class CardTokenizationModule: TokenizationModule {
         }
     }
     
-    private func presentPaymentMethodUserInterface() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async {
-                switch self.paymentMethodConfiguration.type {
-                case PrimerPaymentMethodType.paymentCard.rawValue:
-                    let pcfvc = PrimerCardFormViewController(
-                        paymentMethodConfiguration: self.paymentMethodConfiguration,
-                        userInterfaceModule: self.userInterfaceModule)
-                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
-                    seal.fulfill()
-                    
-                case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
-                    let pcfvc = PrimerCardFormViewController(
-                        paymentMethodConfiguration: self.paymentMethodConfiguration,
-                        userInterfaceModule: self.userInterfaceModule)
-                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
-                    seal.fulfill()
-                    
-                default:
-                    precondition(false, "Should never end up here")
-                }
-            }
-        }
-    }
-    
     private func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.userInputCompletion = {
@@ -177,7 +152,7 @@ class CardTokenizationModule: TokenizationModule {
     
     private func dispatchActions() -> Promise<Void> {
         return Promise { seal in
-            var network = (self.userInterfaceModule as? InputAndResultUserInterfaceModule)?.cardNetwork?.rawValue.uppercased()
+            var network = (self.userInterfaceModule as? InputPostPaymentAndResultUserInterfaceModule)?.cardNetwork?.rawValue.uppercased()
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
             }

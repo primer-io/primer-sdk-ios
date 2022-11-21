@@ -7,8 +7,13 @@
 
 #if canImport(UIKit)
 
-// Blik, MBWay, Multibanco
-class InputAndResultUserInterfaceModule: NewUserInterfaceModule {
+// Blik
+// MBWay
+// Multibanco
+// QRCode-based
+// Voucher-based
+
+class InputAndResultUserInterfaceModule: NewUserInterfaceModule, PrimerTextFieldViewDelegate {
     
     // MARK: - Overrides
     
@@ -32,20 +37,12 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule {
     private lazy var _inputView: PrimerView? = {
                 
         guard self.paymentMethodConfiguration.implementationType != .webRedirect,
-              let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else { return nil }
+              let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else {
+            return nil
+        }
         
         switch paymentMethodType {
             
-        case .adyenBancontactCard:
-            
-            var formViews: [[UIView?]] = [
-                [cardNumberContainerView],
-                [expiryDateContainerView],
-                [cardholderNameContainerView]
-            ]
-                        
-            return PrimerFormView(frame: .zero, formViews: formViews)
-
         case .adyenBlik,
                 .adyenMBWay:
 
@@ -76,7 +73,9 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule {
         
     private lazy var _resultView: PrimerView? = {
 
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else { return PrimerView() }
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else {
+            return nil
+        }
 
         switch paymentMethodType {
         case .adyenMBWay:
@@ -103,8 +102,6 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule {
             return makePrimerButtonWithTitleText(Strings.PaymentButton.confirm, isEnabled: false)
         case .adyenMultibanco:
             return makePrimerButtonWithTitleText(Strings.PaymentButton.confirmToPay, isEnabled: true)
-        case .adyenBancontactCard:
-            return makePrimerButtonWithTitleText(Strings.PaymentButton.pay, isEnabled: false)
         default:
             return nil
         }
@@ -138,43 +135,6 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule {
         180+(CGFloat(decisions.count)*tableView.rowHeight)
     }
 
-    
-    // MARK: Card Network
-    
-    var cardNetwork: CardNetwork?
-    
-    // MARK: Card number
-    
-    internal lazy var cardNumberField: PrimerCardNumberFieldView = {
-        PrimerCardNumberField.cardNumberFieldViewWithDelegate(self)
-    }()
-    
-    internal lazy var cardNumberContainerView: PrimerCustomFieldView = {
-        PrimerCardNumberField.cardNumberContainerViewWithFieldView(cardNumberField)
-    }()
-    
-    // MARK: Cardholder name
-    
-    internal lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
-        if !PrimerCardholderNameField.isCardholderNameFieldEnabled { return nil }
-        return PrimerCardholderNameField.cardholderNameFieldViewWithDelegate(self)
-    }()
-    
-    internal lazy var cardholderNameContainerView: PrimerCustomFieldView? = {
-        if !PrimerCardholderNameField.isCardholderNameFieldEnabled { return nil }
-        return PrimerCardholderNameField.cardholderNameContainerViewFieldView(cardholderNameField)
-    }()
-    
-    // MARK: Expiry date
-    
-    internal lazy var expiryDateField: PrimerExpiryDateFieldView = {
-        return PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
-    }()
-    
-    internal lazy var expiryDateContainerView: PrimerCustomFieldView = {
-        return PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
-    }()
-    
     lazy var inputs: [Input] = {
 
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else {
@@ -248,7 +208,14 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule {
                     userInterfaceModule: self)
                 PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                 seal.fulfill()
-                
+            case PrimerPaymentMethodType.primerTestKlarna.rawValue,
+                PrimerPaymentMethodType.primerTestSofort.rawValue,
+                PrimerPaymentMethodType.primerTestPayPal.rawValue:
+                let testPaymentMethodsVC = PrimerTestPaymentMethodViewController(
+                    paymentMethodConfiguration: self.paymentMethodConfiguration,
+                    userInterfaceModule: self)
+                PrimerUIManager.primerRootViewController?.show(viewController: testPaymentMethodsVC)
+                seal.fulfill()
             default:
                 seal.fulfill()
             }
@@ -467,97 +434,24 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule {
 
 }
 
-extension InputAndResultUserInterfaceModule: PrimerTextFieldViewDelegate {
-    
-    func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {
-        showTexfieldViewErrorIfNeeded(for: primerTextFieldView, isValid: true)
-    }
+extension InputAndResultUserInterfaceModule {
     
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
         
-        guard let paymentMethodType =  PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else { return }
-
-        switch paymentMethodType {
-        case .adyenBancontactCard:
-            autofocusToNextFieldIfNeeded(for: primerTextFieldView, isValid: isValid)
-            showTexfieldViewErrorIfNeeded(for: primerTextFieldView, isValid: isValid)
-//            enableSubmitButtonIfNeeded()
-            
-        default:
+        guard isValid == true,
+              let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else {
             return
         }
-    }
-    
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
-        
-        guard let paymentMethodType =  PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else { return }
-        
-        switch paymentMethodType {
-            
-        case .adyenBancontactCard:
 
-            self.cardNetwork = cardNetwork
-            
-            var network = self.cardNetwork?.rawValue.uppercased()
-            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-            
-            if let cardNetwork = cardNetwork, cardNetwork != .unknown, cardNumberContainerView.rightImage2 == nil && cardNetwork.icon != nil {
-                if network == nil || network == "UNKNOWN" {
-                    network = "OTHER"
-                }
-                
-                cardNumberContainerView.rightImage2 = cardNetwork.icon
-                
-                firstly {
-                    clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodConfiguration.type, cardNetwork: network)
-                }
-                .done {
-//                    self.updateButtonUI()
-                }
-                .catch { _ in }
-            } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
-                cardNumberContainerView.rightImage2 = nil
-                            
-                firstly {
-                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                }
-                .done {
-//                    self.updateButtonUI()
-                }
-                .catch { _ in }
-            }
-            
+        switch paymentMethodType {
+        case .adyenBlik,
+                .adyenMultibanco:
+            enableSubmitButtonIfNeeded()
         default:
             return
         }
     }
 }
-
-extension InputAndResultUserInterfaceModule {
-    
-    internal func showTexfieldViewErrorIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        if isValid == false {
-            // We know for sure that the text is not valid, even if the user hasn't finished typing.
-            if primerTextFieldView is PrimerCardNumberFieldView, !primerTextFieldView.isEmpty {
-                cardNumberContainerView.errorText = Strings.CardFormView.CardNumber.invalidErrorMessage
-            } else if primerTextFieldView is PrimerExpiryDateFieldView, !primerTextFieldView.isEmpty {
-                expiryDateContainerView.errorText = Strings.CardFormView.ExpiryDate.invalidErrorMessage
-            } else if primerTextFieldView is PrimerCardholderNameFieldView, !primerTextFieldView.isEmpty {
-                cardholderNameContainerView?.errorText = Strings.CardFormView.Cardholder.invalidErrorMessage
-            }
-        } else {
-            // We don't know for sure if the text is valid
-            if primerTextFieldView is PrimerCardNumberFieldView {
-                cardNumberContainerView.errorText = nil
-            } else if primerTextFieldView is PrimerExpiryDateFieldView {
-                expiryDateContainerView.errorText = nil
-            } else if primerTextFieldView is PrimerCardholderNameFieldView {
-                cardholderNameContainerView?.errorText = nil
-            }
-        }
-    }
-}
-
 
 extension InputAndResultUserInterfaceModule {
     
@@ -620,19 +514,6 @@ extension InputAndResultUserInterfaceModule {
         }
         
         return stackViews
-    }
-}
-
-extension InputAndResultUserInterfaceModule {
-    
-    internal func autofocusToNextFieldIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        if isValid == true {
-            if primerTextFieldView is PrimerCardNumberFieldView {
-                _ = expiryDateField.becomeFirstResponder()
-            } else if primerTextFieldView is PrimerExpiryDateFieldView {
-                _ = cardholderNameField?.becomeFirstResponder()
-            }
-        }
     }
 }
 

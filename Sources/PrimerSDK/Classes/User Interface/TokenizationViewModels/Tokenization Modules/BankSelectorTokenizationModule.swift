@@ -59,7 +59,12 @@ class BankSelectorTokenizationModule: TokenizationModule {
             }
             .then { banks -> Promise<Void> in
                 self.banks = banks
-                return self.presentPaymentMethodUserInterface()
+                (self.userInterfaceModule as? InputAndPostPaymentUserInterfaceModule)?.banks = banks
+                (self.userInterfaceModule as? InputAndPostPaymentUserInterfaceModule)?.didSelectBank = { [weak self] bank in
+                    self?.selectedBank = bank
+                    self?.bankSelectionCompletion?(bank)
+                }
+                return (self.userInterfaceModule as? InputAndPostPaymentUserInterfaceModule)?.presentPreTokenizationViewControllerIfNeeded() ?? Promise()
             }
             .then { () -> Promise<Void> in
                 return self.checkoutEventsNotifier.fireDidPresentPaymentMethodUI()
@@ -147,22 +152,6 @@ class BankSelectorTokenizationModule: TokenizationModule {
                 case .success(let banks):
                     seal.fulfill(banks)
                 }
-            }
-        }
-    }
-    
-    private func presentPaymentMethodUserInterface() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async {
-                let bsvc = self.userInterfaceModule.createBanksSelectorViewController(with: self.banks)
-                
-                bsvc.didSelectBank = { [weak self] bank in
-                    self?.selectedBank = bank
-                    self?.bankSelectionCompletion?(bank)
-                }
-                
-                PrimerUIManager.primerRootViewController?.show(viewController: bsvc)
-                seal.fulfill()
             }
         }
     }
