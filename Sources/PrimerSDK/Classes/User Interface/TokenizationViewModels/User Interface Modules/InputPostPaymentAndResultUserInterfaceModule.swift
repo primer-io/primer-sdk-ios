@@ -76,18 +76,13 @@ class InputPostPaymentAndResultUserInterfaceModule: NewUserInterfaceModule {
         return Promise { seal in
             DispatchQueue.main.async {
                 switch self.paymentMethodConfiguration.type {
-                case PrimerPaymentMethodType.paymentCard.rawValue:
+                case PrimerPaymentMethodType.paymentCard.rawValue,
+                    PrimerPaymentMethodType.adyenBancontactCard.rawValue:
                     let pcfvc = PrimerCardFormViewController(
                         paymentMethodConfiguration: self.paymentMethodConfiguration,
                         userInterfaceModule: self)
                     PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
-                    seal.fulfill()
-                    
-                case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
-                    let pcfvc = PrimerCardFormViewController(
-                        paymentMethodConfiguration: self.paymentMethodConfiguration,
-                        userInterfaceModule: self)
-                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+                    self.presentedViewController = pcfvc
                     seal.fulfill()
                     
                 default:

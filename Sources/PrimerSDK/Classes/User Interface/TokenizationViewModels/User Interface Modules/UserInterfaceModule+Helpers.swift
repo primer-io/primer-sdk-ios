@@ -30,6 +30,17 @@ extension NewUserInterfaceModule {
         submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
         return submitButton
     }
+    
+    internal func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView? {
+        guard let squareLogo = self.icon else { return nil }
+        let imgView = UIImageView()
+        imgView.image = squareLogo
+        imgView.contentMode = .scaleAspectFit
+        imgView.translatesAutoresizingMaskIntoConstraints = false
+        imgView.heightAnchor.constraint(equalToConstant: dimension).isActive = true
+        imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
+        return imgView
+    }
                 
     internal func enableSubmitButtonIfNeeded() {
 //        switch self.paymentMethodModule.paymentMethodConfiguration.type {

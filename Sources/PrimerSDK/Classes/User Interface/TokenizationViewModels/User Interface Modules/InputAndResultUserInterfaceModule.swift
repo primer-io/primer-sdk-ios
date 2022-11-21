@@ -106,7 +106,7 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule, PrimerTextField
             return nil
         }
     }()
-    
+        
     // MARK: Primer Payment Methods Test (DUMMY APMs)
     
     private let decisions = PrimerTestPaymentMethodSessionInfo.FlowDecision.allCases
@@ -207,6 +207,7 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule, PrimerTextField
                     paymentMethodType: self.paymentMethodConfiguration.type,
                     userInterfaceModule: self)
                 PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+                self.presentedViewController = pcfvc
                 seal.fulfill()
             case PrimerPaymentMethodType.primerTestKlarna.rawValue,
                 PrimerPaymentMethodType.primerTestSofort.rawValue,
@@ -215,6 +216,7 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule, PrimerTextField
                     paymentMethodConfiguration: self.paymentMethodConfiguration,
                     userInterfaceModule: self)
                 PrimerUIManager.primerRootViewController?.show(viewController: testPaymentMethodsVC)
+                self.presentedViewController = testPaymentMethodsVC
                 seal.fulfill()
             default:
                 seal.fulfill()
@@ -228,6 +230,7 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule, PrimerTextField
             case PrimerPaymentMethodType.adyenMBWay.rawValue:
                 let vc = PrimerPaymentPendingInfoViewController(userInterfaceModule: self)
                 PrimerUIManager.primerRootViewController?.show(viewController: vc)
+                self.presentedViewController = vc
                 seal.fulfill()
             default:
                 seal.fulfill()
@@ -243,8 +246,8 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule, PrimerTextField
                 let pcfvc = PrimerVoucherInfoPaymentViewController(
                     userInterfaceModule: self,
                     shouldShareVoucherInfoWithText: VoucherValue.sharableVoucherValuesText)
-                
                 PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+                self.presentedViewController = pcfvc
                 seal.fulfill()
             default:
                 seal.fulfill()
