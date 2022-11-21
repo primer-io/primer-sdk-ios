@@ -13,9 +13,8 @@ import UIKit
 
 class WebRedirectPaymentModule: PaymentModule {
     
-    private var redirectUrl: URL!
+    var redirectUrl: URL!
     private var statusUrl: URL!
-    private var webViewController: SFSafariViewController!
     private var resumeToken: String?
     
     override func handleDecodedJWTTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
@@ -38,7 +37,7 @@ class WebRedirectPaymentModule: PaymentModule {
                         self.checkoutEventsNotifier.fireWillPresentPaymentMethodUI()
                     }
                     .then { () -> Promise<Void> in
-                        return self.presentPaymentMethodUserInterface()
+                        return self.userInterfaceModule.presentPostPaymentViewControllerIfNeeded()
                     }
                     .then { () -> Promise<Void> in
                         return self.checkoutEventsNotifier.fireDidPresentPaymentMethodUI()
@@ -59,22 +58,6 @@ class WebRedirectPaymentModule: PaymentModule {
                 }
             } else {
                 seal.fulfill(nil)
-            }
-        }
-    }
-    
-    private func presentPaymentMethodUserInterface() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async { [unowned self] in
-                self.webViewController = SFSafariViewController(url: self.redirectUrl)
-                self.webViewController.delegate = self
-                
-                PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
-                    DispatchQueue.main.async {
-                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.paymentMethodConfiguration.type)
-                        seal.fulfill(())
-                    }
-                })
             }
         }
     }
@@ -100,7 +83,7 @@ class WebRedirectPaymentModule: PaymentModule {
                 seal.fulfill()
             }
             .ensure {
-                self.webViewController?.dismiss(animated: true)
+                self.userInterfaceModule.presentedViewController?.dismiss(animated: true)
             }
             .catch { err in
                 seal.reject(err)
@@ -124,7 +107,7 @@ extension WebRedirectPaymentModule: SFSafariViewControllerDelegate {
     
     func safariViewController(_ controller: SFSafariViewController, initialLoadDidRedirectTo URL: URL) {
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
-            self.webViewController?.dismiss(animated: true)
+            self.userInterfaceModule.presentedViewController?.dismiss(animated: true)
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
     }

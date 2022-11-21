@@ -197,15 +197,7 @@ class NewUserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 }
 
 extension NewUserInterfaceModule {
-    
-    internal func createBanksSelectorViewController(with banks: [AdyenBank]) -> BankSelectorViewController {
-        let bsvc = BankSelectorViewController(
-            paymentMethodType: self.paymentMethodConfiguration.type,
-            navigationBarImage: self.navigationBarLogo,
-            banks: banks)
-        return bsvc
-    }
-    
+        
     internal func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView? {
         guard let squareLogo = self.icon else { return nil }
         let imgView = UIImageView()

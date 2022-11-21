@@ -8,14 +8,21 @@
 
 #if canImport(UIKit)
 
-// Card form
+// Card
+// Adyen Bancontact Card
+
 class InputPostPaymentAndResultUserInterfaceModule: NewUserInterfaceModule {
     
-    // MARK: -
-    
+    // MARK: Overrides
+
     override var inputView: PrimerView? {
         get { _inputView }
         set { _inputView = newValue }
+    }
+    
+    override var submitButton: PrimerButton? {
+        get { _submitButton }
+        set { _submitButton = newValue }
     }
         
     private lazy var _inputView: PrimerView? = {
@@ -38,13 +45,58 @@ class InputPostPaymentAndResultUserInterfaceModule: NewUserInterfaceModule {
             
             return PrimerFormView(frame: .zero, formViews: formViews)
             
+        case .adyenBancontactCard:
+            
+            var formViews: [[UIView?]] = [
+                [cardNumberContainerView],
+                [expiryDateContainerView],
+                [cardholderNameContainerView]
+            ]
+                        
+            return PrimerFormView(frame: .zero, formViews: formViews)
+
         default:
             return nil
         }
     }()
     
-    // MARK: -
+    private lazy var _submitButton: PrimerButton? = {
+        
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else { return nil }
+
+        switch paymentMethodType {
+        case .adyenBancontactCard:
+            return makePrimerButtonWithTitleText(Strings.PaymentButton.pay, isEnabled: false)
+        default:
+            return nil
+        }
+    }()
     
+    override func presentPreTokenizationViewControllerIfNeeded() -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async {
+                switch self.paymentMethodConfiguration.type {
+                case PrimerPaymentMethodType.paymentCard.rawValue:
+                    let pcfvc = PrimerCardFormViewController(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self)
+                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+                    seal.fulfill()
+                    
+                case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
+                    let pcfvc = PrimerCardFormViewController(
+                        paymentMethodConfiguration: self.paymentMethodConfiguration,
+                        userInterfaceModule: self)
+                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+                    seal.fulfill()
+                    
+                default:
+                    precondition(false, "Should never end up here")
+                }
+            }
+        }
+    }
+        
     // MARK: Card Network
     
     var cardNetwork: CardNetwork? {
@@ -243,10 +295,11 @@ extension InputPostPaymentAndResultUserInterfaceModule: PrimerTextFieldViewDeleg
         guard let paymentMethodType =  PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else { return }
 
         switch paymentMethodType {
-        case .paymentCard:
+        case .paymentCard,
+                .adyenBancontactCard:
             autofocusToNextFieldIfNeeded(for: primerTextFieldView, isValid: isValid)
             showTexfieldViewErrorIfNeeded(for: primerTextFieldView, isValid: isValid)
-//            enableSubmitButtonIfNeeded()
+            enableSubmitButtonIfNeeded()
             
         default:
             return
@@ -259,7 +312,8 @@ extension InputPostPaymentAndResultUserInterfaceModule: PrimerTextFieldViewDeleg
         
         switch paymentMethodType {
             
-        case .paymentCard:
+        case .paymentCard,
+                .adyenBancontactCard:
 
             self.cardNetwork = cardNetwork
             
@@ -277,7 +331,7 @@ extension InputPostPaymentAndResultUserInterfaceModule: PrimerTextFieldViewDeleg
                     clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodConfiguration.type, cardNetwork: network)
                 }
                 .done {
-//                    self.updateButtonUI()
+                    self.updateButtonUI()
                 }
                 .catch { _ in }
             } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
@@ -287,7 +341,7 @@ extension InputPostPaymentAndResultUserInterfaceModule: PrimerTextFieldViewDeleg
                     clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                 }
                 .done {
-//                    self.updateButtonUI()
+                    self.updateButtonUI()
                 }
                 .catch { _ in }
             }

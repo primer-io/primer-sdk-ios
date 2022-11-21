@@ -97,7 +97,7 @@ class FormTokenizationModule: TokenizationModule {
                 return self.checkoutEventsNotifier.fireWillPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
-                return self.presentPaymentMethodUserInterface()
+                return (self.userInterfaceModule as? InputAndResultUserInterfaceModule)?.presentPreTokenizationViewControllerIfNeeded() ?? Promise()
             }
             .then { () -> Promise<Void> in
                 return self.checkoutEventsNotifier.fireDidPresentPaymentMethodUI()
@@ -274,35 +274,7 @@ class FormTokenizationModule: TokenizationModule {
             fatalError("Payment method card should never end here.")
         }
     }
-    
-    func presentPaymentMethodUserInterface() -> Promise<Void> {
-        //        [.adyenBlik, .adyenMBWay, .adyenMultibanco]
-        return Promise { seal in
-            DispatchQueue.main.async {
-                switch self.paymentMethodConfiguration.type {
-                case PrimerPaymentMethodType.adyenBlik.rawValue,
-                    PrimerPaymentMethodType.adyenMBWay.rawValue:
-                    
-//                    let pcfvc = PrimerInputViewController(
-//                        paymentMethodType: self.paymentMethodConfiguration.type,
-//                        userInterfaceModule: self.userInterfaceModule,
-//                        inputsDistribution: .horizontal)
-//                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
-                    seal.fulfill()
-                    
-                    
-                case PrimerPaymentMethodType.adyenMultibanco.rawValue:
-//                    let pcfvc = PrimerAccountInfoPaymentViewController(userInterfaceModule: self.userInterfaceModule)
-//                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
-                    seal.fulfill()
-                    
-                default:
-                    seal.fulfill()
-                }
-            }
-        }
-    }
-    
+        
     func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.userInputCompletion = {

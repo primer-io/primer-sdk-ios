@@ -52,7 +52,10 @@ class PrimerTestPaymentMethodTokenizationModule: TokenizationModule {
                 return self.checkoutEventsNotifier.fireWillPresentPaymentMethodUI()
             }
             .then { () -> Promise<Void> in
-                return self.presentPaymentMethodUserInterface()
+                (self.userInterfaceModule as? InputAndResultUserInterfaceModule)?.decisionSelectionCompletion = { decision in
+                    self.selectedDecision = decision
+                }
+                return (self.userInterfaceModule as? InputAndResultUserInterfaceModule)?.presentPreTokenizationViewControllerIfNeeded() ?? Promise()
             }
             .then { () -> Promise<Void> in
                 return self.checkoutEventsNotifier.fireDidPresentPaymentMethodUI()
@@ -99,24 +102,6 @@ class PrimerTestPaymentMethodTokenizationModule: TokenizationModule {
             }
             .catch { err in
                 seal.reject(err)
-            }
-        }
-    }
-    
-    private func presentPaymentMethodUserInterface() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async {
-                
-                (self.userInterfaceModule as? InputAndResultUserInterfaceModule)?.decisionSelectionCompletion = { decision in
-                    self.selectedDecision = decision
-                }
-                
-                let testPaymentMethodsVC = PrimerTestPaymentMethodViewController(
-                    paymentMethodConfiguration: self.paymentMethodConfiguration,
-                    userInterfaceModule: self.userInterfaceModule)
-                
-                PrimerUIManager.primerRootViewController?.show(viewController: testPaymentMethodsVC)
-                seal.fulfill()
             }
         }
     }
