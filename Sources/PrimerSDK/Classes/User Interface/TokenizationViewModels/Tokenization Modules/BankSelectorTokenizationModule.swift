@@ -75,8 +75,7 @@ class BankSelectorTokenizationModule: TokenizationModule {
             .then { () -> Promise<Void> in
                 DispatchQueue.main.async {
                     PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(
-                        imageView: self.userInterfaceModule.makeIconImageView(withDimension: 24.0),
-                        message: nil)
+                        imageView: UIImageView.makeSquaredIconImageView(from: self.userInterfaceModule.icon))
                 }
                 return self.firePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodConfiguration.type))
             }

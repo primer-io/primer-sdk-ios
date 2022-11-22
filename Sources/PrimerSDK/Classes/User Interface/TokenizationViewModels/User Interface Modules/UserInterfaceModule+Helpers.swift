@@ -14,34 +14,7 @@ extension NewUserInterfaceModule {
     internal var isSubmitButtonAnimating: Bool {
         submitButton?.isAnimating == true
     }
-    
-    internal func makePrimerButtonWithTitleText(_ titleText: String, isEnabled: Bool) -> PrimerButton {
-        let submitButton = PrimerButton()
-        submitButton.translatesAutoresizingMaskIntoConstraints = false
-        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        submitButton.isAccessibilityElement = true
-        submitButton.accessibilityIdentifier = "submit_btn"
-        submitButton.isEnabled = isEnabled
-        submitButton.setTitle(titleText, for: .normal)
-        submitButton.backgroundColor = isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
-        submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
-        submitButton.layer.cornerRadius = 4
-        submitButton.clipsToBounds = true
-        submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
-        return submitButton
-    }
-    
-    internal func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView? {
-        guard let squareLogo = self.icon else { return nil }
-        let imgView = UIImageView()
-        imgView.image = squareLogo
-        imgView.contentMode = .scaleAspectFit
-        imgView.translatesAutoresizingMaskIntoConstraints = false
-        imgView.heightAnchor.constraint(equalToConstant: dimension).isActive = true
-        imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
-        return imgView
-    }
-                
+                    
     internal func enableSubmitButtonIfNeeded() {
 //        switch self.paymentMethodModule.paymentMethodConfiguration.type {
 //        case PrimerPaymentMethodType.primerTestKlarna.rawValue,
@@ -105,30 +78,6 @@ extension NewUserInterfaceModule {
         self.submitButton?.backgroundColor = flag ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
     }
     
-    internal func makePaymentPendingInfoView(logo: UIImage?, message: String) -> PrimerFormView {
-        
-        // The top logo
-        
-        let logoImageView = UIImageView(image: logo)
-        logoImageView.translatesAutoresizingMaskIntoConstraints = false
-        logoImageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        logoImageView.clipsToBounds = true
-        logoImageView.contentMode = .scaleAspectFit
-        
-        // Message string
-        
-        let completeYourPaymentLabel = UILabel()
-        completeYourPaymentLabel.numberOfLines = 0
-        completeYourPaymentLabel.textAlignment = .center
-        completeYourPaymentLabel.text = message
-        completeYourPaymentLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
-        completeYourPaymentLabel.textColor = theme.text.title.color
-        
-        let views = [[logoImageView],
-                     [completeYourPaymentLabel]]
-        
-        return PrimerFormView(formViews: views)
-    }
     
     @objc
     internal func copyToClipboardTapped(_ sender: UIButton) {

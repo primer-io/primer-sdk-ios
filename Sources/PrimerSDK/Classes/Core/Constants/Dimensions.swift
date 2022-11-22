@@ -8,6 +8,10 @@ public struct PrimerDimensions {
     public static let safeArea: CGFloat = 10.0
     public static let zero: CGFloat = CGFloat.zero
     
+    public struct Icon {
+        public static let squaredDimension: CGFloat = 24.0
+    }
+    
     public struct NavigationBar {
         public static let `default`: CGFloat = 44.0
     }

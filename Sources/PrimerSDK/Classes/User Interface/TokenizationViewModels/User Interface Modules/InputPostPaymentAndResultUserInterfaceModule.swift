@@ -20,11 +20,6 @@ class InputPostPaymentAndResultUserInterfaceModule: NewUserInterfaceModule {
         set { _inputView = newValue }
     }
     
-    override var submitButton: PrimerButton? {
-        get { _submitButton }
-        set { _submitButton = newValue }
-    }
-        
     private lazy var _inputView: PrimerView? = {
         
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else {
@@ -55,18 +50,6 @@ class InputPostPaymentAndResultUserInterfaceModule: NewUserInterfaceModule {
                         
             return PrimerFormView(frame: .zero, formViews: formViews)
 
-        default:
-            return nil
-        }
-    }()
-    
-    private lazy var _submitButton: PrimerButton? = {
-        
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else { return nil }
-
-        switch paymentMethodType {
-        case .adyenBancontactCard:
-            return makePrimerButtonWithTitleText(Strings.PaymentButton.pay, isEnabled: false)
         default:
             return nil
         }
