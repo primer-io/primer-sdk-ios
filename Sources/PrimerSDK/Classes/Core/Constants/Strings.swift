@@ -88,6 +88,23 @@ extension Strings {
 
 extension Strings {
     
+    enum SubmitButton {
+        
+        static let confirm = NSLocalizedString(
+            "primer-confirm-mandate-confirm",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Confirm",
+            comment: "Confirm button title text")
+        
+        static let confirmToPay = NSLocalizedString(
+            "confirmButtonTitle",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Confirm to pay",
+            comment: "Confirm button title text")
+    }
+    
     enum PaymentButton {
         
         static let pay = NSLocalizedString(
@@ -116,21 +133,6 @@ extension Strings {
             bundle: Bundle.primerResources,
             value: "Pay with card",
             comment: "Pay with card - Payment Method Type (Card Not vaulted)")
-        
-        static let confirm = NSLocalizedString(
-            "primer-confirm-mandate-confirm",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Confirm",
-            comment: "Confirm button title text")
-        
-        static let confirmToPay = NSLocalizedString(
-            "confirmButtonTitle",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Confirm to pay",
-            comment: "Confirm button title text")
-
     }
 }
 

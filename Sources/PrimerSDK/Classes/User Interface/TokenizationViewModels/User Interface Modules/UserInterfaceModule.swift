@@ -89,8 +89,7 @@ class NewUserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }()
     
     private lazy var _paymentMethodButton: PrimerButton? = {
-        let paymentMethodButtonBuilder = PaymentMethodButtonBuilder(paymentMethodConfiguration: self.paymentMethodConfiguration,
-                                                                    accessibilityIdentifier: .paymentMethodType(self.paymentMethodConfiguration.type))
+        let paymentMethodButtonBuilder = PaymentMethodButtonBuilder(paymentMethodConfiguration: self.paymentMethodConfiguration)
         paymentMethodButtonBuilder.button.addTarget(self, action: #selector(paymentMethodButtonTapped(_:)), for: .touchUpInside)
         return paymentMethodButtonBuilder.button
     }()
@@ -100,7 +99,8 @@ class NewUserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else { return nil }
 
         switch paymentMethodType {
-        case .paymentCard:
+        case .paymentCard,
+                .adyenBancontactCard:
 
             var title: String = Strings.PaymentButton.pay
 
@@ -118,8 +118,7 @@ class NewUserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 precondition(false, "Intent should have been set")
             }
 
-            return PaymentMethodButtonBuilder(paymentMethodConfiguration: self.paymentMethodConfiguration,
-                                              accessibilityIdentifier: .paymentMethodType(self.paymentMethodConfiguration.type)).button
+            return PaymentMethodButtonBuilder(paymentMethodConfiguration: self.paymentMethodConfiguration).button
 
         default:
             return nil

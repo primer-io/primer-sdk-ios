@@ -79,9 +79,9 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule, PrimerTextField
 
         switch paymentMethodType {
         case .adyenMBWay:
-            return self.makePaymentPendingInfoView(logo: self.navigationBarLogo, message: Strings.MBWay.completeYourPayment)
+            return PrimerFormView.makeLogoAndMessageInfoView(logo: self.navigationBarLogo, message: Strings.MBWay.completeYourPayment)
         case .adyenBlik:
-            return self.makePaymentPendingInfoView(logo: self.navigationBarLogo, message: Strings.Blik.completeYourPayment)
+            return PrimerFormView.makeLogoAndMessageInfoView(logo: self.navigationBarLogo, message: Strings.Blik.completeYourPayment)
         case .adyenMultibanco:
             return self.voucherInfoView
         case .rapydFast:
@@ -99,9 +99,14 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule, PrimerTextField
         switch paymentMethodType {
         case .adyenBlik,
                 .xfersPayNow:
-            return makePrimerButtonWithTitleText(Strings.PaymentButton.confirm, isEnabled: false)
+            return UserInterfaceModuleSubmitButtonFactory.makeSubmitButtonForUserInterfaceModule(self,
+                                                                                                 titleText: Strings.SubmitButton.confirm,
+                                                                                                 action: #selector(submitButtonTapped(_:)))
         case .adyenMultibanco:
-            return makePrimerButtonWithTitleText(Strings.PaymentButton.confirmToPay, isEnabled: true)
+            return UserInterfaceModuleSubmitButtonFactory.makeSubmitButtonForUserInterfaceModule(self,
+                                                                                                 titleText:Strings.SubmitButton.confirmToPay,
+                                                                                                 action: #selector(submitButtonTapped(_:)),
+                                                                                                 isEnabled: true)
         default:
             return nil
         }

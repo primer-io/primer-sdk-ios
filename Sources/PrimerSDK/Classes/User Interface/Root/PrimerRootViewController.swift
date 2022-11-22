@@ -319,7 +319,7 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
     
-    internal func showLoadingScreenIfNeeded(imageView: UIImageView?, message: String?) {
+    internal func showLoadingScreenIfNeeded(imageView: UIImageView?, message: String? = nil) {
         if let lastViewController = (nc.viewControllers.last as? PrimerContainerViewController)?.childViewController {
             if lastViewController is PrimerLoadingViewController ||
                 lastViewController is PrimerResultViewController {

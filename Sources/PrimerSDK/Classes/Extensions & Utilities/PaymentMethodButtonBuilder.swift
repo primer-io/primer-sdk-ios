@@ -7,43 +7,15 @@
 
 #if canImport(UIKit)
 
-enum PaymentMethodButtonAccessibilityIdentifierType {
-    case submit
-    case paymentMethodType(String)
-}
-
-extension PaymentMethodButtonAccessibilityIdentifierType: RawRepresentable {
-    
-    init?(rawValue: String) {
-        switch rawValue {
-        case "submit_btn": self = .submit
-        case let paymentMethodType: self = .paymentMethodType(paymentMethodType)
-        }
-    }
-
-    var rawValue: String {
-        switch self {
-        case .submit: return "submit_btn"
-        case let .paymentMethodType(type): return type
-        }
-    }
-}
-
 class PaymentMethodButtonBuilder {
     
     weak var paymentMethodConfiguration: PrimerPaymentMethod!
-    var accessibilityIdentifier: PaymentMethodButtonAccessibilityIdentifierType
     
     //MARK: - Initializers
     
-    init(paymentMethodConfiguration: PrimerPaymentMethod, accessibilityIdentifier: PaymentMethodButtonAccessibilityIdentifierType) {
+    init(paymentMethodConfiguration: PrimerPaymentMethod) {
         self.paymentMethodConfiguration = paymentMethodConfiguration
-        self.accessibilityIdentifier = accessibilityIdentifier
     }
-    
-    private lazy var theme: PrimerThemeProtocol = {
-        DependencyContainer.resolve()
-    }()
     
     var themeMode: PrimerTheme.Mode {
         if let baseLogoImage = self.paymentMethodConfiguration.baseLogoImage {
@@ -734,14 +706,11 @@ class PaymentMethodButtonBuilder {
             return Strings.PaymentButton.payWithCard
             
         case PrimerPaymentMethodType.apaya.rawValue:
-            // Update with `metadataButtonText ?? Strings.PaymentButton.payByMobile` once we'll get localized strings
-            return Strings.PaymentButton.payByMobile
+            return metadataButtonText ?? Strings.PaymentButton.payByMobile
             
         case PrimerPaymentMethodType.paymentCard.rawValue:
-            // Commenting the below code as we are not getting localized strings in `text` key
-            // for the a Payment Method Instrument object out of `/configuration` API response
-            //
-            // if let metadataButtonText = metadataButtonText { return metadataButtonText }
+            
+            if let metadataButtonText = metadataButtonText { return metadataButtonText }
             return PrimerInternal.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.PaymentButton.payWithCard
             
         case PrimerPaymentMethodType.twoCtwoP.rawValue:
@@ -752,9 +721,9 @@ class PaymentMethodButtonBuilder {
         }
     }
     
-    var buttonImage: UIImage? {
+    lazy var buttonImage: UIImage? = {
         return self.paymentMethodConfiguration.logo
-    }
+    }()
     
     lazy var buttonFont: UIFont? = {
         return UIFont.systemFont(ofSize: 17.0, weight: .medium)
@@ -875,9 +844,8 @@ class PaymentMethodButtonBuilder {
         ]
         
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.accessibilityIdentifier = accessibilityIdentifier.rawValue
+        button.accessibilityIdentifier = self.paymentMethodConfiguration.type
         button.clipsToBounds = true
-        button.isEnabled = false
         let imagePadding: CGFloat = 20
         let leftPadding = UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0
         let defaultRightPadding = customPaddingSettingsCard.contains(self.paymentMethodConfiguration.type) ? imagePadding : 0
@@ -890,15 +858,14 @@ class PaymentMethodButtonBuilder {
         button.imageView?.contentMode = .scaleAspectFit
         button.titleLabel?.font = self.buttonFont
         button.layer.cornerRadius = self.buttonCornerRadius
-        button.backgroundColor = button.isEnabled ? self.theme.mainButton.color(for: .enabled) : self.theme.mainButton.color(for: .disabled)
+        button.backgroundColor = self.buttonColor
         button.setTitle(self.buttonTitle, for: .normal)
         button.setImage(self.buttonImage, for: .normal)
         button.setTitleColor(self.buttonTitleColor, for: .normal)
         button.tintColor = self.buttonTintColor
         button.layer.borderWidth = self.buttonBorderWidth
         button.layer.borderColor = self.buttonBorderColor?.cgColor
-        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        
+        button.heightAnchor.constraint(equalToConstant: 45).isActive = true
         return button
     }()
 }

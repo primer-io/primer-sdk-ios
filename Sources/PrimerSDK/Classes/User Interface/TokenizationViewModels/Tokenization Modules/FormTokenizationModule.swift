@@ -83,7 +83,7 @@ class FormTokenizationModule: TokenizationModule {
                 place: .cardForm))
         Analytics.Service.record(event: event)
         
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.userInterfaceModule.makeIconImageView(withDimension: 24.0), message: nil)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: UIImageView.makeSquaredIconImageView(from: self.userInterfaceModule.icon))
         
         return Promise { seal in
             firstly {
