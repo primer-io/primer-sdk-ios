@@ -15,7 +15,7 @@ protocol PaymentMethodModuleProtocol: NSObjectProtocol {
     
     var paymentMethodConfiguration: PrimerPaymentMethod { get }
     var checkouEventsNotifierModule: CheckoutEventsNotifierModule { get }
-    var userInterfaceModule: NewUserInterfaceModule! { get }
+    var userInterfaceModule: UserInterfaceModule! { get }
     var tokenizationModule: TokenizationModuleProtocol! { get }
     var paymentModule: PaymentModuleProtocol! { get }
     
@@ -25,7 +25,7 @@ protocol PaymentMethodModuleProtocol: NSObjectProtocol {
     
     init?(
         paymentMethodConfiguration: PrimerPaymentMethod,
-        userInterfaceModule: NewUserInterfaceModule?,
+        userInterfaceModule: UserInterfaceModule?,
         tokenizationModule: TokenizationModuleProtocol?,
         paymentModule: PaymentModuleProtocol?
     )
@@ -43,7 +43,7 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
     }()
     var paymentMethodConfiguration: PrimerPaymentMethod
     var checkouEventsNotifierModule: CheckoutEventsNotifierModule
-    var userInterfaceModule: NewUserInterfaceModule!
+    var userInterfaceModule: UserInterfaceModule!
     var tokenizationModule: TokenizationModuleProtocol!
     var paymentModule: PaymentModuleProtocol!
     
@@ -53,7 +53,7 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
     
     required init?(
         paymentMethodConfiguration: PrimerPaymentMethod,
-        userInterfaceModule: NewUserInterfaceModule?,
+        userInterfaceModule: UserInterfaceModule?,
         tokenizationModule: TokenizationModuleProtocol?,
         paymentModule: PaymentModuleProtocol?
     ) {
@@ -62,7 +62,7 @@ class PaymentMethodModule: NSObject, PaymentMethodModuleProtocol {
         
         super.init()
         
-        self.userInterfaceModule = userInterfaceModule ?? NewUserInterfaceModule(paymentMethodConfiguration: self.paymentMethodConfiguration,
+        self.userInterfaceModule = userInterfaceModule ?? UserInterfaceModule(paymentMethodConfiguration: self.paymentMethodConfiguration,
                                                                                  tokenizationModule: self.tokenizationModule,
                                                                                  paymentModule: self.paymentModule)
         

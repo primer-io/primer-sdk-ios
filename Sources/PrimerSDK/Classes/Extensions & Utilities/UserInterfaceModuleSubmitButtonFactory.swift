@@ -11,7 +11,7 @@ import UIKit
 
 class UserInterfaceModuleSubmitButtonFactory {
     
-    static func makeSubmitButtonForUserInterfaceModule(_ userInferfaceModule: NewUserInterfaceModule,
+    static func makeSubmitButtonForUserInterfaceModule(_ userInferfaceModule: UserInterfaceModule,
                                                        titleText: String,
                                                        accessibilityIdentifier: UserInterfaceModuleButtonAccessibilityIdentifierType = .submit,
                                                        action: Selector,

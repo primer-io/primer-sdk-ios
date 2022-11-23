@@ -10,7 +10,7 @@
 import SafariServices
 
 // Web redirects
-class PostPaymentUserInterfaceModule: NewUserInterfaceModule {
+class PostPaymentUserInterfaceModule: UserInterfaceModule {
     
     // MARK: Overrides
     

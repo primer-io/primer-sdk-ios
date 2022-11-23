@@ -13,7 +13,7 @@
 // QRCode-based
 // Voucher-based
 
-class InputAndResultUserInterfaceModule: NewUserInterfaceModule, PrimerTextFieldViewDelegate {
+class InputAndResultUserInterfaceModule: UserInterfaceModule, PrimerTextFieldViewDelegate {
     
     // MARK: - Overrides
     

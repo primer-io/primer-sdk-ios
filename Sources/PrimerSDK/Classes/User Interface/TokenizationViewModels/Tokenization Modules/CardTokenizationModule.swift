@@ -17,7 +17,7 @@ class CardTokenizationModule: TokenizationModule {
     
     required init(
         paymentMethodConfiguration: PrimerPaymentMethod,
-        userInterfaceModule: NewUserInterfaceModule,
+        userInterfaceModule: UserInterfaceModule,
         checkoutEventsNotifier: CheckoutEventsNotifierModule)
     {
         super.init(

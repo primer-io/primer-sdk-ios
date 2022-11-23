@@ -9,7 +9,7 @@
 
 import UIKit
 
-extension NewUserInterfaceModule {
+extension UserInterfaceModule {
     
     internal var isSubmitButtonAnimating: Bool {
         submitButton?.isAnimating == true
@@ -20,7 +20,7 @@ extension NewUserInterfaceModule {
     }
 }
 
-extension NewUserInterfaceModule {
+extension UserInterfaceModule {
     
     func validateEnableSubmitButton() {
         if submitButtonValidations.allSatisfy({ $0 == true }) {
@@ -33,7 +33,7 @@ extension NewUserInterfaceModule {
     }
 }
 
-extension NewUserInterfaceModule {
+extension UserInterfaceModule {
 
     internal func updateSubmitButton() {
         if let amount = AppState.current.amount, self.isSubmitButtonAnimating == false {

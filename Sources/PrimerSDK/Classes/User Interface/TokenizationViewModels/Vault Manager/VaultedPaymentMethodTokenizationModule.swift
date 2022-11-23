@@ -15,7 +15,7 @@ class VaultedPaymentMethodTokenizationModule: TokenizationModule {
     
     init(
         paymentMethodConfiguration: PrimerPaymentMethod,
-        userInterfaceModule: NewUserInterfaceModule,
+        userInterfaceModule: UserInterfaceModule,
         checkoutEventsNotifier: CheckoutEventsNotifierModule,
         selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
     ) {
@@ -26,7 +26,7 @@ class VaultedPaymentMethodTokenizationModule: TokenizationModule {
             checkoutEventsNotifier: checkoutEventsNotifier)
     }
     
-    required init(paymentMethodConfiguration: PrimerPaymentMethod, userInterfaceModule: NewUserInterfaceModule, checkoutEventsNotifier: CheckoutEventsNotifierModule) {
+    required init(paymentMethodConfiguration: PrimerPaymentMethod, userInterfaceModule: UserInterfaceModule, checkoutEventsNotifier: CheckoutEventsNotifierModule) {
         fatalError("init(paymentMethodConfiguration:userInterfaceModule:checkoutEventsNotifier:) has not been implemented")
     }
     

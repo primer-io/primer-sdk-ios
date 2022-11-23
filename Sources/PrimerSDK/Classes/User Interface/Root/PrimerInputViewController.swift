@@ -11,14 +11,14 @@ import UIKit
 
 internal class PrimerInputViewController: PrimerFormViewController {
     
-    let userInterfaceModule: NewUserInterfaceModule
+    let userInterfaceModule: UserInterfaceModule
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(paymentMethodType: String,
-         userInterfaceModule: NewUserInterfaceModule,
+         userInterfaceModule: UserInterfaceModule,
          inputsDistribution: NSLayoutConstraint.Axis = .vertical) {
         self.userInterfaceModule = userInterfaceModule
         super.init(nibName: nil, bundle: nil)
