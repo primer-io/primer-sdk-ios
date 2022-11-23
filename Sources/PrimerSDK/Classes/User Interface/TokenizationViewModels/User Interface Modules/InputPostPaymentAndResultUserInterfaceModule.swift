@@ -55,6 +55,25 @@ class InputPostPaymentAndResultUserInterfaceModule: NewUserInterfaceModule {
         }
     }()
     
+    override var submitButtonValidations: [Bool] {
+        var validations = [
+            cardNumberField.isTextValid,
+            expiryDateField.isTextValid,
+        ]
+
+        if isRequiringCVVInput {
+            validations.append(cvvField.isTextValid)
+        }
+
+        if isShowingBillingAddressFieldsRequired {
+            validations.append(contentsOf: allVisibleBillingAddressFieldViews.map { $0.isTextValid })
+        }
+
+        if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
+        
+        return validations
+    }
+    
     override func presentPreTokenizationViewControllerIfNeeded() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
@@ -73,6 +92,12 @@ class InputPostPaymentAndResultUserInterfaceModule: NewUserInterfaceModule {
                 }
             }
         }
+    }
+    
+    private var paymentMethodsRequiringCVVInput: [PrimerPaymentMethodType] = [.paymentCard]
+    var isRequiringCVVInput: Bool {
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else { return false }
+        return paymentMethodsRequiringCVVInput.contains(paymentMethodType)
     }
         
     // MARK: Card Network
@@ -277,7 +302,7 @@ extension InputPostPaymentAndResultUserInterfaceModule: PrimerTextFieldViewDeleg
                 .adyenBancontactCard:
             autofocusToNextFieldIfNeeded(for: primerTextFieldView, isValid: isValid)
             showTexfieldViewErrorIfNeeded(for: primerTextFieldView, isValid: isValid)
-            enableSubmitButtonIfNeeded()
+            validateEnableSubmitButton()
             
         default:
             return
@@ -309,7 +334,7 @@ extension InputPostPaymentAndResultUserInterfaceModule: PrimerTextFieldViewDeleg
                     clientSessionActionsModule.selectPaymentMethodIfNeeded(self.paymentMethodConfiguration.type, cardNetwork: network)
                 }
                 .done {
-                    self.updateButtonUI()
+                    self.updateSubmitButton()
                 }
                 .catch { _ in }
             } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
@@ -319,7 +344,7 @@ extension InputPostPaymentAndResultUserInterfaceModule: PrimerTextFieldViewDeleg
                     clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                 }
                 .done {
-                    self.updateButtonUI()
+                    self.updateSubmitButton()
                 }
                 .catch { _ in }
             }

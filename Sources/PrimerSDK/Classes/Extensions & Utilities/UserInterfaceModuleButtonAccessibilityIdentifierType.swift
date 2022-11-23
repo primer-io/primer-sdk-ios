@@ -1,5 +1,5 @@
 //
-//  UserInterfaceModule+PaymentMethodButtonBuilder.swift
+//  UserInterfaceModuleButtonAccessibilityIdentifierType.swift
 //  PrimerSDK
 //
 //  Created by Evangelos on 21/10/22.

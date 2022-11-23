@@ -14,47 +14,28 @@ extension NewUserInterfaceModule {
     internal var isSubmitButtonAnimating: Bool {
         submitButton?.isAnimating == true
     }
-                    
-    internal func enableSubmitButtonIfNeeded() {
-//        switch self.paymentMethodModule.paymentMethodConfiguration.type {
-//        case PrimerPaymentMethodType.primerTestKlarna.rawValue,
-//            PrimerPaymentMethodType.primerTestPayPal.rawValue,
-//            PrimerPaymentMethodType.primerTestSofort.rawValue:
-//            if lastSelectedIndexPath != nil {
-//                self.submitButton?.isEnabled = true
-//                self.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
-//            } else {
-//                self.submitButton?.isEnabled = false
-//                self.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
-//            }
-//
-//        default:
-//            var validations = [
-//                cardNumberField.isTextValid,
-//                expiryDateField.isTextValid,
-//            ]
-//
-//            if isRequiringCVVInput {
-//                validations.append(cvvField.isTextValid)
-//            }
-//
-//            if isShowingBillingAddressFieldsRequired {
-//                validations.append(contentsOf: allVisibleBillingAddressFieldViews.map { $0.isTextValid })
-//            }
-//
-//            if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
-//
-//            if validations.allSatisfy({ $0 == true }) {
-//                self.submitButton?.isEnabled = true
-//                self.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
-//            } else {
-//                self.submitButton?.isEnabled = false
-//                self.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
-//            }
-//        }
+    
+    internal var isPaymentMethodButtonAnimating: Bool {
+        paymentMethodButton?.isAnimating == true
     }
-        
-    internal func updateButtonUI() {
+}
+
+extension NewUserInterfaceModule {
+    
+    func validateEnableSubmitButton() {
+        if submitButtonValidations.allSatisfy({ $0 == true }) {
+            self.submitButton?.isEnabled = true
+            self.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
+        } else {
+            self.submitButton?.isEnabled = false
+            self.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
+        }
+    }
+}
+
+extension NewUserInterfaceModule {
+
+    internal func updateSubmitButton() {
         if let amount = AppState.current.amount, self.isSubmitButtonAnimating == false {
             self.configurePayButton(amount: amount)
         }
@@ -76,24 +57,6 @@ extension NewUserInterfaceModule {
         self.submitButton?.isEnabled = flag
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         self.submitButton?.backgroundColor = flag ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
-    }
-    
-    
-    @objc
-    internal func copyToClipboardTapped(_ sender: UIButton) {
-        UIPasteboard.general.string = PrimerAPIConfigurationModule.decodedJWTToken?.accountNumber
-        
-        log(logLevel: .debug, message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
-        
-        DispatchQueue.main.async {
-            sender.isSelected = true
-        }
-        Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { timer in
-            DispatchQueue.main.async {
-                sender.isSelected = false
-            }
-            timer.invalidate()
-        }
     }
 }
 

@@ -97,11 +97,16 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule, PrimerTextField
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodConfiguration.type) else { return nil }
 
         switch paymentMethodType {
-        case .adyenBlik,
-                .xfersPayNow:
+        case .adyenBlik:
             return UserInterfaceModuleSubmitButtonFactory.makeSubmitButtonForUserInterfaceModule(self,
                                                                                                  titleText: Strings.SubmitButton.confirm,
                                                                                                  action: #selector(submitButtonTapped(_:)))
+        case .xfersPayNow:
+            return UserInterfaceModuleSubmitButtonFactory.makeSubmitButtonForUserInterfaceModule(self,
+                                                                                                 titleText: Strings.SubmitButton.confirm,
+                                                                                                 action: #selector(submitButtonTapped(_:)),
+                                                                                                 isEnabled: true)
+
         case .adyenMultibanco:
             return UserInterfaceModuleSubmitButtonFactory.makeSubmitButtonForUserInterfaceModule(self,
                                                                                                  titleText:Strings.SubmitButton.confirmToPay,
@@ -198,6 +203,21 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule, PrimerTextField
             return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "multibanco-logo-light", in: Bundle.primerResources, compatibleWith: nil)
         default:
             return super.navigationBarLogo
+        }
+    }
+    
+    override var submitButtonValidations: [Bool] {
+        switch self.paymentMethodConfiguration.type {
+        case PrimerPaymentMethodType.primerTestKlarna.rawValue,
+            PrimerPaymentMethodType.primerTestPayPal.rawValue,
+            PrimerPaymentMethodType.primerTestSofort.rawValue:
+            let selectedIndexPath = lastSelectedIndexPath != nil
+            return [selectedIndexPath]
+        case PrimerPaymentMethodType.adyenMBWay.rawValue,
+            PrimerPaymentMethodType.adyenBlik.rawValue:
+            return [inputs.allSatisfy({ ($0.isValid != nil) == true })]
+        default:
+            return super.submitButtonValidations
         }
     }
     
@@ -387,17 +407,8 @@ class InputAndResultUserInterfaceModule: NewUserInterfaceModule, PrimerTextField
                 }
             }
         }
-        
-        //                let copyToClipboardImage = UIImage(named: "copy-to-clipboard", in: Bundle.primerResources, compatibleWith: nil)
-        //                let copiedToClipboardImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)
-        //                let copyToClipboardButton = UIButton(type: .custom)
-        //                copyToClipboardButton.setImage(copyToClipboardImage, for: .normal)
-        //                copyToClipboardButton.setImage(copiedToClipboardImage, for: .selected)
-        //                copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
-        //                copyToClipboardButton.addTarget(self, action: #selector(copyToClipboardTapped), for: .touchUpInside)
-        //                entityStackView.addArrangedSubview(copyToClipboardButton)
-        
-        //        self.uiModule.submitButton = nil
+                
+        self.submitButton = nil
         
         let views = [[completeYourPaymentLabel],
                      [expiresAtContainerStackView],
@@ -453,8 +464,8 @@ extension InputAndResultUserInterfaceModule {
 
         switch paymentMethodType {
         case .adyenBlik,
-                .adyenMultibanco:
-            enableSubmitButtonIfNeeded()
+                .adyenMBWay:
+            validateEnableSubmitButton()
         default:
             return
         }
@@ -552,7 +563,6 @@ extension InputAndResultUserInterfaceModule: UITableViewDataSource, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-//        updateButtonUI()
         let stackView = UIStackView(arrangedSubviews: [self.submitButton!])
         stackView.alignment = .center
         stackView.spacing = 16
@@ -565,7 +575,7 @@ extension InputAndResultUserInterfaceModule: UITableViewDataSource, UITableViewD
         }
         lastSelectedIndexPath = indexPath
         decisionSelectionCompletion?(decisions[indexPath.row])
-//        enableSubmitButtonIfNeeded()
+        validateEnableSubmitButton()
     }
     
     
@@ -646,39 +656,36 @@ extension InputAndResultUserInterfaceModule {
         transferFundsLabel.textColor = theme.text.title.color
         accountNumberInfoContainerStackView.addArrangedSubview(transferFundsLabel)
         
-        let accountNumberStackView = PrimerStackView()
-        accountNumberStackView.axis = .horizontal
-        accountNumberStackView.spacing = 12.0
-        accountNumberStackView.heightAnchor.constraint(equalToConstant: 56.0).isActive = true
-        accountNumberStackView.addBackground(color: .white)
-        accountNumberStackView.layoutMargins = UIEdgeInsets(top: PrimerDimensions.StackViewSpacing.default,
-                                                            left: PrimerDimensions.StackViewSpacing.default,
-                                                            bottom: PrimerDimensions.StackViewSpacing.default,
-                                                            right: PrimerDimensions.StackViewSpacing.default)
-        accountNumberStackView.layer.cornerRadius = PrimerDimensions.cornerRadius / 2
-        accountNumberStackView.layer.borderColor = UIColor.gray200.cgColor
-        accountNumberStackView.layer.borderWidth = 2.0
-        accountNumberStackView.isLayoutMarginsRelativeArrangement = true
-        accountNumberStackView.layer.cornerRadius = 8.0
-        
         if let accountNumber = PrimerAPIConfigurationModule.decodedJWTToken?.accountNumber {
+
+            let accountNumberStackView = PrimerStackView()
+            accountNumberStackView.axis = .horizontal
+            accountNumberStackView.spacing = 12.0
+            accountNumberStackView.heightAnchor.constraint(equalToConstant: 56.0).isActive = true
+            accountNumberStackView.addBackground(color: .white)
+            accountNumberStackView.layoutMargins = UIEdgeInsets(top: PrimerDimensions.StackViewSpacing.default,
+                                                                left: PrimerDimensions.StackViewSpacing.default,
+                                                                bottom: PrimerDimensions.StackViewSpacing.default,
+                                                                right: PrimerDimensions.StackViewSpacing.default)
+            accountNumberStackView.layer.cornerRadius = PrimerDimensions.cornerRadius / 2
+            accountNumberStackView.layer.borderColor = UIColor.gray200.cgColor
+            accountNumberStackView.layer.borderWidth = 2.0
+            accountNumberStackView.isLayoutMarginsRelativeArrangement = true
+            accountNumberStackView.layer.cornerRadius = 8.0
+        
             let accountNumberLabel = UILabel()
             accountNumberLabel.text = accountNumber
             accountNumberLabel.font = UIFont.boldSystemFont(ofSize: PrimerDimensions.Font.label)
             accountNumberLabel.textColor = theme.text.title.color
             accountNumberStackView.addArrangedSubview(accountNumberLabel)
+            
+            let copyToClipboardButton = CopyToClipboardButton(textToCopy: accountNumber)
+            copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
+            accountNumberStackView.addArrangedSubview(copyToClipboardButton)
+            
+            accountNumberInfoContainerStackView.addArrangedSubview(accountNumberStackView)
         }
         
-        let copyToClipboardImage = UIImage(named: "copy-to-clipboard", in: Bundle.primerResources, compatibleWith: nil)
-        let copiedToClipboardImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)
-        let copyToClipboardButton = UIButton(type: .custom)
-        copyToClipboardButton.setImage(copyToClipboardImage, for: .normal)
-        copyToClipboardButton.setImage(copiedToClipboardImage, for: .selected)
-        copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
-        copyToClipboardButton.addTarget(self, action: #selector(copyToClipboardTapped), for: .touchUpInside)
-        accountNumberStackView.addArrangedSubview(copyToClipboardButton)
-        
-        accountNumberInfoContainerStackView.addArrangedSubview(accountNumberStackView)
         
         let views = [[completeYourPaymentLabel],
                      [dueAtContainerStackView],
