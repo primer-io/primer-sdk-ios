@@ -22,7 +22,7 @@ protocol UserInterfaceModuleProtocol: NSObject {
     init(paymentMethodConfiguration: PrimerPaymentMethod,
          tokenizationModule: TokenizationModuleProtocol,
          paymentModule: PaymentModuleProtocol)
-    
+        
     func presentPreTokenizationViewControllerIfNeeded() -> Promise<Void>
     func presentPostPaymentViewControllerIfNeeded() -> Promise<Void>
     func presentResultViewControllerIfNeeded() -> Promise<Void>
@@ -125,9 +125,11 @@ class NewUserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         }
         
     }()
-
     
     var presentedViewController: UIViewController?
+    var submitButtonValidations: [Bool] {
+        return []
+    }
     
     var themeMode: PrimerTheme.Mode {
         if let baseLogoImage = paymentMethodConfiguration.baseLogoImage {
@@ -178,7 +180,7 @@ class NewUserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     func presentResultViewControllerIfNeeded() -> Promise<Void> {
         fatalError("presentResultViewControllerIfNeeded() has not been implemented")
     }
-    
+        
     func dismisPresentedViewControllerIfNeeded() -> Promise<Void> {
         return Promise { seal in
             self.presentedViewController?.dismiss(animated: true)

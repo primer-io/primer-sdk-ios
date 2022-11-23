@@ -36,7 +36,7 @@ class CardTokenizationModule: TokenizationModule {
             cardholderNameField: userInterfaceModule.cardholderNameField,
             billingAddressFieldViews: userInterfaceModule.allVisibleBillingAddressFieldViews,
             paymentMethodType: paymentMethodConfiguration.type,
-            isRequiringCVVInput: true
+            isRequiringCVVInput: userInterfaceModule.isRequiringCVVInput
         )
         
         cardComponentsManager.delegate = self
