@@ -11,7 +11,7 @@
 // Card
 // Adyen Bancontact Card
 
-class InputPostPaymentAndResultUserInterfaceModule: NewUserInterfaceModule {
+class InputPostPaymentAndResultUserInterfaceModule: UserInterfaceModule {
     
     // MARK: Overrides
 

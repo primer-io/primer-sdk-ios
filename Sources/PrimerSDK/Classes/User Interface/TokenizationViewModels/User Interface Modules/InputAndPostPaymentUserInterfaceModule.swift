@@ -10,7 +10,7 @@
 // Bank selector
 // Adyen dotPay
 
-class InputAndPostPaymentUserInterfaceModule: NewUserInterfaceModule {
+class InputAndPostPaymentUserInterfaceModule: UserInterfaceModule {
     
     // MARK: Overrides
 

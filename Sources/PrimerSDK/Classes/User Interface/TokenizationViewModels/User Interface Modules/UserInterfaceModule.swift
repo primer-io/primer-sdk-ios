@@ -30,7 +30,7 @@ protocol UserInterfaceModuleProtocol: NSObject {
     func dismisPresentedViewControllerIfNeeded() -> Promise<Void>
 }
 
-class NewUserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
+class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     

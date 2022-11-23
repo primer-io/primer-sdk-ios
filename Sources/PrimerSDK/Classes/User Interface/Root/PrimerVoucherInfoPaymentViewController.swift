@@ -11,7 +11,7 @@ import UIKit
 
 internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
         
-    let userInterfaceModule: NewUserInterfaceModule
+    let userInterfaceModule: UserInterfaceModule
     let textToShare: String?
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
@@ -30,7 +30,7 @@ internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController 
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(userInterfaceModule: NewUserInterfaceModule, shouldShareVoucherInfoWithText textToShare: String? = nil) {
+    init(userInterfaceModule: UserInterfaceModule, shouldShareVoucherInfoWithText textToShare: String? = nil) {
         self.userInterfaceModule = userInterfaceModule
         self.textToShare = textToShare
         super.init(nibName: nil, bundle: nil)

@@ -13,13 +13,13 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private weak var paymentMethodConfiguration: PrimerPaymentMethod!
-    private weak var userInterfaceModule: NewUserInterfaceModule!
+    private weak var userInterfaceModule: UserInterfaceModule!
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    init(paymentMethodConfiguration: PrimerPaymentMethod, userInterfaceModule: NewUserInterfaceModule) {
+    init(paymentMethodConfiguration: PrimerPaymentMethod, userInterfaceModule: UserInterfaceModule) {
         super.init(nibName: nil, bundle: nil)
         self.paymentMethodConfiguration = paymentMethodConfiguration
         self.userInterfaceModule = userInterfaceModule

@@ -14,11 +14,11 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()    
     private weak var paymentMethodConfiguration: PrimerPaymentMethod!
-    private weak var userInterfaceModule: NewUserInterfaceModule!
+    private weak var userInterfaceModule: UserInterfaceModule!
     
     init(
         paymentMethodConfiguration: PrimerPaymentMethod,
-        userInterfaceModule: NewUserInterfaceModule
+        userInterfaceModule: UserInterfaceModule
     ) {
         self.paymentMethodConfiguration = paymentMethodConfiguration
         self.userInterfaceModule = userInterfaceModule
