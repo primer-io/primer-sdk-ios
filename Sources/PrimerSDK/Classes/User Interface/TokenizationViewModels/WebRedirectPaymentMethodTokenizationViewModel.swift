@@ -289,6 +289,27 @@ struct PollingResponse: Decodable {
     let id: String
     let source: String
     let urls: PollingURLs
+    
+    enum CodingKeys: CodingKey {
+        case status
+        case id
+        case source
+        case urls
+    }
+    
+    init(from decoder: Decoder) throws {
+        do {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.status = try container.decode(PollingStatus.self, forKey: .status)
+            self.id = try container.decode(String.self, forKey: .id)
+            self.source = try container.decode(String.self, forKey: .source)
+            self.urls = try container.decode(PollingURLs.self, forKey: .urls)
+        } catch {
+            print(error)
+            throw error
+        }
+        
+    }
 }
 
 struct PollingURLs: Decodable {
