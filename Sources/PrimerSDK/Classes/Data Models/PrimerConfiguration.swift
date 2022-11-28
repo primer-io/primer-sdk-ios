@@ -235,20 +235,19 @@ extension Response.Body {
                                 else { continue }
                                 
                             }
-                        } else if let surcharge = paymentMethodOption["surcharge"] as? Int,
-                                  let paymentMethod = self.paymentMethods?.filter({ $0.type == type }).first
-                        {
-                            paymentMethod.hasUnknownSurcharge = false
-                            paymentMethod.surcharge = surcharge
                         }
                     }
                 }
+                
+                if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
+                    paymentMethod.hasUnknownSurcharge = true
+                    paymentMethod.surcharge = nil
+                }
+            } catch {
+                print(error)
+                throw error
             }
             
-            if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
-                paymentMethod.hasUnknownSurcharge = true
-                paymentMethod.surcharge = nil
-            }
         }
         
         init(
