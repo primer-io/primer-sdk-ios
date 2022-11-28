@@ -142,43 +142,49 @@ extension Response.Body {
         internal let sdkSupportedPaymentMethodTypes: [PrimerPaymentMethodType] = PrimerPaymentMethodType.allCases
         
         public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
-            self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
-            self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
-            let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
-            self.paymentMethods = throwables.compactMap({ $0.value })
-            self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
-            let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
-            self.checkoutModules = moduleThrowables.compactMap({ $0.value })
-            
-            if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
-                for paymentMethodOption in options {
-                    if let type = paymentMethodOption["type"] as? String {
-                        if type == PrimerPaymentMethodType.paymentCard.rawValue,
-                            let networks = paymentMethodOption["networks"] as? [[String: Any]],
-                           !networks.isEmpty
-                        {
-                            for network in networks {
-                                guard network["type"] is String,
-                                network["surcharge"] is Int
-                                else { continue }
-                                
+            do {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
+                self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
+                self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
+                let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
+                self.paymentMethods = throwables.compactMap({ $0.value })
+                self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
+                let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
+                self.checkoutModules = moduleThrowables.compactMap({ $0.value })
+                
+                if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
+                    for paymentMethodOption in options {
+                        if let type = paymentMethodOption["type"] as? String {
+                            if type == PrimerPaymentMethodType.paymentCard.rawValue,
+                                let networks = paymentMethodOption["networks"] as? [[String: Any]],
+                               !networks.isEmpty
+                            {
+                                for network in networks {
+                                    guard network["type"] is String,
+                                    network["surcharge"] is Int
+                                    else { continue }
+                                    
+                                }
+                            } else if let surcharge = paymentMethodOption["surcharge"] as? Int,
+                                      let paymentMethod = self.paymentMethods?.filter({ $0.type == type }).first
+                            {
+                                paymentMethod.hasUnknownSurcharge = false
+                                paymentMethod.surcharge = surcharge
                             }
-                        } else if let surcharge = paymentMethodOption["surcharge"] as? Int,
-                                  let paymentMethod = self.paymentMethods?.filter({ $0.type == type }).first
-                        {
-                            paymentMethod.hasUnknownSurcharge = false
-                            paymentMethod.surcharge = surcharge
                         }
                     }
                 }
+                
+                if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
+                    paymentMethod.hasUnknownSurcharge = true
+                    paymentMethod.surcharge = nil
+                }
+            } catch {
+                print(error)
+                throw error
             }
             
-            if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
-                paymentMethod.hasUnknownSurcharge = true
-                paymentMethod.surcharge = nil
-            }
         }
         
         init(
