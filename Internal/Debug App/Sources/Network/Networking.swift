@@ -274,7 +274,9 @@ class Networking {
             apiVersion: .v3,
             url: url,
             method: .post,
-            headers: nil,
+            headers: [
+                "X-TEST-SCENARIO": "TEST_ADYEN_GIROPAY_PAYMENT_SUCCESS"
+            ],
             queryParameters: nil,
             body: bodyData) { result in
                 switch result {
