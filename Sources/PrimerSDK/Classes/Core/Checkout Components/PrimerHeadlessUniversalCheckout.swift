@@ -328,7 +328,7 @@ public struct PrimerAsset {
         case jcb
         case klarna, kount
         case layBuy = "laybuy", looker
-        case masterCard = "mastercard", mbway = "mb-way", mercadoPago = "mercado-pago", metamask, mobilePay = "mobilepay", mollie
+        case masterCard = "mastercard", mbway, mercadoPago = "mercado-pago", metamask, mobilePay = "mobilepay", mollie
         case neonomics, netSuite = "netsuite", nexi, nuvei
         case opennode
         case p24, payNL = "pay-nl", payconiq, payNow = "paynow", payPal = "paypal", primer, printful, payTrail = "paytrail", payshop, poli, promptPay = "promptpay", paymentCard = "payment-card"
