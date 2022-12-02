@@ -142,8 +142,6 @@ class Networking {
                 }
                 return
             }
-            
-            print("Status code: \(httpResponse.statusCode)")
 
             guard let data = data else {
                 msg += "Status code: \(httpResponse.statusCode)\n"
@@ -252,7 +250,8 @@ class Networking {
     static func requestClientSession(requestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil, completion: @escaping (String?, Error?) -> Void) {
         let url = environment.baseUrl.appendingPathComponent("/api/client-session")
 
-        let bodyData: Data!
+        var bodyData: Data!
+        var headers: [String: String]?
         
         do {
             if let requestBodyJson = requestBody.dictionaryValue {
@@ -261,6 +260,27 @@ class Networking {
                 completion(nil, NetworkError.serializationError)
                 return
             }
+            
+            let failure = Test.Params.Failure(
+                flow: Test.Flow.tokenization,
+                error: Test.Params.Failure.Error(
+                    errorId: "error-id",
+                    description: "error-description"))
+            
+            let testScenario: Test.Scenario? = .testAdyenBlik(testParams: Test.Params(
+                result: .success,
+                amount: 1000,
+                currency: .EUR,
+                countryCode: .de,
+                network: nil,
+                surcharge: 99,
+                polling: Test.Params.Polling(iterations: 1)))
+            
+            if let testScenario {
+                headers = ["X-TEST-SCENARIO": testScenario.rawValue]
+                bodyData = try JSONEncoder().encode(testScenario.testParams)
+            }
+            
         } catch {
             completion(nil, NetworkError.missingParams)
             return
@@ -271,11 +291,10 @@ class Networking {
             apiVersion: .v3,
             url: url,
             method: .post,
-            headers: [
-                "X-TEST-SCENARIO": "TEST_ADYEN_GIROPAY_PAYMENT_SUCCESS"
-            ],
+            headers: headers,
             queryParameters: nil,
-            body: bodyData) { result in
+            body: bodyData
+        ) { result in
                 switch result {
                 case .success(let data):
                     do {
