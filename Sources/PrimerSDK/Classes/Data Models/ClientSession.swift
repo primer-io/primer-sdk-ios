@@ -276,21 +276,24 @@ internal class ClientSession {
         let paymentMethod: ClientSession.PaymentMethod?
         let order: ClientSession.Order?
         let customer: ClientSession.Customer?
+        let isMockedResponse: Bool?
         
         enum CodingKeys: String, CodingKey {
-            case clientSessionId, paymentMethod, order, customer // metadata
+            case clientSessionId, paymentMethod, order, customer, isMockedResponse // metadata
         }
         
         init(
             clientSessionId: String?,
             paymentMethod: ClientSession.PaymentMethod?,
             order: ClientSession.Order?,
-            customer: ClientSession.Customer?
+            customer: ClientSession.Customer?,
+            isMockedResponse: Bool?
         ) {
             self.clientSessionId = clientSessionId
             self.paymentMethod = paymentMethod
             self.order = order
             self.customer = customer
+            self.isMockedResponse = isMockedResponse
         }
         
         required internal init(from decoder: Decoder) throws {
@@ -299,6 +302,7 @@ internal class ClientSession {
             self.paymentMethod = (try? container.decode(ClientSession.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
             self.order = (try? container.decode(ClientSession.Order?.self, forKey: .order)) ?? nil
             self.customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
+            self.isMockedResponse = (try? container.decode(Bool?.self, forKey: .isMockedResponse)) ?? nil
         }
         
         internal func encode(to encoder: Encoder) throws {
@@ -306,6 +310,7 @@ internal class ClientSession {
             try container.encode(paymentMethod, forKey: .paymentMethod)
             try container.encode(order, forKey: .order)
             try container.encode(customer, forKey: .customer)
+            try? container.encode(isMockedResponse, forKey: .isMockedResponse)
         }
     }
 }
