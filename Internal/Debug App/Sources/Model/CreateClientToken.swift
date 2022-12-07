@@ -162,6 +162,7 @@ struct ClientSessionRequestBody {
     let customer: ClientSessionRequestBody.Customer?
     let order: ClientSessionRequestBody.Order?
     let paymentMethod: ClientSessionRequestBody.PaymentMethod?
+    let testParams: Test.Params?
     
     var dictionaryValue: [String: Any]? {
         var dic: [String: Any] = [:]
@@ -196,6 +197,10 @@ struct ClientSessionRequestBody {
         
         if let paymentMethod = paymentMethod {
             dic["paymentMethod"] = paymentMethod.dictionaryValue
+        }
+        
+        if let testParams = testParams {
+            dic["testParams"] = try? testParams.asDictionary()
         }
 
         return dic.keys.count == 0 ? nil : dic

@@ -88,6 +88,7 @@ class Networking {
         
         if let apiVersion = apiVersion {
             request.addValue(apiVersion.rawValue, forHTTPHeaderField: "x-api-version")
+            request.addValue("IOS", forHTTPHeaderField: "Client")
         }
                         
         msg += "Headers:\n\(request.allHTTPHeaderFields ?? [:])\n"
@@ -260,27 +261,6 @@ class Networking {
                 completion(nil, NetworkError.serializationError)
                 return
             }
-            
-            let failure = Test.Params.Failure(
-                flow: Test.Flow.tokenization,
-                error: Test.Params.Failure.Error(
-                    errorId: "error-id",
-                    description: "error-description"))
-            
-            let testScenario: Test.Scenario? = .testAdyenBlik(testParams: Test.Params(
-                result: .success,
-                amount: 1000,
-                currency: .EUR,
-                countryCode: .de,
-                network: nil,
-                surcharge: 99,
-                polling: Test.Params.Polling(iterations: 1)))
-            
-            if let testScenario {
-                headers = ["X-TEST-SCENARIO": testScenario.rawValue]
-                bodyData = try JSONEncoder().encode(testScenario.testParams)
-            }
-            
         } catch {
             completion(nil, NetworkError.missingParams)
             return
