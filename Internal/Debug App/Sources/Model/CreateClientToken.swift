@@ -202,6 +202,10 @@ struct ClientSessionRequestBody {
         if let paymentMethod = paymentMethod {
             dic["paymentMethod"] = paymentMethod.dictionaryValue
         }
+        
+        if let testParams = testParams {
+            dic["testParams"] = try? testParams.asDictionary()
+        }
 
         return dic.keys.count == 0 ? nil : dic
     }
