@@ -57,7 +57,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         currencyTextField.text = Currency.EUR.rawValue
         currencyTextField.accessibilityIdentifier = "currency_txt_field"
         amountTextField.placeholder = "In minor units (type 100 for 1.00)"
-        amountTextField.text = "999"
+        amountTextField.text = "10100"
         amountTextField.accessibilityIdentifier = "amount_txt_field"
         performPaymentSwitch.isOn = performPaymentAfterVaulting
         performPaymentSwitch.accessibilityIdentifier = "perform_payment_switch"
@@ -101,12 +101,19 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         self.evaluateCustomDefinedApiKey()
         self.evaluateMetadataTestCase()
         
+        let testParams = Test.Params(
+            scenario: .testNative3DS,
+            result: .success,
+            network: nil,
+            polling: Test.Params.Polling(iterations: 1))
+        
         clientSessionRequestBody = Networking.createClientSessionRequestBodyWithParameters(
             amount: amount,
             currency: Currency(rawValue: currencyTextField.text ?? ""),
             customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
             phoneNumber: phoneNumberTextField.text,
-            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""))
+            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
+            testParams: testParams)
         
         let vc = MerchantCheckoutViewController.instantiate()
         navigationController?.pushViewController(vc, animated: true)
@@ -121,7 +128,8 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
             currency: Currency(rawValue: currencyTextField.text ?? ""),
             customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
             phoneNumber: phoneNumberTextField.text,
-            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""))
+            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
+            testParams: nil)
         
         let vc = MerchantHUCPaymentMethodsViewController.instantiate()
         navigationController?.pushViewController(vc, animated: true)
