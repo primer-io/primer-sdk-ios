@@ -241,11 +241,33 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         var data: Primer3DSSDKGeneratedAuthData!
         
+        var isMockedBE = false
+#if DEBUG
+        if PrimerAPIConfiguration.current?.clientSession?.isMockedResponse == true {
+            isMockedBE = true
+        }
+#endif
+        
         do {
             let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodTokenData.paymentInstrumentData?.network ?? "")
-
-            try primer3DS!.initializeSDK(licenseKey: licenseKey, certificates: certs)
-            data = try primer3DS!.createTransaction(directoryServerId: directoryServerId, protocolVersion: protocolVersion.rawValue)
+            
+            if !isMockedBE {
+                try primer3DS!.initializeSDK(licenseKey: licenseKey, certificates: certs)
+                data = try primer3DS!.createTransaction(directoryServerId: directoryServerId, protocolVersion: protocolVersion.rawValue)
+            } else {
+                let vc = PrimerDemo3DSViewController()
+                PrimerUIManager.primerRootViewController?.present(vc, animated: true)
+                
+                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { timer in
+                    vc.dismiss(animated: true) {
+                        completion(.success("resume_token"))
+                        timer.invalidate()
+                    }
+                }
+                
+                return
+            }
+            
         } catch {
             ErrorHandler.shared.handle(error: error)
             completion(.failure(error))
