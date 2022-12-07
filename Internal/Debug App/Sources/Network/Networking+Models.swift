@@ -16,7 +16,8 @@ extension Networking {
         currency: Currency?,
         customerId: String,
         phoneNumber: String?,
-        countryCode: CountryCode?
+        countryCode: CountryCode?,
+        testParams: Test.Params?
     ) -> ClientSessionRequestBody {
         
         var metadataTestCaseDict: [String : Any]? = nil
@@ -122,7 +123,8 @@ extension Networking {
                             ]
                         ]
                     ]
-            )
+            ),
+            testParams: testParams
         )
     }
 }
