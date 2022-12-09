@@ -18,5 +18,20 @@ target 'Debug App' do
   target 'Debug App UITests' do
     # Pods for testing
   end
+  
+  post_install do |installer|
+    fix_code_signing(installer)
+  end
+  
+end
 
+def fix_code_signing(installer)
+  installer.generated_projects.each do |project|
+    project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings["DEVELOPMENT_TEAM"] = "N8UN9TR5DY"
+        config.build_settings["GENERATE_INFOPLIST_FILE"] = "YES"
+      end
+    end
+  end
 end
