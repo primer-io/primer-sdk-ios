@@ -58,4 +58,11 @@ struct WebRedirectSessionInfo: OffSessionPaymentSessionInfo {
     var redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
 }
 
+struct IPay88SessionInfo: OffSessionPaymentSessionInfo {
+    var refNo: String
+    var locale: String
+    var platform: String = "IOS"
+    var redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
+}
+
 #endif

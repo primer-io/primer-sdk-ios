@@ -105,6 +105,9 @@ class PrimerPaymentMethod: Codable {
                     return ApplePayTokenizationViewModel(config: self)
                 }
                 
+            case PrimerPaymentMethodType.iPay88Card.rawValue:
+                return IPay88TokenizationViewModel(config: self)
+                
             case PrimerPaymentMethodType.klarna.rawValue:
                 return KlarnaTokenizationViewModel(config: self)
                 
@@ -229,7 +232,7 @@ class PrimerPaymentMethod: Codable {
             options = cardOptions
         } else if let payPalOptions = try? container.decode(PayPalOptions.self, forKey: .options) {
             options = payPalOptions
-        } else if let apayaOptions = try? container.decode(ApayaOptions.self, forKey: .options) {
+        } else if let apayaOptions = try? container.decode(MerchantOptions.self, forKey: .options) {
             options = apayaOptions
         } else {
             options = nil
@@ -247,12 +250,12 @@ class PrimerPaymentMethod: Codable {
         try container.encode(surcharge, forKey: .surcharge)
         try container.encode(displayMetadata, forKey: .displayMetadata)
         
-        if let cardOptions = options as? CardOptions {
-            try container.encode(cardOptions, forKey: .options)
-        } else if let payPalOptions = options as? PayPalOptions {
-            try container.encode(payPalOptions, forKey: .options)
-        } else if let apayaOptions = options as? ApayaOptions {
-            try container.encode(apayaOptions, forKey: .options)
+        if let options = options as? CardOptions {
+            try container.encode(options, forKey: .options)
+        } else if let options = options as? PayPalOptions {
+            try container.encode(options, forKey: .options)
+        } else if let options = options as? MerchantOptions {
+            try container.encode(options, forKey: .options)
         }
     }
 }
