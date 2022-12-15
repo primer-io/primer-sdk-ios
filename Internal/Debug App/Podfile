@@ -38,4 +38,5 @@ def fix_code_signing(installer)
     end
     end
   end
+  
 end
