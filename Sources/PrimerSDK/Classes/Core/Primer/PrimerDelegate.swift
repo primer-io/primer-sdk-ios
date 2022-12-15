@@ -122,6 +122,11 @@ internal class PrimerDelegateProxy {
     
     static func primerDidFailWithError(_ error: PrimerErrorProtocol, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
         DispatchQueue.main.async {
+            if case .sdkDismissed = (error as? PrimerError) {
+                // Don't send an error, the primerDidDismiss has been called.
+                return
+            }
+            
             if case .merchantError = (error as? PrimerError) {
                 decisionHandler(.fail(withErrorMessage: error.errorDescription))
                 return

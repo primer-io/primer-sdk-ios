@@ -13,10 +13,6 @@ protocol PaymentMethodOptions: Codable { }
 
 extension PaymentMethodOptions { }
 
-struct ApayaOptions: PaymentMethodOptions {
-    let merchantAccountId: String
-}
-
 struct PayPalOptions: PaymentMethodOptions {
     let clientId: String
 }
@@ -29,7 +25,10 @@ struct CardOptions: PaymentMethodOptions {
     let processorConfigId: String?
 }
 
-
+struct MerchantOptions: PaymentMethodOptions {
+    let merchantId: String
+    let merchantAccountId: String
+}
 
 extension PrimerTestPaymentMethodSessionInfo.FlowDecision {
     

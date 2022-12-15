@@ -28,6 +28,7 @@ class PollingModule: Module {
     internal let url: URL
     internal var retryInterval: TimeInterval = 3
     internal private(set) var cancellationError: PrimerError?
+    internal private(set) var failureError: PrimerError?
 
     required init(url: URL) {
         self.url = url
@@ -51,14 +52,23 @@ class PollingModule: Module {
         self.cancellationError = err
     }
     
+    func fail(withError err: PrimerError) {
+        self.failureError = err
+    }
+    
     private func startPolling(completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
-        if let cancellationError = cancellationError {
+        if let cancellationError {
             completion(nil, cancellationError)
             return
         }
         
+        if let failureError {
+            completion(nil, failureError)
+            return
+        }
+        
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.sdkDismissed
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return

@@ -547,6 +547,26 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     text: nil,
                     textColor: nil))
             
+        case .iPay88Card:
+            return PrimerPaymentMethod.DisplayMetadata(
+                button: PrimerPaymentMethod.DisplayMetadata.Button(
+                    iconUrl: nil,
+                    backgroundColor: PrimerTheme.BaseColors(
+                        coloredHex: "#D63727",
+                        lightHex: "#FFFFFF",
+                        darkHex: "#000000"),
+                    cornerRadius: 4,
+                    borderWidth: PrimerTheme.BaseBorderWidth(
+                        colored: 0,
+                        light: 1,
+                        dark: 1),
+                    borderColor: PrimerTheme.BaseColors(
+                        coloredHex: nil,
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF"),
+                    text: nil,
+                    textColor: nil))
+            
         case .klarna,
                 .primerTestKlarna:
             return PrimerPaymentMethod.DisplayMetadata(

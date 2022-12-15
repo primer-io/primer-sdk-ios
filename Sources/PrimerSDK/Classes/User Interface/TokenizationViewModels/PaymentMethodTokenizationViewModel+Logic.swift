@@ -451,7 +451,10 @@ extension PaymentMethodTokenizationViewModel {
                 }
                 
                 guard let status = paymentResponse?.status, status != .failed else {
-                    seal.reject(PrimerError.paymentFailed(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
+                    seal.reject(PrimerError.paymentFailed(
+                        description: "Failed to create/resume payment",
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: nil))
                     return
                 }
                 
@@ -482,7 +485,10 @@ extension PaymentMethodTokenizationViewModel {
                 }
                 
                 guard let status = paymentResponse?.status, status != .failed else {
-                    seal.reject(PrimerError.paymentFailed(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
+                    seal.reject(PrimerError.paymentFailed(
+                        description: "Failed to create/resume payment",
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: nil))
                     return
                 }
                 
