@@ -14,6 +14,7 @@ struct DecodedJWTToken: Codable {
     var accessToken: String?
     var analyticsUrl: String?
     var analyticsUrlV2: String?
+    var backendCallbackUrl: String?
     var configurationUrl: String?
     var coreUrl: String?
     var env: String?
