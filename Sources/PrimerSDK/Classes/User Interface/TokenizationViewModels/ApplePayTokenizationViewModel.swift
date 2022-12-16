@@ -170,7 +170,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     seal.reject(err)
                     return
                 }
-                            
+                
                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
@@ -181,7 +181,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let countryCode = PrimerAPIConfigurationModule.apiConfiguration!.clientSession!.order!.countryCode!
                 let currency = AppState.current.currency!
                 let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions!.merchantIdentifier
-
+                
                 var orderItems: [OrderItem]
                 
                 if let lineItems = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() }) {
@@ -301,7 +301,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 paymentMethodConfigId: applePayConfigId,
                 sourceConfig: ApplePayPaymentInstrument.SourceConfig(source: "IN_APP", merchantId: merchantIdentifier),
                 token: self.applePayPaymentResponse.token)
-
+            
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             
@@ -396,6 +396,24 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         didAuthorizePayment payment: PKPayment,
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
+#if targetEnvironment(simulator)
+        if payment.token.paymentData.count == 0 {
+            let err = PrimerError.invalidArchitecture(
+                description: "Apple Pay cannot return tokenization data in the simulator",
+                recoverSuggestion: "Use a real device instead of the simulator",
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
+            ErrorHandler.handle(error: err)
+            completion(PKPaymentAuthorizationResult(status: .failure, errors: [err]))
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                controller.dismiss(animated: true, completion: nil)
+            }
+            applePayReceiveDataCompletion?(.failure(err))
+            applePayReceiveDataCompletion = nil
+            return
+        }
+#endif
+        
         self.isCancelled = false
         self.didTimeout = true
         
