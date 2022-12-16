@@ -356,7 +356,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
 #if canImport(PrimerIPay88SDK)
             if decodedJWTToken.intent == "IPAY88_CARD_REDIRECTION" {
-                guard let backendCallbackUrlStr = decodedJWTToken.backendCallbackUrl,
+                guard let backendCallbackUrlStr = decodedJWTToken.backendCallbackUrl?.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlPasswordAllowed)?.replacingOccurrences(of: "=", with: "%3D"),
                       let backendCallbackUrl = URL(string: backendCallbackUrlStr),
                       let statusUrlStr = decodedJWTToken.statusUrl,
                       let statusUrl = URL(string: statusUrlStr) else {
@@ -415,7 +415,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             paymentId: "2", // 2: iPay88 Card Payment
             merchantKey: self.config.id!,
             merchantCode: (self.config.options as! MerchantOptions).merchantId,
-            refNo: PrimerAPIConfiguration.current!.clientSession!.order!.id!,
+            refNo: UUID().uuidString,
             prodDesc: PrimerAPIConfiguration.current!.clientSession!.order!.lineItems!.compactMap({ $0.description }).joined(separator: ", "),
             userName: "\(PrimerAPIConfiguration.current!.clientSession!.customer!.firstName!) \(PrimerAPIConfiguration.current!.clientSession!.customer!.lastName!)",
             userEmail: PrimerAPIConfiguration.current!.clientSession!.customer!.emailAddress!,
