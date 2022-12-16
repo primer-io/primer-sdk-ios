@@ -22,6 +22,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     
 #if canImport(PrimerIPay88SDK)
     private var backendCallbackUrl: URL!
+    private var primerTransactionId: String!
     private var statusUrl: URL!
     private var resumeToken: String!
     private var primerIPay88ViewController: PrimerIPay88ViewController!
@@ -359,7 +360,9 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 guard let backendCallbackUrlStr = decodedJWTToken.backendCallbackUrl?.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlPasswordAllowed)?.replacingOccurrences(of: "=", with: "%3D"),
                       let backendCallbackUrl = URL(string: backendCallbackUrlStr),
                       let statusUrlStr = decodedJWTToken.statusUrl,
-                      let statusUrl = URL(string: statusUrlStr) else {
+                      let statusUrl = URL(string: statusUrlStr),
+                      let primerTransactionId = decodedJWTToken.primerTransactionId
+                else {
                     let err = PrimerError.invalidClientToken(
                         userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                         diagnosticsId: nil)
@@ -373,6 +376,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 }
                 
                 self.backendCallbackUrl = backendCallbackUrl
+                self.primerTransactionId = primerTransactionId
                 self.statusUrl = statusUrl
                 
                 self.primerIPay88Payment = self.createPrimerIPay88Payment()
@@ -415,7 +419,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             paymentId: "2", // 2: iPay88 Card Payment
             merchantKey: self.config.id!,
             merchantCode: (self.config.options as! MerchantOptions).merchantId,
-            refNo: UUID().uuidString,
+            refNo: self.primerTransactionId,
             prodDesc: PrimerAPIConfiguration.current!.clientSession!.order!.lineItems!.compactMap({ $0.description }).joined(separator: ", "),
             userName: "\(PrimerAPIConfiguration.current!.clientSession!.customer!.firstName!) \(PrimerAPIConfiguration.current!.clientSession!.customer!.lastName!)",
             userEmail: PrimerAPIConfiguration.current!.clientSession!.customer!.emailAddress!,
