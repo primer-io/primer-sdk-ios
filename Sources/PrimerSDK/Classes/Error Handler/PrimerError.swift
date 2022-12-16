@@ -321,6 +321,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case failedToPerform3DS(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalid3DSKey(userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalidClientSessionValue(name: String, value: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalidMerchantCapabilities(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String?)
@@ -371,6 +372,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "failed-to-perform-3ds"
         case .invalid3DSKey:
             return "invalid-3ds-key"
+        case .invalidArchitecture:
+            return "invalid-architecture"
         case .invalidClientSessionValue:
             return "invalid-client-session-value"
         case .invalidUrl:
@@ -443,6 +446,8 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .invalidUrl(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .invalid3DSKey(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .invalidArchitecture(_, _, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .invalidClientSessionValue(_, _, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
@@ -526,6 +531,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "[\(errorId)] Failed on perform 3DS with error: \(error?.localizedDescription ?? "nil") (diagnosticsId: \(self.diagnosticsId)"
         case .invalid3DSKey:
             return "[\(errorId)] Invalid 3DS key (diagnosticsId: \(self.diagnosticsId)"
+        case .invalidArchitecture(let description, _, _, let diagnosticsId):
+            return "[\(errorId)] \(description) (diagnosticsId: \(self.diagnosticsId)"
         case .invalidClientSessionValue(let name, let value, _, _):
             return "[\(errorId)] Invalid client session value for '\(name)' with value '\(value ?? "nil")' (diagnosticsId: \(self.diagnosticsId)"
         case .invalidUrl(url: let url, _, _):
@@ -586,6 +593,7 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .failedToPerform3DS(_, let userInfo, _),
                 .invalidUrl(_, let userInfo, _),
                 .invalid3DSKey(let userInfo, _),
+                .invalidArchitecture(_, _, let userInfo, _),
                 .invalidClientSessionValue(_, _, let userInfo, _),
                 .invalidMerchantCapabilities(let userInfo, _),
                 .invalidMerchantIdentifier(_, let userInfo, _),
@@ -654,6 +662,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return nil
         case .invalid3DSKey:
             return "Contact Primer to enable 3DS on your account."
+        case .invalidArchitecture(_, let recoverySuggestion, _, _):
+            return recoverySuggestion
         case .invalidClientSessionValue(let name, _, _, _):
             return "Check if you have provided a valid value for \"\(name)\" in your client session"
         case .invalidMerchantCapabilities:
