@@ -552,20 +552,23 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,
                     backgroundColor: PrimerTheme.BaseColors(
-                        coloredHex: "#D63727",
+                        coloredHex: "#FFFFFF",
                         lightHex: "#FFFFFF",
                         darkHex: "#000000"),
                     cornerRadius: 4,
                     borderWidth: PrimerTheme.BaseBorderWidth(
-                        colored: 0,
+                        colored: 1,
                         light: 1,
                         dark: 1),
                     borderColor: PrimerTheme.BaseColors(
-                        coloredHex: nil,
+                        coloredHex: "#000000",
                         lightHex: "#000000",
                         darkHex: "#FFFFFF"),
-                    text: nil,
-                    textColor: nil))
+                    text: Strings.PaymentButton.payWithCard,
+                    textColor: PrimerTheme.BaseColors(
+                        coloredHex: "#000000",
+                        lightHex: "#000000",
+                        darkHex: "#FFFFFF")))
             
         case .klarna,
                 .primerTestKlarna:
@@ -796,6 +799,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             // Update with `metadataButtonText ?? Strings.PaymentButton.payByMobile` once we'll get localized strings
             return Strings.PaymentButton.payByMobile
             
+        case PrimerPaymentMethodType.iPay88Card.rawValue:
+            return Strings.PaymentButton.payWithCard
+            
         case PrimerPaymentMethodType.paymentCard.rawValue:
             // Commenting the below code as we are not getting localized strings in `text` key
             // for the a Payment Method Instrument object out of `/configuration` API response
@@ -925,11 +931,11 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
     
     var paymentMethodButton: PrimerButton {
-        
         let customPaddingSettingsCard: [String] = [
+            PrimerPaymentMethodType.adyenBancontactCard.rawValue,
             PrimerPaymentMethodType.coinbase.rawValue,
-            PrimerPaymentMethodType.paymentCard.rawValue,
-            PrimerPaymentMethodType.adyenBancontactCard.rawValue
+            PrimerPaymentMethodType.iPay88Card.rawValue,
+            PrimerPaymentMethodType.paymentCard.rawValue
         ]
         
         let paymentMethodButton = PrimerButton()
