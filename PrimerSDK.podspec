@@ -18,7 +18,6 @@ Pod::Spec.new do |s|
 
     s.xcconfig = {
        'MARKETING_VERSION' => s.version,
-       'CODE_SIGNING_ALLOWED' => 'NO'
     }
 
     s.subspec 'Core' do |ss|
