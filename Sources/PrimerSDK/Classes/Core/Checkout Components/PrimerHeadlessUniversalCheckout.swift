@@ -184,7 +184,7 @@ public class PrimerHeadlessUniversalCheckout {
 #endif
         
 #if !canImport(PrimerIPay88SDK)
-        if let iPay88ViewModelIndex = paymentMethods.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
+        if let iPay88ViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
             paymentMethods.remove(at: iPay88ViewModelIndex)
             print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile or by adding \"primer-ipay88-sdk-ios\" in your Swift Package Manager, so you can perform payments with iPay88.\n\n")
         }
