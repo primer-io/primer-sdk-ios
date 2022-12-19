@@ -23,6 +23,18 @@ extension PrimerHeadlessUniversalCheckout {
         private(set) public var paymentMethodType: String
         private let appState: AppStateProtocol = AppState.current
         public var requiredInputElementTypes: [PrimerInputElementType] {
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: "requiredInputElementTypes",
+                    params: [
+                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                        "paymentMethodType": paymentMethodType
+                    ]))
+            
+            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.sync()
+            
             var mutableRequiredInputElementTypes: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
             
             if let checkoutModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
@@ -36,6 +48,18 @@ extension PrimerHeadlessUniversalCheckout {
         }
         public var inputElements: [PrimerHeadlessUniversalCheckoutInputElement] = [] {
             didSet {
+                let sdkEvent = Analytics.Event(
+                    eventType: .sdkEvent,
+                    properties: SDKEventProperties(
+                        name: "inputElements",
+                        params: [
+                            "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                            "paymentMethodType": paymentMethodType
+                        ]))
+                
+                Analytics.Service.record(events: [sdkEvent])
+                Analytics.Service.sync()
+                
                 var tmpInputElementsContainers: [Weak<PrimerInputElementDelegateContainer>] = []
                 inputElements.forEach { el in
                     if let _ = el.inputElementDelegate {
@@ -68,6 +92,18 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public init(paymentMethodType: String) throws {
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                        "paymentMethodType": paymentMethodType
+                    ]))
+            
+            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.sync()
+            
             guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() else {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -87,10 +123,35 @@ extension PrimerHeadlessUniversalCheckout {
         @available(*, deprecated, message: "This initiliazer supports `.paymentCard` as a payment method type only. Use the default `init(paymentMethodType: String)` to support multiple payment method types that requires card element inputs.")
         public override init() {
             self.paymentMethodType = PrimerPaymentMethodType.paymentCard.rawValue
+            
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: "inputElements",
+                    params: [
+                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                        "paymentMethodType": paymentMethodType
+                    ]))
+            
+            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.sync()
+            
             super.init()
         }
         
         public func submit() {
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                        "paymentMethodType": paymentMethodType
+                    ]))
+            
+            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.sync()
+            
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidStartPreparation(for: PrimerPaymentMethodType.paymentCard.rawValue)
             
             firstly {
