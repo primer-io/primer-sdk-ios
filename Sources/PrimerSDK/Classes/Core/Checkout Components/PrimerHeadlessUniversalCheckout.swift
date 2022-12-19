@@ -174,12 +174,22 @@ public class PrimerHeadlessUniversalCheckout {
     
     internal func listAvailablePaymentMethodsTypes() -> [String]? {
         var paymentMethods = PrimerAPIConfiguration.paymentMethodConfigs
-        if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
+        
 #if !canImport(PrimerKlarnaSDK)
+        if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
+
             paymentMethods?.remove(at: klarnaIndex)
             print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
-#endif
         }
+#endif
+        
+#if !canImport(PrimerIPay88SDK)
+        if let iPay88ViewModelIndex = paymentMethods.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
+            paymentMethods.remove(at: iPay88ViewModelIndex)
+            print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile or by adding \"primer-ipay88-sdk-ios\" in your Swift Package Manager, so you can perform payments with iPay88.\n\n")
+        }
+#endif
+        
         return paymentMethods?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
     
