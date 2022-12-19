@@ -27,7 +27,6 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var resumeToken: String!
     private var primerIPay88ViewController: PrimerIPay88ViewController!
     private var primerIPay88Payment: PrimerIPay88Payment!
-    private var didCancel: (() -> Void)?
     private var didComplete: (() -> Void)?
     private var didFail: ((_ err: PrimerError) -> Void)?
 #endif
@@ -276,7 +275,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
 #if canImport(PrimerIPay88SDK)
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
             
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
@@ -454,7 +453,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.willPresentPaymentMethodUI?()
                 PrimerUIManager.primerRootViewController?.present(self.primerIPay88ViewController, animated: true, completion: {
                     DispatchQueue.main.async {
-                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.config.type)
+                        PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: self.config.type)
                         self.didPresentPaymentMethodUI?()
                         seal.fulfill()
                     }
