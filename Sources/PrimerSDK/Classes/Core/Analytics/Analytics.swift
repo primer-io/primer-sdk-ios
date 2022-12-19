@@ -15,6 +15,7 @@ class Analytics {
     static var apiClient: PrimerAPIClientProtocol?
     
     struct Event: Codable {
+        
         // The variables below are used locally, and are getting deleted before sending them.
         var analyticsUrl: String?
         var localId: String?
@@ -31,6 +32,8 @@ class Analytics {
         var sdkSessionId: String
         var sdkType: String = PrimerSource.sdkSourceType.sourceType
         var sdkVersion = Bundle.primerFramework.releaseVersionNumber
+        var sdkIntegrationType: PrimerSDKIntegrationType? = PrimerInternal.shared.sdkIntegrationType
+        var sdkPaymentHandling: PrimerPaymentHandling? = PrimerSettings.current.paymentHandling
         
         init(eventType: Analytics.Event.EventType, properties: AnalyticsEventProperties?) {
             self.eventType = eventType
@@ -46,7 +49,8 @@ class Analytics {
         private enum CodingKeys: String, CodingKey {
             case analyticsUrl, appIdentifier, checkoutSessionId, clientSessionId,
                  createdAt, customerId, device, eventType, localId, primerAccountId,
-                 properties, sdkSessionId, sdkType, sdkVersion
+                 properties, sdkSessionId, sdkType, sdkVersion, sdkIntegrationType,
+                 sdkPaymentHandling
         }
         
         func encode(to encoder: Encoder) throws {
@@ -66,6 +70,13 @@ class Analytics {
             try? container.encode(sdkSessionId, forKey: .sdkSessionId)
             try? container.encode(sdkType, forKey: .sdkType)
             try? container.encode(sdkVersion, forKey: .sdkVersion)
+            try? container.encode(sdkIntegrationType?.rawValue, forKey: .sdkIntegrationType)
+            
+            if sdkPaymentHandling == .auto {
+                try? container.encode("AUTO", forKey: .sdkPaymentHandling)
+            } else if sdkPaymentHandling == .manual {
+                try? container.encode("MANUAL", forKey: .sdkPaymentHandling)
+            }
             
             if let crashEventProperties = properties as? CrashEventProperties {
                 try? container.encode(crashEventProperties, forKey: .properties)
@@ -100,6 +111,18 @@ class Analytics {
             self.sdkType = try container.decode(String.self, forKey: .sdkType)
             self.sdkVersion = try container.decode(String.self, forKey: .sdkVersion)
             
+            if let sdkIntegrationTypeStr = try? container.decode(String.self, forKey: .sdkIntegrationType) {
+                self.sdkIntegrationType = PrimerSDKIntegrationType(rawValue: sdkIntegrationTypeStr)
+            }
+            
+            if let sdkPaymentHandlingStr = try? container.decode(String.self, forKey: .sdkPaymentHandling) {
+                if sdkPaymentHandlingStr == "AUTO" {
+                    self.sdkPaymentHandling = .auto
+                } else if sdkPaymentHandlingStr == "MANUAL" {
+                    self.sdkPaymentHandling = .manual
+                }
+            }
+            
             if let crashEventProperties = (try? container.decode(CrashEventProperties?.self, forKey: .properties)) {
                 self.properties = crashEventProperties
             } else if let messageEventProperties = (try? container.decode(MessageEventProperties?.self, forKey: .properties)) {
@@ -116,9 +139,7 @@ class Analytics {
                 self.properties = uiEventProperties
             }
         }
-        
     }
-    
 }
 
 #endif
