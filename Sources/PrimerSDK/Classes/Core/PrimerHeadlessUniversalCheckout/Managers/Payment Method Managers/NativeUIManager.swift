@@ -17,6 +17,18 @@ extension PrimerHeadlessUniversalCheckout {
         private var paymentMethod: PrimerPaymentMethod?
         
         required public init(paymentMethodType: String) throws {
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                        "paymentMethodType": paymentMethodType
+                    ]))
+            
+            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.sync()
+            
             self.paymentMethodType = paymentMethodType
             self.paymentMethod = try self.validatePaymentMethod(withType: paymentMethodType)
             
@@ -65,6 +77,18 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public func showPaymentMethod(intent: PrimerSessionIntent) throws {
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: #function,
+                    params: [
+                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                        "paymentMethodType": paymentMethodType
+                    ]))
+            
+            Analytics.Service.record(events: [sdkEvent])
+            Analytics.Service.sync()
+            
             do {
                 try self.validatePaymentMethod(withType: self.paymentMethodType)
             } catch {
