@@ -16,6 +16,11 @@ public class PrimerHeadlessUniversalCheckout {
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate?
     public weak var uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate?
     private(set) public var clientToken: String?
+    
+    internal let sdkSessionId = UUID().uuidString
+    internal private(set) var checkoutSessionId: String?
+    internal private(set) var timingEventId: String?
+    internal var sdkIntegrationType: PrimerSDKIntegrationType?
 
     private var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
     private let unsupportedPaymentMethodTypes: [String] = [
@@ -39,6 +44,32 @@ public class PrimerHeadlessUniversalCheckout {
         completion: @escaping (_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]?, _ err: Error?) -> Void
     ) {
         PrimerInternal.shared.intent = .checkout
+        
+        var events: [Analytics.Event] = []
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
+                ]))
+        
+        let connectivityEvent = Analytics.Event(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(
+                networkType: Connectivity.networkType))
+        
+        
+        let timingStartEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .start,
+                id: PrimerInternal.shared.timingEventId!))
+        
+        events = [sdkEvent, connectivityEvent, timingStartEvent]
+        Analytics.Service.record(events: events)
+        Analytics.Service.sync()
         
         if delegate != nil {
             PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -163,12 +194,22 @@ public class PrimerHeadlessUniversalCheckout {
     
     internal func listAvailablePaymentMethodsTypes() -> [String]? {
         var paymentMethods = PrimerAPIConfiguration.paymentMethodConfigs
-        if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
+        
 #if !canImport(PrimerKlarnaSDK)
+        if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
             paymentMethods?.remove(at: klarnaIndex)
             print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
-#endif
+            
         }
+#endif
+        
+#if !canImport(PrimerIPay88SDK)
+        if let iPay88ViewModelIndex = paymentMethods.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
+            paymentMethods.remove(at: iPay88ViewModelIndex)
+            print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.\n\n")
+        }
+#endif
+        
         return paymentMethods?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
 }

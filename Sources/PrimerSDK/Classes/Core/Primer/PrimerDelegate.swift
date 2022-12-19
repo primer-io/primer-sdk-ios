@@ -104,6 +104,19 @@ internal class PrimerDelegateProxy {
         DispatchQueue.main.async {
             Primer.shared.delegate?.primerDidCompleteCheckoutWithData(data)
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(data)
+            
+            if let timingEventId = PrimerHeadlessUniversalCheckout.current.timingEventId,
+               PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData != nil
+            {
+                let timingEndEvent = Analytics.Event(
+                    eventType: .timerEvent,
+                    properties: TimerEventProperties(
+                        momentType: .start,
+                        id: timingEventId))
+                
+                Analytics.Service.record(events: [timingEndEvent])
+                Analytics.Service.sync()
+            }
         }
     }
     
@@ -158,6 +171,19 @@ internal class PrimerDelegateProxy {
                     }
                 })
                 
+            }
+            
+            if let timingEventId = PrimerHeadlessUniversalCheckout.current.timingEventId,
+               PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData != nil
+            {
+                let timingEndEvent = Analytics.Event(
+                    eventType: .timerEvent,
+                    properties: TimerEventProperties(
+                        momentType: .start,
+                        id: timingEventId))
+                
+                Analytics.Service.record(events: [timingEndEvent])
+                Analytics.Service.sync()
             }
         }
     }
