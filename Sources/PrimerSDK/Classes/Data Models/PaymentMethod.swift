@@ -177,7 +177,8 @@ class PrimerPaymentMethod: Codable {
         switch internalPaymentMethodType {
         case PrimerPaymentMethodType.applePay,
             PrimerPaymentMethodType.goCardless,
-            PrimerPaymentMethodType.googlePay:
+            PrimerPaymentMethodType.googlePay,
+			PrimerPaymentMethodType.iPay88Card:
             return false
         default:
             return true
