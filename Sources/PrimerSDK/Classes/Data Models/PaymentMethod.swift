@@ -165,7 +165,8 @@ class PrimerPaymentMethod: Codable {
         switch self.type {
         case PrimerPaymentMethodType.applePay.rawValue,
             PrimerPaymentMethodType.goCardless.rawValue,
-            PrimerPaymentMethodType.googlePay.rawValue:
+            PrimerPaymentMethodType.googlePay.rawValue,
+            PrimerPaymentMethodType.iPay88Card.rawValue:
             return false
         default:
             return true
