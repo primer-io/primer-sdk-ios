@@ -224,6 +224,7 @@ internal class PrimerInternal {
             properties: SDKEventProperties(
                 name: #function,
                 params: [
+                    "paymentMethodType": paymentMethodType,
                     "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
                 ]))
         

@@ -302,6 +302,7 @@ public class PrimerHeadlessUniversalCheckout {
             properties: SDKEventProperties(
                 name: #function,
                 params: [
+                    "paymentMethodType": paymentMethod,
                     "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
                 ]))
         
