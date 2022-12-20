@@ -16,10 +16,6 @@ Pod::Spec.new do |s|
     s.default_subspec = 'Core'
     s.ios.frameworks  = 'Foundation', 'UIKit'
 
-    s.xcconfig = {
-       'MARKETING_VERSION' => s.version,
-    }
-
     s.subspec 'Core' do |ss|
         ss.ios.source_files = 'Sources/PrimerSDK/Classes/**/*.{h,m,swift}'
         ss.ios.resource_bundles = {
