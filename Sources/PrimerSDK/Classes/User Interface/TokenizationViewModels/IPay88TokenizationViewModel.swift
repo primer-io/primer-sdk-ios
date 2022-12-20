@@ -135,7 +135,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             errors.append(err)
             
         } else {
-            let productsDescription = PrimerAPIConfiguration.current?.clientSession?.order?.lineItems?.compactMap({ $0.description }).joined(separator: ", ")
+            let productsDescription = PrimerAPIConfiguration.current?.clientSession?.order?.lineItems?.compactMap({ $0.name ?? $0.description }).joined(separator: ", ")
             
             if productsDescription == nil {
                 let err = PrimerError.invalidClientSessionValue(
