@@ -94,7 +94,7 @@ extension Response.Body {
         }
         
         static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
-            var viewModels = PrimerAPIConfiguration.paymentMethodConfigs?
+            var viewModels: [PaymentMethodTokenizationViewModelProtocol] = PrimerAPIConfiguration.paymentMethodConfigs?
                 .filter({ $0.isEnabled })
                 .filter({ $0.baseLogoImage != nil })
                 .compactMap({ $0.tokenizationViewModel })
@@ -122,17 +122,45 @@ extension Response.Body {
             }
 #endif
             
-            for (index, viewModel) in viewModels.enumerated() {
-                if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
-                    viewModels.swapAt(0, index)
+            var validViewModels: [PaymentMethodTokenizationViewModelProtocol] = []
+            
+            for viewModel in viewModels {
+                do {
+                    try viewModel.validate()
+                    validViewModels.append(viewModel)
+                } catch {
+                    var warningStr = "\nWARNING!\n\(viewModel.config.type) configuration has been found, but it cannot be presented."
+                    
+                    if let primerErr = error as? PrimerError {
+                        if case .underlyingErrors(let errors, _, _) = primerErr {
+                            for err in errors {
+                                warningStr += "\n-\(err.localizedDescription)"
+                            }
+                        } else {
+                            warningStr += "\n-\(primerErr.localizedDescription)"
+                        }
+                        
+                    } else {
+                        warningStr += "\n-\(error.localizedDescription)"
+                    }
+                    
+                    warningStr += "\n\n"
+                    
+                    print(warningStr)
                 }
             }
             
-            for (index, viewModel) in viewModels.enumerated() {
+            for (index, viewModel) in validViewModels.enumerated() {
+                if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
+                    validViewModels.swapAt(0, index)
+                }
+            }
+            
+            for (index, viewModel) in validViewModels.enumerated() {
                 viewModel.position = index
             }
             
-            return viewModels
+            return validViewModels
         }
         
         let coreUrl: String?
