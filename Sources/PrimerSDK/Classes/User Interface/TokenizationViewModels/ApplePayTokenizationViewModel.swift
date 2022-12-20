@@ -400,7 +400,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
 #if targetEnvironment(simulator)
         if payment.token.paymentData.count == 0 {
             let err = PrimerError.invalidArchitecture(
-                description: "Apple Pay cannot return tokenization data in the simulator",
+                description: "Apple Pay does not work with Primer when used in the simulator due to a limitation from Apple Pay.",
                 recoverSuggestion: "Use a real device instead of the simulator",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
