@@ -96,7 +96,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         
         if AppState.current.currency != .MYR {
             let err = PrimerError.invalidClientSessionValue(
-                name: "currency",
+                name: "currencyCode",
                 value: AppState.current.currency?.rawValue,
                 allowedValue: "MYR",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
