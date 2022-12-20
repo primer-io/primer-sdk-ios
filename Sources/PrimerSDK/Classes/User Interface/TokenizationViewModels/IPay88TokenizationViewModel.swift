@@ -87,6 +87,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientSessionValue(
                 name: "amount",
                 value: nil,
+                allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -97,6 +98,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientSessionValue(
                 name: "currency",
                 value: AppState.current.currency?.rawValue,
+                allowedValue: "MYR",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -109,6 +111,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientSessionValue(
                 name: "order.id",
                 value: nil,
+                allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -119,6 +122,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientSessionValue(
                 name: "order.countryCode",
                 value: nil,
+                allowedValue: "MY",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -129,6 +133,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientSessionValue(
                 name: "order.lineItems",
                 value: nil,
+                allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -141,6 +146,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let err = PrimerError.invalidClientSessionValue(
                     name: "order.lineItems.description",
                     value: nil,
+                    allowedValue: nil,
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
@@ -154,6 +160,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientSessionValue(
                 name: "customer.firstName",
                 value: nil,
+                allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -164,6 +171,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientSessionValue(
                 name: "customer.lastName",
                 value: nil,
+                allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -174,6 +182,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientSessionValue(
                 name: "customer.emailAddress",
                 value: nil,
+                allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
             ErrorHandler.handle(error: err)
@@ -184,6 +193,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientSessionValue(
                 name: "customer.mobileNumber",
                 value: nil,
+                allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: nil)
             ErrorHandler.handle(error: err)

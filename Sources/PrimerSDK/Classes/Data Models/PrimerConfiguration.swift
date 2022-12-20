@@ -134,10 +134,43 @@ extension Response.Body {
                     if let primerErr = error as? PrimerError {
                         if case .underlyingErrors(let errors, _, _) = primerErr {
                             for err in errors {
-                                warningStr += "\n-\(err.localizedDescription)"
+                                if let primerErr = err as? PrimerError {
+                                    var errLine: String = ""
+                                    if let errDescription = primerErr.plainDescription {
+                                        errLine += "\n-\(errDescription)"
+                                    }
+                                    
+                                    if let recoverySuggestion = primerErr.recoverySuggestion {
+                                        if errLine.count != 0 {
+                                            errLine += " | "
+                                        } else {
+                                            errLine += "\n-"
+                                        }
+                                        
+                                        errLine += recoverySuggestion
+                                    }
+                                    warningStr += errLine
+                                    
+                                } else {
+                                    warningStr += "\n-\(error.localizedDescription)"
+                                }
                             }
                         } else {
-                            warningStr += "\n-\(primerErr.localizedDescription)"
+                            var errLine: String = ""
+                            if let errDescription = primerErr.plainDescription {
+                                errLine += "\n-\(errDescription)"
+                            }
+                            
+                            if let recoverySuggestion = primerErr.recoverySuggestion {
+                                if errLine.count != 0 {
+                                    errLine += " | "
+                                } else {
+                                    errLine += "\n-"
+                                }
+                                
+                                errLine += recoverySuggestion
+                            }
+                            warningStr += errLine
                         }
                         
                     } else {

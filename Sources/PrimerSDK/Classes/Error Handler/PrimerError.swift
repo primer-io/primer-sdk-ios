@@ -222,17 +222,17 @@ internal enum InternalError: PrimerErrorProtocol {
     var errorDescription: String? {
         switch self {
         case .failedToEncode(let message, _, _):
-            return "[\(errorId)] Failed to encode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Failed to encode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId))"
         case .failedToDecode(let message, _, _):
-            return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId))"
         case .failedToSerialize(let message, _, _):
-            return "[\(errorId)] Failed to serialize\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Failed to serialize\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId))"
         case .connectivityErrors(let errors, _, _):
-            return "[\(errorId)] Connectivity failure | Errors: \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Connectivity failure | Errors: \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId))"
         case .invalidUrl(let url, _, _):
-            return "[\(errorId)] Invalid URL \(url ?? "nil") (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Invalid URL \(url ?? "nil") (diagnosticsId: \(self.diagnosticsId))"
         case .invalidValue(let key, let value, _, _):
-            return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key) (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key) (diagnosticsId: \(self.diagnosticsId))"
         case .noData:
             return "[\(errorId)] No data"
         case .serverError(let status, let response, _, _):
@@ -243,11 +243,11 @@ internal enum InternalError: PrimerErrorProtocol {
             {
                 resStr = str
             }
-            return "[\(errorId)] Server error [\(status)] Response: \(resStr) (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Server error [\(status)] Response: \(resStr) (diagnosticsId: \(self.diagnosticsId))"
         case .unauthorized(let url, let method, _, _):
-            return "[\(errorId)] Unauthorized response for URL \(url) [\(method.rawValue)] (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Unauthorized response for URL \(url) [\(method.rawValue)] (diagnosticsId: \(self.diagnosticsId))"
         case .underlyingErrors(let errors, _, _):
-            return "[\(errorId)] Multiple errors occured | Errors \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Multiple errors occured | Errors \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId))"
         }
     }
     
@@ -322,7 +322,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalid3DSKey(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidClientSessionValue(name: String, value: String?, userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidClientSessionValue(name: String, value: String?, allowedValue: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalidMerchantCapabilities(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalidUrlScheme(urlScheme: String?, userInfo: [String: String]?, diagnosticsId: String?)
@@ -449,7 +449,7 @@ internal enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId ?? UUID().uuidString
         case .invalidArchitecture(_, _, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
-        case .invalidClientSessionValue(_, _, _, let diagnosticsId):
+        case .invalidClientSessionValue(_, _, _, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .invalidMerchantCapabilities(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
@@ -494,86 +494,90 @@ internal enum PrimerError: PrimerErrorProtocol {
         }
     }
     
-    var errorDescription: String? {
+    var plainDescription: String? {
         switch self {
         case .generic(let message, let userInfo, _):
             if let userInfo = userInfo,
                 let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .fragmentsAllowed),
                let jsonStr = jsonData.prettyPrintedJSONString as String? {
-                return "[\(errorId)] Generic error | Message: \(message) | Data: \(jsonStr)) (diagnosticsId: \(self.diagnosticsId)"
+                return "Generic error | Message: \(message) | Data: \(jsonStr))"
             } else {
-                return "[\(errorId)] Generic error | Message: \(message) (diagnosticsId: \(self.diagnosticsId)"
+                return "Generic error | Message: \(message)"
             }
         case .invalidClientToken:
-            return "[\(errorId)] Client token is not valid (diagnosticsId: \(self.diagnosticsId)"
+            return "Client token is not valid"
         case .missingPrimerConfiguration:
-            return "[\(errorId)] Missing SDK configuration (diagnosticsId: \(self.diagnosticsId)"
+            return "Missing SDK configuration"
         case .missingPrimerDelegate:
-            return "[\(errorId)] Primer delegate has not been set (diagnosticsId: \(self.diagnosticsId)"
+            return "Primer delegate has not been set"
         case .missingPrimerCheckoutComponentsDelegate:
-            return "[\(errorId)] Primer Checkout Components delegate has not been set (diagnosticsId: \(self.diagnosticsId)"
+            return "Primer Checkout Components delegate has not been set"
         case .missingPrimerInputElement(let inputElementType, _, _):
-            return "[\(errorId)] Missing primer input element for \(inputElementType) (diagnosticsId: \(self.diagnosticsId)"
+            return "Missing primer input element for \(inputElementType)"
         case .missingSDK(let sdkName, _, _):
-            return "[\(errorId)] Missing SDK \"\(sdkName)'| (diagnosticsId: \(self.diagnosticsId)"
+            return "Missing SDK \"\(sdkName)'|"
         case .misconfiguredPaymentMethods:
-            return "[\(errorId)] Payment methods haven't been set up correctly (diagnosticsId: \(self.diagnosticsId)"
+            return "Payment methods haven't been set up correctly"
         case .cancelled(let paymentMethodType, _, _):
-            return "[\(errorId)] Payment method \(paymentMethodType) cancelled (diagnosticsId: \(self.diagnosticsId)"
+            return "Payment method \(paymentMethodType) cancelled"
         case .cancelledByCustomer(let message, _, _):
             let messageToShow = message != nil ? " with message \(message!)" : ""
-            return "[\(errorId)] Payment cancelled\(messageToShow) (diagnosticsId: \(self.diagnosticsId)"
+            return "Payment cancelled\(messageToShow)"
         case .failedToCreateSession(error: let error, _, _):
-            return "[\(errorId)] Failed to create session with error: \(error?.localizedDescription ?? "nil") (diagnosticsId: \(self.diagnosticsId)"
+            return "Failed to create session with error: \(error?.localizedDescription ?? "nil")"
         case .failedOnWebViewFlow(error: let error, _, _):
-            return "[\(errorId)] Failed on webview flow with error: \(error?.localizedDescription ?? "nil") (diagnosticsId: \(self.diagnosticsId)"
+            return "Failed on webview flow with error: \(error?.localizedDescription ?? "nil")"
         case .failedToPerform3DS(let error, _, _):
-            return "[\(errorId)] Failed on perform 3DS with error: \(error?.localizedDescription ?? "nil") (diagnosticsId: \(self.diagnosticsId)"
+            return "Failed on perform 3DS with error: \(error?.localizedDescription ?? "nil")"
         case .invalid3DSKey:
-            return "[\(errorId)] Invalid 3DS key (diagnosticsId: \(self.diagnosticsId)"
+            return "Invalid 3DS key"
         case .invalidArchitecture(let description, _, _, let diagnosticsId):
-            return "[\(errorId)] \(description) (diagnosticsId: \(self.diagnosticsId)"
-        case .invalidClientSessionValue(let name, let value, _, _):
-            return "[\(errorId)] Invalid client session value for '\(name)' with value '\(value ?? "nil")' (diagnosticsId: \(self.diagnosticsId)"
+            return "\(description)"
+        case .invalidClientSessionValue(let name, let value, _, _, _):
+            return "Invalid client session value for '\(name)' with value '\(value ?? "nil")'"
         case .invalidUrl(url: let url, _, _):
-            return "[\(errorId)] Invalid URL: \(url ?? "nil") (diagnosticsId: \(self.diagnosticsId)"
+            return "Invalid URL: \(url ?? "nil")"
         case .invalidMerchantCapabilities:
-            return "[\(errorId)] Invalid merchant capabilities (diagnosticsId: \(self.diagnosticsId)"
+            return "Invalid merchant capabilities"
         case .invalidMerchantIdentifier(let merchantIdentifier, _, _):
-            return "[\(errorId)] Invalid merchant identifier: \(merchantIdentifier == nil ? "nil" : "\(merchantIdentifier!)") (diagnosticsId: \(self.diagnosticsId)"
+            return "Invalid merchant identifier: \(merchantIdentifier == nil ? "nil" : "\(merchantIdentifier!)")"
         case .invalidUrlScheme(let urlScheme, _, _):
-            return "[\(errorId)] Invalid URL scheme: \(urlScheme == nil ? "nil" : "\(urlScheme!)") (diagnosticsId: \(self.diagnosticsId)"
+            return "Invalid URL scheme: \(urlScheme == nil ? "nil" : "\(urlScheme!)")"
         case .invalidSetting(let name, let value, _, _):
-            return "[\(errorId)] Invalid setting for \(name) (provided value is \(value ?? "nil")) (diagnosticsId: \(self.diagnosticsId)"
+            return "Invalid setting for \(name) (provided value is \(value ?? "nil"))"
         case .invalidSupportedPaymentNetworks:
-            return "[\(errorId)] Invalid supported payment networks (diagnosticsId: \(self.diagnosticsId)"
+            return "Invalid supported payment networks"
         case .invalidValue(key: let key, value: let value, _, _):
-            return "[\(errorId)] Invalid value '\(value ?? "nil")' for key '\(key)' (diagnosticsId: \(self.diagnosticsId)"
+            return "Invalid value '\(value ?? "nil")' for key '\(key)'"
         case .unableToMakePaymentsOnProvidedNetworks:
-            return "[\(errorId)] Unable to make payments on provided networks (diagnosticsId: \(self.diagnosticsId)"
+            return "Unable to make payments on provided networks"
         case .unableToPresentPaymentMethod(let paymentMethodType, _, _):
-            return "[\(errorId)] Unable to present payment method \(paymentMethodType) (diagnosticsId: \(self.diagnosticsId)"
+            return "Unable to present payment method \(paymentMethodType)"
         case .unsupportedIntent(let intent, _, _):
-            return "[\(errorId)] Unsupported session intent \(intent.rawValue) (diagnosticsId: \(self.diagnosticsId)"
+            return "Unsupported session intent \(intent.rawValue)"
         case .underlyingErrors(let errors, _, _):
-            return "[\(errorId)] Multiple errors occured: \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId)"
+            return "Multiple errors occured: \(errors.combinedDescription)"
         case .unsupportedPaymentMethod(let paymentMethodType, _, _):
-            return "[\(errorId)] Unsupported payment method type \(paymentMethodType) (diagnosticsId: \(self.diagnosticsId)"
+            return "Unsupported payment method type \(paymentMethodType)"
         case .missingCustomUI(let paymentMethod, _, _):
-            return "[\(errorId)] Missing custom user interface for \(paymentMethod) (diagnosticsId: \(self.diagnosticsId)"
+            return "Missing custom user interface for \(paymentMethod)"
         case .merchantError(let message, _, _):
             return message
         case .paymentFailed(let description, _, _):
-            return "[\(errorId)] \(description) (diagnosticsId: \(self.diagnosticsId)"
+            return "\(description)"
         case .applePayTimedOut:
-            return "[\(errorId)] Apple Pay timed out (diagnosticsId: \(self.diagnosticsId)"
+            return "Apple Pay timed out"
         case .failedToFindModule(let name, _, let diagnosticsId):
-            return "[\(errorId)] Failed to find module \(name) (diagnosticsId: \(self.diagnosticsId)"
+            return "Failed to find module \(name)"
         case .sdkDismissed:
-            return "[\(errorId)] SDK has been dismissed (diagnosticsId: \(self.diagnosticsId)"
+            return "SDK has been dismissed"
         case .unknown:
-            return "[\(errorId)] Something went wrong (diagnosticsId: \(self.diagnosticsId)"
+            return "Something went wrong"
         }
+    }
+    
+    var errorDescription: String? {
+        return "[\(errorId)] \(plainDescription) (diagnosticsId: \(self.diagnosticsId))"
     }
     
     var info: [String: String]? {
@@ -594,7 +598,7 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .invalidUrl(_, let userInfo, _),
                 .invalid3DSKey(let userInfo, _),
                 .invalidArchitecture(_, _, let userInfo, _),
-                .invalidClientSessionValue(_, _, let userInfo, _),
+                .invalidClientSessionValue(_, _, _, let userInfo, _),
                 .invalidMerchantCapabilities(let userInfo, _),
                 .invalidMerchantIdentifier(_, let userInfo, _),
                 .invalidUrlScheme(_, let userInfo, _),
@@ -664,8 +668,12 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "Contact Primer to enable 3DS on your account."
         case .invalidArchitecture(_, let recoverySuggestion, _, _):
             return recoverySuggestion
-        case .invalidClientSessionValue(let name, _, _, _):
-            return "Check if you have provided a valid value for \"\(name)\" in your client session"
+        case .invalidClientSessionValue(let name, _, let allowedValue, _, _):
+            var str = "Check if you have provided a valid value for \"\(name)\" in your client session."
+            if let allowedValue {
+                str +=  " Allowed values are [\(allowedValue)]."
+            }
+            return str
         case .invalidMerchantCapabilities:
             return nil
         case .invalidMerchantIdentifier:
