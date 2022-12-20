@@ -446,7 +446,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                     DispatchQueue.main.async {
                         PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.config.type)
                         self.didPresentPaymentMethodUI?()
-                        seal.fulfill(())
+                        seal.fulfill()
                     }
                 })
                 
