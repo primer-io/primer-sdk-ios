@@ -31,7 +31,22 @@ public class PrimerHeadlessUniversalCheckout {
     
     fileprivate init() {}
     
-    public func start(withClientToken clientToken: String, settings: PrimerSettings? = nil, delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil, completion: @escaping (_ paymentMethodTypes: [String]?, _ err: Error?) -> Void) {
+    public func start(
+        withClientToken clientToken: String,
+        settings: PrimerSettings? = nil,
+        delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil,
+        completion: @escaping (_ paymentMethodTypes: [String]?, _ err: Error?) -> Void
+    ) {
+        DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
+        
+        if delegate != nil {
+            PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        }
+        
+        if PrimerHeadlessUniversalCheckout.current.delegate == nil {
+            print("WARNING!\nPrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
+        }
+        
         PrimerInternal.shared.sdkIntegrationType = .headless
         PrimerInternal.shared.intent = .checkout
         
@@ -54,16 +69,6 @@ public class PrimerHeadlessUniversalCheckout {
         
         Analytics.Service.record(events: [sdkEvent, timingStartEvent])
         Analytics.Service.sync()
-        
-        if delegate != nil {
-            PrimerHeadlessUniversalCheckout.current.delegate = delegate
-        }
-        
-        if PrimerHeadlessUniversalCheckout.current.delegate == nil {
-            print("WARNING!\nPrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
-        }
-        
-        DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         settings.uiOptions.isInitScreenEnabled = false
