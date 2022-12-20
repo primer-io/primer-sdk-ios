@@ -133,7 +133,6 @@ internal class PrimerInternal {
         
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
-        Analytics.Service.sync()
         
         firstly {
             PrimerUIManager.preparePresentation(clientToken: clientToken)
@@ -187,7 +186,6 @@ internal class PrimerInternal {
         
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
-        Analytics.Service.sync()
         
         firstly {
             PrimerUIManager.preparePresentation(clientToken: clientToken)
@@ -242,7 +240,6 @@ internal class PrimerInternal {
         
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
-        Analytics.Service.sync()
         
         firstly {
             PrimerUIManager.preparePresentation(clientToken: clientToken)
@@ -279,9 +276,7 @@ internal class PrimerInternal {
                 id: self.timingEventId))
         
         Analytics.Service.record(events: [sdkEvent, timingEvent])
-        
-        Analytics.Service.sync()
-        
+                
         self.checkoutSessionId = nil
         self.selectedPaymentMethodType = nil
         

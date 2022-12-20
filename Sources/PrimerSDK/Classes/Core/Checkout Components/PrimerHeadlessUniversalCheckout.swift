@@ -68,7 +68,6 @@ public class PrimerHeadlessUniversalCheckout {
                 id: self.timingEventId))
         
         Analytics.Service.record(events: [sdkEvent, timingStartEvent])
-        Analytics.Service.sync()
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         settings.uiOptions.isInitScreenEnabled = false
@@ -208,7 +207,6 @@ public class PrimerHeadlessUniversalCheckout {
                 ]))
         
         Analytics.Service.record(events: [sdkEvent])
-        Analytics.Service.sync()
         
         switch paymentMethodType {
         case PrimerPaymentMethodType.paymentCard.rawValue:
@@ -238,7 +236,6 @@ public class PrimerHeadlessUniversalCheckout {
                 params: nil))
         
         Analytics.Service.record(events: [sdkEvent])
-        Analytics.Service.sync()
         
         guard let paymentMethodConfigs = PrimerAPIConfiguration.paymentMethodConfigs else { return nil }
         guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
@@ -253,7 +250,6 @@ public class PrimerHeadlessUniversalCheckout {
                 params: nil))
         
         Analytics.Service.record(events: [sdkEvent])
-        Analytics.Service.sync()
         
         return brand.getImage(assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
@@ -266,7 +262,6 @@ public class PrimerHeadlessUniversalCheckout {
                 params: nil))
         
         Analytics.Service.record(events: [sdkEvent])
-        Analytics.Service.sync()
         
         var paymentMethodIdentifier = PrimerPaymentMethodType(rawValue: paymentMethodType)?.paymentMethodIdentifier
         if paymentMethodIdentifier == nil,
@@ -286,7 +281,6 @@ public class PrimerHeadlessUniversalCheckout {
                 params: nil))
         
         Analytics.Service.record(events: [sdkEvent])
-        Analytics.Service.sync()
         
         return PrimerAsset.getAsset(for: cardNetwork, assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
@@ -313,7 +307,6 @@ public class PrimerHeadlessUniversalCheckout {
                 id: self.timingEventId))
         
         Analytics.Service.record(events: [sdkEvent, timingStartEvent])
-        Analytics.Service.sync()
         
         DispatchQueue.main.async {
             let appState: AppStateProtocol = DependencyContainer.resolve()
@@ -330,8 +323,6 @@ public class PrimerHeadlessUniversalCheckout {
                         id: self.timingEventId))
                 
                 Analytics.Service.record(events: [timingEndEvent])
-                Analytics.Service.sync()
-                
                 return
             }
             
@@ -347,8 +338,6 @@ public class PrimerHeadlessUniversalCheckout {
                         id: self.timingEventId))
                 
                 Analytics.Service.record(events: [timingEndEvent])
-                Analytics.Service.sync()
-                
                 return
             }
             
@@ -394,7 +383,6 @@ public class PrimerHeadlessUniversalCheckout {
                     id: self.timingEventId))
             
             Analytics.Service.record(events: [timingEndEvent])
-            Analytics.Service.sync()
         }
     }
 }
