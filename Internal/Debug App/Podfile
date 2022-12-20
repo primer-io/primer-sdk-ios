@@ -20,18 +20,17 @@ target 'Debug App' do
     # Pods for testing
   end
   
-  post_install do |installer|
-    installer.aggregate_targets.each do |target|
-      if target.name == "PrimerSDK"
-        target.build_configurations.each do |config|
-          config.build_settings['FRAMEWORK_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88SDK"
-          config.build_settings['LIBRARY_SEARCH_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88SDK"
-          config.build_settings['SWIFT_INCLUDE_PATHS'] = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88SDK"
-          config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88SDK/PrimerIPay88SDK.modulemap"'
-          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -weak_library -l"PrimerIPay88SDK"'
-        end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
+      puts "Fixing code signing for #{target.name}..."
+      
+      target.build_configurations.each do |config|
+        config.build_settings["DEVELOPMENT_TEAM"] = "N8UN9TR5DY"
       end
     end
   end
-  
+
 end
