@@ -94,7 +94,7 @@ extension Response.Body {
         }
         
         static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
-            var viewModels = PrimerAPIConfiguration.paymentMethodConfigs?
+            var viewModels: [PaymentMethodTokenizationViewModelProtocol] = PrimerAPIConfiguration.paymentMethodConfigs?
                 .filter({ $0.isEnabled })
                 .filter({ $0.baseLogoImage != nil })
                 .compactMap({ $0.tokenizationViewModel })
@@ -115,17 +115,85 @@ extension Response.Body {
             }
 #endif
             
-            for (index, viewModel) in viewModels.enumerated() {
-                if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
-                    viewModels.swapAt(0, index)
+#if !canImport(PrimerIPay88SDK)
+            if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
+                viewModels.remove(at: iPay88ViewModelIndex)
+                print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.\n\n")
+            }
+#endif
+            
+            var validViewModels: [PaymentMethodTokenizationViewModelProtocol] = []
+            
+            for viewModel in viewModels {
+                do {
+                    try viewModel.validate()
+                    validViewModels.append(viewModel)
+                } catch {
+                    var warningStr = "\nWARNING!\n\(viewModel.config.type) configuration has been found, but it cannot be presented."
+                    
+                    if let primerErr = error as? PrimerError {
+                        if case .underlyingErrors(let errors, _, _) = primerErr {
+                            for err in errors {
+                                if let primerErr = err as? PrimerError {
+                                    var errLine: String = ""
+                                    if let errDescription = primerErr.plainDescription {
+                                        errLine += "\n-\(errDescription)"
+                                    }
+                                    
+                                    if let recoverySuggestion = primerErr.recoverySuggestion {
+                                        if errLine.count != 0 {
+                                            errLine += " | "
+                                        } else {
+                                            errLine += "\n-"
+                                        }
+                                        
+                                        errLine += recoverySuggestion
+                                    }
+                                    warningStr += errLine
+                                    
+                                } else {
+                                    warningStr += "\n-\(error.localizedDescription)"
+                                }
+                            }
+                        } else {
+                            var errLine: String = ""
+                            if let errDescription = primerErr.plainDescription {
+                                errLine += "\n-\(errDescription)"
+                            }
+                            
+                            if let recoverySuggestion = primerErr.recoverySuggestion {
+                                if errLine.count != 0 {
+                                    errLine += " | "
+                                } else {
+                                    errLine += "\n-"
+                                }
+                                
+                                errLine += recoverySuggestion
+                            }
+                            warningStr += errLine
+                        }
+                        
+                    } else {
+                        warningStr += "\n-\(error.localizedDescription)"
+                    }
+                    
+                    warningStr += "\n\n"
+                    
+                    print(warningStr)
                 }
             }
             
-            for (index, viewModel) in viewModels.enumerated() {
+            for (index, viewModel) in validViewModels.enumerated() {
+                if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
+                    validViewModels.swapAt(0, index)
+                }
+            }
+            
+            for (index, viewModel) in validViewModels.enumerated() {
                 viewModel.position = index
             }
             
-            return viewModels
+            return validViewModels
         }
         
         let coreUrl: String?
@@ -206,7 +274,7 @@ extension Response.Body {
             guard let method = self.paymentMethods?
                     .first(where: { method in return method.type == type }) else { return nil }
             
-            if let apayaOptions = method.options as? ApayaOptions {
+            if let apayaOptions = method.options as? MerchantOptions {
                 return apayaOptions.merchantAccountId
             } else {
                 return nil

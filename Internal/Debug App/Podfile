@@ -4,19 +4,33 @@ platform :ios, '10.0'
 target 'Debug App' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
-
+  
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../../'
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
-
+  pod 'PrimerIPay88SDK'
+  
   target 'Debug App Tests' do
     inherit! :search_paths
     # Pods for testing
   end
-
+  
   target 'Debug App UITests' do
     # Pods for testing
+  end
+  
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
+      puts "Fixing code signing for #{target.name}..."
+      
+      target.build_configurations.each do |config|
+        config.build_settings["DEVELOPMENT_TEAM"] = "N8UN9TR5DY"
+      end
+    end
   end
 
 end

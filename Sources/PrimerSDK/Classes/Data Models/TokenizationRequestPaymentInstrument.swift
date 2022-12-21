@@ -97,8 +97,14 @@ class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
             try container.encode(sessionInfo, forKey: .sessionInfo)
         } else if let sessionInfo = sessionInfo as? RetailOutletTokenizationSessionRequestParameters {
             try container.encode(sessionInfo, forKey: .sessionInfo)
+        } else if let sessionInfo = sessionInfo as? IPay88SessionInfo {
+            try container.encode(sessionInfo, forKey: .sessionInfo)
         } else {
-            let err = InternalError.invalidValue(key: "SessionInfo", value: self.sessionInfo, userInfo: nil, diagnosticsId: nil)
+            let err = InternalError.invalidValue(
+                key: "SessionInfo",
+                value: self.sessionInfo,
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: nil)
             ErrorHandler.handle(error: err)
             throw err
         }

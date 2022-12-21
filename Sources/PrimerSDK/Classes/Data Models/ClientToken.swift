@@ -28,6 +28,10 @@ struct DecodedJWTToken: Codable {
     var qrCode: String?
     var accountNumber: String?
     
+    // iPay88
+    var backendCallbackUrl: String?
+    var primerTransactionId: String?
+    
     // Voucher info
     var expiresAt: Date?
     var entity: String?
@@ -60,6 +64,9 @@ struct DecodedJWTToken: Codable {
         // Expiration
         case exp
         case expiration
+        // iPay88
+        case backendCallbackUrl
+        case primerTransactionId
         // QR Code
         case qrCode
         case qrCodeUrl
@@ -83,7 +90,9 @@ struct DecodedJWTToken: Codable {
         statusUrl: String?,
         redirectUrl: String?,
         qrCode: String?,
-        accountNumber: String?
+        accountNumber: String?,
+        backendCallbackUrl: String?,
+        primerTransactionId: String?
     ) {
         self.accessToken = accessToken
         self.expDate = expDate
@@ -99,6 +108,8 @@ struct DecodedJWTToken: Codable {
         self.redirectUrl = redirectUrl
         self.qrCode = qrCode
         self.accountNumber = accountNumber
+        self.backendCallbackUrl = backendCallbackUrl
+        self.primerTransactionId = primerTransactionId
     }
     
     init(from decoder: Decoder) throws {
@@ -143,6 +154,10 @@ struct DecodedJWTToken: Codable {
             self.qrCode = qrCode
         }
         
+        // iPay88
+        self.backendCallbackUrl = (try? container.decode(String?.self, forKey: .backendCallbackUrl)) ?? nil
+        self.primerTransactionId = (try? container.decode(String?.self, forKey: .primerTransactionId)) ?? nil
+        
         // Voucher info
         if let dateString = try? container.decode(String.self, forKey: .expiresAt) {
             let dateFormatter = DateFormatter().withVoucherExpirationDateFormat()
@@ -180,6 +195,10 @@ struct DecodedJWTToken: Codable {
         } else {
             try? container.encode(qrCode, forKey: .qrCode)
         }
+        
+        // iPay88
+        try? container.encode(backendCallbackUrl, forKey: .backendCallbackUrl)
+        try? container.encode(primerTransactionId, forKey: .primerTransactionId)
         
         // Voucher info
         try? container.encode(expiresAt, forKey: .expiresAt)

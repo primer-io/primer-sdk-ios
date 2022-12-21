@@ -25,11 +25,19 @@ public class PrimerHeadlessUniversalCheckout {
     ]
     
     internal var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
+    internal let sdkSessionId = UUID().uuidString
+    internal private(set) var checkoutSessionId: String?
+    internal private(set) var timingEventId: String?
     
     fileprivate init() {}
     
-    public func start(withClientToken clientToken: String, settings: PrimerSettings? = nil, delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil, completion: @escaping (_ paymentMethodTypes: [String]?, _ err: Error?) -> Void) {
-        PrimerInternal.shared.intent = .checkout
+    public func start(
+        withClientToken clientToken: String,
+        settings: PrimerSettings? = nil,
+        delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil,
+        completion: @escaping (_ paymentMethodTypes: [String]?, _ err: Error?) -> Void
+    ) {
+        DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
         
         if delegate != nil {
             PrimerHeadlessUniversalCheckout.current.delegate = delegate
@@ -39,7 +47,27 @@ public class PrimerHeadlessUniversalCheckout {
             print("WARNING!\nPrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
         }
         
-        DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
+        PrimerInternal.shared.sdkIntegrationType = .headless
+        PrimerInternal.shared.intent = .checkout
+        
+        self.checkoutSessionId = UUID().uuidString
+        self.timingEventId = UUID().uuidString
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
+                ]))
+        
+        let timingStartEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .start,
+                id: self.timingEventId))
+        
+        Analytics.Service.record(events: [sdkEvent, timingStartEvent])
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         settings.uiOptions.isInitScreenEnabled = false
@@ -150,16 +178,36 @@ public class PrimerHeadlessUniversalCheckout {
     
     internal func listAvailablePaymentMethodsTypes() -> [String]? {
         var paymentMethods = PrimerAPIConfiguration.paymentMethodConfigs
-        if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
+        
 #if !canImport(PrimerKlarnaSDK)
+        if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
+
             paymentMethods?.remove(at: klarnaIndex)
             print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
-#endif
         }
+#endif
+        
+#if !canImport(PrimerIPay88SDK)
+        if let iPay88ViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
+            paymentMethods?.remove(at: iPay88ViewModelIndex)
+            print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.\n\n")
+        }
+#endif
+        
         return paymentMethods?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
     
     public func listRequiredInputElementTypes(for paymentMethodType: String) -> [PrimerInputElementType]? {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
+                ]))
+        
+        Analytics.Service.record(events: [sdkEvent])
+        
         switch paymentMethodType {
         case PrimerPaymentMethodType.paymentCard.rawValue:
             var requiredFields: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
@@ -181,16 +229,40 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     public static func makeButton(for paymentMethodType: String) -> UIButton? {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: nil))
+        
+        Analytics.Service.record(events: [sdkEvent])
+        
         guard let paymentMethodConfigs = PrimerAPIConfiguration.paymentMethodConfigs else { return nil }
         guard let paymentMethodConfig = paymentMethodConfigs.filter({ $0.type == paymentMethodType }).first else { return nil }
         return paymentMethodConfig.tokenizationViewModel?.uiModule.paymentMethodButton
     }
     
     public static func getAsset(for brand: PrimerAsset.Brand, assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: nil))
+        
+        Analytics.Service.record(events: [sdkEvent])
+        
         return brand.getImage(assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
     
     public static func getAsset(for paymentMethodType: String, assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: nil))
+        
+        Analytics.Service.record(events: [sdkEvent])
+        
         var paymentMethodIdentifier = PrimerPaymentMethodType(rawValue: paymentMethodType)?.paymentMethodIdentifier
         if paymentMethodIdentifier == nil,
            let provider = paymentMethodType.components(separatedBy: "_").first {
@@ -202,10 +274,40 @@ public class PrimerHeadlessUniversalCheckout {
     }
     
     public static func getAsset(for cardNetwork: CardNetwork, assetType: PrimerAsset.ImageType, userInterfaceStyle: PrimerUserInterfaceStyle? = nil) -> UIImage? {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: nil))
+        
+        Analytics.Service.record(events: [sdkEvent])
+        
         return PrimerAsset.getAsset(for: cardNetwork, assetType: assetType, userInterfaceStyle: userInterfaceStyle)
     }
     
     public func showPaymentMethod(_ paymentMethod: String, completion: ((_ viewController: UIViewController) -> Void)? = nil) {
+        PrimerInternal.shared.sdkIntegrationType = .headless
+        PrimerInternal.shared.intent = .checkout
+        
+        self.timingEventId = UUID().uuidString
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "paymentMethodType": paymentMethod,
+                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
+                ]))
+        
+        let timingStartEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .start,
+                id: self.timingEventId))
+        
+        Analytics.Service.record(events: [sdkEvent, timingStartEvent])
+        
         DispatchQueue.main.async {
             let appState: AppStateProtocol = DependencyContainer.resolve()
             guard let clientToken = appState.clientToken else {
@@ -213,6 +315,14 @@ public class PrimerHeadlessUniversalCheckout {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
+                
+                let timingEndEvent = Analytics.Event(
+                    eventType: .timerEvent,
+                    properties: TimerEventProperties(
+                        momentType: .end,
+                        id: self.timingEventId))
+                
+                Analytics.Service.record(events: [timingEndEvent])
                 return
             }
             
@@ -220,6 +330,14 @@ public class PrimerHeadlessUniversalCheckout {
                 let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: paymentMethod, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err)
+                
+                let timingEndEvent = Analytics.Event(
+                    eventType: .timerEvent,
+                    properties: TimerEventProperties(
+                        momentType: .end,
+                        id: self.timingEventId))
+                
+                Analytics.Service.record(events: [timingEndEvent])
                 return
             }
             
@@ -257,6 +375,14 @@ public class PrimerHeadlessUniversalCheckout {
             
             PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationDidStart?(for: paymentMethod)
             PrimerInternal.shared.showPaymentMethod(paymentMethod, withIntent: .checkout, andClientToken: clientToken)
+            
+            let timingEndEvent = Analytics.Event(
+                eventType: .timerEvent,
+                properties: TimerEventProperties(
+                    momentType: .end,
+                    id: self.timingEventId))
+            
+            Analytics.Service.record(events: [timingEndEvent])
         }
     }
 }

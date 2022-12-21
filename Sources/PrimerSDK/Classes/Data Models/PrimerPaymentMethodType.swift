@@ -36,6 +36,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case goCardless             = "GOCARDLESS"
     case googlePay              = "GOOGLE_PAY"
     case hoolah                 = "HOOLAH"
+    case iPay88Card             = "IPAY88_CARD"
     case klarna                 = "KLARNA"
     case mollieBankcontact      = "MOLLIE_BANCONTACT"
     case mollieIdeal            = "MOLLIE_IDEAL"
@@ -110,6 +111,9 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
                 .buckarooIdeal,
                 .buckarooSofort:
             return "BUCKAROO"
+            
+        case .iPay88Card:
+            return "IPAY88"
             
         case .mollieBankcontact,
                 .mollieIdeal:

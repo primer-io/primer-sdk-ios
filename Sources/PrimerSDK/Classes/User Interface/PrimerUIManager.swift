@@ -15,36 +15,8 @@ internal class PrimerUIManager {
     internal static var primerRootViewController: PrimerRootViewController?
     internal static var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol?
     
-    static func preparePresentation(
-        clientToken: String,
-        function: String
-    ) -> Promise<Void> {
+    static func preparePresentation(clientToken: String) -> Promise<Void> {
         return Promise { seal in
-            var events: [Analytics.Event] = []
-            
-            let sdkEvent = Analytics.Event(
-                eventType: .sdkEvent,
-                properties: SDKEventProperties(
-                    name: function,
-                    params: [
-                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
-                    ]))
-            
-            let connectivityEvent = Analytics.Event(
-                eventType: .networkConnectivity,
-                properties: NetworkConnectivityEventProperties(
-                    networkType: Connectivity.networkType))
-            
-            
-            let timingEvent = Analytics.Event(
-                eventType: .timerEvent,
-                properties: TimerEventProperties(
-                    momentType: .start,
-                    id: PrimerInternal.shared.timingEventId!))
-            
-            events = [sdkEvent, connectivityEvent, timingEvent]
-            Analytics.Service.record(events: events)
-                        
             firstly {
                 PrimerUIManager.prepareRootViewController()
             }

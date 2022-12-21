@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "PrimerSDK"
-    s.version      = "2.15.1"
+    s.version      = "2.16.0"
     s.summary      = "Official iOS SDK for Primer"
     s.description  = <<-DESC
     This library contains the official iOS SDK for Primer. Install this Cocoapod to seemlessly integrate the Primer Checkout & API platform in your app.
@@ -11,32 +11,29 @@ Pod::Spec.new do |s|
     s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{s.version}" }
 
     s.swift_version = "4.2"
-    s.ios.deployment_target = '10.0'
+    s.ios.deployment_target = "10.0"
 
-    s.default_subspec = 'Core'
-    s.ios.frameworks  = 'Foundation', 'UIKit'
+    s.default_subspec = "Core"
+    s.ios.frameworks  = "Foundation", "UIKit"
 
-    s.xcconfig = {
-       'MARKETING_VERSION' => s.version,
-       'CODE_SIGNING_ALLOWED' => 'NO'
-    }
-
-    s.subspec 'Core' do |ss|
-        ss.ios.source_files = 'Sources/PrimerSDK/Classes/**/*.{h,m,swift}'
+    s.subspec "Core" do |ss|
+        ss.ios.source_files = "Sources/PrimerSDK/Classes/**/*.{h,m,swift}"
         ss.ios.resource_bundles = {
-            'PrimerResources' => [
-                'Sources/PrimerSDK/Resources/*.xcassets',
-                'Sources/PrimerSDK/Resources/Localizable/**/*.strings',
-                'Sources/PrimerSDK/Resources/Localizable/**/*.stringsdict',
-                'Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}',
-                'Sources/PrimerSDK/Resources/Nibs/*',
-                'Sources/PrimerSDK/Resources/JSONs/**/*.json'
+            "PrimerResources" => [
+                "Sources/PrimerSDK/Resources/*.xcassets",
+                "Sources/PrimerSDK/Resources/Localizable/**/*.strings",
+                "Sources/PrimerSDK/Resources/Localizable/**/*.stringsdict",
+                "Sources/PrimerSDK/Resources/Storyboards/*.{storyboard}",
+                "Sources/PrimerSDK/Resources/Nibs/*",
+                "Sources/PrimerSDK/Resources/JSONs/**/*.json"
             ]
         }
         ss.ios.pod_target_xcconfig = {
             "FRAMEWORK_SEARCH_PATHS" => [
+                "$(inherited)",
                 "${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS",
                 "${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK",
+                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88SDK"
             ]
         }
     end

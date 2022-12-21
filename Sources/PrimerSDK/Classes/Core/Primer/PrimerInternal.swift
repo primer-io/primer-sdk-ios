@@ -26,6 +26,7 @@ internal class PrimerInternal {
     internal let sdkSessionId = UUID().uuidString
     internal private(set) var checkoutSessionId: String?
     internal private(set) var timingEventId: String?
+    internal var sdkIntegrationType: PrimerSDKIntegrationType?
     
     // MARK: - INITIALIZATION
     
@@ -102,13 +103,39 @@ internal class PrimerInternal {
      */
     
     internal func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
+        self.sdkIntegrationType = .dropIn
         self.intent = .checkout
         self.selectedPaymentMethodType = nil
         self.checkoutSessionId = UUID().uuidString
         self.timingEventId = UUID().uuidString
         
+        var events: [Analytics.Event] = []
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
+                ]))
+        
+        let connectivityEvent = Analytics.Event(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(
+                networkType: Connectivity.networkType))
+        
+        
+        let timingStartEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .start,
+                id: PrimerInternal.shared.timingEventId!))
+        
+        events = [sdkEvent, connectivityEvent, timingStartEvent]
+        Analytics.Service.record(events: events)
+        
         firstly {
-            PrimerUIManager.preparePresentation(clientToken: clientToken, function: #function)
+            PrimerUIManager.preparePresentation(clientToken: clientToken)
         }
         .done {
             PrimerUIManager.presentPaymentUI()
@@ -128,13 +155,40 @@ internal class PrimerInternal {
     }
     
     internal func showVaultManager(clientToken: String, completion: ((Error?) -> Void)? = nil) {
+        self.sdkIntegrationType = .dropIn
         self.intent = .vault
         self.selectedPaymentMethodType = nil
+        
         self.checkoutSessionId = UUID().uuidString
         self.timingEventId = UUID().uuidString
         
+        var events: [Analytics.Event] = []
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
+                ]))
+        
+        let connectivityEvent = Analytics.Event(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(
+                networkType: Connectivity.networkType))
+        
+        
+        let timingStartEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .start,
+                id: PrimerInternal.shared.timingEventId!))
+        
+        events = [sdkEvent, connectivityEvent, timingStartEvent]
+        Analytics.Service.record(events: events)
+        
         firstly {
-            PrimerUIManager.preparePresentation(clientToken: clientToken, function: #function)
+            PrimerUIManager.preparePresentation(clientToken: clientToken)
         }
         .done {
             PrimerUIManager.presentPaymentUI()
@@ -154,13 +208,41 @@ internal class PrimerInternal {
     }
     
     internal func showPaymentMethod(_ paymentMethodType: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
+        self.sdkIntegrationType = .dropIn
         self.intent = intent
         self.selectedPaymentMethodType = paymentMethodType
+        
         self.checkoutSessionId = UUID().uuidString
         self.timingEventId = UUID().uuidString
         
+        var events: [Analytics.Event] = []
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: #function,
+                params: [
+                    "paymentMethodType": paymentMethodType,
+                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
+                ]))
+        
+        let connectivityEvent = Analytics.Event(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(
+                networkType: Connectivity.networkType))
+        
+        
+        let timingStartEvent = Analytics.Event(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: .start,
+                id: PrimerInternal.shared.timingEventId!))
+        
+        events = [sdkEvent, connectivityEvent, timingStartEvent]
+        Analytics.Service.record(events: events)
+        
         firstly {
-            PrimerUIManager.preparePresentation(clientToken: clientToken, function: #function)
+            PrimerUIManager.preparePresentation(clientToken: clientToken)
         }
         .done {
             PrimerUIManager.presentPaymentUI()
@@ -194,9 +276,7 @@ internal class PrimerInternal {
                 id: self.timingEventId))
         
         Analytics.Service.record(events: [sdkEvent, timingEvent])
-        
-        Analytics.Service.sync()
-        
+                
         self.checkoutSessionId = nil
         self.selectedPaymentMethodType = nil
         
