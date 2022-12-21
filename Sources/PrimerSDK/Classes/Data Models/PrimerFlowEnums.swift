@@ -7,7 +7,7 @@
 
 #if canImport(UIKit)
 
-public enum PrimerSessionIntent: String, Encodable {
+public enum PrimerSessionIntent: String, Codable {
     case checkout = "CHECKOUT"
     case vault = "VAULT"
 }
