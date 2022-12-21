@@ -21,7 +21,7 @@ internal class PrimerInternal {
     // MARK: - PROPERTIES
     
     internal var intent: PrimerSessionIntent?
-    internal private(set) var selectedPaymentMethodType: String?
+    internal var selectedPaymentMethodType: String?
     
     internal let sdkSessionId = UUID().uuidString
     internal private(set) var checkoutSessionId: String?
@@ -115,9 +115,7 @@ internal class PrimerInternal {
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
-                params: [
-                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
-                ]))
+                params: nil))
         
         let connectivityEvent = Analytics.Event(
             eventType: .networkConnectivity,
@@ -168,9 +166,7 @@ internal class PrimerInternal {
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
-                params: [
-                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
-                ]))
+                params: nil))
         
         let connectivityEvent = Analytics.Event(
             eventType: .networkConnectivity,
@@ -221,10 +217,7 @@ internal class PrimerInternal {
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
-                params: [
-                    "paymentMethodType": paymentMethodType,
-                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
-                ]))
+                params: nil))
         
         let connectivityEvent = Analytics.Event(
             eventType: .networkConnectivity,

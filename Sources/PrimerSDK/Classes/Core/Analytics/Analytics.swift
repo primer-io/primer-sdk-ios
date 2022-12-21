@@ -71,13 +71,8 @@ class Analytics {
             try? container.encode(sdkType, forKey: .sdkType)
             try? container.encode(sdkVersion, forKey: .sdkVersion)
             try? container.encode(sdkIntegrationType?.rawValue, forKey: .sdkIntegrationType)
-            
-            if sdkPaymentHandling == .auto {
-                try? container.encode("AUTO", forKey: .sdkPaymentHandling)
-            } else if sdkPaymentHandling == .manual {
-                try? container.encode("MANUAL", forKey: .sdkPaymentHandling)
-            }
-            
+            try? container.encode(sdkPaymentHandling, forKey: .sdkPaymentHandling)
+                        
             if let crashEventProperties = properties as? CrashEventProperties {
                 try? container.encode(crashEventProperties, forKey: .properties)
             } else if let messageEventProperties = properties as? MessageEventProperties {
