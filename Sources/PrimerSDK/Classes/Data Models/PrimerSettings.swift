@@ -10,17 +10,18 @@ internal protocol PrimerSettingsProtocol {
     var debugOptions: PrimerDebugOptions { get }
 }
 
-public class PrimerSettings: PrimerSettingsProtocol {
+public class PrimerSettings: PrimerSettingsProtocol, Codable {
     
     static var current: PrimerSettings {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         return settings as! PrimerSettings
     }
-    public let paymentHandling: PrimerPaymentHandling
-    public let localeData: PrimerLocaleData
-    public let paymentMethodOptions: PrimerPaymentMethodOptions
-    public internal(set) var uiOptions: PrimerUIOptions
-    public let debugOptions: PrimerDebugOptions
+    
+    let paymentHandling: PrimerPaymentHandling
+    let localeData: PrimerLocaleData
+    let paymentMethodOptions: PrimerPaymentMethodOptions
+    let uiOptions: PrimerUIOptions
+    let debugOptions: PrimerDebugOptions
     
     public init(
         paymentHandling: PrimerPaymentHandling = .auto,
@@ -39,9 +40,9 @@ public class PrimerSettings: PrimerSettingsProtocol {
 
 // MARK: - PAYMENT HANDLING
 
-public enum PrimerPaymentHandling {
-    case auto
-    case manual
+public enum PrimerPaymentHandling: String, Codable {
+    case auto   = "AUTO"
+    case manual = "MANUAL"
 }
 
 // MARK: - PAYMENT METHOD OPTIONS
@@ -52,7 +53,7 @@ internal protocol PrimerPaymentMethodOptionsProtocol {
     var klarnaOptions: PrimerKlarnaOptions? { get }
 }
 
-public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol {
+public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Codable {
     
     let urlScheme: String?
     let applePayOptions: PrimerApplePayOptions?
@@ -85,11 +86,7 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol {
 
 // MARK: Apple Pay
 
-internal protocol PrimerApplePayOptionsProtocol {
-    var merchantIdentifier: String { get }
-}
-
-public class PrimerApplePayOptions: PrimerApplePayOptionsProtocol {
+public class PrimerApplePayOptions: Codable {
     
     let merchantIdentifier: String
     let merchantName: String
@@ -104,11 +101,7 @@ public class PrimerApplePayOptions: PrimerApplePayOptionsProtocol {
 
 // MARK: Klarna
 
-internal protocol PrimerKlarnaOptionsProtocol {
-    var recurringPaymentDescription: String { get }
-}
-
-public class PrimerKlarnaOptions: PrimerKlarnaOptionsProtocol {
+public class PrimerKlarnaOptions: Codable {
     
     let recurringPaymentDescription: String
     
@@ -119,12 +112,8 @@ public class PrimerKlarnaOptions: PrimerKlarnaOptionsProtocol {
 
 // MARK: Card Payment
 
-internal protocol PrimerCardPaymentOptionsProtocol {
-    var is3DSOnVaultingEnabled: Bool { get }
-}
-
 @available(*, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
-public class PrimerCardPaymentOptions: PrimerCardPaymentOptionsProtocol {
+public class PrimerCardPaymentOptions: Codable {
     
     @available(*, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     let is3DSOnVaultingEnabled: Bool
@@ -143,12 +132,16 @@ internal protocol PrimerUIOptionsProtocol {
     var theme: PrimerTheme { get }
 }
 
-public class PrimerUIOptions: PrimerUIOptionsProtocol {
+public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
     
     public internal(set) var isInitScreenEnabled: Bool
     public internal(set) var isSuccessScreenEnabled: Bool
     public internal(set) var isErrorScreenEnabled: Bool
     public let theme: PrimerTheme
+    
+    private enum CodingKeys : String, CodingKey {
+        case isInitScreenEnabled, isSuccessScreenEnabled, isErrorScreenEnabled, theme
+    }
     
     public init(
         isInitScreenEnabled: Bool? = nil,
@@ -161,6 +154,21 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol {
         self.isErrorScreenEnabled = isErrorScreenEnabled != nil ? isErrorScreenEnabled! : true
         self.theme = theme ?? PrimerTheme()
     }
+    
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
+        self.isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
+        self.isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
+        self.theme = PrimerTheme()
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(isInitScreenEnabled, forKey: .isInitScreenEnabled)
+        try container.encode(isSuccessScreenEnabled, forKey: .isSuccessScreenEnabled)
+        try container.encode(isErrorScreenEnabled, forKey: .isErrorScreenEnabled)
+    }
 }
 
 // MARK: - DEBUG OPTIONS
@@ -169,7 +177,7 @@ internal protocol PrimerDebugOptionsProtocol {
     var is3DSSanityCheckEnabled: Bool { get }
 }
 
-public class PrimerDebugOptions: PrimerDebugOptionsProtocol {
+public class PrimerDebugOptions: PrimerDebugOptionsProtocol, Codable {
     
     let is3DSSanityCheckEnabled: Bool
     
