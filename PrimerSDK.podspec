@@ -5,10 +5,10 @@ Pod::Spec.new do |s|
     s.description  = <<-DESC
     This library contains the official iOS SDK for Primer. Install this Cocoapod to seemlessly integrate the Primer Checkout & API platform in your app.
     DESC
-    s.homepage     = 'https://www.primer.io'
-    s.license      = { :type => 'MIT', :file => 'LICENSE' }
-    s.author       = { 'Primer' => 'dx@primer.io' }
-    s.source       = { :git => 'https://github.com/primer-io/primer-sdk-ios.git', :tag => '#{s.version}' }
+    s.homepage     = "https://www.primer.io"
+    s.license      = { :type => "MIT", :file => "LICENSE" }
+    s.author       = { "Primer" => "dx@primer.io" }
+    s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{s.version}" }
 
     s.swift_version = "4.2"
     s.ios.deployment_target = "10.0"
