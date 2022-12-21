@@ -130,7 +130,24 @@ extension Analytics.Event {
 protocol AnalyticsEventProperties: Codable {}
 
 struct CrashEventProperties: AnalyticsEventProperties {
+    
     var stacktrace: [String]
+    var params: [String: AnyCodable]?
+    
+    init(stacktrace: [String]) {
+        self.stacktrace = stacktrace
+        
+        let sdkProperties = SDKProperties()
+        if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
+           let data = try? JSONSerialization.data(withJSONObject: sdkPropertiesDict, options: .fragmentsAllowed) {
+            let decoder = JSONDecoder()
+            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: data) {
+                self.params = anyDecodableDictionary
+            }
+        } else {
+            self.params = nil
+        }
+    }
 }
 
 struct MessageEventProperties: AnalyticsEventProperties {
@@ -179,29 +196,118 @@ struct MessageEventProperties: AnalyticsEventProperties {
 }
 
 struct NetworkCallEventProperties: AnalyticsEventProperties {
+    
     var callType: Analytics.Event.Property.NetworkCallType
     var id: String
     var url: String
     var method: HTTPMethod
     var errorBody: String?
     var responseCode: Int?
+    var params: [String: AnyCodable]?
+    
+    init(
+        callType: Analytics.Event.Property.NetworkCallType,
+        id: String,
+        url: String,
+        method: HTTPMethod,
+        errorBody: String?,
+        responseCode: Int?
+    ) {
+        self.callType = callType
+        self.id = id
+        self.url = url
+        self.method = method
+        self.errorBody = errorBody
+        self.responseCode = responseCode
+        
+        let sdkProperties = SDKProperties()
+        if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
+           let data = try? JSONSerialization.data(withJSONObject: sdkPropertiesDict, options: .fragmentsAllowed) {
+            let decoder = JSONDecoder()
+            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: data) {
+                self.params = anyDecodableDictionary
+            }
+        } else {
+            self.params = nil
+        }
+    }
 }
 
 struct NetworkConnectivityEventProperties: AnalyticsEventProperties {
+    
     var networkType: Connectivity.NetworkType
+    var params: [String: AnyCodable]?
+    
+    init(networkType: Connectivity.NetworkType) {
+        self.networkType = networkType
+        
+        let sdkProperties = SDKProperties()
+        if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
+           let data = try? JSONSerialization.data(withJSONObject: sdkPropertiesDict, options: .fragmentsAllowed) {
+            let decoder = JSONDecoder()
+            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: data) {
+                self.params = anyDecodableDictionary
+            }
+        } else {
+            self.params = nil
+        }
+    }
 }
 
 struct SDKEventProperties: AnalyticsEventProperties {
+    
     var name: String
-    var params: [String: String]?
+    var params: [String: AnyCodable]?
+    
+    init(name: String, params: [String: String]?) {
+        self.name = name
+        
+        var _params: [String: Any] = params ?? [:]
+        
+        let sdkProperties = SDKProperties()
+        if let sdkPropertiesDict = try? sdkProperties.asDictionary() {
+            _params.merge(sdkPropertiesDict) {(current,_) in current}
+        }
+        
+        if !_params.isEmpty, let _paramsData = try? JSONSerialization.data(withJSONObject: _params, options: .fragmentsAllowed) {
+            let decoder = JSONDecoder()
+            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: _paramsData) {
+                self.params = anyDecodableDictionary
+            }
+        } else {
+            self.params = nil
+        }
+    }
 }
 
 struct TimerEventProperties: AnalyticsEventProperties {
+    
     var momentType: Analytics.Event.Property.TimerType
     var id: String?
+    var params: [String: AnyCodable]?
+    
+    init(
+        momentType: Analytics.Event.Property.TimerType,
+        id: String?
+    ) {
+        self.momentType = momentType
+        self.id = id
+        
+        let sdkProperties = SDKProperties()
+        if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
+           let data = try? JSONSerialization.data(withJSONObject: sdkPropertiesDict, options: .fragmentsAllowed) {
+            let decoder = JSONDecoder()
+            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: data) {
+                self.params = anyDecodableDictionary
+            }
+        } else {
+            self.params = nil
+        }
+    }
 }
 
 struct UIEventProperties: AnalyticsEventProperties {
+    
     var action: Analytics.Event.Property.Action
     var context: Analytics.Event.Property.Context?
     var extra: String?
@@ -209,6 +315,108 @@ struct UIEventProperties: AnalyticsEventProperties {
     var objectId: Analytics.Event.Property.ObjectId?
     var objectClass: String?
     var place: Analytics.Event.Property.Place
+    var params: [String: String]?
+    
+    init(
+        action: Analytics.Event.Property.Action,
+        context: Analytics.Event.Property.Context?,
+        extra: String?,
+        objectType: Analytics.Event.Property.ObjectType,
+        objectId: Analytics.Event.Property.ObjectId?,
+        objectClass: String?,
+        place: Analytics.Event.Property.Place
+    ) {
+        self.action = action
+        self.context = context
+        self.extra = extra
+        self.objectType = objectType
+        self.objectId = objectId
+        self.objectClass = objectClass
+        self.place = place
+        
+        if let jsonData = try? JSONEncoder().encode(SDKProperties()),
+           let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: .allowFragments),
+           let params = jsonObject as? [String: String]
+        {
+            self.params = params
+        }
+    }
+}
+
+struct SDKProperties: Codable {
+    
+    let clientToken: String?
+    let integrationType: String?
+    let paymentMethodType: String?
+    let sdkIntegrationType: PrimerSDKIntegrationType?
+    let sdkIntent: PrimerSessionIntent?
+    let sdkPaymentHandling: PrimerPaymentHandling?
+    let sdkSessionId: String?
+    let sdkSettings: [String: AnyCodable]?
+    let sdkType: String?
+    let sdkVersion: String?
+    
+    private enum CodingKeys: String, CodingKey {
+        case clientToken, integrationType, paymentMethodType,
+             sdkIntegrationType, sdkIntent, sdkPaymentHandling,
+             sdkSessionId, sdkSettings, sdkType, sdkVersion
+    }
+    
+    init() {
+        self.clientToken = AppState.current.clientToken
+        self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
+#if COCOAPODS
+        self.integrationType = "COCOAPODS"
+#else
+        self.integrationType = "SPM"
+#endif
+        self.paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType
+        self.sdkIntent = PrimerInternal.shared.intent
+        self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
+        self.sdkSessionId = PrimerInternal.shared.checkoutSessionId
+        
+        self.sdkType = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
+        self.sdkVersion = Bundle.primerFramework.releaseVersionNumber
+        
+        if let settingsDict = try? PrimerSettings.current.asDictionary(),
+            let settingsData = try? JSONSerialization.data(withJSONObject: settingsDict, options: .fragmentsAllowed) {
+            let decoder = JSONDecoder()
+            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: settingsData) {
+                self.sdkSettings = anyDecodableDictionary
+                return
+            }
+        }
+        
+        self.sdkSettings = nil
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        if let clientToken {
+            try container.encode(clientToken, forKey: .clientToken)
+        }
+        
+        if let integrationType {
+            try container.encode(integrationType, forKey: .integrationType)
+        }
+        
+        if let paymentMethodType {
+            try container.encode(paymentMethodType, forKey: .paymentMethodType)
+        }
+        
+        if let sdkIntent {
+            try container.encode(sdkIntent, forKey: .sdkIntent)
+        }
+        
+        if let sdkPaymentHandling {
+            try container.encode(sdkPaymentHandling, forKey: .sdkPaymentHandling)
+        }
+        
+        if let sdkSettings {
+            try container.encode(sdkSettings, forKey: .sdkSettings)
+        }
+    }
 }
 
 #endif
