@@ -57,6 +57,7 @@ public class PrimerHeadlessUniversalCheckout {
         
         PrimerInternal.shared.checkoutSessionId = UUID().uuidString
         PrimerInternal.shared.timingEventId = UUID().uuidString
+        
         var events: [Analytics.Event] = []
         
         let sdkEvent = Analytics.Event(
