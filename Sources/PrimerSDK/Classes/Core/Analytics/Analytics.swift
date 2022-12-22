@@ -16,6 +16,8 @@ class Analytics {
     
     struct Event: Codable {
         
+        static var omitLocalParametersEncoding: Bool = false
+        
         // The variables below are used locally, and are getting deleted before sending them.
         var analyticsUrl: String?
         var localId: String?
@@ -56,7 +58,9 @@ class Analytics {
         
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
-            try? container.encode(analyticsUrl, forKey: .analyticsUrl)
+            if !Analytics.Event.omitLocalParametersEncoding {
+                try? container.encode(analyticsUrl, forKey: .analyticsUrl)
+            }
             try? container.encode(appIdentifier, forKey: .appIdentifier)
             try? container.encode(checkoutSessionId, forKey: .checkoutSessionId)
             try? container.encode(clientSessionId, forKey: .clientSessionId)
@@ -64,7 +68,7 @@ class Analytics {
             try? container.encode(customerId, forKey: .customerId)
             try? container.encode(device, forKey: .device)
             try? container.encode(eventType, forKey: .eventType)
-            if let localId = localId {
+            if let localId = localId, !Analytics.Event.omitLocalParametersEncoding {
                 try? container.encode(localId, forKey: .localId)
             }
             try? container.encode(primerAccountId, forKey: .primerAccountId)

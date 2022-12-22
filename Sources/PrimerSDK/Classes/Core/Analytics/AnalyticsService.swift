@@ -137,6 +137,7 @@ extension Analytics {
                     storedEvents = Array(storedEvents[0..<Int(batchSize)])
                 }
                 
+                Analytics.Event.omitLocalParametersEncoding = true
                 let requestBody = Analytics.Service.Request(data: storedEvents)
                 
                 primerLogAnalytics(
@@ -150,6 +151,8 @@ extension Analytics {
                 
                 let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
                 apiClient.sendAnalyticsEvents(url: analyticsUrl, body: requestBody) { result in
+                    Analytics.Event.omitLocalParametersEncoding = false
+                    
                     switch result {
                     case .success:
                         primerLogAnalytics(
