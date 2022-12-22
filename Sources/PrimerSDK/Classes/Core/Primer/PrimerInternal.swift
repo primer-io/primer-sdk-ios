@@ -24,8 +24,8 @@ internal class PrimerInternal {
     internal var selectedPaymentMethodType: String?
     
     internal let sdkSessionId = UUID().uuidString
-    internal private(set) var checkoutSessionId: String?
-    internal private(set) var timingEventId: String?
+    internal var checkoutSessionId: String?
+    internal var timingEventId: String?
     internal var sdkIntegrationType: PrimerSDKIntegrationType?
     
     // MARK: - INITIALIZATION
