@@ -33,7 +33,6 @@ extension PrimerHeadlessUniversalCheckout {
                     ]))
             
             Analytics.Service.record(events: [sdkEvent])
-            Analytics.Service.sync()
             
             var mutableRequiredInputElementTypes: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
             
@@ -58,7 +57,6 @@ extension PrimerHeadlessUniversalCheckout {
                         ]))
                 
                 Analytics.Service.record(events: [sdkEvent])
-                Analytics.Service.sync()
                 
                 var tmpInputElementsContainers: [Weak<PrimerInputElementDelegateContainer>] = []
                 inputElements.forEach { el in
@@ -102,7 +100,6 @@ extension PrimerHeadlessUniversalCheckout {
                     ]))
             
             Analytics.Service.record(events: [sdkEvent])
-            Analytics.Service.sync()
             
             guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() else {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
@@ -134,7 +131,6 @@ extension PrimerHeadlessUniversalCheckout {
                     ]))
             
             Analytics.Service.record(events: [sdkEvent])
-            Analytics.Service.sync()
             
             super.init()
         }
@@ -150,7 +146,6 @@ extension PrimerHeadlessUniversalCheckout {
                     ]))
             
             Analytics.Service.record(events: [sdkEvent])
-            Analytics.Service.sync()
             
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidStartPreparation(for: PrimerPaymentMethodType.paymentCard.rawValue)
             

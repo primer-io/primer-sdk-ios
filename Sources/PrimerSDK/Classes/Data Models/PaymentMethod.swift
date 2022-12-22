@@ -171,10 +171,10 @@ class PrimerPaymentMethod: Codable {
         }
         
         switch self.type {
-        case PrimerPaymentMethodType.applePay,
-            PrimerPaymentMethodType.goCardless,
-            PrimerPaymentMethodType.googlePay,
-            PrimerPaymentMethodType.iPay88Card:
+        case PrimerPaymentMethodType.applePay.rawValue,
+            PrimerPaymentMethodType.goCardless.rawValue,
+            PrimerPaymentMethodType.googlePay.rawValue,
+            PrimerPaymentMethodType.iPay88Card.rawValue:
             return false
         default:
             return true
@@ -216,6 +216,9 @@ class PrimerPaymentMethod: Codable {
             categories.append(PrimerPaymentMethodManagerCategory.rawData)
             
         case .applePay:
+            categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
+            
+        case .iPay88Card:
             categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
             
         case .klarna:
