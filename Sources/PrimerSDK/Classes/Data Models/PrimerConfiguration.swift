@@ -200,6 +200,7 @@ extension Response.Body {
         let pciUrl: String?
         var clientSession: ClientSession.APIResponse?
         let paymentMethods: [PrimerPaymentMethod]?
+        let primerAccountId: String?
         let keys: ThreeDS.Keys?
         let checkoutModules: [Response.Body.Configuration.CheckoutModule]?
         
@@ -216,6 +217,7 @@ extension Response.Body {
             self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
             let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
             self.paymentMethods = throwables.compactMap({ $0.value })
+            self.primerAccountId = (try? container.decode(String?.self, forKey: .primerAccountId)) ?? nil
             self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
             let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
             self.checkoutModules = moduleThrowables.compactMap({ $0.value })
@@ -254,6 +256,7 @@ extension Response.Body {
             pciUrl: String?,
             clientSession: ClientSession.APIResponse?,
             paymentMethods: [PrimerPaymentMethod]?,
+            primerAccountId: String?,
             keys: ThreeDS.Keys?,
             checkoutModules: [PrimerAPIConfiguration.CheckoutModule]?
         ) {
@@ -261,6 +264,7 @@ extension Response.Body {
             self.pciUrl = pciUrl
             self.clientSession = clientSession
             self.paymentMethods = paymentMethods
+            self.primerAccountId = primerAccountId
             self.keys = keys
             self.checkoutModules = checkoutModules
         }
