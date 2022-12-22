@@ -45,6 +45,18 @@ public class PrimerHeadlessUniversalCheckout {
     ) {
         PrimerInternal.shared.intent = .checkout
         
+        DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
+        
+        if delegate != nil {
+            PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        }
+        
+        if PrimerHeadlessUniversalCheckout.current.delegate == nil {
+            print("WARNING!\nPrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
+        }
+        
+        PrimerInternal.shared.checkoutSessionId = UUID().uuidString
+        PrimerInternal.shared.timingEventId = UUID().uuidString
         var events: [Analytics.Event] = []
         
         let sdkEvent = Analytics.Event(
@@ -69,17 +81,6 @@ public class PrimerHeadlessUniversalCheckout {
         
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
-        Analytics.Service.sync()
-        
-        if delegate != nil {
-            PrimerHeadlessUniversalCheckout.current.delegate = delegate
-        }
-        
-        if PrimerHeadlessUniversalCheckout.current.delegate == nil {
-            print("WARNING!\nPrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
-        }
-        
-        DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         settings.uiOptions.isInitScreenEnabled = false
