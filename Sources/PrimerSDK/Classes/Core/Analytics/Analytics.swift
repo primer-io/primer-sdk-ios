@@ -46,6 +46,7 @@ class Analytics {
             self.clientSessionId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId
             self.customerId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id
             self.localId = String.randomString(length: 32)
+            self.primerAccountId = PrimerAPIConfigurationModule.apiConfiguration?.primerAccountId
             self.sdkSessionId = PrimerInternal.shared.sdkSessionId
             self.sdkType = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
             
