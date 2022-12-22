@@ -387,9 +387,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .done {
-                seal.fulfill()
-            }
             .done { paymentMethodTokenData in
                 seal.fulfill(paymentMethodTokenData)
             }
