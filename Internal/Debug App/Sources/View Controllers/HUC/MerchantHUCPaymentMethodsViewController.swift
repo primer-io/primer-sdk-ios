@@ -144,7 +144,8 @@ extension MerchantHUCPaymentMethodsViewController: UITableViewDataSource, UITabl
 extension MerchantHUCPaymentMethodsViewController {
     
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
-        
+        print("\n\n🤯🤯🤯 \(#function)\ndata: \(data)")
+        self.hideLoadingOverlay()
     }
     
     func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {

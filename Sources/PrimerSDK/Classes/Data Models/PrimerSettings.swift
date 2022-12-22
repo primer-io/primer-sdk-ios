@@ -20,7 +20,7 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
     let paymentHandling: PrimerPaymentHandling
     let localeData: PrimerLocaleData
     let paymentMethodOptions: PrimerPaymentMethodOptions
-    let uiOptions: PrimerUIOptions
+    var uiOptions: PrimerUIOptions
     let debugOptions: PrimerDebugOptions
     
     public init(

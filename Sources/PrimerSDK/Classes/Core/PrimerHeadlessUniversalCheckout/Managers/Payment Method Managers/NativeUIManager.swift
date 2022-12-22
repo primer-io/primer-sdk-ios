@@ -27,7 +27,6 @@ extension PrimerHeadlessUniversalCheckout {
                     ]))
             
             Analytics.Service.record(events: [sdkEvent])
-            Analytics.Service.sync()
             
             self.paymentMethodType = paymentMethodType
             self.paymentMethod = try self.validatePaymentMethod(withType: paymentMethodType)
@@ -87,7 +86,6 @@ extension PrimerHeadlessUniversalCheckout {
                     ]))
             
             Analytics.Service.record(events: [sdkEvent])
-            Analytics.Service.sync()
             
             do {
                 try self.validatePaymentMethod(withType: self.paymentMethodType)
