@@ -9,7 +9,11 @@ public class Primer {
     
     // MARK: - PROPERTIES
     
-    public weak var delegate: PrimerDelegate?
+    public weak var delegate: PrimerDelegate? {
+        didSet {
+            PrimerInternal.shared.sdkIntegrationType = .dropIn
+        }
+    }
     public var intent: PrimerSessionIntent? {
         return PrimerInternal.shared.intent
     }

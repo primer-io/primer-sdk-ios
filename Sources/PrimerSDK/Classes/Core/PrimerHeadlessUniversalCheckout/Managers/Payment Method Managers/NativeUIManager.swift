@@ -17,6 +17,8 @@ extension PrimerHeadlessUniversalCheckout {
         private var paymentMethod: PrimerPaymentMethod?
         
         required public init(paymentMethodType: String) throws {
+            PrimerInternal.shared.sdkIntegrationType = .headless
+            
             let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
                 properties: SDKEventProperties(
@@ -76,6 +78,8 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public func showPaymentMethod(intent: PrimerSessionIntent) throws {
+            PrimerInternal.shared.sdkIntegrationType = .headless
+            
             let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
                 properties: SDKEventProperties(
