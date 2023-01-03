@@ -45,36 +45,29 @@ internal class PrimerDelegateProxy {
     
     static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecisionProtocol) -> Void) {
         DispatchQueue.main.async {
-            if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod != nil,
+            if PrimerInternal.shared.sdkIntegrationType == .headless,
                (decisionHandler as ((PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)?) != nil
             {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod!(paymentMethodTokenData, decisionHandler: decisionHandler)
-                return
-            }
-            
-            if Primer.shared.delegate?.primerDidTokenizePaymentMethod != nil,
-               (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
+                
+            } else if PrimerInternal.shared.sdkIntegrationType == .dropIn,
+                      (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil
             {
                 Primer.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
-                return
             }
         }
     }
     
     static func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecisionProtocol) -> Void) {
         DispatchQueue.main.async {
-            if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith != nil,
+            if PrimerInternal.shared.sdkIntegrationType == .headless,
                (decisionHandler as ((PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)?) != nil
             {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith!(resumeToken, decisionHandler: decisionHandler)
-                return
-            }
-            
-            if Primer.shared.delegate?.primerDidResumeWith != nil,
-               (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
+            } else if PrimerInternal.shared.sdkIntegrationType == .dropIn,
+                      (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil
             {
                 Primer.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
-                return
             }
         }
     }
@@ -88,10 +81,6 @@ internal class PrimerDelegateProxy {
                 decisionHandler(.continuePaymentCreation())
             }
         }
-    }
-    
-    static var isOnCheckoutDismissedImplemented: Bool {
-        return Primer.shared.delegate?.primerDidDismiss != nil
     }
     
     static func primerDidDismiss() {
@@ -147,25 +136,28 @@ internal class PrimerDelegateProxy {
             
             let exposedError: Error = error.exposedError
             
-            if Primer.shared.delegate?.primerDidFailWithError == nil,
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail == nil
-            {
-                print("WARNING!\nDelegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
-                decisionHandler(.fail(withErrorMessage: nil))
-                return
-            }
-            
-            if Primer.shared.delegate?.primerDidFailWithError != nil {
-                Primer.shared.delegate?.primerDidFailWithError?(exposedError, data: data, decisionHandler: { errorDecision in
-                    switch errorDecision.type {
-                    case .fail(let message):
-                        DispatchQueue.main.async {
-                            decisionHandler(.fail(withErrorMessage: message))
+            if PrimerInternal.shared.sdkIntegrationType == .dropIn {
+                if Primer.shared.delegate?.primerDidFailWithError == nil {
+                    print("WARNING!\nDelegate function 'primerDidFailWithError' hasn't been implemented. No custom error message will be displayed on the error screen.")
+                    decisionHandler(.fail(withErrorMessage: nil))
+                    
+                } else {
+                    Primer.shared.delegate?.primerDidFailWithError?(exposedError, data: data, decisionHandler: { errorDecision in
+                        switch errorDecision.type {
+                        case .fail(let message):
+                            DispatchQueue.main.async {
+                                decisionHandler(.fail(withErrorMessage: message))
+                            }
                         }
-                    }
-                })
-            } else if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail != nil {
-                DispatchQueue.main.async {
+                    })
+                }
+                
+            } else if PrimerInternal.shared.sdkIntegrationType == .headless {
+                if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail == nil {
+                    print("WARNING!\nDelegate function 'primerHeadlessUniversalCheckoutDidFail' hasn't been implemented.")
+                    decisionHandler(.fail(withErrorMessage: nil))
+                    
+                } else {
                     PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail!(withError: exposedError, checkoutData: data)
                     decisionHandler(.fail(withErrorMessage: nil))
                 }
@@ -177,7 +169,7 @@ internal class PrimerDelegateProxy {
                 let timingEndEvent = Analytics.Event(
                     eventType: .timerEvent,
                     properties: TimerEventProperties(
-                        momentType: .start,
+                        momentType: .end,
                         id: timingEventId))
                 
                 Analytics.Service.record(events: [timingEndEvent])
