@@ -85,6 +85,7 @@ extension Analytics {
                 function: #function,
                 line: #line)
             
+            Analytics.Event.omitLocalParametersEncoding = false
             let eventsData = try JSONEncoder().encode(events)
             try eventsData.write(to: Analytics.Service.filepath)
         }
