@@ -13,14 +13,21 @@ public class PrimerHeadlessUniversalCheckout {
     
     public static let current = PrimerHeadlessUniversalCheckout()
     
-    public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate?
-    public weak var uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate?
+    public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate? {
+        didSet {
+            PrimerInternal.shared.sdkIntegrationType = .headless
+        }
+    }
+    public weak var uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate? {
+        didSet {
+            PrimerInternal.shared.sdkIntegrationType = .headless
+        }
+    }
     private(set) public var clientToken: String?
     
     internal let sdkSessionId = UUID().uuidString
     internal private(set) var checkoutSessionId: String?
     internal private(set) var timingEventId: String?
-    internal var sdkIntegrationType: PrimerSDKIntegrationType?
 
     private var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
     private let unsupportedPaymentMethodTypes: [String] = [
@@ -43,6 +50,7 @@ public class PrimerHeadlessUniversalCheckout {
         uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate? = nil,
         completion: @escaping (_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]?, _ err: Error?) -> Void
     ) {
+        PrimerInternal.shared.sdkIntegrationType = .headless
         PrimerInternal.shared.intent = .checkout
         
         DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
