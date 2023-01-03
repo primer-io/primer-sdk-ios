@@ -248,20 +248,20 @@ extension MerchantHUCPaymentMethodsViewController {
         self.hideLoadingOverlay()
     }
     
-    func primerHeadlessUniversalCheckoutDidFail(withError err: Error) {
-        print("\n\nMERCHANT APP\n\(#function)\nerror: \(err)")
+    func primerHeadlessUniversalCheckoutDidFail(withError err: Error, checkoutData: PrimerCheckoutData?) {
+        print("\n\nMERCHANT APP\n\(#function)\nerror: \(err)\ncheckoutData: \(checkoutData)")
         self.logs.append(#function)
-        
+
         self.primerError = err
         self.hideLoadingOverlay()
     }
     
     func primerHeadlessUniversalCheckoutWillUpdateClientSession() {
-        print("\n\n🤯🤯🤯 \(#function)")
+        print("\n\n\(#function)")
     }
     
     func primerHeadlessUniversalCheckoutDidUpdateClientSession(_ clientSession: PrimerClientSession) {
-        print("\n\n🤯🤯🤯 \(#function)\nclientSession: \(clientSession)")
+        print("\n\n\(#function)\nclientSession: \(clientSession)")
     }
     
     func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
@@ -274,12 +274,12 @@ extension MerchantHUCPaymentMethodsViewController {
 extension MerchantHUCPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutUIDelegate {
     
     func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
-        print("\n\n🤯🤯🤯 \(#function)")
+        print("\n\n\(#function)")
         self.showLoadingOverlay()
     }
     
     func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String) {
-        print("\n\n🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
+        print("\n\n\(#function)\npaymentMethodType: \(paymentMethodType)")
     }
 }
 
