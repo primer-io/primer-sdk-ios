@@ -122,7 +122,6 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public func submit() {
-            
             guard let rawData = rawData else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
