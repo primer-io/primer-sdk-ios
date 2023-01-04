@@ -290,8 +290,8 @@ class PrimerPaymentMethod: Codable {
             options = cardOptions
         } else if let payPalOptions = try? container.decode(PayPalOptions.self, forKey: .options) {
             options = payPalOptions
-        } else if let apayaOptions = try? container.decode(MerchantOptions.self, forKey: .options) {
-            options = apayaOptions
+        } else if let merchantOptions = try? container.decode(MerchantOptions.self, forKey: .options) {
+            options = merchantOptions
         } else {
             options = nil
         }
