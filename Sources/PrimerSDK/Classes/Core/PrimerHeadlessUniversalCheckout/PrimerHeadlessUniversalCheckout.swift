@@ -126,6 +126,10 @@ public class PrimerHeadlessUniversalCheckout {
         }
     }
     
+    public func cleanUp() {
+        PrimerAPIConfigurationModule.resetSession()
+    }
+    
     // MARK: - HELPERS
     
     private func continueValidateSession() -> Promise<Void> {

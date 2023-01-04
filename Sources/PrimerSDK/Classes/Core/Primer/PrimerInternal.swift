@@ -300,7 +300,10 @@ internal class PrimerInternal {
         
         PrimerUIManager.dismissPrimerUI(animated: true) {
             PrimerDelegateProxy.primerDidDismiss()
-            PrimerAPIConfigurationModule.resetSession()
+            
+            if PrimerInternal.shared.sdkIntegrationType == .dropIn {
+                PrimerAPIConfigurationModule.resetSession()
+            }
         }
     }
 }
