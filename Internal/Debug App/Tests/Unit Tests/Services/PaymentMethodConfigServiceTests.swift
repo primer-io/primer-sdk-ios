@@ -20,6 +20,7 @@ class PaymentMethodConfigServiceTests: XCTestCase {
             paymentMethods: [
                 PrimerPaymentMethod(id: "payment-card-id", implementationType: .nativeSdk, type: "PAYMENT_CARD", name: "Payment Card", processorConfigId: "payment-card-processor_config-id", surcharge: nil, options: nil, displayMetadata: nil)
             ],
+            primerAccountId: nil,
             keys: nil,
             checkoutModules: nil
         )

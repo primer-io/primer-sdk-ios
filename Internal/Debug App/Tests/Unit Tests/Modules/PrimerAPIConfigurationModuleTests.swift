@@ -21,6 +21,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             pciUrl: "https://pci.primer.io",
             clientSession: nil,
             paymentMethods: [],
+            primerAccountId: nil,
             keys: nil,
             checkoutModules: nil)
                 
