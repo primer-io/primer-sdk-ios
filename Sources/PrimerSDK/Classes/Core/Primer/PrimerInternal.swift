@@ -229,7 +229,6 @@ internal class PrimerInternal {
     }
     
     internal func showPaymentMethod(_ paymentMethodType: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
-        self.sdkIntegrationType = .dropIn
         self.intent = intent
         self.selectedPaymentMethodType = paymentMethodType
         
