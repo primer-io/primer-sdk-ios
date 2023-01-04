@@ -147,6 +147,34 @@ internal extension String {
         return isValid
     }
     
+    var isValidExpiryDateWith4DigitYear: Bool {
+        // swiftlint:disable identifier_name
+        let _self = self.replacingOccurrences(of: "/", with: "")
+        // swiftlint:enable identifier_name
+        if _self.count != 6 {
+            return false
+        }
+        
+        if !_self.isNumeric {
+            return false
+        }
+        
+        guard let date = _self.toDate(withFormat: "MMyyyy") else { return false }
+        let isValid = date.endOfMonth > Date()
+        
+        if !isValid {
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Invalid expiry date",
+                    messageType: .validationFailed,
+                    severity: .error))
+            Analytics.Service.record(event: event)
+        }
+        
+        return isValid
+    }
+    
     func isTypingValidCVV(cardNetwork: CardNetwork?) -> Bool? {
         let maxDigits = cardNetwork?.validation?.code.length ?? 4
         if !isNumeric && !isEmpty { return false }

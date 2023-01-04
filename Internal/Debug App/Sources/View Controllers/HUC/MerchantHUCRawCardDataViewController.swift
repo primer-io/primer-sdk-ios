@@ -216,12 +216,12 @@ extension MerchantHUCRawDataViewController: UITextFieldDelegate {
             self.rawCardData.cardNumber = (newText ?? "").replacingOccurrences(of: " ", with: "")
             
         } else if textField == self.expiryDateTextField,
-                  newText?.count == 5,
+                  newText?.count == 7,
                   let expiryComponents = newText?.split(separator: "/"),
                   expiryComponents.count == 2
         {
             self.rawCardData.expiryMonth = String(expiryComponents[0])
-            self.rawCardData.expiryYear = "20\(String(expiryComponents[1]))"
+            self.rawCardData.expiryYear  = String(expiryComponents[1])
             
         } else if textField == self.cvvTextField {
             self.rawCardData.cvv = newText ?? ""
