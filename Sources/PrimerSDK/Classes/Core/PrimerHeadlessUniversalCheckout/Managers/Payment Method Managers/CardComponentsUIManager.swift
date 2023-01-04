@@ -690,6 +690,10 @@ extension PrimerHeadlessUniversalCheckout {
             return Promise { seal in
                 let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
                 createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
+                    if let paymentResponse {
+                        self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+                    }
+                    
                     guard error == nil else {
                         seal.reject(error!)
                         return
@@ -697,7 +701,7 @@ extension PrimerHeadlessUniversalCheckout {
                     
                     guard let status = paymentResponse?.status, status != .failed else {
                         seal.reject(PrimerError.paymentFailed(
-                            description: "Failed to create/resume payment",
+                            description: paymentResponse?.id != nil ? "Failed to create payment with id \(paymentResponse!.id!)" : "Failed to create payment",
                             userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                             diagnosticsId: nil))
                         return
@@ -787,6 +791,9 @@ extension PrimerHeadlessUniversalCheckout {
                 
                 let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
                 createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
+                    if let paymentResponse {
+                        self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+                    }
                     
                     guard error == nil else {
                         seal.reject(error!)
@@ -795,7 +802,7 @@ extension PrimerHeadlessUniversalCheckout {
                     
                     guard let status = paymentResponse?.status, status != .failed else {
                         seal.reject(PrimerError.paymentFailed(
-                            description: "Failed to create/resume payment",
+                            description: paymentResponse?.id != nil ? "Failed to resume payment with id \(paymentResponse!.id!)" : "Failed to resume payment",
                             userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                             diagnosticsId: nil))
                         return
