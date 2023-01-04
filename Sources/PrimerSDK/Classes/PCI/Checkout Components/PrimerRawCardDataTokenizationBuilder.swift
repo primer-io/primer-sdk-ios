@@ -120,9 +120,9 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 errors.append(PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
             }
             
-            let expiryDate = rawData.expiryMonth + "/" + rawData.expiryYear.suffix(2)
+            let expiryDate = rawData.expiryMonth + "/" + rawData.expiryYear
             
-            if !expiryDate.isValidExpiryDate {
+            if !expiryDate.isValidExpiryDateWith4DigitYear {
                 errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
             }
             
