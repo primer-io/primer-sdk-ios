@@ -40,7 +40,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         @discardableResult
-        private func validatePaymentMethod(withType paymentMethodType: String) throws -> PrimerPaymentMethod {
+        private func validatePaymentMethod(withType paymentMethodType: String, andIntent intent: PrimerSessionIntent? = nil) throws -> PrimerPaymentMethod {
             guard PrimerAPIConfigurationModule.decodedJWTToken != nil,
                   PrimerAPIConfigurationModule.apiConfiguration != nil
             else {
@@ -53,6 +53,19 @@ extension PrimerHeadlessUniversalCheckout {
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 throw err
+            }
+            
+            if let intent = intent {
+                if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
+                    (intent == .checkout && paymentMethod.isCheckoutEnabled)
+                {
+                    let err = PrimerError.unsupportedIntent(
+                        intent: intent,
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: nil)
+                    ErrorHandler.handle(error: err)
+                    throw err
+                }
             }
             
             switch paymentMethodType {
@@ -92,7 +105,7 @@ extension PrimerHeadlessUniversalCheckout {
             Analytics.Service.record(events: [sdkEvent])
             
             do {
-                try self.validatePaymentMethod(withType: self.paymentMethodType)
+                try self.validatePaymentMethod(withType: self.paymentMethodType, andIntent: intent)
             } catch {
                 throw error
             }
