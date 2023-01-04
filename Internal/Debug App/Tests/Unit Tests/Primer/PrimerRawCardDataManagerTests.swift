@@ -65,7 +65,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         let rawCardData = PrimerCardData(
             cardNumber: BaseRawCardData.testCardNumbers[.visa]!.first!,
             expiryMonth: "02",
-            expiryYear: "2040",
+            expiryYear: "40",
             cvv: "123",
             cardholderName: "John Smith")
         

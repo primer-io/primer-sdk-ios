@@ -78,6 +78,7 @@ class Mocks {
             pciUrl: "https://pci.primer.io",
             clientSession: clientSession,
             paymentMethods: paymentMethods,
+            primerAccountId: nil,
             keys: nil,
             checkoutModules: nil)
     }
@@ -87,6 +88,7 @@ class Mocks {
         pciUrl: "https://pci.primer.io",
         clientSession: nil,
         paymentMethods: [],
+        primerAccountId: nil,
         keys: nil,
         checkoutModules: nil)
     
@@ -226,6 +228,7 @@ let mockPaymentMethodConfig = PrimerAPIConfiguration(
         PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
         PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: MerchantOptions(merchantId: "merchant-id", merchantAccountId: "merchant-account-id"), displayMetadata: nil)
     ],
+    primerAccountId: nil,
     keys: nil,
     checkoutModules: nil
 )
