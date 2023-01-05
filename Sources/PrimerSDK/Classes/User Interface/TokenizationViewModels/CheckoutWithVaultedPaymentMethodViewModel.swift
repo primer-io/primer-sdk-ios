@@ -230,7 +230,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         case .fail(let message):
                             var merchantErr: Error!
                             if let message = message {
-                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                                 merchantErr = err
                             } else {
                                 merchantErr = NSError.emptyDescriptionError
@@ -339,7 +339,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                             }
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
@@ -353,7 +353,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         case .fail(let message):
                             var merchantErr: Error!
                             if let message = message {
-                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                                 merchantErr = err
                             } else {
                                 merchantErr = NSError.emptyDescriptionError
@@ -371,7 +371,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                             }
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }

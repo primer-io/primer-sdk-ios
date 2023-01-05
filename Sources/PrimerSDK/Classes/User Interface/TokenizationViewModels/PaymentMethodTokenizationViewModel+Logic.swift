@@ -146,7 +146,7 @@ extension PaymentMethodTokenizationViewModel {
             var cancelledError: PrimerError?
             self.didCancel = {
                 self.isCancelled = true
-                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: nil)
+                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: cancelledError!)
                 seal.reject(cancelledError!)
             }
@@ -262,7 +262,7 @@ extension PaymentMethodTokenizationViewModel {
                         case .fail(let message):
                             var merchantErr: Error!
                             if let message = message {
-                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                                 merchantErr = err
                             } else {
                                 merchantErr = NSError.emptyDescriptionError
@@ -280,7 +280,7 @@ extension PaymentMethodTokenizationViewModel {
                             }
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
@@ -358,7 +358,7 @@ extension PaymentMethodTokenizationViewModel {
                         case .fail(let message):
                             var merchantErr: Error!
                             if let message = message {
-                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                                 merchantErr = err
                             } else {
                                 merchantErr = NSError.emptyDescriptionError

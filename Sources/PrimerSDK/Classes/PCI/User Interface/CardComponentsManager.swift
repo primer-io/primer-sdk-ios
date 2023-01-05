@@ -187,15 +187,36 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         var errors: [Error] = []
         
         if !cardnumberField.cardnumber.isValidCardNumber {
-            errors.append(PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+            errors.append(PrimerValidationError.invalidCardnumber(
+                userInfo: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ],
+                diagnosticsId: UUID().uuidString))
         }
         
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
-            errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+            errors.append(PrimerValidationError.invalidExpiryDate(
+                userInfo: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ],
+                diagnosticsId: UUID().uuidString))
         }
         
         if isRequiringCVVInput && !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
-            errors.append(PrimerValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+            errors.append(PrimerValidationError.invalidCvv(
+                userInfo: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ],
+                diagnosticsId: UUID().uuidString))
         }
         
         billingAddressFieldViews?.filter { $0.isTextValid == false }.forEach {
