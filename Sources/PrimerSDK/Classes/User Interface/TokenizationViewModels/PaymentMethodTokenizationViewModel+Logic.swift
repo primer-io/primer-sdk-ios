@@ -107,7 +107,7 @@ extension PaymentMethodTokenizationViewModel {
             if let primerErr = err as? PrimerError,
                case .cancelled = primerErr,
                self.config.type == PrimerPaymentMethodType.applePay.rawValue,
-               PrimerHeadlessUniversalCheckout.current.delegate == nil
+               PrimerInternal.shared.sdkIntegrationType == .dropIn
             {
                 firstly {
                     clientSessionActionsModule.unselectPaymentMethodIfNeeded()
