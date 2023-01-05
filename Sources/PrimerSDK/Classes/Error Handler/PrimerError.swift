@@ -172,8 +172,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             "diagnosticsId": diagnosticsId
         ]
         
-        if let key {
-            tmpUserInfo["key"] = key
+        if let inputElementType {
+            tmpUserInfo["inputElementType"] = inputElementType
         }
         
         return tmpUserInfo
@@ -187,7 +187,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
         return self
     }
     
-    var key: String? {
+    var inputElementType: String? {
         switch self {
         case .invalidCardholderName:
             return "cardholderName"
