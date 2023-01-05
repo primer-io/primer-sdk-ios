@@ -125,7 +125,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             
             let savedPaymentMethodLabel = UILabel()
             savedPaymentMethodLabel.translatesAutoresizingMaskIntoConstraints = false
-            savedPaymentMethodLabel.text = Strings.VaultPaymentMethodViewContent.savedPaymentMethod
+            savedPaymentMethodLabel.text = Strings.VaultPaymentMethodViewContent.savedPaymentMethodsTitle.localizedUppercase
             savedPaymentMethodLabel.adjustsFontSizeToFitWidth = true
             savedPaymentMethodLabel.minimumScaleFactor = 0.8
             savedPaymentMethodLabel.textColor = theme.text.subtitle.color
