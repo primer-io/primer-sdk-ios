@@ -14,15 +14,17 @@ import UIKit
 internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var errorId: String { get }
     var exposedError: Error { get }
-    var info: [String: String]? { get }
+    var info: [String: Any]? { get }
     var diagnosticsId: String { get }
 }
 
-internal enum PrimerValidationError: PrimerErrorProtocol {
+public enum PrimerValidationError: PrimerErrorProtocol {
     
     case invalidCardholderName(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidCardnumber(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidCvv(userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidExpiryMonth(userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidExpiryYear(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidExpiryDate(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidPostalCode(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidFirstName(userInfo: [String: String]?, diagnosticsId: String?)
@@ -31,6 +33,7 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
     case invalidState(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidCountry(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidPhoneNumber(userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidRetailer(userInfo: [String: String]?, diagnosticsId: String?)
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String?)
     
     var diagnosticsId: String {
@@ -59,6 +62,12 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
             return diagnosticsId ?? UUID().uuidString
         case .invalidRawData(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
+        case .invalidExpiryMonth(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .invalidExpiryYear(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .invalidRetailer(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
         }
     }
 
@@ -70,6 +79,10 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
             return "invalid-cardnumber"
         case .invalidCvv:
             return "invalid-cvv"
+        case .invalidExpiryMonth:
+            return "invalid-expiry-month"
+        case .invalidExpiryYear:
+            return "invalid-expiry-year"
         case .invalidExpiryDate:
             return "invalid-expiry-date"
         case .invalidPostalCode:
@@ -88,45 +101,55 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
             return "invalid-phone-number"
         case .invalidRawData:
             return "invalid-raw-data"
+        case .invalidRetailer:
+            return "invalid-retailer"
         }
     }
     
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .invalidCardholderName:
-            return "[\(errorId)] Invalid cardholder name"
+            return "[\(errorId)] Invalid cardholder name (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
         case .invalidCardnumber:
-            return "[\(errorId)] Invalid card number"
+            return "[\(errorId)] Invalid card number (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
         case .invalidCvv:
-            return "[\(errorId)] Invalid CVV"
+            return "[\(errorId)] Invalid CVV (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+        case .invalidExpiryMonth:
+            return "[\(errorId)] Invalid expiry month (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+        case .invalidExpiryYear:
+            return "[\(errorId)] Invalid expiry year (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
         case .invalidExpiryDate:
-            return "[\(errorId)] Invalid expiry date. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year."
+            return "[\(errorId)] Invalid expiry date. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
         case .invalidPostalCode:
-            return "[\(errorId)] Invalid postal code"
+            return "[\(errorId)] Invalid postal code (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
         case .invalidFirstName:
-            return "[\(errorId)] Invalid first name"
+            return "[\(errorId)] Invalid first name (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
         case .invalidLastName:
-            return "[\(errorId)] Invalid last name"
+            return "[\(errorId)] Invalid last name (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
         case .invalidAddress:
-            return "[\(errorId)] Invalid address"
+            return "[\(errorId)] Invalid address (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
         case .invalidState:
-            return "[\(errorId)] Invalid state"
+            return "[\(errorId)] Invalid state (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
         case .invalidCountry:
-            return "[\(errorId)] Invalid country"
+            return "[\(errorId)] Invalid country (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
         case .invalidPhoneNumber:
-            return "[\(errorId)] Invalid phone number"
+            return "[\(errorId)] Invalid phone number (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
         case .invalidRawData:
-            return "[\(errorId)] Invalid raw data"
+            return "[\(errorId)] Invalid raw data (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+        case .invalidRetailer:
+            return "[\(errorId)] Invalid retailer (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
         }
     }
     
-    var info: [String: String]? {
-        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
-        
+    var info: [String: Any]? {
+        var tmpUserInfo: [String: Any] = errorUserInfo
+
         switch self {
         case .invalidCardholderName(let userInfo, _),
                 .invalidCardnumber(let userInfo, _),
                 .invalidCvv(let userInfo, _),
+                .invalidExpiryMonth(let userInfo, _),
+                .invalidExpiryYear(let userInfo, _),
                 .invalidExpiryDate(let userInfo, _),
                 .invalidPostalCode(let userInfo, _),
                 .invalidFirstName(let userInfo, _),
@@ -135,18 +158,28 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
                 .invalidState(let userInfo, _),
                 .invalidCountry(let userInfo, _),
                 .invalidPhoneNumber(let userInfo, _),
-                .invalidRawData(let userInfo, _):
+                .invalidRawData(let userInfo, _),
+                .invalidRetailer(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+        }
+
+        return tmpUserInfo
+    }
+    
+    public var errorUserInfo: [String : Any] {
+        var tmpUserInfo: [String: Any] = [
+            "createdAt": Date().toString(),
+            "diagnosticsId": diagnosticsId
+        ]
+        
+        if let key {
+            tmpUserInfo["key"] = key
         }
         
         return tmpUserInfo
     }
     
-    var errorUserInfo: [String : Any] {
-        return info ?? [:]
-    }
-    
-    var recoverySuggestion: String? {
+    public var recoverySuggestion: String? {
         return nil
     }
     
@@ -154,6 +187,40 @@ internal enum PrimerValidationError: PrimerErrorProtocol {
         return self
     }
     
+    var key: String? {
+        switch self {
+        case .invalidCardholderName:
+            return "cardholderName"
+        case .invalidCardnumber:
+            return "cardnumber"
+        case .invalidCvv:
+            return "cvv"
+        case .invalidExpiryMonth:
+            return "expiryMonth"
+        case .invalidExpiryYear:
+            return "expiryYear"
+        case .invalidExpiryDate:
+            return "expiryDate"
+        case .invalidPostalCode:
+            return nil
+        case .invalidFirstName:
+            return nil
+        case .invalidLastName:
+            return nil
+        case .invalidAddress:
+            return nil
+        case .invalidState:
+            return nil
+        case .invalidCountry:
+            return nil
+        case .invalidPhoneNumber:
+            return "phoneNumber"
+        case .invalidRetailer:
+            return "retailer"
+        case .invalidRawData:
+            return nil
+        }
+    }
 }
 
 internal enum InternalError: PrimerErrorProtocol {
@@ -251,8 +318,8 @@ internal enum InternalError: PrimerErrorProtocol {
         }
     }
     
-    var info: [String: String]? {
-        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
+    var info: [String: Any]? {
+        var tmpUserInfo: [String: Any] = errorUserInfo
         
         switch self {
         case .failedToEncode(_, let userInfo, _),
@@ -266,14 +333,18 @@ internal enum InternalError: PrimerErrorProtocol {
                 .unauthorized(_, _, let userInfo, _),
                 .underlyingErrors(_, let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-            tmpUserInfo["diagnosticsId"] = self.diagnosticsId
         }
         
         return tmpUserInfo
     }
     
     var errorUserInfo: [String : Any] {
-        return info ?? [:]
+        var tmpUserInfo: [String: Any] = [
+            "createdAt": Date().toString(),
+            "diagnosticsId": diagnosticsId
+        ]
+        
+        return tmpUserInfo
     }
     
     var recoverySuggestion: String? {
@@ -584,11 +655,11 @@ internal enum PrimerError: PrimerErrorProtocol {
     }
     
     var errorDescription: String? {
-        return "[\(errorId)] \(plainDescription) (diagnosticsId: \(self.diagnosticsId))"
+        return "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
     }
     
-    var info: [String: String]? {
-        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
+    var info: [String: Any]? {
+        var tmpUserInfo: [String: Any] = errorUserInfo
         
         switch self {
         case .generic(_, let userInfo, _),
@@ -627,17 +698,21 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .failedToFindModule(_, let userInfo, _),
                 .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-            tmpUserInfo["diagnosticsId"] = self.diagnosticsId
             
         case .sdkDismissed:
-            tmpUserInfo["diagnosticsId"] = self.diagnosticsId
+            break
         }
         
         return tmpUserInfo
     }
     
     var errorUserInfo: [String : Any] {
-        return info ?? [:]
+        var tmpUserInfo: [String: Any] = [
+            "createdAt": Date().toString(),
+            "diagnosticsId": diagnosticsId
+        ]
+        
+        return tmpUserInfo
     }
     
     var recoverySuggestion: String? {
