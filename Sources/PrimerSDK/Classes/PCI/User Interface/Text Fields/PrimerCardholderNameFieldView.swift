@@ -22,7 +22,14 @@ public final class PrimerCardholderNameFieldView: PrimerSimpleCardFormTextFieldV
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .cardHolder
-        validationError = .invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+        validationError = .invalidCardholderName(
+            userInfo: [
+                "file": #file,
+                "class": "\(Self.self)",
+                "function": #function,
+                "line": "\(#line)"
+            ],
+            diagnosticsId: UUID().uuidString)
         isValid = { text in
             return text.isTypingNonDecimalCharacters
         }
