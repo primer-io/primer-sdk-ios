@@ -109,7 +109,14 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             var errors: [PrimerValidationError] = []
             
             guard let rawData = data as? PrimerCardData, let rawDataManager = rawDataManager else {
-                let err = PrimerValidationError.invalidRawData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerValidationError.invalidRawData(
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
                 errors.append(err)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -137,7 +144,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         "function": #function,
                         "line": "\(#line)"
                     ],
-                    diagnosticsId: nil))
+                    diagnosticsId: UUID().uuidString))
                 
             } else {
                 if Int(rawData.expiryMonth)! > 12 {
@@ -149,7 +156,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                             "function": #function,
                             "line": "\(#line)"
                         ],
-                        diagnosticsId: nil))
+                        diagnosticsId: UUID().uuidString))
                     
                 } else if Int(rawData.expiryMonth)! < 1 {
                     isInvalidMonth = true
@@ -160,7 +167,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                             "function": #function,
                             "line": "\(#line)"
                         ],
-                        diagnosticsId: nil))
+                        diagnosticsId: UUID().uuidString))
                     
                 }
             }
@@ -175,30 +182,59 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         "function": #function,
                         "line": "\(#line)"
                     ],
-                    diagnosticsId: nil))
+                    diagnosticsId: UUID().uuidString))
             }
             
             if !isInvalidMonth, !isInvalidYear {
                 let expiryDate = rawData.expiryMonth + "/" + rawData.expiryYear
                 
                 if !expiryDate.isValidExpiryDateWith4DigitYear {
-                    errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+                    errors.append(PrimerValidationError.invalidExpiryDate(
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
                 }
             }
             
             let cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
             if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
-                errors.append(PrimerValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+                errors.append(PrimerValidationError.invalidCvv(
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString))
             }
             
             if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                 if !(rawData.cardholderName ?? "").isValidCardholderName {
-                    errors.append(PrimerValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+                    errors.append(PrimerValidationError.invalidCardholderName(
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
                 }
             }
             
             if !errors.isEmpty {
-                let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.underlyingErrors(
+                    errors: errors,
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
                 self.isDataValid = false
                 self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: false, errors: errors)
                 seal.reject(err)

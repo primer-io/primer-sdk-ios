@@ -131,7 +131,14 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
             var errors: [PrimerValidationError] = []
             
             guard let rawData = data as? PrimerBancontactCardRedirectData, let rawDataManager = rawDataManager else {
-                let err = PrimerValidationError.invalidRawData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerValidationError.invalidRawData(
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
                 errors.append(err)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -139,23 +146,52 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
             }
             
             if !rawData.cardNumber.isValidCardNumber {
-                errors.append(PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+                errors.append(PrimerValidationError.invalidCardnumber(
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString))
             }
             
             let expiryDate = rawData.expiryMonth + "/" + rawData.expiryYear.suffix(2)
             
             if !expiryDate.isValidExpiryDate {
-                errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+                errors.append(PrimerValidationError.invalidExpiryDate(
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString))
             }
             
             if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                 if !(rawData.cardholderName).isValidCardholderName {
-                    errors.append(PrimerValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+                    errors.append(PrimerValidationError.invalidCardholderName(
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
                 }
             }
             
             if !errors.isEmpty {
-                let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.underlyingErrors(
+                    errors: errors,
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
                 self.isDataValid = false
                 self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: false, errors: errors)
                 seal.reject(err)

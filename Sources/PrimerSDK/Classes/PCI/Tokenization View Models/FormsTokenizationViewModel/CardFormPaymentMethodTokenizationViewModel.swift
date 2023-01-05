@@ -522,6 +522,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     }
                 }
     #else
+                let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 let err = PrimerError.failedToImport3DS(
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
@@ -550,7 +551,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                             let err = PrimerError.cancelled(
                                 paymentMethodType: self.config.type,
                                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                                diagnosticsId: nil)
+                                diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             pollingModule.cancel(withError: err)
                         }
