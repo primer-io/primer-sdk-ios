@@ -117,13 +117,73 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             }
             
             if !rawData.cardNumber.isValidCardNumber {
-                errors.append(PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+                errors.append(PrimerValidationError.invalidCardnumber(
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString))
             }
             
-            let expiryDate = rawData.expiryMonth + "/" + rawData.expiryYear
+            var isInvalidMonth = false
+            if Int(rawData.expiryMonth) == nil {
+                isInvalidMonth = true
+                errors.append(PrimerValidationError.invalidExpiryMonth(
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: nil))
+                
+            } else {
+                if Int(rawData.expiryMonth)! > 12 {
+                    isInvalidMonth = true
+                    errors.append(PrimerValidationError.invalidExpiryMonth(
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: nil))
+                    
+                } else if Int(rawData.expiryMonth)! < 1 {
+                    isInvalidMonth = true
+                    errors.append(PrimerValidationError.invalidExpiryMonth(
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: nil))
+                    
+                }
+            }
             
-            if !expiryDate.isValidExpiryDateWith4DigitYear {
-                errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+            var isInvalidYear = false
+            if Int(rawData.expiryYear) == nil {
+                isInvalidYear = true
+                errors.append(PrimerValidationError.invalidExpiryYear(
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: nil))
+            }
+            
+            if !isInvalidMonth, !isInvalidYear {
+                let expiryDate = rawData.expiryMonth + "/" + rawData.expiryYear
+                
+                if !expiryDate.isValidExpiryDateWith4DigitYear {
+                    errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+                }
             }
             
             let cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
