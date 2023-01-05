@@ -45,13 +45,13 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             let err = PrimerError.invalidClientToken(
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
         
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -65,7 +65,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 key: "configuration.id",
                 value: config.id,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
@@ -75,7 +75,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 key: "configuration.merchantId",
                 value: config.id,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
@@ -88,7 +88,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 value: nil,
                 allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
@@ -99,7 +99,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 value: AppState.current.currency?.rawValue,
                 allowedValue: "MYR",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
@@ -112,7 +112,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 value: nil,
                 allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
@@ -123,7 +123,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 value: nil,
                 allowedValue: "MY",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
@@ -134,7 +134,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 value: nil,
                 allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
             
@@ -147,7 +147,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                     value: nil,
                     allowedValue: nil,
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: nil)
+                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 errors.append(err)
             }
@@ -161,7 +161,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 value: nil,
                 allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
@@ -172,7 +172,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 value: nil,
                 allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
@@ -183,7 +183,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 value: nil,
                 allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
@@ -194,7 +194,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 value: nil,
                 allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
@@ -203,7 +203,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         let err = PrimerError.missingSDK(
             sdkName: "PrimerIPay88SDK",
             userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-            diagnosticsId: nil)
+            diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: err)
         errors.append(err)
 #endif
@@ -215,7 +215,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.underlyingErrors(
                 errors: errors,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -265,7 +265,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.missingSDK(
                 sdkName: "PrimerIPay88SDK",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
 #endif
@@ -298,7 +298,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.missingSDK(
                 sdkName: "PrimerIPay88SDK",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
 #endif
@@ -314,7 +314,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.missingSDK(
                 sdkName: "PrimerIPay88SDK",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
 #endif
@@ -325,7 +325,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
 #if canImport(PrimerIPay88SDK)
             guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -355,7 +355,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.missingSDK(
                 sdkName: "PrimerIPay88SDK",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
 #endif
@@ -374,7 +374,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 else {
                     let err = PrimerError.invalidClientToken(
                         userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                        diagnosticsId: nil)
+                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -411,7 +411,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.missingSDK(
                 sdkName: "PrimerIPay88SDK",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
 #endif
@@ -478,7 +478,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let err = PrimerError.cancelled(
                     paymentMethodType: self.config.type,
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: nil)
+                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 pollingModule.cancel(withError: err)
             }
@@ -533,7 +533,7 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
                 let err = PrimerError.paymentFailed(
                     description: "iPay88 payment (transId: \(self.primerIPay88Payment.transId ?? "nil"), refNo: \(self.primerIPay88Payment.refNo ) failed with error '\(description)'",
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: nil)
+                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 self.didFail?(err)
                 self.nullifyCallbacks()

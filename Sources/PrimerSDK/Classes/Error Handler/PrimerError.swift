@@ -20,54 +20,54 @@ internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
 
 public enum PrimerValidationError: PrimerErrorProtocol {
     
-    case invalidCardholderName(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidCardnumber(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidCvv(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidExpiryMonth(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidExpiryYear(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidExpiryDate(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidPostalCode(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidFirstName(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidLastName(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidAddress(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidState(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidCountry(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidPhoneNumber(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidRetailer(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidRawData(userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidCardholderName(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidCardnumber(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidCvv(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidExpiryMonth(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidExpiryYear(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidExpiryDate(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidPostalCode(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidFirstName(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidLastName(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidAddress(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidState(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidCountry(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidPhoneNumber(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidRetailer(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
     
     var diagnosticsId: String {
         switch self {
         case .invalidCardholderName(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidCardnumber(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidCvv(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidExpiryDate(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidPostalCode(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidFirstName(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidLastName(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidAddress(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidState(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidCountry(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidPhoneNumber(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidRawData(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidExpiryMonth(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidExpiryYear(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidRetailer(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         }
     }
 
@@ -225,16 +225,16 @@ public enum PrimerValidationError: PrimerErrorProtocol {
 
 internal enum InternalError: PrimerErrorProtocol {
     
-    case failedToEncode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToDecode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToSerialize(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case connectivityErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String?)
-    case noData(userInfo: [String: String]?, diagnosticsId: String?)
-    case serverError(status: Int, response: PrimerServerErrorResponse?, userInfo: [String: String]?, diagnosticsId: String?)
-    case unauthorized(url: String, method: HTTPMethod, userInfo: [String: String]?, diagnosticsId: String?)
-    case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
+    case failedToEncode(message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case failedToDecode(message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case failedToSerialize(message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case connectivityErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
+    case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String)
+    case noData(userInfo: [String: String]?, diagnosticsId: String)
+    case serverError(status: Int, response: PrimerServerErrorResponse?, userInfo: [String: String]?, diagnosticsId: String)
+    case unauthorized(url: String, method: HTTPMethod, userInfo: [String: String]?, diagnosticsId: String)
+    case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
     
     var errorId: String {
         switch self {
@@ -379,42 +379,42 @@ internal enum InternalError: PrimerErrorProtocol {
 
 internal enum PrimerError: PrimerErrorProtocol {
     
-    case generic(message: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String?)
-    case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String?)
-    case missingPrimerDelegate(userInfo: [String: String]?, diagnosticsId: String?)
-    case missingPrimerCheckoutComponentsDelegate(userInfo: [String: String]?, diagnosticsId: String?)
-    case misconfiguredPaymentMethods(userInfo: [String: String]?, diagnosticsId: String?)
-    case missingPrimerInputElement(inputElementType: PrimerInputElementType, userInfo: [String: String]?, diagnosticsId: String?)
-    case cancelled(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
-    case failedOnWebViewFlow(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToPerform3DS(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalid3DSKey(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidClientSessionValue(name: String, value: String?, allowedValue: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidMerchantCapabilities(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidUrlScheme(urlScheme: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidSetting(name: String, value: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidSupportedPaymentNetworks(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String?)
-    case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String?)
-    case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String?)
-    case unsupportedPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
-    case missingCustomUI(paymentMethod: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case missingSDK(sdkName: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case cancelledByCustomer(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case paymentFailed(description: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToFindModule(name: String, userInfo: [String: String]?, diagnosticsId: String?)
+    case generic(message: String, userInfo: [String: String]?, diagnosticsId: String)
+    case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String)
+    case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String)
+    case missingPrimerDelegate(userInfo: [String: String]?, diagnosticsId: String)
+    case missingPrimerCheckoutComponentsDelegate(userInfo: [String: String]?, diagnosticsId: String)
+    case misconfiguredPaymentMethods(userInfo: [String: String]?, diagnosticsId: String)
+    case missingPrimerInputElement(inputElementType: PrimerInputElementType, userInfo: [String: String]?, diagnosticsId: String)
+    case cancelled(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
+    case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
+    case failedOnWebViewFlow(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
+    case failedToPerform3DS(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalid3DSKey(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidClientSessionValue(name: String, value: String?, allowedValue: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidMerchantCapabilities(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidUrlScheme(urlScheme: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidSetting(name: String, value: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidSupportedPaymentNetworks(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String)
+    case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String)
+    case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
+    case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String)
+    case unsupportedPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
+    case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
+    case missingCustomUI(paymentMethod: String, userInfo: [String: String]?, diagnosticsId: String)
+    case missingSDK(sdkName: String, userInfo: [String: String]?, diagnosticsId: String)
+    case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String)
+    case cancelledByCustomer(message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case paymentFailed(description: String, userInfo: [String: String]?, diagnosticsId: String)
+    case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String)
+    case failedToFindModule(name: String, userInfo: [String: String]?, diagnosticsId: String)
     case sdkDismissed
-    case unknown(userInfo: [String: String]?, diagnosticsId: String?)
+    case unknown(userInfo: [String: String]?, diagnosticsId: String)
     
     var errorId: String {
         switch self {
@@ -816,9 +816,9 @@ extension PrimerError {
         
         switch errorCode {
         case .failed:
-            return PrimerError.paymentFailed(description: message ?? "", userInfo: userInfo, diagnosticsId: nil)
+            return PrimerError.paymentFailed(description: message ?? "", userInfo: userInfo, diagnosticsId: UUID().uuidString)
         case .cancelledByCustomer:
-            return PrimerError.cancelledByCustomer(message: message, userInfo: userInfo, diagnosticsId: nil)
+            return PrimerError.cancelledByCustomer(message: message, userInfo: userInfo, diagnosticsId: UUID().uuidString)
         default:
             return nil
         }

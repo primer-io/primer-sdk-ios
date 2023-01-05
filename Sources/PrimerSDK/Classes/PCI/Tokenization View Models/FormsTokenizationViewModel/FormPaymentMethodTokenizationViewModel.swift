@@ -456,26 +456,26 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
         
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
         
         if PrimerInternal.shared.intent == .checkout {
             if AppState.current.amount == nil {
-                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
             
             if AppState.current.currency == nil {
-                let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -574,7 +574,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                             let err = PrimerError.cancelled(
                                 paymentMethodType: self.config.type,
                                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                                diagnosticsId: nil)
+                                diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             pollingModule.cancel(withError: err)
                             return
@@ -589,7 +589,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                         seal.reject(err)
                     }
                 } else {
-                    let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     seal.reject(error)
                 }
             } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
@@ -699,14 +699,14 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             return Promise { seal in
                 
                 guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
                 
                 guard let blikCode = inputs.first?.text else {
-                    let err = PrimerError.invalidValue(key: "blikCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "blikCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -738,7 +738,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         case PrimerPaymentMethodType.rapydFast.rawValue:
             return Promise { seal in
                 guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -770,14 +770,14 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             return Promise { seal in
                 
                 guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
                 
                 guard let phoneNumber = inputs.first?.text else {
-                    let err = PrimerError.invalidValue(key: "phoneNumber", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "phoneNumber", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -807,7 +807,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         case PrimerPaymentMethodType.adyenMultibanco.rawValue:
             return Promise { seal in
                 guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return

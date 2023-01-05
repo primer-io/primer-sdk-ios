@@ -178,7 +178,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         if let isValid = self.isValid {
             validation = (isValid(primerTextField._text ?? "") ?? false)
                 ? PrimerTextField.Validation.valid
-            : PrimerTextField.Validation.invalid(PrimerError.invalidValue(key: "primerTextField.text", value: textField.text, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
+            : PrimerTextField.Validation.invalid(PrimerError.invalidValue(key: "primerTextField.text", value: textField.text, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
         }
         
         switch validation {

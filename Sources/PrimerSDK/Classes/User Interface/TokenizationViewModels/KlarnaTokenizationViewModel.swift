@@ -28,19 +28,19 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
         
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
         
         guard config.id != nil else {
-            let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -48,32 +48,32 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         let klarnaSessionType: KlarnaSessionType = PrimerInternal.shared.intent == .vault ? .recurringPayment : .hostedPaymentPage
         
         if PrimerInternal.shared.intent == .checkout && AppState.current.amount == nil  {
-            let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
         
         if case .hostedPaymentPage = klarnaSessionType {
             if AppState.current.amount == nil {
-                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
             
             if AppState.current.currency == nil {
-                let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
             
             if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems ?? []).isEmpty {
-                let err = PrimerError.invalidValue(key: "lineItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidValue(key: "lineItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
             
             if !(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems ?? []).filter({ $0.amount == nil }).isEmpty {
-                let err = PrimerError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -141,7 +141,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
             }
 #else
-            let err = PrimerError.failedToFindModule(name: "Primer/Klarna", userInfo: nil, diagnosticsId: nil)
+            let err = PrimerError.failedToFindModule(name: "Primer/Klarna", userInfo: nil, diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
 #endif
@@ -186,7 +186,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     let err = PrimerError.invalidUrlScheme(
                         urlScheme: settings.paymentMethodOptions.urlScheme,
                         userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                        diagnosticsId: nil)
+                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -235,14 +235,14 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let klarnaCustomerToken = self.klarnaCustomerTokenAPIResponse?.customerTokenId else {
-                let err = PrimerError.invalidValue(key: "tokenization.klarnaCustomerToken", value: nil, userInfo: nil, diagnosticsId: nil)
+                let err = PrimerError.invalidValue(key: "tokenization.klarnaCustomerToken", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
             
             guard let sessionData = self.klarnaCustomerTokenAPIResponse?.sessionData else {
-                let err = PrimerError.invalidValue(key: "tokenization.sessionData", value: nil, userInfo: nil, diagnosticsId: nil)
+                let err = PrimerError.invalidValue(key: "tokenization.sessionData", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -271,14 +271,14 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private func createPaymentSession() -> Promise<Response.Body.Klarna.CreatePaymentSession> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
             
             guard let configId = config.id else {
-                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -288,7 +288,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             
             var amount = AppState.current.amount
             if amount == nil && PrimerInternal.shared.intent == .checkout {
-                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -298,28 +298,28 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             
             if case .hostedPaymentPage = klarnaSessionType {
                 if amount == nil {
-                    let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
                 
                 if AppState.current.currency == nil {
-                    let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
                 
                 if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems ?? []).isEmpty {
-                    let err = PrimerError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
                 
                 if !(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems ?? []).filter({ $0.amount == nil }).isEmpty {
-                    let err = PrimerError.invalidValue(key: "settings.orderItems.amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "settings.orderItems.amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -369,7 +369,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private func authorizePaymentSession(authorizationToken: String) -> Promise<Response.Body.Klarna.CustomerToken> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -379,7 +379,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                   let sessionId = self.klarnaPaymentSession?.sessionId else {
                 let err = PrimerError.missingPrimerConfiguration(
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: nil)
+                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -421,7 +421,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private func finalizePaymentSession(completion: @escaping (Result<Response.Body.Klarna.CustomerToken, Error>) -> Void) {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -431,7 +431,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
               let sessionId = self.klarnaPaymentSession?.sessionId else {
             let err = PrimerError.missingPrimerConfiguration(
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return

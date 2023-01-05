@@ -41,7 +41,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     
     override func validate() throws {
         if PrimerAPIConfigurationModule.decodedJWTToken?.isValid != true {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -157,14 +157,14 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 let err = PrimerError.cancelled(
                     paymentMethodType: self.config.type,
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: nil)
+                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 pollingModule.cancel(withError: err)
             }
             
             firstly { () -> Promise<String> in
                 if self.isCancelled {
-                    let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: nil)
+                    let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
                     throw err
                 }
                 return pollingModule.start()
@@ -182,7 +182,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -239,7 +239,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                         seal.reject(err)
                     }
                 } else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }

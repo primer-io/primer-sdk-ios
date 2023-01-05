@@ -15,7 +15,14 @@ public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressFirstName
-        validationError = .invalidFirstName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+        validationError = .invalidFirstName(
+            userInfo: [
+                "file": #file,
+                "class": "\(Self.self)",
+                "function": #function,
+                "line": "\(#line)"
+            ],
+            diagnosticsId: UUID().uuidString)
         isValid = { text in
             return text.isTypingNonDecimalCharacters
         }

@@ -35,7 +35,7 @@ extension Request.URLParameters {
             self.requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
             
             if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
-                throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
+                throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: UUID().uuidString)
             }
         }
         
@@ -43,7 +43,7 @@ extension Request.URLParameters {
             var container = encoder.container(keyedBy: CodingKeys.self)
             
             if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
-                throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: nil)
+                throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: UUID().uuidString)
             }
             
             if let skipPaymentMethodTypes = skipPaymentMethodTypes {
@@ -317,7 +317,7 @@ extension Response.Body.Configuration {
                 self.saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
                 
                 if self.cardHolderName == nil && self.saveCardCheckbox == nil {
-                    let err = InternalError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = InternalError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
                 }
@@ -369,7 +369,7 @@ extension Response.Body.Configuration {
                     self.phoneNumber == nil &&
                     self.state == nil
                 {
-                    let err = InternalError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = InternalError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
                 }
