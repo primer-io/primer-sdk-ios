@@ -15,7 +15,7 @@ extension PrimerHeadlessUniversalCheckout {
         
         public static func getCardNetworkImage(for cardNetwork: CardNetwork) throws -> UIImage? {
             if AppState.current.apiConfiguration == nil {
-                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: nil)
+                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -25,7 +25,7 @@ extension PrimerHeadlessUniversalCheckout {
         
         public static func getPaymentMethodAsset(for paymentMethodType: String) throws -> PrimerPaymentMethodAsset? {
             if AppState.current.apiConfiguration == nil {
-                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: nil)
+                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -62,7 +62,7 @@ extension PrimerHeadlessUniversalCheckout {
         
         public static func getPaymentMethodAssets() throws -> [PrimerPaymentMethodAsset] {
             if AppState.current.apiConfiguration == nil {
-                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: nil)
+                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
