@@ -57,7 +57,7 @@ extension PrimerHeadlessUniversalCheckout {
             
             if let intent = intent {
                 if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
-                    (intent == .checkout && paymentMethod.isCheckoutEnabled)
+                    (intent == .checkout && !paymentMethod.isCheckoutEnabled)
                 {
                     let err = PrimerError.unsupportedIntent(
                         intent: intent,
