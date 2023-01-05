@@ -194,7 +194,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 
                 self.klarnaViewController = PrimerKlarnaViewController(
                     delegate: self,
-                    paymentCategory: .payLater,
+                    paymentCategory: .payNow,
                     clientToken: self.klarnaPaymentSession!.clientToken,
                     urlScheme: urlSchemeStr)
                 
