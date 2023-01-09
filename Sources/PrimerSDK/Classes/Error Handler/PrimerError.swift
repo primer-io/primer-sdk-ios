@@ -76,7 +76,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
         case .invalidCardholderName:
             return "invalid-cardholder-name"
         case .invalidCardnumber:
-            return "invalid-cardnumber"
+            return "invalid-card-number"
         case .invalidCvv:
             return "invalid-cvv"
         case .invalidExpiryMonth:
