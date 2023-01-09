@@ -36,7 +36,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
     case invalidRetailer(userInfo: [String: String]?, diagnosticsId: String)
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
     
-    var diagnosticsId: String {
+    public var diagnosticsId: String {
         switch self {
         case .invalidCardholderName(_, let diagnosticsId):
             return diagnosticsId
@@ -499,7 +499,7 @@ public enum PrimerError: PrimerErrorProtocol {
         }
     }
     
-    var diagnosticsId: String {
+    public var diagnosticsId: String {
         switch self {
         case .generic(_, _, let diagnosticsId):
             return diagnosticsId
