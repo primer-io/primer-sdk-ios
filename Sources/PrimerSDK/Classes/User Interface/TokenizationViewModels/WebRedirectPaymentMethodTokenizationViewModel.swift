@@ -173,6 +173,9 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 self.resumeToken = resumeToken
                 seal.fulfill()
             }
+            .ensure {
+                self.didCancel = nil
+            }
             .catch { err in
                 seal.reject(err)
             }
