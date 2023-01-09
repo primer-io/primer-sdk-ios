@@ -71,7 +71,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
         }
     }
 
-    var errorId: String {
+    public var errorId: String {
         switch self {
         case .invalidCardholderName:
             return "invalid-cardholder-name"
@@ -109,35 +109,35 @@ public enum PrimerValidationError: PrimerErrorProtocol {
     public var errorDescription: String? {
         switch self {
         case .invalidCardholderName:
-            return "[\(errorId)] Invalid cardholder name (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] Cardholder name is not valid."
         case .invalidCardnumber:
-            return "[\(errorId)] Invalid card number (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] Card number is not valid."
         case .invalidCvv:
-            return "[\(errorId)] Invalid CVV (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] CVV is not valid."
         case .invalidExpiryMonth:
-            return "[\(errorId)] Invalid expiry month (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] Expiry month is not valid."
         case .invalidExpiryYear:
-            return "[\(errorId)] Invalid expiry year (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] Expiry year is not valid."
         case .invalidExpiryDate:
-            return "[\(errorId)] Invalid expiry date. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] Expiry date is not valid. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year."
         case .invalidPostalCode:
-            return "[\(errorId)] Invalid postal code (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] Postal code is not valid."
         case .invalidFirstName:
-            return "[\(errorId)] Invalid first name (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] First name is not valid."
         case .invalidLastName:
-            return "[\(errorId)] Invalid last name (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] Last name is not valid."
         case .invalidAddress:
-            return "[\(errorId)] Invalid address (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] Address is not valid."
         case .invalidState:
-            return "[\(errorId)] Invalid state (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] State is not valid."
         case .invalidCountry:
-            return "[\(errorId)] Invalid country (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] Country is not valid."
         case .invalidPhoneNumber:
-            return "[\(errorId)] Invalid phone number (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] Phone number is not valid."
         case .invalidRawData:
-            return "[\(errorId)] Invalid raw data (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] Raw data is not valid."
         case .invalidRetailer:
-            return "[\(errorId)] Invalid retailer (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+            return "[\(errorId)] Retailer is not valid."
         }
     }
     
@@ -264,25 +264,25 @@ internal enum InternalError: PrimerErrorProtocol {
     var diagnosticsId: String {
         switch self {
         case .failedToEncode(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .failedToDecode(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .failedToSerialize(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .connectivityErrors(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidUrl(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidValue(_, _, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .noData(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .serverError(_, _, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .unauthorized(_, _, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .underlyingErrors(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         }
     }
     
@@ -377,7 +377,7 @@ internal enum InternalError: PrimerErrorProtocol {
     }
 }
 
-internal enum PrimerError: PrimerErrorProtocol {
+public enum PrimerError: PrimerErrorProtocol {
     
     case generic(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String)
@@ -416,7 +416,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case sdkDismissed
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
     
-    var errorId: String {
+    public var errorId: String {
         switch self {
         case .generic:
             return "primer-generic"
@@ -496,77 +496,77 @@ internal enum PrimerError: PrimerErrorProtocol {
     var diagnosticsId: String {
         switch self {
         case .generic(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .uninitializedSDKSession(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidClientToken(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .missingPrimerConfiguration(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .missingPrimerDelegate(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .missingPrimerCheckoutComponentsDelegate(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .misconfiguredPaymentMethods(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .missingPrimerInputElement(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .cancelled(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .failedToCreateSession(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .failedOnWebViewFlow(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .failedToPerform3DS(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidUrl(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalid3DSKey(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidArchitecture(_, _, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidClientSessionValue(_, _, _, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidMerchantCapabilities(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidMerchantIdentifier(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidUrlScheme(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidSetting(_, _, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidSupportedPaymentNetworks(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .invalidValue(_, _, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .unableToMakePaymentsOnProvidedNetworks(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .unableToPresentPaymentMethod(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .unsupportedIntent(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .unsupportedPaymentMethod(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .underlyingErrors(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .missingCustomUI(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .missingSDK(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .merchantError(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .cancelledByCustomer(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .paymentFailed(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .applePayTimedOut(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .failedToFindModule(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .sdkDismissed:
             return UUID().uuidString
         case .unknown(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         }
     }
     
@@ -609,7 +609,7 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "Failed on perform 3DS with error: \(error?.localizedDescription ?? "nil")"
         case .invalid3DSKey:
             return "Invalid 3DS key"
-        case .invalidArchitecture(let description, _, _, let diagnosticsId):
+        case .invalidArchitecture(let description, _, _, _):
             return "\(description)"
         case .invalidClientSessionValue(let name, let value, _, _, _):
             return "Invalid client session value for '\(name)' with value '\(value ?? "nil")'"
@@ -645,7 +645,7 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "\(description)"
         case .applePayTimedOut:
             return "Apple Pay timed out"
-        case .failedToFindModule(let name, _, let diagnosticsId):
+        case .failedToFindModule(let name, _, _):
             return "Failed to find module \(name)"
         case .sdkDismissed:
             return "SDK has been dismissed"
@@ -654,7 +654,7 @@ internal enum PrimerError: PrimerErrorProtocol {
         }
     }
     
-    var errorDescription: String? {
+    public var errorDescription: String? {
         return "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
     }
     
@@ -706,7 +706,7 @@ internal enum PrimerError: PrimerErrorProtocol {
         return tmpUserInfo
     }
     
-    var errorUserInfo: [String : Any] {
+    public var errorUserInfo: [String : Any] {
         var tmpUserInfo: [String: Any] = [
             "createdAt": Date().toString(),
             "diagnosticsId": diagnosticsId
@@ -715,7 +715,7 @@ internal enum PrimerError: PrimerErrorProtocol {
         return tmpUserInfo
     }
     
-    var recoverySuggestion: String? {
+    public var recoverySuggestion: String? {
         switch self {
         case .generic:
             return nil
@@ -738,16 +738,12 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .cancelledByCustomer:
             return nil
         case .failedToCreateSession:
-            // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
             return nil
         case .failedOnWebViewFlow:
-            // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
             return nil
         case .failedToPerform3DS:
-            // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
             return nil
         case .invalidUrl:
-            // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
             return nil
         case .invalid3DSKey:
             return "Contact Primer to enable 3DS on your account."
