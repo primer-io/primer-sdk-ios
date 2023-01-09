@@ -415,6 +415,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String?)
     case failedToFindModule(name: String, userInfo: [String: String]?, diagnosticsId: String?)
     case sdkDismissed
+    case failedToProcessPayment(paymentId: String, status: String, userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
     
     public var errorId: String {
@@ -491,6 +492,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "failed-to-find-module"
         case .sdkDismissed:
             return "sdk-dismissed"
+        case .failedToProcessPayment:
+            return "failed-to-process-payment"
         case .unknown:
             return "unknown"
         }
@@ -570,6 +573,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .sdkDismissed:
             return UUID().uuidString
+        case .failedToProcessPayment(_, _, _, let diagnosticsId):
+            return diagnosticsId
         case .unknown(_, let diagnosticsId):
             return diagnosticsId
         }
@@ -656,6 +661,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Failed to find module \(name)"
         case .sdkDismissed:
             return "SDK has been dismissed"
+        case .failedToProcessPayment(let paymentId, let status, _, _):
+            return "The payment with id \(paymentId) was created but ended up in a \(status) status."
         case .unknown:
             return "Something went wrong"
         }
@@ -704,6 +711,7 @@ public enum PrimerError: PrimerErrorProtocol {
                 .paymentFailed(_, let userInfo, _),
                 .applePayTimedOut(let userInfo, _),
                 .failedToFindModule(_, let userInfo, _),
+                .failedToProcessPayment(_, _, let userInfo, _),
                 .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
             
@@ -805,6 +813,8 @@ public enum PrimerError: PrimerErrorProtocol {
         case .failedToFindModule(let name, _, _):
             return "Make sure you have added the module \(name) in your project."
         case .sdkDismissed:
+            return nil
+        case .failedToProcessPayment:
             return nil
         case .unknown:
             return "Contact Primer and provide them diagnostics id \(self.diagnosticsId)"
