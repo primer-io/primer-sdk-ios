@@ -585,6 +585,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     .done { resumeToken in
                         seal.fulfill(resumeToken)
                     }
+                    .ensure {
+                        self.didCancel = nil
+                    }
                     .catch { err in
                         seal.reject(err)
                     }
