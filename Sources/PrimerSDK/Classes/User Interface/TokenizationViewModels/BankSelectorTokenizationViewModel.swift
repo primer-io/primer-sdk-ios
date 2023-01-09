@@ -20,6 +20,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }
     private var bankSelectionCompletion: ((AdyenBank) -> Void)?
     private var tokenizationService: TokenizationServiceProtocol?
+    
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -27,14 +28,6 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             throw err
         }
     }
-    
-    /**
-     This callback is used when the user selects a bank (i.e. taps on a table cell) and a fake tokenization is performed. This payment method token is then
-     used by the merchant to create a payment, and subsequently receive a **requiredAction**.
-     
-     It must be set before the user taps on a cell, and nullified when a **paymentMethod** is returned.
-     */
-    fileprivate var tmpTokenizationCallback: ((_ paymentMethod: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void)?
     
     internal lazy var tableView: UITableView = {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -77,7 +70,6 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     override func cancel() {
         self.webViewController = nil
         self.webViewCompletion = nil
-        self.tmpTokenizationCallback = nil
         super.cancel()
     }
     
@@ -117,6 +109,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                 return self.awaitUserInput()
             }
             .then { () -> Promise<Void> in
+                self.bankSelectionCompletion = nil
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .done {
@@ -130,6 +123,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                     })
                 }
 
+                self.bankSelectionCompletion = nil
                 self.webViewController = nil
                 self.webViewCompletion = nil
             }
@@ -240,20 +234,6 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                     
                 case .success(let banks):
                     seal.fulfill(banks)
-                }
-            }
-        }
-    }
-    
-    private func fetchPaymentMethodToken() -> Promise<PrimerPaymentMethodTokenData> {
-        return Promise { seal in
-            self.tmpTokenizationCallback = { (paymentMethod, err) in
-                if let err = err {
-                    seal.reject(err)
-                } else if let paymentMethod = paymentMethod {
-                    seal.fulfill(paymentMethod)
-                } else {
-                    assert(true, "Should never get in here.")
                 }
             }
         }
