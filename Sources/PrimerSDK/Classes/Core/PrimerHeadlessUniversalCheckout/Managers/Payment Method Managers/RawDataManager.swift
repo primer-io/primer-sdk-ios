@@ -653,31 +653,59 @@ extension PrimerHeadlessUniversalCheckout {
             return Promise { seal in
                 let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
                 createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
-                    if let paymentResponse {
-                        self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
-                    }
                     
-                    guard error == nil else {
-                        seal.reject(error!)
-                        return
-                    }
-                    
-                    guard let status = paymentResponse?.status, status != .failed else {
-                        seal.reject(PrimerError.paymentFailed(
-                            description: paymentResponse?.id != nil ? "Failed to create payment with id \(paymentResponse!.id!)" : "Failed to create payment",
-                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                            diagnosticsId: UUID().uuidString))
-                        return
-                    }
-                    
-                    if let paymentFailureReason = paymentResponse?.paymentFailureReason,
-                       let paymentErrorCode = PrimerPaymentErrorCode(rawValue: paymentFailureReason),
-                       let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
+                    if let error = error {
+                        if let paymentResponse {
+                            self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+                        }
+                        
                         seal.reject(error)
-                        return
+                        
+                    } else if let paymentResponse = paymentResponse {
+                        if paymentResponse.id == nil {
+                            let err = PrimerError.paymentFailed(
+                                description: "Failed to create payment",
+                                userInfo: [
+                                    "file": #file,
+                                    "class": "\(Self.self)",
+                                    "function": #function,
+                                    "line": "\(#line)"
+                                ],
+                                diagnosticsId: UUID().uuidString)
+                            ErrorHandler.handle(error: err)
+                            seal.reject(err)
+                            
+                        } else if paymentResponse.status == .failed {
+                            let err = PrimerError.failedToProcessPayment(
+                                paymentId: paymentResponse.id ?? "nil",
+                                status: paymentResponse.status.rawValue,
+                                userInfo: [
+                                    "file": #file,
+                                    "class": "\(Self.self)",
+                                    "function": #function,
+                                    "line": "\(#line)"
+                                ],
+                                diagnosticsId: UUID().uuidString)
+                            ErrorHandler.handle(error: err)
+                            seal.reject(err)
+                            
+                        } else {
+                            seal.fulfill(paymentResponse)
+                        }
+                        
+                    } else {
+                        let err = PrimerError.paymentFailed(
+                            description: "Failed to create payment",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
                     }
-                    
-                    seal.fulfill(paymentResponse)
                 }
             }
         }
@@ -686,31 +714,59 @@ extension PrimerHeadlessUniversalCheckout {
             return Promise { seal in
                 let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
                 createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
-                    if let paymentResponse {
-                        self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
-                    }
                     
-                    guard error == nil else {
-                        seal.reject(error!)
-                        return
-                    }
-                    
-                    guard let status = paymentResponse?.status, status != .failed else {
-                        seal.reject(PrimerError.paymentFailed(
-                            description: paymentResponse?.id != nil ? "Failed to resume payment with id \(paymentResponse!.id!)" : "Failed to resume payment",
-                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                            diagnosticsId: UUID().uuidString))
-                        return
-                    }
-                    
-                    if let paymentFailureReason = paymentResponse?.paymentFailureReason,
-                       let paymentErrorCode = PrimerPaymentErrorCode(rawValue: paymentFailureReason),
-                       let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
+                    if let error = error {
+                        if let paymentResponse {
+                            self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+                        }
+                        
                         seal.reject(error)
-                        return
+                        
+                    } else if let paymentResponse = paymentResponse {
+                        if paymentResponse.id == nil {
+                            let err = PrimerError.paymentFailed(
+                                description: "Failed to resume payment",
+                                userInfo: [
+                                    "file": #file,
+                                    "class": "\(Self.self)",
+                                    "function": #function,
+                                    "line": "\(#line)"
+                                ],
+                                diagnosticsId: UUID().uuidString)
+                            ErrorHandler.handle(error: err)
+                            seal.reject(err)
+                            
+                        } else if paymentResponse.status == .failed {
+                            let err = PrimerError.failedToProcessPayment(
+                                paymentId: paymentResponse.id ?? "nil",
+                                status: paymentResponse.status.rawValue,
+                                userInfo: [
+                                    "file": #file,
+                                    "class": "\(Self.self)",
+                                    "function": #function,
+                                    "line": "\(#line)"
+                                ],
+                                diagnosticsId: UUID().uuidString)
+                            ErrorHandler.handle(error: err)
+                            seal.reject(err)
+                            
+                        } else {
+                            seal.fulfill(paymentResponse)
+                        }
+                        
+                    } else {
+                        let err = PrimerError.paymentFailed(
+                            description: "Failed to resume payment",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
                     }
-                    
-                    seal.fulfill(paymentResponse)
                 }
             }
         }
