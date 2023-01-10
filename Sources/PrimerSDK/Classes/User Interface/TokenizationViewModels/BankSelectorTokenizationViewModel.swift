@@ -103,10 +103,10 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             .then { banks -> Promise<Void> in
                 self.banks = banks
                 self.dataSource = banks
-                return self.presentPaymentMethodUserInterface()
+                return self.presentBankList()
             }
             .then { () -> Promise<Void> in
-                return self.awaitUserInput()
+                return self.awaitBankSelection()
             }
             .then { () -> Promise<Void> in
                 self.bankSelectionCompletion = nil
@@ -156,6 +156,8 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                     })
                 }
 
+                self.bankSelectionCompletion = nil
+                self.selectedBank = nil
                 self.webViewController = nil
                 self.webViewCompletion = nil
             }
@@ -171,12 +173,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         }
     }
     
-    override func presentPaymentMethodUserInterface() -> Promise<Void> {
-        
-        guard PrimerAPIConfigurationModule.decodedJWTToken?.intent?.contains("_REDIRECTION") == false else {
-            return super.presentPaymentMethodUserInterface()
-        }
-        
+    private func presentBankList() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
                 let bsvc = BankSelectorViewController(viewModel: self)
@@ -188,12 +185,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         }
     }
     
-    override func awaitUserInput() -> Promise<Void> {
-        
-        guard PrimerAPIConfigurationModule.decodedJWTToken?.intent?.contains("_REDIRECTION") == false else {
-            return super.awaitUserInput()
-        }
-        
+    private func awaitBankSelection() -> Promise<Void> {
         return Promise { seal in
             self.bankSelectionCompletion = { bank in
                 self.selectedBank = bank

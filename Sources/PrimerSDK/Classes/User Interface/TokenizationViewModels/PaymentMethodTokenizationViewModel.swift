@@ -133,6 +133,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
                 cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: cancelledError!)
                 seal.reject(cancelledError!)
+                self.isCancelled = false
             }
             
             firstly { () -> Promise<Void> in
