@@ -53,24 +53,20 @@ extension PaymentMethodTokenizationViewModel {
                     let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
                     
                     if let primerErr = err as? PrimerError,
-                       case .cancelled = primerErr
+                       case .cancelled = primerErr,
+                       PrimerInternal.shared.sdkIntegrationType == .dropIn,
+                       (
+                        self.config.implementationType == .webRedirect ||
+                        self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                        self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                        self.config.type == PrimerPaymentMethodType.payPal.rawValue
+                       )
                     {
-                        if PrimerHeadlessUniversalCheckout.current.delegate != nil {
-                            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: primerErr, checkoutData: self.paymentCheckoutData)
-                        }
-                        
                         firstly {
                             clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         }
                         .done { merchantErrorMessage in
-                            if PrimerHeadlessUniversalCheckout.current.delegate == nil {
-                                if PrimerInternal.shared.selectedPaymentMethodType == nil {
-                                    PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
-                                } else {
-                                    PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
-                                }
-                            }
-                            
+                            PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
                         }
                         // The above promises will never end up on error.
                         .catch { _ in }
@@ -106,12 +102,12 @@ extension PaymentMethodTokenizationViewModel {
             
             if let primerErr = err as? PrimerError,
                case .cancelled = primerErr,
+               PrimerInternal.shared.sdkIntegrationType == .dropIn,
                (
                 self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
                 self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
                 self.config.type == PrimerPaymentMethodType.payPal.rawValue
-               ),
-               PrimerInternal.shared.sdkIntegrationType == .dropIn
+               )
             {
                 firstly {
                     clientSessionActionsModule.unselectPaymentMethodIfNeeded()
@@ -153,6 +149,7 @@ extension PaymentMethodTokenizationViewModel {
                 cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: cancelledError!)
                 seal.reject(cancelledError!)
+                self.isCancelled = false
             }
             
             firstly { () -> Promise<DecodedJWTToken?> in
