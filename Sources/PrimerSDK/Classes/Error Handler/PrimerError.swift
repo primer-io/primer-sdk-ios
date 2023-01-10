@@ -190,17 +190,17 @@ public enum PrimerValidationError: PrimerErrorProtocol {
     var inputElementType: String? {
         switch self {
         case .invalidCardholderName:
-            return "cardholderName"
+            return "CARDHOLDER_NAME"
         case .invalidCardnumber:
-            return "cardnumber"
+            return "CARD_NUMBER"
         case .invalidCvv:
-            return "cvv"
+            return "CVV"
         case .invalidExpiryMonth:
-            return "expiryMonth"
+            return "EXPIRY_MONTH"
         case .invalidExpiryYear:
-            return "expiryYear"
+            return "EXPIRY_YEAR"
         case .invalidExpiryDate:
-            return "expiryDate"
+            return "EXPIRY_DATE"
         case .invalidPostalCode:
             return nil
         case .invalidFirstName:
@@ -214,9 +214,9 @@ public enum PrimerValidationError: PrimerErrorProtocol {
         case .invalidCountry:
             return nil
         case .invalidPhoneNumber:
-            return "phoneNumber"
+            return "PHONE_NUMBER"
         case .invalidRetailer:
-            return "retailer"
+            return "RETAILER"
         case .invalidRawData:
             return nil
         }
