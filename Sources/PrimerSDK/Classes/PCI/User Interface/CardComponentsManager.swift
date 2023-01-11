@@ -186,15 +186,29 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     private func validateCardComponents() throws {
         var errors: [Error] = []
         
-        if !cardnumberField.cardnumber.isValidCardNumber {
-            errors.append(PrimerValidationError.invalidCardnumber(
+        if cardnumberField.cardnumber.isEmpty {
+            let err = PrimerValidationError.invalidCardnumber(
+                message: "Card number can not be blank.",
                 userInfo: [
                     "file": #file,
                     "class": "\(Self.self)",
                     "function": #function,
                     "line": "\(#line)"
                 ],
-                diagnosticsId: UUID().uuidString))
+                diagnosticsId: UUID().uuidString)
+            errors.append(err)
+            
+        } else if !cardnumberField.cardnumber.isValidCardNumber {
+            let err = PrimerValidationError.invalidCardnumber(
+                message: "Card number is not valid.",
+                userInfo: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ],
+                diagnosticsId: UUID().uuidString)
+            errors.append(err)
         }
         
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
@@ -208,15 +222,31 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 diagnosticsId: UUID().uuidString))
         }
         
-        if isRequiringCVVInput && !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
-            errors.append(PrimerValidationError.invalidCvv(
-                userInfo: [
-                    "file": #file,
-                    "class": "\(Self.self)",
-                    "function": #function,
-                    "line": "\(#line)"
-                ],
-                diagnosticsId: UUID().uuidString))
+        if isRequiringCVVInput {
+            if cvvField.cvv.isEmpty {
+                let err = PrimerValidationError.invalidCvv(
+                    message: "CVV cannot be blank.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                errors.append(err)
+                
+            } else if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
+                let err = PrimerValidationError.invalidCvv(
+                    message: "CVV is not valid.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                errors.append(err)
+            }
         }
         
         billingAddressFieldViews?.filter { $0.isTextValid == false }.forEach {
