@@ -16,6 +16,7 @@ public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressFirstName
         validationError = .invalidFirstName(
+            message: "First name is not valid.",
             userInfo: [
                 "file": #file,
                 "class": "\(Self.self)",
