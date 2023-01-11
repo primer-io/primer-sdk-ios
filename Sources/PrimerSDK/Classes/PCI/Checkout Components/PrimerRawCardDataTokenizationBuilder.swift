@@ -58,10 +58,17 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     var requiredInputElementTypes: [PrimerInputElementType] {
         
         var mutableRequiredInputElementTypes: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
+        
         let cardInfoOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
-        if cardInfoOptions?.cardHolderName == false {
-            return mutableRequiredInputElementTypes
+        
+        if let isCardHolderNameCheckoutModuleOptionEnabled = cardInfoOptions?.cardHolderName {
+            if isCardHolderNameCheckoutModuleOptionEnabled {
+                mutableRequiredInputElementTypes.append(.cardholderName)
+            }
+        } else {
+            mutableRequiredInputElementTypes.append(.cardholderName)
         }
+        
         mutableRequiredInputElementTypes.append(.cardholderName)
         return mutableRequiredInputElementTypes
     }
