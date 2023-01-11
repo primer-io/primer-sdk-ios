@@ -36,11 +36,14 @@ extension PrimerHeadlessUniversalCheckout {
             
             var mutableRequiredInputElementTypes: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
             
-            if let checkoutModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first,
-               let options = checkoutModule.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions {
-                if options.cardHolderName == true {
+            let cardInfoOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
+            
+            if let isCardHolderNameCheckoutModuleOptionEnabled = cardInfoOptions?.cardHolderName {
+                if isCardHolderNameCheckoutModuleOptionEnabled {
                     mutableRequiredInputElementTypes.append(.cardholderName)
                 }
+            } else {
+                mutableRequiredInputElementTypes.append(.cardholderName)
             }
             
             return mutableRequiredInputElementTypes
