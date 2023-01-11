@@ -585,6 +585,17 @@ extension PrimerHeadlessUniversalCheckout {
                         .done { resumeToken in
                             seal.fulfill(resumeToken)
                         }
+                        .ensure {
+                            DispatchQueue.main.async { [weak self] in
+                                PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+                                
+                                self?.webViewCompletion = nil
+                                self?.webViewController?.dismiss(animated: true, completion: { [weak self] in
+                                    guard let strongSelf = self else { return }
+                                    strongSelf.webViewController = nil
+                                })
+                            }
+                        }
                         .catch { err in
                             seal.reject(err)
                         }
