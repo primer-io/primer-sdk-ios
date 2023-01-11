@@ -13,6 +13,7 @@ public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
             return !text.isEmpty
         }
         validationError = .invalidAddress(
+            message: "Address is not valid.",
             userInfo: [
                 "file": #file,
                 "class": "\(Self.self)",

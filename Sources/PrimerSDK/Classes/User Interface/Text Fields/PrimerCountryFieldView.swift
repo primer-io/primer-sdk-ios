@@ -20,6 +20,7 @@ public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressCountry
         validationError = .invalidCountry(
+            message: "Country is not valid.",
             userInfo: [
                 "file": #file,
                 "class": "\(Self.self)",
