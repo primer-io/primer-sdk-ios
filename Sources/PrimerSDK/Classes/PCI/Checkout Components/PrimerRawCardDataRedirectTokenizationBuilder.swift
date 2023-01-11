@@ -145,15 +145,29 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                 return
             }
             
-            if !rawData.cardNumber.isValidCardNumber {
-                errors.append(PrimerValidationError.invalidCardnumber(
+            if rawData.cardNumber.isEmpty {
+                let err = PrimerValidationError.invalidCardnumber(
+                    message: "Card number can not be blank.",
                     userInfo: [
                         "file": #file,
                         "class": "\(Self.self)",
                         "function": #function,
                         "line": "\(#line)"
                     ],
-                    diagnosticsId: UUID().uuidString))
+                    diagnosticsId: UUID().uuidString)
+                errors.append(err)
+                
+            } else if !rawData.cardNumber.isValidCardNumber {
+                let err = PrimerValidationError.invalidCardnumber(
+                    message: "Card number is not valid.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                errors.append(err)
             }
             
             let expiryDate = rawData.expiryMonth + "/" + rawData.expiryYear.suffix(2)
@@ -170,8 +184,20 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
             }
             
             if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
-                if !(rawData.cardholderName).isValidCardholderName {
+                if rawData.cardholderName.isEmpty {
                     errors.append(PrimerValidationError.invalidCardholderName(
+                        message: "Cardholder name cannot be blank.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
+                    
+                } else if !(rawData.cardholderName).isValidCardholderName {
+                    errors.append(PrimerValidationError.invalidCardholderName(
+                        message: "Cardholder name is not valid.",
                         userInfo: [
                             "file": #file,
                             "class": "\(Self.self)",

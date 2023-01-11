@@ -23,6 +23,7 @@ public final class PrimerCardholderNameFieldView: PrimerSimpleCardFormTextFieldV
         textField.delegate = self
         editingAnalyticsObjectId = .cardHolder
         validationError = .invalidCardholderName(
+            message: "Cardholder name is not valid.",
             userInfo: [
                 "file": #file,
                 "class": "\(Self.self)",

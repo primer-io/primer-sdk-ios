@@ -16,6 +16,7 @@ public final class PrimerCityFieldView: PrimerSimpleCardFormTextFieldView {
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressCity
         validationError = .invalidState(
+            message: "State is not valid.",
             userInfo: [
                 "file": #file,
                 "class": "\(Self.self)",
