@@ -227,6 +227,17 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         "line": "\(#line)"
                     ],
                     diagnosticsId: UUID().uuidString))
+            } else if rawData.expiryYear.count != 4 {
+                isInvalidYear = true
+                errors.append(PrimerValidationError.invalidExpiryYear(
+                    message: "Expiry year is not valid.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString))
             }
             
             if !isInvalidMonth, !isInvalidYear {
