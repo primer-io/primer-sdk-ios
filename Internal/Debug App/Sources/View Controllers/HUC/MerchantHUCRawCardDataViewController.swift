@@ -159,7 +159,7 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
     }
     
     @IBAction func payButtonTapped(_ sender: UIButton) {
-        guard expiryDateTextField.text?.count == 5,
+        guard expiryDateTextField.text?.count == 7,
               let expiryComponents = expiryDateTextField.text?.split(separator: "/") else {
             self.showErrorMessage("Please write expiry date in format MM/YY")
             return
