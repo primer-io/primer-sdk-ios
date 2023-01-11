@@ -50,6 +50,7 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
             validation = .valid
         case false:
             let err = PrimerValidationError.invalidPostalCode(
+                message: "Postal code is not valid.",
                 userInfo: [
                     "file": #file,
                     "class": "\(Self.self)",

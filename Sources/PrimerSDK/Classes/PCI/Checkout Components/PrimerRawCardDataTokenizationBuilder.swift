@@ -123,8 +123,37 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 return
             }
             
-            if !rawData.cardNumber.isValidCardNumber {
-                errors.append(PrimerValidationError.invalidCardnumber(
+            if rawData.cardNumber.isEmpty {
+                let err = PrimerValidationError.invalidCardnumber(
+                    message: "Card number can not be blank.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                errors.append(err)
+                
+            } else if !rawData.cardNumber.isValidCardNumber {
+                let err = PrimerValidationError.invalidCardnumber(
+                    message: "Card number is not valid.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                errors.append(err)
+            }
+            
+            var isInvalidMonth = false
+            
+            if rawData.expiryMonth.isEmpty {
+                isInvalidMonth = true
+                errors.append(PrimerValidationError.invalidExpiryMonth(
+                    message: "Expiry month cannot be blank.",
                     userInfo: [
                         "file": #file,
                         "class": "\(Self.self)",
@@ -132,12 +161,11 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         "line": "\(#line)"
                     ],
                     diagnosticsId: UUID().uuidString))
-            }
-            
-            var isInvalidMonth = false
-            if Int(rawData.expiryMonth) == nil {
+                
+            } else if Int(rawData.expiryMonth) == nil {
                 isInvalidMonth = true
                 errors.append(PrimerValidationError.invalidExpiryMonth(
+                    message: "Expiry month is not valid.",
                     userInfo: [
                         "file": #file,
                         "class": "\(Self.self)",
@@ -150,6 +178,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 if Int(rawData.expiryMonth)! > 12 {
                     isInvalidMonth = true
                     errors.append(PrimerValidationError.invalidExpiryMonth(
+                        message: "Expiry month is not valid.",
                         userInfo: [
                             "file": #file,
                             "class": "\(Self.self)",
@@ -161,6 +190,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 } else if Int(rawData.expiryMonth)! < 1 {
                     isInvalidMonth = true
                     errors.append(PrimerValidationError.invalidExpiryMonth(
+                        message: "Expiry month is not valid.",
                         userInfo: [
                             "file": #file,
                             "class": "\(Self.self)",
@@ -173,9 +203,23 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             }
             
             var isInvalidYear = false
-            if Int(rawData.expiryYear) == nil {
+            
+            if rawData.expiryYear.isEmpty {
                 isInvalidYear = true
                 errors.append(PrimerValidationError.invalidExpiryYear(
+                    message: "Expiry year cannot be blank.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString))
+                
+            } else if Int(rawData.expiryYear) == nil {
+                isInvalidYear = true
+                errors.append(PrimerValidationError.invalidExpiryYear(
+                    message: "Expiry year is not valid.",
                     userInfo: [
                         "file": #file,
                         "class": "\(Self.self)",
@@ -201,20 +245,46 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             }
             
             let cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
-            if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
-                errors.append(PrimerValidationError.invalidCvv(
+            
+            if rawData.cvv.isEmpty {
+                let err = PrimerValidationError.invalidCvv(
+                    message: "CVV cannot be blank.",
                     userInfo: [
                         "file": #file,
                         "class": "\(Self.self)",
                         "function": #function,
                         "line": "\(#line)"
                     ],
-                    diagnosticsId: UUID().uuidString))
+                    diagnosticsId: UUID().uuidString)
+                errors.append(err)
+                
+            } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
+                let err = PrimerValidationError.invalidCvv(
+                    message: "CVV is not valid.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                errors.append(err)
             }
             
             if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
-                if !(rawData.cardholderName ?? "").isValidCardholderName {
+                if (rawData.cardholderName ?? "").isEmpty {
                     errors.append(PrimerValidationError.invalidCardholderName(
+                        message: "Cardholder name cannot be blank.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
+                } else if !(rawData.cardholderName ?? "").isValidCardholderName {
+                    errors.append(PrimerValidationError.invalidCardholderName(
+                        message: "Cardholder name is not valid.",
                         userInfo: [
                             "file": #file,
                             "class": "\(Self.self)",
