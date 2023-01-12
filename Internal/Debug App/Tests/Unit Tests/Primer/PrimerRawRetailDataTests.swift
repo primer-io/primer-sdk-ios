@@ -15,7 +15,7 @@ class PrimerRawRetailDataTests: XCTestCase {
     
     func test_invalid_raw_retail_data() throws {
         
-        let rawRetailData = PrimerRawRetailerData(id: "")
+        let rawRetailData = PrimerRetailerData(id: "")
         
         let tokenizationBuilder = PrimerRawRetailerDataTokenizationBuilder(paymentMethodType: "XENDIT_RETAIL_OUTLETS")
         
@@ -30,7 +30,7 @@ class PrimerRawRetailDataTests: XCTestCase {
     
     func test_valid_raw_retail_data() throws {
         
-        let rawRetailData = PrimerRawRetailerData(id: "test")
+        let rawRetailData = PrimerRetailerData(id: "test")
         
         let tokenizationBuilder = PrimerRawRetailerDataTokenizationBuilder(paymentMethodType: "XENDIT_RETAIL_OUTLETS")
         

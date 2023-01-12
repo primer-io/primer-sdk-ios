@@ -561,7 +561,7 @@ extension PrimerHeadlessUniversalCheckout {
                             return
                         }
 
-                        guard let selectedRetailer = rawData as? PrimerRawRetailerData,
+                        guard let selectedRetailer = rawData as? PrimerRetailerData,
                               let selectedRetailerName = (initializationData as? RetailOutletsList)?.result.first(where: { $0.id == selectedRetailer.id })?.name else {
                             let err = PrimerError.invalidValue(key: "rawData.id", value: "Invalid Retailer Identifier", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)

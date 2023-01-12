@@ -13,7 +13,7 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
     
     var rawData: PrimerRawData? {
         didSet {
-            if let rawRetailerData = self.rawData as? PrimerRawRetailerData {
+            if let rawRetailerData = self.rawData as? PrimerRetailerData {
                 rawRetailerData.onDataDidChange = {
                     _ = self.validateRawData(rawRetailerData)
                 }
@@ -52,7 +52,7 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
                 return
             }
             
-            guard let rawData = data as? PrimerRawRetailerData else {
+            guard let rawData = data as? PrimerRetailerData else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -76,7 +76,7 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
             
             var errors: [PrimerValidationError] = []
             
-            guard let rawData = data as? PrimerRawRetailerData, let rawDataManager = rawDataManager else {
+            guard let rawData = data as? PrimerRetailerData, let rawDataManager = rawDataManager else {
                 let err = PrimerValidationError.invalidRawData(
                     userInfo: [
                         "file": #file,
