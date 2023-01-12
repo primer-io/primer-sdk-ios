@@ -65,7 +65,7 @@ class Mocks {
         order: nil,
         orderId: nil,
         requiredAction: nil,
-        status: .settled,
+        status: .success,
         paymentFailureReason: nil)
     
     
