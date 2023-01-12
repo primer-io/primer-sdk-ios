@@ -21,9 +21,7 @@ public class PrimerRawRetailerData: PrimerRawData {
         case id = "retailOutlet"
     }
     
-    public required init(
-        id: String
-    ) {
+    public required init(id: String) {
         self.id = id
         super.init()
     }
