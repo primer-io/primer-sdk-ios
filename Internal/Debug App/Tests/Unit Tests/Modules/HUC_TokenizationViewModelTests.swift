@@ -410,8 +410,7 @@ class HUC_TokenizationViewModelTests: XCTestCase {
                 
                 let rawCardData = PrimerCardData(
                     cardNumber: "4111 1111 1111 1111",
-                    expiryMonth: "03",
-                    expiryYear: "2030",
+                    expiryDate: "03/2030",
                     cvv: "123",
                     cardholderName: "John Smith")
                 
