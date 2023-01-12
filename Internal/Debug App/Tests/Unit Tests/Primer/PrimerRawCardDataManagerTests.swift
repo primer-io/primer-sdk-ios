@@ -64,8 +64,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
     func test_valid_raw_card_data() throws {
         let rawCardData = PrimerCardData(
             cardNumber: BaseRawCardData.testCardNumbers[.visa]!.first!,
-            expiryMonth: "02",
-            expiryYear: "40",
+            expiryDate: "02/2040",
             cvv: "123",
             cardholderName: "John Smith")
         
@@ -85,8 +84,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
     func test_invalid_cardnumber_in_raw_card_data() throws {
         let rawCardData = PrimerCardData(
             cardNumber: BaseRawCardData.testCardNumbers[.visa]!.first!,
-            expiryMonth: "02",
-            expiryYear: "2040",
+            expiryDate: "02/2040",
             cvv: "123",
             cardholderName: "John Smith")
         
@@ -132,8 +130,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
     func test_invalid_expiry_date_in_raw_card_data() throws {
         let rawCardData = PrimerCardData(
             cardNumber: BaseRawCardData.testCardNumbers[.visa]!.first!,
-            expiryMonth: "02",
-            expiryYear: "2040",
+            expiryDate: "02/2040",
             cvv: "123",
             cardholderName: "John Smith")
         
@@ -148,7 +145,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in }
         
         firstly { () -> Promise<Void> in
-            rawCardData.expiryMonth = "a"
+            rawCardData.expiryDate = "a"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -157,7 +154,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in }
         
         firstly { () -> Promise<Void> in
-            rawCardData.expiryMonth = "1"
+            rawCardData.expiryDate = "1"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -166,7 +163,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly { () -> Promise<Void> in
-            rawCardData.expiryMonth = ""
+            rawCardData.expiryDate = ""
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -175,7 +172,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly { () -> Promise<Void> in
-            rawCardData.expiryMonth = "13"
+            rawCardData.expiryDate = "13"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -184,7 +181,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly { () -> Promise<Void> in
-            rawCardData.expiryMonth = "019"
+            rawCardData.expiryDate = "019"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -193,8 +190,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly { () -> Promise<Void> in
-            rawCardData.expiryMonth = "02"
-            rawCardData.expiryYear  = ""
+            rawCardData.expiryDate = "02/"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -203,7 +199,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in }
         
         firstly { () -> Promise<Void> in
-            rawCardData.expiryYear  = "25"
+            rawCardData.expiryDate  = "02/25"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -212,7 +208,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly { () -> Promise<Void> in
-            rawCardData.expiryYear  = "2a5"
+            rawCardData.expiryDate  = "02/2a5"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -221,7 +217,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly { () -> Promise<Void> in
-            rawCardData.expiryYear  = "2019"
+            rawCardData.expiryDate  = "02/2019"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -233,8 +229,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
     func test_invalid_cvv_in_raw_card_data() throws {
         let rawCardData = PrimerCardData(
             cardNumber: BaseRawCardData.testCardNumbers[.visa]!.first!,
-            expiryMonth: "99",
-            expiryYear: "2040",
+            expiryDate: "99/2040",
             cvv: "12345",
             cardholderName: "John Smith")
 
@@ -296,8 +291,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
     func test_valid_raw_bancontact_card_data() throws {
         let rawCardData = PrimerBancontactCardRedirectData(
             cardNumber: BaseRawCardData.testCardNumbers[.visa]!.last!,
-            expiryMonth: "03",
-            expiryYear: "2030",
+            expiryDate: "03/2030",
             cardholderName: "John Smith")
         
         let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
@@ -319,8 +313,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
         
         let rawCardData = PrimerBancontactCardRedirectData(
             cardNumber: BaseRawCardData.testCardNumbers[.visa]!.randomElement()!,
-            expiryMonth: "02",
-            expiryYear: "2040",
+            expiryDate: "02/2040",
             cardholderName: "John Smith")
         
         let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
@@ -339,8 +332,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
     func test_invalid_cardnumber_in_raw_card_data() throws {
         let rawCardData = PrimerBancontactCardRedirectData(
             cardNumber: BaseRawCardData.testCardNumbers[.visa]!.first!,
-            expiryMonth: "02",
-            expiryYear: "2040",
+            expiryDate: "02/2040",
             cardholderName: "John Smith")
         
         let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
@@ -385,8 +377,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
     func test_invalid_expiry_date_in_raw_card_data() throws {
         let rawCardData = PrimerBancontactCardRedirectData(
             cardNumber: BaseRawCardData.testCardNumbers[.visa]!.randomElement()!,
-            expiryMonth: "02",
-            expiryYear: "2040",
+            expiryDate: "02/2040",
             cardholderName: "John Smith")
         
         let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
@@ -400,7 +391,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
         .catch { _ in }
         
         firstly { () -> Promise<Void> in
-            rawCardData.expiryMonth = "a"
+            rawCardData.expiryDate = "a"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -409,7 +400,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
         .catch { _ in }
         
         firstly { () -> Promise<Void> in
-            rawCardData.expiryMonth = "1"
+            rawCardData.expiryDate = "1"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -418,7 +409,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly { () -> Promise<Void> in
-            rawCardData.expiryMonth = ""
+            rawCardData.expiryDate = ""
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -427,7 +418,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly { () -> Promise<Void> in
-            rawCardData.expiryMonth = "13"
+            rawCardData.expiryDate = "13"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -436,7 +427,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly { () -> Promise<Void> in
-            rawCardData.expiryMonth = "019"
+            rawCardData.expiryDate = "019"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -445,8 +436,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly { () -> Promise<Void> in
-            rawCardData.expiryMonth = "02"
-            rawCardData.expiryYear  = ""
+            rawCardData.expiryDate = "02/"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -455,7 +445,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
         .catch { _ in }
         
         firstly { () -> Promise<Void> in
-            rawCardData.expiryYear  = "25"
+            rawCardData.expiryDate  = "02/25"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -464,7 +454,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly { () -> Promise<Void> in
-            rawCardData.expiryYear  = "2a5"
+            rawCardData.expiryDate  = "02/2a5"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
@@ -473,7 +463,7 @@ class PrimerRawCardRedirectDataManagerTests: XCTestCase {
         .catch { _ in }
 
         firstly { () -> Promise<Void> in
-            rawCardData.expiryYear  = "2019"
+            rawCardData.expiryDate  = "02/2019"
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done {
