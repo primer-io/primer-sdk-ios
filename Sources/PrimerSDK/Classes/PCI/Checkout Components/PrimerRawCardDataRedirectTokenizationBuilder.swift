@@ -42,7 +42,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
     
     var rawData: PrimerRawData? {
         didSet {
-            if let rawCardData = self.rawData as? PrimerBancontactCardRedirectData {
+            if let rawCardData = self.rawData as? PrimerBancontactCardData {
                 rawCardData.onDataDidChange = {
                     _ = self.validateRawData(rawCardData)
                     
@@ -135,7 +135,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
             
             var errors: [PrimerValidationError] = []
             
-            guard let rawData = data as? PrimerBancontactCardRedirectData, let rawDataManager = rawDataManager else {
+            guard let rawData = data as? PrimerBancontactCardData, let rawDataManager = rawDataManager else {
                 let err = PrimerValidationError.invalidRawData(
                     userInfo: [
                         "file": #file,
