@@ -21,7 +21,7 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
     var paymentMethodType: String!
     var paymentId: String?
     var activityIndicator: UIActivityIndicatorView?
-    var rawCardData = PrimerCardData(cardNumber: "", expiryMonth: "", expiryYear: "", cvv: "", cardholderName: "")
+    var rawCardData = PrimerCardData(cardNumber: "", expiryDate: "", cvv: "", cardholderName: "")
     
     var cardnumberTextField: UITextField!
     var expiryDateTextField: UITextField!
@@ -216,13 +216,10 @@ extension MerchantHUCRawDataViewController: UITextFieldDelegate {
             self.rawCardData.cardNumber = (newText ?? "").replacingOccurrences(of: " ", with: "")
             
         } else if textField == self.expiryDateTextField,
-                  newText?.count == 7,
-                  let expiryComponents = newText?.split(separator: "/"),
-                  expiryComponents.count == 2
+                  newText?.count == 7
         {
-            self.rawCardData.expiryMonth = String(expiryComponents[0])
-            self.rawCardData.expiryYear  = String(expiryComponents[1])
-            
+            self.rawCardData.expiryDate = newText!
+
         } else if textField == self.cvvTextField {
             self.rawCardData.cvv = newText ?? ""
             

@@ -106,19 +106,24 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                 return
             }
                         
-            guard let rawData = data as? PrimerBancontactCardRedirectData else {
+            guard let rawData = data as? PrimerCardData,
+                  (rawData.expiryDate.split(separator: "/")).count == 2
+            else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
             
+            let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
+            let expiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+            
             let paymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
                                                                     paymentMethodType: paymentMethodType,
                                                                     number: PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as! String,
-                                                                    expirationMonth: rawData.expiryMonth,
-                                                                    expirationYear: rawData.expiryYear,
-                                                                    cardholderName: rawData.cardholderName)
+                                                                    expirationMonth: expiryMonth,
+                                                                    expirationYear: expiryYear,
+                                                                    cardholderName: rawData.cardholderName ?? "")
             
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             seal.fulfill(requestBody)
@@ -170,17 +175,128 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                 errors.append(err)
             }
             
-            let expiryDate = rawData.expiryMonth + "/" + rawData.expiryYear.suffix(2)
+            let expiryDateComponents = rawData.expiryDate.split(separator: "/")
             
-            if !expiryDate.isValidExpiryDate {
-                errors.append(PrimerValidationError.invalidExpiryDate(
+            if expiryDateComponents.count != 2 {
+                let err = PrimerValidationError.invalidExpiryDate(
+                    message: "Expiry date is not valid. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year separated by '/'.",
                     userInfo: [
                         "file": #file,
                         "class": "\(Self.self)",
                         "function": #function,
                         "line": "\(#line)"
                     ],
-                    diagnosticsId: UUID().uuidString))
+                    diagnosticsId: UUID().uuidString)
+                errors.append(err)
+                
+            } else {
+                let expiryMonth = String(expiryDateComponents[0])
+                let expiryYear = String(expiryDateComponents[1])
+                
+                var isInvalidMonth = false
+                var isInvalidYear = false
+                
+                if expiryMonth.isEmpty {
+                    isInvalidMonth = true
+                    errors.append(PrimerValidationError.invalidExpiryMonth(
+                        message: "Expiry month cannot be blank.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
+                    
+                } else if Int(expiryMonth) == nil {
+                    isInvalidMonth = true
+                    errors.append(PrimerValidationError.invalidExpiryMonth(
+                        message: "Expiry month is not valid.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
+                    
+                } else {
+                    if Int(expiryMonth)! > 12 {
+                        isInvalidMonth = true
+                        errors.append(PrimerValidationError.invalidExpiryMonth(
+                            message: "Expiry month is not valid.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString))
+                        
+                    } else if Int(expiryMonth)! < 1 {
+                        isInvalidMonth = true
+                        errors.append(PrimerValidationError.invalidExpiryMonth(
+                            message: "Expiry month is not valid.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString))
+                        
+                    }
+                }
+                                
+                if expiryYear.isEmpty {
+                    isInvalidYear = true
+                    errors.append(PrimerValidationError.invalidExpiryYear(
+                        message: "Expiry year cannot be blank.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
+                    
+                } else if Int(expiryYear) == nil {
+                    isInvalidYear = true
+                    errors.append(PrimerValidationError.invalidExpiryYear(
+                        message: "Expiry year is not valid.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
+                } else if expiryYear.count != 4 {
+                    isInvalidYear = true
+                    errors.append(PrimerValidationError.invalidExpiryYear(
+                        message: "Expiry year is not valid.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
+                }
+                
+                if !isInvalidMonth, !isInvalidYear {
+                    if !rawData.expiryDate.isValidExpiryDateWith4DigitYear {
+                        errors.append(PrimerValidationError.invalidExpiryDate(
+                            message: "Expiry date is not valid. Expiry date should not be in the past.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString))
+                    }
+                }
             }
             
             if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
