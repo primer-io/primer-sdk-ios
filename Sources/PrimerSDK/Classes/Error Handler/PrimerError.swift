@@ -25,7 +25,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
     case invalidCvv(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidExpiryMonth(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidExpiryYear(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidExpiryDate(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidExpiryDate(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidPostalCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidFirstName(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidLastName(message: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -44,7 +44,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return diagnosticsId
         case .invalidCvv(_, _, let diagnosticsId):
             return diagnosticsId
-        case .invalidExpiryDate(_, let diagnosticsId):
+        case .invalidExpiryDate(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidPostalCode(_, _, let diagnosticsId):
             return diagnosticsId
@@ -118,8 +118,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "[\(errorId)] \(message)"
         case .invalidExpiryYear(let message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidExpiryDate:
-            return "[\(errorId)] Expiry date is not valid. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year."
+        case .invalidExpiryDate(let message, _, _):
+            return "[\(errorId)] \(message)"
         case .invalidPostalCode(let message, _, _):
             return "[\(errorId)] \(message)"
         case .invalidFirstName(let message, _, _):
@@ -150,7 +150,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
                 .invalidCvv(_, let userInfo, _),
                 .invalidExpiryMonth(_, let userInfo, _),
                 .invalidExpiryYear(_, let userInfo, _),
-                .invalidExpiryDate(let userInfo, _),
+                .invalidExpiryDate(_, let userInfo, _),
                 .invalidPostalCode(_, let userInfo, _),
                 .invalidFirstName(_, let userInfo, _),
                 .invalidLastName(_, let userInfo, _),

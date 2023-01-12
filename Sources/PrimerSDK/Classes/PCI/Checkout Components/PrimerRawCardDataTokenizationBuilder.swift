@@ -69,7 +69,6 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             mutableRequiredInputElementTypes.append(.cardholderName)
         }
         
-        mutableRequiredInputElementTypes.append(.cardholderName)
         return mutableRequiredInputElementTypes
     }
     
@@ -83,26 +82,30 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
-            
             guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
-            
-            guard let rawData = data as? PrimerCardData else {
+                        
+            guard let rawData = data as? PrimerCardData,
+                  (rawData.expiryDate.split(separator: "/")).count == 2
+            else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
             
+            let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
+            let expiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+                        
             let paymentInstrument = CardPaymentInstrument(
                 number: PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as! String,
                 cvv: rawData.cvv,
-                expirationMonth: rawData.expiryMonth,
-                expirationYear: rawData.expiryYear,
+                expirationMonth: expiryMonth,
+                expirationYear: expiryYear,
                 cardholderName: rawData.cardholderName)
             
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
@@ -154,35 +157,41 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     diagnosticsId: UUID().uuidString)
                 errors.append(err)
             }
-            
-            var isInvalidMonth = false
-            
-            if rawData.expiryMonth.isEmpty {
-                isInvalidMonth = true
-                errors.append(PrimerValidationError.invalidExpiryMonth(
-                    message: "Expiry month cannot be blank.",
+                        
+            let expiryDateComponents = rawData.expiryDate.split(separator: "/")
+                        
+            if expiryDateComponents.count != 2 {
+                let err = PrimerValidationError.invalidExpiryDate(
+                    message: "Expiry date is not valid. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year separated by '/'.",
                     userInfo: [
                         "file": #file,
                         "class": "\(Self.self)",
                         "function": #function,
                         "line": "\(#line)"
                     ],
-                    diagnosticsId: UUID().uuidString))
-                
-            } else if Int(rawData.expiryMonth) == nil {
-                isInvalidMonth = true
-                errors.append(PrimerValidationError.invalidExpiryMonth(
-                    message: "Expiry month is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
+                    diagnosticsId: UUID().uuidString)
+                errors.append(err)
                 
             } else {
-                if Int(rawData.expiryMonth)! > 12 {
+                let expiryMonth = String(expiryDateComponents[0])
+                let expiryYear = String(expiryDateComponents[1])
+                
+                var isInvalidMonth = false
+                var isInvalidYear = false
+                
+                if expiryMonth.isEmpty {
+                    isInvalidMonth = true
+                    errors.append(PrimerValidationError.invalidExpiryMonth(
+                        message: "Expiry month cannot be blank.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
+                    
+                } else if Int(expiryMonth) == nil {
                     isInvalidMonth = true
                     errors.append(PrimerValidationError.invalidExpiryMonth(
                         message: "Expiry month is not valid.",
@@ -194,64 +203,38 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         ],
                         diagnosticsId: UUID().uuidString))
                     
-                } else if Int(rawData.expiryMonth)! < 1 {
-                    isInvalidMonth = true
-                    errors.append(PrimerValidationError.invalidExpiryMonth(
-                        message: "Expiry month is not valid.",
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
-                        diagnosticsId: UUID().uuidString))
-                    
+                } else {
+                    if Int(expiryMonth)! > 12 {
+                        isInvalidMonth = true
+                        errors.append(PrimerValidationError.invalidExpiryMonth(
+                            message: "Expiry month is not valid.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString))
+                        
+                    } else if Int(expiryMonth)! < 1 {
+                        isInvalidMonth = true
+                        errors.append(PrimerValidationError.invalidExpiryMonth(
+                            message: "Expiry month is not valid.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString))
+                        
+                    }
                 }
-            }
-            
-            var isInvalidYear = false
-            
-            if rawData.expiryYear.isEmpty {
-                isInvalidYear = true
-                errors.append(PrimerValidationError.invalidExpiryYear(
-                    message: "Expiry year cannot be blank.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
-                
-            } else if Int(rawData.expiryYear) == nil {
-                isInvalidYear = true
-                errors.append(PrimerValidationError.invalidExpiryYear(
-                    message: "Expiry year is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
-            } else if rawData.expiryYear.count != 4 {
-                isInvalidYear = true
-                errors.append(PrimerValidationError.invalidExpiryYear(
-                    message: "Expiry year is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
-            }
-            
-            if !isInvalidMonth, !isInvalidYear {
-                let expiryDate = rawData.expiryMonth + "/" + rawData.expiryYear
-                
-                if !expiryDate.isValidExpiryDateWith4DigitYear {
-                    errors.append(PrimerValidationError.invalidExpiryDate(
+                                
+                if expiryYear.isEmpty {
+                    isInvalidYear = true
+                    errors.append(PrimerValidationError.invalidExpiryYear(
+                        message: "Expiry year cannot be blank.",
                         userInfo: [
                             "file": #file,
                             "class": "\(Self.self)",
@@ -259,6 +242,43 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                             "line": "\(#line)"
                         ],
                         diagnosticsId: UUID().uuidString))
+                    
+                } else if Int(expiryYear) == nil {
+                    isInvalidYear = true
+                    errors.append(PrimerValidationError.invalidExpiryYear(
+                        message: "Expiry year is not valid.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
+                } else if expiryYear.count != 4 {
+                    isInvalidYear = true
+                    errors.append(PrimerValidationError.invalidExpiryYear(
+                        message: "Expiry year is not valid.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString))
+                }
+                
+                if !isInvalidMonth, !isInvalidYear {
+                    if !rawData.expiryDate.isValidExpiryDateWith4DigitYear {
+                        errors.append(PrimerValidationError.invalidExpiryDate(
+                            message: "Expiry date is not valid. Expiry date should not be in the past.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString))
+                    }
                 }
             }
             

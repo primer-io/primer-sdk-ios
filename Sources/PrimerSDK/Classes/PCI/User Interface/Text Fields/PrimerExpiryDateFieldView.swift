@@ -40,6 +40,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             validation = .valid
         } else {
             let err = PrimerValidationError.invalidExpiryDate(
+                message: "Expiry date is not valid. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year separated by '/'.",
                 userInfo: [
                     "file": #file,
                     "class": "\(Self.self)",
