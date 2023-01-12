@@ -11,6 +11,56 @@ import Foundation
 
 internal extension Date {
     
+    var oneYearLater: Date {
+        let dateComponents = Calendar.current.dateComponents([
+            .second,
+            .minute,
+            .hour,
+            .day,
+            .month,
+            .year
+        ], from: self)
+        
+        var oneYearLaterDateComponents = DateComponents()
+        oneYearLaterDateComponents.second = dateComponents.second!
+        oneYearLaterDateComponents.minute = dateComponents.minute!
+        oneYearLaterDateComponents.hour = dateComponents.hour!
+        oneYearLaterDateComponents.day = dateComponents.day!
+        oneYearLaterDateComponents.month = dateComponents.month!
+        oneYearLaterDateComponents.year = dateComponents.year! + 1
+        
+        return Calendar.current.date(from: oneYearLaterDateComponents)!
+    }
+    
+    var startOfDay: Date {
+        return Calendar.current.startOfDay(for: self)
+    }
+    
+    var endOfDay: Date {
+        var components = DateComponents()
+        components.day = 1
+        components.second = -1
+        return Calendar.current.date(byAdding: components, to: startOfDay)!
+    }
+    
+    var startOfMonth: Date {
+        let components = Calendar.current.dateComponents([.year, .month], from: startOfDay)
+        return Calendar.current.date(from: components)!
+    }
+    
+    var endOfMonth: Date {
+        var components = DateComponents()
+        components.month = 1
+        components.second = -1
+        return Calendar.current.date(byAdding: components, to: startOfMonth)!
+    }
+    
+    var isValidExpiryDate: Bool {
+        let oneYearLaterEndOfMonthDate = self.oneYearLater.endOfMonth
+        let now = Date()
+        return now < oneYearLaterEndOfMonthDate
+    }
+    
     var yearComponentAsString: String {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year], from: self)
@@ -18,19 +68,6 @@ internal extension Date {
             return "\(year)"
         }
         return ""
-    }
-    
-    var startOfMonth: Date {
-        let calendar = Calendar(identifier: .gregorian)
-        let components = calendar.dateComponents([.year, .month], from: self)
-        return  calendar.date(from: components)!
-    }
-    
-    var endOfMonth: Date {
-        var components = DateComponents()
-        components.month = 1
-        components.second = -1
-        return Calendar(identifier: .gregorian).date(byAdding: components, to: startOfMonth)!
     }
     
     // swiftlint:disable identifier_name
