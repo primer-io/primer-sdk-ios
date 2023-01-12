@@ -9,7 +9,7 @@
 
 import Foundation
 
-public class PrimerRawRetailerData: PrimerRawData {
+public class PrimerRetailerData: PrimerRawData {
     
     public var id: String {
         didSet {
