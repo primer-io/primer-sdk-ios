@@ -18,12 +18,7 @@ public class PrimerBancontactCardRedirectData: PrimerCardRedirectData {
             self.onDataDidChange?()
         }
     }
-    public var expiryMonth: String {
-        didSet {
-            self.onDataDidChange?()
-        }
-    }
-    public var expiryYear: String {
+    public var expiryDate: String {
         didSet {
             self.onDataDidChange?()
         }
@@ -35,18 +30,16 @@ public class PrimerBancontactCardRedirectData: PrimerCardRedirectData {
     }
     
     private enum CodingKeys: String, CodingKey {
-        case cardNumber, expiryMonth, expiryYear, cardholderName
+        case cardNumber, expiryDate, cardholderName
     }
         
     public required init(
         cardNumber: String,
-        expiryMonth: String,
-        expiryYear: String,
+        expiryDate: String,
         cardholderName: String
     ) {
         self.cardNumber = cardNumber
-        self.expiryMonth = expiryMonth
-        self.expiryYear = expiryYear
+        self.expiryDate = expiryDate
         self.cardholderName = cardholderName
         super.init()
     }
@@ -54,8 +47,7 @@ public class PrimerBancontactCardRedirectData: PrimerCardRedirectData {
     public override func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(cardNumber, forKey: .cardNumber)
-        try container.encode(expiryMonth, forKey: .expiryMonth)
-        try container.encode(expiryYear, forKey: .expiryYear)
+        try container.encode(expiryDate, forKey: .expiryDate)
         try container.encode(cardholderName, forKey: .cardholderName)
     }
 }
