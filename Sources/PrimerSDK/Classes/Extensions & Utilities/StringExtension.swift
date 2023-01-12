@@ -324,9 +324,6 @@ internal extension String {
     mutating func capitalizeFirstLetter() {
         self = self.capitalizingFirstLetter()
     }
-}
-
-extension String {
     
     internal func isValidPhoneNumberForPaymentMethodType(_ paymentMethodType: PrimerPaymentMethodType) -> Bool {
         
@@ -341,6 +338,52 @@ extension String {
         
         let phoneNumber = NSPredicate(format: "SELF MATCHES %@", regex)
         return phoneNumber.evaluate(with: self)
+    }
+    
+    func validateExpiryDateString() throws {
+        if self.isEmpty {
+            let err = PrimerValidationError.invalidExpiryDate(
+                message: "Expiry date cannot be blank.",
+                userInfo: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ],
+                diagnosticsId: UUID().uuidString)
+            throw err
+            
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MM/yyyy"
+            
+            if let expiryDate = dateFormatter.date(from: self) {
+                if !expiryDate.isValidExpiryDate {
+                    let err = PrimerValidationError.invalidExpiryDate(
+                        message: "Card expiry date is not valid. Expiry date should not be less than a year in the past.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                    throw err
+                }
+                
+            } else {
+                let err = PrimerValidationError.invalidExpiryDate(
+                    message: "Card expiry date is not valid. Valid expiry date format is MM/YYYY.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                throw err
+            }
+        }
     }
 }
 
