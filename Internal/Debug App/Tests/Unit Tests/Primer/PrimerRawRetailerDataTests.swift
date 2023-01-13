@@ -11,7 +11,7 @@
 import XCTest
 @testable import PrimerSDK
 
-class PrimerRawRetailDataTests: XCTestCase {
+class PrimerRawRetailerDataTests: XCTestCase {
     
     func test_invalid_raw_retail_data() throws {
         
