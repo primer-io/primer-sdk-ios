@@ -1,5 +1,7 @@
 #if canImport(UIKit)
 
+import Foundation
+
 public enum TokenType: String, Codable {
     case multiUse = "MULTI_USE"
     case singleUse = "SINGLE_USE"
