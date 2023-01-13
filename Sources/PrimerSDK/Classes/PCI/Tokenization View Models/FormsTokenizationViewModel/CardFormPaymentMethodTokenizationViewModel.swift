@@ -15,7 +15,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     // MARK: - Properties
     
-    private var cardComponentsManager: CardComponentsManager!
+    private var cardComponentsManager: InternalCardComponentsManager!
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     private var userInputCompletion: (() -> Void)?
@@ -286,7 +286,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     required init(config: PrimerPaymentMethod) {
         super.init(config: config)
                         
-        self.cardComponentsManager = CardComponentsManager(
+        self.cardComponentsManager = InternalCardComponentsManager(
             cardnumberField: cardNumberField,
             expiryDateField: expiryDateField,
             cvvField: cvvField,
@@ -695,14 +695,14 @@ extension CardFormPaymentMethodTokenizationViewModel {
     }
 }
 
-extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate {
+extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsManagerDelegate {
     
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData) {
+    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData) {
         self.cardComponentsManagerTokenizationCompletion?(paymentMethodToken, nil)
         self.cardComponentsManagerTokenizationCompletion = nil
     }
     
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
+    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
         if let clientToken = PrimerAPIConfigurationModule.clientToken {
             completion(clientToken, nil)
         } else {
@@ -712,14 +712,14 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         }
     }
     
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error]) {
+    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, tokenizationFailedWith errors: [Error]) {
         let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: err)
         self.cardComponentsManagerTokenizationCompletion?(nil, err)
         self.cardComponentsManagerTokenizationCompletion = nil
     }
     
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
+    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, isLoading: Bool) {
         isLoading ? self.uiModule.submitButton?.startAnimating() : self.uiModule.submitButton?.stopAnimating()
         PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = !isLoading
     }
