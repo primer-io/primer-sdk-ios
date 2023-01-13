@@ -36,7 +36,7 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
     var primerError: Error?
     var logs: [String] = []
     
-    var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardComponentsUIManager?
+    var cardComponentsManager: PrimerHeadlessUniversalCheckout.CardComponentsManager?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,11 +65,11 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
         
         PrimerHeadlessUniversalCheckout.current.delegate = self
         
-        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardComponentsUIManager()
-        self.cardFormUIManager!.delegate = self
+        self.cardComponentsManager = try! PrimerHeadlessUniversalCheckout.CardComponentsManager()
+        self.cardComponentsManager!.delegate = self
         
         var tmpInputElements: [PrimerHeadlessUniversalCheckoutInputElement] = []
-        for inputElementType in self.cardFormUIManager!.requiredInputElementTypes {
+        for inputElementType in self.cardComponentsManager!.requiredInputElementTypes {
             let textField = PrimerInputTextField(type: inputElementType, frame: .zero)
             textField.borderStyle = .line
             textField.layer.borderColor = UIColor.black.cgColor
@@ -99,13 +99,13 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
             tmpInputElements.append(textField)
         }
         
-        self.cardFormUIManager?.inputElements = tmpInputElements
+        self.cardComponentsManager?.inputElements = tmpInputElements
         self.stackView.addArrangedSubview(self.paymentButton)
     }
     
     @objc
     func paymentButtonTapped() {
-        self.cardFormUIManager?.submit()
+        self.cardComponentsManager?.submit()
     }
     
     // MARK: - HELPERS
@@ -271,9 +271,9 @@ extension MerchantHUCCardComponentsViewController: PrimerInputElementDelegate {
     }
 }
 
-extension MerchantHUCCardComponentsViewController: PrimerHeadlessUniversalCheckoutCardComponentsUIManagerDelegate {
+extension MerchantHUCCardComponentsViewController: PrimerHeadlessUniversalCheckoutCardComponentsManagerDelegate {
     
-    func cardFormUIManager(_ cardFormUIManager: PrimerHeadlessUniversalCheckout.CardComponentsUIManager, isCardFormValid: Bool) {
+    func cardComponentsManager(_ cardComponentsManager: PrimerHeadlessUniversalCheckout.CardComponentsManager, isCardFormValid: Bool) {
         
     }
 }

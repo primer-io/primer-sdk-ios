@@ -12,13 +12,13 @@ import SafariServices
 
 public protocol PrimerHeadlessUniversalCheckoutInputData{}
 
-public protocol PrimerHeadlessUniversalCheckoutCardComponentsUIManagerDelegate: AnyObject  {
-    func cardFormUIManager(_ cardFormUIManager: PrimerHeadlessUniversalCheckout.CardComponentsUIManager, isCardFormValid: Bool)
+public protocol PrimerHeadlessUniversalCheckoutCardComponentsManagerDelegate: AnyObject  {
+    func cardComponentsManager(_ cardComponentsManager: PrimerHeadlessUniversalCheckout.CardComponentsManager, isCardFormValid: Bool)
 }
 
 extension PrimerHeadlessUniversalCheckout {
     
-    public final class CardComponentsUIManager: NSObject, PrimerInputElementDelegate {
+    public final class CardComponentsManager: NSObject, PrimerInputElementDelegate {
         
         private(set) public var paymentMethodType: String
         private let appState: AppStateProtocol = AppState.current
@@ -74,11 +74,11 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         private var originalInputElementsContainers: [Weak<PrimerInputElementDelegateContainer>]? = []
-        public weak var delegate: PrimerHeadlessUniversalCheckoutCardComponentsUIManagerDelegate?
+        public weak var delegate: PrimerHeadlessUniversalCheckoutCardComponentsManagerDelegate?
         private(set) public var isCardFormValid: Bool = false {
             didSet {
                 DispatchQueue.main.async {
-                    self.delegate?.cardFormUIManager(self, isCardFormValid: self.isCardFormValid)
+                    self.delegate?.cardComponentsManager(self, isCardFormValid: self.isCardFormValid)
                 }
             }
         }
@@ -960,7 +960,7 @@ extension PrimerHeadlessUniversalCheckout {
     }
 }
 
-extension PrimerHeadlessUniversalCheckout.CardComponentsUIManager: ResumeHandlerProtocol {
+extension PrimerHeadlessUniversalCheckout.CardComponentsManager: ResumeHandlerProtocol {
     
     // MARK: - RESUME HANDLER
     
@@ -973,7 +973,7 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsUIManager: ResumeHandler
     public func handleSuccess() {}
 }
 
-extension PrimerHeadlessUniversalCheckout.CardComponentsUIManager {
+extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
     
     private func handle(_ clientToken: String) {
         
@@ -1065,7 +1065,7 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsUIManager {
     }
 }
 
-extension PrimerHeadlessUniversalCheckout.CardComponentsUIManager: SFSafariViewControllerDelegate {
+extension PrimerHeadlessUniversalCheckout.CardComponentsManager: SFSafariViewControllerDelegate {
     
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion = webViewCompletion {
