@@ -32,7 +32,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     var inputs: [Input] = []
     private var didCancelPolling: (() -> Void)?
     
-    private var cardComponentsManager: CardComponentsManager!
+    private var cardComponentsManager: InternalCardComponentsManager!
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         
     private static let countryCodeFlag = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.flag ?? ""
