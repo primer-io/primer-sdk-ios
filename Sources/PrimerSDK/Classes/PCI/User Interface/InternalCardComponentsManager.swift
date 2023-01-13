@@ -1,5 +1,5 @@
 //
-//  CardComponentsManager.swift
+//  InternalCardComponentsManager.swift
 //  PrimerSDK
 //
 //  Created by Evangelos Pittas on 6/7/21.
@@ -10,27 +10,27 @@
 import UIKit
 
 @objc
-public protocol CardComponentsManagerDelegate {
+internal protocol InternalCardComponentsManagerDelegate {
     /// The cardComponentsManager(_:clientTokenCallback:) can be used to provide the CardComponentsManager with an access token from the merchants backend.
     /// This delegate function is optional since you can initialize the CardComponentsManager with an access token. Still, if the access token is not valid, the CardComponentsManager
     /// will try to acquire an access token through this function.
-    @objc optional func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void)
+    @objc optional func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void)
     /// The cardComponentsManager(_:onTokenizeSuccess:) is the only required method, and it will return the payment method token (which
     /// contains all the information needed)
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData)
+    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData)
     /// The cardComponentsManager(_:tokenizationFailedWith:) will return any tokenization errors that have occured.
-    @objc optional func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error])
+    @objc optional func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, tokenizationFailedWith errors: [Error])
     /// The cardComponentsManager(_:isLoading:) will return true when the CardComponentsManager is performing an async operation and waiting for a result, false
     /// when loading has finished.
-    @objc optional func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool)
+    @objc optional func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, isLoading: Bool)
 }
 
-protocol CardComponentsManagerProtocol {
+protocol InternalCardComponentsManagerProtocol {
     var cardnumberField: PrimerCardNumberFieldView { get }
     var expiryDateField: PrimerExpiryDateFieldView { get }
     var cvvField: PrimerCVVFieldView { get }
     var cardholderField: PrimerCardholderNameFieldView? { get }
-    var delegate: CardComponentsManagerDelegate? { get }
+    var delegate: InternalCardComponentsManagerDelegate? { get }
     var customerId: String? { get }
     var merchantIdentifier: String? { get }
     var amount: Int? { get }
@@ -46,20 +46,20 @@ typealias BillingAddressField = (fieldView: PrimerTextFieldView,
                                  isFieldHidden: Bool)
 
 @objc
-public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
+internal class InternalCardComponentsManager: NSObject, InternalCardComponentsManagerProtocol {
     
-    public var cardnumberField: PrimerCardNumberFieldView
-    public var expiryDateField: PrimerExpiryDateFieldView
-    public var cvvField: PrimerCVVFieldView
-    public var cardholderField: PrimerCardholderNameFieldView?
-    public var billingAddressFieldViews: [PrimerTextFieldView]?
-    public var isRequiringCVVInput: Bool
-    public var paymentMethodType: String
-    public var delegate: CardComponentsManagerDelegate?
-    public var customerId: String?
-    public var merchantIdentifier: String?
-    public var amount: Int?
-    public var currency: Currency?
+    var cardnumberField: PrimerCardNumberFieldView
+    var expiryDateField: PrimerExpiryDateFieldView
+    var cvvField: PrimerCVVFieldView
+    var cardholderField: PrimerCardholderNameFieldView?
+    var billingAddressFieldViews: [PrimerTextFieldView]?
+    var isRequiringCVVInput: Bool
+    var paymentMethodType: String
+    var delegate: InternalCardComponentsManagerDelegate?
+    var customerId: String?
+    var merchantIdentifier: String?
+    var amount: Int?
+    var currency: Currency?
     internal var decodedJWTToken: DecodedJWTToken? {
         return PrimerAPIConfigurationModule.decodedJWTToken
     }
@@ -73,7 +73,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     }
     
     /// The CardComponentsManager can be initialized with/out an access token. In the case that is initialized without an access token, the delegate function cardComponentsManager(_:clientTokenCallback:) will be called. You can initialize an instance (representing a session) by registering the necessary PrimerTextFieldViews
-    public init(
+    init(
         cardnumberField: PrimerCardNumberFieldView,
         expiryDateField: PrimerExpiryDateFieldView,
         cvvField: PrimerCVVFieldView,
@@ -356,7 +356,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
     
 }
 
-internal class MockCardComponentsManager: CardComponentsManagerProtocol {
+internal class MockCardComponentsManager: InternalCardComponentsManagerProtocol {
     
     var cardnumberField: PrimerCardNumberFieldView
     
@@ -368,7 +368,7 @@ internal class MockCardComponentsManager: CardComponentsManagerProtocol {
     
     var postalCodeField: PrimerPostalCodeFieldView?
     
-    var delegate: CardComponentsManagerDelegate?
+    var delegate: InternalCardComponentsManagerDelegate?
     
     var customerId: String?
     
