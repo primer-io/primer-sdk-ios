@@ -446,7 +446,37 @@ extension PrimerHeadlessUniversalCheckout {
                             PrimerInternal.shared.dismiss()
                         }
                         
-                    } else {
+                    } else if let statusUrlStr = decodedJWTToken.statusUrl,
+                              let statusUrl = URL(string: statusUrlStr),
+                              decodedJWTToken.intent != nil {
+                        
+                        DispatchQueue.main.async {
+                            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                        }
+                        
+                        var pollingModule: PollingModule? = PollingModule(url: statusUrl)
+                        
+                        firstly {
+                            pollingModule!.start()
+                        }
+                        .done { resumeToken in
+                            seal.fulfill(resumeToken)
+                        }
+                        .catch { err in
+                             if let primerErr = err as? PrimerError {
+                                 pollingModule?.cancel(withError: primerErr)
+                             } else {
+                                 let err = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+                                 ErrorHandler.handle(error: err)
+                                 pollingModule?.cancel(withError: err)
+                             }
+                             
+                             pollingModule = nil
+                             seal.reject(err)
+                             PrimerInternal.shared.dismiss()
+                         }
+                         
+                     } else {
                         let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
                         seal.reject(error)
                     }
