@@ -66,7 +66,7 @@ enum PrimerAPI: Endpoint, Equatable {
     // Generic
     case poll(clientToken: DecodedJWTToken?, url: String)
     
-    case sendAnalyticsEvents(url: URL, body: Analytics.Service.Request?)
+    case sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: Analytics.Service.Request?)
     
     case fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo)
 
@@ -130,8 +130,11 @@ internal extension PrimerAPI {
             if let token = clientToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
-        case .sendAnalyticsEvents:
-            break
+            
+        case .sendAnalyticsEvents(let clientToken, _, _):
+            if let token = clientToken?.accessToken {
+                tmpHeaders["Primer-Client-Token"] = token
+            }
         }
         
         switch self {
@@ -182,7 +185,7 @@ internal extension PrimerAPI {
             return urlStr
         case .poll(_, let url):
             return url
-        case .sendAnalyticsEvents(let url, _):
+        case .sendAnalyticsEvents(_, let url, _):
             return url.absoluteString
         case .validateClientToken(let request):
             return request.clientToken.decodedJWTToken?.pciUrl
@@ -330,7 +333,7 @@ internal extension PrimerAPI {
                 .poll,
                 .listRetailOutlets:
             return nil
-        case .sendAnalyticsEvents(_, let body):
+        case .sendAnalyticsEvents(_, _, let body):
             return try? JSONEncoder().encode(body)
         case .fetchPayPalExternalPayerInfo(_, let payPalExternalPayerInfoRequestBody):
             return try? JSONEncoder().encode(payPalExternalPayerInfoRequestBody)

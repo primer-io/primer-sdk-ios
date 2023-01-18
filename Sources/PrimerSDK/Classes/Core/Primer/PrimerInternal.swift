@@ -276,6 +276,7 @@ internal class PrimerInternal {
                 id: self.timingEventId))
         
         Analytics.Service.record(events: [sdkEvent, timingEvent])
+        Analytics.Service.sync()
                 
         self.checkoutSessionId = nil
         self.selectedPaymentMethodType = nil

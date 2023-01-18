@@ -40,7 +40,7 @@ class Analytics {
         init(eventType: Analytics.Event.EventType, properties: AnalyticsEventProperties?) {
             self.eventType = eventType
             self.properties = properties
-            self.analyticsUrl = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrl
+            self.analyticsUrl = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2
             self.checkoutSessionId = PrimerInternal.shared.checkoutSessionId
             self.clientSessionId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId
             self.customerId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id
