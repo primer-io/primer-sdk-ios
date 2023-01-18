@@ -45,7 +45,18 @@ extension PrimerHeadlessUniversalCheckout {
         }
         public private(set) var paymentMethodTokenData: PrimerPaymentMethodTokenData?
         public var requiredInputElementTypes: [PrimerInputElementType] {
-            self.rawDataTokenizationBuilder.requiredInputElementTypes
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: "\(Self.self).requiredInputElementTypes",
+                    params: [
+                        "category": "RAW_DATA",
+                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                        "paymentMethodType": paymentMethodType
+                    ]))
+            Analytics.Service.record(event: sdkEvent)
+            
+            return self.rawDataTokenizationBuilder.requiredInputElementTypes
         }
         private var resumePaymentId: String?
         private var rawDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol
@@ -56,6 +67,18 @@ extension PrimerHeadlessUniversalCheckout {
         var initializationData: PrimerInitializationData?
         
         required public init(paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil) throws {
+            PrimerInternal.shared.sdkIntegrationType = .headless
+            
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: "\(Self.self).\(#function)",
+                    params: [
+                        "category": "RAW_DATA",
+                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                        "paymentMethodType": paymentMethodType
+                    ]))
+            Analytics.Service.record(events: [sdkEvent])
             
             self.delegate = delegate
             
@@ -102,6 +125,17 @@ extension PrimerHeadlessUniversalCheckout {
         ///     - completion: the completion block returning either `PrimerInitializationData` or `Error`
 
         public func configure(completion: @escaping (PrimerInitializationData?, Error?) -> Void) {
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: "\(Self.self).\(#function)",
+                    params: [
+                        "category": "RAW_DATA",
+                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                        "paymentMethodType": paymentMethodType
+                    ]))
+            Analytics.Service.record(events: [sdkEvent])
+            
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) else {
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
@@ -122,6 +156,17 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public func submit() {
+            let sdkEvent = Analytics.Event(
+                eventType: .sdkEvent,
+                properties: SDKEventProperties(
+                    name: "\(Self.self).\(#function)",
+                    params: [
+                        "category": "RAW_DATA",
+                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                        "paymentMethodType": paymentMethodType
+                    ]))
+            Analytics.Service.record(events: [sdkEvent])
+            
             guard let rawData = rawData else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
