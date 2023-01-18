@@ -71,7 +71,7 @@ public class PrimerHeadlessUniversalCheckout {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
-                name: #function,
+                name: "\(Self.self).\(#function)",
                 params: [
                     "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
                 ]))

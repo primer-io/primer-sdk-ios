@@ -26,8 +26,9 @@ extension PrimerHeadlessUniversalCheckout {
             let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
                 properties: SDKEventProperties(
-                    name: "requiredInputElementTypes",
+                    name: "\(Self.self).requiredInputElementTypes",
                     params: [
+                        "category": "CARD_COMPONENTS",
                         "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
                         "paymentMethodType": paymentMethodType
                     ]))
@@ -53,8 +54,9 @@ extension PrimerHeadlessUniversalCheckout {
                 let sdkEvent = Analytics.Event(
                     eventType: .sdkEvent,
                     properties: SDKEventProperties(
-                        name: "inputElements",
+                        name: "\(Self.self).inputElements",
                         params: [
+                            "category": "CARD_COMPONENTS",
                             "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
                             "paymentMethodType": paymentMethodType
                         ]))
@@ -96,8 +98,9 @@ extension PrimerHeadlessUniversalCheckout {
             let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
                 properties: SDKEventProperties(
-                    name: #function,
+                    name: "\(Self.self).\(#function)",
                     params: [
+                        "category": "CARD_COMPONENTS",
                         "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
                         "paymentMethodType": paymentMethodType
                     ]))
@@ -127,8 +130,9 @@ extension PrimerHeadlessUniversalCheckout {
             let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
                 properties: SDKEventProperties(
-                    name: "inputElements",
+                    name: "\(Self.self).\(#function)",
                     params: [
+                        "category": "CARD_COMPONENTS",
                         "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
                         "paymentMethodType": paymentMethodType
                     ]))
@@ -142,8 +146,9 @@ extension PrimerHeadlessUniversalCheckout {
             let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
                 properties: SDKEventProperties(
-                    name: #function,
+                    name: "\(Self.self).\(#function)",
                     params: [
+                        "category": "CARD_COMPONENTS",
                         "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
                         "paymentMethodType": paymentMethodType
                     ]))

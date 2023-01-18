@@ -22,12 +22,12 @@ extension PrimerHeadlessUniversalCheckout {
             let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
                 properties: SDKEventProperties(
-                    name: #function,
+                    name: "\(Self.self).\(#function)",
                     params: [
+                        "category": "NATIVE_UI",
                         "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
                         "paymentMethodType": paymentMethodType
                     ]))
-            
             Analytics.Service.record(events: [sdkEvent])
             
             self.paymentMethodType = paymentMethodType
@@ -96,8 +96,9 @@ extension PrimerHeadlessUniversalCheckout {
             let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
                 properties: SDKEventProperties(
-                    name: #function,
+                    name: "\(Self.self).\(#function)",
                     params: [
+                        "category": "NATIVE_UI",
                         "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
                         "paymentMethodType": paymentMethodType
                     ]))
