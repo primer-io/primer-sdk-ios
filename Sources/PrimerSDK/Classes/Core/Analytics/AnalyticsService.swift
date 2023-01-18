@@ -100,10 +100,12 @@ extension Analytics {
                 line: #line)
             
             if let events = events {
-                let eventsIds = events.compactMap({ $0.localId })
-                let allEvents = Analytics.Service.loadEvents()
-                let remainingEvents = allEvents.filter({ !eventsIds.contains($0.localId ?? "") })
+                let storedEvents = Analytics.Service.loadEvents()
+                let eventsLocalIds = events.compactMap({ $0.localId ?? "" })
+                
+                let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId ?? "")} )
                 try save(events: remainingEvents)
+
             } else {
                 try Analytics.Service.save(events: [])
             }
