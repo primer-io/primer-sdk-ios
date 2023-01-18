@@ -148,8 +148,11 @@ extension Analytics {
                     function: #function,
                     line: #line)
                 
+                Analytics.Event.omitLocalParametersEncoding = true
                 let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
                 apiClient.sendAnalyticsEvents(url: analyticsUrl, body: requestBody) { result in
+                    Analytics.Event.omitLocalParametersEncoding = false
+                    
                     switch result {
                     case .success:
                         primerLogAnalytics(
