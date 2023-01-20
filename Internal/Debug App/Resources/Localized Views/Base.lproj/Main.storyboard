@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ORN-tn-RVh">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ORN-tn-RVh">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -12,7 +12,7 @@
         <!--App View Controller-->
         <scene sceneID="8CA-lH-fba">
             <objects>
-                <viewController id="Hsc-Wl-Q65" customClass="AppViewController" customModule="ExampleApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Hsc-Wl-Q65" customClass="AppViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="P7R-MC-LKq">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -224,7 +224,7 @@
         <!--Merchant Checkout View Controller-->
         <scene sceneID="Hnl-Pi-aw2">
             <objects>
-                <viewController storyboardIdentifier="MerchantCheckoutViewController" id="rv5-RJ-1cA" customClass="MerchantCheckoutViewController" customModule="ExampleApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MerchantCheckoutViewController" id="rv5-RJ-1cA" customClass="MerchantCheckoutViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1AU-v5-4lz">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -299,7 +299,7 @@
         <!--MerchantHUC Payment Methods View Controller-->
         <scene sceneID="UQL-4J-Gcf">
             <objects>
-                <viewController storyboardIdentifier="MerchantHUCPaymentMethodsViewController" id="HWB-lM-wQr" customClass="MerchantHUCPaymentMethodsViewController" customModule="ExampleApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MerchantHUCPaymentMethodsViewController" id="HWB-lM-wQr" customClass="MerchantHUCPaymentMethodsViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="yVt-gx-xRg">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -308,7 +308,7 @@
                                 <rect key="frame" x="20" y="48" width="374" height="814"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="MerchantPaymentMethodCell" rowHeight="89" id="3tb-mP-9fD" customClass="MerchantPaymentMethodCell" customModule="ExampleApp" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="MerchantPaymentMethodCell" rowHeight="89" id="3tb-mP-9fD" customClass="MerchantPaymentMethodCell" customModule="Debug_App" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="374" height="89"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="3tb-mP-9fD" id="gtQ-c4-psU">
@@ -369,7 +369,7 @@
         <!--MerchantHUC Raw Data View Controller-->
         <scene sceneID="b45-kg-Ezl">
             <objects>
-                <viewController storyboardIdentifier="MerchantHUCRawDataViewController" id="Csz-JN-Blu" customClass="MerchantHUCRawDataViewController" customModule="ExampleApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MerchantHUCRawDataViewController" id="Csz-JN-Blu" customClass="MerchantHUCRawDataViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="m9u-Rr-n1n">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -379,12 +379,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WEJ-0g-Ch1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3596" y="821"/>
+            <point key="canvasLocation" x="4555" y="821"/>
         </scene>
         <!--Merchant Result View Controller-->
         <scene sceneID="Tkv-cI-sz4">
             <objects>
-                <viewController storyboardIdentifier="MerchantResultViewController" id="T6d-fS-wFQ" customClass="MerchantResultViewController" customModule="ExampleApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MerchantResultViewController" id="T6d-fS-wFQ" customClass="MerchantResultViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8sw-1v-qHI">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -493,7 +493,7 @@
         <!--MerchantHUC Raw Retail Data View Controller-->
         <scene sceneID="yR7-KK-YHi">
             <objects>
-                <viewController storyboardIdentifier="MerchantHUCRawRetailDataViewController" id="G6G-a8-MgS" customClass="MerchantHUCRawRetailDataViewController" customModule="ExampleApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MerchantHUCRawRetailDataViewController" id="G6G-a8-MgS" customClass="MerchantHUCRawRetailDataViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="qXX-95-D5T">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -504,6 +504,51 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="m7L-Ts-2Du" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3596" y="821"/>
+        </scene>
+        <!--MerchantHUC Raw Phone Number Data View Controller-->
+        <scene sceneID="Dwn-Fp-ivv">
+            <objects>
+                <viewController storyboardIdentifier="MerchantHUCRawPhoneNumberDataViewController" id="fVQ-mT-aSY" customClass="MerchantHUCRawPhoneNumberDataViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="DWV-9B-4Pq">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter your phone number" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="KNl-mr-49X">
+                                <rect key="frame" x="20" y="68" width="374" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Eg-ST-l61">
+                                <rect key="frame" x="20" y="122" width="374" height="45"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="oMg-y7-9TH"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Submit"/>
+                                <connections>
+                                    <action selector="submitButtonTapped:" destination="fVQ-mT-aSY" eventType="touchUpInside" id="KpZ-E1-jsQ"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="aPc-44-dHg"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="aPc-44-dHg" firstAttribute="trailing" secondItem="KNl-mr-49X" secondAttribute="trailing" constant="20" id="HKp-pW-2Ri"/>
+                            <constraint firstItem="KNl-mr-49X" firstAttribute="top" secondItem="aPc-44-dHg" secondAttribute="top" constant="20" id="NjQ-SA-zb1"/>
+                            <constraint firstItem="aPc-44-dHg" firstAttribute="trailing" secondItem="2Eg-ST-l61" secondAttribute="trailing" constant="20" id="Ov5-He-0gh"/>
+                            <constraint firstItem="2Eg-ST-l61" firstAttribute="top" secondItem="KNl-mr-49X" secondAttribute="bottom" constant="20" id="Wll-QX-Lvs"/>
+                            <constraint firstItem="KNl-mr-49X" firstAttribute="leading" secondItem="aPc-44-dHg" secondAttribute="leading" constant="20" id="huj-5L-3FL"/>
+                            <constraint firstItem="2Eg-ST-l61" firstAttribute="leading" secondItem="aPc-44-dHg" secondAttribute="leading" constant="20" id="ptW-Zi-Zzt"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="phoneNumberTextField" destination="KNl-mr-49X" id="PkE-yI-Kl9"/>
+                        <outlet property="submitButton" destination="2Eg-ST-l61" id="9FB-Gf-MfQ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uza-Fh-Tqf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5659" y="821"/>
         </scene>
     </scenes>
     <resources>

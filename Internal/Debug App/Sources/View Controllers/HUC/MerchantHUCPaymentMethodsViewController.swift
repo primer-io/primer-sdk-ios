@@ -125,6 +125,9 @@ extension MerchantHUCPaymentMethodsViewController: UITableViewDataSource, UITabl
         } else if paymentMethodType == "XENDIT_RETAIL_OUTLETS" {
             let vc = MerchantHUCRawRetailDataViewController.instantiate(paymentMethodType: paymentMethodType)
             self.navigationController?.pushViewController(vc, animated: true)
+        } else if paymentMethodType == "XENDIT_OVO" {
+            let vc = MerchantHUCRawPhoneNumberDataViewController.instantiate(paymentMethodType: paymentMethodType)
+            self.navigationController?.pushViewController(vc, animated: true)
         } else {
             PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
         }

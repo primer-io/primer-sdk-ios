@@ -30,7 +30,7 @@ internal func log(logLevel: PrimerLogLevel = .info, title: String? = nil, messag
     }
 
     #if DEBUG
-    if logLevel.rawValue < PrimerLogLevel.debug.rawValue { return }
+    if logLevel.rawValue < PrimerLogLevel.verbose.rawValue { return }
 
     var log: String = "\n"
     let now = Date()

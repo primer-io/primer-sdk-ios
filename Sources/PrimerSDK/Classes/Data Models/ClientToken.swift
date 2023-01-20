@@ -116,6 +116,8 @@ struct DecodedJWTToken: Codable {
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.accessToken = try? container.decode(String.self, forKey: .accessToken)
+        self.analyticsUrl = try? container.decode(String.self, forKey: .analyticsUrl)
+        self.analyticsUrlV2 = try? container.decode(String.self, forKey: .analyticsUrlV2)
         self.configurationUrl = try? container.decode(String.self, forKey: .configurationUrl)
         self.paymentFlow = try? container.decode(String.self, forKey: .paymentFlow)
         self.threeDSecureInitUrl = try? container.decode(String.self, forKey: .threeDSecureInitUrl)
