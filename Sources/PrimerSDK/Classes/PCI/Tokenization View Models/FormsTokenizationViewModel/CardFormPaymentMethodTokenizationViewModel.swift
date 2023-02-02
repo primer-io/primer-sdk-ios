@@ -525,7 +525,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     }
                 }
     #else
-                let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.failedToImport3DS(
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
     #endif

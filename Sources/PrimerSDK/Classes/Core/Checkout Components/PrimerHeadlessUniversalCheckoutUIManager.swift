@@ -514,7 +514,9 @@ extension PrimerHeadlessUniversalCheckout {
                         }
                     }
         #else
-                    let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.failedToImport3DS(
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: nil)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
         #endif
@@ -915,7 +917,9 @@ extension PrimerHeadlessUniversalCheckout.CardFormUIManager {
             }
 #else
             DispatchQueue.main.async {
-                let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.failedToImport3DS(
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: nil)
                 ErrorHandler.handle(error: err)
                 PrimerDelegateProxy.primerDidFailWithError(err, data: nil) { errorDecision in
                     // FIXME: handle the err
