@@ -32,10 +32,11 @@ class Analytics {
         var primerAccountId: String?
         var properties: AnalyticsEventProperties? = nil
         var sdkSessionId: String
-        var sdkType: String = PrimerSource.sdkSourceType.sourceType
+        var sdkType: String
         var sdkVersion = Bundle.primerFramework.releaseVersionNumber
         var sdkIntegrationType: PrimerSDKIntegrationType? = PrimerInternal.shared.sdkIntegrationType
         var sdkPaymentHandling: PrimerPaymentHandling? = PrimerSettings.current.paymentHandling
+        var integrationType: String
         
         init(eventType: Analytics.Event.EventType, properties: AnalyticsEventProperties?) {
             self.eventType = eventType
@@ -46,13 +47,20 @@ class Analytics {
             self.customerId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id
             self.localId = String.randomString(length: 32)
             self.sdkSessionId = PrimerInternal.shared.sdkSessionId
+            self.sdkType = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
+            
+#if COCOAPODS
+            self.integrationType = "COCOAPODS"
+#else
+            self.integrationType = "SPM"
+#endif
         }
         
         private enum CodingKeys: String, CodingKey {
             case analyticsUrl, appIdentifier, checkoutSessionId, clientSessionId,
                  createdAt, customerId, device, eventType, localId, primerAccountId,
                  properties, sdkSessionId, sdkType, sdkVersion, sdkIntegrationType,
-                 sdkPaymentHandling
+                 sdkPaymentHandling, integrationType
         }
         
         func encode(to encoder: Encoder) throws {
@@ -75,6 +83,7 @@ class Analytics {
             try? container.encode(sdkType, forKey: .sdkType)
             try? container.encode(sdkVersion, forKey: .sdkVersion)
             try? container.encode(sdkIntegrationType?.rawValue, forKey: .sdkIntegrationType)
+            try? container.encode(integrationType, forKey: .integrationType)
             
             if sdkPaymentHandling == .auto {
                 try? container.encode("AUTO", forKey: .sdkPaymentHandling)
@@ -114,6 +123,7 @@ class Analytics {
             self.sdkSessionId = try container.decode(String.self, forKey: .sdkSessionId)
             self.sdkType = try container.decode(String.self, forKey: .sdkType)
             self.sdkVersion = try container.decode(String.self, forKey: .sdkVersion)
+            self.integrationType = try container.decode(String.self, forKey: .integrationType)
             
             if let sdkIntegrationTypeStr = try? container.decode(String.self, forKey: .sdkIntegrationType) {
                 self.sdkIntegrationType = PrimerSDKIntegrationType(rawValue: sdkIntegrationTypeStr)
