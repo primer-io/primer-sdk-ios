@@ -69,24 +69,24 @@ public struct Apaya {
                 let err = PrimerError.generic(
                     message: "Failed to find query parameters: [status, success]",
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: nil)
+                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
-                throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             }
             
             if status == "SETUP_ERROR" {
                 let err = PrimerError.generic(
                     message: "Apaya status is SETUP_ERROR",
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: nil)
+                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
-                throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 
             } else if status == "SETUP_ABANDONED" {
                 let err = PrimerError.cancelled(
                     paymentMethodType: PrimerPaymentMethodType.apaya.rawValue,
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: nil)
+                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -101,7 +101,7 @@ public struct Apaya {
                 let err = PrimerError.invalidValue(
                     key: "apaya-params", value: nil,
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: nil)
+                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -109,7 +109,7 @@ public struct Apaya {
             guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
                 let err = PrimerError.invalidClientToken(
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: nil)
+                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -119,7 +119,7 @@ public struct Apaya {
                     key: "apaya-merchantAccountId",
                     value: nil,
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: nil)
+                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }

@@ -742,9 +742,9 @@ extension PrimerError {
         
         switch errorCode {
         case .failed:
-            return PrimerError.paymentFailed(description: message ?? "", userInfo: userInfo, diagnosticsId: nil)
+            return PrimerError.paymentFailed(description: message ?? "", userInfo: userInfo, diagnosticsId: UUID().uuidString)
         case .cancelledByCustomer:
-            return PrimerError.cancelledByCustomer(message: message, userInfo: userInfo, diagnosticsId: nil)
+            return PrimerError.cancelledByCustomer(message: message, userInfo: userInfo, diagnosticsId: UUID().uuidString)
         default:
             return nil
         }
