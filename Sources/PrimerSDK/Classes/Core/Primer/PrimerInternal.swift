@@ -150,7 +150,7 @@ internal class PrimerInternal {
             if let err = err as? PrimerError {
                 primerErr = err
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: UUID().uuidString)
             }
             
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
@@ -203,7 +203,7 @@ internal class PrimerInternal {
             if let err = err as? PrimerError {
                 primerErr = err
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: UUID().uuidString)
             }
             
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
@@ -257,7 +257,7 @@ internal class PrimerInternal {
             if let err = err as? PrimerError {
                 primerErr = err
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: UUID().uuidString)
             }
             
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)

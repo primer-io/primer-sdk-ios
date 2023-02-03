@@ -29,12 +29,13 @@ internal class ErrorHandler {
                 properties: MessageEventProperties(
                     message: error.localizedDescription,
                     messageType: .error,
-                    severity: .error))
+                    severity: .error,
+                    diagnosticsId: error.diagnosticsId))
 
-            switch error {
-            default:
-                break
+            if let createdAt = error.info?["createdAt"]?.toDate() {
+                event.createdAt = createdAt.millisecondsSince1970
             }
+            
 
         } else {
             let nsError = error as NSError

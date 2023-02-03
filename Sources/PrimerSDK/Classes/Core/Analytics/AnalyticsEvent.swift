@@ -132,6 +132,7 @@ struct MessageEventProperties: AnalyticsEventProperties {
     var message: String?
     var messageType: Analytics.Event.Property.MessageType
     var severity: Analytics.Event.Property.Severity
+    var diagnosticsId: String?
 }
 
 struct NetworkCallEventProperties: AnalyticsEventProperties {
