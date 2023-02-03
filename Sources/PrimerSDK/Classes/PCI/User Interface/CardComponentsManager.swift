@@ -108,7 +108,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         return Promise { seal in
             guard let delegate = delegate else {
                 print("WARNING!\nDelegate has not been set")
-                let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -133,7 +133,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                         seal.fulfill(decodedJWTToken)
                     } else {
                         precondition(false, "Decoded client token should never be null at this point.")
-                        let err = PrimerError.invalidValue(key: "self.decodedClientToken", value: nil, userInfo: nil, diagnosticsId: nil)
+                        let err = PrimerError.invalidValue(key: "self.decodedClientToken", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
                     }
@@ -187,15 +187,15 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         var errors: [Error] = []
         
         if !cardnumberField.cardnumber.isValidCardNumber {
-            errors.append(PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
+            errors.append(PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
         }
         
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
-            errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
+            errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
         }
         
         if isRequiringCVVInput && !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
-            errors.append(PrimerValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil))
+            errors.append(PrimerValidationError.invalidCvv(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
         }
         
         billingAddressFieldViews?.filter { $0.isTextValid == false }.forEach {
@@ -207,7 +207,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
         }
         
         if !errors.isEmpty {
-            let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -267,7 +267,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
             .done { _ in
                 
                 guard let tokenizationPaymentInstrument = self.tokenizationPaymentInstrument else {
-                    let err = PrimerError.invalidValue(key: "Payment Instrument",value: self.tokenizationPaymentInstrument, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "Payment Instrument",value: self.tokenizationPaymentInstrument, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                     return
@@ -284,7 +284,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                     self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                 }
                 .catch { err in
-                    let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: containerErr)
                     self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 }
@@ -293,7 +293,7 @@ public class CardComponentsManager: NSObject, CardComponentsManagerProtocol {
                 self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 self.setIsLoading(false)
             }
-        } catch PrimerError.underlyingErrors(errors: let errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil) {
+        } catch PrimerError.underlyingErrors(errors: let errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString) {
             delegate?.cardComponentsManager?(self, tokenizationFailedWith: errors)
             setIsLoading(false)
         } catch {

@@ -74,67 +74,67 @@ class ThreeDSService: ThreeDSServiceProtocol {
         var errors: [Error] = []
                 
         if PrimerInternal.shared.intent == .checkout && AppState.current.amount == nil {
-            let err = PrimerError.invalidValue(key: "settings.amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "settings.amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if AppState.current.currency == nil {
-            let err = PrimerError.invalidValue(key: "settings.currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "settings.currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.id == nil {
-            let err = PrimerError.invalidValue(key: "settings.orderId", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "settings.orderId", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.billingAddress?.addressLine1 ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.addressLine1", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.addressLine1", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.billingAddress?.city ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.city", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.city", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.billingAddress?.countryCode == nil {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.countryCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.countryCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.billingAddress?.postalCode ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.postalCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.postalCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.firstName ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.firstName", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "settings.customer?.firstName", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.lastName ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.lastName", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "settings.customer?.lastName", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.emailAddress ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.emailAddress", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "settings.customer?.emailAddress", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errors.append(err)
         }
         
         if !errors.isEmpty {
-            let containerErr = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let containerErr = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: containerErr)
             throw containerErr
         }
@@ -193,7 +193,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         let state = AppState.current
         
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -202,14 +202,14 @@ class ThreeDSService: ThreeDSServiceProtocol {
         let env = Environment(rawValue: decodedJWTToken.env ?? "")
         
         guard let apiConfiguration = state.apiConfiguration else {
-            let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
         
         guard let licenseKey = apiConfiguration.keys?.netceteraLicenseKey else {
-            let err = PrimerError.invalid3DSKey(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalid3DSKey(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -218,7 +218,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodTokenData.paymentInstrumentData?.network ?? "")
         
         guard let directoryServerId = cardNetwork.directoryServerId else {
-            let err = PrimerError.invalidValue(key: "cardNetwork.directoryServerId", value: cardNetwork.directoryServerId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidValue(key: "cardNetwork.directoryServerId", value: cardNetwork.directoryServerId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -313,7 +313,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             case .authSuccess:
                 // Frictionless pass or frictionless attempt
                 guard let resumeToken = beginAuthResponse.resumeToken else {
-                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     completion(.failure(err))
                     return
@@ -325,7 +325,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             case .notPerformed:
                 // Not enough data to perform 3DS. Won't be returned.
                 guard let resumeToken = beginAuthResponse.resumeToken else {
-                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     completion(.failure(err))
                     return
@@ -337,7 +337,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             case .skipped:
                 // Skipped because of a technical failure.
                 guard let resumeToken = beginAuthResponse.resumeToken else {
-                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     completion(.failure(err))
                     return
@@ -349,7 +349,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             case .authFailed:
                 // Frictionless fail or frictionless not authenticated
                 guard let resumeToken = beginAuthResponse.resumeToken else {
-                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     completion(.failure(err))
                     return
@@ -398,7 +398,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             }
             .done { postAuthResponse in
                 guard let resumeToken = beginAuthResponse.resumeToken else {
-                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     completion(.failure(err))
                     return
@@ -424,7 +424,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
     func performChallenge(with threeDSecureAuthResponse: Primer3DSServerAuthData, urlScheme: String?, presentOn viewController: UIViewController) -> Promise<Primer3DSCompletion> {
         return Promise { seal in
             guard let primer3DS = primer3DS else {
-                let err = PrimerError.generic(message: "Failed to find Primer3DS", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                let err = PrimerError.generic(message: "Failed to find Primer3DS", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -435,16 +435,16 @@ class ThreeDSService: ThreeDSServiceProtocol {
                     var containerErr: PrimerError
                     let isCanceledError = (err as NSError).code == -4
                     if isCanceledError {
-                        containerErr = PrimerError.cancelled(paymentMethodType: "3DS", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                        containerErr = PrimerError.cancelled(paymentMethodType: "3DS", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     } else {
-                        containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                        containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     }
                     ErrorHandler.handle(error: containerErr)
                     seal.reject(containerErr)
                 } else if let primer3DSCompletion = primer3DSCompletion {
                     seal.fulfill(primer3DSCompletion)
                 } else {
-                    let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+                    let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }
@@ -456,7 +456,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                          threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
                          completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -475,7 +475,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
     
     func continueRemoteAuth(threeDSTokenId: String, completion: @escaping (Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: nil)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return

@@ -318,6 +318,7 @@ internal enum PrimerError: PrimerErrorProtocol {
     case cancelled(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String?)
     case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
     case failedOnWebViewFlow(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
+    case failedToImport3DS(userInfo: [String: String]?, diagnosticsId: String?)
     case failedToPerform3DS(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalid3DSKey(userInfo: [String: String]?, diagnosticsId: String?)
@@ -368,6 +369,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "failed-to-create-session"
         case .failedOnWebViewFlow:
             return "failed-on-webview"
+        case .failedToImport3DS:
+            return "failed-to-import-3ds"
         case .failedToPerform3DS:
             return "failed-to-perform-3ds"
         case .invalid3DSKey:
@@ -440,6 +443,8 @@ internal enum PrimerError: PrimerErrorProtocol {
         case .failedToCreateSession(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .failedOnWebViewFlow(_, _, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
+        case .failedToImport3DS(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .failedToPerform3DS(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
@@ -527,6 +532,8 @@ internal enum PrimerError: PrimerErrorProtocol {
             return "Failed to create session with error: \(error?.localizedDescription ?? "nil")"
         case .failedOnWebViewFlow(error: let error, _, _):
             return "Failed on webview flow with error: \(error?.localizedDescription ?? "nil")"
+        case .failedToImport3DS(_, _):
+            return "Failed on import Primer3DS"
         case .failedToPerform3DS(let error, _, _):
             return "Failed on perform 3DS with error: \(error?.localizedDescription ?? "nil")"
         case .invalid3DSKey:
@@ -594,6 +601,7 @@ internal enum PrimerError: PrimerErrorProtocol {
                 .cancelled(_, let userInfo, _),
                 .failedToCreateSession(_, let userInfo, _),
                 .failedOnWebViewFlow(_, let userInfo, _),
+                .failedToImport3DS(let userInfo, _),
                 .failedToPerform3DS(_, let userInfo, _),
                 .invalidUrl(_, let userInfo, _),
                 .invalid3DSKey(let userInfo, _),
@@ -656,6 +664,9 @@ internal enum PrimerError: PrimerErrorProtocol {
             // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
             return nil
         case .failedOnWebViewFlow:
+            // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
+            return nil
+        case .failedToImport3DS:
             // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
             return nil
         case .failedToPerform3DS:
@@ -731,9 +742,9 @@ extension PrimerError {
         
         switch errorCode {
         case .failed:
-            return PrimerError.paymentFailed(description: message ?? "", userInfo: userInfo, diagnosticsId: nil)
+            return PrimerError.paymentFailed(description: message ?? "", userInfo: userInfo, diagnosticsId: UUID().uuidString)
         case .cancelledByCustomer:
-            return PrimerError.cancelledByCustomer(message: message, userInfo: userInfo, diagnosticsId: nil)
+            return PrimerError.cancelledByCustomer(message: message, userInfo: userInfo, diagnosticsId: UUID().uuidString)
         default:
             return nil
         }

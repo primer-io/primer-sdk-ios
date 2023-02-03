@@ -94,6 +94,10 @@ internal class PrimerInternal {
     
     internal func configure(settings: PrimerSettings? = nil) {
         DependencyContainer.register((settings ?? PrimerSettings()) as PrimerSettingsProtocol)
+        
+        if let theme = settings?.uiOptions.theme {
+            DependencyContainer.register(theme as PrimerThemeProtocol)
+        }
     }
     
     // MARK: - SHOW
@@ -146,7 +150,7 @@ internal class PrimerInternal {
             if let err = err as? PrimerError {
                 primerErr = err
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: UUID().uuidString)
             }
             
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
@@ -199,7 +203,7 @@ internal class PrimerInternal {
             if let err = err as? PrimerError {
                 primerErr = err
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: UUID().uuidString)
             }
             
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
@@ -253,7 +257,7 @@ internal class PrimerInternal {
             if let err = err as? PrimerError {
                 primerErr = err
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: nil)
+                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: UUID().uuidString)
             }
             
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)

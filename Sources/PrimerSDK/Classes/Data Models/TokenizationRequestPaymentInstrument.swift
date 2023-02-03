@@ -104,7 +104,7 @@ class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
                 key: "SessionInfo",
                 value: self.sessionInfo,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: nil)
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
