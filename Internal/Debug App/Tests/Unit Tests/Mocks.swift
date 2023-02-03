@@ -10,7 +10,7 @@
 @testable import PrimerSDK
 import XCTest
 
-var mockClientToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil)
+var mockClientToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil)
 
 //(
 //    accessToken: "bla",
@@ -39,7 +39,7 @@ class Mocks {
         )
     )
     
-    static var decodedJWTToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil)
+    static var decodedJWTToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil)
     
     static var primerPaymentMethodTokenData = PrimerPaymentMethodTokenData(
         analyticsId: "mock_analytics_id",
@@ -211,7 +211,7 @@ let mockPaymentMethodConfig = PrimerAPIConfiguration(
     paymentMethods: [
         PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
         PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
-        PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: ApayaOptions(merchantAccountId: "merchant_account_id"), displayMetadata: nil)
+        PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: MerchantOptions(merchantId: "merchant-id", merchantAccountId: "merchant-account-id"), displayMetadata: nil)
     ],
     keys: nil,
     checkoutModules: nil
@@ -251,7 +251,7 @@ class MockAppState: AppStateProtocol {
             paymentMethods: [
                 PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
                 PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
-                PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: ApayaOptions(merchantAccountId: "merchant_account_id"), displayMetadata: nil)
+                PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: MerchantOptions(merchantId: "merchant-id", merchantAccountId: "merchant-account-id"), displayMetadata: nil)
             ],
             keys: nil,
             checkoutModules: nil
@@ -269,7 +269,7 @@ extension MockAppState {
     }
     
     static var mockDecodedClientToken: DecodedJWTToken {
-        return DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSinceNow: 1000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: "account-number", backendCallbackUrl: nil)
+        return DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSinceNow: 1000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: "account-number", backendCallbackUrl: nil, primerTransactionId: nil)
     }
     
     static var mockPrimerAPIConfigurationJsonString: String {
@@ -469,6 +469,8 @@ class MockLocator {
 }
 
 class MockPrimerAPIClient: PrimerAPIClientProtocol {
+    
+    
     
     var mockedNetworkDelay: TimeInterval = 2
     var validateClientTokenResult: (SuccessResponse?, Error?)?
@@ -772,6 +774,10 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Result<Response.Body.Payment, Error>) -> Void) {
+        
+    }
+    
+    func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?, url: URL, body: PrimerSDK.Analytics.Service.Request?, completion: @escaping (Result<PrimerSDK.Analytics.Service.Response, Error>) -> Void) {
         
     }
 }

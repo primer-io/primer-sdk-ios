@@ -94,6 +94,10 @@ internal class PrimerInternal {
     
     internal func configure(settings: PrimerSettings? = nil) {
         DependencyContainer.register((settings ?? PrimerSettings()) as PrimerSettingsProtocol)
+        
+        if let theme = settings?.uiOptions.theme {
+            DependencyContainer.register(theme as PrimerThemeProtocol)
+        }
     }
     
     // MARK: - SHOW
