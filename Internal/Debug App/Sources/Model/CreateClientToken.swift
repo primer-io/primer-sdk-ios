@@ -162,7 +162,7 @@ struct ClientSessionRequestBody {
     let customer: ClientSessionRequestBody.Customer?
     let order: ClientSessionRequestBody.Order?
     let paymentMethod: ClientSessionRequestBody.PaymentMethod?
-    let testParams: Test.Params?
+    var testParams: Test.Params?
     
     var dictionaryValue: [String: Any]? {
         var dic: [String: Any] = [:]

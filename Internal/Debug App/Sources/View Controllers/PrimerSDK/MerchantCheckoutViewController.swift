@@ -31,7 +31,7 @@ class MerchantCheckoutViewController: UIViewController, PrimerDelegate {
             paymentHandling: paymentHandling == .auto ? .auto : .manual,
             paymentMethodOptions: PrimerPaymentMethodOptions(
                 urlScheme: "merchant://primer.io",
-                applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team", merchantName: "Primer Merchant", isCaptureBillingAddressEnabled: true)
+                applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.checkout.team", merchantName: "Primer Merchant", isCaptureBillingAddressEnabled: false)
             )
         )
         
@@ -222,7 +222,7 @@ extension MerchantCheckoutViewController {
         print("\n\nMERCHANT APP\n\(#function)\nError: \(error)")
         self.logs.append(#function)
         
-        let message = "Merchant App | ERROR"
+        let message = "Merchant App | ERROR: \(error.localizedDescription)"
         decisionHandler(.fail(withErrorMessage: message))
     }
     
