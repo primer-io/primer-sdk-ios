@@ -81,6 +81,19 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         view.endEditing(true)
     }
     
+    @IBAction func chooseTestScenarioButtonTapped(_ sender: Any) {
+        clientSessionRequestBody = Networking.createClientSessionRequestBodyWithParameters(
+            amount: amount,
+            currency: Currency(rawValue: currencyTextField.text ?? ""),
+            customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
+            phoneNumber: phoneNumberTextField.text,
+            countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
+            testParams: nil)
+        
+        let vc = TestScenariosViewController.instantiate()
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
     @IBAction func environmentValueChanged(_ sender: UISegmentedControl) {
         environment = Environment(intValue: sender.selectedSegmentIndex)
     }
@@ -102,10 +115,11 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
         self.evaluateMetadataTestCase()
         
         let testParams = Test.Params(
-            scenario: .testNative3DS,
+            scenario: .testAdyenGiropay,
             result: .success,
             network: nil,
-            polling: Test.Params.Polling(iterations: 1))
+            polling: Test.Params.Polling(iterations: 1),
+            threeDS: Test.Params.ThreeDS(scenario: .passChallenge))
         
         clientSessionRequestBody = Networking.createClientSessionRequestBodyWithParameters(
             amount: amount,
@@ -113,7 +127,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
             customerId: (customerIdTextField.text ?? "").isEmpty ? "ios_customer_id" : customerIdTextField.text!,
             phoneNumber: phoneNumberTextField.text,
             countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
-            testParams: testParams)
+            testParams: nil)
         
         let vc = MerchantCheckoutViewController.instantiate()
         navigationController?.pushViewController(vc, animated: true)
