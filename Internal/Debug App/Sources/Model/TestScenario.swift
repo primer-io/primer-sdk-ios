@@ -11,11 +11,16 @@ import PrimerSDK
 
 class Test {
     
-    enum Scenario: String, Equatable, Codable {
+    enum Scenario: String, Equatable, Codable, CaseIterable {
         
         case testAdyenBlik      = "TEST_ADYEN_BLIK"
         case testAdyenGiropay   = "TEST_ADYEN_GIROPAY"
+        case testApplePay       = "TEST_APPLE_PAY"
+        case testCardpayment    = "TEST_CARD_PAYMENT"
+        case testIPay88Card     = "TEST_IPAY88_CARD"
+        case testKlarna         = "TEST_KLARNA"
         case testNative3DS      = "TEST_NATIVE_3DS"
+        case testProcessor3DS   = "TEST_PROCESSOR_3DS"
     }
     
     enum Result: Equatable, Codable {
@@ -62,8 +67,9 @@ class Test {
         }
     }
     
-    enum Flow: String, Codable {
+    enum Flow: String, Codable, CaseIterable {
         case clientSession = "CLIENT_SESSION"
+        case configuration = "CONFIGURATION"
         case clientSessionActions = "CLIENT_SESSION_ACTIONS"
         case tokenization = "TOKENIZATION"
         case payment = "PAYMENT"
@@ -72,17 +78,19 @@ class Test {
     
     struct Params: Codable {
         
-        let scenario: Test.Scenario
-        let result: Test.Result
-        let failure: Failure?
-        let network: Network?
-        let polling: Polling?
+        var scenario: Test.Scenario
+        var result: Test.Result
+        var failure: Failure?
+        var network: Network?
+        var polling: Polling?
+        var threeDS: ThreeDS?
         
         init(
             scenario: Test.Scenario,
             result: Test.Result,
             network: Network?,
-            polling: Polling?
+            polling: Polling?,
+            threeDS: ThreeDS?
         ) {
             self.scenario = scenario
             self.result = result
@@ -96,6 +104,7 @@ class Test {
             
             self.network = network
             self.polling = polling
+            self.threeDS = threeDS
         }
         
         func encode(to encoder: Encoder) throws {
@@ -107,8 +116,9 @@ class Test {
             } else {
                 try container.encode("SUCCESS", forKey: .result)
             }
-            try container.encode(self.network, forKey: .network)
-            try container.encode(self.polling, forKey: .polling)
+            try container.encodeIfPresent(self.network, forKey: .network)
+            try container.encodeIfPresent(self.polling, forKey: .polling)
+            try container.encodeIfPresent(self.threeDS, forKey: .threeDS)
         }
         
         struct Failure: Codable {
@@ -128,6 +138,17 @@ class Test {
         
         struct Network: Codable {
             let delay: Int
+        }
+        
+        struct ThreeDS: Codable {
+            let scenario: ThreeDS.Scenario
+            
+            enum Scenario: String, Codable, CaseIterable {
+                case passChallenge      = "PASS_CHALLENGE"
+                case failChallenge      = "FAIL_CHALLENGE"
+                case frictionlessPass   = "FRICTIONLESS_PASS"
+                case frictionlessFail   = "FRICTIONLESS_FAIL"
+            }
         }
     }
 }
