@@ -22,6 +22,8 @@ app_output_archive_path = "/var/tmp/Primer.io_Debug_App.xcarchive"
 sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
 pr_number = ENV['PR_NUMBER']
 
+ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
+
 #--------------------- END CONSTANTS -----------------------#
 
 #----------------------- FASTLANE -------------------------#
@@ -138,6 +140,8 @@ platform :ios do
       public_key: public_key,
       note: sdk_version_name_source_branch
     )
+    
+    update_deployment_url(lane_context[SharedValues::APPETIZE_APP_URL])
 
   end
 
@@ -208,6 +212,10 @@ platform :ios do
       xcodeproj: app_xcode_proj
     )
 
+  end
+  
+  def update_deployment_url(pub_url)
+    sh("echo APPETIZE_APP_URL=#{pub_url} >> $GITHUB_ENV")
   end
 
   desc 'Store the Browserstack ID into a file'
