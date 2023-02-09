@@ -32,7 +32,7 @@ internal class ErrorHandler {
                     severity: .error,
                     diagnosticsId: error.diagnosticsId))
 
-            if let createdAt = error.info?["createdAt"]?.toDate() {
+            if let createdAt = (error.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
             }
             

@@ -211,7 +211,7 @@ extension MerchantHUCRawPhoneNumberDataViewController {
     }
 }
 
-extension MerchantHUCRawPhoneNumberDataViewController: PrimerRawDataManagerDelegate {
+extension MerchantHUCRawPhoneNumberDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
     
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
         print("\n\nMERCHANT APP\n\(#function)\ndataIsValid: \(isValid)")

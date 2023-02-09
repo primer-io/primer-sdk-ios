@@ -379,41 +379,41 @@ internal enum InternalError: PrimerErrorProtocol {
 
 public enum PrimerError: PrimerErrorProtocol {
     
-    case generic(message: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String?)
-    case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String?)
-    case missingPrimerDelegate(userInfo: [String: String]?, diagnosticsId: String?)
-    case missingPrimerCheckoutComponentsDelegate(userInfo: [String: String]?, diagnosticsId: String?)
-    case misconfiguredPaymentMethods(userInfo: [String: String]?, diagnosticsId: String?)
-    case missingPrimerInputElement(inputElementType: PrimerInputElementType, userInfo: [String: String]?, diagnosticsId: String?)
-    case cancelled(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
-    case failedOnWebViewFlow(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToImport3DS(userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToPerform3DS(error: Error?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalid3DSKey(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidClientSessionValue(name: String, value: String?, allowedValue: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidMerchantCapabilities(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidUrlScheme(urlScheme: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidSetting(name: String, value: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidSupportedPaymentNetworks(userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String?)
-    case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String?)
-    case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String?)
-    case unsupportedPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
-    case missingCustomUI(paymentMethod: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case missingSDK(sdkName: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case cancelledByCustomer(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case paymentFailed(description: String, userInfo: [String: String]?, diagnosticsId: String?)
-    case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToFindModule(name: String, userInfo: [String: String]?, diagnosticsId: String?)
+    case generic(message: String, userInfo: [String: String]?, diagnosticsId: String)
+    case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String)
+    case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String)
+    case missingPrimerDelegate(userInfo: [String: String]?, diagnosticsId: String)
+    case missingPrimerCheckoutComponentsDelegate(userInfo: [String: String]?, diagnosticsId: String)
+    case misconfiguredPaymentMethods(userInfo: [String: String]?, diagnosticsId: String)
+    case missingPrimerInputElement(inputElementType: PrimerInputElementType, userInfo: [String: String]?, diagnosticsId: String)
+    case cancelled(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
+    case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
+    case failedOnWebViewFlow(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
+    case failedToImport3DS(userInfo: [String: String]?, diagnosticsId: String)
+    case failedToPerform3DS(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalid3DSKey(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidClientSessionValue(name: String, value: String?, allowedValue: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidMerchantCapabilities(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidUrlScheme(urlScheme: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidSetting(name: String, value: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidSupportedPaymentNetworks(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String)
+    case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String)
+    case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
+    case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String)
+    case unsupportedPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
+    case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
+    case missingCustomUI(paymentMethod: String, userInfo: [String: String]?, diagnosticsId: String)
+    case missingSDK(sdkName: String, userInfo: [String: String]?, diagnosticsId: String)
+    case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String)
+    case cancelledByCustomer(message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case paymentFailed(description: String, userInfo: [String: String]?, diagnosticsId: String)
+    case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String)
+    case failedToFindModule(name: String, userInfo: [String: String]?, diagnosticsId: String)
     case sdkDismissed
     case failedToProcessPayment(paymentId: String, status: String, userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
@@ -522,9 +522,9 @@ public enum PrimerError: PrimerErrorProtocol {
         case .failedToCreateSession(_, _, let diagnosticsId):
             return diagnosticsId
         case .failedOnWebViewFlow(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .failedToImport3DS(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
+            return diagnosticsId
         case .failedToPerform3DS(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidUrl(_, _, let diagnosticsId):
