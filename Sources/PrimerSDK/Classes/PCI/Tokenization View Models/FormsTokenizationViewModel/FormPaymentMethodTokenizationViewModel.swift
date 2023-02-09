@@ -861,6 +861,14 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             super.handleSuccessfulFlow()
         }
     }
+    
+    override func cancel() {
+        didCancel?()
+        inputs = []
+        
+        let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+        ErrorHandler.handle(error: err)
+    }
 }
 
 extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
@@ -906,17 +914,6 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
             countryFieldView.validation = .valid
             countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
             PrimerUIManager.primerRootViewController?.popViewController()
-    }
-}
-
-extension FormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol {
-    
-    func cancel() {
-        didCancel?()
-        inputs = []
-        
-        let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: err)
     }
 }
 
