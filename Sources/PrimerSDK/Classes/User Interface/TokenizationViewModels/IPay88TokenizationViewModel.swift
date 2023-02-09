@@ -524,11 +524,11 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
     }
     
     func primerIPay88PaymentSessionCompleted(payment: PrimerIPay88SDK.PrimerIPay88Payment?, error: PrimerIPay88SDK.PrimerIPay88Error?) {
-        if let payment {
+        if let payment = payment {
             self.primerIPay88Payment = payment
         }
         
-        if let error {
+        if let error = error {
             switch error {
             case .iPay88Error(let description, _):
                 let err = PrimerError.paymentFailed(
