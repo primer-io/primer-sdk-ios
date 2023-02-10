@@ -1,0 +1,37 @@
+name: Run lint and static analysis
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  pod-lint:
+    if: ${{ github.event.pull_request.base.ref == 'master' }}
+    runs-on: macos-latest
+    name: "Pod lint"
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ["4.2"]
+
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.6"
+          bundler-cache: true
+
+      - name: Lint pod
+        run: |
+          set -eo pipefail
+          pod lib lint --allow-warnings --swift-version=${{ matrix.version }} --analyze
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
