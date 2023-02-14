@@ -300,9 +300,10 @@ extension CountryCode {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.locale = try container.decode(String.self, forKey: .locale)
             self.countries = [:]
-            if let countriesWithMultipleOptionNames = (try? container.decode([CountryCode.RawValue: AnyCodable]?.self, forKey: .countries)) {
+            
+            if let countriesWithMultipleOptionNames = try container.decodeIfPresent([CountryCode.RawValue: AnyCodable].self, forKey: .countries) {
                 var updatedCountries: [CountryCode.RawValue: String] = [:]
-                countriesWithMultipleOptionNames?.forEach {
+                countriesWithMultipleOptionNames.forEach {
                     if let countryNames = $0.value.value as? [String] {
                         updatedCountries[$0.key] = countryNames.first
                     } else if let countryName = $0.value.value as? String {
