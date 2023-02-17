@@ -47,7 +47,7 @@ class MerchantHUCRawRetailDataViewController: UIViewController, PrimerHeadlessUn
         }
     }
     
-    var checkoutData: [String] = []
+    var checkoutData: PrimerCheckoutData?
     var primerError: Error?
     var logs: [String] = []
     var primerRawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager!
@@ -155,12 +155,6 @@ extension MerchantHUCRawRetailDataViewController {
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
         self.logs.append(#function)
-        
-        if let checkoutDataDictionary = try? data.asDictionary(),
-           let jsonData = try? JSONSerialization.data(withJSONObject: checkoutDataDictionary, options: .prettyPrinted),
-           let jsonString = jsonData.prettyPrintedJSONString {
-            self.checkoutData.append(jsonString as String)
-        }
         
         self.hideLoadingOverlay()
         let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
@@ -299,11 +293,6 @@ extension MerchantHUCRawRetailDataViewController {
     func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(additionalInfo)")
         self.logs.append(#function)
-        if let checkoutDataDictionary = try? additionalInfo.asDictionary(),
-           let jsonData = try? JSONSerialization.data(withJSONObject: checkoutDataDictionary, options: .prettyPrinted),
-           let jsonString = jsonData.prettyPrintedJSONString {
-            self.checkoutData.append(jsonString as String)
-        }
         
         self.hideLoadingOverlay()
         let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)

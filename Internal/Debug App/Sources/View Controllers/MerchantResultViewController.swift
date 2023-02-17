@@ -12,17 +12,19 @@ import PrimerSDK
 class MerchantResultViewController: UIViewController {
     
     static func instantiate(
-        checkoutData: [String]?,
+        checkoutData: PrimerCheckoutData?,
         error: Error?,
         logs: [String]
     ) -> MerchantResultViewController {
         let rvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantResultViewController") as! MerchantResultViewController
         rvc.checkoutData = checkoutData
+        rvc.error = error
         rvc.logs = logs
         return rvc
     }
     
-    var checkoutData: [String]?
+    var checkoutData: PrimerCheckoutData?
+    var error: Error?
     var logs: [String] = []
     
     @IBOutlet weak var responseStatus: UILabel!
@@ -34,21 +36,45 @@ class MerchantResultViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        self.responseStatus.text = self.checkoutData?.payment?.paymentFailureReason != nil ? self.checkoutData?.payment?.paymentFailureReason?.rawValue : "SUCCESS"
-        self.responseStatus.font = .systemFont(ofSize: 17, weight: .medium)
-        self.responseStatus.textColor = .green
-
-        let logsText: String = logs.joined(separator: "\n\n")
+        responseStatus.font = .systemFont(ofSize: 17, weight: .medium)
+        responseStatus.textColor = .green
         
-        if logsText.count > 0 {
-            self.logsTextView.text = logsText
+        if logs.count > 0 {
+            if let data = try? JSONSerialization.data(withJSONObject: logs) {
+                if let prettyNSStr = data.prettyPrintedJSONString {
+                    if let prettyStr = prettyNSStr as? String {
+                        logsTextView.text = prettyStr
+                    } else {
+                        logsTextView.text = "[\"Failed to case NSString to String [WebDriverIO]\"]"
+                    }
+                } else {
+                    logsTextView.text = "[\"Failed to create pretty string from logs\"]"
+                }
+            } else {
+                logsTextView.text = "[\"Failed to convert logs to data\"]"
+            }
+        } else {
+            logsTextView.text = "[\"No logs received\"]"
         }
-        
-        let checkoutDataText: String = (checkoutData ?? []).joined(separator: "\n\n---\n\n")
-        
-        if checkoutDataText.count > 0 {
-            responseTextView.attributedText = NSAttributedString(string: checkoutDataText)
+
+        if let checkoutData {
+            if let data = try? JSONEncoder().encode(checkoutData) {
+                if let prettyNSStr = data.prettyPrintedJSONString {
+                    if let prettyStr = prettyNSStr as? String {
+                        responseTextView.text = prettyStr
+                    } else {
+                        responseTextView.text = "[\"Failed to case NSString to String [WebDriverIO]\"]"
+                    }
+                } else {
+                    responseTextView.text = "[\"Failed to create pretty string from checkout data\"]"
+                }
+            } else {
+                responseTextView.text = "[\"Failed to convert logs to data\"]"
+            }
+        } else if let error = self.error {
+            responseTextView.text = "[\"\(error.localizedDescription)\"]"
+        } else {
+            responseTextView.text = "[\"No checkout data or error received\"]"
         }
     }
-    
 }

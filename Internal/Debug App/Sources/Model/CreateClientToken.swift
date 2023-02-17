@@ -154,14 +154,14 @@ public struct PaymentMethod: Codable {
 
 struct ClientSessionRequestBody {
     
-    let customerId: String?
-    let orderId: String?
-    let currencyCode: Currency?
-    let amount: Int?
-    let metadata: [String: Any]?
-    let customer: ClientSessionRequestBody.Customer?
-    let order: ClientSessionRequestBody.Order?
-    let paymentMethod: ClientSessionRequestBody.PaymentMethod?
+    var customerId: String?
+    var orderId: String?
+    var currencyCode: Currency?
+    var amount: Int?
+    var metadata: [String: Any]?
+    var customer: ClientSessionRequestBody.Customer?
+    var order: ClientSessionRequestBody.Order?
+    var paymentMethod: ClientSessionRequestBody.PaymentMethod?
     var testParams: Test.Params?
     
     var dictionaryValue: [String: Any]? {
@@ -207,12 +207,12 @@ struct ClientSessionRequestBody {
     }
     
     struct Customer: Codable {
-        let firstName: String?
-        let lastName: String?
-        let emailAddress: String?
-        let mobileNumber: String?
-        let billingAddress: Address?
-        let shippingAddress: Address?
+        var firstName: String?
+        var lastName: String?
+        var emailAddress: String?
+        var mobileNumber: String?
+        var billingAddress: Address?
+        var shippingAddress: Address?
         
         var dictionaryValue: [String: Any]? {
             var dic: [String: Any] = [:]
@@ -250,8 +250,8 @@ struct ClientSessionRequestBody {
     }
     
     struct Order: Codable {
-        let countryCode: CountryCode?
-        let lineItems: [LineItem]?
+        var countryCode: CountryCode?
+        var lineItems: [LineItem]?
         
         var dictionaryValue: [String: Any]? {
             var dic: [String: Any] = [:]
@@ -268,10 +268,10 @@ struct ClientSessionRequestBody {
         }
         
         struct LineItem: Codable {
-            let itemId: String?
-            let description: String?
-            let amount: Int?
-            let quantity: Int?
+            var itemId: String?
+            var description: String?
+            var amount: Int?
+            var quantity: Int?
             
             var dictionaryValue: [String: Any]? {
                 var dic: [String: Any] = [:]
@@ -365,16 +365,15 @@ struct JWTToken: Decodable {
 }
 
 public struct Address: Codable {
-    let firstName: String?
-    let lastName: String?
-    let addressLine1: String?
-    let addressLine2: String?
-    let city: String?
-    let state: String?
-    let countryCode: String?
-    let postalCode: String?
     
-    
+    var firstName: String?
+    var lastName: String?
+    var addressLine1: String?
+    var addressLine2: String?
+    var city: String?
+    var state: String?
+    var countryCode: String?
+    var postalCode: String?
     
     public init(
         firstName: String?,

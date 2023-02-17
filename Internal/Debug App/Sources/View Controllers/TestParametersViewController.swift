@@ -128,8 +128,8 @@ class TestParametersViewController: UIViewController {
         
         clientSessionRequestBody.testParams = testParams
     
-        let vc = MerchantCheckoutViewController.instantiate()
-        navigationController?.pushViewController(vc, animated: true)
+//        let vc = MerchantCheckoutViewController.instantiate()
+//        navigationController?.pushViewController(vc, animated: true)
     }
 }
 

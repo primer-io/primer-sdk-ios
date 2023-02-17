@@ -39,6 +39,7 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    
         environmentControl.selectedSegmentIndex = environment.intValue
         environmentControl.accessibilityIdentifier = "env_control"
         checkoutHandlingControl.selectedSegmentIndex = paymentHandling == .auto ? 0 : 1
@@ -129,8 +130,8 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
             countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
             testParams: nil)
         
-        let vc = MerchantCheckoutViewController.instantiate()
-        navigationController?.pushViewController(vc, animated: true)
+//        let vc = MerchantCheckoutViewController.instantiate()
+//        navigationController?.pushViewController(vc, animated: true)
     }
     
     @IBAction func hucButtonTapped(_ sender: Any) {
