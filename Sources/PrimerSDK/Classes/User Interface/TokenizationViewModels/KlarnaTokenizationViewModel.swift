@@ -17,6 +17,10 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 #if canImport(PrimerKlarnaSDK)
     private var klarnaViewController: PrimerKlarnaViewController?
 #endif
+    
+#if DEBUG
+    private var demoThirdPartySDKViewController: PrimerThirdPartySDKViewController?
+#endif
     private var klarnaPaymentSession: Response.Body.Klarna.CreatePaymentSession?
     private var klarnaCustomerTokenAPIResponse: Response.Body.Klarna.CustomerToken?
     private var klarnaPaymentSessionCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
@@ -136,6 +140,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.klarnaViewController?.dismiss(animated: true, completion: {
                     self.didDismissExternalView?()
                 })
+                self.demoThirdPartySDKViewController?.dismiss(animated: true, completion: {
+                    self.didDismissExternalView?()
+                })
             }
             .catch { err in
                 seal.reject(err)
@@ -178,41 +185,57 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
-#if canImport(PrimerKlarnaSDK)
-                let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-                
-                guard let urlSchemeStr = settings.paymentMethodOptions.urlScheme,
-                      URL(string: urlSchemeStr) != nil else {
-                    let err = PrimerError.invalidUrlScheme(
-                        urlScheme: settings.paymentMethodOptions.urlScheme,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
+                var isMockedBE = false
+#if DEBUG
+                if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+                    isMockedBE = true
                 }
-                
-                self.klarnaViewController = PrimerKlarnaViewController(
-                    delegate: self,
-                    paymentCategory: .payNow,
-                    clientToken: self.klarnaPaymentSession!.clientToken,
-                    urlScheme: urlSchemeStr)
-                
-                self.klarnaPaymentSessionCompletion = { _, err in
-                    if let err = err {
-                        seal.reject(err)
-                    } else {
-                        fatalError()
-                    }
-                }
-                
-                self.willPresentExternalView?()
-                PrimerUIManager.primerRootViewController?.show(viewController: self.klarnaViewController!)
-                self.didPresentExternalView?()
-                seal.fulfill()
-#else
-                
 #endif
+                
+                if !isMockedBE {
+#if canImport(PrimerKlarnaSDK)
+                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+                    
+                    guard let urlSchemeStr = settings.paymentMethodOptions.urlScheme,
+                          URL(string: urlSchemeStr) != nil else {
+                        let err = PrimerError.invalidUrlScheme(
+                            urlScheme: settings.paymentMethodOptions.urlScheme,
+                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                            diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                        return
+                    }
+                    
+                    self.klarnaViewController = PrimerKlarnaViewController(
+                        delegate: self,
+                        paymentCategory: .payNow,
+                        clientToken: self.klarnaPaymentSession!.clientToken,
+                        urlScheme: urlSchemeStr)
+                    
+                    self.klarnaPaymentSessionCompletion = { _, err in
+                        if let err = err {
+                            seal.reject(err)
+                        } else {
+                            fatalError()
+                        }
+                    }
+                    
+                    self.willPresentExternalView?()
+                    PrimerUIManager.primerRootViewController?.show(viewController: self.klarnaViewController!)
+                    self.didPresentExternalView?()
+                    seal.fulfill()
+#else
+                    
+#endif
+                } else {
+                    self.demoThirdPartySDKViewController = PrimerThirdPartySDKViewController(paymentMethodType: self.config.type)
+                    self.demoThirdPartySDKViewController!.onSendCredentialsButtonTapped = {
+                        self.klarnaPaymentSessionCompletion?("mock_auth_token", nil)
+                    }
+                    PrimerUIManager.primerRootViewController?.present(self.demoThirdPartySDKViewController!, animated: true)
+                    seal.fulfill()
+                }
             }
         }
     }
@@ -333,7 +356,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 // Do not send amount for recurring payments, even if it's set
                 amount = nil
             }
-                        
+            
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
             let body = Request.Body.Klarna.CreatePaymentSession(
@@ -392,7 +415,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 description: PrimerSettings.current.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
                 localeData: PrimerSettings.current.localeData
             )
-                        
+            
             let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
             
             apiClient.createKlarnaCustomerToken(clientToken: decodedJWTToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in

@@ -53,6 +53,7 @@ class PrimerThirdPartySDKViewController: UIViewController {
     
     var paymentMethodType: String
     let stackView = UIStackView()
+    var onSendCredentialsButtonTapped: (() -> Void)?
     
     init(paymentMethodType: String) {
         self.paymentMethodType = paymentMethodType
@@ -103,6 +104,7 @@ class PrimerThirdPartySDKViewController: UIViewController {
         
         
         let sendCredentialsButton = UIButton()
+        sendCredentialsButton.accessibilityIdentifier = "Send Credentials"
         sendCredentialsButton.accessibilityIdentifier = "3rd Party SDK Send Credentials Button"
         sendCredentialsButton.setTitle("Send Credentials", for: .normal)
         sendCredentialsButton.setTitleColor(.black, for: .normal)
@@ -114,14 +116,7 @@ class PrimerThirdPartySDKViewController: UIViewController {
     
     @IBAction func sendCredentialsButtonTapped(_ sender: UIButton) {
 #if DEBUG
-        guard let testId = PrimerAPIConfiguration.current?.clientSession?.testId else {
-            return
-        }
-        
-        let api = PrimerAPIClient()
-        api.testFinalizePolling(clientToken: PrimerAPIConfigurationModule.decodedJWTToken!, testId: testId) { result in
-            
-        }
+        self.onSendCredentialsButtonTapped?()
 #endif
     }
 }
