@@ -219,7 +219,7 @@ jobs:
       steps:
         - name: Clone and launch Browserstack tests via Appium 🧪
           run: |
-             git clone -b develop https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/dx/mobile-appium-tests.git .
+             git clone -b feature/CHKT-404_UI-Tests https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/dx/mobile-appium-tests.git .
           env:
             GITLAB_TEMP_PATH: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
 
