@@ -9,7 +9,7 @@ target 'Debug App' do
   pod 'PrimerSDK', :path => '../../'
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
-#  pod 'PrimerIPay88SDK'
+  #  pod 'PrimerIPay88SDK'
   
   target 'Debug App Tests' do
     inherit! :search_paths
@@ -30,12 +30,18 @@ def fix_code_signing(installer)
   installer.generated_projects.each do |project|
     project.targets.each do |target|
       if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
-      puts "Fixing code signing for #{target.name}..."
-      
-      target.build_configurations.each do |config|
-        config.build_settings["DEVELOPMENT_TEAM"] = "N8UN9TR5DY"
+        puts "Fixing code signing for #{target.name}..."
+        
+        target.build_configurations.each do |config|
+          config.build_settings["DEVELOPMENT_TEAM"] = "N8UN9TR5DY"
+        end
       end
-    end
+      
+      if target.name == "PrimerSDK"
+        target.build_configurations.each do |config|
+          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -framework "Primer3DS" -framework "PrimerKlarnaSDK"'
+        end
+      end
     end
   end
   

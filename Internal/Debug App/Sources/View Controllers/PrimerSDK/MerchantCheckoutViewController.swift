@@ -133,7 +133,11 @@ extension MerchantCheckoutViewController {
                 decisionHandler(.fail(withErrorMessage: "Oh no, something went wrong creating the payment..."))
                 
             } else if let res = res {
-                self.checkoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(id: "", orderId: "", paymentFailureReason: nil))
+                self.checkoutData = PrimerCheckoutData(
+                    payment: PrimerCheckoutDataPayment(
+                        id: res.id,
+                        orderId: res.orderId,
+                        paymentFailureReason: nil))
                 
                 if res.status == .declined {
                     decisionHandler(.fail(withErrorMessage: "Oh no, payment was declined :("))
