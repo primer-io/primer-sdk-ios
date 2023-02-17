@@ -29,7 +29,7 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
     var cardholderNameTextField: UITextField!
     var payButton: UIButton!
     
-    var checkoutData: [String] = []
+    var checkoutData: PrimerCheckoutData?
     var primerError: Error?
     var logs: [String] = []
     
@@ -242,12 +242,6 @@ extension MerchantHUCRawDataViewController {
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
         self.logs.append(#function)
-        
-        if let checkoutDataDictionary = try? data.asDictionary(),
-           let jsonData = try? JSONSerialization.data(withJSONObject: checkoutDataDictionary, options: .prettyPrinted),
-           let jsonString = jsonData.prettyPrintedJSONString {
-            self.checkoutData.append(jsonString as String)
-        }
         
         self.hideLoadingOverlay()
         
