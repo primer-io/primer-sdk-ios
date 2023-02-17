@@ -226,12 +226,12 @@ extension Response.Body {
                 for paymentMethodOption in options {
                     if let type = paymentMethodOption["type"] as? String {
                         if type == PrimerPaymentMethodType.paymentCard.rawValue,
-                            let networks = paymentMethodOption["networks"] as? [[String: Any]],
+                           let networks = paymentMethodOption["networks"] as? [[String: Any]],
                            !networks.isEmpty
                         {
                             for network in networks {
                                 guard network["type"] is String,
-                                network["surcharge"] is Int
+                                      network["surcharge"] is Int
                                 else { continue }
                                 
                             }
@@ -243,11 +243,7 @@ extension Response.Body {
                     paymentMethod.hasUnknownSurcharge = true
                     paymentMethod.surcharge = nil
                 }
-            } catch {
-                print(error)
-                throw error
             }
-            
         }
         
         init(
