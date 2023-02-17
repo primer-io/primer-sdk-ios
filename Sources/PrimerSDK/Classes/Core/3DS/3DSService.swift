@@ -243,7 +243,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         
         var isMockedBE = false
 #if DEBUG
-        if PrimerAPIConfiguration.current?.clientSession?.isMockedResponse == true {
+        if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
             isMockedBE = true
         }
 #endif
