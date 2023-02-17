@@ -47,7 +47,7 @@ class PrimerResultComponentView: PrimerView {
         if let message = message {
             let messageLabel = UILabel()
             messageLabel.text = message
-            messageLabel.accessibilityIdentifier = "result_component_view_message_label"
+            messageLabel.accessibilityIdentifier = "Result Component View Message Label"
             messageLabel.numberOfLines = 0
             messageLabel.font = .systemFont(ofSize: 16)
             messageLabel.textColor = UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0)
