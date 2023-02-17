@@ -9,7 +9,7 @@ target 'Debug App' do
   pod 'PrimerSDK', :path => '../../'
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
-#  pod 'PrimerIPay88SDK'
+  #  pod 'PrimerIPay88SDK'
   
   target 'Debug App Tests' do
     inherit! :search_paths
@@ -48,7 +48,6 @@ def fix_linking(installer)
           config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -framework "Primer3DS" -framework "PrimerKlarnaSDK" -framework "PrimerIPay88SDK"'
         end
       end
-    end
     end
   end
   
