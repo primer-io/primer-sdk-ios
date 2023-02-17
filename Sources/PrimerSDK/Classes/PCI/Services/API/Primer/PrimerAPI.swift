@@ -76,6 +76,8 @@ enum PrimerAPI: Endpoint, Equatable {
     
     case createPayment(clientToken: DecodedJWTToken, paymentRequest: Request.Body.Payment.Create)
     case resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume)
+    
+    case testFinalizePolling(clientToken: DecodedJWTToken, testId: String)
 
 }
 
@@ -111,7 +113,8 @@ internal extension PrimerAPI {
                 .requestPrimerConfigurationWithActions(let clientToken, _),
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
                 .createPayment(let clientToken, _),
-                .resumePayment(let clientToken, _, _):
+                .resumePayment(let clientToken, _, _),
+                .testFinalizePolling(let clientToken, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -166,7 +169,8 @@ internal extension PrimerAPI {
                 .createApayaSession(let clientToken, _),
                 .listAdyenBanks(let clientToken, _),
                 .listRetailOutlets(let clientToken, _),
-                .fetchPayPalExternalPayerInfo(let clientToken, _):
+                .fetchPayPalExternalPayerInfo(let clientToken, _),
+                .testFinalizePolling(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .deleteVaultedPaymentMethod(let clientToken, _),
@@ -243,6 +247,8 @@ internal extension PrimerAPI {
             return "/payments"
         case .resumePayment(_, let paymentId, _):
             return "/payments/\(paymentId)/resume"
+        case .testFinalizePolling(_, let testId):
+            return "/finalize-polling"
         }
     }
     
@@ -280,7 +286,8 @@ internal extension PrimerAPI {
                 .fetchPayPalExternalPayerInfo,
                 .validateClientToken,
                 .createPayment,
-                .resumePayment:
+                .resumePayment,
+                .testFinalizePolling:
             return .post
         case .poll:
             return .get
@@ -343,6 +350,8 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(paymentCreateRequestBody)
         case .resumePayment(_, _, let paymentResumeRequestBody):
             return try? JSONEncoder().encode(paymentResumeRequestBody)
+        case .testFinalizePolling:
+            return nil
         }
     }
     
