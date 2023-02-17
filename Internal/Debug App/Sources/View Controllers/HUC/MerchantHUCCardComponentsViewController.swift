@@ -32,7 +32,7 @@ class MerchantHUCCardComponentsViewController: UIViewController, PrimerHeadlessU
     
     var threeDSAlert: UIAlertController?
     
-    var checkoutData: [String] = []
+    var checkoutData: PrimerCheckoutData?
     var primerError: Error?
     var logs: [String] = []
     

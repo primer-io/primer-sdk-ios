@@ -16,7 +16,7 @@ class Test {
         case testAdyenBlik      = "TEST_ADYEN_BLIK"
         case testAdyenGiropay   = "TEST_ADYEN_GIROPAY"
         case testApplePay       = "TEST_APPLE_PAY"
-        case testCardpayment    = "TEST_CARD_PAYMENT"
+        case testPaymentCard    = "TEST_PAYMENT_CARD"
         case testIPay88Card     = "TEST_IPAY88_CARD"
         case testKlarna         = "TEST_KLARNA"
         case testNative3DS      = "TEST_NATIVE_3DS"
