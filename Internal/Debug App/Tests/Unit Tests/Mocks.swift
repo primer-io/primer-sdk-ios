@@ -485,9 +485,7 @@ class MockLocator {
 }
 
 class MockPrimerAPIClient: PrimerAPIClientProtocol {
-    
-    
-    
+
     var mockedNetworkDelay: TimeInterval = 2
     var validateClientTokenResult: (SuccessResponse?, Error?)?
     var fetchConfigurationResult: (Response.Body.Configuration?, Error?)?
