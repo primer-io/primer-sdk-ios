@@ -448,8 +448,16 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         didAuthorizePayment payment: PKPayment,
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
+        
+        var isMockedBE: Bool = false
+#if DEBUG
+        if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+            isMockedBE = true
+        }
+#endif
+        
 #if targetEnvironment(simulator)
-        if payment.token.paymentData.count == 0 {
+        if payment.token.paymentData.count == 0 && !isMockedBE {
             let err = PrimerError.invalidArchitecture(
                 description: "Apple Pay does not work with Primer when used in the simulator due to a limitation from Apple Pay.",
                 recoverSuggestion: "Use a real device instead of the simulator",
@@ -469,17 +477,29 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         self.isCancelled = false
         self.didTimeout = true
         
-        applePayControllerCompletion = { obj in
+        self.applePayControllerCompletion = { obj in
             self.didTimeout = false
             completion(obj)
         }
         
         do {
-            let tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self, from: payment.token.paymentData)
-            
+            let tokenPaymentData: ApplePayPaymentResponseTokenPaymentData
+            if isMockedBE {
+                tokenPaymentData = ApplePayPaymentResponseTokenPaymentData(
+                    data: "apple-pay-payment-response-mock-data",
+                    signature: "apple-pay-mock-signature",
+                    version: "apple-pay-mock-version",
+                    header: ApplePayTokenPaymentDataHeader(
+                        ephemeralPublicKey: "apple-pay-mock-ephemeral-key",
+                        publicKeyHash: "apple-pay-mock-public-key-hash",
+                        transactionId: "apple-pay-mock--transaction-id"))
+            } else {
+                tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self, from: payment.token.paymentData)
+            }
+                        
             let billingAddress = clientSessionBillingAddressFromApplePayBillingContact(payment.billingContact)
             
-            let applePayPaymentResponse = ApplePayPaymentResponse(
+            applePayPaymentResponse = ApplePayPaymentResponse(
                 token: ApplePayPaymentInstrument.PaymentResponseToken(
                     paymentMethod: ApplePayPaymentResponsePaymentMethod(
                         displayName: payment.token.paymentMethod.displayName,
@@ -490,10 +510,12 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
                     paymentData: tokenPaymentData
                 ), billingAddress: billingAddress)
             
+            
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
             controller.dismiss(animated: true, completion: nil)
             applePayReceiveDataCompletion?(.success(applePayPaymentResponse))
             applePayReceiveDataCompletion = nil
+            
         } catch {
             completion(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
             controller.dismiss(animated: true, completion: nil)

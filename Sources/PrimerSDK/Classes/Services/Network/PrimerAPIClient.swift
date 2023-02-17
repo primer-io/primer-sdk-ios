@@ -107,6 +107,11 @@ protocol PrimerAPIClientProtocol {
         paymentId: String,
         paymentResumeRequest: Request.Body.Payment.Resume,
         completion: @escaping (_ result: Result<Response.Body.Payment, Error>) -> Void)
+    
+    func testFinalizePolling(
+        clientToken: DecodedJWTToken,
+        testId: String,
+        completion: @escaping (_ result: Result<Void, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -498,6 +503,18 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let res):
                 completion(.success(res))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func testFinalizePolling(clientToken: DecodedJWTToken, testId: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        let endpoint = PrimerAPI.testFinalizePolling(clientToken: clientToken, testId: testId)
+        networkService.request(endpoint) { (result: Result<Response.Body.Payment, Error>) in
+            switch result {
+            case .success(let res):
+                completion(.success(()))
             case .failure(let err):
                 completion(.failure(err))
             }

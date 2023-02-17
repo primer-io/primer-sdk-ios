@@ -322,10 +322,10 @@ internal class ClientSession {
         let paymentMethod: ClientSession.PaymentMethod?
         let order: ClientSession.Order?
         let customer: ClientSession.Customer?
-        let isMockedResponse: Bool?
+        let testId: String?
         
         enum CodingKeys: String, CodingKey {
-            case clientSessionId, paymentMethod, order, customer, isMockedResponse // metadata
+            case clientSessionId, paymentMethod, order, customer, testId // metadata
         }
         
         init(
@@ -333,13 +333,13 @@ internal class ClientSession {
             paymentMethod: ClientSession.PaymentMethod?,
             order: ClientSession.Order?,
             customer: ClientSession.Customer?,
-            isMockedResponse: Bool?
+            testId: String?
         ) {
             self.clientSessionId = clientSessionId
             self.paymentMethod = paymentMethod
             self.order = order
             self.customer = customer
-            self.isMockedResponse = isMockedResponse
+            self.testId = testId
         }
         
         required internal init(from decoder: Decoder) throws {
@@ -348,7 +348,7 @@ internal class ClientSession {
             self.paymentMethod = (try? container.decode(ClientSession.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
             self.order = (try? container.decode(ClientSession.Order?.self, forKey: .order)) ?? nil
             self.customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
-            self.isMockedResponse = (try? container.decode(Bool?.self, forKey: .isMockedResponse)) ?? nil
+            self.testId = (try? container.decode(String?.self, forKey: .testId)) ?? nil
         }
         
         internal func encode(to encoder: Encoder) throws {
@@ -356,7 +356,7 @@ internal class ClientSession {
             try container.encode(paymentMethod, forKey: .paymentMethod)
             try container.encode(order, forKey: .order)
             try container.encode(customer, forKey: .customer)
-            try? container.encode(isMockedResponse, forKey: .isMockedResponse)
+            try? container.encode(testId, forKey: .testId)
         }
     }
 }

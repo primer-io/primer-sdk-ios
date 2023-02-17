@@ -79,6 +79,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         if let amountStr = universalCheckoutViewModel.amountStr {
             titleLabel = UILabel()
+            titleLabel.accessibilityIdentifier = "Amount Label"
             titleLabel.translatesAutoresizingMaskIntoConstraints = false
             titleLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
             titleLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
