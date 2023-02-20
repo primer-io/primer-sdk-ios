@@ -243,14 +243,14 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="TestScenarioCell" id="qTj-ny-pOW" customClass="TestScenarioCell" customModule="Debug_App" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="50" width="414" height="51"/>
+                                        <rect key="frame" x="0.0" y="50" width="414" height="52"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="qTj-ny-pOW" id="ilI-cY-aLE">
-                                            <rect key="frame" x="0.0" y="0.0" width="383.5" height="51"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="383.5" height="52"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WIT-D3-1a2">
-                                                    <rect key="frame" x="40" y="15" width="327.5" height="21"/>
+                                                    <rect key="frame" x="40" y="15" width="327.5" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -547,7 +547,7 @@
                                 </connections>
                             </segmentedControl>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fED-8r-rOM">
-                                <rect key="frame" x="0.0" y="163" width="414" height="614"/>
+                                <rect key="frame" x="0.0" y="163" width="414" height="561"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="Yce-hH-uhX">
                                         <rect key="frame" x="20" y="20" width="374" height="3404"/>
@@ -1364,7 +1364,7 @@
                                 </constraints>
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QJ8-WE-cU8">
-                                <rect key="frame" x="20" y="797" width="374" height="45"/>
+                                <rect key="frame" x="20" y="744" width="374" height="45"/>
                                 <color key="backgroundColor" systemColor="labelColor"/>
                                 <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
                                 <constraints>
@@ -1377,21 +1377,38 @@
                                     <action selector="primerSDKButtonTapped:" destination="jAd-Lg-hf8" eventType="touchUpInside" id="6yQ-K0-Ren"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0FS-cB-H3t">
+                                <rect key="frame" x="20" y="797" width="374" height="45"/>
+                                <color key="backgroundColor" systemColor="labelColor"/>
+                                <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="WWY-2r-9EB"/>
+                                </constraints>
+                                <state key="normal" title="Primer Headless">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="primerHeadlessButtonTapped:" destination="jAd-Lg-hf8" eventType="touchUpInside" id="Fj9-Yh-7To"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Zrd-hK-BPB"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Zrd-hK-BPB" firstAttribute="bottom" secondItem="QJ8-WE-cU8" secondAttribute="bottom" constant="20" id="0qn-xB-pvh"/>
                             <constraint firstItem="Zrd-hK-BPB" firstAttribute="trailing" secondItem="fED-8r-rOM" secondAttribute="trailing" id="3hj-R0-nxA"/>
+                            <constraint firstItem="Zrd-hK-BPB" firstAttribute="bottom" secondItem="0FS-cB-H3t" secondAttribute="bottom" constant="20" id="4aU-Bq-QKi"/>
                             <constraint firstItem="Yce-hH-uhX" firstAttribute="width" secondItem="mBo-uS-Zxo" secondAttribute="width" constant="-40" id="6lX-9N-h8F"/>
                             <constraint firstItem="fED-8r-rOM" firstAttribute="top" secondItem="hgd-Bd-Btv" secondAttribute="bottom" constant="20" id="B4Q-01-hOc"/>
                             <constraint firstItem="fED-8r-rOM" firstAttribute="leading" secondItem="Zrd-hK-BPB" secondAttribute="leading" id="CI3-3Q-Ofs"/>
+                            <constraint firstItem="0FS-cB-H3t" firstAttribute="top" secondItem="QJ8-WE-cU8" secondAttribute="bottom" constant="8" id="Jqp-pP-fzB"/>
                             <constraint firstItem="Zrd-hK-BPB" firstAttribute="trailing" secondItem="hgd-Bd-Btv" secondAttribute="trailing" constant="20" id="Jwc-cu-e85"/>
                             <constraint firstItem="QJ8-WE-cU8" firstAttribute="top" secondItem="fED-8r-rOM" secondAttribute="bottom" constant="20" id="OuA-PJ-gJs"/>
+                            <constraint firstItem="0FS-cB-H3t" firstAttribute="leading" secondItem="Zrd-hK-BPB" secondAttribute="leading" constant="20" id="PN6-tb-LPi"/>
                             <constraint firstItem="hgd-Bd-Btv" firstAttribute="top" secondItem="Zrd-hK-BPB" secondAttribute="top" constant="20" id="QzY-En-9eF"/>
                             <constraint firstItem="Zrd-hK-BPB" firstAttribute="trailing" secondItem="QJ8-WE-cU8" secondAttribute="trailing" constant="20" id="R2W-5K-OkP"/>
                             <constraint firstItem="QJ8-WE-cU8" firstAttribute="leading" secondItem="Zrd-hK-BPB" secondAttribute="leading" constant="20" id="RcB-UZ-pNx"/>
                             <constraint firstItem="hgd-Bd-Btv" firstAttribute="leading" secondItem="Zrd-hK-BPB" secondAttribute="leading" constant="20" id="eGJ-wA-ArM"/>
+                            <constraint firstItem="Zrd-hK-BPB" firstAttribute="trailing" secondItem="0FS-cB-H3t" secondAttribute="trailing" constant="20" id="z2s-e4-vto"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="ajD-hG-M6S"/>
@@ -1574,10 +1591,10 @@
             </objects>
             <point key="canvasLocation" x="3784" y="1821"/>
         </scene>
-        <!--MerchantHUC Payment Methods View Controller-->
+        <!--Merchant Headless Checkout Available Payment Methods View Controller-->
         <scene sceneID="UQL-4J-Gcf">
             <objects>
-                <viewController storyboardIdentifier="MerchantHUCPaymentMethodsViewController" id="HWB-lM-wQr" customClass="MerchantHUCPaymentMethodsViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MerchantHUCPaymentMethodsViewController" id="HWB-lM-wQr" customClass="MerchantHeadlessCheckoutAvailablePaymentMethodsViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="yVt-gx-xRg">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1644,10 +1661,10 @@
             </objects>
             <point key="canvasLocation" x="3597.1014492753625" y="820.98214285714278"/>
         </scene>
-        <!--MerchantHUC Raw Data View Controller-->
+        <!--Merchant Headless Checkout Raw Data View Controller-->
         <scene sceneID="b45-kg-Ezl">
             <objects>
-                <viewController storyboardIdentifier="MerchantHUCRawDataViewController" id="Csz-JN-Blu" customClass="MerchantHUCRawDataViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MerchantHUCRawDataViewController" id="Csz-JN-Blu" customClass="MerchantHeadlessCheckoutRawDataViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="m9u-Rr-n1n">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
