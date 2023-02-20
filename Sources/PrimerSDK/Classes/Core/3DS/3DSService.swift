@@ -65,6 +65,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
     
     private var threeDSSDKWindow: UIWindow?
     static var apiClient: PrimerAPIClientProtocol?
+    private var demo3DSWindow: UIWindow?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -145,13 +146,32 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 try primer3DS!.initializeSDK(licenseKey: licenseKey, certificates: certs)
                 data = try primer3DS!.createTransaction(directoryServerId: directoryServerId, protocolVersion: protocolVersion.rawValue)
             } else {
+                if #available(iOS 13.0, *) {
+                    if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                        demo3DSWindow = UIWindow(windowScene: windowScene)
+                    } else {
+                        // Not opted-in in UISceneDelegate
+                        demo3DSWindow = UIWindow(frame: UIScreen.main.bounds)
+                    }
+                } else {
+                    // Fallback on earlier versions
+                    demo3DSWindow = UIWindow(frame: UIScreen.main.bounds)
+                }
+
+                demo3DSWindow!.rootViewController = ClearViewController()
+                demo3DSWindow!.backgroundColor = UIColor.clear
+                demo3DSWindow!.windowLevel = UIWindow.Level.alert
+                demo3DSWindow!.makeKeyAndVisible()
+                
                 let vc = PrimerDemo3DSViewController()
-                PrimerUIManager.primerRootViewController?.present(vc, animated: true)
+                demo3DSWindow!.rootViewController?.present(vc, animated: true)
                 
                 Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { timer in
                     vc.dismiss(animated: true) {
                         completion(.success("resume_token"))
                         timer.invalidate()
+                        self.demo3DSWindow?.rootViewController = nil
+                        self.demo3DSWindow = nil
                     }
                 }
                 
