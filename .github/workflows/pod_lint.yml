@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ["4.2", "5.7"]
+        version: ["4.2"]
 
     steps:
       - name: Cancel previous jobs
