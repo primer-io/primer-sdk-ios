@@ -1,5 +1,5 @@
 //
-//  MerchantHUCRawCardDataViewController.swift
+//  MerchantHeadlessCheckoutRawDataViewController.swift
 //  PrimerSDK_Example
 //
 //  Created by Evangelos on 12/7/22.
@@ -9,13 +9,18 @@
 import PrimerSDK
 import UIKit
 
-class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversalCheckoutDelegate {
+class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     
-    static func instantiate(paymentMethodType: String) -> MerchantHUCRawDataViewController {
-        let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHUCRawDataViewController") as! MerchantHUCRawDataViewController
+    static func instantiate(paymentMethodType: String, settings: PrimerSettings, clientToken: String) -> MerchantHeadlessCheckoutRawDataViewController {
+        let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHUCRawDataViewController") as! MerchantHeadlessCheckoutRawDataViewController
         mpmvc.paymentMethodType = paymentMethodType
+        mpmvc.settings = settings
+        mpmvc.clientToken = clientToken
         return mpmvc
     }
+    
+    var settings: PrimerSettings!
+    var clientToken: String!
     
     var stackView: UIStackView!
     var paymentMethodType: String!
@@ -29,8 +34,6 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
     var cardholderNameTextField: UITextField!
     var payButton: UIButton!
     
-    var checkoutData: PrimerCheckoutData?
-    var primerError: Error?
     var logs: [String] = []
     
     override func viewDidLoad() {
@@ -44,30 +47,8 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
         self.stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
         self.stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         self.stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        
-        PrimerHeadlessUniversalCheckout.current.delegate = self
-        
-        self.showLoadingOverlay()
-        
-        Networking.requestClientSession(requestBody: clientSessionRequestBody) { (clientToken, err) in
-            if let err = err {
-                self.showErrorMessage(err.localizedDescription)
- 
-            } else if let clientToken = clientToken {
-                let settings = PrimerSettings(
-                    paymentHandling: paymentHandling == .auto ? .auto : .manual,
-                    paymentMethodOptions: PrimerPaymentMethodOptions(
-                        urlScheme: "merchant://redirect",
-                        applePayOptions: PrimerApplePayOptions(merchantIdentifier: "merchant.dx.team", merchantName: "Primer Merchant", isCaptureBillingAddressEnabled: false)
-                    )
-                )
-                
-                PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, completion: { (pms, err) in
-                    self.hideLoadingOverlay()
-                    self.renderInputs()
-                })
-            }
-        }
+
+        self.renderInputs()
     }
     
     var primerRawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
@@ -198,7 +179,7 @@ class MerchantHUCRawDataViewController: UIViewController, PrimerHeadlessUniversa
     }
 }
 
-extension MerchantHUCRawDataViewController: UITextFieldDelegate {
+extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         var newText: String?
@@ -233,141 +214,7 @@ extension MerchantHUCRawDataViewController: UITextFieldDelegate {
     }
 }
 
-// MARK: - PRIMER HEADLESS UNIVERSAL CHECKOUT DELEGATE
-
-// MARK: Auto Payment Handling
-
-extension MerchantHUCRawDataViewController {
-    
-    func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
-        print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
-        self.logs.append(#function)
-        
-        self.hideLoadingOverlay()
-        
-        let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
-        self.navigationController?.pushViewController(rvc, animated: true)
-    }
-}
-
-// MARK: Manual Payment Handling
-
-extension MerchantHUCRawDataViewController {
-    
-    func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
-        print("\n\nMERCHANT APP\n\(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
-        self.logs.append(#function)
-        
-        Networking.createPayment(with: paymentMethodTokenData) { (res, err) in
-            if let err = err {
-                self.showErrorMessage(err.localizedDescription)
-                self.hideLoadingOverlay()
-
-            } else if let res = res {
-                self.paymentId = res.id
-                
-                if res.requiredAction?.clientToken != nil {
-                    decisionHandler(.continueWithNewClientToken(res.requiredAction!.clientToken))
-                    
-                } else {
-                    self.hideLoadingOverlay()
-                    let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
-                    self.navigationController?.pushViewController(rvc, animated: true)
-                }
-
-            } else {
-                assert(true)
-            }
-        }
-    }
-    
-    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
-        print("\n\nMERCHANT APP\n\(#function)\nresumeToken: \(resumeToken)")
-        self.logs.append(#function)
-        
-        Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
-            DispatchQueue.main.async {
-                self.hideLoadingOverlay()
-            }
-            
-            if let err = err {
-                self.showErrorMessage(err.localizedDescription)
-                decisionHandler(.fail(withErrorMessage: "Merchant App\nFailed to resume payment."))
-            } else {
-                decisionHandler(.succeed())
-            }
-            
-            let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
-            self.navigationController?.pushViewController(rvc, animated: true)
-        }
-    }
-}
-
-// MARK: Common
-
-extension MerchantHUCRawDataViewController {
-
-    func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
-        print("\n\nMERCHANT APP\n\(#function)")
-        self.logs.append(#function)
-    }
-    
-    func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
-        print("\n\nMERCHANT APP\n\(#function)")
-        self.logs.append(#function)
-        self.showLoadingOverlay()
-    }
-    
-    func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
-        print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
-        self.logs.append(#function)
-    }
-    
-    func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
-        print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
-        self.logs.append(#function)
-    }
-    
-    func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
-        print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(additionalInfo)")
-        self.logs.append(#function)
-        DispatchQueue.main.async {
-            self.hideLoadingOverlay()
-        }
-    }
-    
-    func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
-        print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(additionalInfo)")
-        self.logs.append(#function)
-        self.hideLoadingOverlay()
-    }
-    
-    func primerHeadlessUniversalCheckoutDidFail(withError err: Error) {
-        print("\n\nMERCHANT APP\n\(#function)\nerror: \(err)")
-        self.logs.append(#function)
-        
-        self.primerError = err
-        self.hideLoadingOverlay()
-    }
-    
-    func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
-        print("\n\nMERCHANT APP\n\(#function)")
-        self.logs.append(#function)
-    }
-    
-    func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
-        print("\n\nMERCHANT APP\n\(#function)\nclientSession: \(clientSession)")
-        self.logs.append(#function)
-    }
-    
-    func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
-        print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
-        self.logs.append(#function)
-        decisionHandler(.continuePaymentCreation())
-    }
-}
-
-extension MerchantHUCRawDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
     
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
         print("\n\nMERCHANT APP\n\(#function)\ndataIsValid: \(isValid)")
