@@ -612,6 +612,111 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+    
+    @IBAction func primerHeadlessButtonTapped(_ sender: Any) {
+        customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
+        
+        let settings = PrimerSettings(
+            paymentHandling: selectedPaymentHandling,
+            paymentMethodOptions: PrimerPaymentMethodOptions(
+                urlScheme: "merchant://primer.io",
+                applePayOptions: PrimerApplePayOptions(
+                    merchantIdentifier: "merchant.checkout.team",
+                    merchantName: merchantNameTextField.text ?? "Primer Merchant",
+                    isCaptureBillingAddressEnabled: false)),
+            uiOptions: nil
+        )
+        
+        switch renderMode {
+        case .createClientSession,
+                .testScenario:
+            clientSession.currencyCode = Currency(rawValue: currencyTextField.text ?? "")
+            clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
+            clientSession.orderId = orderIdTextField.text
+            clientSession.customerId = customerIdTextField.text
+            clientSession.customer?.firstName = customerFirstNameTextField.text
+            clientSession.customer?.lastName = customerLastNameTextField.text
+            clientSession.customer?.emailAddress = customerEmailTextField.text
+            clientSession.customer?.mobileNumber = customerMobileNumberTextField.text
+            
+            if billingAddressSwitch.isOn {
+                clientSession.customer?.billingAddress?.firstName = billingAddressFirstNameTextField.text
+                clientSession.customer?.billingAddress?.lastName = billingAddressLastNameTextField.text
+                clientSession.customer?.billingAddress?.addressLine1 = billingAddressLine1TextField.text
+                clientSession.customer?.billingAddress?.addressLine2 = billingAddressLine2TextField.text
+                clientSession.customer?.billingAddress?.city = billingAddressCityTextField.text
+                clientSession.customer?.billingAddress?.state = billingAddressStateTextField.text
+                clientSession.customer?.billingAddress?.postalCode = billingAddressPostalCodeTextField.text
+                clientSession.customer?.billingAddress?.countryCode = billingAddressCountryTextField.text
+            } else {
+                clientSession.customer?.billingAddress = nil
+            }
+            
+            if shippingAddressSwitch.isOn {
+                clientSession.customer?.shippingAddress?.firstName = shippinAddressFirstNameTextField.text
+                clientSession.customer?.shippingAddress?.lastName = shippinAddressLastNameTextField.text
+                clientSession.customer?.shippingAddress?.addressLine1 = shippinAddressLine1TextField.text
+                clientSession.customer?.shippingAddress?.addressLine2 = shippinAddressLine2TextField.text
+                clientSession.customer?.shippingAddress?.city = shippinAddressCityTextField.text
+                clientSession.customer?.shippingAddress?.state = shippinAddressStateTextField.text
+                clientSession.customer?.shippingAddress?.postalCode = shippinAddressPostalCodeTextField.text
+                clientSession.customer?.shippingAddress?.countryCode = shippinAddressCountryTextField.text
+            } else {
+                clientSession.customer?.shippingAddress = nil
+            }
+            
+            if case .testScenario = renderMode {
+                guard let selectedTestScenario = selectedTestScenario else {
+                    let alert = UIAlertController(title: "Error", message: "Please choose Test Scenario", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    present(alert, animated: true)
+                    return
+                }
+                
+                var testParams = Test.Params(
+                    scenario: selectedTestScenario,
+                    result: .success,
+                    network: nil,
+                    polling: nil,
+                    threeDS: nil)
+                
+                if testResultSegmentedControl.selectedSegmentIndex == 1 {
+                    guard let selectedTestFlow = selectedTestFlow else {
+                        let alert = UIAlertController(title: "Error", message: "Please choose failure flow in the Failure Parameters", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default))
+                        present(alert, animated: true)
+                        return
+                    }
+                    
+                    let failure = Test.Params.Failure(
+                        flow: selectedTestFlow,
+                        error: Test.Params.Failure.Error(
+                            errorId: testErrorIdTextField.text ?? "test-error-id",
+                            description: testErrorDescriptionTextField.text ?? "test-error-description"))
+                    
+                    testParams.result = .failure(failure: failure)
+                    
+                } else if case .testNative3DS = selectedTestScenario {
+                    guard let selectedTest3DSScenario = selectedTest3DSScenario else {
+                        let alert = UIAlertController(title: "Error", message: "Please choose 3DS scenario", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default))
+                        present(alert, animated: true)
+                        return
+                    }
+                    testParams.threeDS = Test.Params.ThreeDS(scenario: selectedTest3DSScenario)
+                }
+                
+                clientSession.testParams = testParams
+            }
+            
+            let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(settings: settings, clientSession: clientSession, clientToken: nil)
+            navigationController?.pushViewController(vc, animated: true)
+            
+        case .clientToken:
+            let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(settings: settings, clientSession: nil, clientToken: clientTokenTextField.text)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 }
 
 extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPickerViewDelegate {
