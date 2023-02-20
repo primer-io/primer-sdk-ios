@@ -146,8 +146,8 @@ class AppViewController: UIViewController, UIPickerViewDataSource, UIPickerViewD
             countryCode: CountryCode(rawValue: countryCodeTextField.text ?? ""),
             testParams: nil)
         
-        let vc = MerchantHUCPaymentMethodsViewController.instantiate()
-        navigationController?.pushViewController(vc, animated: true)
+//        let vc = MerchantHUCPaymentMethodsViewController.instantiate()
+//        navigationController?.pushViewController(vc, animated: true)
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
