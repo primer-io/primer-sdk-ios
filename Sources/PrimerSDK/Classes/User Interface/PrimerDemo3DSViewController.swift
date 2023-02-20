@@ -104,7 +104,6 @@ class PrimerThirdPartySDKViewController: UIViewController {
         
         
         let sendCredentialsButton = UIButton()
-        sendCredentialsButton.accessibilityIdentifier = "Send Credentials"
         sendCredentialsButton.accessibilityIdentifier = "3rd Party SDK Send Credentials Button"
         sendCredentialsButton.setTitle("Send Credentials", for: .normal)
         sendCredentialsButton.setTitleColor(.black, for: .normal)
