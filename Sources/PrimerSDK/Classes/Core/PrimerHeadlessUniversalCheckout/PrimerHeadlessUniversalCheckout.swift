@@ -35,6 +35,7 @@ public class PrimerHeadlessUniversalCheckout {
         PrimerPaymentMethodType.adyenDotPay.rawValue,
         PrimerPaymentMethodType.adyenIDeal.rawValue,
         PrimerPaymentMethodType.goCardless.rawValue,
+        PrimerPaymentMethodType.googlePay.rawValue,
         PrimerPaymentMethodType.primerTestKlarna.rawValue,
         PrimerPaymentMethodType.primerTestPayPal.rawValue,
         PrimerPaymentMethodType.primerTestSofort.rawValue,
