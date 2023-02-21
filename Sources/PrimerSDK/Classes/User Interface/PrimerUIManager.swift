@@ -177,9 +177,27 @@ internal class PrimerUIManager {
         }
     }
     
+    static func dismissPrimerUI(animated flag: Bool) -> Promise<Void> {
+        return Promise { seal in
+            DispatchQueue.main.async {
+                self.dismissPrimerUI(animated: flag) {
+                    seal.fulfill()
+                }
+            }
+        }
+    }
+    
     static func dismissPrimerUI(animated flag: Bool, completion: (() -> Void)? = nil) {
         DispatchQueue.main.async {
             guard let primerRootViewController = PrimerUIManager.primerRootViewController else {
+                PrimerUIManager.primerWindow?.isHidden = true
+                if #available(iOS 13, *) {
+                    PrimerUIManager.primerWindow?.windowScene = nil
+                }
+                PrimerUIManager.primerWindow?.rootViewController = nil
+                PrimerUIManager.primerRootViewController = nil
+                PrimerUIManager.primerWindow?.resignKey()
+                PrimerUIManager.primerWindow = nil
                 completion?()
                 return
             }
