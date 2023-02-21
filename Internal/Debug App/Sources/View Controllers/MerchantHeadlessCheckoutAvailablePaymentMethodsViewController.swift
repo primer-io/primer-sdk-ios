@@ -126,7 +126,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             let alert = UIAlertController(title: "", message: "Select Implementation", preferredStyle: .actionSheet)
             
             let rawDataAlertAction = UIAlertAction(title: "Raw Data", style: .default , handler:{ (UIAlertAction)in
-                let vc = MerchantHeadlessCheckoutRawDataViewController.instantiate(paymentMethodType: paymentMethodType, settings: self.settings, clientToken: self.clientToken!)
+                let vc = MerchantHeadlessCheckoutRawDataViewController.instantiate(paymentMethodType: paymentMethodType)
                 self.navigationController?.pushViewController(vc, animated: true)
             })
             rawDataAlertAction.accessibilityIdentifier = "raw_data_huc_alert_action"
@@ -146,10 +146,10 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             self.present(alert, animated: true, completion: nil)
             
         } else if paymentMethodType == "XENDIT_RETAIL_OUTLETS" {
-            let vc = MerchantHUCRawRetailDataViewController.instantiate(paymentMethodType: paymentMethodType)
+            let vc = MerchantHeadlessCheckoutRawRetailDataViewController.instantiate(paymentMethodType: paymentMethodType)
             self.navigationController?.pushViewController(vc, animated: true)
         } else if paymentMethodType == "XENDIT_OVO" {
-            let vc = MerchantHUCRawPhoneNumberDataViewController.instantiate(paymentMethodType: paymentMethodType)
+            let vc = MerchantHeadlessCheckoutRawPhoneNumberDataViewController.instantiate(paymentMethodType: paymentMethodType)
             self.navigationController?.pushViewController(vc, animated: true)
         } else {
             redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
