@@ -226,15 +226,27 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     self.didPresentExternalView?()
                     seal.fulfill()
 #else
-                    
+                    seal.fulfill()
 #endif
                 } else {
-                    self.demoThirdPartySDKViewController = PrimerThirdPartySDKViewController(paymentMethodType: self.config.type)
-                    self.demoThirdPartySDKViewController!.onSendCredentialsButtonTapped = {
-                        self.klarnaPaymentSessionCompletion?("mock_auth_token", nil)
+                    #if DEBUG
+                    
+                    firstly {
+                        PrimerUIManager.prepareRootViewController()
                     }
-                    PrimerUIManager.primerRootViewController?.present(self.demoThirdPartySDKViewController!, animated: true)
-                    seal.fulfill()
+                    .done {
+                        self.demoThirdPartySDKViewController = PrimerThirdPartySDKViewController(paymentMethodType: self.config.type)
+                        self.demoThirdPartySDKViewController!.onSendCredentialsButtonTapped = {
+                            self.klarnaPaymentSessionCompletion?("mock_auth_token", nil)
+                        }
+                        PrimerUIManager.primerRootViewController?.present(self.demoThirdPartySDKViewController!, animated: true, completion: {
+                            seal.fulfill()
+                        })
+                    }
+                    .catch { err in
+                        seal.fulfill()
+                    }
+#endif
                 }
             }
         }
