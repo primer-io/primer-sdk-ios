@@ -576,11 +576,10 @@ extension PrimerHeadlessUniversalCheckout {
                        let statusUrl = URL(string: statusUrlStr),
                        decodedJWTToken.intent != nil {
                         
-                        DispatchQueue.main.async {
-                            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
-                        }
-                        
                         firstly {
+                            PrimerUIManager.prepareRootViewController()
+                        }
+                        .then { () -> Promise<Void> in
                             self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                         }
                         .then { () -> Promise<String> in
@@ -592,12 +591,11 @@ extension PrimerHeadlessUniversalCheckout {
                         }
                         .ensure {
                             DispatchQueue.main.async { [weak self] in
-                                PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
-                                
                                 self?.webViewCompletion = nil
                                 self?.webViewController?.dismiss(animated: true, completion: { [weak self] in
                                     guard let strongSelf = self else { return }
                                     strongSelf.webViewController = nil
+                                    PrimerUIManager.dismissPrimerUI(animated: true)
                                 })
                             }
                         }
