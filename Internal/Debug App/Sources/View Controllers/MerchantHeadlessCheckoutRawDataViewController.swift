@@ -11,16 +11,13 @@ import UIKit
 
 class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     
-    static func instantiate(paymentMethodType: String, settings: PrimerSettings, clientToken: String) -> MerchantHeadlessCheckoutRawDataViewController {
+    static func instantiate(paymentMethodType: String) -> MerchantHeadlessCheckoutRawDataViewController {
         let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHUCRawDataViewController") as! MerchantHeadlessCheckoutRawDataViewController
         mpmvc.paymentMethodType = paymentMethodType
-        mpmvc.settings = settings
-        mpmvc.clientToken = clientToken
         return mpmvc
     }
     
-    var settings: PrimerSettings!
-    var clientToken: String!
+    var primerRawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
     
     var stackView: UIStackView!
     var paymentMethodType: String!
@@ -51,7 +48,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
         self.renderInputs()
     }
     
-    var primerRawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
+    
     
     func renderInputs() {
         do {

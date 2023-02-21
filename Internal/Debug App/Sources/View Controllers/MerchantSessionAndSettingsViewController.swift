@@ -9,6 +9,10 @@
 import PrimerSDK
 import UIKit
 
+var environment: Environment = .sandbox
+var customDefinedApiKey: String?
+var performPaymentAfterVaulting: Bool = true
+
 class MerchantSessionAndSettingsViewController: UIViewController {
     
     enum RenderMode: Int {
@@ -121,7 +125,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     
     var renderMode: RenderMode = .createClientSession
     
-    var selectedEnvironment: Environment = .sandbox
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
         
     var clientSession = ClientSessionRequestBody(
@@ -260,7 +263,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         test3DSScenarioPicker.delegate = self
         test3DSScenarioTextField.inputView = test3DSScenarioPicker
         
-        switch selectedEnvironment {
+        switch environment {
         case .staging:
             environmentSegmentedControl.selectedSegmentIndex = 0
         case .sandbox:
@@ -457,11 +460,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBAction func environmentSegmentedControlValuewChanged(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            selectedEnvironment = .staging
+            environment = .staging
         case 1:
-            selectedEnvironment = .sandbox
+            environment = .sandbox
         case 2:
-            selectedEnvironment = .production
+            environment = .production
         default:
             fatalError()
         }
