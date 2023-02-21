@@ -9,10 +9,10 @@
 import PrimerSDK
 import UIKit
 
-class MerchantHUCRawPhoneNumberDataViewController: UIViewController, PrimerHeadlessUniversalCheckoutDelegate {
+class MerchantHeadlessCheckoutRawPhoneNumberDataViewController: UIViewController, PrimerHeadlessUniversalCheckoutDelegate {
     
-    static func instantiate(paymentMethodType: String) -> MerchantHUCRawPhoneNumberDataViewController {
-        let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHUCRawPhoneNumberDataViewController") as! MerchantHUCRawPhoneNumberDataViewController
+    static func instantiate(paymentMethodType: String) -> MerchantHeadlessCheckoutRawPhoneNumberDataViewController {
+        let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHUCRawPhoneNumberDataViewController") as! MerchantHeadlessCheckoutRawPhoneNumberDataViewController
         mpmvc.paymentMethodType = paymentMethodType
         return mpmvc
     }
@@ -75,7 +75,7 @@ class MerchantHUCRawPhoneNumberDataViewController: UIViewController, PrimerHeadl
 
 // MARK: Auto Payment Handling
 
-extension MerchantHUCRawPhoneNumberDataViewController {
+extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController {
     
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
@@ -90,7 +90,7 @@ extension MerchantHUCRawPhoneNumberDataViewController {
 
 // MARK: Manual Payment Handling
 
-extension MerchantHUCRawPhoneNumberDataViewController {
+extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController {
     
     func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
@@ -143,7 +143,7 @@ extension MerchantHUCRawPhoneNumberDataViewController {
 
 // MARK: Common
 
-extension MerchantHUCRawPhoneNumberDataViewController {
+extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController {
 
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
         print("\n\nMERCHANT APP\n\(#function)")
@@ -205,7 +205,7 @@ extension MerchantHUCRawPhoneNumberDataViewController {
     }
 }
 
-extension MerchantHUCRawPhoneNumberDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
     
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
         print("\n\nMERCHANT APP\n\(#function)\ndataIsValid: \(isValid)")
