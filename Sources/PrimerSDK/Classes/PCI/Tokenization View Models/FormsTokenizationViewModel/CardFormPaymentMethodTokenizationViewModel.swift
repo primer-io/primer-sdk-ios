@@ -301,22 +301,22 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func start() {
         self.checkouEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = false
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
         }
         
         self.checkouEventsNotifierModule.didFinishTokenization = {
             self.uiModule.submitButton?.stopAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = true
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
         }
         
         self.didStartPayment = {
             self.uiModule.submitButton?.startAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = false
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
         }
         
         self.didFinishPayment = { err in
             self.uiModule.submitButton?.stopAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = true
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
             
             self.willDismissPaymentMethodUI?()
             self.webViewController?.dismiss(animated: true, completion: {
@@ -720,7 +720,7 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
     
     func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, isLoading: Bool) {
         isLoading ? self.uiModule.submitButton?.startAnimating() : self.uiModule.submitButton?.stopAnimating()
-        PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = !isLoading
+        PrimerUIManager.primerRootViewController?.enableUserInteraction(!isLoading)
     }
     
     fileprivate func autofocusToNextFieldIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
