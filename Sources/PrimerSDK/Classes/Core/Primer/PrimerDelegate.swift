@@ -116,6 +116,8 @@ internal class PrimerDelegateProxy {
                     Analytics.Service.record(events: [timingEndEvent])
                 }
                 
+                PrimerUIManager.dismissPrimerUI(animated: true)
+                
             } else if PrimerInternal.shared.sdkIntegrationType == .dropIn {
                 Primer.shared.delegate?.primerDidCompleteCheckoutWithData(data)
             }
@@ -178,6 +180,8 @@ internal class PrimerDelegateProxy {
                     Analytics.Service.record(events: [timingEndEvent])
                     Analytics.Service.sync()
                 }
+                
+                PrimerUIManager.dismissPrimerUI(animated: true)
                 
             } else if PrimerInternal.shared.sdkIntegrationType == .dropIn {
                 if Primer.shared.delegate?.primerDidFailWithError == nil {
