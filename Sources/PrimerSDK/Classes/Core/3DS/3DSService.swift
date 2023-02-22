@@ -166,13 +166,10 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 let vc = PrimerDemo3DSViewController()
                 demo3DSWindow!.rootViewController?.present(vc, animated: true)
                 
-                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { timer in
-                    vc.dismiss(animated: true) {
-                        completion(.success("resume_token"))
-                        timer.invalidate()
-                        self.demo3DSWindow?.rootViewController = nil
-                        self.demo3DSWindow = nil
-                    }
+                vc.onSendCredentialsButtonTapped = {
+                    completion(.success("resume_token"))
+                    self.demo3DSWindow?.rootViewController = nil
+                    self.demo3DSWindow = nil
                 }
                 
                 return
