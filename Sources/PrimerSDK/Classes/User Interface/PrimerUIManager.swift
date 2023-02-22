@@ -177,6 +177,7 @@ internal class PrimerUIManager {
         }
     }
     
+    @discardableResult
     static func dismissPrimerUI(animated flag: Bool) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
