@@ -203,6 +203,9 @@ extension PrimerHeadlessUniversalCheckout {
                     PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
             }
+            .ensure {
+                PrimerUIManager.dismissPrimerUI(animated: true)
+            }
             .catch { error in
                 ErrorHandler.handle(error: error)
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error, checkoutData: self.paymentCheckoutData)
