@@ -388,19 +388,24 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.primerTransactionId = primerTransactionId
                 self.statusUrl = statusUrl
                 
-                self.primerIPay88Payment = self.createPrimerIPay88Payment()
-                
-                firstly {
-                    self.presentPaymentMethodUserInterface()
-                }
-                .then { () -> Promise<Void> in
-                    return self.awaitUserInput()
-                }
-                .done {
-                    seal.fulfill(self.resumeToken)
-                }
-                .catch { err in
-                    seal.reject(err)
+                do {
+                    self.primerIPay88Payment = try self.createPrimerIPay88Payment()
+                    
+                    firstly {
+                        self.presentPaymentMethodUserInterface()
+                    }
+                    .then { () -> Promise<Void> in
+                        return self.awaitUserInput()
+                    }
+                    .done {
+                        seal.fulfill(self.resumeToken)
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                    
+                } catch {
+                    seal.reject(error)
                 }
                 
             } else {
@@ -419,24 +424,46 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
 #if canImport(PrimerIPay88SDK)
-    private func createPrimerIPay88Payment() -> PrimerIPay88Payment {
-        let amountStr = self.iPay88NumberFormatter.string(from: NSNumber(value: Double(AppState.current.amount!)/100))
+    private func createPrimerIPay88Payment() throws -> PrimerIPay88Payment {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
+              let primerTransactionId = decodedJWTToken.primerTransactionId,
+              let paymentId = decodedJWTToken.paymentId,
+              let actionType = decodedJWTToken.actionType,
+              let supportedCurrency = decodedJWTToken.supportedCurrency,
+              let supportedCountry = decodedJWTToken.supportedCountry
+        else {
+            let err = PrimerError.invalidClientToken(
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
         
-        return PrimerIPay88Payment(
-            amount: amountStr!,
-            currency: "MYR",
-            paymentId: "2", // 2: iPay88 Card Payment
-            merchantKey: self.config.id!,
+        let amountStr = self.iPay88NumberFormatter.string(from: NSNumber(value: Double(AppState.current.amount!)/100)) ?? ""
+
+        let primerIPayPayment = PrimerIPay88Payment(
             merchantCode: (self.config.options as! MerchantOptions).merchantId,
-            refNo: self.primerTransactionId,
+            paymentId: paymentId,
+            refNo: primerTransactionId,
+            amount: amountStr,
+            currency: supportedCurrency,
             prodDesc: PrimerAPIConfiguration.current!.clientSession!.order!.lineItems!.compactMap({ $0.description }).joined(separator: ", "),
             userName: "\(PrimerAPIConfiguration.current!.clientSession!.customer!.firstName!) \(PrimerAPIConfiguration.current!.clientSession!.customer!.lastName!)",
             userEmail: PrimerAPIConfiguration.current!.clientSession!.customer!.emailAddress!,
             userContact: PrimerAPIConfiguration.current!.clientSession!.customer!.mobileNumber!,
-            country: "MY",
-            backendPostURL: self.backendCallbackUrl!.absoluteString,
             remark: nil,
-            lang: "UTF-8")
+            lang: "UTF-8",
+            country: supportedCountry,
+            backendPostURL: self.backendCallbackUrl!.absoluteString,
+            appdeeplink: nil,
+            actionType: actionType,
+            tokenId: nil,
+            promoCode: nil,
+            fixPaymentId: paymentId,
+            transId: nil,
+            authCode: nil)
+
+        return primerIPayPayment
     }
 
     
