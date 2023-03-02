@@ -12,13 +12,12 @@ import Foundation
 internal extension Bundle {
 
     static var primerFramework: Bundle {
-        return Bundle(for: Primer.self)
+        return Bundle(identifier: "org.cocoapods.PrimerSDK") ?? Bundle(for: Primer.self)
     }
 
     static var primerResources: Bundle {
         #if COCOAPODS
-        let frameworkBundle = Bundle(for: Primer.self)
-        let bundleURL = frameworkBundle.resourceURL?.appendingPathComponent("PrimerResources.bundle")
+        let bundleURL = Bundle.primerFramework.resourceURL?.appendingPathComponent("PrimerResources.bundle")
         return Bundle(url: bundleURL!)!
         #else
         return Bundle.module
@@ -33,13 +32,12 @@ internal extension Bundle {
         if let reactNativeVersion = Primer.shared.integrationOptions?.reactNativeVersion {
             return reactNativeVersion
         }
-        return infoDictionary?["CFBundleShortVersionString"] as? String
+        return Bundle.primerFramework.infoDictionary?["CFBundleShortVersionString"] as? String
     }
     
     var buildVersionNumber: String? {
-        return infoDictionary?["CFBundleVersion"] as? String
+        return Bundle.primerFramework.infoDictionary?["CFBundleVersion"] as? String
     }
-
 }
 
 #endif
