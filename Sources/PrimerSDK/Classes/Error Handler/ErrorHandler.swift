@@ -42,7 +42,7 @@ internal class ErrorHandler {
             event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
-                    message: nsError.localizedDescription,
+                    message: "\(nsError.domain) [\(nsError.code)]: \(nsError.localizedDescription)",
                     messageType: .error,
                     severity: .error))
         }
