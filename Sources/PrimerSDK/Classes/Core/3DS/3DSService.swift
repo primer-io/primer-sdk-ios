@@ -242,7 +242,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         var data: Primer3DSSDKGeneratedAuthData!
         
         do {
-            let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodTokenData.paymentInstrumentData?.network ?? "")
+            let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodTokenData.paymentInstrumentData?.binData?.network ?? "")
 
             try primer3DS!.initializeSDK(licenseKey: licenseKey, certificates: certs)
             data = try primer3DS!.createTransaction(directoryServerId: directoryServerId, protocolVersion: protocolVersion.rawValue)
