@@ -243,6 +243,14 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                              responseCode: beginAuthResponse.authentication.responseCode.rawValue,
                                              transactionId: beginAuthResponse.authentication.transactionId)
             
+            let present3DSUIEvent = Analytics.Event(
+                eventType: .ui,
+                properties: UIEventProperties(
+                    action: Analytics.Event.Property.Action.present,
+                    objectType: .thirdPartyView,
+                    place: .threeDSScreen))
+            Analytics.Service.record(events: [present3DSUIEvent])
+            
             firstly {
                 self.performChallenge(with: serverAuthData, urlScheme: nil, presentOn: self.threeDSSDKWindow!.rootViewController!)
             }
@@ -261,6 +269,14 @@ class ThreeDSService: ThreeDSServiceProtocol {
 
             }
             .ensure {
+                let dismiss3DSUIEvent = Analytics.Event(
+                    eventType: .ui,
+                    properties: UIEventProperties(
+                        action: Analytics.Event.Property.Action.dismiss,
+                        objectType: .thirdPartyView,
+                        place: .threeDSScreen))
+                Analytics.Service.record(events: [dismiss3DSUIEvent])
+                
                 self.threeDSSDKWindow?.isHidden = true
                 self.threeDSSDKWindow = nil
             }
