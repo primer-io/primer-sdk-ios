@@ -70,60 +70,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    static func validate3DSParameters() throws {
-        var errors: [Error] = []
-                
-        if PrimerInternal.shared.intent == .checkout && AppState.current.amount == nil {
-            let err = PrimerError.invalidValue(key: "settings.amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if AppState.current.currency == nil {
-            let err = PrimerError.invalidValue(key: "settings.currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.id == nil {
-            let err = PrimerError.invalidValue(key: "settings.orderId", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.firstName ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.firstName", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.lastName ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.lastName", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.emailAddress ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.emailAddress", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if !errors.isEmpty {
-            let containerErr = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: containerErr)
-            throw containerErr
-        }
-    }
-    
     static func buildBeginAuthExtraData() throws -> ThreeDS.BeginAuthExtraData {
-        do {
-            try ThreeDSService.validate3DSParameters()
-        } catch {
-            ErrorHandler.shared.handle(error: error)
-            throw error
-        }
-        
         let clientSession = PrimerAPIConfigurationModule.apiConfiguration!.clientSession!
         let customer = clientSession.customer!
         
@@ -235,7 +182,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                                        sdkEphemPubKey: data.sdkEphemPubKey,
                                                        sdkReferenceNumber: data.sdkReferenceNumber)
         
-        var threeDSecureBeginAuthRequest = ThreeDS.BeginAuthRequest(maxProtocolVersion: env == .production ? .v1 : .v2,
+        let threeDSecureBeginAuthRequest = ThreeDS.BeginAuthRequest(maxProtocolVersion: env == .production ? .v1 : .v2,
                                                                     challengePreference: .requestedByRequestor,
                                                                     device: threeDSecureAuthData,
                                                                     amount: nil,
@@ -245,41 +192,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                                                     billingAddress: nil,
                                                                     shippingAddress: nil,
                                                                     customerAccount: nil)
-        
-        do {
-            try ThreeDSService.validate3DSParameters()
-        } catch {
-            ErrorHandler.shared.handle(error: error)
-            completion(.failure(error))
-            return
-        }
-        
-        let customer = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
-        
-        let threeDSCustomer = ThreeDS.Customer(name: "\(customer?.firstName ?? "") \(customer?.lastName ?? "")",
-                                        email: customer!.emailAddress!,
-                                        homePhone: nil,
-                                        mobilePhone: customer?.mobileNumber,
-                                        workPhone: nil)
-        
-        let threeDSAddress = ThreeDS.Address(title: nil,
-                                             firstName: customer?.billingAddress?.firstName,
-                                             lastName: customer?.billingAddress?.lastName,
-                                             email: nil,
-                                             phoneNumber: nil,
-                                             addressLine1: customer?.billingAddress?.addressLine1,
-                                             addressLine2: customer?.billingAddress?.addressLine2,
-                                             addressLine3: nil,
-                                             city: customer?.billingAddress?.city,
-                                             state: nil,
-                                             countryCode: CountryCode(optionalRawValue: customer?.billingAddress?.countryCode?.rawValue),
-                                             postalCode: customer?.billingAddress?.postalCode)
-        
-        threeDSecureBeginAuthRequest.amount = AppState.current.amount
-        threeDSecureBeginAuthRequest.currencyCode = AppState.current.currency
-        threeDSecureBeginAuthRequest.orderId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.id
-        threeDSecureBeginAuthRequest.customer = threeDSCustomer
-        threeDSecureBeginAuthRequest.billingAddress = threeDSAddress
         
         firstly {
             self.beginRemoteAuth(paymentMethodTokenData: paymentMethodTokenData, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
