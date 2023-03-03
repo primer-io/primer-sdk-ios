@@ -70,39 +70,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    static func buildBeginAuthExtraData() throws -> ThreeDS.BeginAuthExtraData {
-        let clientSession = PrimerAPIConfigurationModule.apiConfiguration!.clientSession!
-        let customer = clientSession.customer!
-        
-        let threeDSCustomer = ThreeDS.Customer(name: "\(customer.firstName!) \(customer.lastName!)",
-                                        email: customer.emailAddress!,
-                                        homePhone: nil,
-                                        mobilePhone: customer.mobileNumber,
-                                        workPhone: nil)
-        
-        let threeDSAddress = ThreeDS.Address(title: nil,
-                                             firstName: customer.billingAddress?.firstName,
-                                             lastName: customer.billingAddress?.lastName,
-                                             email: customer.emailAddress,
-                                             phoneNumber: customer.mobileNumber,
-                                             addressLine1: customer.billingAddress?.addressLine1,
-                                             addressLine2: customer.billingAddress?.addressLine2,
-                                             addressLine3: nil,
-                                             city: customer.billingAddress?.city,
-                                             state: customer.billingAddress?.state,
-                                             countryCode: CountryCode(optionalRawValue: customer.billingAddress?.countryCode?.rawValue),
-                                             postalCode: customer.billingAddress?.postalCode)
-        
-        return ThreeDS.BeginAuthExtraData(
-            amount: 0,
-            currencyCode: AppState.current.currency!,
-            orderId: clientSession.order?.id ?? "",
-            customer: threeDSCustomer,
-            billingAddress: threeDSAddress,
-            shippingAddress: nil,
-            customerAccount: nil)
-    }
-    
     var primer3DS: Primer3DS?
     
     // swiftlint:disable function_body_length
