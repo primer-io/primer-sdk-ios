@@ -91,30 +91,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
             errors.append(err)
         }
         
-        if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.billingAddress?.addressLine1 ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.addressLine1", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.billingAddress?.city ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.city", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.billingAddress?.countryCode == nil {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.countryCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.billingAddress?.postalCode ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.postalCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
         if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.firstName ?? "").isEmpty {
             let err = PrimerError.invalidValue(key: "settings.customer?.firstName", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
@@ -158,17 +134,17 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                         workPhone: nil)
         
         let threeDSAddress = ThreeDS.Address(title: nil,
-                                             firstName: customer.firstName,
-                                             lastName: customer.lastName,
+                                             firstName: customer.billingAddress?.firstName,
+                                             lastName: customer.billingAddress?.lastName,
                                              email: customer.emailAddress,
                                              phoneNumber: customer.mobileNumber,
-                                             addressLine1: customer.billingAddress!.addressLine1!,
-                                             addressLine2: customer.billingAddress!.addressLine2,
+                                             addressLine1: customer.billingAddress?.addressLine1,
+                                             addressLine2: customer.billingAddress?.addressLine2,
                                              addressLine3: nil,
-                                             city: customer.billingAddress!.city!,
-                                             state: nil,
-                                             countryCode: CountryCode(rawValue: customer.billingAddress!.countryCode!.rawValue)!,
-                                             postalCode: customer.billingAddress!.postalCode!)
+                                             city: customer.billingAddress?.city,
+                                             state: customer.billingAddress?.state,
+                                             countryCode: CountryCode(optionalRawValue: customer.billingAddress?.countryCode?.rawValue),
+                                             postalCode: customer.billingAddress?.postalCode)
         
         return ThreeDS.BeginAuthExtraData(
             amount: 0,
@@ -278,26 +254,26 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return
         }
         
-        let customer = PrimerAPIConfigurationModule.apiConfiguration!.clientSession!.customer!
+        let customer = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
         
-        let threeDSCustomer = ThreeDS.Customer(name: "\(customer.firstName) \(customer.lastName)",
-                                        email: customer.emailAddress!,
+        let threeDSCustomer = ThreeDS.Customer(name: "\(customer?.firstName ?? "") \(customer?.lastName ?? "")",
+                                        email: customer?.emailAddress,
                                         homePhone: nil,
-                                        mobilePhone: customer.mobileNumber,
+                                        mobilePhone: customer?.mobileNumber,
                                         workPhone: nil)
         
         let threeDSAddress = ThreeDS.Address(title: nil,
-                                             firstName: customer.firstName,
-                                             lastName: customer.lastName,
-                                             email: customer.emailAddress,
-                                             phoneNumber: customer.mobileNumber,
-                                             addressLine1: customer.billingAddress!.addressLine1!,
-                                             addressLine2: customer.billingAddress!.addressLine2,
+                                             firstName: customer?.billingAddress?.firstName,
+                                             lastName: customer?.billingAddress?.lastName,
+                                             email: nil,
+                                             phoneNumber: nil,
+                                             addressLine1: customer?.billingAddress?.addressLine1,
+                                             addressLine2: customer?.billingAddress?.addressLine2,
                                              addressLine3: nil,
-                                             city: customer.billingAddress!.city!,
+                                             city: customer?.billingAddress?.city,
                                              state: nil,
-                                             countryCode: CountryCode(rawValue: customer.billingAddress!.countryCode!.rawValue)!,
-                                             postalCode: customer.billingAddress!.postalCode!)
+                                             countryCode: CountryCode(optionalRawValue: customer?.billingAddress?.countryCode?.rawValue),
+                                             postalCode: customer?.billingAddress?.postalCode)
         
         threeDSecureBeginAuthRequest.amount = AppState.current.amount
         threeDSecureBeginAuthRequest.currencyCode = AppState.current.currency

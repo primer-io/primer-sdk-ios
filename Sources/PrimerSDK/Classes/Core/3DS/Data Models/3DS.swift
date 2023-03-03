@@ -152,7 +152,7 @@ public struct ThreeDS {
         let currencyCode: Currency?
         let orderId: String
         let customer: ThreeDS.Customer
-        let billingAddress: ThreeDS.Address
+        let billingAddress: ThreeDS.Address?
         let shippingAddress: ThreeDS.Address?
         let customerAccount: ThreeDS.CustomerAccount?
     }
@@ -163,6 +163,7 @@ public struct ThreeDS {
     }
     
     internal struct Customer: Codable {
+        
         let name: String
         let email: String
         let homePhone: String?
@@ -175,18 +176,51 @@ public struct ThreeDS {
     }
     
     internal struct Address: Codable {
+        
         let title: String?
         let firstName: String?
         let lastName: String?
         let email: String?
         let phoneNumber: String?
-        let addressLine1: String
+        let addressLine1: String?
         let addressLine2: String?
         let addressLine3: String?
-        let city: String
+        let city: String?
         let state: String?
-        let countryCode: CountryCode
-        let postalCode: String
+        let countryCode: CountryCode?
+        let postalCode: String?
+        
+        func encode(to encoder: Encoder) throws {
+            // Only take into account address fields
+            if self.firstName == nil,
+               self.lastName == nil,
+               self.addressLine1 == nil,
+               self.addressLine2 == nil,
+               self.addressLine3 == nil,
+               self.city == nil,
+               self.state == nil,
+               self.countryCode == nil,
+               self.postalCode == nil
+            {
+                var container = encoder.singleValueContainer()
+                try container.encodeNil()
+                
+            } else {
+                var container = encoder.container(keyedBy: ThreeDS.Address.CodingKeys.self)
+                try container.encodeIfPresent(self.title, forKey: ThreeDS.Address.CodingKeys.title)
+                try container.encodeIfPresent(self.firstName, forKey: ThreeDS.Address.CodingKeys.firstName)
+                try container.encodeIfPresent(self.lastName, forKey: ThreeDS.Address.CodingKeys.lastName)
+                try container.encodeIfPresent(self.email, forKey: ThreeDS.Address.CodingKeys.email)
+                try container.encodeIfPresent(self.phoneNumber, forKey: ThreeDS.Address.CodingKeys.phoneNumber)
+                try container.encodeIfPresent(self.addressLine1, forKey: ThreeDS.Address.CodingKeys.addressLine1)
+                try container.encodeIfPresent(self.addressLine2, forKey: ThreeDS.Address.CodingKeys.addressLine2)
+                try container.encodeIfPresent(self.addressLine3, forKey: ThreeDS.Address.CodingKeys.addressLine3)
+                try container.encodeIfPresent(self.city, forKey: ThreeDS.Address.CodingKeys.city)
+                try container.encodeIfPresent(self.state, forKey: ThreeDS.Address.CodingKeys.state)
+                try container.encodeIfPresent(self.countryCode, forKey: ThreeDS.Address.CodingKeys.countryCode)
+                try container.encodeIfPresent(self.postalCode, forKey: ThreeDS.Address.CodingKeys.postalCode)
+            }
+        }
     }
     
     internal struct CustomerAccount: Codable {
