@@ -10,17 +10,20 @@ import Foundation
 import PrimerSDK
 
 enum APIVersion: String {
-    case v2 = "2021-09-27"
-    case v3 = "2021-10-19"
-    case v4 = "2021-12-01"
-    case v5 = "2021-12-10"
+    case v2     = "2021-09-27"
+    case v2_1   = "2.1"
+    case v2_2   = "2.2"
+    case v3     = "2021-10-19"
+    case v4     = "2021-12-01"
+    case v5     = "2021-12-10"
 }
 
 enum HTTPMethod: String {
-    case get = "GET"
-    case post = "POST"
-    case put = "PUT"
+    case get    = "GET"
+    case post   = "POST"
+    case put    = "PUT"
     case delete = "DELETE"
+    case patch  = "PATCH"
 }
 
 enum NetworkError: Error {
@@ -293,6 +296,52 @@ class Networking {
             }
     }
     
+    static func patchClientSession(clientToken: String, requestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil, completion: @escaping (String?, Error?) -> Void) {
+        let url = environment.baseUrl.appendingPathComponent("/api/client-session")
+        
+        var tmpRequestBody = requestBody
+        tmpRequestBody.clientToken = clientToken
+
+        let bodyData: Data!
+        
+        do {
+            if let requestBodyJson = tmpRequestBody.dictionaryValue {
+                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
+            } else {
+                completion(nil, NetworkError.serializationError)
+                return
+            }
+        } catch {
+            completion(nil, NetworkError.missingParams)
+            return
+        }
+        
+        let networking = Networking()
+        networking.request(
+            apiVersion: .v2_1,
+            url: url,
+            method: .patch,
+            headers: nil,
+            queryParameters: nil,
+            body: bodyData) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
+                            completion(token, nil)
+                        } else {
+                            let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                            completion(nil, err)
+                        }
+                        
+                    } catch {
+                        completion(nil, error)
+                    }
+                case .failure(let err):
+                    completion(nil, err)
+                }
+            }
+    }
 }
 
 internal extension String {
