@@ -257,7 +257,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         let customer = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
         
         let threeDSCustomer = ThreeDS.Customer(name: "\(customer?.firstName ?? "") \(customer?.lastName ?? "")",
-                                        email: customer?.emailAddress,
+                                        email: customer!.emailAddress!,
                                         homePhone: nil,
                                         mobilePhone: customer?.mobileNumber,
                                         workPhone: nil)
