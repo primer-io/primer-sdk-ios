@@ -44,9 +44,11 @@ internal class ErrorHandler {
                 properties: MessageEventProperties(
                     message: "\(nsError.domain) [\(nsError.code)]: \(nsError.localizedDescription)",
                     messageType: .error,
-                    severity: .error))
+                    severity: .error,
+                    diagnosticsId: nil,
+                    context: nsError.userInfo))
         }
-
+        
         Analytics.Service.record(event: event)
 
         return false
