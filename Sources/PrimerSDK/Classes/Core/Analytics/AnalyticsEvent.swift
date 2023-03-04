@@ -134,10 +134,48 @@ struct CrashEventProperties: AnalyticsEventProperties {
 }
 
 struct MessageEventProperties: AnalyticsEventProperties {
+    
     var message: String?
     var messageType: Analytics.Event.Property.MessageType
     var severity: Analytics.Event.Property.Severity
     var diagnosticsId: String?
+    var context: [String: Any]?
+    
+    private enum CodingKeys: String, CodingKey {
+        case message, messageType, severity, diagnosticsId, context
+    }
+    
+    init(
+        message: String?,
+        messageType: Analytics.Event.Property.MessageType,
+        severity: Analytics.Event.Property.Severity,
+        diagnosticsId: String? = nil,
+        context: [String: Any]? = nil
+    ) {
+        self.message = message
+        self.messageType = messageType
+        self.severity = severity
+        self.diagnosticsId = diagnosticsId
+        self.context = context
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.message = try container.decodeIfPresent(String.self, forKey: .message)
+        self.messageType = try container.decode(Analytics.Event.Property.MessageType.self, forKey: .messageType)
+        self.severity = try container.decode(Analytics.Event.Property.Severity.self, forKey: .severity)
+        self.diagnosticsId = try container.decodeIfPresent(String.self, forKey: .diagnosticsId)
+        self.context = try container.decodeIfPresent([String: Any].self, forKey: .context)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(message, forKey: .message)
+        try container.encode(messageType, forKey: .messageType)
+        try container.encode(severity, forKey: .severity)
+        try container.encodeIfPresent(diagnosticsId, forKey: .diagnosticsId)
+        try container.encodeIfPresent(context, forKey: .context)
+    }
 }
 
 struct NetworkCallEventProperties: AnalyticsEventProperties {
