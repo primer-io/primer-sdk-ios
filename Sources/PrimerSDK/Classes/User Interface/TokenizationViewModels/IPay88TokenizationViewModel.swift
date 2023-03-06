@@ -10,8 +10,8 @@
 import Foundation
 import UIKit
 
-#if canImport(PrimerIPay88SDK)
-import PrimerIPay88SDK
+#if canImport(PrimerIPay88MHSDK)
+import PrimerIPay88MHSDK
 #endif
 
 class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
@@ -20,7 +20,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         log(logLevel: .debug, message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-#if canImport(PrimerIPay88SDK)
+#if canImport(PrimerIPay88MHSDK)
     private var backendCallbackUrl: URL!
     private var primerTransactionId: String!
     private var statusUrl: URL!
@@ -199,7 +199,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             errors.append(err)
         }
         
-#if !canImport(PrimerIPay88SDK)
+#if !canImport(PrimerIPay88MHSDK)
         let err = PrimerError.missingSDK(
             sdkName: "PrimerIPay88SDK",
             userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
@@ -240,7 +240,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
-#if canImport(PrimerIPay88SDK)
+#if canImport(PrimerIPay88MHSDK)
             firstly {
                 self.validateReturningPromise()
             }
@@ -274,7 +274,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-#if canImport(PrimerIPay88SDK)
+#if canImport(PrimerIPay88MHSDK)
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
             
             firstly {
@@ -307,7 +307,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
-#if canImport(PrimerIPay88SDK)
+#if canImport(PrimerIPay88MHSDK)
             seal.fulfill()
             
 #else
@@ -323,7 +323,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-#if canImport(PrimerIPay88SDK)
+#if canImport(PrimerIPay88MHSDK)
             guard let configId = config.id else {
                 let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
@@ -364,7 +364,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-#if canImport(PrimerIPay88SDK)
+#if canImport(PrimerIPay88MHSDK)
             if decodedJWTToken.intent == "IPAY88_CARD_REDIRECTION" {
                 guard let backendCallbackUrlStr = decodedJWTToken.backendCallbackUrl?.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlPasswordAllowed)?.replacingOccurrences(of: "=", with: "%3D"),
                       let backendCallbackUrl = URL(string: backendCallbackUrlStr),
@@ -423,7 +423,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
     
-#if canImport(PrimerIPay88SDK)
+#if canImport(PrimerIPay88MHSDK)
     private func createPrimerIPay88Payment() throws -> PrimerIPay88Payment {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
               let primerTransactionId = decodedJWTToken.primerTransactionId,
@@ -542,7 +542,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 #endif
 }
 
-#if canImport(PrimerIPay88SDK)
+#if canImport(PrimerIPay88MHSDK)
 extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
     
     func primerIPay88ViewDidLoad() {
