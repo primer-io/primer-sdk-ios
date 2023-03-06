@@ -6,7 +6,7 @@ internal protocol PrimerSettingsProtocol {
     var paymentHandling: PrimerPaymentHandling { get }
     var localeData: PrimerLocaleData { get }
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
-    var uiOptions: PrimerUIOptions { get set }
+    var uiOptions: PrimerUIOptions { get }
     var debugOptions: PrimerDebugOptions { get }
 }
 

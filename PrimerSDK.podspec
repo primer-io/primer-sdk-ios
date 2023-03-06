@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
                 "$(inherited)",
                 "${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS",
                 "${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK",
-                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88SDK"
+                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MHSDK"
             ]
         }
     end
