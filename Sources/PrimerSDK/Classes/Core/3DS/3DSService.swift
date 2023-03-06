@@ -287,8 +287,12 @@ class ThreeDSService: ThreeDSServiceProtocol {
             let present3DSUIEvent = Analytics.Event(
                 eventType: .ui,
                 properties: UIEventProperties(
-                    action: Analytics.Event.Property.Action.present,
+                    action: .present,
+                    context: nil,
+                    extra: nil,
                     objectType: .thirdPartyView,
+                    objectId: nil,
+                    objectClass: "\(Self.self)",
                     place: .threeDSScreen))
             Analytics.Service.record(events: [present3DSUIEvent])
             
@@ -314,7 +318,11 @@ class ThreeDSService: ThreeDSServiceProtocol {
                     eventType: .ui,
                     properties: UIEventProperties(
                         action: Analytics.Event.Property.Action.dismiss,
+                        context: nil,
+                        extra: nil,
                         objectType: .thirdPartyView,
+                        objectId: nil,
+                        objectClass: "\(Self.self)",
                         place: .threeDSScreen))
                 Analytics.Service.record(events: [dismiss3DSUIEvent])
                 
