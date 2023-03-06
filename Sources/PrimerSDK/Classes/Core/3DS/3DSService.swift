@@ -70,116 +70,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    static func validate3DSParameters() throws {
-        var errors: [Error] = []
-                
-        if PrimerInternal.shared.intent == .checkout && AppState.current.amount == nil {
-            let err = PrimerError.invalidValue(key: "settings.amount", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if AppState.current.currency == nil {
-            let err = PrimerError.invalidValue(key: "settings.currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.id == nil {
-            let err = PrimerError.invalidValue(key: "settings.orderId", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.billingAddress?.addressLine1 ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.addressLine1", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.billingAddress?.city ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.city", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.billingAddress?.countryCode == nil {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.countryCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.billingAddress?.postalCode ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.billingAddress?.postalCode", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.firstName ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.firstName", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.lastName ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.lastName", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.emailAddress ?? "").isEmpty {
-            let err = PrimerError.invalidValue(key: "settings.customer?.emailAddress", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if !errors.isEmpty {
-            let containerErr = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: containerErr)
-            throw containerErr
-        }
-    }
-    
-    static func buildBeginAuthExtraData() throws -> ThreeDS.BeginAuthExtraData {
-        do {
-            try ThreeDSService.validate3DSParameters()
-        } catch {
-            ErrorHandler.shared.handle(error: error)
-            throw error
-        }
-        
-        let clientSession = PrimerAPIConfigurationModule.apiConfiguration!.clientSession!
-        let customer = clientSession.customer!
-        
-        let threeDSCustomer = ThreeDS.Customer(name: "\(customer.firstName!) \(customer.lastName!)",
-                                        email: customer.emailAddress!,
-                                        homePhone: nil,
-                                        mobilePhone: customer.mobileNumber,
-                                        workPhone: nil)
-        
-        let threeDSAddress = ThreeDS.Address(title: nil,
-                                             firstName: customer.firstName,
-                                             lastName: customer.lastName,
-                                             email: customer.emailAddress,
-                                             phoneNumber: customer.mobileNumber,
-                                             addressLine1: customer.billingAddress!.addressLine1!,
-                                             addressLine2: customer.billingAddress!.addressLine2,
-                                             addressLine3: nil,
-                                             city: customer.billingAddress!.city!,
-                                             state: nil,
-                                             countryCode: CountryCode(rawValue: customer.billingAddress!.countryCode!.rawValue)!,
-                                             postalCode: customer.billingAddress!.postalCode!)
-        
-        return ThreeDS.BeginAuthExtraData(
-            amount: 0,
-            currencyCode: AppState.current.currency!,
-            orderId: clientSession.order?.id ?? "",
-            customer: threeDSCustomer,
-            billingAddress: threeDSAddress,
-            shippingAddress: nil,
-            customerAccount: nil)
-    }
-    
     var primer3DS: Primer3DS?
     
     // swiftlint:disable function_body_length
@@ -215,7 +105,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             return
         }
         
-        let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodTokenData.paymentInstrumentData?.network ?? "")
+        let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodTokenData.paymentInstrumentData?.binData?.network ?? "")
         
         guard let directoryServerId = cardNetwork.directoryServerId else {
             let err = PrimerError.invalidValue(key: "cardNetwork.directoryServerId", value: cardNetwork.directoryServerId, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -242,8 +132,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
         var data: Primer3DSSDKGeneratedAuthData!
         
         do {
-            let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodTokenData.paymentInstrumentData?.network ?? "")
-
             try primer3DS!.initializeSDK(licenseKey: licenseKey, certificates: certs)
             data = try primer3DS!.createTransaction(directoryServerId: directoryServerId, protocolVersion: protocolVersion.rawValue)
         } catch {
@@ -259,7 +147,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                                        sdkEphemPubKey: data.sdkEphemPubKey,
                                                        sdkReferenceNumber: data.sdkReferenceNumber)
         
-        var threeDSecureBeginAuthRequest = ThreeDS.BeginAuthRequest(maxProtocolVersion: env == .production ? .v1 : .v2,
+        let threeDSecureBeginAuthRequest = ThreeDS.BeginAuthRequest(maxProtocolVersion: env == .production ? .v1 : .v2,
                                                                     challengePreference: .requestedByRequestor,
                                                                     device: threeDSecureAuthData,
                                                                     amount: nil,
@@ -269,41 +157,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                                                     billingAddress: nil,
                                                                     shippingAddress: nil,
                                                                     customerAccount: nil)
-        
-        do {
-            try ThreeDSService.validate3DSParameters()
-        } catch {
-            ErrorHandler.shared.handle(error: error)
-            completion(.failure(error))
-            return
-        }
-        
-        let customer = PrimerAPIConfigurationModule.apiConfiguration!.clientSession!.customer!
-        
-        let threeDSCustomer = ThreeDS.Customer(name: "\(customer.firstName) \(customer.lastName)",
-                                        email: customer.emailAddress!,
-                                        homePhone: nil,
-                                        mobilePhone: customer.mobileNumber,
-                                        workPhone: nil)
-        
-        let threeDSAddress = ThreeDS.Address(title: nil,
-                                             firstName: customer.firstName,
-                                             lastName: customer.lastName,
-                                             email: customer.emailAddress,
-                                             phoneNumber: customer.mobileNumber,
-                                             addressLine1: customer.billingAddress!.addressLine1!,
-                                             addressLine2: customer.billingAddress!.addressLine2,
-                                             addressLine3: nil,
-                                             city: customer.billingAddress!.city!,
-                                             state: nil,
-                                             countryCode: CountryCode(rawValue: customer.billingAddress!.countryCode!.rawValue)!,
-                                             postalCode: customer.billingAddress!.postalCode!)
-        
-        threeDSecureBeginAuthRequest.amount = AppState.current.amount
-        threeDSecureBeginAuthRequest.currencyCode = AppState.current.currency
-        threeDSecureBeginAuthRequest.orderId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.id
-        threeDSecureBeginAuthRequest.customer = threeDSCustomer
-        threeDSecureBeginAuthRequest.billingAddress = threeDSAddress
         
         firstly {
             self.beginRemoteAuth(paymentMethodTokenData: paymentMethodTokenData, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
@@ -390,6 +243,14 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                              responseCode: beginAuthResponse.authentication.responseCode.rawValue,
                                              transactionId: beginAuthResponse.authentication.transactionId)
             
+            let present3DSUIEvent = Analytics.Event(
+                eventType: .ui,
+                properties: UIEventProperties(
+                    action: Analytics.Event.Property.Action.present,
+                    objectType: .thirdPartyView,
+                    place: .threeDSScreen))
+            Analytics.Service.record(events: [present3DSUIEvent])
+            
             firstly {
                 self.performChallenge(with: serverAuthData, urlScheme: nil, presentOn: self.threeDSSDKWindow!.rootViewController!)
             }
@@ -408,6 +269,14 @@ class ThreeDSService: ThreeDSServiceProtocol {
 
             }
             .ensure {
+                let dismiss3DSUIEvent = Analytics.Event(
+                    eventType: .ui,
+                    properties: UIEventProperties(
+                        action: Analytics.Event.Property.Action.dismiss,
+                        objectType: .thirdPartyView,
+                        place: .threeDSScreen))
+                Analytics.Service.record(events: [dismiss3DSUIEvent])
+                
                 self.threeDSSDKWindow?.isHidden = true
                 self.threeDSSDKWindow = nil
             }

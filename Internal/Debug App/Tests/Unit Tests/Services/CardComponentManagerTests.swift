@@ -165,4 +165,34 @@ class CardComponentManagerTests: XCTestCase {
         }
     }
     
+    func test_card_directory_server_id() throws {
+        for (cardNetwork, cardnumbers) in testCardNumbers {
+            var directoryServerId: String
+            
+            switch cardNetwork {
+            case .amex:
+                directoryServerId = "A000000025"
+            case .diners,
+                    .discover:
+                directoryServerId = "A000000152"
+            case .jcb:
+                directoryServerId = "A000000065"
+            case .masterCard:
+                directoryServerId = "A000000004"
+            case .visa:
+                directoryServerId = "A000000003"
+            case .unionpay:
+                directoryServerId = "A000000333"
+            default:
+                directoryServerId = "A999999999"
+            }
+            
+            for cardnumber in cardnumbers {
+                let tmpCardNetwork = CardNetwork(cardNumber: cardnumber)
+                if let detectedDirectoryServerId = cardNetwork.directoryServerId {
+                    XCTAssert(detectedDirectoryServerId == directoryServerId, "\(cardnumber) [\(tmpCardNetwork)] returned wrong directory server id '\(cardNetwork.directoryServerId)' (it should had returned '\(directoryServerId)')")
+                }
+            }
+        }
+    }
 }

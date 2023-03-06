@@ -264,7 +264,7 @@ public enum CardNetwork: String, CaseIterable {
         }
     }
     
-    var directoryServerId: String? {        
+    var directoryServerId: String? {
         switch self {
         case .visa:
             return "A000000003"
@@ -274,7 +274,8 @@ public enum CardNetwork: String, CaseIterable {
             return "A000000025"
         case .jcb:
             return "A000000065"
-        case .diners:
+        case .diners,
+                .discover:
             return "A000000152"
         case .unionpay:
             return "A000000333"

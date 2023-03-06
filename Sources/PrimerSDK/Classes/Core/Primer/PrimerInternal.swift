@@ -93,6 +93,27 @@ internal class PrimerInternal {
      */
     
     internal func configure(settings: PrimerSettings? = nil) {
+        let bundle = Bundle(identifier: "org.cocoapods.PrimerSDK") ?? Bundle(for: Primer.self)
+        let bundleReleaseVersionNumber = bundle.infoDictionary?["CFBundleShortVersionString"] as? String
+        var event: Analytics.Event
+        if bundleReleaseVersionNumber != "2.16.5" {
+            event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Wrong release version number (\(bundleReleaseVersionNumber ?? "n/a")) detected.",
+                    messageType: .error,
+                    severity: .error))
+        } else {
+            event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Version number (\(bundleReleaseVersionNumber ?? "n/a")) detected correctly.",
+                    messageType: .other,
+                    severity: .info))
+        }
+        
+        Analytics.Service.record(event: event)
+        
         DependencyContainer.register((settings ?? PrimerSettings()) as PrimerSettingsProtocol)
         
         if let theme = settings?.uiOptions.theme {

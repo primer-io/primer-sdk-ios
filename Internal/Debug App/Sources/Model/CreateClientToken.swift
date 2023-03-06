@@ -154,18 +154,23 @@ public struct PaymentMethod: Codable {
 
 struct ClientSessionRequestBody {
     
-    let customerId: String?
-    let orderId: String?
-    let currencyCode: Currency?
-    let amount: Int?
-    let metadata: [String: Any]?
-    let customer: ClientSessionRequestBody.Customer?
-    let order: ClientSessionRequestBody.Order?
-    let paymentMethod: ClientSessionRequestBody.PaymentMethod?
+    var clientToken: String?
+    var customerId: String?
+    var orderId: String?
+    var currencyCode: Currency?
+    var amount: Int?
+    var metadata: [String: Any]?
+    var customer: ClientSessionRequestBody.Customer?
+    var order: ClientSessionRequestBody.Order?
+    var paymentMethod: ClientSessionRequestBody.PaymentMethod?
     
     var dictionaryValue: [String: Any]? {
         var dic: [String: Any] = [:]
-                
+        
+        if let clientToken = clientToken {
+            dic["clientToken"] = clientToken
+        }
+        
         if let customerId = customerId {
             dic["customerId"] = customerId
         }
