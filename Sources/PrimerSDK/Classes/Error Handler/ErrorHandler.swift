@@ -39,6 +39,13 @@ internal class ErrorHandler {
 
         } else {
             let nsError = error as NSError
+            var userInfo = nsError.userInfo
+            
+            if let nsLocalizedDescription = userInfo[NSLocalizedDescriptionKey] {
+                userInfo["description"] = nsLocalizedDescription
+                userInfo[NSLocalizedDescriptionKey] = nil
+            }
+            
             event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
@@ -46,7 +53,7 @@ internal class ErrorHandler {
                     messageType: .error,
                     severity: .error,
                     diagnosticsId: nil,
-                    context: nsError.userInfo))
+                    context: userInfo))
         }
         
         Analytics.Service.record(event: event)
