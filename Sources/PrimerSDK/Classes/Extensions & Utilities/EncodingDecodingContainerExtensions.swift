@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 4/3/23.
 //
 
+#if canImport(UIKit)
+
 import Foundation
 
 // Inspired by https://gist.github.com/mbuchetics/c9bc6c22033014aa0c550d3b4324411a
@@ -141,3 +143,5 @@ extension UnkeyedDecodingContainer {
         return try nestedContainer.decode(type)
     }
 }
+
+#endif
