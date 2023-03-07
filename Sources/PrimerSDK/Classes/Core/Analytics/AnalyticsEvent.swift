@@ -34,9 +34,35 @@ extension Analytics.Event {
         }
         
         struct Context: Codable {
+            
             var issuerId: String?
             var paymentMethodType: String?
             var url: String?
+            var iPay88PaymentMethodId: String?
+            var iPay88ActionType: String?
+            
+            init(
+                issuerId: String? = nil,
+                paymentMethodType: String? = nil,
+                url: String? = nil,
+                iPay88PaymentMethodId: String? = nil,
+                iPay88ActionType: String? = nil
+            ) {
+                self.issuerId = issuerId
+                self.paymentMethodType = paymentMethodType
+                self.url = url
+                self.iPay88PaymentMethodId = iPay88PaymentMethodId
+                self.iPay88ActionType = iPay88ActionType
+            }
+            
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.container(keyedBy: Analytics.Event.Property.Context.CodingKeys.self)
+                try container.encodeIfPresent(self.issuerId, forKey: Analytics.Event.Property.Context.CodingKeys.issuerId)
+                try container.encodeIfPresent(self.paymentMethodType, forKey: Analytics.Event.Property.Context.CodingKeys.paymentMethodType)
+                try container.encodeIfPresent(self.url, forKey: Analytics.Event.Property.Context.CodingKeys.url)
+                try container.encodeIfPresent(self.iPay88PaymentMethodId, forKey: Analytics.Event.Property.Context.CodingKeys.iPay88PaymentMethodId)
+                try container.encodeIfPresent(self.iPay88ActionType, forKey: Analytics.Event.Property.Context.CodingKeys.iPay88ActionType)
+            }
         }
         
         enum MessageType: String, Codable {
@@ -115,6 +141,7 @@ extension Analytics.Event {
             case webview                = "WEBVIEW"
             case universalCheckout      = "UNIVERSAL_CHECKOUT"
             case threeDSScreen          = "3DS_VIEW"
+            case iPay88View             = "IPAY88_VIEW"
         }
         
         enum Severity: String, Codable {

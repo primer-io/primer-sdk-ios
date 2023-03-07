@@ -29,6 +29,8 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var primerIPay88Payment: PrimerIPay88Payment!
     private var didComplete: (() -> Void)?
     private var didFail: ((_ err: PrimerError) -> Void)?
+    private var iPay88PaymentMethodId: String?
+    private var iPay88ActionType: String?
 #endif
     
     private lazy var iPay88NumberFormatter: NumberFormatter = {
@@ -222,21 +224,6 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {
-        let event = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: self.config.type,
-                    url: nil),
-                extra: nil,
-                objectType: .button,
-                objectId: .select,
-                objectClass: "\(Self.self)",
-                place: .paymentMethodPopup))
-        Analytics.Service.record(event: event)
-        
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
         
         return Promise { seal in
@@ -439,6 +426,9 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
         
+        self.iPay88PaymentMethodId = iPay88PaymentMethodId
+        self.iPay88ActionType = iPay88ActionType
+        
         let amountStr = self.iPay88NumberFormatter.string(from: NSNumber(value: Double(AppState.current.amount!)/100)) ?? ""
 
         let primerIPayPayment = PrimerIPay88Payment(
@@ -478,6 +468,22 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 }
 
                 self.willPresentPaymentMethodUI?()
+                
+                let iPay88PresentEvent = Analytics.Event(
+                    eventType: .ui,
+                    properties: UIEventProperties(
+                        action: .present,
+                        context: Analytics.Event.Property.Context(
+                            paymentMethodType: self.config.type,
+                            iPay88PaymentMethodId: self.iPay88PaymentMethodId,
+                            iPay88ActionType: self.iPay88ActionType),
+                        extra: nil,
+                        objectType: .view,
+                        objectId: nil,
+                        objectClass: "\(Self.self)",
+                        place: .iPay88View))
+                Analytics.Service.record(event: iPay88PresentEvent)
+                
                 PrimerUIManager.primerRootViewController?.present(self.primerIPay88ViewController, animated: true, completion: {
                     DispatchQueue.main.async {
                         PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: self.config.type)
@@ -522,10 +528,23 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.fulfill()
             }
             .ensure {
+                let iPay88DismissEvent = Analytics.Event(
+                    eventType: .ui,
+                    properties: UIEventProperties(
+                        action: .dismiss,
+                        context: Analytics.Event.Property.Context(
+                            paymentMethodType: self.config.type,
+                            iPay88PaymentMethodId: self.iPay88PaymentMethodId,
+                            iPay88ActionType: self.iPay88ActionType),
+                        extra: nil,
+                        objectType: .view,
+                        objectId: nil,
+                        objectClass: "\(Self.self)",
+                        place: .iPay88View))
+                Analytics.Service.record(event: iPay88DismissEvent)
+                
                 DispatchQueue.main.async { [unowned self] in
-                    self.primerIPay88ViewController?.dismiss(animated: true, completion: {
-                        
-                    })
+                    self.primerIPay88ViewController?.dismiss(animated: true)
                 }
             }
             .catch { err in
