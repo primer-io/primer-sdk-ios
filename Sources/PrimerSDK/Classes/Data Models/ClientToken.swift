@@ -31,9 +31,9 @@ struct DecodedJWTToken: Codable {
     // iPay88
     var backendCallbackUrl: String?
     var primerTransactionId: String?
-    var paymentId: String?
-    var actionType: String?
-    var supportedCurrency: String?
+    var iPay88PaymentMethodId: String?
+    var iPay88ActionType: String?
+    var supportedCurrencyCode: String?
     var supportedCountry: String?
     
     // Voucher info
@@ -71,9 +71,9 @@ struct DecodedJWTToken: Codable {
         // iPay88
         case backendCallbackUrl
         case primerTransactionId
-        case paymentId
-        case actionType
-        case supportedCurrency
+        case iPay88PaymentMethodId
+        case iPay88ActionType
+        case supportedCurrencyCode
         case supportedCountry
         // QR Code
         case qrCode
@@ -101,9 +101,9 @@ struct DecodedJWTToken: Codable {
         accountNumber: String?,
         backendCallbackUrl: String?,
         primerTransactionId: String?,
-        paymentId: String?,
-        actionType: String?,
-        supportedCurrency: String?,
+        iPay88PaymentMethodId: String?,
+        iPay88ActionType: String?,
+        supportedCurrencyCode: String?,
         supportedCountry: String?
     ) {
         self.accessToken = accessToken
@@ -122,9 +122,9 @@ struct DecodedJWTToken: Codable {
         self.accountNumber = accountNumber
         self.backendCallbackUrl = backendCallbackUrl
         self.primerTransactionId = primerTransactionId
-        self.paymentId = paymentId
-        self.actionType = actionType
-        self.supportedCurrency = supportedCurrency
+        self.iPay88PaymentMethodId = iPay88PaymentMethodId
+        self.iPay88ActionType = iPay88ActionType
+        self.supportedCurrencyCode = supportedCurrencyCode
         self.supportedCountry = supportedCountry
     }
     
@@ -175,9 +175,9 @@ struct DecodedJWTToken: Codable {
         // iPay88
         self.backendCallbackUrl = try container.decodeIfPresent(String.self, forKey: .backendCallbackUrl)
         self.primerTransactionId = try container.decodeIfPresent(String.self, forKey: .primerTransactionId)
-        self.paymentId = try container.decodeIfPresent(String.self, forKey: .paymentId)
-        self.actionType = try container.decodeIfPresent(String.self, forKey: .actionType)
-        self.supportedCurrency = try container.decodeIfPresent(String.self, forKey: .supportedCurrency)
+        self.iPay88PaymentMethodId = try container.decodeIfPresent(String.self, forKey: .iPay88PaymentMethodId)
+        self.iPay88ActionType = try container.decodeIfPresent(String.self, forKey: .iPay88ActionType)
+        self.supportedCurrencyCode = try container.decodeIfPresent(String.self, forKey: .supportedCurrencyCode)
         self.supportedCountry = try container.decodeIfPresent(String.self, forKey: .supportedCountry)
         
         // Voucher info
@@ -221,9 +221,9 @@ struct DecodedJWTToken: Codable {
         // iPay88
         try? container.encode(backendCallbackUrl, forKey: .backendCallbackUrl)
         try? container.encode(primerTransactionId, forKey: .primerTransactionId)
-        try? container.encode(paymentId, forKey: .paymentId)
-        try? container.encode(actionType, forKey: .actionType)
-        try? container.encode(supportedCurrency, forKey: .supportedCurrency)
+        try? container.encode(iPay88PaymentMethodId, forKey: .iPay88PaymentMethodId)
+        try? container.encode(iPay88ActionType, forKey: .iPay88ActionType)
+        try? container.encode(supportedCurrencyCode, forKey: .supportedCurrencyCode)
         try? container.encode(supportedCountry, forKey: .supportedCountry)
         
         // Voucher info

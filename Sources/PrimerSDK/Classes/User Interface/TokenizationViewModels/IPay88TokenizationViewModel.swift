@@ -427,9 +427,9 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     private func createPrimerIPay88Payment() throws -> PrimerIPay88Payment {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
               let primerTransactionId = decodedJWTToken.primerTransactionId,
-              let paymentId = decodedJWTToken.paymentId,
-              let actionType = decodedJWTToken.actionType,
-              let supportedCurrency = decodedJWTToken.supportedCurrency,
+              let iPay88PaymentMethodId = decodedJWTToken.iPay88PaymentMethodId,
+              let iPay88ActionType = decodedJWTToken.iPay88ActionType,
+              let supportedCurrency = decodedJWTToken.supportedCurrencyCode,
               let supportedCountry = decodedJWTToken.supportedCountry
         else {
             let err = PrimerError.invalidClientToken(
@@ -443,7 +443,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         let primerIPayPayment = PrimerIPay88Payment(
             merchantCode: (self.config.options as! MerchantOptions).merchantId,
-            paymentId: paymentId,
+            paymentId: iPay88PaymentMethodId,
             refNo: primerTransactionId,
             amount: amountStr,
             currency: supportedCurrency,
@@ -451,15 +451,15 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             userName: "\(PrimerAPIConfiguration.current!.clientSession!.customer!.firstName!) \(PrimerAPIConfiguration.current!.clientSession!.customer!.lastName!)",
             userEmail: PrimerAPIConfiguration.current!.clientSession!.customer!.emailAddress!,
             userContact: PrimerAPIConfiguration.current!.clientSession!.customer!.mobileNumber!,
-            remark: nil,
+            remark: PrimerAPIConfiguration.current!.clientSession?.customer?.id,
             lang: "UTF-8",
             country: supportedCountry,
             backendPostURL: self.backendCallbackUrl!.absoluteString,
             appdeeplink: nil,
-            actionType: actionType,
+            actionType: iPay88ActionType,
             tokenId: nil,
             promoCode: nil,
-            fixPaymentId: paymentId,
+            fixPaymentId: iPay88PaymentMethodId,
             transId: nil,
             authCode: nil)
 
@@ -549,7 +549,7 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
         
     }
     
-    func primerIPay88PaymentSessionCompleted(payment: PrimerIPay88SDK.PrimerIPay88Payment?, error: PrimerIPay88SDK.PrimerIPay88Error?) {
+    func primerIPay88PaymentSessionCompleted(payment: PrimerIPay88MHSDK.PrimerIPay88Payment?, error: PrimerIPay88MHSDK.PrimerIPay88Error?) {
         if let payment = payment {
             self.primerIPay88Payment = payment
         }
@@ -572,7 +572,7 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
         }
     }
     
-    func primerIPay88PaymentCancelled(payment: PrimerIPay88SDK.PrimerIPay88Payment?, error: PrimerIPay88SDK.PrimerIPay88Error?) {
+    func primerIPay88PaymentCancelled(payment: PrimerIPay88MHSDK.PrimerIPay88Payment?, error: PrimerIPay88MHSDK.PrimerIPay88Error?) {
         self.didCancel?()
         self.nullifyCallbacks()
     }
