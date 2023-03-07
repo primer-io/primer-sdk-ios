@@ -415,11 +415,23 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
               let primerTransactionId = decodedJWTToken.primerTransactionId,
               let iPay88PaymentMethodId = decodedJWTToken.iPay88PaymentMethodId,
-              let iPay88ActionType = decodedJWTToken.iPay88ActionType,
               let supportedCurrency = decodedJWTToken.supportedCurrencyCode,
               let supportedCountry = decodedJWTToken.supportedCountry
         else {
             let err = PrimerError.invalidClientToken(
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+        
+        let iPay88ActionType = decodedJWTToken.iPay88ActionType ?? ""
+        
+        if iPay88ActionType == "BT" && PrimerAPIConfiguration.current?.clientSession?.customer?.id == nil {
+            let err = PrimerError.invalidClientSessionValue(
+                name: "customer.id",
+                value: nil,
+                allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
