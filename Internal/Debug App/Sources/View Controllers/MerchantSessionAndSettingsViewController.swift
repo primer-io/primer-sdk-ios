@@ -240,7 +240,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         self.view.accessibilityIdentifier = "Background View"
         self.testingModeSegmentedControl.accessibilityIdentifier = "Testing Mode Segmented Control"
         self.clientTokenTextField.accessibilityIdentifier = "Client Token Text Field"
-        self.primerSDKButton.accessibilityIdentifier = "Primer SDK Button"
     }
     
     

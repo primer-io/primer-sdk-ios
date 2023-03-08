@@ -923,7 +923,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QJ8-WE-cU8">
                                 <rect key="frame" x="20" y="744" width="374" height="45"/>
                                 <color key="backgroundColor" systemColor="labelColor"/>
-                                <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Primer SDK Button"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="45" id="iJd-a8-l4a"/>
                                 </constraints>
@@ -937,7 +937,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0FS-cB-H3t">
                                 <rect key="frame" x="20" y="797" width="374" height="45"/>
                                 <color key="backgroundColor" systemColor="labelColor"/>
-                                <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Primer Headless SDK Button"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="45" id="WWY-2r-9EB"/>
                                 </constraints>
