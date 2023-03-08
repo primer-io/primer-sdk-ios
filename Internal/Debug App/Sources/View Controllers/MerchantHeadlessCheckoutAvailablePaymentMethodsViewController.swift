@@ -115,6 +115,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
         let paymentMethod = self.availablePaymentMethods[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "MerchantPaymentMethodCell", for: indexPath) as! MerchantPaymentMethodCell
         cell.configure(paymentMethod: paymentMethod)
+        cell.accessibilityIdentifier = paymentMethod.paymentMethodType
         return cell
     }
     
