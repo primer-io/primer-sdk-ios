@@ -12,6 +12,7 @@ import UIKit
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = true
+var performPaymentAfterVaulting: Bool = false
 
 class MerchantSessionAndSettingsViewController: UIViewController {
     
@@ -272,6 +273,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         default:
             environmentSegmentedControl.selectedSegmentIndex = 0
         }
+        
+        self.apiKeyTextField.text = customDefinedApiKey
         
         let viewTap = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
         view.addGestureRecognizer(viewTap)
