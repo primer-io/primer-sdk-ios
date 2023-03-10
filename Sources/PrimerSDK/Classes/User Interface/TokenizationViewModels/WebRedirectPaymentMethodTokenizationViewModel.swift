@@ -33,6 +33,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         switch notification.name.rawValue {
         case Notification.Name.urlSchemeRedirect.rawValue:
             self.webViewController?.dismiss(animated: true)
+            self.didCancel?()
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         default:
             super.receivedNotification(notification)
