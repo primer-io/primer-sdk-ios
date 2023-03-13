@@ -209,10 +209,10 @@ internal class PrimerUIManager {
                     if #available(iOS 13, *) {
                         PrimerUIManager.primerWindow?.windowScene = nil
                     }
-                    PrimerUIManager.primerWindow?.rootViewController = nil
-                    PrimerUIManager.primerRootViewController = nil
+                    
                     PrimerUIManager.primerWindow?.resignKey()
                     PrimerUIManager.primerWindow = nil
+                    PrimerUIManager.primerRootViewController = nil
                     completion?()
                 }
             }

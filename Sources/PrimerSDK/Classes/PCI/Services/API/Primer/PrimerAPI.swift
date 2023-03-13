@@ -66,7 +66,7 @@ enum PrimerAPI: Endpoint, Equatable {
     // Generic
     case poll(clientToken: DecodedJWTToken?, url: String)
     
-    case sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: Analytics.Service.Request?)
+    case sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?)
     
     case fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo)
 
@@ -93,6 +93,10 @@ internal extension PrimerAPI {
     
     var headers: [String: String]? {
         var tmpHeaders = PrimerAPI.headers
+        
+        if let checkoutSessionId = PrimerInternal.shared.checkoutSessionId {
+            tmpHeaders["Primer-SDK-Checkout-Session-ID"] = checkoutSessionId
+        }
         
         switch self {
         case .deleteVaultedPaymentMethod(let clientToken, _),
