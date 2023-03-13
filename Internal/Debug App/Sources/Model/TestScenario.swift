@@ -13,14 +13,15 @@ class Test {
     
     enum Scenario: String, Equatable, Codable, CaseIterable {
         
-        case testAdyenBlik      = "TEST_ADYEN_BLIK"
-        case testAdyenGiropay   = "TEST_ADYEN_GIROPAY"
-        case testApplePay       = "TEST_APPLE_PAY"
-        case testPaymentCard    = "TEST_PAYMENT_CARD"
-        case testIPay88Card     = "TEST_IPAY88_CARD"
-        case testKlarna         = "TEST_KLARNA"
-        case testNative3DS      = "TEST_NATIVE_3DS"
-        case testProcessor3DS   = "TEST_PROCESSOR_3DS"
+        case testAdyenBlik              = "TEST_ADYEN_BLIK"
+        case testAdyenGiropay           = "TEST_ADYEN_GIROPAY"
+        case testApplePay               = "TEST_APPLE_PAY"
+        case testPaymentCard            = "TEST_PAYMENT_CARD"
+        case testIPay88CardRecurring    = "TEST_IPAY88_CARD_RECURRING"
+        case testIPay88CardOneOff       = "TEST_IPAY88_CARD_ONE_OFF"
+        case testKlarna                 = "TEST_KLARNA"
+        case testNative3DS              = "TEST_NATIVE_3DS"
+        case testProcessor3DS           = "TEST_PROCESSOR_3DS"
     }
     
     enum Result: Equatable, Codable {
