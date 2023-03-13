@@ -88,7 +88,8 @@ internal extension PrimerAPI {
     static let headers: [String: String] = [
         "Content-Type": "application/json",
         "Primer-SDK-Version": Bundle.primerFramework.releaseVersionNumber ?? "n/a",
-        "Primer-SDK-Client": PrimerSource.sdkSourceType.sourceType
+        "Primer-SDK-Client": PrimerSource.sdkSourceType.sourceType,
+        "Primer-SDK-Checkout-Session-ID": PrimerInternal.shared.sdkSessionId
     ]
     
     var headers: [String: String]? {
