@@ -88,12 +88,15 @@ internal extension PrimerAPI {
     static let headers: [String: String] = [
         "Content-Type": "application/json",
         "Primer-SDK-Version": Bundle.primerFramework.releaseVersionNumber ?? "n/a",
-        "Primer-SDK-Client": PrimerSource.sdkSourceType.sourceType,
-        "Primer-SDK-Checkout-Session-ID": PrimerInternal.shared.sdkSessionId
+        "Primer-SDK-Client": PrimerSource.sdkSourceType.sourceType
     ]
     
     var headers: [String: String]? {
         var tmpHeaders = PrimerAPI.headers
+        
+        if let checkoutSessionId = PrimerInternal.shared.checkoutSessionId {
+            tmpHeaders["Primer-SDK-Checkout-Session-ID"] = checkoutSessionId
+        }
         
         switch self {
         case .deleteVaultedPaymentMethod(let clientToken, _),
