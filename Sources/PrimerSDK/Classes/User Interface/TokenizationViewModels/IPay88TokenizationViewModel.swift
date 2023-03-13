@@ -207,6 +207,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         
 #if !canImport(PrimerIPay88MYSDK)
         let err = PrimerError.missingSDK(
+            paymentMethodType: self.config.type,
             sdkName: "PrimerIPay88SDK",
             userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
             diagnosticsId: UUID().uuidString)
@@ -254,6 +255,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             
 #else
             let err = PrimerError.missingSDK(
+                paymentMethodType: self.config.type,
                 sdkName: "PrimerIPay88SDK",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: UUID().uuidString)
