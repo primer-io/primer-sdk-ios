@@ -408,7 +408,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case unsupportedPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
     case missingCustomUI(paymentMethod: String, userInfo: [String: String]?, diagnosticsId: String)
-    case missingSDK(sdkName: String, userInfo: [String: String]?, diagnosticsId: String)
+    case missingSDK(paymentMethodType: String, sdkName: String, userInfo: [String: String]?, diagnosticsId: String)
     case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case cancelledByCustomer(message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case paymentFailed(description: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -481,7 +481,7 @@ public enum PrimerError: PrimerErrorProtocol {
         case .missingCustomUI:
             return "missing-custom-ui"
         case .missingSDK:
-            return "missing-sdk"
+            return "missing-sdk-dependency"
         case .merchantError:
             return "merchant-error"
         case .paymentFailed:
@@ -559,7 +559,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .missingCustomUI(_, _, let diagnosticsId):
             return diagnosticsId
-        case .missingSDK(_, _, let diagnosticsId):
+        case .missingSDK(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .merchantError(_, _, let diagnosticsId):
             return diagnosticsId
@@ -602,8 +602,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Primer Checkout Components delegate has not been set"
         case .missingPrimerInputElement(let inputElementType, _, _):
             return "Missing primer input element for \(inputElementType)"
-        case .missingSDK(let sdkName, _, _):
-            return "Missing SDK \"\(sdkName)'|"
+        case .missingSDK(let paymentMethodType, let sdkName, _, _):
+            return "\(paymentMethodType) configuration has been found, but dependency \(sdkName) is missing"
         case .misconfiguredPaymentMethods:
             return "Payment methods haven't been set up correctly"
         case .cancelled(let paymentMethodType, _, _):
@@ -705,7 +705,7 @@ public enum PrimerError: PrimerErrorProtocol {
                 .unsupportedPaymentMethod(_, let userInfo, _),
                 .underlyingErrors(_, let userInfo, _),
                 .missingCustomUI(_, let userInfo, _),
-                .missingSDK(_, let userInfo, _),
+                .missingSDK(_, _, let userInfo, _),
                 .merchantError(_, let userInfo, _),
                 .cancelledByCustomer(_, let userInfo, _),
                 .paymentFailed(_, let userInfo, _),
@@ -802,8 +802,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Check underlying errors for more information."
         case .missingCustomUI(let paymentMethod, _, _):
             return "You have to built your UI for \(paymentMethod) and utilize PrimerCheckoutComponents.UIManager's functionality."
-        case .missingSDK(let sdkName, _, _):
-            return "You need to add \"\(sdkName)\" via CocoaPods or Swift Package Manager"
+        case .missingSDK(let paymentMethodType, let sdkName, _, _):
+            return "Add \(sdkName) in your project so you can perform payments with \(paymentMethodType)"
         case .merchantError:
             return nil
         case .paymentFailed:

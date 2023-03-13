@@ -115,6 +115,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
         let paymentMethod = self.availablePaymentMethods[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "MerchantPaymentMethodCell", for: indexPath) as! MerchantPaymentMethodCell
         cell.configure(paymentMethod: paymentMethod)
+        cell.accessibilityIdentifier = paymentMethod.paymentMethodType
         return cell
     }
     
@@ -317,40 +318,33 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: PrimerH
 
 class MerchantPaymentMethodCell: UITableViewCell {
     
+    @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var paymentMethodLabel: UILabel!
-    @IBOutlet weak var buttonContainerView: UIView!
+    @IBOutlet weak var paymentMethodLogoView: UIImageView!
     
     var paymentMethod: PrimerHeadlessUniversalCheckout.PaymentMethod!
     
     func configure(paymentMethod: PrimerHeadlessUniversalCheckout.PaymentMethod) {
         self.paymentMethod = paymentMethod
-        paymentMethodLabel.text = paymentMethod.paymentMethodType
-        
-        let paymentMethodAsset = try? PrimerHeadlessUniversalCheckout.AssetsManager.getPaymentMethodAsset(for: paymentMethod.paymentMethodType)
-        
-        let paymentMethodButton = UIButton()
-        buttonContainerView.addSubview(paymentMethodButton)
-        
-        paymentMethodButton.accessibilityIdentifier = paymentMethod.paymentMethodType
-        paymentMethodButton.clipsToBounds = true
-        paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 12,
-                                                           left: 16,
-                                                           bottom: 12,
-                                                           right: 16)
-        paymentMethodButton.contentMode = .scaleAspectFit
-        paymentMethodButton.imageView?.contentMode = .scaleAspectFit
-        paymentMethodButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
-        paymentMethodButton.layer.cornerRadius = 4
-        
-        paymentMethodButton.backgroundColor = paymentMethodAsset?.paymentMethodBackgroundColor.colored ?? paymentMethodAsset?.paymentMethodBackgroundColor.light
-        paymentMethodButton.setImage(paymentMethodAsset?.paymentMethodLogo.colored ?? paymentMethodAsset?.paymentMethodLogo.light, for: .normal)
-        paymentMethodButton.setTitleColor(.black, for: .normal)
-
-        paymentMethodButton.translatesAutoresizingMaskIntoConstraints = false
-        paymentMethodButton.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        paymentMethodButton.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        paymentMethodButton.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        paymentMethodButton.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        if let paymentMethodAsset = try? PrimerHeadlessUniversalCheckout.AssetsManager.getPaymentMethodAsset(for: paymentMethod.paymentMethodType) {
+            
+            self.stackView.backgroundColor = (paymentMethodAsset.paymentMethodBackgroundColor.colored ?? paymentMethodAsset.paymentMethodBackgroundColor.light) ?? paymentMethodAsset.paymentMethodBackgroundColor.dark
+            
+            if let logoImage = (paymentMethodAsset.paymentMethodLogo.colored ?? paymentMethodAsset.paymentMethodLogo.light) ?? paymentMethodAsset.paymentMethodLogo.dark {
+                self.paymentMethodLogoView.isHidden = false
+                self.paymentMethodLabel.isHidden = true
+                self.paymentMethodLogoView.image = logoImage
+                
+            } else {
+                self.paymentMethodLogoView.isHidden = true
+                self.paymentMethodLabel.isHidden = false
+                self.paymentMethodLabel.text = "Failed to find logo for \(paymentMethod.paymentMethodType)"
+            }
+            
+        } else {
+            self.paymentMethodLogoView.isHidden = true
+            self.paymentMethodLabel.isHidden = false
+            self.paymentMethodLabel.text = "Failed to find payment method asset for \(paymentMethod.paymentMethodType)"
+        }
     }
 }
