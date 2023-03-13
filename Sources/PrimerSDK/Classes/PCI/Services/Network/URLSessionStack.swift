@@ -181,24 +181,22 @@ internal class URLSessionStack: NetworkService {
                 }
                 
 #if DEBUG
-                
                 if endpoint.shouldParseResponseBody {
-                    let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                    let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
-                    var jsonStr: String?
-                    if jsonData != nil {
-                        jsonStr = String(data: jsonData!, encoding: .utf8 )
-                    }
-                    
-                    msg += "\nBody:\n\(jsonStr ?? "Empty body")"
-                    
                     if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
                         primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                     } else {
+                        let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                        let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
+                        var jsonStr: String?
+                        if jsonData != nil {
+                            jsonStr = String(data: jsonData!, encoding: .utf8 )
+                        }
+                        
+                        msg += "\nBody:\n\(jsonStr ?? "Empty body")"
+                        
                         log(logLevel: .debug, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                     }
                 }
-                
 #endif
                 
                 if endpoint.shouldParseResponseBody == false, httpResponse?.statusCode == 200 {
