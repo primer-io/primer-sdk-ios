@@ -923,7 +923,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QJ8-WE-cU8">
                                 <rect key="frame" x="20" y="744" width="374" height="45"/>
                                 <color key="backgroundColor" systemColor="labelColor"/>
-                                <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Primer SDK Button"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="45" id="iJd-a8-l4a"/>
                                 </constraints>
@@ -937,7 +937,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0FS-cB-H3t">
                                 <rect key="frame" x="20" y="797" width="374" height="45"/>
                                 <color key="backgroundColor" systemColor="labelColor"/>
-                                <accessibility key="accessibilityConfiguration" identifier="initialize_primer_sdk"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Primer Headless SDK Button"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="45" id="WWY-2r-9EB"/>
                                 </constraints>
@@ -1167,30 +1167,35 @@
                                             <rect key="frame" x="0.0" y="0.0" width="374" height="89"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Da7-sC-pmD">
-                                                    <rect key="frame" x="28" y="15" width="41.5" height="59"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jha-ky-KlR">
-                                                    <rect key="frame" x="77.5" y="4" width="288.5" height="81"/>
-                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                </view>
+                                                <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PVq-th-HsD">
+                                                    <rect key="frame" x="20" y="8" width="334" height="73"/>
+                                                    <subviews>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="L8T-ne-1ca">
+                                                            <rect key="frame" x="0.0" y="0.0" width="292.5" height="73"/>
+                                                        </imageView>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ir2-Ws-Ayc">
+                                                            <rect key="frame" x="292.5" y="0.0" width="41.5" height="73"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="45" id="jRk-d1-s8a"/>
+                                                    </constraints>
+                                                </stackView>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="Jha-ky-KlR" firstAttribute="top" secondItem="gtQ-c4-psU" secondAttribute="top" constant="4" id="0ra-K4-tOf"/>
-                                                <constraint firstAttribute="trailing" secondItem="Jha-ky-KlR" secondAttribute="trailing" constant="8" id="0sR-ej-vIi"/>
-                                                <constraint firstItem="Da7-sC-pmD" firstAttribute="leading" secondItem="gtQ-c4-psU" secondAttribute="leadingMargin" constant="8" id="DXh-J5-MLb"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="Da7-sC-pmD" secondAttribute="bottom" constant="4" id="GE1-Jo-Tbt"/>
-                                                <constraint firstItem="Jha-ky-KlR" firstAttribute="leading" secondItem="Da7-sC-pmD" secondAttribute="trailing" constant="8" id="dpP-sl-gJw"/>
-                                                <constraint firstAttribute="bottom" secondItem="Jha-ky-KlR" secondAttribute="bottom" constant="4" id="fLJ-tE-MmR"/>
-                                                <constraint firstItem="Da7-sC-pmD" firstAttribute="top" secondItem="gtQ-c4-psU" secondAttribute="topMargin" constant="4" id="h3K-iN-yGO"/>
+                                                <constraint firstAttribute="trailing" secondItem="PVq-th-HsD" secondAttribute="trailing" constant="20" id="BI4-m8-6aY"/>
+                                                <constraint firstItem="PVq-th-HsD" firstAttribute="top" secondItem="gtQ-c4-psU" secondAttribute="top" constant="8" id="CYT-zF-IyK"/>
+                                                <constraint firstItem="PVq-th-HsD" firstAttribute="leading" secondItem="gtQ-c4-psU" secondAttribute="leading" constant="20" id="gVz-gx-MrS"/>
+                                                <constraint firstAttribute="bottom" secondItem="PVq-th-HsD" secondAttribute="bottom" constant="8" id="lfQ-mk-SDK"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="buttonContainerView" destination="Jha-ky-KlR" id="fMl-m0-Rri"/>
-                                            <outlet property="paymentMethodLabel" destination="Da7-sC-pmD" id="Cf0-og-Fis"/>
+                                            <outlet property="paymentMethodLabel" destination="ir2-Ws-Ayc" id="F0B-YH-peI"/>
+                                            <outlet property="paymentMethodLogoView" destination="L8T-ne-1ca" id="YGw-ca-Kqy"/>
+                                            <outlet property="stackView" destination="PVq-th-HsD" id="INk-QX-tNB"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>

@@ -89,6 +89,9 @@ class PrimerPaymentMethod: Codable {
         if implementationType == .webRedirect {
             return WebRedirectPaymentMethodTokenizationViewModel(config: self)
             
+        } else if implementationType == .iPay88Sdk {
+            return IPay88TokenizationViewModel(config: self)
+            
         } else if let internalPaymentMethodType = internalPaymentMethodType {
             switch internalPaymentMethodType {
             case PrimerPaymentMethodType.adyenBlik,
@@ -108,9 +111,6 @@ class PrimerPaymentMethod: Codable {
                 if #available(iOS 11.0, *) {
                     return ApplePayTokenizationViewModel(config: self)
                 }
-                
-            case PrimerPaymentMethodType.iPay88Card:
-                return IPay88TokenizationViewModel(config: self)
                 
             case PrimerPaymentMethodType.klarna:
                 return KlarnaTokenizationViewModel(config: self)
@@ -166,7 +166,7 @@ class PrimerPaymentMethod: Codable {
             return false
         }
         
-        if self.implementationType == .webRedirect {
+        if self.implementationType == .webRedirect || self.implementationType == .iPay88Sdk {
             return false
         }
         
@@ -198,7 +198,7 @@ class PrimerPaymentMethod: Codable {
     lazy var paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory]? = {
         var categories: [PrimerPaymentMethodManagerCategory] = []
         
-        if implementationType == .webRedirect {
+        if implementationType == .webRedirect || implementationType == .iPay88Sdk {
             categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
             return categories
         }
@@ -216,9 +216,6 @@ class PrimerPaymentMethod: Codable {
             categories.append(PrimerPaymentMethodManagerCategory.rawData)
             
         case .applePay:
-            categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
-            
-        case .iPay88Card:
             categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
             
         case .klarna:
@@ -322,8 +319,9 @@ extension PrimerPaymentMethod {
     
     public enum ImplementationType: String, Codable, CaseIterable, Equatable, Hashable {
         
-        case nativeSdk = "NATIVE_SDK"
-        case webRedirect = "WEB_REDIRECT"
+        case nativeSdk      = "NATIVE_SDK"
+        case webRedirect    = "WEB_REDIRECT"
+        case iPay88Sdk      = "IPAY88_SDK"
         
         var isEnabled: Bool {
             return true
