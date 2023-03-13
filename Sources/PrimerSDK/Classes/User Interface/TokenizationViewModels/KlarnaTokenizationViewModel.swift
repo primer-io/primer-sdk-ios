@@ -229,8 +229,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     seal.fulfill()
 #endif
                 } else {
-                    #if DEBUG
-                    
+#if DEBUG
                     firstly {
                         PrimerUIManager.prepareRootViewController()
                     }

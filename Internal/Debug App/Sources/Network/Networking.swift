@@ -107,64 +107,66 @@ class Networking {
         msg = ""
         
         URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
-            msg += "RESPONSE\n"
-            msg += "URL: \(request.url?.absoluteString ?? "Invalid")\n"
-            
-            if err != nil {
-                msg += "Error: \(err!)\n"
-                print(msg)
-                completion(.failure(err!))
-                return
-            }
-
-            guard let httpResponse = response as? HTTPURLResponse else {
-                msg += "Error: Invalid response\n"
-                print(msg)
-                completion(.failure(NetworkError.invalidResponse))
-                return
-            }
-
-            if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
-                msg += "Status code: \(httpResponse.statusCode)\n"
-                if let data = data, let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                    msg += "Body:\n\(resJson)\n"
-                }
-                print(msg)
-                completion(.failure(NetworkError.invalidResponse))
+            DispatchQueue.main.async {
+                msg += "RESPONSE\n"
+                msg += "URL: \(request.url?.absoluteString ?? "Invalid")\n"
                 
+                if err != nil {
+                    msg += "Error: \(err!)\n"
+                    print(msg)
+                    completion(.failure(err!))
+                    return
+                }
+
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    msg += "Error: Invalid response\n"
+                    print(msg)
+                    completion(.failure(NetworkError.invalidResponse))
+                    return
+                }
+
+                if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
+                    msg += "Status code: \(httpResponse.statusCode)\n"
+                    if let data = data, let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
+                        msg += "Body:\n\(resJson)\n"
+                    }
+                    print(msg)
+                    completion(.failure(NetworkError.invalidResponse))
+                    
+                    guard let data = data else {
+                        print("No data")
+                        completion(.failure(NetworkError.invalidResponse))
+                        return
+                    }
+                    
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                        print("Response body: \(json)")
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                    return
+                }
+
                 guard let data = data else {
-                    print("No data")
+                    msg += "Status code: \(httpResponse.statusCode)\n"
+                    msg += "Body:\nNo data\n"
+                    print(msg)
                     completion(.failure(NetworkError.invalidResponse))
                     return
                 }
                 
-                do {
-                    let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                    print("Response body: \(json)")
-                } catch {
-                    print("Error: \(error)")
-                }
-                return
-            }
-
-            guard let data = data else {
                 msg += "Status code: \(httpResponse.statusCode)\n"
-                msg += "Body:\nNo data\n"
+                if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
+                    msg += "Body:\n\(resJson)\n"
+                } else {
+                    msg += "Body (String): \(String(describing: String(data: data, encoding: .utf8)))"
+                }
+                
                 print(msg)
-                completion(.failure(NetworkError.invalidResponse))
-                return
-            }
-            
-            msg += "Status code: \(httpResponse.statusCode)\n"
-            if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                msg += "Body:\n\(resJson)\n"
-            } else {
-                msg += "Body (String): \(String(describing: String(data: data, encoding: .utf8)))"
-            }
-            
-            print(msg)
 
-            completion(.success(data))
+                completion(.success(data))
+            }
         }).resume()
     }
     
