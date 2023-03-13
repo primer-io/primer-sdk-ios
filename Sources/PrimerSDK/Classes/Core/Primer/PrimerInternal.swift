@@ -69,7 +69,11 @@ internal class PrimerInternal {
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         if let urlScheme = settings.paymentMethodOptions.urlScheme, url.absoluteString.contains(urlScheme) {
-            NotificationCenter.default.post(name: Notification.Name.urlSchemeRedirect, object: nil)
+            if url.absoluteString.contains("/cancel") {
+                NotificationCenter.default.post(name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
+            } else {
+                NotificationCenter.default.post(name: Notification.Name.receivedUrlSchemeRedirect, object: nil)
+            }
             return true
         }
         
