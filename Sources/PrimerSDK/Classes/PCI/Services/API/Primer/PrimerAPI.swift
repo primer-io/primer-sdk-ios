@@ -66,7 +66,7 @@ enum PrimerAPI: Endpoint, Equatable {
     // Generic
     case poll(clientToken: DecodedJWTToken?, url: String)
     
-    case sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: Analytics.Service.Request?)
+    case sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?)
     
     case fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo)
 
