@@ -115,7 +115,7 @@ extension Response.Body {
             }
 #endif
             
-#if !canImport(PrimerIPay88SDK)
+#if !canImport(PrimerIPay88MYSDK)
             if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
                 viewModels.remove(at: iPay88ViewModelIndex)
                 print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.\n\n")

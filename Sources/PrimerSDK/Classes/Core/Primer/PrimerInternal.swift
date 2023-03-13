@@ -59,16 +59,25 @@ internal class PrimerInternal {
     }
     
     internal func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+#if canImport(Primer3DS)
+        let is3DSHandled = Primer3DS.application(app, open: url, options: options)
+        
+        if is3DSHandled {
+            return true
+        }
+#endif
+        
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        if url.absoluteString == settings.paymentMethodOptions.urlScheme {
-            NotificationCenter.default.post(name: Notification.Name.urlSchemeRedirect, object: nil)
+        if let urlScheme = settings.paymentMethodOptions.urlScheme, url.absoluteString.contains(urlScheme) {
+            if url.absoluteString.contains("/cancel") {
+                NotificationCenter.default.post(name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
+            } else {
+                NotificationCenter.default.post(name: Notification.Name.receivedUrlSchemeRedirect, object: nil)
+            }
+            return true
         }
         
-#if canImport(Primer3DS)
-        return Primer3DS.application(app, open: url, options: options)
-#else
         return false
-#endif
     }
     
     internal func application(_ application: UIApplication,

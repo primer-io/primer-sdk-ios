@@ -11,7 +11,7 @@ import UIKit
 
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
-var performPaymentAfterVaulting: Bool = true
+var performPaymentAfterVaulting: Bool = false
 
 class MerchantSessionAndSettingsViewController: UIViewController {
     
@@ -130,7 +130,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var clientSession = ClientSessionRequestBody(
         customerId: "ios-customer-\(String.randomString(length: 8))",
         orderId: "ios-order-\(String.randomString(length: 8))",
-        currencyCode: .EUR,
+        currencyCode: .MYR,
         amount: nil,
         metadata: nil,
         customer: ClientSessionRequestBody.Customer(
@@ -158,7 +158,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 postalCode: "EC53 8BT")
         ),
         order: ClientSessionRequestBody.Order(
-            countryCode: .de,
+            countryCode: .my,
             lineItems: [
                 ClientSessionRequestBody.Order.LineItem(
                     itemId: "fancy-shoes-\(String.randomString(length: 4))",
@@ -240,7 +240,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         self.view.accessibilityIdentifier = "Background View"
         self.testingModeSegmentedControl.accessibilityIdentifier = "Testing Mode Segmented Control"
         self.clientTokenTextField.accessibilityIdentifier = "Client Token Text Field"
-        self.primerSDKButton.accessibilityIdentifier = "Primer SDK Button"
     }
     
     
@@ -273,6 +272,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         default:
             environmentSegmentedControl.selectedSegmentIndex = 0
         }
+        
+        self.apiKeyTextField.text = customDefinedApiKey
         
         let viewTap = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
         view.addGestureRecognizer(viewTap)

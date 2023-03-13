@@ -134,8 +134,6 @@ extension Analytics {
                 var isFinishedSyncingAllAnalyticsUrls: [Bool] = analyticsUrls.compactMap({ _ in false })
                 
                 if !sdkLogEvents.isEmpty, let sdkLogEventsURL = URL(string: "https://analytics.production.data.primer.io/sdk-logs") {
-                    let sdkLogEventsRequestBody = Analytics.Service.Request(data: sdkLogEvents)
-                    
                     primerLogAnalytics(
                         title: "ANALYTICS",
                         message: "📚 Syncing \(sdkLogEvents.count) events on URL: \(sdkLogEventsURL.absoluteString)",
@@ -146,7 +144,7 @@ extension Analytics {
                         line: #line)
                     
                     let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
-                    apiClient.sendAnalyticsEvents(clientToken: nil, url: sdkLogEventsURL, body: sdkLogEventsRequestBody) { result in
+                    apiClient.sendAnalyticsEvents(clientToken: nil, url: sdkLogEventsURL, body: sdkLogEvents) { result in
                         Analytics.Event.omitLocalParametersEncoding = false
                         isFinishedSyncingSdkLogEvents = true
                         
@@ -206,8 +204,6 @@ extension Analytics {
                     let analyticsEvents = storedEvents.filter({ $0.analyticsUrl == analyticsUrl.absoluteString })
                     
                     if !analyticsEvents.isEmpty, let decodedJWTToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken {
-                        let analyticsEventsRequestBody = Analytics.Service.Request(data: analyticsEvents)
-                        
                         primerLogAnalytics(
                             title: "ANALYTICS",
                             message: "📚 Syncing \(analyticsEvents.count) events on URL: \(analyticsUrl.absoluteString)",
@@ -218,7 +214,7 @@ extension Analytics {
                             line: #line)
                         
                         let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
-                        apiClient.sendAnalyticsEvents(clientToken: decodedJWTToken, url: analyticsUrl, body: analyticsEventsRequestBody) { result in
+                        apiClient.sendAnalyticsEvents(clientToken: decodedJWTToken, url: analyticsUrl, body: analyticsEvents) { result in
                             Analytics.Event.omitLocalParametersEncoding = false
                             isFinishedSyncingAllAnalyticsUrls[index] = true
                             
@@ -275,10 +271,6 @@ extension Analytics {
                     }
                 }
             }
-        }
-        
-        struct Request: Encodable {
-            let data: [Analytics.Event]
         }
         
         struct Response: Decodable {
