@@ -191,31 +191,40 @@ internal class PrimerUIManager {
     static func dismissPrimerUI(animated flag: Bool, completion: (() -> Void)? = nil) {
         DispatchQueue.main.async {
             guard let primerRootViewController = PrimerUIManager.primerRootViewController else {
-                PrimerUIManager.primerWindow?.isHidden = true
-                if #available(iOS 13, *) {
-                    PrimerUIManager.primerWindow?.windowScene = nil
-                }
-                PrimerUIManager.primerWindow?.rootViewController = nil
-                PrimerUIManager.primerRootViewController = nil
-                PrimerUIManager.primerWindow?.resignKey()
-                PrimerUIManager.primerWindow = nil
+                PrimerUIManager.dismissPrimerWindow(completion: completion)
                 completion?()
                 return
             }
             
-            primerRootViewController.dismissPrimerRootViewController(animated: flag) {
-                DispatchQueue.main.async {
-                    PrimerUIManager.primerWindow?.isHidden = true
-                    if #available(iOS 13, *) {
-                        PrimerUIManager.primerWindow?.windowScene = nil
+            if #available(iOS 16.1, *) {
+                primerRootViewController.dismissPrimerRootViewController(animated: flag) {
+                    PrimerUIManager.dismissPrimerWindow(completion: completion)
+                }
+            } else if #available(iOS 16.0, *) {
+                Timer.scheduledTimer(withTimeInterval: 0.8, repeats: false) { _ in
+                    primerRootViewController.dismissPrimerRootViewController(animated: flag) {
+                        PrimerUIManager.dismissPrimerWindow(completion: completion)
                     }
-                    
-                    PrimerUIManager.primerWindow?.resignKey()
-                    PrimerUIManager.primerWindow = nil
-                    PrimerUIManager.primerRootViewController = nil
-                    completion?()
+                }
+            } else {
+                primerRootViewController.dismissPrimerRootViewController(animated: flag) {
+                    PrimerUIManager.dismissPrimerWindow(completion: completion)
                 }
             }
+        }
+    }
+    
+    static func dismissPrimerWindow(completion: (() -> Void)? = nil) {
+        DispatchQueue.main.async {
+            PrimerUIManager.primerWindow?.isHidden = true
+            if #available(iOS 13, *) {
+                PrimerUIManager.primerWindow?.windowScene = nil
+            }
+            
+            PrimerUIManager.primerWindow?.resignKey()
+            PrimerUIManager.primerWindow = nil
+            PrimerUIManager.primerRootViewController = nil
+            completion?()
         }
     }
     
