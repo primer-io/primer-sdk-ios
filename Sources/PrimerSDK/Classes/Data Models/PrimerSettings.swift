@@ -17,7 +17,7 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         return settings as! PrimerSettings
     }
     
-    let paymentHandling: PrimerPaymentHandling
+    public let paymentHandling: PrimerPaymentHandling
     let localeData: PrimerLocaleData
     let paymentMethodOptions: PrimerPaymentMethodOptions
     let uiOptions: PrimerUIOptions
