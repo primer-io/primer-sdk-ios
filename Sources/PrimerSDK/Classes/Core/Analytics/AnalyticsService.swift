@@ -38,27 +38,6 @@ extension Analytics {
             }
         }
         
-        private static func loadEvents() -> [Event] {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: "📚 Loading events",
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
-                function: #function,
-                line: #line)
-            
-            do {
-                let eventsData = try Data(contentsOf: Analytics.Service.filepath)
-                let events = try JSONDecoder().decode([Analytics.Event].self, from: eventsData)
-                return events.sorted(by: { $0.createdAt > $1.createdAt })
-                
-            } catch {
-                Analytics.Service.deleteAnalyticsFile()
-                return []
-            }
-        }
-        
         internal static func record(event: Analytics.Event) {
             Analytics.Service.record(events: [event])
         }
@@ -69,7 +48,8 @@ extension Analytics {
                 message: "📚 Recording \(events.count) events",
                 prefix: "📚",
                 bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
+                file: #file,
+                className: "\(Self.self)",
                 function: #function,
                 line: #line)
             
@@ -78,83 +58,6 @@ extension Analytics {
                 tmpEvents.append(contentsOf: events)
                 let sortedEvents = tmpEvents.sorted(by: { $0.createdAt < $1.createdAt })
                 Analytics.Service.save(events: sortedEvents)
-            }
-        }
-        
-        private static func save(events: [Analytics.Event]) {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: "📚 Saving \(events.count) events",
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
-                function: #function,
-                line: #line)
-                        
-            do {
-                let eventsData = try JSONEncoder().encode(events)
-                try eventsData.write(to: Analytics.Service.filepath)
-            } catch {
-                let event = Analytics.Event(
-                    eventType: .message,
-                    properties: MessageEventProperties(
-                        message: "Failed to delete analytics file at \(Analytics.Service.filepath.absoluteString)",
-                        messageType: .error,
-                        severity: .error))
-                Analytics.Service.record(event: event)
-            }
-        }
-        
-        private static func deleteEvents(_ events: [Analytics.Event]? = nil) throws {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: "📚 Deleting \(events == nil ? "all" : "\(events!.count)") events",
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
-                function: #function,
-                line: #line)
-            
-            if let events = events {
-                let storedEvents = Analytics.Service.loadEvents()
-                let eventsLocalIds = events.compactMap({ $0.localId ?? "" })
-                
-                let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId ?? "")} )
-                Analytics.Service.save(events: remainingEvents)
-
-            } else {
-                Analytics.Service.deleteAnalyticsFile()
-            }
-        }
-        
-        private static func deleteAnalyticsFile() {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: "📚 Deleting analytics file at \(Analytics.Service.filepath.absoluteString)",
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
-                function: #function,
-                line: #line)
-            
-            do {
-                try FileManager.default.removeItem(at: Analytics.Service.filepath)
-                let event = Analytics.Event(
-                    eventType: .message,
-                    properties: MessageEventProperties(
-                        message: "Successfully deleted analytics file at \(Analytics.Service.filepath.absoluteString)",
-                        messageType: .other,
-                        severity: .info))
-                Analytics.Service.record(event: event)
-                
-            } catch {
-                let event = Analytics.Event(
-                    eventType: .message,
-                    properties: MessageEventProperties(
-                        message: "Failed to delete analytics file at \(Analytics.Service.filepath.absoluteString)",
-                        messageType: .error,
-                        severity: .error))
-                Analytics.Service.record(event: event)
             }
         }
         
@@ -314,6 +217,105 @@ extension Analytics {
                         }
                     }
                 }
+            }
+        }
+        
+        private static func loadEvents() -> [Event] {
+            primerLogAnalytics(
+                title: "ANALYTICS",
+                message: "📚 Loading events",
+                prefix: "📚",
+                bundle: Bundle.primerFrameworkIdentifier,
+                file: #file, className: "\(Self.self)",
+                function: #function,
+                line: #line)
+            
+            do {
+                let eventsData = try Data(contentsOf: Analytics.Service.filepath)
+                let events = try JSONDecoder().decode([Analytics.Event].self, from: eventsData)
+                return events.sorted(by: { $0.createdAt > $1.createdAt })
+                
+            } catch {
+                Analytics.Service.deleteAnalyticsFile()
+                return []
+            }
+        }
+        
+        private static func save(events: [Analytics.Event]) {
+            primerLogAnalytics(
+                title: "ANALYTICS",
+                message: "📚 Saving \(events.count) events",
+                prefix: "📚",
+                bundle: Bundle.primerFrameworkIdentifier,
+                file: #file,
+                className: "\(Self.self)",
+                function: #function,
+                line: #line)
+                        
+            do {
+                let eventsData = try JSONEncoder().encode(events)
+                try eventsData.write(to: Analytics.Service.filepath)
+            } catch {
+                let event = Analytics.Event(
+                    eventType: .message,
+                    properties: MessageEventProperties(
+                        message: "Failed to delete analytics file at \(Analytics.Service.filepath.absoluteString)",
+                        messageType: .error,
+                        severity: .error))
+                Analytics.Service.record(event: event)
+            }
+        }
+        
+        private static func deleteEvents(_ events: [Analytics.Event]? = nil) throws {
+            primerLogAnalytics(
+                title: "ANALYTICS",
+                message: "📚 Deleting \(events == nil ? "all" : "\(events!.count)") events",
+                prefix: "📚",
+                bundle: Bundle.primerFrameworkIdentifier,
+                file: #file, className: "\(Self.self)",
+                function: #function,
+                line: #line)
+            
+            if let events = events {
+                let storedEvents = Analytics.Service.loadEvents()
+                let eventsLocalIds = events.compactMap({ $0.localId ?? "" })
+                
+                let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId ?? "")} )
+                Analytics.Service.save(events: remainingEvents)
+
+            } else {
+                Analytics.Service.deleteAnalyticsFile()
+            }
+        }
+        
+        private static func deleteAnalyticsFile() {
+            primerLogAnalytics(
+                title: "ANALYTICS",
+                message: "📚 Deleting analytics file at \(Analytics.Service.filepath.absoluteString)",
+                prefix: "📚",
+                bundle: Bundle.primerFrameworkIdentifier,
+                file: #file, className: "\(Self.self)",
+                function: #function,
+                line: #line)
+            
+            do {
+                try FileManager.default.removeItem(at: Analytics.Service.filepath)
+                let event = Analytics.Event(
+                    eventType: .message,
+                    properties: MessageEventProperties(
+                        message: "Successfully deleted analytics file at \(Analytics.Service.filepath.absoluteString)",
+                        messageType: .other,
+                        severity: .info))
+                Analytics.Service.record(event: event)
+                
+            } catch {
+                let event = Analytics.Event(
+                    eventType: .message,
+                    properties: MessageEventProperties(
+                        message: "Failed to delete analytics file at \(Analytics.Service.filepath.absoluteString)",
+                        messageType: .error,
+                        severity: .error))
+                Analytics.Service.record(event: event)
             }
         }
         
