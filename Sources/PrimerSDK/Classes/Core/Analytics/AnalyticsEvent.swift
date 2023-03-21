@@ -66,6 +66,7 @@ extension Analytics.Event {
         }
         
         enum MessageType: String, Codable {
+            case analytics                          = "ANALYTICS"
             case error                              = "ERROR"
             case missingValue                       = "MISSING_VALUE"
             case paymentMethodImageLoadingFailed    = "PM_IMAGE_LOADING_FAILED"
