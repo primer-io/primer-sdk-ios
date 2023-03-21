@@ -90,9 +90,7 @@ extension Analytics {
                 file: #file, className: "\(Self.self)",
                 function: #function,
                 line: #line)
-            
-            Analytics.Event.omitLocalParametersEncoding = false
-            
+                        
             do {
                 let eventsData = try JSONEncoder().encode(events)
                 try eventsData.write(to: Analytics.Service.filepath)
@@ -160,7 +158,7 @@ extension Analytics {
             }
         }
         
-        internal static func sync(batchSize: UInt = 100) {
+        internal static func sync(batchSize: UInt = 500) {
             Analytics.queue.async {
                 primerLogAnalytics(
                     title: "ANALYTICS",
@@ -193,7 +191,6 @@ extension Analytics {
                     
                     let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
                     apiClient.sendAnalyticsEvents(clientToken: nil, url: sdkLogEventsURL, body: sdkLogEvents) { result in
-                        Analytics.Event.omitLocalParametersEncoding = false
                         isFinishedSyncingSdkLogEvents = true
                         
                         switch result {
@@ -263,7 +260,6 @@ extension Analytics {
                         
                         let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
                         apiClient.sendAnalyticsEvents(clientToken: decodedJWTToken, url: analyticsUrl, body: analyticsEvents) { result in
-                            Analytics.Event.omitLocalParametersEncoding = false
                             isFinishedSyncingAllAnalyticsUrls[index] = true
                             
                             switch result {
