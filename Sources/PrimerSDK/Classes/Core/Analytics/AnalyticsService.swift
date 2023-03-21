@@ -62,16 +62,16 @@ extension Analytics {
         }
         
         internal static func sync(batchSize: UInt = 500) {
+            primerLogAnalytics(
+                title: "ANALYTICS",
+                message: "📚 Syncing...",
+                prefix: "📚",
+                bundle: Bundle.primerFrameworkIdentifier,
+                file: #file, className: "\(Self.self)",
+                function: #function,
+                line: #line)
+            
             Analytics.queue.async {
-                primerLogAnalytics(
-                    title: "ANALYTICS",
-                    message: "📚 Syncing...",
-                    prefix: "📚",
-                    bundle: Bundle.primerFrameworkIdentifier,
-                    file: #file, className: "\(Self.self)",
-                    function: #function,
-                    line: #line)
-                
                 var storedEvents = Analytics.Service.loadEvents()
                 if storedEvents.count > batchSize {
                     storedEvents = Array(storedEvents[0..<Int(batchSize)])
