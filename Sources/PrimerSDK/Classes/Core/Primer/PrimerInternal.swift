@@ -48,14 +48,6 @@ internal class PrimerInternal {
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
-        
-#if DEBUG
-        do {
-            try Analytics.Service.deleteEvents()
-        } catch {
-            fatalError(error.localizedDescription)
-        }
-#endif
     }
     
     internal func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
