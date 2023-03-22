@@ -291,6 +291,7 @@ enum PollingStatus: String, Codable {
 }
 
 struct PollingResponse: Decodable {
+    
     let status: PollingStatus
     let id: String
     let source: String
@@ -301,6 +302,18 @@ struct PollingResponse: Decodable {
         case id
         case source
         case urls
+    }
+    
+    init(
+        status: PollingStatus,
+        id: String,
+        source: String,
+        urls: PollingURLs
+    ) {
+        self.status = status
+        self.id = id
+        self.source = source
+        self.urls = urls
     }
     
     init(from decoder: Decoder) throws {
