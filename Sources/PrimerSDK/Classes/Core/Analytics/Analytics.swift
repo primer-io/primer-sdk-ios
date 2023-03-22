@@ -14,11 +14,15 @@ class Analytics {
     static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics")
     static var apiClient: PrimerAPIClientProtocol?
     
-    struct Event: Codable {
+    struct Event: Codable, Equatable {
+        
+        static func == (lhs: Analytics.Event, rhs: Analytics.Event) -> Bool {
+            return lhs.localId == rhs.localId
+        }
                 
         // The variables below are used locally, and are getting deleted before sending them.
         var analyticsUrl: String?
-        var localId: String?
+        var localId: String
         
         var appIdentifier: String? = Bundle.main.bundleIdentifier
         var checkoutSessionId: String?
@@ -113,7 +117,7 @@ class Analytics {
             self.customerId = (try container.decode(String?.self, forKey: .customerId)) ?? nil
             self.device = try container.decode(Device.self, forKey: .device)
             self.eventType = try container.decode(Analytics.Event.EventType.self, forKey: .eventType)
-            self.localId = (try? container.decode(String?.self, forKey: .localId)) ?? nil
+            self.localId = try container.decode(String.self, forKey: .localId)
             self.primerAccountId = (try? container.decode(String?.self, forKey: .primerAccountId)) ?? nil
             self.sdkSessionId = try container.decode(String.self, forKey: .sdkSessionId)
             self.sdkType = try container.decode(String.self, forKey: .sdkType)
