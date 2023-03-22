@@ -25,6 +25,9 @@ extension Analytics {
             return url
         }()
         
+        static let sdkLogsUrl = URL(string: "https://analytics.production.data.primer.io/sdk-logs")!
+        static var eventsToRemove: [Analytics.Event] = []
+        
         static var lastSyncAt: Date? {
             get {
                 guard let lastSyncAtStr = UserDefaults.primerFramework.string(forKey: "primer.analytics.lastSyncAt") else { return nil }
@@ -38,284 +41,416 @@ extension Analytics {
             }
         }
         
-        internal static func record(event: Analytics.Event) {
+        @discardableResult
+        internal static func record(event: Analytics.Event) -> Promise<Void> {
             Analytics.Service.record(events: [event])
         }
         
-        internal static func record(events: [Analytics.Event]) {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: "📚 Recording \(events.count) events",
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file,
-                className: "\(Self.self)",
-                function: #function,
-                line: #line)
-            
-            Analytics.queue.async {
-                var tmpEvents = Analytics.Service.loadEvents()
-                tmpEvents.append(contentsOf: events)
-                let sortedEvents = tmpEvents.sorted(by: { $0.createdAt < $1.createdAt })
-                Analytics.Service.save(events: sortedEvents)
+        @discardableResult
+        internal static func record(events: [Analytics.Event]) -> Promise<Void> {
+            return Promise { seal in
+                Analytics.queue.async {
+                    primerLogAnalytics(
+                        title: "ANALYTICS",
+                        message: "📚 Recording \(events.count) events",
+                        prefix: "📚",
+                        bundle: Bundle.primerFrameworkIdentifier,
+                        file: #file,
+                        className: "\(Self.self)",
+                        function: #function,
+                        line: #line)
+                    
+                    
+                    firstly {
+                        Analytics.Service.loadEvents()
+                    }
+                    .then { storedEvents -> Promise<Void> in
+                        var combinedEvents: [Analytics.Event] = storedEvents
+                        combinedEvents.append(contentsOf: events)
+                        let sortedEvents: [Analytics.Event] = combinedEvents.sorted(by: { $0.createdAt < $1.createdAt })
+                        return Analytics.Service.save(events: sortedEvents)
+                    }
+                    .done {
+                        seal.fulfill()
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                }
             }
         }
         
-        internal static func sync(batchSize: UInt = 500) {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: "📚 Syncing...",
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
-                function: #function,
-                line: #line)
-            
-            Analytics.queue.async {
-                var storedEvents = Analytics.Service.loadEvents()
-                if storedEvents.count > batchSize {
-                    storedEvents = Array(storedEvents[0..<Int(batchSize)])
-                }
-                
-                let sdkLogEvents = storedEvents.filter({ $0.analyticsUrl == nil })
-                let analyticsUrls = storedEvents.compactMap({ $0.analyticsUrl }).compactMap({ URL(string: $0) }).unique
-                var isFinishedSyncingSdkLogEvents = false
-                var isFinishedSyncingAllAnalyticsUrls: [Bool] = analyticsUrls.compactMap({ _ in false })
-                
-                if !sdkLogEvents.isEmpty, let sdkLogEventsURL = URL(string: "https://analytics.production.data.primer.io/sdk-logs") {
+        @discardableResult
+        internal static func sync(batchSize: UInt = 300) -> Promise<Void> {
+            return Promise { seal in
+                Analytics.queue.async {
                     primerLogAnalytics(
                         title: "ANALYTICS",
-                        message: "📚 Syncing \(sdkLogEvents.count) events on URL: \(sdkLogEventsURL.absoluteString)",
+                        message: "📚 Syncing...",
                         prefix: "📚",
                         bundle: Bundle.primerFrameworkIdentifier,
                         file: #file, className: "\(Self.self)",
                         function: #function,
                         line: #line)
                     
-                    let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
-                    apiClient.sendAnalyticsEvents(clientToken: nil, url: sdkLogEventsURL, body: sdkLogEvents) { result in
-                        isFinishedSyncingSdkLogEvents = true
-                        
-                        switch result {
-                        case .success:
-                            primerLogAnalytics(
-                                title: "ANALYTICS",
-                                message: "📚 Finished syncing \(sdkLogEvents.count) events on URL: \(sdkLogEventsURL.absoluteString)",
-                                prefix: "📚",
-                                bundle: Bundle.primerFrameworkIdentifier,
-                                file: #file, className: "\(Self.self)",
-                                function: #function,
-                                line: #line)
-                            
-                            do {
-                                try Analytics.Service.deleteEvents(sdkLogEvents)
-                            } catch {
-                                ErrorHandler.handle(error: error)
-                                return
-                            }
-                            
-                            self.lastSyncAt = Date()
-                            
-                            if isFinishedSyncingSdkLogEvents &&
-                                (isFinishedSyncingAllAnalyticsUrls.filter({ $0 == false }).count == 0)
-                            {
-                                let remainingEvents = Analytics.Service.loadEvents()
-                                    .filter({ $0.eventType != Analytics.Event.EventType.networkCall && $0.eventType != Analytics.Event.EventType.networkConnectivity })
-                                if !remainingEvents.isEmpty {
-                                    primerLogAnalytics(
-                                        title: "ANALYTICS",
-                                        message: "📚 \(remainingEvents.count) events remain",
-                                        prefix: "📚",
-                                        bundle: Bundle.primerFrameworkIdentifier,
-                                        file: #file, className: "\(Self.self)",
-                                        function: #function,
-                                        line: #line)
-
-                                    Analytics.Service.sync()
-                                }
-                            }
-                            
-                        case .failure(let err):
-                            primerLogAnalytics(
-                                title: "ANALYTICS",
-                                message: "📚 Failed to sync \(sdkLogEvents.count) events on URL \(sdkLogEventsURL.absoluteString) with error \(err)",
-                                prefix: "📚",
-                                bundle: Bundle.primerFrameworkIdentifier,
-                                file: #file, className: "\(Self.self)",
-                                function: #function,
-                                line: #line)
-                        }
-                    }
-                }
-                
-                for (index, analyticsUrl) in analyticsUrls.enumerated() {
-                    let analyticsEvents = storedEvents.filter({ $0.analyticsUrl == analyticsUrl.absoluteString })
+                    let promises: [Promise<Void>] = [
+                        Analytics.Service.sendSkdLogEvents(batchSize: batchSize),
+                        Analytics.Service.sendSkdAnalyticsEvents(batchSize: batchSize)
+                    ]
                     
-                    if !analyticsEvents.isEmpty, let decodedJWTToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken {
+                    Analytics.Service.eventsToRemove = []
+                    
+                    firstly {
+                        when(fulfilled: promises)
+                    }
+                    .then { responses -> Promise<Void> in
                         primerLogAnalytics(
                             title: "ANALYTICS",
-                            message: "📚 Syncing \(analyticsEvents.count) events on URL: \(analyticsUrl.absoluteString)",
+                            message: "📚 All events synced",
                             prefix: "📚",
                             bundle: Bundle.primerFrameworkIdentifier,
                             file: #file, className: "\(Self.self)",
                             function: #function,
                             line: #line)
                         
-                        let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
-                        apiClient.sendAnalyticsEvents(clientToken: decodedJWTToken, url: analyticsUrl, body: analyticsEvents) { result in
-                            isFinishedSyncingAllAnalyticsUrls[index] = true
-                            
-                            switch result {
-                            case .success:
-                                primerLogAnalytics(
-                                    title: "ANALYTICS",
-                                    message: "📚 Finished syncing \(analyticsEvents.count) events on URL: \(analyticsUrl.absoluteString)",
-                                    prefix: "📚",
-                                    bundle: Bundle.primerFrameworkIdentifier,
-                                    file: #file, className: "\(Self.self)",
-                                    function: #function,
-                                    line: #line)
-                                
-                                do {
-                                    try Analytics.Service.deleteEvents(analyticsEvents)
-                                } catch {
-                                    ErrorHandler.handle(error: error)
-                                    return
-                                }
-                                
-                                self.lastSyncAt = Date()
-                                
-                                if isFinishedSyncingSdkLogEvents &&
-                                    (isFinishedSyncingAllAnalyticsUrls.filter({ $0 == false }).count == 0)
-                                {
-                                    let remainingEvents = Analytics.Service.loadEvents()
-                                        .filter({ $0.eventType != Analytics.Event.EventType.networkCall && $0.eventType != Analytics.Event.EventType.networkConnectivity })
-                                    if !remainingEvents.isEmpty {
-                                        primerLogAnalytics(
-                                            title: "ANALYTICS",
-                                            message: "📚 \(remainingEvents.count) events remain",
-                                            prefix: "📚",
-                                            bundle: Bundle.primerFrameworkIdentifier,
-                                            file: #file, className: "\(Self.self)",
-                                            function: #function,
-                                            line: #line)
-
-                                        Analytics.Service.sync()
-                                    }
-                                }
-                                
-                            case .failure(let err):
-                                primerLogAnalytics(
-                                    title: "ANALYTICS",
-                                    message: "📚 Failed to sync \(analyticsEvents.count) events on URL \(analyticsUrl.absoluteString) with error \(err)",
-                                    prefix: "📚",
-                                    bundle: Bundle.primerFrameworkIdentifier,
-                                    file: #file, className: "\(Self.self)",
-                                    function: #function,
-                                    line: #line)
+                        return Analytics.Service.deleteEvents(Analytics.Service.eventsToRemove)
+                    }
+                    .done {
+                        let remainingEvents = try? self.loadEventsLinear()
+                        
+                        primerLogAnalytics(
+                            title: "ANALYTICS",
+                            message: "📚 Deleted synced events. There're \((remainingEvents ?? []).count) events remaining in the queue.",
+                            prefix: "📚",
+                            bundle: Bundle.primerFrameworkIdentifier,
+                            file: #file, className: "\(Self.self)",
+                            function: #function,
+                            line: #line)
+                        
+                        seal.fulfill()
+                    }
+                    .catch { err in
+                        primerLogAnalytics(
+                            title: "ANALYTICS",
+                            message: "📚 Failed to sync events with error \(err.localizedDescription)",
+                            prefix: "📚",
+                            bundle: Bundle.primerFrameworkIdentifier,
+                            file: #file, className: "\(Self.self)",
+                            function: #function,
+                            line: #line)
+                        seal.reject(err)
+                    }
+                }
+            }
+        }
+        
+        private static func sendSkdLogEvents(batchSize: UInt) -> Promise<Void> {
+            return Promise { seal in
+                Analytics.queue.async {
+                    firstly {
+                        Analytics.Service.loadEvents()
+                    }
+                    .then { events -> Promise<Void> in
+                        let sdkLogEvents = events.filter({ $0.analyticsUrl == nil })
+                        let sdkLogEventsBatches = sdkLogEvents.toBatches(of: batchSize)
+                        
+                        var promises: [Promise<Void>] = []
+                        
+                        for sdkLogEventsBatch in sdkLogEventsBatches {
+                            let p = sendEvents(sdkLogEventsBatch, to: Analytics.Service.sdkLogsUrl)
+                            promises.append(p)
+                        }
+                        
+                        return when(fulfilled: promises)
+                    }
+                    .done {
+                        seal.fulfill()
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                }
+            }
+        }
+        
+        private static func sendSkdAnalyticsEvents(batchSize: UInt) -> Promise<Void> {
+            return Promise { seal in
+                Analytics.queue.async {
+                    firstly {
+                        Analytics.Service.loadEvents()
+                    }
+                    .then { events -> Promise<Void> in
+                        let analyticsEvents = events.filter({ $0.analyticsUrl != nil })
+                        let analyticsEventsBatches = analyticsEvents.toBatches(of: batchSize)
+                        
+                        var promises: [Promise<Void>] = []
+                        
+                        if let analyticsUrlStr = analyticsEvents.first(where: { $0.analyticsUrl != nil })?.analyticsUrl,
+                           let analyticsUrl = URL(string: analyticsUrlStr)
+                        {
+                            for analyticsEventsBatch in analyticsEventsBatches {
+                                let p = sendEvents(analyticsEventsBatch, to: analyticsUrl)
+                                promises.append(p)
                             }
+                            
+                            return when(fulfilled: promises)
+                        } else {
+                            return Promise()
+                        }
+                    }
+                    .done {
+                        seal.fulfill()
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+                }
+            }
+        }
+        
+        private static func sendEvents(
+            _ events: [Analytics.Event],
+            to url: URL
+        ) -> Promise<Void> {
+            return Promise { seal in
+                Analytics.queue.async {
+                    sendEvents(events, to: url) { err in
+                        if let err = err {
+                            seal.reject(err)
+                        } else {
+                            seal.fulfill()
                         }
                     }
                 }
             }
         }
         
-        private static func loadEvents() -> [Event] {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: "📚 Loading events",
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
-                function: #function,
-                line: #line)
-            
-            do {
-                let eventsData = try Data(contentsOf: Analytics.Service.filepath)
-                let events = try JSONDecoder().decode([Analytics.Event].self, from: eventsData)
-                return events.sorted(by: { $0.createdAt > $1.createdAt })
+        private static func sendEvents(
+            _ events: [Analytics.Event],
+            to url: URL,
+            completion: @escaping (Error?) -> Void
+        ) {
+            Analytics.queue.async {
+                if events.isEmpty {
+                    completion(nil)
+                    return
+                }
                 
-            } catch {
-                Analytics.Service.deleteAnalyticsFile()
-                return []
-            }
-        }
-        
-        private static func save(events: [Analytics.Event]) {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: "📚 Saving \(events.count) events",
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file,
-                className: "\(Self.self)",
-                function: #function,
-                line: #line)
+                if url.absoluteString != Analytics.Service.sdkLogsUrl.absoluteString, PrimerAPIConfigurationModule.clientToken?.decodedJWTToken == nil {
+                    // Sync another time
+                    completion(nil)
+                    return
+                }
+                
+                let decodedJWTToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken
+                
+                let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
+                apiClient.sendAnalyticsEvents(
+                    clientToken: decodedJWTToken,
+                    url: url,
+                    body: events
+                ) { result in
+                    switch result {
+                    case .success:
+                        primerLogAnalytics(
+                            title: "ANALYTICS",
+                            message: "📚 Finished syncing \(events.count) events on URL: \(url.absoluteString)",
+                            prefix: "📚",
+                            bundle: Bundle.primerFrameworkIdentifier,
+                            file: #file,
+                            className: "\(Self.self)",
+                            function: #function,
+                            line: #line)
                         
-            do {
-                let eventsData = try JSONEncoder().encode(events)
-                try eventsData.write(to: Analytics.Service.filepath)
-            } catch {
-                let event = Analytics.Event(
-                    eventType: .message,
-                    properties: MessageEventProperties(
-                        message: "Failed to delete analytics file at \(Analytics.Service.filepath.absoluteString)",
-                        messageType: .error,
-                        severity: .error))
-                Analytics.Service.record(event: event)
+                        self.lastSyncAt = Date()
+                        Analytics.Service.eventsToRemove.append(contentsOf: events)
+                        
+                        completion(nil)
+                        
+                    case .failure(let err):
+                        primerLogAnalytics(
+                            title: "ANALYTICS",
+                            message: "📚 Failed to sync \(events.count) events on URL \(url.absoluteString) with error \(err)",
+                            prefix: "📚",
+                            bundle: Bundle.primerFrameworkIdentifier,
+                            file: #file, className: "\(Self.self)",
+                            function: #function,
+                            line: #line)
+                        ErrorHandler.handle(error: err)
+                        completion(err)
+                    }
+                }
             }
         }
         
-        private static func deleteEvents(_ events: [Analytics.Event]? = nil) throws {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: "📚 Deleting \(events == nil ? "all" : "\(events!.count)") events",
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
-                function: #function,
-                line: #line)
-            
-            if let events = events {
-                let storedEvents = Analytics.Service.loadEvents()
-                let eventsLocalIds = events.compactMap({ $0.localId ?? "" })
-                
-                let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId ?? "")} )
-                Analytics.Service.save(events: remainingEvents)
-
-            } else {
-                Analytics.Service.deleteAnalyticsFile()
+        private static func loadEventsLinear() throws -> [Analytics.Event] {
+            let eventsData = try Data(contentsOf: Analytics.Service.filepath)
+            let events = try JSONDecoder().decode([Analytics.Event].self, from: eventsData)
+            let sortedEvents = events.sorted(by: { $0.createdAt > $1.createdAt })
+            return sortedEvents
+        }
+        
+        internal static func loadEvents() -> Promise<[Event]> {
+            return Promise { seal in
+                Analytics.queue.async {
+                    primerLogAnalytics(
+                        title: "ANALYTICS",
+                        message: "📚 Loading events",
+                        prefix: "📚",
+                        bundle: Bundle.primerFrameworkIdentifier,
+                        file: #file, className: "\(Self.self)",
+                        function: #function,
+                        line: #line)
+                    
+                    do {
+                        let events = try self.loadEventsLinear()
+                        seal.fulfill(events)
+                        
+                    } catch {
+                        firstly {
+                            Analytics.Service.deleteAnalyticsFile()
+                        }
+                        .done {
+                            seal.fulfill([])
+                        }
+                        .catch { err in
+                            seal.reject(err)
+                        }
+                    }
+                }
             }
         }
         
-        private static func deleteAnalyticsFile() {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: "📚 Deleting analytics file at \(Analytics.Service.filepath.absoluteString)",
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
-                function: #function,
-                line: #line)
-            
-            do {
-                try FileManager.default.removeItem(at: Analytics.Service.filepath)
-                let event = Analytics.Event(
-                    eventType: .message,
-                    properties: MessageEventProperties(
-                        message: "Successfully deleted analytics file at \(Analytics.Service.filepath.absoluteString)",
-                        messageType: .other,
-                        severity: .info))
-                Analytics.Service.record(event: event)
-                
-            } catch {
-                let event = Analytics.Event(
-                    eventType: .message,
-                    properties: MessageEventProperties(
-                        message: "Failed to delete analytics file at \(Analytics.Service.filepath.absoluteString)",
-                        messageType: .error,
-                        severity: .error))
-                Analytics.Service.record(event: event)
+        private static func save(events: [Analytics.Event]) -> Promise<Void> {
+            return Promise { seal in
+                Analytics.queue.async {
+                    primerLogAnalytics(
+                        title: "ANALYTICS",
+                        message: "📚 Saving \(events.count) events",
+                        prefix: "📚",
+                        bundle: Bundle.primerFrameworkIdentifier,
+                        file: #file,
+                        className: "\(Self.self)",
+                        function: #function,
+                        line: #line)
+                                
+                    do {
+                        let eventsData = try JSONEncoder().encode(events)
+                        try eventsData.write(to: Analytics.Service.filepath)
+                        seal.fulfill()
+                        
+                    } catch {
+                        let event = Analytics.Event(
+                            eventType: .message,
+                            properties: MessageEventProperties(
+                                message: "Failed to delete analytics file at \(Analytics.Service.filepath.absoluteString)",
+                                messageType: .error,
+                                severity: .error))
+                        
+                        firstly {
+                            Analytics.Service.record(event: event)
+                        }
+                        .done {
+                            seal.fulfill()
+                        }
+                        .catch { err in
+                            seal.reject(error)
+                        }
+                    }
+                }
+            }
+        }
+        
+        private static func deleteEvents(_ events: [Analytics.Event]? = nil) -> Promise<Void> {
+            return Promise { seal in
+                Analytics.queue.async {
+                    primerLogAnalytics(
+                        title: "ANALYTICS",
+                        message: "📚 Deleting \(events == nil ? "all" : "\(events!.count)") events",
+                        prefix: "📚",
+                        bundle: Bundle.primerFrameworkIdentifier,
+                        file: #file, className: "\(Self.self)",
+                        function: #function,
+                        line: #line)
+                    
+                    if let events = events {
+                        firstly {
+                            Analytics.Service.loadEvents()
+                        }
+                        .then { storedEvents -> Promise<Void> in
+                            let eventsLocalIds = events.compactMap({ $0.localId })
+                            let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId )} )
+                            return Analytics.Service.save(events: remainingEvents)
+                        }
+                        .done {
+                            seal.fulfill()
+                        }
+                        .catch { err in
+                            seal.reject(err)
+                        }
+                        
+                    } else {
+                        firstly {
+                            Analytics.Service.deleteAnalyticsFile()
+                        }
+                        .done {
+                            seal.fulfill()
+                        }
+                        .catch { err in
+                            seal.reject(err)
+                        }
+                    }
+                }
+            }
+        }
+        
+        internal static func deleteAnalyticsFile() -> Promise<Void> {
+            return Promise { seal in
+                Analytics.queue.async {
+                    primerLogAnalytics(
+                        title: "ANALYTICS",
+                        message: "📚 Deleting analytics file at \(Analytics.Service.filepath.absoluteString)",
+                        prefix: "📚",
+                        bundle: Bundle.primerFrameworkIdentifier,
+                        file: #file, className: "\(Self.self)",
+                        function: #function,
+                        line: #line)
+                    
+                    
+                    if #available(iOS 16.0, *) {
+                        if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
+                            do {
+                                try FileManager.default.removeItem(at: Analytics.Service.filepath)
+                                seal.fulfill()
+                            } catch {
+                                let err = PrimerError.underlyingErrors(
+                                    errors: [error],
+                                    userInfo: nil,
+                                    diagnosticsId: UUID().uuidString)
+                                ErrorHandler.handle(error: err)
+                                seal.reject(err)
+                            }
+                        } else {
+                            seal.fulfill()
+                        }
+                    } else {
+                        if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path) {
+                            do {
+                                try FileManager.default.removeItem(at: Analytics.Service.filepath)
+                                seal.fulfill()
+                            } catch {
+                                let err = PrimerError.underlyingErrors(
+                                    errors: [error],
+                                    userInfo: nil,
+                                    diagnosticsId: UUID().uuidString)
+                                ErrorHandler.handle(error: err)
+                                seal.reject(err)
+                            }
+                        } else {
+                            seal.fulfill()
+                        }
+                    }
+                }
             }
         }
         
@@ -323,7 +458,6 @@ extension Analytics {
             let id: String?
             let result: String?
         }
-        
     }
 }
 
