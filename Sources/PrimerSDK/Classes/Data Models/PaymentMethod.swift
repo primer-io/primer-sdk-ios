@@ -25,7 +25,7 @@ class PrimerPaymentMethod: Codable {
     let id: String? // Will be nil for cards
     let implementationType: PrimerPaymentMethod.ImplementationType
     let type: String
-    var name: String?
+    var name: String
     let processorConfigId: String?
     var surcharge: Int?
     let options: PaymentMethodOptions?
@@ -256,7 +256,7 @@ class PrimerPaymentMethod: Codable {
         id: String?,
         implementationType: PrimerPaymentMethod.ImplementationType,
         type: String,
-        name: String?,
+        name: String,
         processorConfigId: String?,
         surcharge: Int?,
         options: PaymentMethodOptions?,
@@ -278,7 +278,7 @@ class PrimerPaymentMethod: Codable {
         id = (try? container.decode(String?.self, forKey: .id)) ?? nil
         implementationType = try container.decode(PrimerPaymentMethod.ImplementationType.self, forKey: .implementationType)
         type = try container.decode(String.self, forKey: .type)
-        name = (try? container.decode(String?.self, forKey: .name)) ?? nil
+        name = try container.decode(String.self, forKey: .name)
         processorConfigId = (try? container.decode(String?.self, forKey: .processorConfigId)) ?? nil
         surcharge = (try? container.decode(Int?.self, forKey: .surcharge)) ?? nil
         displayMetadata = (try? container.decode(PrimerPaymentMethod.DisplayMetadata?.self, forKey: .displayMetadata)) ?? nil
