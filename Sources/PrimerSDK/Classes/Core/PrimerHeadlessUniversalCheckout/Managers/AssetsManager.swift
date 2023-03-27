@@ -56,6 +56,7 @@ extension PrimerHeadlessUniversalCheckout {
             
             return PrimerPaymentMethodAsset(
                 paymentMethodType: paymentMethodType,
+                paymentMethodName: paymentMethod.name,
                 paymentMethodLogo: paymentMethodLogo,
                 paymentMethodBackgroundColor: paymentMethodBackgroundColor)
         }
@@ -98,6 +99,7 @@ extension PrimerHeadlessUniversalCheckout {
                 
                 let paymentMethodAsset = PrimerPaymentMethodAsset(
                     paymentMethodType: paymentMethod.type,
+                    paymentMethodName: paymentMethod.name,
                     paymentMethodLogo: paymentMethodLogo,
                     paymentMethodBackgroundColor: paymentMethodBackgroundColor)
                 
@@ -112,11 +114,18 @@ extension PrimerHeadlessUniversalCheckout {
 public class PrimerPaymentMethodAsset {
     
     public let paymentMethodType: String
+    public let paymentMethodName: String
     public let paymentMethodLogo: PrimerPaymentMethodLogo
     public let paymentMethodBackgroundColor: PrimerPaymentMethodBackgroundColor
     
-    init(paymentMethodType: String, paymentMethodLogo: PrimerPaymentMethodLogo, paymentMethodBackgroundColor: PrimerPaymentMethodBackgroundColor) {
+    init(
+        paymentMethodType: String,
+        paymentMethodName: String,
+        paymentMethodLogo: PrimerPaymentMethodLogo,
+        paymentMethodBackgroundColor: PrimerPaymentMethodBackgroundColor
+    ) {
         self.paymentMethodType = paymentMethodType
+        self.paymentMethodName = paymentMethodName
         self.paymentMethodLogo = paymentMethodLogo
         self.paymentMethodBackgroundColor = paymentMethodBackgroundColor
     }
