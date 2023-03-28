@@ -121,7 +121,8 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
                 vaultOnSuccess: false,
                 options: isSurchargeIncluded ? [["surcharge": 99]] : nil),
             order: nil,
-            customer: nil)
+            customer: nil,
+            testId: nil)
         let apiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
             paymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
@@ -268,7 +269,8 @@ class DropInUI_TokenizationViewModelTests: XCTestCase {
                 vaultOnSuccess: false,
                 options: isSurchargeIncluded ? [["surcharge": 99]] : nil),
             order: nil,
-            customer: nil)
+            customer: nil,
+            testId: nil)
         let apiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
             paymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
