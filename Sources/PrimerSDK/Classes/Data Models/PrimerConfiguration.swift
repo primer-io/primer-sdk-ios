@@ -112,6 +112,14 @@ extension Response.Body {
             if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
                 viewModels.remove(at: klarnaViewModelIndex)
                 print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
+                
+                let event = Analytics.Event(
+                    eventType: .message,
+                    properties: MessageEventProperties(
+                        message: "PrimerKlarnaSDK has not been integrated",
+                        messageType: .error,
+                        severity: .error))
+                Analytics.Service.record(events: [event])
             }
 #endif
             
@@ -119,6 +127,14 @@ extension Response.Body {
             if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
                 viewModels.remove(at: iPay88ViewModelIndex)
                 print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.\n\n")
+                
+                let event = Analytics.Event(
+                    eventType: .message,
+                    properties: MessageEventProperties(
+                        message: "PrimerIPay88MYSDK has not been integrated",
+                        messageType: .error,
+                        severity: .error))
+                Analytics.Service.record(events: [event])
             }
 #endif
             
