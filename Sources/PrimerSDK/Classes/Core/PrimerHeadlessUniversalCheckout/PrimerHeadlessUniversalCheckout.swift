@@ -42,7 +42,9 @@ public class PrimerHeadlessUniversalCheckout {
         PrimerPaymentMethodType.xfersPayNow.rawValue,
     ]
     
-    fileprivate init() {}
+    fileprivate init() {
+        Analytics.Service.sync()
+    }
     
     public func start(
         withClientToken clientToken: String,
