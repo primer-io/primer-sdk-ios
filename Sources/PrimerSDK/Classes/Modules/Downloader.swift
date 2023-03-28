@@ -162,9 +162,35 @@ internal class Downloader: NSObject, DownloaderModule {
             let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 2)
             let cache = session.configuration.urlCache
             
-            if cache?.cachedResponse(for: request) != nil {
-                seal.fulfill()
-                return
+            if let cachedResponse = cache?.cachedResponse(for: request) {
+                if #available(iOS 16.0, *) {
+                    if FileManager.default.fileExists(atPath: localUrl.path()) {
+                        seal.fulfill(())
+                        return
+                    }
+                } else {
+                    if FileManager.default.fileExists(atPath: localUrl.path) {
+                        seal.fulfill(())
+                        return
+                    }
+                }
+                
+                let validStatusCodesRange = 200..<300
+                
+                if let httpUrlResponse = cachedResponse.response as? HTTPURLResponse,
+                   validStatusCodesRange.contains(httpUrlResponse.statusCode)
+                {
+                    do {
+                        FileManager.default.delegate = self
+                        try cachedResponse.data.write(to: localUrl)
+                        seal.fulfill(())
+                        return
+                        
+                    } catch {
+                        let primerErr = PrimerError.underlyingErrors(errors: [error], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: primerErr)
+                    }
+                }
             }
             
             let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
