@@ -14,13 +14,15 @@ class Analytics {
     static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics")
     static var apiClient: PrimerAPIClientProtocol?
     
-    struct Event: Codable {
+    struct Event: Codable, Equatable {
         
-        static var omitLocalParametersEncoding: Bool = false
-        
+        static func == (lhs: Analytics.Event, rhs: Analytics.Event) -> Bool {
+            return lhs.localId == rhs.localId
+        }
+                
         // The variables below are used locally, and are getting deleted before sending them.
         var analyticsUrl: String?
-        var localId: String?
+        var localId: String
         
         var appIdentifier: String? = Bundle.main.bundleIdentifier
         var checkoutSessionId: String?
@@ -66,9 +68,7 @@ class Analytics {
         
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
-            if !Analytics.Event.omitLocalParametersEncoding {
-                try? container.encode(analyticsUrl, forKey: .analyticsUrl)
-            }
+            try? container.encode(analyticsUrl, forKey: .analyticsUrl)
             try? container.encode(appIdentifier, forKey: .appIdentifier)
             try? container.encode(checkoutSessionId, forKey: .checkoutSessionId)
             try? container.encode(clientSessionId, forKey: .clientSessionId)
@@ -76,9 +76,7 @@ class Analytics {
             try? container.encode(customerId, forKey: .customerId)
             try? container.encode(device, forKey: .device)
             try? container.encode(eventType, forKey: .eventType)
-            if let localId = localId, !Analytics.Event.omitLocalParametersEncoding {
-                try? container.encode(localId, forKey: .localId)
-            }
+            try? container.encode(localId, forKey: .localId)
             try? container.encode(primerAccountId, forKey: .primerAccountId)
             try? container.encode(sdkSessionId, forKey: .sdkSessionId)
             try? container.encode(sdkType, forKey: .sdkType)
@@ -119,7 +117,7 @@ class Analytics {
             self.customerId = (try container.decode(String?.self, forKey: .customerId)) ?? nil
             self.device = try container.decode(Device.self, forKey: .device)
             self.eventType = try container.decode(Analytics.Event.EventType.self, forKey: .eventType)
-            self.localId = (try? container.decode(String?.self, forKey: .localId)) ?? nil
+            self.localId = try container.decode(String.self, forKey: .localId)
             self.primerAccountId = (try? container.decode(String?.self, forKey: .primerAccountId)) ?? nil
             self.sdkSessionId = try container.decode(String.self, forKey: .sdkSessionId)
             self.sdkType = try container.decode(String.self, forKey: .sdkType)

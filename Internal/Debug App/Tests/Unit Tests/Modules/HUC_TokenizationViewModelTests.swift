@@ -36,7 +36,8 @@ class HUC_TokenizationViewModelTests: XCTestCase {
                 vaultOnSuccess: false,
                 options: nil),
             order: nil,
-            customer: nil)
+            customer: nil,
+            testId: nil)
         let apiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
             paymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
@@ -250,7 +251,8 @@ class HUC_TokenizationViewModelTests: XCTestCase {
                 vaultOnSuccess: false,
                 options: isSurchargeIncluded ? [["surcharge": 99]] : nil),
             order: nil,
-            customer: nil)
+            customer: nil,
+            testId: nil)
         let apiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
             paymentMethods: [paymentMethod])
