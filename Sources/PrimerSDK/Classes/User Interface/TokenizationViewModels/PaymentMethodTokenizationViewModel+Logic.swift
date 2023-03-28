@@ -431,15 +431,26 @@ extension PaymentMethodTokenizationViewModel {
                 let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
                 let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
                 
-                PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
-                    switch paymentCreationDecision.type {
-                    case .abort(let errorMessage):
-                        let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                        seal.reject(error)
-                    case .continue:
-                        seal.fulfill()
+                var decisionHandlerHasBeenCalled = false
+                
+                PrimerDelegateProxy.primerWillCreatePaymentWithData(
+                    checkoutPaymentMethodData,
+                    decisionHandler: { paymentCreationDecision in
+                        decisionHandlerHasBeenCalled = true
+                        switch paymentCreationDecision.type {
+                        case .abort(let errorMessage):
+                            let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            seal.reject(error)
+                        case .continue:
+                            seal.fulfill()
+                        }
+                    })
+                
+                Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
+                    if !decisionHandlerHasBeenCalled {
+                        print("PRIMER SDK\nWARNING!\nThe 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.")
                     }
-                })
+                }
             }
         }
     }
