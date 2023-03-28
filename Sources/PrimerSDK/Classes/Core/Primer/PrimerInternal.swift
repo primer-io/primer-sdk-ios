@@ -43,6 +43,13 @@ internal class PrimerInternal {
         print("Can import Primer3DS")
 #else
         print("WARNING!\nFailed to import Primer3DS")
+        let event = Analytics.Event(
+            eventType: .message,
+            properties: MessageEventProperties(
+                message: "Primer3DS has not been integrated",
+                messageType: .error,
+                severity: .error))
+        Analytics.Service.record(events: [event])
 #endif
         
         NotificationCenter.default.removeObserver(self)
