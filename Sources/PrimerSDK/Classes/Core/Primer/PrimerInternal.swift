@@ -97,7 +97,7 @@ internal class PrimerInternal {
         let bundle = Bundle(identifier: "org.cocoapods.PrimerSDK") ?? Bundle(for: Primer.self)
         let bundleReleaseVersionNumber = bundle.infoDictionary?["CFBundleShortVersionString"] as? String
         var event: Analytics.Event
-        if bundleReleaseVersionNumber != "2.16.5" {
+        if bundleReleaseVersionNumber != "2.17.0-rc.5" {
             event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
