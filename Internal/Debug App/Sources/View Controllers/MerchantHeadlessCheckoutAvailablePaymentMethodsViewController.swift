@@ -332,14 +332,14 @@ class MerchantPaymentMethodCell: UITableViewCell {
             
             if let logoImage = (paymentMethodAsset.paymentMethodLogo.colored ?? paymentMethodAsset.paymentMethodLogo.light) ?? paymentMethodAsset.paymentMethodLogo.dark {
                 self.paymentMethodLogoView.isHidden = false
-                self.paymentMethodLabel.isHidden = true
                 self.paymentMethodLogoView.image = logoImage
                 
             } else {
                 self.paymentMethodLogoView.isHidden = true
-                self.paymentMethodLabel.isHidden = false
                 self.paymentMethodLabel.text = "Failed to find logo for \(paymentMethod.paymentMethodType)"
             }
+            
+            paymentMethodLabel.text = "Pay with \(paymentMethodAsset.paymentMethodName) "
             
         } else {
             self.paymentMethodLogoView.isHidden = true
