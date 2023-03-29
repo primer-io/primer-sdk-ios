@@ -45,8 +45,9 @@ public struct ThreeDS {
     }
 
     internal enum ChallengePreference: String, Codable {
-        case noPreference = "NO_PREFERENCE"
-        case requestedByRequestor = "REQUESTED_BY_REQUESTOR"
+        case noPreference           = "NO_PREFERENCE"
+        case requestedByRequestor   = "REQUESTED_BY_REQUESTOR"
+        case requestedDueToMandate  = "REQUESTED_DUE_TO_MANDATE"
     }
 
     internal struct ACSRenderingType: Codable {
