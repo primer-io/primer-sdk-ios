@@ -283,7 +283,17 @@ extension Analytics {
             }
         }
         
-        private static func loadEventsLinear() throws -> [Analytics.Event] {
+        private static func loadEventsSynchronously() throws -> [Analytics.Event] {
+            if #available(iOS 16.0, *) {
+                if !FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
+                    return []
+                }
+            } else {
+                if !FileManager.default.fileExists(atPath: Analytics.Service.filepath.path) {
+                    return []
+                }
+            }
+            
             let eventsData = try Data(contentsOf: Analytics.Service.filepath)
             let events = try JSONDecoder().decode([Analytics.Event].self, from: eventsData)
             let sortedEvents = events.sorted(by: { $0.createdAt > $1.createdAt })
