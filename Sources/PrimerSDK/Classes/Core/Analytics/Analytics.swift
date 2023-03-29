@@ -11,7 +11,7 @@ import Foundation
 
 class Analytics {
     
-    static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics")
+    static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics", qos: .utility, attributes: .concurrent)
     static var apiClient: PrimerAPIClientProtocol?
     
     struct Event: Codable, Equatable {

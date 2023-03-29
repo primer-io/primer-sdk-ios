@@ -49,7 +49,7 @@ extension Analytics {
         @discardableResult
         internal static func record(events: [Analytics.Event]) -> Promise<Void> {
             return Promise { seal in
-                Analytics.queue.async {
+                Analytics.queue.sync {
                     primerLogAnalytics(
                         title: "ANALYTICS",
                         message: "📚 Recording \(events.count) events",
@@ -60,21 +60,24 @@ extension Analytics {
                         function: #function,
                         line: #line)
                     
-                    
-                    firstly {
-                        Analytics.Service.loadEvents()
-                    }
-                    .then { storedEvents -> Promise<Void> in
-                        var combinedEvents: [Analytics.Event] = storedEvents
-                        combinedEvents.append(contentsOf: events)
-                        let sortedEvents: [Analytics.Event] = combinedEvents.sorted(by: { $0.createdAt < $1.createdAt })
-                        return Analytics.Service.save(events: sortedEvents)
-                    }
-                    .done {
-                        seal.fulfill()
-                    }
-                    .catch { err in
-                        seal.reject(err)
+                    do {
+                        let storedEvents: [Analytics.Event] = try Analytics.Service.loadEventsSynchronously()
+                        
+                        var combinedEvents: [Analytics.Event] = events.sorted(by: { $0.createdAt > $1.createdAt })
+                        combinedEvents.append(contentsOf: storedEvents)
+                        
+                        firstly {
+                            Analytics.Service.save(events: combinedEvents)
+                        }
+                        .done {
+                            seal.fulfill()
+                        }
+                        .catch { err in
+                            seal.reject(err)
+                        }
+                        
+                    } catch {
+                        seal.reject(error)
                     }
                 }
             }
@@ -83,7 +86,7 @@ extension Analytics {
         @discardableResult
         internal static func sync(batchSize: UInt = 300) -> Promise<Void> {
             return Promise { seal in
-                Analytics.queue.async {
+                Analytics.queue.sync {
                     primerLogAnalytics(
                         title: "ANALYTICS",
                         message: "📚 Syncing...",
@@ -116,8 +119,7 @@ extension Analytics {
                         return Analytics.Service.deleteEvents(Analytics.Service.eventsToRemove)
                     }
                     .done {
-                        let remainingEvents = try? self.loadEventsLinear()
-                        
+                        let remainingEvents = try? self.loadEventsSynchronously()
                         primerLogAnalytics(
                             title: "ANALYTICS",
                             message: "📚 Deleted synced events. There're \((remainingEvents ?? []).count) events remaining in the queue.",
@@ -146,7 +148,7 @@ extension Analytics {
         
         private static func sendSkdLogEvents(batchSize: UInt) -> Promise<Void> {
             return Promise { seal in
-                Analytics.queue.async {
+                Analytics.queue.sync {
                     firstly {
                         Analytics.Service.loadEvents()
                     }
@@ -175,7 +177,7 @@ extension Analytics {
         
         private static func sendSkdAnalyticsEvents(batchSize: UInt) -> Promise<Void> {
             return Promise { seal in
-                Analytics.queue.async {
+                Analytics.queue.sync {
                     firstly {
                         Analytics.Service.loadEvents()
                     }
@@ -213,7 +215,7 @@ extension Analytics {
             to url: URL
         ) -> Promise<Void> {
             return Promise { seal in
-                Analytics.queue.async {
+                Analytics.queue.sync {
                     sendEvents(events, to: url) { err in
                         if let err = err {
                             seal.reject(err)
@@ -230,7 +232,7 @@ extension Analytics {
             to url: URL,
             completion: @escaping (Error?) -> Void
         ) {
-            Analytics.queue.async {
+            Analytics.queue.sync {
                 if events.isEmpty {
                     completion(nil)
                     return
@@ -302,7 +304,7 @@ extension Analytics {
         
         internal static func loadEvents() -> Promise<[Event]> {
             return Promise { seal in
-                Analytics.queue.async {
+                Analytics.queue.sync {
                     primerLogAnalytics(
                         title: "ANALYTICS",
                         message: "📚 Loading events",
@@ -313,7 +315,7 @@ extension Analytics {
                         line: #line)
                     
                     do {
-                        let events = try self.loadEventsLinear()
+                        let events = try self.loadEventsSynchronously()
                         seal.fulfill(events)
                         
                     } catch {
@@ -333,7 +335,7 @@ extension Analytics {
         
         private static func save(events: [Analytics.Event]) -> Promise<Void> {
             return Promise { seal in
-                Analytics.queue.async {
+                Analytics.queue.sync {
                     primerLogAnalytics(
                         title: "ANALYTICS",
                         message: "📚 Saving \(events.count) events",
@@ -373,7 +375,7 @@ extension Analytics {
         
         private static func deleteEvents(_ events: [Analytics.Event]? = nil) -> Promise<Void> {
             return Promise { seal in
-                Analytics.queue.async {
+                Analytics.queue.sync {
                     primerLogAnalytics(
                         title: "ANALYTICS",
                         message: "📚 Deleting \(events == nil ? "all" : "\(events!.count)") events",
@@ -416,7 +418,7 @@ extension Analytics {
         
         internal static func deleteAnalyticsFile() -> Promise<Void> {
             return Promise { seal in
-                Analytics.queue.async {
+                Analytics.queue.sync {
                     primerLogAnalytics(
                         title: "ANALYTICS",
                         message: "📚 Deleting analytics file at \(Analytics.Service.filepath.absoluteString)",
