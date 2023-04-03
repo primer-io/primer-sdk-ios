@@ -267,6 +267,58 @@ class AnalyticsTests: XCTestCase {
         }
     }
     
+    func test_wrapped_error() throws {
+        let recordEvent = expectation(description: "Record event")
+        
+        let diagnosticsId = "diagnostics-id"
+
+        let nsErrorUserInfo: [String: Any] = [
+            "nsTestString": "test",
+            "nsTestNumber": -3.14,
+            "nsTestBoolean": true
+        ]
+        
+        let errorUserInfo: [String: String] = [
+            "testString": "test"
+        ]
+        
+        let nsError = NSError(
+            domain: "domain",
+            code: 1,
+            userInfo: nsErrorUserInfo)
+        
+        let primerErr = PrimerError.failedToPerform3DS(
+            error: nsError,
+            userInfo: errorUserInfo,
+            diagnosticsId: diagnosticsId)
+        
+        ErrorHandler.handle(error: primerErr)
+        
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+            recordEvent.fulfill()
+        }
+        
+        wait(for: [recordEvent], timeout: 10)
+        
+        let events = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        let errorEvents = events.filter({ ($0.properties as? MessageEventProperties)?.diagnosticsId == diagnosticsId })
+        let errorEvent = errorEvents.first
+        
+        XCTAssert(errorEvent != nil, "Should had written the error event")
+        XCTAssert(errorEvent?.properties as? MessageEventProperties != nil, "Error should contain MessageEventProperties")
+        
+        XCTAssert(errorEvent?.appIdentifier == "com.primerapi.PrimerSDKExample", "App identifier should be 'com.primerapi.PrimerSDKExample'")
+        XCTAssert(errorEvent?.eventType == .message, "Event type should be '.message'")
+        XCTAssert(errorEvent?.sdkType == "IOS_NATIVE", "SDK type should be 'IOS_NATIVE'")
+        
+        let errorEventProperties = errorEvent?.properties as? MessageEventProperties
+        XCTAssert(errorEventProperties!.diagnosticsId == diagnosticsId, "Error's diagnostic id should be \(diagnosticsId)")
+        XCTAssert(errorEventProperties!.context?["nsTestNumber"] as? Double == -3.14, "Context should include 'nsTestNumber == -3.14'")
+        XCTAssert(errorEventProperties!.context?["nsTestString"] as? String == "test", "Context should include 'nsTestString == test'")
+        XCTAssert(errorEventProperties!.context?["nsTestBoolean"] as? Bool == true, "Context should include 'nsTestBoolean == true'")
+        XCTAssert(errorEventProperties!.context?["testString"] as? String == "test", "Context should include 'testString == test'")
+    }
+    
     func test_recording_race_conditions() throws {
         // Make sure we start clean
         Analytics.Service.deleteAnalyticsFileSynchonously()
