@@ -189,7 +189,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                                        sdkReferenceNumber: data.sdkReferenceNumber)
         
         let threeDSecureBeginAuthRequest = ThreeDS.BeginAuthRequest(maxProtocolVersion: env == .production ? .v1 : .v2,
-                                                                    challengePreference: .requestedByRequestor,
+                                                                    challengePreference: .requestedDueToMandate,
                                                                     device: threeDSecureAuthData,
                                                                     amount: nil,
                                                                     currencyCode: nil,
