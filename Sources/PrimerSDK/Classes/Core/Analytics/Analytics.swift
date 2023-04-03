@@ -11,7 +11,7 @@ import Foundation
 
 class Analytics {
     
-    static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics")
+    static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics", qos: .utility)
     static var apiClient: PrimerAPIClientProtocol?
     
     struct Event: Codable, Equatable {
@@ -20,37 +20,42 @@ class Analytics {
             return lhs.localId == rhs.localId
         }
                 
-        // The variables below are used locally, and are getting deleted before sending them.
-        var analyticsUrl: String?
-        var localId: String
-        
-        var appIdentifier: String? = Bundle.main.bundleIdentifier
-        var checkoutSessionId: String?
-        var clientSessionId: String?
-        var createdAt: Int = Date().millisecondsSince1970
-        var customerId: String?
-        var device: Device = Device()
-        var eventType: Analytics.Event.EventType
-        var primerAccountId: String?
-        var properties: AnalyticsEventProperties? = nil
-        var sdkSessionId: String
-        var sdkType: String
-        var sdkVersion = Bundle.primerFramework.releaseVersionNumber
-        var sdkIntegrationType: PrimerSDKIntegrationType? = PrimerInternal.shared.sdkIntegrationType
-        var sdkPaymentHandling: PrimerPaymentHandling? = PrimerSettings.current.paymentHandling
-        var integrationType: String
+        let analyticsUrl: String?
+        let localId: String
+        let appIdentifier: String?
+        let checkoutSessionId: String?
+        let clientSessionId: String?
+        var createdAt: Int  // 👈 `createdAt` will be modified and get the error's timestamp for error events.
+        let customerId: String?
+        let device: Device
+        let eventType: Analytics.Event.EventType
+        let primerAccountId: String?
+        var properties: AnalyticsEventProperties?  // 👈 `properties` can be modified.
+        let sdkSessionId: String
+        let sdkType: String
+        let sdkVersion: String?
+        let sdkIntegrationType: PrimerSDKIntegrationType?
+        let sdkPaymentHandling: PrimerPaymentHandling?
+        let integrationType: String
         
         init(eventType: Analytics.Event.EventType, properties: AnalyticsEventProperties?) {
-            self.eventType = eventType
-            self.properties = properties
             self.analyticsUrl = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2
+            self.localId = String.randomString(length: 32)
+            
+            self.appIdentifier = Bundle.main.bundleIdentifier
             self.checkoutSessionId = PrimerInternal.shared.checkoutSessionId
             self.clientSessionId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId
+            self.createdAt = Date().millisecondsSince1970
             self.customerId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id
-            self.localId = String.randomString(length: 32)
+            self.device = Device()
+            self.eventType = eventType
             self.primerAccountId = PrimerAPIConfigurationModule.apiConfiguration?.primerAccountId
+            self.properties = properties
             self.sdkSessionId = PrimerInternal.shared.sdkSessionId
             self.sdkType = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
+            self.sdkVersion = Bundle.primerFramework.releaseVersionNumber
+            self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
+            self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
             
 #if COCOAPODS
             self.integrationType = "COCOAPODS"
@@ -60,10 +65,23 @@ class Analytics {
         }
         
         private enum CodingKeys: String, CodingKey {
-            case analyticsUrl, appIdentifier, checkoutSessionId, clientSessionId,
-                 createdAt, customerId, device, eventType, localId, primerAccountId,
-                 properties, sdkSessionId, sdkType, sdkVersion, sdkIntegrationType,
-                 sdkPaymentHandling, integrationType
+            case analyticsUrl,
+                 localId,
+                 appIdentifier,
+                 checkoutSessionId,
+                 clientSessionId,
+                 createdAt,
+                 customerId,
+                 device,
+                 eventType,
+                 primerAccountId,
+                 properties,
+                 sdkSessionId,
+                 sdkType,
+                 sdkVersion,
+                 sdkIntegrationType,
+                 sdkPaymentHandling,
+                 integrationType
         }
         
         func encode(to encoder: Encoder) throws {
@@ -109,16 +127,16 @@ class Analytics {
         
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.analyticsUrl = (try? container.decode(String?.self, forKey: .analyticsUrl)) ?? nil
-            self.appIdentifier = (try? container.decode(String.self, forKey: .appIdentifier)) ?? nil
-            self.checkoutSessionId = (try? container.decode(String?.self, forKey: .checkoutSessionId)) ?? nil
-            self.clientSessionId = (try? container.decode(String?.self, forKey: .clientSessionId)) ?? nil
+            self.analyticsUrl = try container.decodeIfPresent(String.self, forKey: .analyticsUrl)
+            self.appIdentifier = try container.decodeIfPresent(String.self, forKey: .appIdentifier)
+            self.checkoutSessionId = try container.decodeIfPresent(String.self, forKey: .checkoutSessionId)
+            self.clientSessionId = try container.decodeIfPresent(String.self, forKey: .clientSessionId)
             self.createdAt = try container.decode(Int.self, forKey: .createdAt)
-            self.customerId = (try container.decode(String?.self, forKey: .customerId)) ?? nil
+            self.customerId = try container.decodeIfPresent(String.self, forKey: .customerId)
             self.device = try container.decode(Device.self, forKey: .device)
             self.eventType = try container.decode(Analytics.Event.EventType.self, forKey: .eventType)
             self.localId = try container.decode(String.self, forKey: .localId)
-            self.primerAccountId = (try? container.decode(String?.self, forKey: .primerAccountId)) ?? nil
+            self.primerAccountId = try container.decodeIfPresent(String.self, forKey: .primerAccountId)
             self.sdkSessionId = try container.decode(String.self, forKey: .sdkSessionId)
             self.sdkType = try container.decode(String.self, forKey: .sdkType)
             self.sdkVersion = try container.decode(String.self, forKey: .sdkVersion)
@@ -126,6 +144,8 @@ class Analytics {
             
             if let sdkIntegrationTypeStr = try? container.decode(String.self, forKey: .sdkIntegrationType) {
                 self.sdkIntegrationType = PrimerSDKIntegrationType(rawValue: sdkIntegrationTypeStr)
+            } else {
+                self.sdkIntegrationType = nil
             }
             
             if let sdkPaymentHandlingStr = try? container.decode(String.self, forKey: .sdkPaymentHandling) {
@@ -133,7 +153,11 @@ class Analytics {
                     self.sdkPaymentHandling = .auto
                 } else if sdkPaymentHandlingStr == "MANUAL" {
                     self.sdkPaymentHandling = .manual
+                } else {
+                    self.sdkPaymentHandling = nil
                 }
+            } else {
+                self.sdkPaymentHandling = nil
             }
             
             if let crashEventProperties = (try? container.decode(CrashEventProperties?.self, forKey: .properties)) {
@@ -150,6 +174,8 @@ class Analytics {
                 self.properties = timerEventProperties
             } else if let uiEventProperties = (try? container.decode(UIEventProperties?.self, forKey: .properties)) {
                 self.properties = uiEventProperties
+            } else {
+                self.properties = nil
             }
         }
     }
