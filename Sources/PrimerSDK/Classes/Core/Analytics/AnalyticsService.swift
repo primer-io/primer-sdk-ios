@@ -206,7 +206,6 @@ extension Analytics {
                     if let err = err {
                         seal.reject(err)
                     } else {
-                        Analytics.Service.deleteEventsSynchronously(events)
                         seal.fulfill()
                     }
                 }
@@ -250,6 +249,8 @@ extension Analytics {
                         function: #function,
                         line: #line)
                     
+                    Analytics.Service.deleteEventsSynchronously(events)
+                    
                     completion(nil)
                     
                 case .failure(let err):
@@ -268,29 +269,35 @@ extension Analytics {
         }
         
         internal static func loadEventsSynchronously() throws -> [Analytics.Event] {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: "📚 Loading events",
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
-                function: #function,
-                line: #line)
-            
-            if #available(iOS 16.0, *) {
-                if !FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
-                    return []
+            do {
+                primerLogAnalytics(
+                    title: "ANALYTICS",
+                    message: "📚 Loading events",
+                    prefix: "📚",
+                    bundle: Bundle.primerFrameworkIdentifier,
+                    file: #file, className: "\(Self.self)",
+                    function: #function,
+                    line: #line)
+                
+                if #available(iOS 16.0, *) {
+                    if !FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
+                        return []
+                    }
+                } else {
+                    if !FileManager.default.fileExists(atPath: Analytics.Service.filepath.path) {
+                        return []
+                    }
                 }
-            } else {
-                if !FileManager.default.fileExists(atPath: Analytics.Service.filepath.path) {
-                    return []
-                }
+                
+                let eventsData = try Data(contentsOf: Analytics.Service.filepath)
+                let events = try JSONDecoder().decode([Analytics.Event].self, from: eventsData)
+                let sortedEvents = events.sorted(by: { $0.createdAt > $1.createdAt })
+                return sortedEvents
+                
+            } catch {
+                Analytics.Service.deleteAnalyticsFile()
+                return []
             }
-            
-            let eventsData = try Data(contentsOf: Analytics.Service.filepath)
-            let events = try JSONDecoder().decode([Analytics.Event].self, from: eventsData)
-            let sortedEvents = events.sorted(by: { $0.createdAt > $1.createdAt })
-            return sortedEvents
         }
         
         private static func saveSynchronously(events: [Analytics.Event]) {
@@ -339,57 +346,54 @@ extension Analytics {
                         let eventsLocalIds = events.compactMap({ $0.localId })
                         let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId )} )
                         Analytics.Service.saveSynchronously(events: remainingEvents)
-                        
-                        let newStoredEvents = try Analytics.Service.loadEventsSynchronously()
-                        
+                                                
                     } else {
-                        Analytics.Service.deleteAnalyticsFileSynchonously()
+                        Analytics.Service.deleteAnalyticsFile()
                     }
                 } catch {
-                    Analytics.Service.deleteAnalyticsFileSynchonously()
+                    Analytics.Service.deleteAnalyticsFile()
                 }
             }
         }
         
-        static func deleteAnalyticsFileSynchonously() {
-            Analytics.queue.sync {
-                primerLogAnalytics(
-                    title: "ANALYTICS",
-                    message: "📚 Deleting analytics file at \(Analytics.Service.filepath.absoluteString)",
-                    prefix: "📚",
-                    bundle: Bundle.primerFrameworkIdentifier,
-                    file: #file, className: "\(Self.self)",
-                    function: #function,
-                    line: #line)
-                
-                if #available(iOS 16.0, *) {
-                    if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
-                        do {
-                            try FileManager.default.removeItem(at: Analytics.Service.filepath)
-                            
-                        } catch {
-                            let err = PrimerError.underlyingErrors(
-                                errors: [error],
-                                userInfo: nil,
-                                diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                        }
+        internal static func deleteAnalyticsFile() {
+            primerLogAnalytics(
+                title: "ANALYTICS",
+                message: "📚 Deleting analytics file at \(Analytics.Service.filepath.absoluteString)",
+                prefix: "📚",
+                bundle: Bundle.primerFrameworkIdentifier,
+                file: #file, className: "\(Self.self)",
+                function: #function,
+                line: #line)
+            
+            if #available(iOS 16.0, *) {
+                if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
+                    do {
+                        try FileManager.default.removeItem(at: Analytics.Service.filepath)
+                        
+                    } catch {
+                        let err = PrimerError.underlyingErrors(
+                            errors: [error],
+                            userInfo: nil,
+                            diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
                     }
-                } else {
-                    if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path) {
-                        do {
-                            try FileManager.default.removeItem(at: Analytics.Service.filepath)
-                            
-                        } catch {
-                            let err = PrimerError.underlyingErrors(
-                                errors: [error],
-                                userInfo: nil,
-                                diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                        }
+                }
+            } else {
+                if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path) {
+                    do {
+                        try FileManager.default.removeItem(at: Analytics.Service.filepath)
+                        
+                    } catch {
+                        let err = PrimerError.underlyingErrors(
+                            errors: [error],
+                            userInfo: nil,
+                            diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
                     }
                 }
             }
+            
         }
         
         struct Response: Decodable {
