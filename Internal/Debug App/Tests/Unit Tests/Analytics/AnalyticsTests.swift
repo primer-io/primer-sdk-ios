@@ -83,6 +83,8 @@ class AnalyticsTests: XCTestCase {
     }
         
     func test_record_new_events() throws {
+        self.createAnalyticsFileForRC3()
+         
         let exp = expectation(description: "Await")
 
         var newEvents: [Analytics.Event] = []
@@ -178,13 +180,62 @@ class AnalyticsTests: XCTestCase {
         }
     }
     
+    func test_corrupt_analytics_file_with_rc_3_events() throws {
+        let createClientSessionExpectation = expectation(description: "Create client session")
+        var expectationsToBeFulfilled = [createClientSessionExpectation]
+        
+        firstly {
+            self.createDemoClientSessionAndSetAppState()
+        }
+        .done { clientToken in
+            
+        }
+        .ensure {
+            createClientSessionExpectation.fulfill()
+        }
+        .catch { err in
+            XCTAssert(false, err.localizedDescription)
+        }
+        
+        wait(for: expectationsToBeFulfilled, timeout: 30)
+        
+        self.cleanUpAnalytics()
+        
+        self.createAnalyticsFileForRC3()
+        
+        let writeEventExpectation = expectation(description: "Create client session")
+        expectationsToBeFulfilled = [writeEventExpectation]
+        
+        let newEvents = self.createEvents(10, withMessage: "A message")
+        
+        firstly {
+            Analytics.Service.record(events: newEvents)
+        }
+        .done {
+            
+        }
+        .ensure {
+            writeEventExpectation.fulfill()
+        }
+        .catch { err in
+            XCTAssert(false, err.localizedDescription)
+        }
+        
+        wait(for: expectationsToBeFulfilled, timeout: 30)
+        
+        var storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        XCTAssert(storedEvents.count == 10, "storedEvents should be 10")
+    }
+    
     func test_sync() throws {
+        self.createAnalyticsFileForRC3()
+        
         let exp = expectation(description: "Await")
         
         var storedEvents: [Analytics.Event]?
         let batchSize: UInt = 4
         
-        Analytics.Service.deleteAnalyticsFileSynchonously()
+        self.deleteAnalyticsFileSynchonously()
         
         firstly {
             // Create events without having a client token yet
@@ -247,13 +298,15 @@ class AnalyticsTests: XCTestCase {
     }
     
     func test_delete_analytics_file() throws {
+        self.createAnalyticsFileForRC3()
+        
         let exp = expectation(description: "Await")
         
         firstly {
             self.createAnalyticsEvents(deletePreviousEvents: true)
         }
         .done { events in
-            Analytics.Service.deleteAnalyticsFileSynchonously()
+            self.deleteAnalyticsFileSynchonously()
             exp.fulfill()
         }
         .catch { err in
@@ -320,8 +373,8 @@ class AnalyticsTests: XCTestCase {
     }
     
     func test_recording_race_conditions() throws {
-        // Make sure we start clean
-        Analytics.Service.deleteAnalyticsFileSynchonously()
+        self.cleanUpAnalytics()
+        self.createAnalyticsFileForRC3()
         var storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
         XCTAssert(storedEvents.count == 0, "Analytics events should be empty")
         
@@ -460,7 +513,10 @@ class AnalyticsTests: XCTestCase {
     
     func test_race_conditions_on_recording_and_deleting_events() throws {
         self.cleanUpAnalytics()
+        self.createAnalyticsFileForRC3()
         var storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        
+        self.createAnalyticsFileForRC3()
 
         let createClientSessionExpectation    = expectation(description: "Create client session")
         var expectationsToBeFulfilled = [createClientSessionExpectation]
@@ -880,8 +936,8 @@ class AnalyticsTests: XCTestCase {
     }
     
     func test_race_conditions_on_syncing() throws {
-        // Make sure we start clean
         self.cleanUpAnalytics()
+        self.createAnalyticsFileForRC3()
         
         var storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
         
@@ -971,10 +1027,13 @@ class AnalyticsTests: XCTestCase {
     }
     
     func test_race_conditions_on_creating_events_and_deleting_analytics_file() throws {
-        // Make sure we start clean
         self.cleanUpAnalytics()
+        self.createAnalyticsFileForRC3()
+        
+        self.createAnalyticsFileForRC3()
         
         var storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        XCTAssert(storedEvents.isEmpty, "storedEvents should be empty since load should delete migration events")
         
         let serialQueue     = DispatchQueue(label: "Serial Queue")
         let concurrentQueue = DispatchQueue(label: "Concurrent Queue", attributes: .concurrent)
@@ -996,38 +1055,36 @@ class AnalyticsTests: XCTestCase {
         
         // Record events from different queues
         
-        var events: [Analytics.Event] = []
         var eventsIds: [String] = []
         
         var serialQueueEvents1 = self.createEvents(2, withMessage: "Serial queue 1")
-        events.append(contentsOf: serialQueueEvents1)
         let serialQueueEvents2 = self.createEvents(2, withMessage: "Serial queue 2")
-        events.append(contentsOf: serialQueueEvents2)
         var concurrentQueueEvents1 = self.createEvents(2, withMessage: "Concurrent queue 1")
-        events.append(contentsOf: concurrentQueueEvents1)
         let concurrentQueueEvents2 = self.createEvents(2, withMessage: "Concurrent queue 2")
-        events.append(contentsOf: concurrentQueueEvents2)
-        let mainQueueEvents = self.createEvents(2, withMessage: "Main queue")
-        events.append(contentsOf: mainQueueEvents)
-        eventsIds = events.compactMap({ $0.localId })
+        var mainQueueEvents = self.createEvents(2, withMessage: "Main queue")
         
         self.writeEvents(serialQueueEvents1, fromQueue: serialQueue) {
+            eventsIds.append(contentsOf: serialQueueEvents1.compactMap({ $0.localId }))
             writeEventsOnSerialQueueExpectation1.fulfill()
         }
         
         self.writeEvents(serialQueueEvents2, fromQueue: serialQueue) {
+            eventsIds.append(contentsOf: serialQueueEvents2.compactMap({ $0.localId }))
             writeEventsOnSerialQueueExpectation2.fulfill()
         }
         
         self.writeEvents(concurrentQueueEvents1, fromQueue: concurrentQueue) {
+            eventsIds.append(contentsOf: concurrentQueueEvents1.compactMap({ $0.localId }))
             writeEventsOnConcurrentQueueExpectation1.fulfill()
         }
         
         self.writeEvents(concurrentQueueEvents2, fromQueue: concurrentQueue) {
+            eventsIds.append(contentsOf: concurrentQueueEvents2.compactMap({ $0.localId }))
             writeEventsOnConcurrentQueueExpectation2.fulfill()
         }
         
         self.writeEvents(mainQueueEvents, fromQueue: DispatchQueue.main) {
+            eventsIds.append(contentsOf: mainQueueEvents.compactMap({ $0.localId }))
             writeEventsOnMainQueueExpectation.fulfill()
         }
         
@@ -1087,10 +1144,10 @@ class AnalyticsTests: XCTestCase {
         let rewriteEventsFromMainQueueExpectation = expectation(description: "Rewrite events from the main queue")
         expectationsToBeFulfilled = [rewriteEventsFromMainQueueExpectation]
         
-        events = self.createEvents(5, withMessage: "A message")
-        eventsIds = events.compactMap({ $0.localId })
+        mainQueueEvents = self.createEvents(5, withMessage: "A message")
         
-        self.writeEvents(events, fromQueue: DispatchQueue.main) {
+        self.writeEvents(mainQueueEvents, fromQueue: DispatchQueue.main) {
+            eventsIds = mainQueueEvents.compactMap({ $0.localId })
             rewriteEventsFromMainQueueExpectation.fulfill()
         }
         
@@ -1106,7 +1163,6 @@ class AnalyticsTests: XCTestCase {
         expectationsToBeFulfilled = [writeEventsOnSerialQueueExpectation1, deleteFileOnSerialQueueExpectation2]
         
         serialQueueEvents1 = self.createEvents(2, withMessage: "Serial queue 1")
-        events.append(contentsOf: serialQueueEvents1)
                 
         self.writeEvents(serialQueueEvents1, fromQueue: serialQueue) {
             eventsIds.append(contentsOf: serialQueueEvents1.compactMap({ $0.localId }))
@@ -1133,7 +1189,6 @@ class AnalyticsTests: XCTestCase {
         expectationsToBeFulfilled = [writeEventsOnConcurrentQueueExpectation1, deleteFileOnConcurrentQueueExpectation2]
         
         concurrentQueueEvents1 = self.createEvents(2, withMessage: "Concurrent queue 1")
-        events.append(contentsOf: serialQueueEvents1)
                 
         self.writeEvents(concurrentQueueEvents1, fromQueue: concurrentQueue) {
             eventsIds.append(contentsOf: concurrentQueueEvents1.compactMap({ $0.localId }))
@@ -1160,7 +1215,6 @@ class AnalyticsTests: XCTestCase {
         expectationsToBeFulfilled = [writeEventsOnSerialQueueExpectation1, deleteFileOnConcurrentQueueExpectation1]
         
         serialQueueEvents1 = self.createEvents(2, withMessage: "Serial queue 1")
-        events.append(contentsOf: serialQueueEvents1)
                 
         self.writeEvents(serialQueueEvents1, fromQueue: serialQueue) {
             eventsIds.append(contentsOf: serialQueueEvents1.compactMap({ $0.localId }))
@@ -1188,7 +1242,6 @@ class AnalyticsTests: XCTestCase {
         expectationsToBeFulfilled = [deleteEventsOnSerialQueueExpectation1, writeFileOnConcurrentQueueExpectation1]
         
         concurrentQueueEvents1 = self.createEvents(2, withMessage: "Concurrent queue 1")
-        events.append(contentsOf: concurrentQueueEvents1)
             
         self.deleteAnalyticsFile(fromQueue: serialQueue) {
             eventsIds = []
@@ -1300,7 +1353,7 @@ class AnalyticsTests: XCTestCase {
     private func createAnalyticsEvents(deletePreviousEvents: Bool) -> Promise<[Analytics.Event]> {
         return Promise { seal in
             if deletePreviousEvents {
-                Analytics.Service.deleteAnalyticsFileSynchonously()
+                self.deleteAnalyticsFileSynchonously()
             }
             
             firstly {
@@ -1323,7 +1376,11 @@ class AnalyticsTests: XCTestCase {
                     if let err = err {
                         seal.reject(err)
                     } else if let clientToken = clientToken {
-                        AppState.current.clientToken = clientToken
+                        let settings = PrimerSettings()
+                        DependencyContainer.register(settings as PrimerSettingsProtocol)
+                        let appState = AppState()
+                        appState.clientToken = clientToken
+                        DependencyContainer.register(appState as AppStateProtocol)
                         seal.fulfill(clientToken)
                     } else {
                         fatalError()
@@ -1384,7 +1441,7 @@ class AnalyticsTests: XCTestCase {
     
     func deleteAnalyticsFile(fromQueue queue: DispatchQueue, completion: @escaping (() -> Void)) {
         queue.async {
-            Analytics.Service.deleteAnalyticsFileSynchonously()
+            self.deleteAnalyticsFileSynchonously()
             completion()
         }
     }
@@ -1407,9 +1464,15 @@ class AnalyticsTests: XCTestCase {
     }
     
     func cleanUpAnalytics() {
-        Analytics.Service.deleteAnalyticsFileSynchonously()
+        self.deleteAnalyticsFileSynchonously()
         let storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
         XCTAssert(storedEvents.count == 0, "Analytics events should be empty")
+    }
+    
+    func deleteAnalyticsFileSynchonously() {
+        Analytics.queue.sync {
+            Analytics.Service.deleteAnalyticsFile()
+        }
     }
 }
 
