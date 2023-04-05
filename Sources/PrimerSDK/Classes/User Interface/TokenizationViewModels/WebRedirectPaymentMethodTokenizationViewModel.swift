@@ -407,7 +407,6 @@ struct PollingResponse: Decodable {
             self.source = try container.decode(String.self, forKey: .source)
             self.urls = try container.decode(PollingURLs.self, forKey: .urls)
         } catch {
-            print(error)
             throw error
         }
         
