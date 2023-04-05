@@ -1365,6 +1365,23 @@ class AnalyticsTests: XCTestCase {
         }
     }
     
+    func createAnalyticsFileForRC3() {
+        do {
+            let eventsData = AnalyticsTestsConstants.analytics_v_2_17_0_rc_3_Events.data(using: .utf8)!
+            try eventsData.write(to: Analytics.Service.filepath)
+            
+        } catch {
+            primerLogAnalytics(
+                title: "ANALYTICS",
+                message: error.localizedDescription,
+                prefix: "📚",
+                bundle: Bundle.primerFrameworkIdentifier,
+                file: #file, className: "\(Self.self)",
+                function: #function,
+                line: #line)
+        }
+    }
+    
     func deleteAnalyticsFile(fromQueue queue: DispatchQueue, completion: @escaping (() -> Void)) {
         queue.async {
             Analytics.Service.deleteAnalyticsFileSynchonously()
