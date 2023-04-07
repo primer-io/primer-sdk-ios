@@ -370,31 +370,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             }
         }
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         lineItemsStackView.removeAllArrangedSubviews()
         lineItemsStackView.alignment = .fill
         lineItemsStackView.distribution = .fill
@@ -428,10 +403,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         totalAmountLabel.text = "\(totalAmount)"
         
     }
-    
-    
-    
-    
     
     // MARK: - ACTIONS
     
