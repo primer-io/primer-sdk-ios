@@ -138,7 +138,7 @@ class Test {
         }
         
         struct Network: Codable {
-            let delay: Int
+            let delay: Int  // in ms
         }
         
         struct ThreeDS: Codable {
