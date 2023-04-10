@@ -34,8 +34,8 @@ internal extension Bundle {
         }
         let version = Bundle.primerFramework.infoDictionary?["CFBundleShortVersionString"] as? String
         
-        if version != "2.17.0-rc.6" {
-            return "2.17.0-rc.6"
+        if version != "2.17.0-rc.8" {
+            return "2.17.0-rc.8"
         } else {
             return version
         }
