@@ -88,22 +88,11 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         
         // Amount & currency validation
         
-        if AppState.current.amount == nil {
+        if (AppState.current.amount ?? 0) == 0 {
             let err = PrimerError.invalidClientSessionValue(
                 name: "amount",
-                value: nil,
+                value: AppState.current.amount == nil ? nil : "\(AppState.current.amount!)",
                 allowedValue: nil,
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if AppState.current.currency != .MYR {
-            let err = PrimerError.invalidClientSessionValue(
-                name: "currencyCode",
-                value: AppState.current.currency?.rawValue,
-                allowedValue: "MYR",
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
@@ -111,28 +100,6 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
         
         // Order validation
-        
-        if PrimerAPIConfiguration.current?.clientSession?.order?.id == nil {
-            let err = PrimerError.invalidClientSessionValue(
-                name: "order.id",
-                value: nil,
-                allowedValue: nil,
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if PrimerAPIConfiguration.current?.clientSession?.order?.countryCode != .my {
-            let err = PrimerError.invalidClientSessionValue(
-                name: "order.countryCode",
-                value: nil,
-                allowedValue: "MY",
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
         
         if (PrimerAPIConfiguration.current?.clientSession?.order?.lineItems ?? []).count == 0 {
             let err = PrimerError.invalidClientSessionValue(
@@ -186,17 +153,6 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         if PrimerAPIConfiguration.current?.clientSession?.customer?.emailAddress == nil {
             let err = PrimerError.invalidClientSessionValue(
                 name: "customer.emailAddress",
-                value: nil,
-                allowedValue: nil,
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
-        if PrimerAPIConfiguration.current?.clientSession?.customer?.mobileNumber == nil {
-            let err = PrimerError.invalidClientSessionValue(
-                name: "customer.mobileNumber",
                 value: nil,
                 allowedValue: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
@@ -426,7 +382,9 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
               let primerTransactionId = decodedJWTToken.primerTransactionId,
               let iPay88PaymentMethodId = decodedJWTToken.iPay88PaymentMethodId,
               let supportedCurrency = decodedJWTToken.supportedCurrencyCode,
-              let supportedCountry = decodedJWTToken.supportedCountry
+              supportedCurrency.uppercased() == PrimerAPIConfiguration.current?.clientSession?.order?.currencyCode?.rawValue.uppercased(),
+              let supportedCountry = decodedJWTToken.supportedCountry,
+              supportedCountry.uppercased() == PrimerAPIConfiguration.current?.clientSession?.order?.countryCode?.rawValue.uppercased()
         else {
             let err = PrimerError.invalidClientToken(
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
