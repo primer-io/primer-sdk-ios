@@ -195,14 +195,24 @@ internal extension PrimerAPI {
     
     var path: String {
         switch self {
-        case .deleteVaultedPaymentMethod(_, let id):
-            return "/payment-instruments/\(id)/vault"
         case .fetchConfiguration:
             return ""
-        case .fetchVaultedPaymentMethods:
-            return "/payment-instruments"
+        case .deleteVaultedPaymentMethod(_, let id):
+            return "/payment-instruments/\(id)/vault"
         case .exchangePaymentMethodToken(_, let paymentMethodId):
             return "/payment-instruments/\(paymentMethodId)/exchange"
+        case .fetchVaultedPaymentMethods:
+            return "/payment-instruments"
+        case .tokenizePaymentMethod:
+            return "/payment-instruments"
+        case .createPayment:
+            return "/payments"
+        case .resumePayment(_, let paymentId, _):
+            return "/payments/\(paymentId)/resume"
+        case .begin3DSRemoteAuth(_, let paymentMethodToken, _):
+            return "/3ds/\(paymentMethodToken.token ?? "")/auth"
+        case .continue3DSRemoteAuth(_, let threeDSTokenId):
+            return "/3ds/\(threeDSTokenId)/continue"
         case .createPayPalOrderSession:
             return "/paypal/orders/create"
         case .createPayPalBillingAgreementSession:
@@ -215,14 +225,6 @@ internal extension PrimerAPI {
             return "/klarna/customer-tokens"
         case .finalizeKlarnaPaymentSession:
             return "/klarna/payment-sessions/finalize"
-//        case .createDirectDebitMandate:
-//            return "/gocardless/mandates"
-        case .tokenizePaymentMethod:
-            return "/payment-instruments"
-        case .begin3DSRemoteAuth(_, let paymentMethodToken, _):
-            return "/3ds/\(paymentMethodToken.token ?? "")/auth"
-        case .continue3DSRemoteAuth(_, let threeDSTokenId):
-            return "/3ds/\(threeDSTokenId)/continue"
         case .createApayaSession:
             return "/session-token"
         case .listAdyenBanks:
@@ -239,10 +241,6 @@ internal extension PrimerAPI {
             return "/paypal/orders"
         case .validateClientToken:
             return "/client-token/validate"
-        case .createPayment:
-            return "/payments"
-        case .resumePayment(_, let paymentId, _):
-            return "/payments/\(paymentId)/resume"
         }
     }
     
