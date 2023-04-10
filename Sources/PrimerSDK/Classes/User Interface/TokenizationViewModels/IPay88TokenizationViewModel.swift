@@ -101,17 +101,6 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         
         // Order validation
         
-        if PrimerAPIConfiguration.current?.clientSession?.order?.id == nil {
-            let err = PrimerError.invalidClientSessionValue(
-                name: "order.id",
-                value: nil,
-                allowedValue: nil,
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
-        }
-        
         if (PrimerAPIConfiguration.current?.clientSession?.order?.lineItems ?? []).count == 0 {
             let err = PrimerError.invalidClientSessionValue(
                 name: "order.lineItems",
