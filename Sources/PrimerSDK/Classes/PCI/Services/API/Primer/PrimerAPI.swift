@@ -253,10 +253,6 @@ internal extension PrimerAPI {
             return "/paypal/orders"
         case .validateClientToken:
             return "/client-token/validate"
-        case .createPayment:
-            return "/payments"
-        case .resumePayment(_, let paymentId, _):
-            return "/payments/\(paymentId)/resume"
         case .testFinalizePolling(_, let testId):
             return "/finalize-polling"
         }
