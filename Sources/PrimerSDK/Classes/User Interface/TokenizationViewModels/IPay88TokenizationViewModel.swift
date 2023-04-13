@@ -574,7 +574,9 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                     if !isMockBE {
                         self.primerIPay88ViewController?.dismiss(animated: true)
                     } else {
+#if DEBUG
                         self.demoThirdPartySDKViewController?.dismiss(animated: true)
+#endif
                     }
                 }
             }
