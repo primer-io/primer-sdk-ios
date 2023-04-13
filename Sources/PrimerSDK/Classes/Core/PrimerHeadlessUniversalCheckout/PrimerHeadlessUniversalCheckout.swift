@@ -71,6 +71,19 @@ public class PrimerHeadlessUniversalCheckout {
         
         var events: [Analytics.Event] = []
         
+#if canImport(Primer3DS)
+        print("Can import Primer3DS")
+#else
+        print("WARNING!\nFailed to import Primer3DS")
+        let event = Analytics.Event(
+            eventType: .message,
+            properties: MessageEventProperties(
+                message: "Primer3DS has not been integrated",
+                messageType: .error,
+                severity: .error))
+        events.append(event)
+#endif
+        
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(

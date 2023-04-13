@@ -39,19 +39,6 @@ internal class PrimerInternal {
     }
     
     fileprivate init() {
-#if canImport(Primer3DS)
-        print("Can import Primer3DS")
-#else
-        print("WARNING!\nFailed to import Primer3DS")
-        let event = Analytics.Event(
-            eventType: .message,
-            properties: MessageEventProperties(
-                message: "Primer3DS has not been integrated",
-                messageType: .error,
-                severity: .error))
-        Analytics.Service.record(events: [event])
-#endif
-        
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
@@ -80,8 +67,8 @@ internal class PrimerInternal {
     }
     
     internal func application(_ application: UIApplication,
-                            continue userActivity: NSUserActivity,
-                            restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+                              continue userActivity: NSUserActivity,
+                              restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
 #if canImport(Primer3DS)
         return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
 #else
@@ -101,26 +88,40 @@ internal class PrimerInternal {
      */
     
     internal func configure(settings: PrimerSettings? = nil) {
+        var events: [Analytics.Event] = []
+        
+#if canImport(Primer3DS)
+        print("Can import Primer3DS")
+#else
+        print("WARNING!\nFailed to import Primer3DS")
+        events.append(Analytics.Event(
+            eventType: .message,
+            properties: MessageEventProperties(
+                message: "Primer3DS has not been integrated",
+                messageType: .error,
+                severity: .error)))
+#endif
         let bundle = Bundle(identifier: "org.cocoapods.PrimerSDK") ?? Bundle(for: Primer.self)
         let bundleReleaseVersionNumber = bundle.infoDictionary?["CFBundleShortVersionString"] as? String
-        var event: Analytics.Event
         if bundleReleaseVersionNumber != "2.17.0-rc.8" {
-            event = Analytics.Event(
+            events.append(Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
                     message: "Wrong release version number (\(bundleReleaseVersionNumber ?? "n/a")) detected.",
                     messageType: .error,
                     severity: .error))
+            )
         } else {
-            event = Analytics.Event(
+            events.append(Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
                     message: "Version number (\(bundleReleaseVersionNumber ?? "n/a")) detected correctly.",
                     messageType: .other,
-                    severity: .info))
+                    severity: .info)))
         }
         
-        Analytics.Service.record(event: event)
+        
+        Analytics.Service.record(events: events)
         
         DependencyContainer.register((settings ?? PrimerSettings()) as PrimerSettingsProtocol)
         
@@ -285,7 +286,7 @@ internal class PrimerInternal {
             completion?(err)
         }
     }
-        
+    
     /** Dismisses any opened checkout sheet view. */
     internal func dismiss() {
         let sdkEvent = Analytics.Event(
@@ -302,7 +303,7 @@ internal class PrimerInternal {
         
         Analytics.Service.record(events: [sdkEvent, timingEvent])
         Analytics.Service.sync()
-                
+        
         self.checkoutSessionId = nil
         self.selectedPaymentMethodType = nil
         
