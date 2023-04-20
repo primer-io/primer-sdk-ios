@@ -210,35 +210,6 @@ class PayPalServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 30.0)
     }
 
-    // MARK: confirmBillingAgreement
-    func test_confirmBillingAgreement_calls_api() throws {
-        let expectation = XCTestExpectation(description: "Create PayPal billing agreement | Failure: No config ID")
-
-        let response = mockPayPalBillingAgreement
-        let data = try JSONEncoder().encode(response)
-//        let api = MockPrimerAPIClient(with: data, throwsError: false)
-        let state = MockAppState()
-        let settings = MockPrimerSettings()
-
-        DependencyContainer.register(state as AppStateProtocol)
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
-        
-        let createOrderRes = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: "approvalUrl")
-        let createOrderData = try JSONEncoder().encode(createOrderRes)
-//        api.response = createOrderData
-//        api.throwsError = false
-
-        let service = PayPalService()
-
-        service.startOrderSession({ result in
-            expectation.fulfill()
-        })
-        
-//        XCTAssertEqual(api.isCalled, true)
-
-        wait(for: [expectation], timeout: 30.0)
-    }
-
     func test_confirmBillingAgreement_fails_if_client_token_nil() throws {
         let expectation = XCTestExpectation(description: "Create PayPal billing agreement | Failure: No client token")
 
