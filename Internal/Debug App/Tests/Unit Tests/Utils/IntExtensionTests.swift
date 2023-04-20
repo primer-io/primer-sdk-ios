@@ -36,7 +36,7 @@ class IntExtensionTests: XCTestCase {
     func test_jpy_formats_correctly() throws {
         let currency = Currency.JPY
         let formattedAmount = amount.toCurrencyString(currency: currency)
-        XCTAssertEqual(formattedAmount, "¥100", "Formatted amount [\(formattedAmount)] is not correct")
+        XCTAssertEqual(formattedAmount, "￥100", "Formatted amount [\(formattedAmount)] is not correct")
     }
     
     func test_krw_formats_correctly() throws {
@@ -48,13 +48,13 @@ class IntExtensionTests: XCTestCase {
     func test_sek_formats_correctly() throws {
         let currency = Currency.SEK
         let formattedAmount = amount.toCurrencyString(currency: currency)
-        XCTAssertEqual(formattedAmount, "SEK 1\(decimalSeparator)00", "Formatted amount [\(formattedAmount)] is not correct")
+        XCTAssertEqual(formattedAmount, "kr1\(decimalSeparator)00", "Formatted amount [\(formattedAmount)] is not correct")
     }
     
     func test_cny_formats_correctly() throws {
         let currency = Currency.CNY
         let formattedAmount = amount.toCurrencyString(currency: currency)
-        XCTAssertEqual(formattedAmount, "CNY 1\(decimalSeparator)00", "Formatted amount [\(formattedAmount)] is not correct")
+        XCTAssertEqual(formattedAmount, "CN¥1\(decimalSeparator)00", "Formatted amount [\(formattedAmount)] is not correct")
     }
     
     func test_usd_huge_amount_formats_correctly() throws {
@@ -68,7 +68,7 @@ class IntExtensionTests: XCTestCase {
         amount = 999999999997
         let currency = Currency.JPY
         let formattedAmount = amount.toCurrencyString(currency: currency)
-        XCTAssertEqual(formattedAmount, "¥999\(groupingSeparator)999\(groupingSeparator)999\(groupingSeparator)997", "Formatted amount [\(formattedAmount)] is not correct")
+        XCTAssertEqual(formattedAmount, "￥999\(groupingSeparator)999\(groupingSeparator)999\(groupingSeparator)997", "Formatted amount [\(formattedAmount)] is not correct")
     }
     
     func test_usd_small_amount_formats_correctly() throws {
@@ -82,6 +82,6 @@ class IntExtensionTests: XCTestCase {
         amount = 1
         let currency = Currency.JPY
         let formattedAmount = amount.toCurrencyString(currency: currency)
-        XCTAssertEqual(formattedAmount, "¥1", "Formatted amount [\(formattedAmount)] is not correct")
+        XCTAssertEqual(formattedAmount, "￥1", "Formatted amount [\(formattedAmount)] is not correct")
     }
 }
