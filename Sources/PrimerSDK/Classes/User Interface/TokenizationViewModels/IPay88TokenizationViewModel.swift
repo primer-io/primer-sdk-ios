@@ -377,7 +377,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
 #if canImport(PrimerIPay88MYSDK)
-    private func createPrimerIPay88Payment() throws -> PrimerIPay88Payment {
+    internal func createPrimerIPay88Payment() throws -> PrimerIPay88Payment {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
               let primerTransactionId = decodedJWTToken.primerTransactionId,
               let iPay88PaymentMethodId = decodedJWTToken.iPay88PaymentMethodId,
@@ -420,11 +420,11 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             prodDesc: PrimerAPIConfiguration.current!.clientSession!.order!.lineItems!.compactMap({ $0.description }).joined(separator: ", "),
             userName: "\(PrimerAPIConfiguration.current!.clientSession!.customer!.firstName!) \(PrimerAPIConfiguration.current!.clientSession!.customer!.lastName!)",
             userEmail: PrimerAPIConfiguration.current!.clientSession!.customer!.emailAddress!,
-            userContact: PrimerAPIConfiguration.current!.clientSession!.customer!.mobileNumber!,
+            userContact: PrimerAPIConfiguration.current!.clientSession!.customer!.mobileNumber ?? "",
             remark: PrimerAPIConfiguration.current!.clientSession?.customer?.id,
             lang: "UTF-8",
             country: supportedCountry,
-            backendPostURL: self.backendCallbackUrl!.absoluteString,
+            backendPostURL: self.backendCallbackUrl?.absoluteString ?? "",
             appdeeplink: nil,
             actionType: iPay88ActionType,
             tokenId: nil,
