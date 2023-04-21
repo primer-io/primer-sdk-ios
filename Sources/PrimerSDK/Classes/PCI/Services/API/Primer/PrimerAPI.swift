@@ -138,19 +138,15 @@ internal extension PrimerAPI {
         }
         
         switch self {
-        case .fetchConfiguration:
+        case .fetchConfiguration,
+                .fetchVaultedPaymentMethods:
             tmpHeaders["X-Api-Version"] = "2.1"
-        case .deleteVaultedPaymentMethod,
-                .exchangePaymentMethodToken,
-                .fetchVaultedPaymentMethods,
-                .tokenizePaymentMethod:
-            tmpHeaders["X-Api-Version"] = "2.1"
-        case .createPayment,
-                .resumePayment:
-            tmpHeaders["X-Api-Version"] = "2021-09-27"
-        case .begin3DSRemoteAuth,
-                .continue3DSRemoteAuth:
+        case .tokenizePaymentMethod,
+                .deleteVaultedPaymentMethod,
+                .exchangePaymentMethodToken:
             tmpHeaders["X-Api-Version"] = "2021-12-10"
+        case .createPayment:
+            tmpHeaders["X-Api-Version"] = "2021-09-27"
         default:
             break
         }
