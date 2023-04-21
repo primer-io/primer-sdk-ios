@@ -144,6 +144,16 @@ extension Response.Body.Tokenization {
         public let mx: String?
         public let currencyCode: Currency?
         public let productId: String?
+        
+        public let paymentMethodConfigId: String?
+        public let paymentMethodType: String
+        public let sessionInfo: SessionInfo?
+        
+        public struct SessionInfo: Codable {
+            public let locale: String?
+            public let platform: String?
+            public let redirectionUrl: String?
+        }
     }
 }
 
