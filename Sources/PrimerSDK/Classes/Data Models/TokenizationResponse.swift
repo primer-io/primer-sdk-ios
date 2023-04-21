@@ -18,7 +18,6 @@ extension Response.Body {
         public var isVaulted: Bool?
         internal var isAlreadyVaulted: Bool?
         public var paymentInstrumentType: PaymentInstrumentType
-        public var paymentMethodType: String?
         public var paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData?
         public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
         public var token: String?
