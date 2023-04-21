@@ -15,10 +15,10 @@ extension Response.Body {
         
         public var analyticsId: String?
         public var id: String?
-        public var isVaulted: Bool?
         internal var isAlreadyVaulted: Bool?
-        public var paymentInstrumentType: PaymentInstrumentType
+        public var isVaulted: Bool?
         public var paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData?
+        public var paymentInstrumentType: PaymentInstrumentType
         public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
         public var token: String?
         public var tokenType: TokenType?
