@@ -11,6 +11,7 @@ build:
   script:
     - gem install cocoapods
     - pod lib lint --allow-warnings --allow-root
+    - pod install --allow-root
     - ls
 
 # release:
