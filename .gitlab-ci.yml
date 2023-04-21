@@ -1,24 +1,12 @@
 variables:
   RUBY_VERSION: 2.7.4
 
-stages:
-  - build
-  - release
-
-build:
+build-and-release:
   stage: build
   image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION
   script:
     - gem install cocoapods
     - pod lib lint --allow-warnings --allow-root
-    - pod install --allow-root
-    - ls
-
-# release:
-#   stage: release
-#   image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION-slim-bullseye
-#   script:
-#     - 
-#   needs:
-#     - build
-#   when: manual
+    # - pod trunk push --allow-root
+  when: manual
+  environment: production
