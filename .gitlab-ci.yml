@@ -3,10 +3,21 @@ variables:
 
 stages:
   - build
+  - release
 
 build:
   stage: build
-  image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION-slim-bullseye
+  image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION
   script:
     - gem install cocoapods
-    - pod lib lint --allow-warnings
+    - pod lib lint --allow-warnings --allow-root
+    - ls
+
+# release:
+#   stage: release
+#   image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION-slim-bullseye
+#   script:
+#     - 
+#   needs:
+#     - build
+#   when: manual
