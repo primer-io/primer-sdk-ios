@@ -146,7 +146,7 @@ extension Response.Body.Tokenization {
         public let productId: String?
         
         public let paymentMethodConfigId: String?
-        public let paymentMethodType: String
+        public let paymentMethodType: String?
         public let sessionInfo: SessionInfo?
         
         public struct SessionInfo: Codable {
