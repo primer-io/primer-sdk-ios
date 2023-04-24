@@ -15,11 +15,10 @@ extension Response.Body {
         
         public var analyticsId: String?
         public var id: String?
-        public var isVaulted: Bool?
         internal var isAlreadyVaulted: Bool?
-        public var paymentInstrumentType: PaymentInstrumentType
-        public var paymentMethodType: String?
+        public var isVaulted: Bool?
         public var paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData?
+        public var paymentInstrumentType: PaymentInstrumentType
         public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
         public var token: String?
         public var tokenType: TokenType?
@@ -145,6 +144,16 @@ extension Response.Body.Tokenization {
         public let mx: String?
         public let currencyCode: Currency?
         public let productId: String?
+        
+        public let paymentMethodConfigId: String?
+        public let paymentMethodType: String?
+        public let sessionInfo: SessionInfo?
+        
+        public struct SessionInfo: Codable {
+            public let locale: String?
+            public let platform: String?
+            public let redirectionUrl: String?
+        }
     }
 }
 
