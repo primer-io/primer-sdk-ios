@@ -183,29 +183,15 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let currency = AppState.current.currency!
                 let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions!.merchantIdentifier
                 
-                var orderItems: [OrderItem]
+                let orderItems: [OrderItem]
                 
-                if let lineItems = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() }) {
-                    orderItems = lineItems
-                } else {
-                    orderItems = [try! OrderItem(name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "", unitAmount: AppState.current.amount ?? 0, quantity: 1)]
+                do {
+                    orderItems = try self.createOrderItemsFromClientSession(AppState.current.apiConfiguration!.clientSession!)
+                } catch {
+                    seal.reject(error)
+                    return
                 }
                 
-                // Add fees, if present
-                if let fees = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.fees {
-                    for fee in fees {
-                        let feeItem = try! OrderItem(name: fee.type.lowercased().capitalizingFirstLetter(), unitAmount: fee.amount, quantity: 1)
-                        orderItems.append(feeItem)
-                    }
-                }
-                
-                // Create the last object of the orderItems array, which is the order summary
-                var totalAmount = 0
-                for orderItem in orderItems {
-                    totalAmount += (orderItem.unitAmount ?? 0) * orderItem.quantity
-                }
-                let summaryItem = try! OrderItem(name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "", unitAmount: totalAmount, quantity: 1)
-                orderItems.append(summaryItem)
                 
                 let applePayRequest = ApplePayRequest(
                     currency: currency,
@@ -363,6 +349,69 @@ extension ApplePayTokenizationViewModel {
                 seal.reject(error)
             }
         }
+    }
+    
+    internal func createOrderItemsFromClientSession(_ clientSession: ClientSession.APIResponse) throws -> [OrderItem] {
+        var orderItems: [OrderItem] = []
+        
+        if let merchantAmount = clientSession.order?.merchantAmount {
+            // If there's a hardcoded amount, create an order item with the merchant name as its title
+            let summaryItem = try OrderItem(
+                name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "",
+                unitAmount: merchantAmount,
+                quantity: 1,
+                discountAmount: nil,
+                taxAmount: nil)
+            orderItems.append(summaryItem)
+            
+        } else if let lineItems = clientSession.order?.lineItems {
+            // If there's no hardcoded amount, map line items to order items
+            guard !lineItems.isEmpty else {
+                let err = PrimerError.invalidValue(
+                    key: "clientSession.order.lineItems",
+                    value: "[]",
+                    userInfo: nil,
+                    diagnosticsId: UUID().uuidString)
+                throw err
+            }
+            
+            for lineItem in lineItems {
+                let orderItem = try lineItem.toOrderItem()
+                orderItems.append(orderItem)
+            }
+            
+            // Add fees, if present
+            if let fees = clientSession.order?.fees {
+                for fee in fees {
+                    let feeItem = try OrderItem(
+                        name: fee.type.lowercased().capitalizingFirstLetter(),
+                        unitAmount: fee.amount,
+                        quantity: 1,
+                        discountAmount: nil,
+                        taxAmount: nil)
+                    orderItems.append(feeItem)
+                }
+            }
+            
+            let summaryItem = try OrderItem(
+                name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "",
+                unitAmount: clientSession.order?.totalOrderAmount,
+                quantity: 1,
+                discountAmount: nil,
+                taxAmount: nil)
+            orderItems.append(summaryItem)
+            
+        } else {
+            // Throw error that neither a hardcoded amount, nor line items exist
+            let err = PrimerError.invalidValue(
+                key: "clientSession.order.lineItems or clientSession.order.amount",
+                value: nil,
+                userInfo: nil,
+                diagnosticsId: UUID().uuidString)
+            throw err
+        }
+        
+        return orderItems
     }
 }
 
