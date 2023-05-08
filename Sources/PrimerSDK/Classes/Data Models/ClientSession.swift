@@ -158,6 +158,28 @@ internal class ClientSession {
             case id = "orderId", merchantAmount, totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, lineItems, shippingAmount
         }
         
+        internal init(
+            id: String?,
+            merchantAmount: Int?,
+            totalOrderAmount: Int?,
+            totalTaxAmount: Int?,
+            countryCode: CountryCode?,
+            currencyCode: Currency?,
+            fees: [ClientSession.Order.Fee]?,
+            lineItems: [ClientSession.Order.LineItem]?,
+            shippingAmount: Int?
+        ) {
+            self.id = id
+            self.merchantAmount = merchantAmount
+            self.totalOrderAmount = totalOrderAmount
+            self.totalTaxAmount = totalTaxAmount
+            self.countryCode = countryCode
+            self.currencyCode = currencyCode
+            self.fees = fees
+            self.lineItems = lineItems
+            self.shippingAmount = shippingAmount
+        }
+        
         internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             id = (try? container.decode(String?.self, forKey: .id)) ?? nil
@@ -275,6 +297,14 @@ internal class ClientSession {
             
             enum CodingKeys: String, CodingKey {
                 case type, amount
+            }
+            
+            init(
+                type: String,
+                amount: Int
+            ) {
+                self.type = type
+                self.amount = amount
             }
             
             internal init(from decoder: Decoder) throws {
