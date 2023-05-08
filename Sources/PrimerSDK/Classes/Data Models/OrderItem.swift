@@ -16,16 +16,25 @@ internal struct OrderItem: Codable {
     public let name: String
     public let unitAmount: Int?
     public let quantity: Int
+    public let discountAmount: Int?
+    public let taxAmount: Int?
     public var isPending: Bool = false
     
     public var applePayItem: PKPaymentSummaryItem {
         
         var applePayItemAmount: NSDecimalNumber!
         
+        let tmpUnitAmount = unitAmount ?? 0
+        let tmpQuantity = quantity
+        let tmpAmount = tmpUnitAmount * tmpQuantity
+        let tmpDiscountAmount = discountAmount ?? 0
+        let tmpTaxAmount = taxAmount ?? 0
+        let tmpTotalOrderItemAmount = tmpAmount - tmpDiscountAmount + tmpTaxAmount
+        
         if AppState.current.currency?.isZeroDecimal == true {
-            applePayItemAmount = NSDecimalNumber(value: (unitAmount ?? 0)*quantity)
+            applePayItemAmount = NSDecimalNumber(value: tmpTotalOrderItemAmount)
         } else {
-            applePayItemAmount = NSDecimalNumber(value: (unitAmount ?? 0)*quantity).dividing(by: 100)
+            applePayItemAmount = NSDecimalNumber(value: tmpTotalOrderItemAmount).dividing(by: 100)
         }
         
         let item = PKPaymentSummaryItem(label: name, amount: applePayItemAmount)
@@ -37,6 +46,8 @@ internal struct OrderItem: Codable {
         name: String,
         unitAmount: Int?,
         quantity: Int,
+        discountAmount: Int?,
+        taxAmount: Int?,
         isPending: Bool = false
     ) throws {
         if isPending && unitAmount != nil {
@@ -55,6 +66,8 @@ internal struct OrderItem: Codable {
         self.unitAmount = unitAmount
         self.quantity = quantity
         self.isPending = isPending
+        self.discountAmount = discountAmount
+        self.taxAmount = taxAmount
     }
     
 }
