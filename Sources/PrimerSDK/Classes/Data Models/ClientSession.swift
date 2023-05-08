@@ -213,9 +213,30 @@ internal class ClientSession {
             let quantity: Int
             let amount: Int?
             let discountAmount: Int?
-            let reference: String?
             let name: String?
             let description: String?
+            let taxAmount: Int?
+            let taxCode: String?
+            
+            init(
+                itemId: String?,
+                quantity: Int,
+                amount: Int?,
+                discountAmount: Int?,
+                name: String?,
+                description: String?,
+                taxAmount: Int?,
+                taxCode: String?
+            ) {
+                self.itemId = itemId
+                self.quantity = quantity
+                self.amount = amount
+                self.discountAmount = discountAmount
+                self.name = name
+                self.description = description
+                self.taxAmount = taxAmount
+                self.taxCode = taxCode
+            }
             
             internal init(
                 itemId: String?,
@@ -240,6 +261,8 @@ internal class ClientSession {
                     name: (self.description ?? PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName) ?? "Item",
                     unitAmount: self.amount,
                     quantity: self.quantity,
+                    discountAmount: self.discountAmount,
+                    taxAmount: self.taxAmount,
                     isPending: false)
             }
         }
