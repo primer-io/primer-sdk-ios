@@ -130,7 +130,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var clientSession = ClientSessionRequestBody(
         customerId: "ios-customer-\(String.randomString(length: 8))",
         orderId: "ios-order-\(String.randomString(length: 8))",
-        currencyCode: .MYR,
+        currencyCode: .EUR,
         amount: nil,
         metadata: nil,
         customer: ClientSessionRequestBody.Customer(
@@ -158,18 +158,22 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 postalCode: "EC53 8BT")
         ),
         order: ClientSessionRequestBody.Order(
-            countryCode: .my,
+            countryCode: .fr,
             lineItems: [
                 ClientSessionRequestBody.Order.LineItem(
                     itemId: "fancy-shoes-\(String.randomString(length: 4))",
                     description: "Fancy Shoes",
-                    amount: 200,
-                    quantity: 1),
+                    amount: 1000,
+                    quantity: 1,
+                    discountAmount: 111,
+                    taxAmount: 222),
                 ClientSessionRequestBody.Order.LineItem(
                     itemId: "cool-hat-\(String.randomString(length: 4))",
                     description: "Cool Hat",
-                    amount: 400,
-                    quantity: 2)
+                    amount: 2000,
+                    quantity: 2,
+                    discountAmount: 111,
+                    taxAmount: 222),
             ]),
         paymentMethod: ClientSessionRequestBody.PaymentMethod(
             vaultOnSuccess: false,
