@@ -230,7 +230,7 @@ internal class ClientSession {
         // MARK: ClientSession.Order.LineItem
         
         internal struct LineItem: Codable {
-            
+
             let itemId: String?
             let quantity: Int
             let amount: Int?
@@ -292,6 +292,7 @@ internal class ClientSession {
         // MARK: ClientSession.Order.Fee
         
         internal struct Fee: Codable {
+            
             let type: String
             let amount: Int
             
