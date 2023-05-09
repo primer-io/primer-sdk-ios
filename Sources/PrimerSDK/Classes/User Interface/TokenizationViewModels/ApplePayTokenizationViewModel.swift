@@ -383,13 +383,16 @@ extension ApplePayTokenizationViewModel {
             // Add fees, if present
             if let fees = clientSession.order?.fees {
                 for fee in fees {
-                    let feeItem = try OrderItem(
-                        name: fee.type.lowercased().capitalizingFirstLetter(),
-                        unitAmount: fee.amount,
-                        quantity: 1,
-                        discountAmount: nil,
-                        taxAmount: nil)
-                    orderItems.append(feeItem)
+                    switch fee.type {
+                    case .surcharge:
+                        let feeItem = try OrderItem(
+                            name: Strings.ApplePay.surcharge,
+                            unitAmount: fee.amount,
+                            quantity: 1,
+                            discountAmount: nil,
+                            taxAmount: nil)
+                        orderItems.append(feeItem)
+                    }
                 }
             }
             
