@@ -253,7 +253,7 @@ internal class ClientSession {
         
         internal struct Fee: Codable {
             
-            let type: String
+            let type: FeeType
             let amount: Int
             
             enum CodingKeys: String, CodingKey {
@@ -261,23 +261,15 @@ internal class ClientSession {
             }
             
             init(
-                type: String,
+                type: FeeType,
                 amount: Int
             ) {
                 self.type = type
                 self.amount = amount
             }
             
-            internal init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                type = try container.decode(String.self, forKey: .type)
-                amount = try container.decode(Int.self, forKey: .amount)
-            }
-            
-            internal func encode(to encoder: Encoder) throws {
-                var container = encoder.container(keyedBy: CodingKeys.self)
-                try container.encode(type, forKey: .type)
-                try container.encode(amount, forKey: .amount)
+            enum FeeType: String, Codable {
+                case surcharge = "SURCHARGE"
             }
         }
     }
