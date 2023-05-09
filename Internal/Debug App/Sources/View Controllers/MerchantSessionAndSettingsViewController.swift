@@ -165,15 +165,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     description: "Fancy Shoes",
                     amount: 1000,
                     quantity: 1,
-                    discountAmount: 111,
-                    taxAmount: 222),
-                ClientSessionRequestBody.Order.LineItem(
-                    itemId: "cool-hat-\(String.randomString(length: 4))",
-                    description: "Cool Hat",
-                    amount: 2000,
-                    quantity: 2,
-                    discountAmount: 111,
-                    taxAmount: 222),
+                    discountAmount: nil,
+                    taxAmount: nil),
             ]),
         paymentMethod: ClientSessionRequestBody.PaymentMethod(
             vaultOnSuccess: false,
