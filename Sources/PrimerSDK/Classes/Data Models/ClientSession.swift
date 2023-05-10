@@ -158,6 +158,28 @@ internal class ClientSession {
             case id = "orderId", merchantAmount, totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, lineItems, shippingAmount
         }
         
+        internal init(
+            id: String?,
+            merchantAmount: Int?,
+            totalOrderAmount: Int?,
+            totalTaxAmount: Int?,
+            countryCode: CountryCode?,
+            currencyCode: Currency?,
+            fees: [ClientSession.Order.Fee]?,
+            lineItems: [ClientSession.Order.LineItem]?,
+            shippingAmount: Int?
+        ) {
+            self.id = id
+            self.merchantAmount = merchantAmount
+            self.totalOrderAmount = totalOrderAmount
+            self.totalTaxAmount = totalTaxAmount
+            self.countryCode = countryCode
+            self.currencyCode = currencyCode
+            self.fees = fees
+            self.lineItems = lineItems
+            self.shippingAmount = shippingAmount
+        }
+        
         internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             id = (try? container.decode(String?.self, forKey: .id)) ?? nil
@@ -186,20 +208,43 @@ internal class ClientSession {
         // MARK: ClientSession.Order.LineItem
         
         internal struct LineItem: Codable {
-            
+
             let itemId: String?
             let quantity: Int
             let amount: Int?
             let discountAmount: Int?
-            let reference: String?
             let name: String?
             let description: String?
+            let taxAmount: Int?
+            let taxCode: String?
+            
+            init(
+                itemId: String?,
+                quantity: Int,
+                amount: Int?,
+                discountAmount: Int?,
+                name: String?,
+                description: String?,
+                taxAmount: Int?,
+                taxCode: String?
+            ) {
+                self.itemId = itemId
+                self.quantity = quantity
+                self.amount = amount
+                self.discountAmount = discountAmount
+                self.name = name
+                self.description = description
+                self.taxAmount = taxAmount
+                self.taxCode = taxCode
+            }
             
             func toOrderItem() throws -> OrderItem {
                 return try OrderItem(
                     name: (self.description ?? PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName) ?? "Item",
                     unitAmount: self.amount,
                     quantity: self.quantity,
+                    discountAmount: self.discountAmount,
+                    taxAmount: self.taxAmount,
                     isPending: false)
             }
         }
@@ -207,23 +252,24 @@ internal class ClientSession {
         // MARK: ClientSession.Order.Fee
         
         internal struct Fee: Codable {
-            let type: String
+            
+            let type: FeeType
             let amount: Int
             
             enum CodingKeys: String, CodingKey {
                 case type, amount
             }
             
-            internal init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                type = try container.decode(String.self, forKey: .type)
-                amount = try container.decode(Int.self, forKey: .amount)
+            init(
+                type: FeeType,
+                amount: Int
+            ) {
+                self.type = type
+                self.amount = amount
             }
             
-            internal func encode(to encoder: Encoder) throws {
-                var container = encoder.container(keyedBy: CodingKeys.self)
-                try container.encode(type, forKey: .type)
-                try container.encode(amount, forKey: .amount)
+            enum FeeType: String, Codable {
+                case surcharge = "SURCHARGE"
             }
         }
     }
