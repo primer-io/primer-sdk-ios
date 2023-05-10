@@ -33,9 +33,10 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
                         quantity: 1,
                         amount: 100,
                         discountAmount: nil,
-                        reference: "mock-reference-1",
                         name: "mock-name-1",
-                        description: "mock-description-1")
+                        description: "mock-description-1",
+                        taxAmount: nil,
+                        taxCode: nil)
                 ],
                 shippingAmount: nil),
             customer: nil,
@@ -121,9 +122,10 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
                         quantity: 1,
                         amount: 100,
                         discountAmount: nil,
-                        reference: "mock-reference-1",
                         name: "mock-name-1",
-                        description: "mock-description-1")
+                        description: "mock-description-1",
+                        taxAmount: nil,
+                        taxCode: nil)
                 ],
                 shippingAmount: nil),
             customer: ClientSession.Customer(

@@ -158,19 +158,6 @@ internal class ClientSession {
             case id = "orderId", merchantAmount, totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, lineItems, shippingAmount
         }
         
-        internal init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            id = (try? container.decode(String?.self, forKey: .id)) ?? nil
-            merchantAmount = (try? container.decode(Int?.self, forKey: .merchantAmount)) ?? nil
-            totalOrderAmount = (try? container.decode(Int?.self, forKey: .totalOrderAmount)) ?? nil
-            totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
-            countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
-            currencyCode = (try? container.decode(Currency?.self, forKey: .currencyCode)) ?? nil
-            fees = (try? container.decode([ClientSession.Order.Fee]?.self, forKey: .fees)) ?? nil
-            lineItems = (try? container.decode([ClientSession.Order.LineItem]?.self, forKey: .lineItems)) ?? nil
-            shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
-        }
-        
         internal init(
             id: String?,
             merchantAmount: Int?,
@@ -193,6 +180,19 @@ internal class ClientSession {
             self.shippingAmount = shippingAmount
         }
         
+        internal init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            id = (try? container.decode(String?.self, forKey: .id)) ?? nil
+            merchantAmount = (try? container.decode(Int?.self, forKey: .merchantAmount)) ?? nil
+            totalOrderAmount = (try? container.decode(Int?.self, forKey: .totalOrderAmount)) ?? nil
+            totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
+            countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
+            currencyCode = (try? container.decode(Currency?.self, forKey: .currencyCode)) ?? nil
+            fees = (try? container.decode([ClientSession.Order.Fee]?.self, forKey: .fees)) ?? nil
+            lineItems = (try? container.decode([ClientSession.Order.LineItem]?.self, forKey: .lineItems)) ?? nil
+            shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
+        }
+        
         internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try? container.encode(merchantAmount, forKey: .merchantAmount)
@@ -208,31 +208,34 @@ internal class ClientSession {
         // MARK: ClientSession.Order.LineItem
         
         internal struct LineItem: Codable {
-            
+
             let itemId: String?
             let quantity: Int
             let amount: Int?
             let discountAmount: Int?
-            let reference: String?
             let name: String?
             let description: String?
+            let taxAmount: Int?
+            let taxCode: String?
             
-            internal init(
+            init(
                 itemId: String?,
                 quantity: Int,
                 amount: Int?,
                 discountAmount: Int?,
-                reference: String?,
                 name: String?,
-                description: String?
+                description: String?,
+                taxAmount: Int?,
+                taxCode: String?
             ) {
                 self.itemId = itemId
                 self.quantity = quantity
                 self.amount = amount
                 self.discountAmount = discountAmount
-                self.reference = reference
                 self.name = name
                 self.description = description
+                self.taxAmount = taxAmount
+                self.taxCode = taxCode
             }
             
             func toOrderItem() throws -> OrderItem {
@@ -240,6 +243,8 @@ internal class ClientSession {
                     name: (self.description ?? PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName) ?? "Item",
                     unitAmount: self.amount,
                     quantity: self.quantity,
+                    discountAmount: self.discountAmount,
+                    taxAmount: self.taxAmount,
                     isPending: false)
             }
         }
@@ -247,23 +252,24 @@ internal class ClientSession {
         // MARK: ClientSession.Order.Fee
         
         internal struct Fee: Codable {
-            let type: String
+            
+            let type: FeeType
             let amount: Int
             
             enum CodingKeys: String, CodingKey {
                 case type, amount
             }
             
-            internal init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                type = try container.decode(String.self, forKey: .type)
-                amount = try container.decode(Int.self, forKey: .amount)
+            init(
+                type: FeeType,
+                amount: Int
+            ) {
+                self.type = type
+                self.amount = amount
             }
             
-            internal func encode(to encoder: Encoder) throws {
-                var container = encoder.container(keyedBy: CodingKeys.self)
-                try container.encode(type, forKey: .type)
-                try container.encode(amount, forKey: .amount)
+            enum FeeType: String, Codable {
+                case surcharge = "SURCHARGE"
             }
         }
     }
