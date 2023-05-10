@@ -273,10 +273,13 @@ struct ClientSessionRequestBody {
         }
         
         struct LineItem: Codable {
+            
             var itemId: String?
             var description: String?
             var amount: Int?
             var quantity: Int?
+            var discountAmount: Int?
+            var taxAmount: Int?
             
             var dictionaryValue: [String: Any]? {
                 var dic: [String: Any] = [:]
@@ -295,6 +298,14 @@ struct ClientSessionRequestBody {
                 
                 if let quantity = quantity {
                     dic["quantity"] = quantity
+                }
+                
+                if let taxAmount = taxAmount {
+                    dic["taxAmount"] = taxAmount
+                }
+                
+                if let discountAmount = discountAmount {
+                    dic["discountAmount"] = discountAmount
                 }
                 
                 return dic.keys.count == 0 ? nil : dic

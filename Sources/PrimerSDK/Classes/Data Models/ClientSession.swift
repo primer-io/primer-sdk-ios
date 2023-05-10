@@ -193,28 +193,6 @@ internal class ClientSession {
             shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
         }
         
-        internal init(
-            id: String?,
-            merchantAmount: Int?,
-            totalOrderAmount: Int?,
-            totalTaxAmount: Int?,
-            countryCode: CountryCode?,
-            currencyCode: Currency?,
-            fees: [ClientSession.Order.Fee]?,
-            lineItems: [ClientSession.Order.LineItem]?,
-            shippingAmount: Int?
-        ) {
-            self.id = id
-            self.merchantAmount = merchantAmount
-            self.totalOrderAmount = totalOrderAmount
-            self.totalTaxAmount = totalTaxAmount
-            self.countryCode = countryCode
-            self.currencyCode = currencyCode
-            self.fees = fees
-            self.lineItems = lineItems
-            self.shippingAmount = shippingAmount
-        }
-        
         internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try? container.encode(merchantAmount, forKey: .merchantAmount)
@@ -258,24 +236,6 @@ internal class ClientSession {
                 self.description = description
                 self.taxAmount = taxAmount
                 self.taxCode = taxCode
-            }
-            
-            internal init(
-                itemId: String?,
-                quantity: Int,
-                amount: Int?,
-                discountAmount: Int?,
-                reference: String?,
-                name: String?,
-                description: String?
-            ) {
-                self.itemId = itemId
-                self.quantity = quantity
-                self.amount = amount
-                self.discountAmount = discountAmount
-                self.reference = reference
-                self.name = name
-                self.description = description
             }
             
             func toOrderItem() throws -> OrderItem {

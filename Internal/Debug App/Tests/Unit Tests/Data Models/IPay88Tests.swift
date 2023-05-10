@@ -82,9 +82,10 @@ class IPay88Tests: XCTestCase {
                             quantity: 1,
                             amount: 100,
                             discountAmount: nil,
-                            reference: "ref",
                             name: "item-name",
-                            description: "item-description")
+                            description: "item-description",
+                            taxAmount: nil,
+                            taxCode: nil)
                     ],
                     shippingAmount: nil),
                 customer: ClientSession.Customer(
@@ -197,7 +198,7 @@ class IPay88Tests: XCTestCase {
             prodDesc: prodDesc,
             userName: userName,
             userEmail: userEmail,
-            userContact: userContact,
+            userContact: userContact ?? "",
             remark: remark,
             lang: lang,
             country: country,
