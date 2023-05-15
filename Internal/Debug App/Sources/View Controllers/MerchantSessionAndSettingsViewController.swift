@@ -597,7 +597,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     merchantIdentifier: "merchant.checkout.team",
                     merchantName: merchantNameTextField.text ?? "Primer Merchant",
                     isCaptureBillingAddressEnabled: false)),
-            uiOptions: nil
+            uiOptions: nil,
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: true)
         )
         
         switch renderMode {
