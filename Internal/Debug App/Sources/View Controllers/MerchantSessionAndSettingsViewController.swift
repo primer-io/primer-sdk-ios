@@ -158,12 +158,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 postalCode: "EC53 8BT")
         ),
         order: ClientSessionRequestBody.Order(
-            countryCode: .fr,
+            countryCode: .de,
             lineItems: [
                 ClientSessionRequestBody.Order.LineItem(
                     itemId: "fancy-shoes-\(String.randomString(length: 4))",
                     description: "Fancy Shoes",
-                    amount: 1000,
+                    amount: 11000,
                     quantity: 1,
                     discountAmount: nil,
                     taxAmount: nil),
@@ -491,7 +491,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     merchantIdentifier: "merchant.checkout.team",
                     merchantName: merchantNameTextField.text ?? "Primer Merchant",
                     isCaptureBillingAddressEnabled: false)),
-            uiOptions: uiOptions
+            uiOptions: uiOptions,
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
         
         switch renderMode {

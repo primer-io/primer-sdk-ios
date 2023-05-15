@@ -504,14 +504,8 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     
                 } else {
-                    guard let paymentMethodTokenString = paymentMethodTokenData.token else {
-                        let paymentMethodTokenError = PrimerError.invalidValue(key: "resumePaymentId", value: "Payment method token not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: paymentMethodTokenError)
-                        throw paymentMethodTokenError
-                    }
-                    
                     firstly {
-                        self.handleCreatePaymentEvent(paymentMethodTokenString)
+                        self.handleCreatePaymentEvent(paymentMethodTokenData.token)
                     }
                     .done { paymentResponse -> Void in
                         guard paymentResponse != nil else {
@@ -555,7 +549,6 @@ extension PrimerHeadlessUniversalCheckout {
         func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
             return Promise { seal in
                 if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-#if canImport(Primer3DS)
                     guard let paymentMethodTokenData = paymentMethodTokenData else {
                         let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -565,24 +558,19 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     
                     let threeDSService = ThreeDSService()
-                    threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
-                        switch result {
-                        case .success(let resumeToken):
+                    threeDSService.perform3DS(
+                        paymentMethodTokenData: paymentMethodTokenData,
+                        sdkDismissed: nil) { result in
                             DispatchQueue.main.async {
-                                seal.fulfill(resumeToken)
+                                switch result {
+                                case .success(let resumeToken):
+                                    seal.fulfill(resumeToken)
+                                    
+                                case .failure(let err):
+                                    seal.reject(err)
+                                }
                             }
-                            
-                        case .failure(let err):
-                            let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: containerErr)
-                            seal.reject(containerErr)
                         }
-                    }
-#else
-                    let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-#endif
                     
                 } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
                     if let redirectUrlStr = decodedJWTToken.redirectUrl,
@@ -1029,8 +1017,7 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
         if let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
            decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
             
-#if canImport(Primer3DS)
-            guard let paymentMethod = paymentMethodTokenData else {
+            guard let paymentMethodTokenData = paymentMethodTokenData else {
                 DispatchQueue.main.async {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -1039,38 +1026,36 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
                 return
             }
             
-            let threeDSService = ThreeDSService()
             PrimerInternal.shared.intent = .checkout
-            
-            threeDSService.perform3DS(paymentMethodTokenData: paymentMethod, protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
-                switch result {
-                case .success(let resumeToken):
+            let threeDSService = ThreeDSService()
+            threeDSService.perform3DS(
+                paymentMethodTokenData: paymentMethodTokenData,
+                sdkDismissed: nil) { result in
                     DispatchQueue.main.async {
-                        PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
+                        switch result {
+                        case .success(let resumeToken):
+                            PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
 
-                        }
-                    }
-                    
-                case .failure(let err):
-                    log(logLevel: .error, message: "Failed to perform 3DS with error \(err as NSError)")
-                    let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: containerErr)
-                    DispatchQueue.main.async {
-                        PrimerDelegateProxy.primerDidFailWithError(containerErr, data: nil) { errorDecision in
+                            }
+                            
+                        case .failure(let err):
+                            var primerError: PrimerError
+                            
+                            if let primerErr = err as? PrimerError {
+                                primerError = primerErr
+                            } else {
+                                primerError = PrimerError.underlyingErrors(
+                                    errors: [err],
+                                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                    diagnosticsId: UUID().uuidString)
+                            }
+                            
+                            PrimerDelegateProxy.primerDidFailWithError(primerError, data: nil) { errorDecision in
 
+                            }
                         }
                     }
                 }
-            }
-#else
-            DispatchQueue.main.async {
-                let err = PrimerError.failedToPerform3DS(error: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                PrimerDelegateProxy.primerDidFailWithError(err, data: nil) { errorDecision in
-                    // FIXME: handle the err
-                }
-            }
-#endif
             
         } else {
             let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)

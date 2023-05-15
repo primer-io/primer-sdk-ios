@@ -23,8 +23,13 @@ extension PrimerAPIClient {
         }
     }
     
-    func continue3DSAuth(clientToken: DecodedJWTToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void) {
-        let endpoint = PrimerAPI.continue3DSRemoteAuth(clientToken: clientToken, threeDSTokenId: threeDSTokenId)
+    func continue3DSAuth(
+        clientToken: DecodedJWTToken,
+        threeDSTokenId: String,
+        continueInfo: ThreeDS.ContinueInfo,
+        completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void
+    ) {
+        let endpoint = PrimerAPI.continue3DSRemoteAuth(clientToken: clientToken, threeDSTokenId: threeDSTokenId, continueInfo: continueInfo)
         networkService.request(endpoint) { (result: Result<ThreeDS.PostAuthResponse, Error>) in
             switch result {
             case .success(let postAuthResponse):
@@ -34,9 +39,7 @@ extension PrimerAPIClient {
                 completion(.failure(err))
             }
         }
-        
     }
-    
 }
 
 #endif
