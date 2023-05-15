@@ -396,7 +396,14 @@ internal enum InternalError: PrimerErrorProtocol {
     }
 
     var exposedError: Error {
-        return PrimerError.unknown(userInfo: self.errorUserInfo as? [String: String], diagnosticsId: self.diagnosticsId).exposedError
+        switch self {
+        case .failedToPerform3dsButShouldContinue(let error):
+            return error.primerError
+        case .failedToPerform3dsAndShouldBreak(let error):
+            return error.primerError
+        default:
+            return PrimerError.unknown(userInfo: self.errorUserInfo as? [String: String], diagnosticsId: self.diagnosticsId)
+        }
     }
 }
 
@@ -892,6 +899,41 @@ internal struct PrimerServerErrorResponse: Codable {
     var `description`: String
     var diagnosticsId: String
     var validationErrors: [String]?
+}
+
+internal extension Error {
+    
+    var primerError: Error {
+        if let internalErr = self as? InternalError {
+            return internalErr.exposedError
+        } else if let primer3DSErr = self as? Primer3DSErrorContainer {
+            return primer3DSErr
+        } else if let primerErr = self as? PrimerError {
+            switch primerErr {
+            case .underlyingErrors(let errors, _, _):
+                if errors.isEmpty {
+                    let unknownErr = PrimerError.unknown(
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: UUID().uuidString)
+                    return unknownErr
+                } else if errors.count == 1 {
+                    return errors.first!.primerError
+                } else {
+                    return primerErr
+                }
+            default:
+                return primerErr
+            }
+        } else if let validationErr = self as? PrimerValidationError {
+            return validationErr
+        } else {
+            let primerErr = PrimerError.underlyingErrors(
+                errors: [self],
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: UUID().uuidString)
+            return primerErr
+        }
+    }
 }
 
 #endif

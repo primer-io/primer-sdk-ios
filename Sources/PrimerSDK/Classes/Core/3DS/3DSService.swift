@@ -94,7 +94,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         .catch { err in
             var continueInfo: ThreeDS.ContinueInfo?
             
-            if case InternalError.noNeedToPerform3ds(let status) = err {
+            if case InternalError.noNeedToPerform3ds = err {
                 precondition(false, "Should always have resumeToken by now")
                 
                 guard let resumePaymentToken = self.resumePaymentToken else {
@@ -111,9 +111,9 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 completion(.success(resumePaymentToken))
                 return
                 
-            } else if case InternalError.failedToPerform3dsAndShouldBreak(let error) = err {
-                ErrorHandler.handle(error: error)
-                completion(.failure(error))
+            } else if case InternalError.failedToPerform3dsAndShouldBreak(let primerErr) = err {
+                ErrorHandler.handle(error: primerErr)
+                completion(.failure(primerErr))
                 return
                 
             } else if case InternalError.failedToPerform3dsButShouldContinue(let primer3DSErrorContainer) = err {
@@ -128,23 +128,11 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 self.finalize3DSAuthorization(paymentMethodToken: paymentMethodTokenData.token, continueInfo: continueInfo)
             }
             .done { result in
-                let tmpResumePaymentToken = result.resumeToken ?? self.resumePaymentToken
-                
-                guard let resumePaymentToken = tmpResumePaymentToken else {
-                    let err = PrimerError.invalidValue(
-                        key: "resumeToken",
-                        value: nil,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    completion(.failure(err))
-                    return
-                }
-                
-                completion(.success(resumePaymentToken))
+                self.resumePaymentToken = result.resumeToken
+                completion(.success(result.resumeToken))
             }
             .catch { err in
-                completion(.failure(err))
+                completion(.failure(err.primerError))
             }
         }
         
@@ -167,7 +155,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             completion(.success(threeDsAuth.resumeToken))
         }
         .catch { err in
-            completion(.failure(err))
+            completion(.failure(err.primerError))
         }
 #endif
     }
