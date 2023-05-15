@@ -8,8 +8,12 @@
 #if canImport(UIKit)
 
 import Foundation
+#if canImport(Primer3DS)
+import Primer3DS
+#endif
 
 protocol ThreeDSAuthenticationProtocol: Codable {
+    
     var acsReferenceNumber: String? { get }
     var acsSignedContent: String? { get }
     var acsTransactionId: String? { get }
@@ -18,6 +22,7 @@ protocol ThreeDSAuthenticationProtocol: Codable {
 }
 
 protocol ThreeDSSDKAuthDataProtocol: Codable {
+    
     var sdkAppId: String { get }
     var sdkTransactionId: String { get }
     var sdkTimeout: Int { get }
@@ -26,36 +31,67 @@ protocol ThreeDSSDKAuthDataProtocol: Codable {
     var sdkReferenceNumber: String { get }
 }
 
-public struct ThreeDS {
+public class ThreeDS {
+    
+#if canImport(Primer3DS)
+    class Cer: Primer3DSCertificate {
+        
+        var cardScheme: String
+        var encryptionKey: String
+        var rootCertificate: String
+        
+        init(cardScheme: String, rootCertificate: String, encryptionKey: String) {
+            self.cardScheme = cardScheme
+            self.rootCertificate = rootCertificate
+            self .encryptionKey = encryptionKey
+        }
+    }
+    
+    class ServerAuthData: Primer3DSServerAuthData {
+        
+        var acsReferenceNumber: String?
+        var acsSignedContent: String?
+        var acsTransactionId: String?
+        var responseCode: String
+        var transactionId: String?
+        
+        init(acsReferenceNumber: String?, acsSignedContent: String?, acsTransactionId: String?, responseCode: String, transactionId: String?) {
+            self.acsReferenceNumber = acsReferenceNumber
+            self.acsSignedContent = acsSignedContent
+            self.acsTransactionId = acsTransactionId
+            self.responseCode = responseCode
+            self.transactionId = transactionId
+        }
+    }
+#endif
     
     internal struct Keys: Codable {
+        
         let threeDSecureIoCertificates: [ThreeDS.Certificate]?
         let netceteraLicenseKey: String?
     }
     
     internal struct Certificate: Codable {
+        
         let encryptionKey: String
         let cardNetwork: String
         let rootCertificate: String
     }
-    
-    internal enum ProtocolVersion: String, Codable {
-        case v1 = "2.1.0"
-        case v2 = "2.2.0"
-    }
 
     internal enum ChallengePreference: String, Codable {
-        case noPreference           = "NO_PREFERENCE"
-        case requestedByRequestor   = "REQUESTED_BY_REQUESTOR"
-        case requestedDueToMandate  = "REQUESTED_DUE_TO_MANDATE"
+        
+        case noPreference = "NO_PREFERENCE"
+        case requestedByRequestor = "REQUESTED_BY_REQUESTOR"
     }
 
     internal struct ACSRenderingType: Codable {
+        
         let acsInterface: String?
         let acsUiTemplate: String?
     }
     
     internal enum AuthenticationStatus: String {
+        
         case y, a, n, u, e
         
         init(rawValue: String) {
@@ -93,10 +129,10 @@ public struct ThreeDS {
         var recommendation: AuthenticationRecommendation {
             switch self {
             case .y,
-                 .a:
+                    .a:
                 return .proceed
             case .n,
-                 .e:
+                    .e:
                 return .stop
             case .u:
                 return .merchantDecision
@@ -109,6 +145,7 @@ public struct ThreeDS {
     }
     
     internal enum TestScenario: String, Codable {
+        
         // swiftlint:disable identifier_name
         case three3DS2MethodTimeout = "3DS_V2_METHOD_TIMEOUT"
         case threeDS2FrictionlessNoMethod = "3DS_V2_FRICTIONLESS_NO_METHOD"
@@ -126,6 +163,7 @@ public struct ThreeDS {
     }
     
     internal struct SDKAuthData: ThreeDSSDKAuthDataProtocol {
+        
         var sdkAppId: String
         var sdkTransactionId: String
         var sdkTimeout: Int
@@ -135,30 +173,45 @@ public struct ThreeDS {
     }
     
     internal struct BeginAuthRequest: Codable {
-        let maxProtocolVersion: ProtocolVersion
-        let challengePreference: ChallengePreference
-        let device: ThreeDS.SDKAuthData?
         
-        var amount: Int?
-        var currencyCode: Currency?
-        var orderId: String?
-        var customer: ThreeDS.Customer?
-        var billingAddress: ThreeDS.Address?
-        var shippingAddress: ThreeDS.Address?
-        var customerAccount: ThreeDS.CustomerAccount?
+        let maxProtocolVersion: String
+        let device: ThreeDS.SDKAuthData
     }
     
-    internal struct BeginAuthExtraData: Codable {
-        let amount: Int?
-        let currencyCode: Currency?
-        let orderId: String
-        let customer: ThreeDS.Customer
-        let billingAddress: ThreeDS.Address?
-        let shippingAddress: ThreeDS.Address?
-        let customerAccount: ThreeDS.CustomerAccount?
+    internal enum Status: String, Codable {
+        case success = "SUCCESS"
+        case failure = "FAILURE"
+    }
+    
+    internal enum ProtocolVersion: String, Codable {
+        
+        case v_2_1_0 = "2.1.0"
+        case v_2_2_0 = "2.2.0"
+        
+        init?(rawValue: String) {
+            if rawValue == ProtocolVersion.v_2_1_0.rawValue {
+                self = ProtocolVersion.v_2_1_0
+            } else if rawValue == ProtocolVersion.v_2_2_0.rawValue {
+                self = ProtocolVersion.v_2_2_0
+            } else {
+                if (rawValue.compareWithVersion("2.1") == .orderedSame) ||
+                    (rawValue.compareWithVersion("2.1") == .orderedDescending && rawValue.compareWithVersion("2.2") == .orderedAscending)
+                {
+                    self = ProtocolVersion.v_2_1_0
+                    
+                } else if (rawValue.compareWithVersion("2.2") == .orderedSame) ||
+                            (rawValue.compareWithVersion("2.2") == .orderedDescending && rawValue.compareWithVersion("2.3") == .orderedAscending)
+                {
+                    self = ProtocolVersion.v_2_2_0
+                } else {
+                    return nil
+                }
+            }
+        }
     }
     
     internal struct ThreeDSSDKAuthCompletion {
+        
         let sdkTransactionId: String
         let transactionStatus: ThreeDS.AuthenticationStatus
     }
@@ -225,6 +278,7 @@ public struct ThreeDS {
     }
     
     internal struct CustomerAccount: Codable {
+        
         let id: String?
         let createdAt: String?
         let updatedAt: String?
@@ -233,6 +287,7 @@ public struct ThreeDS {
     }
     
     public enum ResponseCode: String, Codable {
+        
         case notPerformed = "NOT_PERFORMED"
         case skipped = "SKIPPED"
         case authSuccess = "AUTH_SUCCESS"
@@ -242,6 +297,7 @@ public struct ThreeDS {
     }
     
     internal enum SkippedCode: String, Codable {
+        
         case gatewayUnavailable = "GATEWAY_UNAVAILABLE"
         case disabledByMerchant = "DISABLED_BY_MERCHANT"
         case notSupportedByIssuer = "NOT_SUPPORTED_BY_ISSUER"
@@ -257,7 +313,7 @@ public struct ThreeDS {
         
         let authentication: ThreeDSAuthenticationProtocol
         let token: PrimerPaymentMethodTokenData
-        let resumeToken: String?
+        let resumeToken: String
         
         enum CodingKeys: String, CodingKey {
             case authentication
@@ -274,7 +330,7 @@ public struct ThreeDS {
                 authentication = threeDSSkippedAPIResponse
             } else if let threeDSAppV2ChallengeAPIResponse = try? container.decode(ThreeDS.AppV2ChallengeAPIResponse.self, forKey: .authentication) {
                 authentication = threeDSAppV2ChallengeAPIResponse
-            }else if let threeDSBrowserV2ChallengeAPIResponse = try? container.decode(ThreeDS.BrowserV2ChallengeAPIResponse.self, forKey: .authentication) {
+            } else if let threeDSBrowserV2ChallengeAPIResponse = try? container.decode(ThreeDS.BrowserV2ChallengeAPIResponse.self, forKey: .authentication) {
                 authentication = threeDSBrowserV2ChallengeAPIResponse
             } else if let threeDSBrowserV1ChallengeAPIResponse = try? container.decode(ThreeDS.BrowserV1ChallengeAPIResponse.self, forKey: .authentication) {
                 authentication = threeDSBrowserV1ChallengeAPIResponse
@@ -282,34 +338,31 @@ public struct ThreeDS {
                 authentication = threeDSSuccessAPIResponse
             } else if let threeDSMethodAPIResponse = try? container.decode(ThreeDS.MethodAPIResponse.self, forKey: .authentication) {
                 authentication = threeDSMethodAPIResponse
-            }  else {
+            } else {
                 let err = InternalError.failedToDecode(message: "ThreeDS.BeginAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
             
+            resumeToken = try container.decode(String.self, forKey: .resumeToken)
             token = try container.decode(PrimerPaymentMethodTokenData.self, forKey: .token)
-            if let token = try? container.decode(String?.self, forKey: .resumeToken) {
-                resumeToken = token
-            } else {
-                resumeToken = nil
-            }
         }
     }
     
     internal struct PostAuthResponse: Codable {
+        
         let token: PrimerPaymentMethodTokenData
-        let resumeToken: String?
+        let resumeToken: String
         let authentication: Authentication?
     }
     
     internal struct Authentication: ThreeDSAuthenticationProtocol {
+        
         let acsReferenceNumber: String?
         let acsSignedContent: String?
         let acsTransactionId: String?
         let responseCode: ThreeDS.ResponseCode
         let transactionId: String?
-        
         let acsOperatorId: String?
         let cryptogram: String?
         let dsReferenceNumber: String?
@@ -320,12 +373,12 @@ public struct ThreeDS {
     }
     
     internal struct SkippedAPIResponse: ThreeDSAuthenticationProtocol, Codable {
+        
         let acsReferenceNumber: String?
         let acsSignedContent: String?
         let acsTransactionId: String?
         let responseCode: ThreeDS.ResponseCode
         let transactionId: String?
-        
         let acsChallengeMandated: Int?
         let acsOperatorId: String?
         let acsRenderingType: ACSRenderingType?
@@ -339,12 +392,12 @@ public struct ThreeDS {
     }
     
     internal struct MethodAPIResponse: ThreeDSAuthenticationProtocol {
+        
         let acsReferenceNumber: String?
         let acsSignedContent: String?
         let acsTransactionId: String?
         let responseCode: ThreeDS.ResponseCode
         let transactionId: String?
-        
         let protocolVersion: String
         let acsOperatorId: String?
         let dsReferenceNumber: String?
@@ -356,12 +409,12 @@ public struct ThreeDS {
     }
     
     internal struct BrowserV2ChallengeAPIResponse: ThreeDSAuthenticationProtocol {
+        
         let acsReferenceNumber: String?
         let acsSignedContent: String?
         let acsTransactionId: String?
         let responseCode: ThreeDS.ResponseCode
         let transactionId: String?
-        
         let protocolVersion: String
         let acsOperatorId: String?
         let dsReferenceNumber: String?
@@ -374,12 +427,12 @@ public struct ThreeDS {
     }
     
     internal struct AppV2ChallengeAPIResponse: ThreeDSAuthenticationProtocol {
+        
         let acsReferenceNumber: String?
         let acsSignedContent: String?
         let acsTransactionId: String?
         let responseCode: ThreeDS.ResponseCode
         let transactionId: String?
-        
         let protocolVersion: String
         let acsOperatorId: String?
         let dsReferenceNumber: String?
@@ -391,12 +444,12 @@ public struct ThreeDS {
     }
     
     internal struct BrowserV1ChallengeAPIResponse: ThreeDSAuthenticationProtocol {
+        
         let acsRefNumber: String?
         let acsSignedContent: String?
         let acsTransactionId: String?
         let responseCode: ThreeDS.ResponseCode
         let transactionId: String?
-        
         let protocolVersion: String
         let acsOperatorId: String?
         let acsReferenceNumber: String?
@@ -411,12 +464,12 @@ public struct ThreeDS {
     }
     
     internal struct DeclinedAPIResponse: ThreeDSAuthenticationProtocol {
+        
         let acsRefNumber: String?
         let acsSignedContent: String?
         let acsTransactionId: String?
         let responseCode: ThreeDS.ResponseCode
         let transactionId: String?
-        
         let protocolVersion: String
         let acsOperatorId: String?
         let acsReferenceNumber: String?
@@ -428,12 +481,14 @@ public struct ThreeDS {
     }
     
     public struct AuthenticationDetails: Codable {
+        
         public let responseCode: ResponseCode
         public let reasonCode, reasonText, protocolVersion: String?
         public let challengeIssued: Bool?
     }
 
     internal enum DeclinedReasonCode: String, Codable {
+        
         case unknown = "UNKNOWN"
         case rejectedByIssuer = "REJECTED_BY_ISSUER"
         case cardAuthenticationFailed = "CARD_AUTHENTICATION_FAILED"
@@ -469,6 +524,64 @@ public struct ThreeDS {
         case protocolVersionNotSupported = "PROTOCOL_VERSION_NOT_SUPPORTED"
         case transactionExcludedFromAttemptsProcessing = "TRANSACTION_EXCLUDED_FROM_ATTEMPTS_PROCESSING"
         case requestedProgramNotSupported = "REQUESTED_PROGRAM_NOT_SUPPORTED"
+    }
+    
+    
+    class ContinueInfo: Encodable {
+        
+        var platform: String
+        var threeDsWrapperSdkVersion: String?
+        var threeDsSdkProvider: String?
+        var threeDsSdkVersion: String?
+        var initProtocolVersion: String?
+        var status: ThreeDS.Status
+        var error: ThreeDS.ContinueInfo.Error?
+        
+        init(
+            initProtocolVersion: String?,
+            error: Primer3DSErrorContainer?
+        ) {
+            self.platform = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
+            self.initProtocolVersion = initProtocolVersion
+            
+#if canImport(Primer3DS)
+            self.threeDsWrapperSdkVersion = Primer3DS.version
+            self.threeDsSdkProvider = Primer3DS.threeDsSdkProvider
+            self.threeDsSdkVersion = Primer3DS.threeDsSdkVersion
+#endif
+            
+            if let primer3DSErr = error {
+                self.status = .failure
+                self.error = ThreeDS.ContinueInfo.Error(error: primer3DSErr)
+            } else {
+                self.status = .success
+            }
+        }
+        
+        class Error: Encodable {
+            
+            var reasonCode: String
+            var reasonText: String
+            var recoverySuggestion: String?
+            var threeDsErrorDescription: String?
+            var threeDsErrorCode: Int?
+            var threeDsErrorComponent: String?
+            var threeDsErrorDetail: String?
+            var threeDsSdkTranscationId: String?
+            var protocolVersion: String?
+            
+            init(error: Primer3DSErrorContainer) {
+                self.reasonCode = error.errorId.uppercased().replacingOccurrences(of: "-", with: "_")
+                self.reasonText = error.plainDescription
+                self.recoverySuggestion = error.recoverySuggestion
+                self.threeDsErrorDescription = error.threeDsErrorDescription
+                self.threeDsErrorCode = error.threeDsErrorCode
+                self.threeDsErrorComponent = error.threeDsErrorComponent
+                self.threeDsErrorDetail = error.threeDsErrorDetail
+                self.threeDsSdkTranscationId = error.threeDsSdkTranscationId
+                self.protocolVersion = error.initProtocolVersion
+            }
+        }
     }
 }
 

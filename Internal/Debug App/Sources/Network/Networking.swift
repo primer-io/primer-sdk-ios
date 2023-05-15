@@ -209,18 +209,15 @@ class Networking {
             }
     }
     
-    static func createPayment(with paymentMethod: PrimerPaymentMethodTokenData,
-                              customDefinedApiKey: String? = nil,
-                              completion: @escaping (Payment.Response?, Error?) -> Void) {
-        guard let paymentMethodToken = paymentMethod.token else {
-            completion(nil, NetworkError.missingParams)
-            return
-        }
-        
+    static func createPayment(
+        with paymentMethodTokenData: PrimerPaymentMethodTokenData,
+        customDefinedApiKey: String? = nil,
+        completion: @escaping (Payment.Response?, Error?) -> Void
+    ) {
         let url = environment.baseUrl.appendingPathComponent("/api/payments/")
-
-        let body = Payment.CreateRequest(token: paymentMethodToken)
-
+        
+        let body = Payment.CreateRequest(token: paymentMethodTokenData.token)
+        
         var bodyData: Data!
 
         do {

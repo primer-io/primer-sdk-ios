@@ -25,6 +25,8 @@ struct DecodedJWTToken: Codable {
     var statusUrl: String?
     var threeDSecureInitUrl: String?
     var threeDSecureToken: String?
+    var useThreeDsWeakValidation: Bool?
+    var supportedThreeDsProtocolVersions: [String]?
     var qrCode: String?
     var accountNumber: String?
     
@@ -64,6 +66,8 @@ struct DecodedJWTToken: Codable {
         case statusUrl
         case threeDSecureInitUrl
         case threeDSecureToken
+        case useThreeDsWeakValidation
+        case supportedThreeDsProtocolVersions
         case accountNumber
         // Expiration
         case exp
@@ -91,6 +95,7 @@ struct DecodedJWTToken: Codable {
         paymentFlow: String?,
         threeDSecureInitUrl: String?,
         threeDSecureToken: String?,
+        supportedThreeDsProtocolVersions: [String]?,
         coreUrl: String?,
         pciUrl: String?,
         env: String?,
@@ -112,6 +117,7 @@ struct DecodedJWTToken: Codable {
         self.paymentFlow = paymentFlow
         self.threeDSecureInitUrl = threeDSecureInitUrl
         self.threeDSecureToken = threeDSecureToken
+        self.supportedThreeDsProtocolVersions = supportedThreeDsProtocolVersions
         self.coreUrl = coreUrl
         self.pciUrl = pciUrl
         self.env = env
@@ -138,6 +144,8 @@ struct DecodedJWTToken: Codable {
         self.paymentFlow = try? container.decode(String.self, forKey: .paymentFlow)
         self.threeDSecureInitUrl = try? container.decode(String.self, forKey: .threeDSecureInitUrl)
         self.threeDSecureToken = try? container.decode(String.self, forKey: .threeDSecureToken)
+        self.useThreeDsWeakValidation = try? container.decode(Bool.self, forKey: .useThreeDsWeakValidation)
+        self.supportedThreeDsProtocolVersions = try container.decodeIfPresent([String].self, forKey: .supportedThreeDsProtocolVersions)
         self.coreUrl = try? container.decode(String.self, forKey: .coreUrl)
         self.pciUrl = try? container.decode(String.self, forKey: .pciUrl)
         self.env = try? container.decode(String.self, forKey: .env)
@@ -202,6 +210,8 @@ struct DecodedJWTToken: Codable {
         try? container.encode(paymentFlow, forKey: .paymentFlow)
         try? container.encode(threeDSecureInitUrl, forKey: .threeDSecureInitUrl)
         try? container.encode(threeDSecureToken, forKey: .threeDSecureToken)
+        try container.encodeIfPresent(useThreeDsWeakValidation, forKey: .useThreeDsWeakValidation)
+        try container.encodeIfPresent(supportedThreeDsProtocolVersions, forKey: .supportedThreeDsProtocolVersions)
         try? container.encode(coreUrl, forKey: .coreUrl)
         try? container.encode(pciUrl, forKey: .pciUrl)
         try? container.encode(env, forKey: .env)

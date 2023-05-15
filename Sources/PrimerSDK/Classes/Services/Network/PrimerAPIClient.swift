@@ -69,7 +69,11 @@ protocol PrimerAPIClientProtocol {
     
     // 3DS
     func begin3DSAuth(clientToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
-    func continue3DSAuth(clientToken: DecodedJWTToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
+    func continue3DSAuth(
+        clientToken: DecodedJWTToken,
+        threeDSTokenId: String,
+        continueInfo: ThreeDS.ContinueInfo,
+        completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
     
     // Apaya
     func createApayaSession(

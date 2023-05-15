@@ -302,14 +302,8 @@ extension PaymentMethodTokenizationViewModel {
                 }
 
             } else {
-                guard let paymentMethodTokenString = paymentMethodTokenData.token else {
-                    let paymentMethodTokenError = PrimerError.invalidValue(key: "resumePaymentId", value: "Payment method token not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: paymentMethodTokenError)
-                    throw paymentMethodTokenError
-                }
-                
                 firstly {
-                    self.handleCreatePaymentEvent(paymentMethodTokenString)
+                    self.handleCreatePaymentEvent(paymentMethodTokenData.token)
                 }
                 .done { paymentResponse -> Void in
                     guard paymentResponse != nil else {

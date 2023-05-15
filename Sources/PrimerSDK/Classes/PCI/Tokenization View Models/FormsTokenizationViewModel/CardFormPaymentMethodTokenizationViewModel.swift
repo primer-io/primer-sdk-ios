@@ -498,7 +498,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 }
                 
             } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-    #if canImport(Primer3DS)
                 guard let paymentMethodTokenData = paymentMethodTokenData else {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -508,26 +507,19 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 }
                 
                 let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
-                    switch result {
-                    case .success(let resumeToken):
+                threeDSService.perform3DS(
+                    paymentMethodTokenData: paymentMethodTokenData,
+                    sdkDismissed: nil) { result in
                         DispatchQueue.main.async {
-                            seal.fulfill(resumeToken)
+                            switch result {
+                            case .success(let resumeToken):
+                                seal.fulfill(resumeToken)
+                                
+                            case .failure(let err):
+                                seal.reject(err)
+                            }
                         }
-                        
-                    case .failure(let err):
-                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: containerErr)
-                        seal.reject(containerErr)
                     }
-                }
-    #else
-                let err = PrimerError.failedToImport3DS(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-    #endif
                 
             } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
                 if let redirectUrlStr = decodedJWTToken.redirectUrl,

@@ -554,8 +554,7 @@ struct SDKProperties: Codable {
         self.sdkType = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
         self.sdkVersion = Bundle.primerFramework.releaseVersionNumber
         
-        if let settingsDict = try? PrimerSettings.current.asDictionary(),
-            let settingsData = try? JSONSerialization.data(withJSONObject: settingsDict, options: .fragmentsAllowed) {
+        if let settingsData = try? JSONEncoder().encode(PrimerSettings.current) {
             let decoder = JSONDecoder()
             if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: settingsData) {
                 self.sdkSettings = anyDecodableDictionary

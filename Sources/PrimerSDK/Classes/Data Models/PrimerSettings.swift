@@ -7,6 +7,7 @@ internal protocol PrimerSettingsProtocol {
     var localeData: PrimerLocaleData { get }
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
     var uiOptions: PrimerUIOptions { get }
+    var threeDsOptions: PrimerThreeDsOptions { get }
     var debugOptions: PrimerDebugOptions { get }
 }
 
@@ -16,11 +17,11 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         return settings as! PrimerSettings
     }
-    
-    public let paymentHandling: PrimerPaymentHandling
+    let paymentHandling: PrimerPaymentHandling
     let localeData: PrimerLocaleData
     let paymentMethodOptions: PrimerPaymentMethodOptions
     let uiOptions: PrimerUIOptions
+    let threeDsOptions: PrimerThreeDsOptions
     let debugOptions: PrimerDebugOptions
     
     public init(
@@ -28,12 +29,14 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         localeData: PrimerLocaleData? = nil,
         paymentMethodOptions: PrimerPaymentMethodOptions? = nil,
         uiOptions: PrimerUIOptions? = nil,
+        threeDsOptions: PrimerThreeDsOptions? = nil,
         debugOptions: PrimerDebugOptions? = nil
     ) {
         self.paymentHandling = paymentHandling
         self.localeData = localeData ?? PrimerLocaleData()
         self.paymentMethodOptions = paymentMethodOptions ?? PrimerPaymentMethodOptions()
         self.uiOptions = uiOptions ?? PrimerUIOptions()
+        self.threeDsOptions = threeDsOptions ?? PrimerThreeDsOptions()
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
     }
 }
@@ -183,6 +186,21 @@ public class PrimerDebugOptions: PrimerDebugOptionsProtocol, Codable {
     
     public init(is3DSSanityCheckEnabled: Bool? = nil) {
         self.is3DSSanityCheckEnabled = is3DSSanityCheckEnabled != nil ? is3DSSanityCheckEnabled! : true
+    }
+}
+
+// MARK: - 3DS OPTIONS
+
+internal protocol PrimerThreeDsOptionsProtocol {
+    var threeDsAppRequestorUrl: String? { get }
+}
+
+public class PrimerThreeDsOptions: PrimerThreeDsOptionsProtocol, Codable {
+    
+    let threeDsAppRequestorUrl: String?
+    
+    public init(threeDsAppRequestorUrl: String? = nil) {
+        self.threeDsAppRequestorUrl = threeDsAppRequestorUrl
     }
 }
 
