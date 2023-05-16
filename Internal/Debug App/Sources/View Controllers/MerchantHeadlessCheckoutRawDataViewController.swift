@@ -77,7 +77,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
                     self.expiryDateTextField.translatesAutoresizingMaskIntoConstraints = false
                     self.expiryDateTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
                     self.expiryDateTextField.delegate = self
-                    self.expiryDateTextField.placeholder = "03/30"
+                    self.expiryDateTextField.placeholder = "03/2030"
                     
                 case .cvv:
                     self.cvvTextField = UITextField(frame: .zero)
@@ -99,7 +99,6 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
                     self.cardholderNameTextField.translatesAutoresizingMaskIntoConstraints = false
                     self.cardholderNameTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
                     self.cardholderNameTextField.delegate = self
-                    self.cardholderNameTextField.placeholder = "John Smith"
                     
                 case .otp:
                     break
@@ -139,7 +138,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     @IBAction func payButtonTapped(_ sender: UIButton) {
         guard expiryDateTextField.text?.count == 7,
               let expiryComponents = expiryDateTextField.text?.split(separator: "/") else {
-            self.showErrorMessage("Please write expiry date in format MM/YY")
+            self.showErrorMessage("Please write expiry date in format MM/YYYY")
             return
         }
         
@@ -151,7 +150,6 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
         if paymentMethodType == "PAYMENT_CARD" {
             self.primerRawDataManager!.submit()
             self.showLoadingOverlay()
-            
         }
     }
     
