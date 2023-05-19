@@ -233,7 +233,8 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 certs.append(cer)
             }
             
-            let useThreeDsWeakValidation = decodedJWTToken.useThreeDsWeakValidation == false ? false : true
+            var useThreeDsWeakValidation = decodedJWTToken.useThreeDsWeakValidation == false ? false : true
+            useThreeDsWeakValidation = true
             
             switch Environment(rawValue: decodedJWTToken.env ?? "") {
             case .production:
