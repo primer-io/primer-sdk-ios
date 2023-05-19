@@ -146,6 +146,7 @@ internal class PrimerDelegateProxy {
     
     static func primerDidFailWithError(_ error: PrimerErrorProtocol, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
         DispatchQueue.main.async {
+            Analytics.Service.sync()
             if case .sdkDismissed = (error as? PrimerError) {
                 // Don't send an error, the primerDidDismiss has been called.
                 return
