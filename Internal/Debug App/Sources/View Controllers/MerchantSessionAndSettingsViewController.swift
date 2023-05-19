@@ -9,7 +9,7 @@
 import PrimerSDK
 import UIKit
 
-var environment: Environment = .sandbox
+var environment: Environment = .production
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
 
@@ -128,9 +128,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
         
     var clientSession = ClientSessionRequestBody(
-        customerId: "ios-customer-\(String.randomString(length: 8))",
-        orderId: "ios-order-\(String.randomString(length: 8))",
-        currencyCode: .EUR,
+        customerId: "ios-appetize-customer-\(String.randomString(length: 8))",
+        orderId: "ios-appetize-order-\(String.randomString(length: 8))",
+        currencyCode: .GBP,
         amount: nil,
         metadata: nil,
         customer: ClientSessionRequestBody.Customer(
@@ -158,70 +158,19 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 postalCode: "EC53 8BT")
         ),
         order: ClientSessionRequestBody.Order(
-            countryCode: .de,
+            countryCode: .gb,
             lineItems: [
                 ClientSessionRequestBody.Order.LineItem(
                     itemId: "fancy-shoes-\(String.randomString(length: 4))",
                     description: "Fancy Shoes",
-                    amount: 11000,
+                    amount: 60,
                     quantity: 1,
                     discountAmount: nil,
                     taxAmount: nil),
             ]),
         paymentMethod: ClientSessionRequestBody.PaymentMethod(
             vaultOnSuccess: false,
-            options:
-                [
-                    "APPLE_PAY": [
-                        "surcharge": [
-                            "amount": 19
-                        ]
-                    ],
-                    "PAY_NL_IDEAL": [
-                        "surcharge": [
-                            "amount": 39
-                        ]
-                    ],
-                    "PAYPAL": [
-                        "surcharge": [
-                            "amount": 49
-                        ]
-                    ],
-                    "ADYEN_TWINT": [
-                        "surcharge": [
-                            "amount": 59
-                        ]
-                    ],
-                    "ADYEN_IDEAL": [
-                        "surcharge": [
-                            "amount": 69
-                        ]
-                    ],
-                    "ADYEN_GIROPAY": [
-                        "surcharge": [
-                            "amount": 79
-                        ]
-                    ],
-                    "BUCKAROO_BANCONTACT": [
-                        "surcharge": [
-                            "amount": 89
-                        ]
-                    ],
-                    "PAYMENT_CARD": [
-                        "networks": [
-                            "VISA": [
-                                "surcharge": [
-                                    "amount": 109
-                                ]
-                            ],
-                            "MASTERCARD": [
-                                "surcharge": [
-                                    "amount": 129
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+            options: nil
         ),
         testParams: nil)
     
