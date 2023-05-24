@@ -95,9 +95,9 @@ class ThreeDSService: ThreeDSServiceProtocol {
             var continueInfo: ThreeDS.ContinueInfo?
             
             if case InternalError.noNeedToPerform3ds = err {
-                precondition(false, "Should always have resumeToken by now")
-                
                 guard let resumePaymentToken = self.resumePaymentToken else {
+                    precondition(false, "Should always have resumeToken by now")
+                    
                     let err = PrimerError.invalidValue(
                         key: "resumeToken",
                         value: nil,
@@ -417,6 +417,8 @@ class ThreeDSService: ThreeDSServiceProtocol {
                                 .METHOD,        // Only applies on Web
                                 .notPerformed,
                                 .skipped:
+                            
+                            self.resumePaymentToken = beginAuthResponse.resumeToken
                             
                             let internalErr = InternalError.noNeedToPerform3ds(
                                 status: beginAuthResponse.authentication.responseCode.rawValue)
