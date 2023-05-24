@@ -121,6 +121,13 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 continueInfo = primer3DSErrorContainer.continueInfo
                 
             } else {
+                let errContainer = Primer3DSErrorContainer.underlyingError(
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: UUID().uuidString,
+                    error: err)
+                continueInfo = ThreeDS.ContinueInfo(
+                    initProtocolVersion: self.initProtocolVersion?.rawValue,
+                    error: errContainer)
                 ErrorHandler.handle(error: err)
             }
 
