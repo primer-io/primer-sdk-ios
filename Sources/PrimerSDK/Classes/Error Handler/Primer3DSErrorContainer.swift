@@ -27,6 +27,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     case invalid3DSSdkVersion(userInfo: [String: String]?, diagnosticsId: String, invalidVersion: String?, validVersion: String)
     case missing3DSConfiguration(userInfo: [String: String]?, diagnosticsId: String, missingKey: String)
     case primer3DSSdkError(userInfo: [String: String]?, diagnosticsId: String, initProtocolVersion: String?, errorInfo: Primer3DSErrorInfo)
+    case underlyingError(userInfo: [String: String]?, diagnosticsId: String, error: Error)
     
     public var errorId: String {
         switch self {
@@ -38,6 +39,13 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
             return "missing-3ds-configuration"
         case .primer3DSSdkError(_, _, _, let errorInfo):
             return errorInfo.errorId
+        case .underlyingError(_, _, let err):
+            if let primerErr = err as? PrimerError {
+                return primerErr.errorId
+            } else {
+                let nsErr = err as NSError
+                return nsErr.domain
+            }
         }
     }
     
@@ -51,6 +59,13 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
             return "Cannot perform 3DS due to invalid 3DS configuration. 3DS Config \(missingKey) is missing"
         case .primer3DSSdkError(_, _, _, let errorInfo):
             return errorInfo.errorDescription
+        case .underlyingError(_, _, let err):
+            if let primerErr = err as? PrimerError {
+                return primerErr.plainDescription ?? primerErr.errorUserInfo.debugDescription
+            } else {
+                let nsErr = err as NSError
+                return nsErr.description
+            }
         }
     }
     
@@ -68,6 +83,12 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
             return errorInfo.recoverySuggestion
         case .missing3DSConfiguration:
             return nil
+        case .underlyingError(_, _, let err):
+            if let primerErr = err as? PrimerError {
+                return primerErr.recoverySuggestion
+            } else {
+                return nil
+            }
         }
     }
     
@@ -89,7 +110,8 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
         case .missingSdkDependency(_, let diagnosticsId),
                 .invalid3DSSdkVersion(_, let diagnosticsId, _, _),
                 .missing3DSConfiguration(_, let diagnosticsId, _),
-                .primer3DSSdkError(_, let diagnosticsId, _, _):
+                .primer3DSSdkError(_, let diagnosticsId, _, _),
+                .underlyingError(_, let diagnosticsId, _):
             return diagnosticsId
         }
     }
@@ -98,7 +120,8 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
         switch self {
         case .missingSdkDependency,
                 .invalid3DSSdkVersion,
-                .missing3DSConfiguration:
+                .missing3DSConfiguration,
+                .underlyingError:
             return nil
         case .primer3DSSdkError(_, _, let initProtocolVersion, _):
             return initProtocolVersion
@@ -113,6 +136,13 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
         switch self {
         case .primer3DSSdkError(_, _, _, let errorInfo):
             return errorInfo.errorDescription
+        case .underlyingError(_, _, let err):
+            if let primerErr = err as? PrimerError {
+                return primerErr.plainDescription
+            } else {
+                let nsErr = err as NSError
+                return nsErr.debugDescription
+            }
         default:
             return nil
         }
