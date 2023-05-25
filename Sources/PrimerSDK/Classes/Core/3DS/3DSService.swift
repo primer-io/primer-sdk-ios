@@ -657,10 +657,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
             }
         }
     }
-    
-    private func handleError() {
-        
-    }
 }
 
 #if canImport(Primer3DS)
