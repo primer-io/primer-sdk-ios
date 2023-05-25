@@ -392,7 +392,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             var threeDsAppRequestorUrl: URL?
             
             if sdkAuthResult.maxSupportedThreeDsProtocolVersion.compareWithVersion("2.1") == .orderedDescending {
-                if let urlStr = PrimerSettings.current.threeDsOptions.threeDsAppRequestorUrl,
+                if let urlStr = PrimerSettings.current.paymentMethodOptions.threeDsOptions?.threeDsAppRequestorUrl,
                    urlStr.hasPrefix("https"),
                    let url = URL(string: urlStr)
                 {

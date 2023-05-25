@@ -20,7 +20,6 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
     let localeData: PrimerLocaleData
     let paymentMethodOptions: PrimerPaymentMethodOptions
     let uiOptions: PrimerUIOptions
-    let threeDsOptions: PrimerThreeDsOptions
     let debugOptions: PrimerDebugOptions
     
     public init(
@@ -35,7 +34,6 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         self.localeData = localeData ?? PrimerLocaleData()
         self.paymentMethodOptions = paymentMethodOptions ?? PrimerPaymentMethodOptions()
         self.uiOptions = uiOptions ?? PrimerUIOptions()
-        self.threeDsOptions = threeDsOptions ?? PrimerThreeDsOptions()
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
     }
 }
