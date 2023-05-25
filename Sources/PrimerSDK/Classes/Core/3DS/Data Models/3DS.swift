@@ -176,7 +176,7 @@ public class ThreeDS {
     internal struct BeginAuthRequest: Codable {
         
         let maxProtocolVersion: String
-        let challengePreference: ChallengePreference = .requestedDueToMandate
+        let challengePreference: ChallengePreference
         let device: ThreeDS.SDKAuthData
     }
     
