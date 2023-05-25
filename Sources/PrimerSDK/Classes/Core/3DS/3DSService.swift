@@ -618,23 +618,11 @@ class ThreeDSService: ThreeDSServiceProtocol {
                 }
                 
                 ErrorHandler.handle(error: primerErr)
-                Analytics.Service.sync()
                 
                 let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
                 completion(.failure(internalErr))
                 
             case .success(let res):
-                let props = MessageEventProperties(
-                    message: "Received /auth response with responseCode \(res.authentication.responseCode.rawValue), resumeToken \(res.resumeToken)",
-                    messageType: .error,
-                    severity: .error)
-                
-                let event = Analytics.Event(
-                    eventType: .message,
-                    properties: props)
-                Analytics.Service.record(event: event)
-                Analytics.Service.sync()
-                
                 completion(.success(res))
             }
         })
