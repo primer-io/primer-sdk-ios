@@ -96,8 +96,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
             
             if case InternalError.noNeedToPerform3ds = err {
                 guard let resumePaymentToken = self.resumePaymentToken else {
-                    precondition(false, "Should always have resumeToken by now")
-                    
                     let err = PrimerError.invalidValue(
                         key: "resumeToken",
                         value: nil,
@@ -201,8 +199,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
     private func initializePrimer3DSSdk() -> Promise<Void> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                precondition(false, "It's already validated in the validate()")
-                
                 let err = PrimerError.invalidClientToken(
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
@@ -213,7 +209,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
             }
             
             guard let apiConfiguration = AppState.current.apiConfiguration else {
-                precondition(false, "It's already validated in the validate()")
                 let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -282,7 +277,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
                         seal.reject(internalErr)
                         
                     } else {
-                        precondition(false, "Should always receive Primer3DSError")
                         let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: error)
                         seal.reject(internalErr)
                     }
@@ -306,8 +300,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
     private func create3DsAuthData(paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<SDKAuthResult> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                precondition(false, "It's already validated in the validate()")
-                
                 let err = PrimerError.invalidClientToken(
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
@@ -376,7 +368,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
                     seal.reject(internalErr)
                     
                 } else {
-                    precondition(false, "Should always receive Primer3DSError")
                     let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: error)
                     seal.reject(internalErr)
                 }
@@ -461,8 +452,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
 #endif
             if !isMockedBE {
                 guard let primer3DS = primer3DS else {
-                    precondition(false, "Primer3DS should have been initialized")
-                    
                     let uuid = UUID().uuidString
                     
                     let primer3DSError = Primer3DSError.initializationError(error: nil, warnings: "Uninitialized SDK")
@@ -543,8 +532,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
                             seal.fulfill(primer3DSCompletion)
                             
                         } else {
-                            precondition(false, "Should always receive an error or a completion")
-                            
                             let err = PrimerError.invalidValue(
                                 key: "performChallenge.result",
                                 value: nil,
@@ -591,8 +578,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
         completion: @escaping (Result<ThreeDS.BeginAuthResponse, Error>) -> Void
     ) {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            precondition(false, "It's already validated in the validate()")
-            
             let err = PrimerError.invalidClientToken(
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: UUID().uuidString)
@@ -634,9 +619,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
         continueInfo: ThreeDS.ContinueInfo?
     ) -> Promise<ThreeDS.PostAuthResponse> {
         return Promise { seal in
-            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                precondition(false, "It's already validated in the validate()")
-                
+            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {                
                 let err = PrimerError.invalidClientToken(
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
