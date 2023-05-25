@@ -9,7 +9,7 @@
 import PrimerSDK
 import UIKit
 
-var environment: Environment = .production
+var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
 
@@ -128,9 +128,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
         
     var clientSession = ClientSessionRequestBody(
-        customerId: "ios-appetize-customer-\(String.randomString(length: 8))",
-        orderId: "ios-appetize-order-\(String.randomString(length: 8))",
-        currencyCode: .GBP,
+        customerId: "ios-customer-\(String.randomString(length: 8))",
+        orderId: "ios-order-\(String.randomString(length: 8))",
+        currencyCode: .EUR,
         amount: nil,
         metadata: nil,
         customer: ClientSessionRequestBody.Customer(
@@ -158,12 +158,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 postalCode: "EC53 8BT")
         ),
         order: ClientSessionRequestBody.Order(
-            countryCode: .gb,
+            countryCode: .de,
             lineItems: [
                 ClientSessionRequestBody.Order.LineItem(
                     itemId: "fancy-shoes-\(String.randomString(length: 4))",
                     description: "Fancy Shoes",
-                    amount: 60,
+                    amount: 11001,
                     quantity: 1,
                     discountAmount: nil,
                     taxAmount: nil),
