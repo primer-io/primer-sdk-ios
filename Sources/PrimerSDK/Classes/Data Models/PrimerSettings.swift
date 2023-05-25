@@ -7,7 +7,6 @@ internal protocol PrimerSettingsProtocol {
     var localeData: PrimerLocaleData { get }
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
     var uiOptions: PrimerUIOptions { get }
-    var threeDsOptions: PrimerThreeDsOptions { get }
     var debugOptions: PrimerDebugOptions { get }
 }
 
@@ -54,6 +53,7 @@ internal protocol PrimerPaymentMethodOptionsProtocol {
     var urlScheme: String? { get }
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
+    var threeDsOptions: PrimerThreeDsOptions? { get }
 }
 
 public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Codable {
@@ -63,15 +63,18 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Cod
     var klarnaOptions: PrimerKlarnaOptions?
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     let cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions(is3DSOnVaultingEnabled: false)
+    var threeDsOptions: PrimerThreeDsOptions?
     
     public init(
         urlScheme: String? = nil,
         applePayOptions: PrimerApplePayOptions? = nil,
-        klarnaOptions: PrimerKlarnaOptions? = nil
+        klarnaOptions: PrimerKlarnaOptions? = nil,
+        threeDsOptions: PrimerThreeDsOptions? = nil
     ) {
         self.urlScheme = urlScheme
         self.applePayOptions = applePayOptions
         self.klarnaOptions = klarnaOptions
+        self.threeDsOptions = threeDsOptions
     }
     
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
