@@ -9,6 +9,8 @@ public class Primer {
     
     // MARK: - PROPERTIES
     
+    internal static let hardcodedVersion: String = "2.17.0-rc.12"
+    
     public weak var delegate: PrimerDelegate? {
         didSet {
             PrimerInternal.shared.sdkIntegrationType = .dropIn

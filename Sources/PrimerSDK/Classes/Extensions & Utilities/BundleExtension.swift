@@ -32,13 +32,8 @@ internal extension Bundle {
         if let reactNativeVersion = Primer.shared.integrationOptions?.reactNativeVersion {
             return reactNativeVersion
         }
-        let version = Bundle.primerFramework.infoDictionary?["CFBundleShortVersionString"] as? String
         
-        if version != "2.17.0-rc.11" {
-            return "2.17.0-rc.11"
-        } else {
-            return version
-        }
+        return Primer.hardcodedVersion
     }
     
     var buildVersionNumber: String? {
