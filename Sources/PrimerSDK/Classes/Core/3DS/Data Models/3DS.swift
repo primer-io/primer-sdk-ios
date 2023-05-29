@@ -369,7 +369,7 @@ public class ThreeDS {
         let dsReferenceNumber: String?
         let dsTransactionId: String?
         let eci: String?
-        let protocolVersion: String
+        let protocolVersion: String?
         let xid: String?
     }
     
@@ -399,7 +399,7 @@ public class ThreeDS {
         let acsTransactionId: String?
         let responseCode: ThreeDS.ResponseCode
         let transactionId: String?
-        let protocolVersion: String
+        let protocolVersion: String?
         let acsOperatorId: String?
         let dsReferenceNumber: String?
         let dsTransactionId: String?
@@ -416,7 +416,7 @@ public class ThreeDS {
         let acsTransactionId: String?
         let responseCode: ThreeDS.ResponseCode
         let transactionId: String?
-        let protocolVersion: String
+        let protocolVersion: String?
         let acsOperatorId: String?
         let dsReferenceNumber: String?
         let dsTransactionId: String
@@ -434,7 +434,7 @@ public class ThreeDS {
         let acsTransactionId: String?
         let responseCode: ThreeDS.ResponseCode
         let transactionId: String?
-        let protocolVersion: String
+        let protocolVersion: String?
         let acsOperatorId: String?
         let dsReferenceNumber: String?
         let dsTransactionId: String
@@ -451,7 +451,7 @@ public class ThreeDS {
         let acsTransactionId: String?
         let responseCode: ThreeDS.ResponseCode
         let transactionId: String?
-        let protocolVersion: String
+        let protocolVersion: String?
         let acsOperatorId: String?
         let acsReferenceNumber: String?
         let dsReferenceNumber: String?
@@ -471,7 +471,7 @@ public class ThreeDS {
         let acsTransactionId: String?
         let responseCode: ThreeDS.ResponseCode
         let transactionId: String?
-        let protocolVersion: String
+        let protocolVersion: String?
         let acsOperatorId: String?
         let acsReferenceNumber: String?
         let dsReferenceNumber: String?
