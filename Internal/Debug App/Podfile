@@ -1,3 +1,6 @@
+source 'https://cdn.cocoapods.org/'
+source 'https://github.com/ios-3ds-sdk/Specs.git'
+
 # Uncomment the next line to define a global platform for your project
 platform :ios, '10.0'
 
@@ -7,7 +10,7 @@ target 'Debug App' do
   
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../../'
-  pod 'Primer3DS', "~> 1.1.1"
+  pod 'Primer3DS', :path => '../../../primer-sdk-3ds-ios' #, "~> 1.1.1"
 #  pod 'PrimerKlarnaSDK'
 #  pod 'PrimerIPay88MYSDK'
   
