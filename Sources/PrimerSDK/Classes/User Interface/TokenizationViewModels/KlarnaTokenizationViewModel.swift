@@ -140,9 +140,12 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.klarnaViewController?.dismiss(animated: true, completion: {
                     self.didDismissExternalView?()
                 })
+                
+#if DEBUG
                 self.demoThirdPartySDKViewController?.dismiss(animated: true, completion: {
                     self.didDismissExternalView?()
                 })
+#endif
             }
             .catch { err in
                 seal.reject(err)
