@@ -9,7 +9,7 @@ public class Primer {
     
     // MARK: - PROPERTIES
     
-    internal static let hardcodedVersion: String = "2.17.0-rc.12"
+    internal static let hardcodedVersion: String = "2.17.0-rc.13"
     
     public weak var delegate: PrimerDelegate? {
         didSet {
