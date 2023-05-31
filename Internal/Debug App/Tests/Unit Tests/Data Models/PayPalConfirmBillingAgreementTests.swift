@@ -104,23 +104,3 @@ class PayPalConfirmBillingAgreementTests: XCTestCase {
 }
 
 #endif
-
-//{
-//  "shippingAddress": {
-//    "city": "London",
-//    "firstName": "John",
-//    "postalCode": "E1 6RL",
-//    "addressLine1": "Spitalfields Arts Market",
-//    "countryCode": "GB",
-//    "addressLine2": null,
-//    "state": "London",
-//    "lastName": "Doe"
-//  },
-//  "externalPayerInfo": {
-//    "email": "sb-358o431493298@personal.example.com",
-//    "firstName": "John",
-//    "lastName": "Doe",
-//    "externalPayerId": "G9AXVJZPMD8WJ"
-//  },
-//  "billingAgreementId": "B-7YT1338453747735W"
-//}
