@@ -6,10 +6,9 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-import XCTest
 #if canImport(PrimerIPay88MYSDK)
+import XCTest
 @testable import PrimerIPay88MYSDK
-#endif
 @testable import PrimerSDK
 
 class IPay88Tests: XCTestCase {
@@ -27,7 +26,6 @@ class IPay88Tests: XCTestCase {
         displayMetadata: nil)
     
     func test_iPay88_payment_object_mapping() throws {
-#if canImport(PrimerIPay88MYSDK)
         var paymentObjects = try self.createIPay88PaymentObjects()
         try self.testMapping(primerIPay88Payment: paymentObjects.0, iPay88Payment: paymentObjects.1, scenario: "All params are valid")
         
@@ -51,9 +49,6 @@ class IPay88Tests: XCTestCase {
         
         paymentObjects = try self.createIPay88PaymentObjects(fixPaymentId: nil)
         try self.testMapping(primerIPay88Payment: paymentObjects.0, iPay88Payment: paymentObjects.1, scenario: "fixPaymentId: null")
-#else
-        XCTAssert(false, "PrimerIPay88MYSDK hasn't been imported.")
-#endif
     }
     
     func test_iPay88_validations() throws {
@@ -235,3 +230,5 @@ class IPay88Tests: XCTestCase {
         XCTAssert(primerIPay88Payment.fixPaymentId ?? "" == iPay88Payment.fixPaymentId, "[Scenario: \(scenario)] fixPaymentId mismatch")
     }
 }
+
+#endif
