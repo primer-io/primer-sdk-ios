@@ -92,7 +92,9 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
                     
                     DispatchQueue.main.async {
                         if let rawDataManager = self.rawDataManager {
-                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: self.isDataValid, errors: errors)
+                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
+                                                                                 dataIsValid: self.isDataValid,
+                                                                                 errors: errors.count == 0 ? nil : errors)
                         }
                         
                         seal.reject(err)
@@ -122,7 +124,9 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
                     
                     DispatchQueue.main.async {
                         if let rawDataManager = self.rawDataManager {
-                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: self.isDataValid, errors: errors)
+                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
+                                                                                 dataIsValid: self.isDataValid,
+                                                                                 errors: errors.count == 0 ? nil : errors)
                         }
                         
                         seal.reject(err)
@@ -132,7 +136,9 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
                     
                     DispatchQueue.main.async {
                         if let rawDataManager = self.rawDataManager {
-                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: self.isDataValid, errors: errors)
+                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
+                                                                                 dataIsValid: self.isDataValid,
+                                                                                 errors: errors.count == 0 ? nil : errors)
                         }
                         
                         seal.fulfill()
