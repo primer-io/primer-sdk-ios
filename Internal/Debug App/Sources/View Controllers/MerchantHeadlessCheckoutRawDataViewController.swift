@@ -177,32 +177,46 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
 extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        var newText: String?
+        print("TextField called")
+        let text = textField.text
         
-        if let text = textField.text,
-           let textRange = Range(range, in: text) {
-            newText = text.replacingCharacters(in: textRange, with: string)
-            
-            if newText!.count == 0 {
-                newText = nil
-            }
+        var newText: String = ""
+        
+        if text != nil,
+           let textRange = Range(range, in: text!) {
+            newText = text!.replacingCharacters(in: textRange, with: string)
         }
         
         if textField == self.cardnumberTextField {
-            self.rawCardData.cardNumber = (newText ?? "").replacingOccurrences(of: " ", with: "")
+            self.rawCardData = PrimerCardData(
+                cardNumber: newText.replacingOccurrences(of: " ", with: ""),
+                expiryDate: self.expiryDateTextField.text ?? "",
+                cvv: self.cvvTextField.text ?? "",
+                cardholderName: self.cardholderNameTextField.text ?? "")
             
-        } else if textField == self.expiryDateTextField,
-                  newText?.count == 7
-        {
-            self.rawCardData.expiryDate = newText!
-
+        } else if textField == self.expiryDateTextField {
+            self.rawCardData = PrimerCardData(
+                cardNumber: self.cardnumberTextField.text ?? "",
+                expiryDate: newText,
+                cvv: self.cvvTextField.text ?? "",
+                cardholderName: self.cardholderNameTextField.text ?? "")
+            
         } else if textField == self.cvvTextField {
-            self.rawCardData.cvv = newText ?? ""
+            self.rawCardData = PrimerCardData(
+                cardNumber: self.cardnumberTextField.text ?? "",
+                expiryDate: self.expiryDateTextField.text ?? "",
+                cvv: newText,
+                cardholderName: self.cardholderNameTextField.text ?? "")
             
         } else if textField == self.cardholderNameTextField {
-            self.rawCardData.cardholderName = newText
+            self.rawCardData = PrimerCardData(
+                cardNumber: self.cardnumberTextField.text ?? "",
+                expiryDate: self.expiryDateTextField.text ?? "",
+                cvv: self.cvvTextField.text ?? "",
+                cardholderName: newText.count == 0 ? nil : newText)
         }
         
+        print("self.rawCardData\ncardNumber: \(self.rawCardData.cardNumber)\nexpiryDate: \(self.rawCardData.expiryDate)\ncvv: \(self.rawCardData.cvv)\ncardholderName: \(self.rawCardData.cardholderName ?? "nil")")
         self.primerRawDataManager?.rawData = self.rawCardData
         
         return true
