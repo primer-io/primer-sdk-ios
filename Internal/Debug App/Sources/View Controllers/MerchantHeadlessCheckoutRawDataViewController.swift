@@ -99,6 +99,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
                     self.cardholderNameTextField!.translatesAutoresizingMaskIntoConstraints = false
                     self.cardholderNameTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
                     self.cardholderNameTextField!.delegate = self
+                    self.cardholderNameTextField!.placeholder = "John Smith"
                     
                 case .otp:
                     break
