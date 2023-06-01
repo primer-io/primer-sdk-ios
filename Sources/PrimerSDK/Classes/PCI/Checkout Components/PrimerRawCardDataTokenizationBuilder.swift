@@ -108,7 +108,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 cvv: rawData.cvv,
                 expirationMonth: expiryMonth,
                 expirationYear: expiryYear,
-                cardholderName: rawData.cardholderName)
+                cardholderName: (rawData.cardholderName?.count ?? 0) == 0 ? nil : rawData.cardholderName)
             
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             seal.fulfill(requestBody)
