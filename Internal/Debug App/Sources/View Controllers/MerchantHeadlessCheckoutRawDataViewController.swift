@@ -25,10 +25,10 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     var activityIndicator: UIActivityIndicatorView?
     var rawCardData = PrimerCardData(cardNumber: "", expiryDate: "", cvv: "", cardholderName: "")
     
-    var cardnumberTextField: UITextField!
-    var expiryDateTextField: UITextField!
-    var cvvTextField: UITextField!
-    var cardholderNameTextField: UITextField!
+    var cardnumberTextField: UITextField?
+    var expiryDateTextField: UITextField?
+    var cvvTextField: UITextField?
+    var cardholderNameTextField: UITextField?
     var payButton: UIButton!
     
     var logs: [String] = []
@@ -59,46 +59,46 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
                 switch inputElementType {
                 case .cardNumber:
                     self.cardnumberTextField = UITextField(frame: .zero)
-                    self.cardnumberTextField.accessibilityIdentifier = "card_txt_fld"
-                    self.cardnumberTextField.borderStyle = .line
-                    self.cardnumberTextField.layer.borderColor = UIColor.black.cgColor
-                    self.stackView.addArrangedSubview(self.cardnumberTextField)
-                    self.cardnumberTextField.translatesAutoresizingMaskIntoConstraints = false
-                    self.cardnumberTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
-                    self.cardnumberTextField.delegate = self
-                    self.cardnumberTextField.placeholder = "4242 4242 4242 4242"
+                    self.cardnumberTextField!.accessibilityIdentifier = "card_txt_fld"
+                    self.cardnumberTextField!.borderStyle = .line
+                    self.cardnumberTextField!.layer.borderColor = UIColor.black.cgColor
+                    self.stackView.addArrangedSubview(self.cardnumberTextField!)
+                    self.cardnumberTextField!.translatesAutoresizingMaskIntoConstraints = false
+                    self.cardnumberTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
+                    self.cardnumberTextField!.delegate = self
+                    self.cardnumberTextField!.placeholder = "4242 4242 4242 4242"
                     
                 case .expiryDate:
                     self.expiryDateTextField = UITextField(frame: .zero)
-                    self.expiryDateTextField.accessibilityIdentifier = "expiry_txt_fld"
-                    self.expiryDateTextField.borderStyle = .line
-                    self.expiryDateTextField.layer.borderColor = UIColor.black.cgColor
-                    self.stackView.addArrangedSubview(self.expiryDateTextField)
-                    self.expiryDateTextField.translatesAutoresizingMaskIntoConstraints = false
-                    self.expiryDateTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
-                    self.expiryDateTextField.delegate = self
-                    self.expiryDateTextField.placeholder = "03/2030"
+                    self.expiryDateTextField!.accessibilityIdentifier = "expiry_txt_fld"
+                    self.expiryDateTextField!.borderStyle = .line
+                    self.expiryDateTextField!.layer.borderColor = UIColor.black.cgColor
+                    self.stackView.addArrangedSubview(self.expiryDateTextField!)
+                    self.expiryDateTextField!.translatesAutoresizingMaskIntoConstraints = false
+                    self.expiryDateTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
+                    self.expiryDateTextField!.delegate = self
+                    self.expiryDateTextField!.placeholder = "03/2030"
                     
                 case .cvv:
                     self.cvvTextField = UITextField(frame: .zero)
-                    self.cvvTextField.accessibilityIdentifier = "cvc_txt_fld"
-                    self.cvvTextField.borderStyle = .line
-                    self.cvvTextField.layer.borderColor = UIColor.black.cgColor
-                    self.stackView.addArrangedSubview(self.cvvTextField)
-                    self.cvvTextField.translatesAutoresizingMaskIntoConstraints = false
-                    self.cvvTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
-                    self.cvvTextField.delegate = self
-                    self.cvvTextField.placeholder = "123"
+                    self.cvvTextField!.accessibilityIdentifier = "cvc_txt_fld"
+                    self.cvvTextField!.borderStyle = .line
+                    self.cvvTextField!.layer.borderColor = UIColor.black.cgColor
+                    self.stackView.addArrangedSubview(self.cvvTextField!)
+                    self.cvvTextField!.translatesAutoresizingMaskIntoConstraints = false
+                    self.cvvTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
+                    self.cvvTextField!.delegate = self
+                    self.cvvTextField!.placeholder = "123"
                     
                 case .cardholderName:
                     self.cardholderNameTextField = UITextField(frame: .zero)
-                    self.cardholderNameTextField.accessibilityIdentifier = "card_holder_txt_fld"
-                    self.cardholderNameTextField.borderStyle = .line
-                    self.cardholderNameTextField.layer.borderColor = UIColor.black.cgColor
-                    self.stackView.addArrangedSubview(self.cardholderNameTextField)
-                    self.cardholderNameTextField.translatesAutoresizingMaskIntoConstraints = false
-                    self.cardholderNameTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
-                    self.cardholderNameTextField.delegate = self
+                    self.cardholderNameTextField!.accessibilityIdentifier = "card_holder_txt_fld"
+                    self.cardholderNameTextField!.borderStyle = .line
+                    self.cardholderNameTextField!.layer.borderColor = UIColor.black.cgColor
+                    self.stackView.addArrangedSubview(self.cardholderNameTextField!)
+                    self.cardholderNameTextField!.translatesAutoresizingMaskIntoConstraints = false
+                    self.cardholderNameTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
+                    self.cardholderNameTextField!.delegate = self
                     
                 case .otp:
                     break
@@ -136,8 +136,8 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     }
     
     @IBAction func payButtonTapped(_ sender: UIButton) {
-        guard expiryDateTextField.text?.count == 7,
-              let expiryComponents = expiryDateTextField.text?.split(separator: "/") else {
+        guard expiryDateTextField?.text?.count == 7,
+              let expiryComponents = expiryDateTextField?.text?.split(separator: "/") else {
             self.showErrorMessage("Please write expiry date in format MM/YYYY")
             return
         }
@@ -190,29 +190,29 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
         if textField == self.cardnumberTextField {
             self.rawCardData = PrimerCardData(
                 cardNumber: newText.replacingOccurrences(of: " ", with: ""),
-                expiryDate: self.expiryDateTextField.text ?? "",
-                cvv: self.cvvTextField.text ?? "",
-                cardholderName: self.cardholderNameTextField.text ?? "")
+                expiryDate: self.expiryDateTextField?.text ?? "",
+                cvv: self.cvvTextField?.text ?? "",
+                cardholderName: self.cardholderNameTextField?.text ?? "")
             
         } else if textField == self.expiryDateTextField {
             self.rawCardData = PrimerCardData(
-                cardNumber: self.cardnumberTextField.text ?? "",
+                cardNumber: self.cardnumberTextField?.text ?? "",
                 expiryDate: newText,
-                cvv: self.cvvTextField.text ?? "",
-                cardholderName: self.cardholderNameTextField.text ?? "")
+                cvv: self.cvvTextField?.text ?? "",
+                cardholderName: self.cardholderNameTextField?.text ?? "")
             
         } else if textField == self.cvvTextField {
             self.rawCardData = PrimerCardData(
-                cardNumber: self.cardnumberTextField.text ?? "",
-                expiryDate: self.expiryDateTextField.text ?? "",
+                cardNumber: self.cardnumberTextField?.text ?? "",
+                expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: newText,
-                cardholderName: self.cardholderNameTextField.text ?? "")
+                cardholderName: self.cardholderNameTextField?.text ?? "")
             
         } else if textField == self.cardholderNameTextField {
             self.rawCardData = PrimerCardData(
-                cardNumber: self.cardnumberTextField.text ?? "",
-                expiryDate: self.expiryDateTextField.text ?? "",
-                cvv: self.cvvTextField.text ?? "",
+                cardNumber: self.cardnumberTextField?.text ?? "",
+                expiryDate: self.expiryDateTextField?.text ?? "",
+                cvv: self.cvvTextField?.text ?? "",
                 cardholderName: newText.count == 0 ? nil : newText)
         }
         
