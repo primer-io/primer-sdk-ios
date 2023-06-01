@@ -67,37 +67,37 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
                     print(merchantErr)
                     
                 } else if let clientToken = clientToken {
-                    self.clientToken = clientToken
-                    
-                    var newClientSession = clientSession
-                    newClientSession.order = ClientSessionRequestBody.Order(
-                        countryCode: .fr,
-                        lineItems: [
-                            ClientSessionRequestBody.Order.LineItem(
-                                itemId: "new-fancy-shoes-\(String.randomString(length: 4))",
-                                description: "Fancy Shoes (updated)",
-                                amount: 10000,
-                                quantity: 1,
-                                discountAmount: 1999,
-                                taxAmount: 4600),
-                            ClientSessionRequestBody.Order.LineItem(
-                                itemId: "cool-hat-\(String.randomString(length: 4))",
-                                description: "Cool Hat (added)",
-                                amount: 2000,
-                                quantity: 2,
-                                discountAmount: nil,
-                                taxAmount: nil)
-                        ]
-                    )
-                    
-                    Networking.patchClientSession(clientToken: clientToken, requestBody: newClientSession) { newClientToken, err in
+//                    self.clientToken = clientToken
+//
+//                    var newClientSession = clientSession
+//                    newClientSession.order = ClientSessionRequestBody.Order(
+//                        countryCode: .fr,
+//                        lineItems: [
+//                            ClientSessionRequestBody.Order.LineItem(
+//                                itemId: "new-fancy-shoes-\(String.randomString(length: 4))",
+//                                description: "Fancy Shoes (updated)",
+//                                amount: 10000,
+//                                quantity: 1,
+//                                discountAmount: 1999,
+//                                taxAmount: 4600),
+//                            ClientSessionRequestBody.Order.LineItem(
+//                                itemId: "cool-hat-\(String.randomString(length: 4))",
+//                                description: "Cool Hat (added)",
+//                                amount: 2000,
+//                                quantity: 2,
+//                                discountAmount: nil,
+//                                taxAmount: nil)
+//                        ]
+//                    )
+//
+//                    Networking.patchClientSession(clientToken: clientToken, requestBody: newClientSession) { newClientToken, err in
                         PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (pms, err) in
                             DispatchQueue.main.async {
                                 self.availablePaymentMethods = pms ?? []
                                 self.tableView.reloadData()
                             }
                         })
-                    }
+//                    }
                 }
             }
         } else {
