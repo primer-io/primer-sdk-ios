@@ -813,7 +813,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return Strings.PaymentButton.payInInstallments
             
         default:
-            return nil
+            return metadataButtonText
         }
     }
     
