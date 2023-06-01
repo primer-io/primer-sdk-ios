@@ -14,6 +14,8 @@ import XCTest
 class PrimerBancontactCardDataManagerTests: XCTestCase {
     
     func test_valid_raw_bancontact_card_data() throws {
+        let exp = expectation(description: "Await validation")
+        
         let rawCardData = PrimerBancontactCardData(
             cardNumber: Constants.testCardNumbers[.visa]!.last!,
             expiryDate: "03/2030",
@@ -25,16 +27,20 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done { _ in
-            // Continue
+            exp.fulfill()
         }
         .catch { _ in
             XCTAssert(false, "Card data should pass validation")
+            exp.fulfill()
         }
+        
+        wait(for: [exp], timeout: 0.1)
     }
     
     // We are making the below tests as well to make sure that the standards validation of simple card data passes
         
     func test_valid_raw_card_data() throws {
+        let exp = expectation(description: "Await validation")
         
         let rawCardData = PrimerBancontactCardData(
             cardNumber: Constants.testCardNumbers[.visa]!.randomElement()!,
@@ -47,14 +53,19 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             return tokenizationBuilder.validateRawData(rawCardData)
         }
         .done { _ in
-            // Continue
+            exp.fulfill()
         }
         .catch { _ in
             XCTAssert(false, "Card data should pass validation")
+            exp.fulfill()
         }
+        
+        wait(for: [exp], timeout: 0.1)
     }
     
     func test_invalid_cardnumber_in_raw_card_data() throws {
+        var exp = expectation(description: "Await validation")
+        
         let rawCardData = PrimerBancontactCardData(
             cardNumber: Constants.testCardNumbers[.visa]!.first!,
             expiryDate: "02/2040",
@@ -68,8 +79,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
             rawCardData.cardNumber = "424242424242424211"
@@ -77,8 +94,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
             rawCardData.cardNumber = "424242424242424212345"
@@ -86,8 +109,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
             rawCardData.cardNumber = ""
@@ -95,14 +124,21 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
     }
     
     func test_invalid_expiry_date_in_raw_card_data() throws {
+        var exp = expectation(description: "Await validation")
+        
         let rawCardData = PrimerBancontactCardData(
             cardNumber: Constants.testCardNumbers[.visa]!.randomElement()!,
-            expiryDate: "02/2040",
+            expiryDate: "02/204",
             cardholderName: "John Smith")
         
         let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
@@ -112,8 +148,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done { _ in
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = ""
@@ -121,8 +163,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "a"
@@ -130,8 +178,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "abcdefg"
@@ -139,8 +193,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "ab/cdef"
@@ -148,8 +208,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "1"
@@ -157,8 +223,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "01"
@@ -166,8 +238,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "1234567"
@@ -175,8 +253,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "01/"
@@ -184,8 +268,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "12/30"
@@ -193,8 +283,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "02/1234"
@@ -202,8 +298,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "02/2030a"
@@ -211,8 +313,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "02/2O30"
@@ -220,8 +328,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "02/2020"
@@ -229,8 +343,14 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
+        exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate  = "02/2a5"
@@ -238,8 +358,13 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         }
         .done {
             XCTAssert(false, "Card data should not pass validation")
+            exp.fulfill()
         }
-        .catch { _ in }
+        .catch { _ in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.1)
     }
 }
 
