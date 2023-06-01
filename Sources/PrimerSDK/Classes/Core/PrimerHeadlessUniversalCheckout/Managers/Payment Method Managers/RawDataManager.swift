@@ -170,7 +170,11 @@ extension PrimerHeadlessUniversalCheckout {
             guard let rawData = rawData else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
-                self.delegate?.primerRawDataManager?(self, dataIsValid: false, errors: [err])
+                
+                DispatchQueue.main.async {
+                    self.delegate?.primerRawDataManager?(self, dataIsValid: false, errors: [err])
+                }
+                
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err, checkoutData: self.paymentCheckoutData)
                 return
             }
