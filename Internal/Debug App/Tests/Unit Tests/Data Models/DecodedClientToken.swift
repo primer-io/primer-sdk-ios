@@ -40,6 +40,7 @@ internal extension DecodedJWTToken {
             paymentFlow: paymentFlow,
             threeDSecureInitUrl: threeDSecureInitUrl,
             threeDSecureToken: threeDSecureToken,
+            supportedThreeDsProtocolVersions: nil,
             coreUrl: coreUrl,
             pciUrl: pciUrl,
             env: env,

@@ -186,7 +186,7 @@ class ApplePayTests: XCTestCase {
                     currencyCode: .GBP,
                     fees: [
                         ClientSession.Order.Fee(
-                            type: "surcharge",
+                            type: .surcharge,
                             amount: 19),
                     ],
                     lineItems: nil,
