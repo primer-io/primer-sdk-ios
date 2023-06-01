@@ -115,125 +115,145 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     
     func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
         return Promise { seal in
-            
-            var errors: [PrimerValidationError] = []
-            
-            guard let rawData = data as? PrimerCardData, let rawDataManager = rawDataManager else {
-                let err = PrimerValidationError.invalidRawData(
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString)
-                errors.append(err)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
-            }
-            
-            if rawData.cardNumber.isEmpty {
-                let err = PrimerValidationError.invalidCardnumber(
-                    message: "Card number can not be blank.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString)
-                errors.append(err)
+            DispatchQueue.global(qos: .userInteractive).async {
+                var errors: [PrimerValidationError] = []
                 
-            } else if !rawData.cardNumber.isValidCardNumber {
-                let err = PrimerValidationError.invalidCardnumber(
-                    message: "Card number is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString)
-                errors.append(err)
-            }
+                guard let rawData = data as? PrimerCardData else {
+                    let err = PrimerValidationError.invalidRawData(
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                    errors.append(err)
+                    ErrorHandler.handle(error: err)
+                    
+                    self.isDataValid = false
+                                        
+                    DispatchQueue.main.async {
+                        if let rawDataManager = self.rawDataManager {
+                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: self.isDataValid, errors: errors)
+                        }
                         
-            do {
-                try rawData.expiryDate.validateExpiryDateString()
-            } catch {
-                if let err = error as? PrimerValidationError {
+                        seal.reject(err)
+                    }
+                    return
+                }
+                
+                if rawData.cardNumber.isEmpty {
+                    let err = PrimerValidationError.invalidCardnumber(
+                        message: "Card number can not be blank.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                    errors.append(err)
+                    
+                } else if !rawData.cardNumber.isValidCardNumber {
+                    let err = PrimerValidationError.invalidCardnumber(
+                        message: "Card number is not valid.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
                     errors.append(err)
                 }
-            }
-            
-            let cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
-            
-            if rawData.cvv.isEmpty {
-                let err = PrimerValidationError.invalidCvv(
-                    message: "CVV cannot be blank.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString)
-                errors.append(err)
-                
-            } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
-                let err = PrimerValidationError.invalidCvv(
-                    message: "CVV is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString)
-                errors.append(err)
-            }
-            
-            if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
-                if (rawData.cardholderName ?? "").isEmpty {
-                    errors.append(PrimerValidationError.invalidCardholderName(
-                        message: "Cardholder name cannot be blank.",
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
-                        diagnosticsId: UUID().uuidString))
-                } else if !(rawData.cardholderName ?? "").isValidCardholderName {
-                    errors.append(PrimerValidationError.invalidCardholderName(
-                        message: "Cardholder name is not valid.",
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
-                        diagnosticsId: UUID().uuidString))
+                            
+                do {
+                    try rawData.expiryDate.validateExpiryDateString()
+                } catch {
+                    if let err = error as? PrimerValidationError {
+                        errors.append(err)
+                    }
                 }
-            }
-            
-            if !errors.isEmpty {
-                let err = PrimerError.underlyingErrors(
-                    errors: errors,
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString)
-                self.isDataValid = false
-                self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: false, errors: errors)
-                seal.reject(err)
-            } else {
-                self.isDataValid = true
-                self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: true, errors: nil)
-                seal.fulfill()
+                
+                let cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
+                
+                if rawData.cvv.isEmpty {
+                    let err = PrimerValidationError.invalidCvv(
+                        message: "CVV cannot be blank.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                    errors.append(err)
+                    
+                } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
+                    let err = PrimerValidationError.invalidCvv(
+                        message: "CVV is not valid.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                    errors.append(err)
+                }
+                
+                if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
+                    if (rawData.cardholderName ?? "").isEmpty {
+                        errors.append(PrimerValidationError.invalidCardholderName(
+                            message: "Cardholder name cannot be blank.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString))
+                    } else if !(rawData.cardholderName ?? "").isValidCardholderName {
+                        errors.append(PrimerValidationError.invalidCardholderName(
+                            message: "Cardholder name is not valid.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString))
+                    }
+                }
+                
+                if !errors.isEmpty {
+                    let err = PrimerError.underlyingErrors(
+                        errors: errors,
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
+                    
+                    self.isDataValid = false
+                    
+                    DispatchQueue.main.async {
+                        if let rawDataManager = self.rawDataManager {
+                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: self.isDataValid, errors: errors)
+                        }
+                        
+                        seal.reject(err)
+                    }
+                    
+                } else {
+                    self.isDataValid = true
+                    
+                    DispatchQueue.main.async {
+                        if let rawDataManager = self.rawDataManager {
+                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: self.isDataValid, errors: errors)
+                        }
+                        
+                        seal.fulfill()
+                    }
+                }
             }
         }
     }
