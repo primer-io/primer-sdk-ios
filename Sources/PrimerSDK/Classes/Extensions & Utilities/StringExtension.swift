@@ -184,6 +184,10 @@ internal extension String {
     }
     
     func isValidCVV(cardNetwork: CardNetwork?) -> Bool {
+        if !self.isNumeric {
+            return false
+        }
+        
         if let numberOfDigits = cardNetwork?.validation?.code.length {
             return count == numberOfDigits
         }
