@@ -428,6 +428,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
         
         let uiOptions = PrimerUIOptions(
+            isInitScreenEnabled: true,
             isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
             isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
             theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
