@@ -112,7 +112,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid data
         var cardData = PrimerCardData(cardNumber: "", expiryDate: "", cvv: "", cardholderName: nil)
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -134,7 +134,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Valid data
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -156,7 +156,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid cardnumber
         cardData = PrimerCardData(cardNumber: "424242424242424", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -178,7 +178,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid cardnumber
         cardData = PrimerCardData(cardNumber: "42424242424242424242", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -200,7 +200,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid cardnumber
         cardData = PrimerCardData(cardNumber: "", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -222,7 +222,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid cardnumber
         cardData = PrimerCardData(cardNumber: "4242424242424243", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -244,7 +244,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "0/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -266,7 +266,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -288,7 +288,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -310,7 +310,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "/", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -332,7 +332,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "01/2022", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -354,7 +354,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "05/2022", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -376,7 +376,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "02", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -398,7 +398,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "aa", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -420,7 +420,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "2030/03", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -442,7 +442,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/30", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -464,7 +464,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/203030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -486,7 +486,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid CVV
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/2030", cvv: "12", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -508,7 +508,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid CVV
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/2030", cvv: "12345", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -530,7 +530,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid CVV
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/2030", cvv: "abc", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -552,7 +552,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid CVV
         cardData = PrimerCardData(cardNumber: "9120000000000006", expiryDate: "03/2030", cvv: "12345", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
         
         // -------------------
         
@@ -574,7 +574,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         // Invalid CVV
         cardData = PrimerCardData(cardNumber: "9120000000000006", expiryDate: "03/2030", cvv: "1", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: 0.122)
+        wait(for: [validation], timeout: 0.4)
     }
     
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
