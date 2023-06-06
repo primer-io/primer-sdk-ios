@@ -55,6 +55,7 @@ extension PaymentMethodTokenizationViewModel {
                     if let primerErr = err as? PrimerError,
                        case .cancelled = primerErr,
                        PrimerInternal.shared.sdkIntegrationType == .dropIn,
+                       PrimerInternal.shared.selectedPaymentMethodType == nil,
                        (
                         self.config.implementationType == .webRedirect ||
                         self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
