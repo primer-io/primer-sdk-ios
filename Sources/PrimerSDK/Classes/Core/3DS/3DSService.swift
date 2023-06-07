@@ -67,8 +67,17 @@ class ThreeDSService: ThreeDSServiceProtocol {
         }
         .then { primer3DSCompletion -> Promise<ThreeDS.PostAuthResponse> in
             sdkDismissed?()
+            
+            guard let token = paymentMethodTokenData.token else {
+                let err = PrimerError.invalidClientToken(
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+            
             return self.finalize3DSAuthorization(
-                paymentMethodToken: paymentMethodTokenData.token,
+                paymentMethodToken: token,
                 continueInfo: nil)
         }
         .done { result in
@@ -128,9 +137,18 @@ class ThreeDSService: ThreeDSServiceProtocol {
                     error: errContainer)
                 ErrorHandler.handle(error: err)
             }
-
+            
+            guard let token = paymentMethodTokenData.token else {
+                let err = PrimerError.invalidClientToken(
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                completion(.failure(err.primerError))
+                return
+            }
+            
             firstly {
-                self.finalize3DSAuthorization(paymentMethodToken: paymentMethodTokenData.token, continueInfo: continueInfo)
+                self.finalize3DSAuthorization(paymentMethodToken: token, continueInfo: continueInfo)
             }
             .done { result in
                 self.resumePaymentToken = result.resumeToken
@@ -153,7 +171,15 @@ class ThreeDSService: ThreeDSServiceProtocol {
             self.validate()
         }
         .then { () -> Promise<ThreeDS.PostAuthResponse> in
-            self.finalize3DSAuthorization(paymentMethodToken: paymentMethodTokenData.token, continueInfo: continueErrorInfo)
+            guard let token = paymentMethodTokenData.token else {
+                let err = PrimerError.invalidClientToken(
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+            
+            return self.finalize3DSAuthorization(paymentMethodToken: token, continueInfo: continueErrorInfo)
         }
         .done { threeDsAuth in
             self.resumePaymentToken = threeDsAuth.resumeToken
