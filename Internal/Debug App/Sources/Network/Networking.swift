@@ -216,7 +216,15 @@ class Networking {
     ) {
         let url = environment.baseUrl.appendingPathComponent("/api/payments/")
         
-        let body = Payment.CreateRequest(token: paymentMethodTokenData.token)
+        guard let token = paymentMethodTokenData.token else {
+            let err = PrimerError.invalidClientToken(
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: UUID().uuidString)
+            completion(nil, err)
+            return
+        }
+        
+        let body = Payment.CreateRequest(token: token)
         
         var bodyData: Data!
 

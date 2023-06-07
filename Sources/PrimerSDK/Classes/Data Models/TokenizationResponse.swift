@@ -20,7 +20,7 @@ extension Response.Body {
         public var paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData?
         public var paymentInstrumentType: PaymentInstrumentType
         public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
-        public var token: String
+        public var token: String?
         public var tokenType: TokenType?
         public var vaultData: Response.Body.Tokenization.VaultData?
         
@@ -33,7 +33,7 @@ extension Response.Body {
             paymentMethodType: String?,
             paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData?,
             threeDSecureAuthentication: ThreeDS.AuthenticationDetails?,
-            token: String,
+            token: String?,
             tokenType: TokenType?,
             vaultData: Response.Body.Tokenization.VaultData?
         ) {

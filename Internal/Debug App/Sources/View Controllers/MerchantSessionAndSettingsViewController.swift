@@ -128,7 +128,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
         
     var clientSession = ClientSessionRequestBody(
-        customerId: "ios-customer-\(String.randomString(length: 8))",
+        customerId: "customer_8",
         orderId: "ios-order-\(String.randomString(length: 8))",
         currencyCode: .EUR,
         amount: nil,

@@ -402,8 +402,17 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     
                 } else {
+                    guard let token = paymentMethodTokenData.token else {
+                        let err = PrimerError.invalidClientToken(
+                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                            diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                        return
+                    }
+                    
                     firstly {
-                        self.handleCreatePaymentEvent(paymentMethodTokenData.token)
+                        self.handleCreatePaymentEvent(token)
                     }
                     .done { paymentResponse -> Void in
                         guard paymentResponse != nil else {
