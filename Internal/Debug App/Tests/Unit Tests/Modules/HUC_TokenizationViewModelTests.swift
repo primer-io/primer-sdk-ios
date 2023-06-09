@@ -38,18 +38,23 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             order: nil,
             customer: nil,
             testId: nil)
-        let apiConfiguration = Mocks.createMockAPIConfiguration(
+        let mockPrimerApiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
             paymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
+
+        let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
         
-        PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
-        PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
-        
+        let mockApiClient = MockPrimerAPIClient()
+        mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
+        mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
+        VaultService.apiClient = mockApiClient
+        PrimerAPIConfigurationModule.apiClient = mockApiClient
+
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken, delegate: self, uiDelegate: self) { availablePaymentMethods, err in
             if let err = err {
                 XCTAssert(false, "SDK failed with error \(err.localizedDescription) while it should have succeeded.")
             } else if let availablePaymentMethods = availablePaymentMethods {
-                XCTAssert(availablePaymentMethods.count == apiConfiguration.paymentMethods?.count, "SDK should have returned the mocked payment methods.")
+                XCTAssert(availablePaymentMethods.count == mockPrimerApiConfiguration.paymentMethods?.count, "SDK should have returned the mocked payment methods.")
             } else {
                 XCTAssert(false, "SDK should have returned an error or payment methods.")
             }
@@ -61,7 +66,7 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             if let err = err {
                 XCTAssert(false, "SDK failed with error \(err.localizedDescription) while it should have succeeded.")
             } else if let availablePaymentMethods = availablePaymentMethods {
-                XCTAssert(availablePaymentMethods.count == apiConfiguration.paymentMethods?.count, "SDK should have returned the mocked payment methods.")
+                XCTAssert(availablePaymentMethods.count == mockPrimerApiConfiguration.paymentMethods?.count, "SDK should have returned the mocked payment methods.")
             } else {
                 XCTAssert(false, "SDK should have returned an error or payment methods.")
             }
@@ -269,6 +274,7 @@ class HUC_TokenizationViewModelTests: XCTestCase {
         ]
         mockApiClient.tokenizePaymentMethodResult = (Mocks.primerPaymentMethodTokenData, nil)
         mockApiClient.paymentResult = (Mocks.payment, nil)
+        mockApiClient.fetchConfigurationResult = (apiConfiguration, nil)
         mockApiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
         
         PrimerAPIConfigurationModule.apiClient = mockApiClient

@@ -231,7 +231,7 @@ class ApplePayTests: XCTestCase {
                 displayMetadata: nil))
         
         do {
-            var clientSession = ClientSession.APIResponse(
+            let clientSession = ClientSession.APIResponse(
                 clientSessionId: nil,
                 paymentMethod: nil,
                 order: ClientSession.Order(
