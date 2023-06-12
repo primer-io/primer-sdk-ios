@@ -14,7 +14,7 @@ import XCTest
 
 class ThreeDSErrorTests: XCTestCase {
     
-    func test_3DS_protocol_veresion_init() throws {
+    func test_3DS_protocol_version_init() throws {
         let initProtocolVersion = "2.1.0"
         let cardNetwork = "CARD-NETWORK"
         let diagnosticsId = "diagnostics-id"
