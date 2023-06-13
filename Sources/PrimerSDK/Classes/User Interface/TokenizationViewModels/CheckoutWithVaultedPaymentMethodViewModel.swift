@@ -97,8 +97,18 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                guard let paymentMethodTokenId = self.selectedPaymentMethodTokenData.id else {
+                    let err = PrimerError.invalidValue(
+                        key: "paymentMethodTokenId",
+                        value: nil,
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
+                    throw err
+                }
+                
                 let tokenizationService = TokenizationService()
-                return tokenizationService.exchangePaymentMethodToken(self.selectedPaymentMethodTokenData)
+                return tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId)
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
