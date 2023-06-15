@@ -329,7 +329,7 @@ internal extension String {
         self = self.capitalizingFirstLetter()
     }
     
-    internal func isValidPhoneNumberForPaymentMethodType(_ paymentMethodType: PrimerPaymentMethodType) -> Bool {
+    func isValidPhoneNumberForPaymentMethodType(_ paymentMethodType: PrimerPaymentMethodType) -> Bool {
         
         var regex = ""
         

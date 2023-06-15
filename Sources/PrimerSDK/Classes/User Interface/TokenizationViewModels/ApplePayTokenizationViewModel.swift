@@ -75,7 +75,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func start() {
         self.didFinishPayment = { err in
-            if let err = err {
+            if let _ = err {
                 self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .failure, errors: nil))
             } else {
                 self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .success, errors: nil))
