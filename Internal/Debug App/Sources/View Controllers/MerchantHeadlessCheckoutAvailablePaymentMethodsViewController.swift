@@ -103,19 +103,9 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
                                 if let err = err {
                                     print("\n\nMERCHANT APP\n\(#function)\nerr: \(err.localizedDescription)")
                                 } else if let vaultedPaymentMethods = vaultedPaymentMethods {
-                                    if let apaya = vaultedPaymentMethods.first(where: { $0.paymentMethodType == "APAYA" }) {
-                                        vaultManager.startPaymentFlow(vaultedPaymentMethodId: apaya.id) { checkoutData, err in
-                                            if let err {
-                                                print("\n\nMERCHANT APP\n\(#function)\nerr: \(err.localizedDescription)")
-                                            } else if let checkoutData {
-                                                print("\n\nMERCHANT APP\n\(#function)\ncheckoutData: \(checkoutData)")
-                                            } else {
-                                                fatalError()
-                                            }
-                                        }
+                                    if let apaya = vaultedPaymentMethods.first(where: { $0.paymentMethodType == "PAYPAL" }) {
+                                        vaultManager.startPaymentFlow(vaultedPaymentMethodId: apaya.id)
                                     }
-                                    
-                                    
                                 }
                             }
                         })
