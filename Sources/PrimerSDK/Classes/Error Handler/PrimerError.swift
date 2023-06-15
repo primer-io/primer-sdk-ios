@@ -446,6 +446,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case failedToFindModule(name: String, userInfo: [String: String]?, diagnosticsId: String)
     case sdkDismissed
     case failedToProcessPayment(paymentId: String, status: String, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
     
     public var errorId: String {
@@ -524,6 +525,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "sdk-dismissed"
         case .failedToProcessPayment:
             return "failed-to-process-payment"
+        case .invalidVaultedPaymentMethodId:
+            return "invalid-vaulted-payment-method-id"
         case .unknown:
             return "unknown"
         }
@@ -604,6 +607,8 @@ public enum PrimerError: PrimerErrorProtocol {
         case .sdkDismissed:
             return UUID().uuidString
         case .failedToProcessPayment(_, _, _, let diagnosticsId):
+            return diagnosticsId
+        case .invalidVaultedPaymentMethodId(_, _, let diagnosticsId):
             return diagnosticsId
         case .unknown(_, let diagnosticsId):
             return diagnosticsId
@@ -693,6 +698,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "SDK has been dismissed"
         case .failedToProcessPayment(let paymentId, let status, _, _):
             return "The payment with id \(paymentId) was created but ended up in a \(status) status."
+        case .invalidVaultedPaymentMethodId(let vaultedPaymentMethodId, _, _):
+            return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
         case .unknown:
             return "Something went wrong"
         }
@@ -742,6 +749,7 @@ public enum PrimerError: PrimerErrorProtocol {
                 .applePayTimedOut(let userInfo, _),
                 .failedToFindModule(_, let userInfo, _),
                 .failedToProcessPayment(_, _, let userInfo, _),
+                .invalidVaultedPaymentMethodId(_, let userInfo, _),
                 .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
             
@@ -846,6 +854,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return nil
         case .failedToProcessPayment:
             return nil
+        case .invalidVaultedPaymentMethodId:
+            return "Please provide the id of one of the vaulted payment methods that have been returned by the 'fetchVaultedPaymentMethods' function."
         case .unknown:
             return "Contact Primer and provide them diagnostics id \(self.diagnosticsId)"
         }

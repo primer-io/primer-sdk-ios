@@ -80,6 +80,21 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public func deleteVaultedPaymentMethod(id: String, completion: @escaping (_ error: Error?) -> Void) {
+            guard let vaultedPaymentMethod = self.vaultedPaymentMethods?.first(where: { $0.id == id }) else {
+                let err = PrimerError.invalidVaultedPaymentMethodId(
+                    vaultedPaymentMethodId: id,
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                
+                DispatchQueue.main.async {
+                    PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
+                        // No need to pass anything
+                    }
+                }
+                return
+            }
+            
             let vaultService = VaultService()
             
             firstly {
@@ -97,10 +112,23 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        public func startPaymentFlow(vaultedPaymentMethodId: String, completion: @escaping (_ checkoutData: PrimerCheckoutData?, _ error: Error?) -> Void) {
+        public func startPaymentFlow(vaultedPaymentMethodId: String) {
             guard let vaultedPaymentMethod = self.vaultedPaymentMethods?.first(where: { $0.id == vaultedPaymentMethodId }) else {
+                let err = PrimerError.invalidVaultedPaymentMethodId(
+                    vaultedPaymentMethodId: vaultedPaymentMethodId,
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                
+                DispatchQueue.main.async {
+                    PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
+                        // No need to pass anything
+                    }
+                }
                 return
             }
+            
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: vaultedPaymentMethod.paymentMethodType)
             
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {
@@ -123,55 +151,113 @@ extension PrimerHeadlessUniversalCheckout {
                             .done { checkoutData in
                                 self.paymentCheckoutData = checkoutData
                                 DispatchQueue.main.async {
-                                    completion(checkoutData, nil)
+                                    guard let checkoutData = self.paymentCheckoutData else {
+                                        let err = PrimerError.generic(
+                                            message: "Failed to find checkout data",
+                                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                            diagnosticsId: UUID().uuidString)
+                                        ErrorHandler.handle(error: err)
+                                        PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
+                                            // No need to pass anything
+                                        }
+                                        return
+                                    }
+                                    
+                                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                                 }
                             }
                             .catch { err in
                                 DispatchQueue.main.async {
-                                    completion(nil, err)
+                                    var primerError: PrimerErrorProtocol
+                                    
+                                    if let primerErr = err as? PrimerErrorProtocol {
+                                        primerError = primerErr
+                                    } else {
+                                        primerError = PrimerError.underlyingErrors(
+                                            errors: [err],
+                                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                            diagnosticsId: UUID().uuidString)
+                                    }
+                                    
+                                    PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { decision in
+                                        // No need to pass anything
+                                    }
                                 }
                             }
                         } else {
                             DispatchQueue.main.async {
-                                completion(self.paymentCheckoutData, nil)
+                                guard let checkoutData = self.paymentCheckoutData else {
+                                    let err = PrimerError.generic(
+                                        message: "Failed to find checkout data",
+                                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                        diagnosticsId: UUID().uuidString)
+                                    ErrorHandler.handle(error: err)
+                                    PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
+                                        // No need to pass anything
+                                    }
+                                    return
+                                }
+                                
+                                PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                             }
                         }
                     }
                     .catch { err in
                         DispatchQueue.main.async {
-                            completion(nil, err)
+                            var primerError: PrimerErrorProtocol
+                            
+                            if let primerErr = err as? PrimerErrorProtocol {
+                                primerError = primerErr
+                            } else {
+                                primerError = PrimerError.underlyingErrors(
+                                    errors: [err],
+                                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                    diagnosticsId: UUID().uuidString)
+                            }
+                            
+                            PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { decision in
+                                // No need to pass anything
+                            }
                         }
                     }
                 } else {
                     DispatchQueue.main.async {
-                        completion(self.paymentCheckoutData, nil)
+                        guard let checkoutData = self.paymentCheckoutData else {
+                            let err = PrimerError.generic(
+                                message: "Failed to find checkout data",
+                                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                diagnosticsId: UUID().uuidString)
+                            ErrorHandler.handle(error: err)
+                            PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
+                                // No need to pass anything
+                            }
+                            return
+                        }
+                        
+                        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     }
                 }
             }
             .catch { err in
                 DispatchQueue.main.async {
-                    completion(nil, err)
+                    var primerError: PrimerErrorProtocol
+                    
+                    if let primerErr = err as? PrimerErrorProtocol {
+                        primerError = primerErr
+                    } else {
+                        primerError = PrimerError.underlyingErrors(
+                            errors: [err],
+                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                            diagnosticsId: UUID().uuidString)
+                    }
+                    
+                    PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { decision in
+                        // No need to pass anything
+                    }
                 }
             }
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
         private func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
             return Promise { seal in
                 if PrimerSettings.current.paymentHandling == .manual {
