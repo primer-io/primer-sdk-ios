@@ -517,7 +517,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.testFinalizePolling(clientToken: clientToken, testId: testId)
         networkService.request(endpoint) { (result: Result<Response.Body.Payment, Error>) in
             switch result {
-            case .success(let res):
+            case .success(_):
                 completion(.success(()))
             case .failure(let err):
                 completion(.failure(err))

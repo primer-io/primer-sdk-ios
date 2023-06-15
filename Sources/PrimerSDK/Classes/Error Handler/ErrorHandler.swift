@@ -77,7 +77,7 @@ internal class ErrorHandler {
             var userInfo = nsError.userInfo
             userInfo["description"] = nsError.description
             
-            if let nsLocalizedDescription = userInfo[NSLocalizedDescriptionKey] {
+            if let _ = userInfo[NSLocalizedDescriptionKey] {
                 userInfo[NSLocalizedDescriptionKey] = nil
             }
             

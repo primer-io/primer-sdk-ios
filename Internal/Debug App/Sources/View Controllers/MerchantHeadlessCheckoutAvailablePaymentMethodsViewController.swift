@@ -22,7 +22,7 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
     var settings: PrimerSettings!
     var clientSession: ClientSessionRequestBody?
     var clientToken: String?
-
+    
     var amount: Int!
     var currency: Currency!
     var countryCode: CountryCode!
@@ -35,7 +35,7 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
     
     var redirectManager: PrimerHeadlessUniversalCheckout.NativeUIManager?
     var logs: [String] = []
-
+    
     @IBOutlet weak var tableView: UITableView!
     var activityIndicator: UIActivityIndicatorView?
     
@@ -215,19 +215,10 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
                 
                 if res.requiredAction?.clientToken != nil {
                     decisionHandler(.continueWithNewClientToken(res.requiredAction!.clientToken))
-                    
                 } else {
                     DispatchQueue.main.async {
                         self.hideLoadingOverlay()
                     }
-                    
-                    if let data = try? JSONEncoder().encode(res) {
-//                        DispatchQueue.main.async {
-//                            let rvc = HUCResultViewController.instantiate(data: [data])
-//                            self.navigationController?.pushViewController(rvc, animated: true)
-//                        }
-                    }
-                    
                     decisionHandler(.complete())
                 }
                 
@@ -240,19 +231,19 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
     func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\nresumeToken: \(resumeToken)")
         self.logs.append(#function)
-
+        
         Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
             DispatchQueue.main.async {
                 self.hideLoadingOverlay()
             }
-
+            
             if let clientToken = res?.requiredAction?.clientToken {
                 decisionHandler(.continueWithNewClientToken(clientToken))
             } else {
                 print("Payment has been resumed")
                 decisionHandler(.complete())
             }
-
+            
             let rvc = MerchantResultViewController.instantiate(checkoutData: nil, error: self.primerError, logs: self.logs)
             self.navigationController?.pushViewController(rvc, animated: true)
         }
@@ -285,7 +276,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
     }
     
     func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
-        print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(additionalInfo)")
+        print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(String(describing: additionalInfo))")
         self.logs.append(#function)
         DispatchQueue.main.async {
             self.hideLoadingOverlay()
@@ -293,13 +284,13 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
     }
     
     func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
-        print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(additionalInfo)")
+        print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(String(describing: additionalInfo))")
         self.logs.append(#function)
         self.hideLoadingOverlay()
     }
     
     func primerHeadlessUniversalCheckoutDidFail(withError err: Error, checkoutData: PrimerCheckoutData?) {
-        print("\n\nMERCHANT APP\n\(#function)\nerror: \(err)\ncheckoutData: \(checkoutData)")
+        print("\n\nMERCHANT APP\n\(#function)\nerror: \(err)\ncheckoutData: \(String(describing: checkoutData))")
         self.logs.append(#function)
         self.primerError = err
         self.hideLoadingOverlay()
