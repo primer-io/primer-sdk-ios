@@ -96,11 +96,10 @@ class Networking {
                         
         msg += "Headers:\n\(request.allHTTPHeaderFields ?? [:])\n"
                 
-        if let body = body {
+        if let body = body,
+           let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments){
             request.httpBody = body
-            
-            let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments)
-            msg += "Body:\n\(bodyJson ?? [:])\n"
+            msg += "Body:\n\(bodyJson)\n"
         }
 
         print(msg)
