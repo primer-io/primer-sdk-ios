@@ -278,7 +278,7 @@ class Networking {
         
         let networking = Networking()
         networking.request(
-            apiVersion: .v3,
+            apiVersion: .v2_2,
             url: url,
             method: .post,
             headers: headers,
