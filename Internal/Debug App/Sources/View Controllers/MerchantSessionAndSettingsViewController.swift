@@ -101,7 +101,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var shippinAddressStateTextField: UITextField!
     @IBOutlet weak var shippinAddressPostalCodeTextField: UITextField!
     @IBOutlet weak var shippinAddressCountryTextField: UITextField!
-
+    
     // MARK: Surcharge Inputs
     
     @IBOutlet weak var surchargeSwitch: UISwitch!
@@ -126,7 +126,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var renderMode: RenderMode = .createClientSession
     
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
-        
+    
     var clientSession = ClientSessionRequestBody(
         customerId: "customer8",
         orderId: "ios-order-\(String.randomString(length: 8))",
@@ -357,7 +357,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         guard let index = sender.view?.tag, lineItems.count > index else {
             return
         }
-
+        
         let lineItem = lineItems[index]
         let vc = MerchantNewLineItemViewController.instantiate(lineItem: lineItem)
         vc.onLineItemEdited = { lineItem in
@@ -634,11 +634,15 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 clientSession.testParams = testParams
             }
             
-            let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(settings: settings, clientSession: clientSession, clientToken: nil)
+            let vc = MerchantHeadlessViewController.instantiate(settings: settings,
+                                                                clientSession: clientSession,
+                                                                clientToken: nil)
             navigationController?.pushViewController(vc, animated: true)
-            
+                        
         case .clientToken:
-            let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(settings: settings, clientSession: nil, clientToken: clientTokenTextField.text)
+            let vc = MerchantHeadlessViewController.instantiate(settings: settings,
+                                                                clientSession: nil,
+                                                                clientToken: clientTokenTextField.text)
             navigationController?.pushViewController(vc, animated: true)
         }
     }

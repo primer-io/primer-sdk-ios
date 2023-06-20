@@ -67,49 +67,14 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
                     print(merchantErr)
                     
                 } else if let clientToken = clientToken {
-//                    self.clientToken = clientToken
-//
-//                    var newClientSession = clientSession
-//                    newClientSession.order = ClientSessionRequestBody.Order(
-//                        countryCode: .fr,
-//                        lineItems: [
-//                            ClientSessionRequestBody.Order.LineItem(
-//                                itemId: "new-fancy-shoes-\(String.randomString(length: 4))",
-//                                description: "Fancy Shoes (updated)",
-//                                amount: 10000,
-//                                quantity: 1,
-//                                discountAmount: 1999,
-//                                taxAmount: 4600),
-//                            ClientSessionRequestBody.Order.LineItem(
-//                                itemId: "cool-hat-\(String.randomString(length: 4))",
-//                                description: "Cool Hat (added)",
-//                                amount: 2000,
-//                                quantity: 2,
-//                                discountAmount: nil,
-//                                taxAmount: nil)
-//                        ]
-//                    )
-//
-//                    Networking.patchClientSession(clientToken: clientToken, requestBody: newClientSession) { newClientToken, err in
-                        PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (pms, err) in
-                            DispatchQueue.main.async {
-                                self.availablePaymentMethods = pms ?? []
-                                self.tableView.reloadData()
-                            }
-                            
-                            let vaultManager = PrimerHeadlessUniversalCheckout.VaultManager()
-                            try! vaultManager.configure()
-                            vaultManager.fetchVaultedPaymentMethods { vaultedPaymentMethods, err in
-                                if let err = err {
-                                    print("\n\nMERCHANT APP\n\(#function)\nerr: \(err.localizedDescription)")
-                                } else if let vaultedPaymentMethods = vaultedPaymentMethods {
-                                    if let apaya = vaultedPaymentMethods.first(where: { $0.paymentMethodType == "PAYPAL" }) {
-                                        vaultManager.startPaymentFlow(vaultedPaymentMethodId: apaya.id)
-                                    }
-                                }
-                            }
-                        })
-//                    }
+                    self.clientToken = clientToken
+                    
+                    PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (pms, err) in
+                        DispatchQueue.main.async {
+                            self.availablePaymentMethods = pms ?? []
+                            self.tableView.reloadData()
+                        }
+                    })
                 }
             }
         } else {

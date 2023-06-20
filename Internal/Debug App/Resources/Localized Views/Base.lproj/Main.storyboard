@@ -3,7 +3,7 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -125,7 +125,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IiI-j4-1kq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2688.4057971014495" y="132.58928571428572"/>
+            <point key="canvasLocation" x="3751" y="1600"/>
         </scene>
         <!--Merchant Session And Settings View Controller-->
         <scene sceneID="DXc-vV-aPm">
@@ -1078,7 +1078,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="19K-SE-wqb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2688" y="1821"/>
+            <point key="canvasLocation" x="3016" y="1819"/>
         </scene>
         <!--Merchant New Line Item View Controller-->
         <scene sceneID="IFB-VF-KwX">
@@ -1189,7 +1189,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yGA-Wt-LbZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3784" y="1821"/>
+            <point key="canvasLocation" x="8614" y="1821"/>
         </scene>
         <!--Merchant Headless Checkout Available Payment Methods View Controller-->
         <scene sceneID="UQL-4J-Gcf">
@@ -1264,7 +1264,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RGM-oR-3VK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3597.1014492753625" y="820.98214285714278"/>
+            <point key="canvasLocation" x="4606" y="1821"/>
         </scene>
         <!--Merchant Headless Checkout Raw Data View Controller-->
         <scene sceneID="b45-kg-Ezl">
@@ -1279,7 +1279,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WEJ-0g-Ch1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4505.7971014492759" y="820.98214285714278"/>
+            <point key="canvasLocation" x="5393" y="1821"/>
         </scene>
         <!--Merchant Result View Controller-->
         <scene sceneID="Tkv-cI-sz4">
@@ -1374,7 +1374,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bha-S1-DUW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3648" y="133"/>
+            <point key="canvasLocation" x="7810" y="1821"/>
         </scene>
         <!--Merchant Headless Checkout Raw Retail Data View Controller-->
         <scene sceneID="yR7-KK-YHi">
@@ -1389,7 +1389,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="m7L-Ts-2Du" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4505.7971014492759" y="820.98214285714278"/>
+            <point key="canvasLocation" x="6200" y="1821"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="w5p-IM-pjz">
@@ -1407,7 +1407,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bdc-az-zWo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1780" y="1821"/>
+            <point key="canvasLocation" x="2254" y="1821"/>
         </scene>
         <!--Merchant Headless Checkout Raw Phone Number Data View Controller-->
         <scene sceneID="Dwn-Fp-ivv">
@@ -1452,7 +1452,71 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uza-Fh-Tqf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5659" y="821"/>
+            <point key="canvasLocation" x="6961" y="1820"/>
+        </scene>
+        <!--Merchant Headless View Controller-->
+        <scene sceneID="e5v-vF-GQc">
+            <objects>
+                <viewController storyboardIdentifier="MerchantHeadlessViewController" id="Exd-GC-dof" customClass="MerchantHeadlessViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Py7-Ma-yKK">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="PVp-85-SY2">
+                                <rect key="frame" x="40" y="750" width="334" height="92"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QED-OX-lJS">
+                                        <rect key="frame" x="0.0" y="0.0" width="334" height="40"/>
+                                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="Universal Checkout Button"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="UEn-hV-WP4"/>
+                                        </constraints>
+                                        <state key="normal" title="Universal Checkout">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <buttonConfiguration key="configuration" style="filled" title="Checkout">
+                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="onCheckoutButtonTap:" destination="Exd-GC-dof" eventType="touchUpInside" id="pqY-wi-jtd"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="min-pU-amV">
+                                        <rect key="frame" x="0.0" y="52" width="334" height="40"/>
+                                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="xvm-vA-zmw"/>
+                                        </constraints>
+                                        <state key="normal" title="Vault">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <buttonConfiguration key="configuration" style="filled" title="Vault">
+                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="onVaultButtonTap:" destination="Exd-GC-dof" eventType="touchUpInside" id="u4H-6K-9jX"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="tFr-1I-U1Z"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="tFr-1I-U1Z" firstAttribute="bottom" secondItem="PVp-85-SY2" secondAttribute="bottom" constant="20" id="K0u-Lx-Gzf"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="PVp-85-SY2" secondAttribute="trailing" constant="20" id="QP7-L9-jPn"/>
+                            <constraint firstItem="PVp-85-SY2" firstAttribute="leading" secondItem="Py7-Ma-yKK" secondAttribute="leadingMargin" constant="20" id="srp-mb-lzA"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="xRF-cN-6YI"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="L0g-KT-ahP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3751" y="2296"/>
         </scene>
     </scenes>
     <resources>
