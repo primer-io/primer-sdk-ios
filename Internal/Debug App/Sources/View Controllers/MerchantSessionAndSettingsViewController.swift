@@ -528,11 +528,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 clientSession.testParams = testParams
             }
             
-            let vc = MerchantCheckoutViewController.instantiate(settings: settings, clientSession: clientSession, clientToken: nil)
+            let vc = MerchantDropInUIViewController.instantiate(settings: settings, clientSession: clientSession, clientToken: nil)
             navigationController?.pushViewController(vc, animated: true)
             
         case .clientToken:
-            let vc = MerchantCheckoutViewController.instantiate(settings: settings, clientSession: nil, clientToken: clientTokenTextField.text)
+            let vc = MerchantDropInUIViewController.instantiate(settings: settings, clientSession: nil, clientToken: clientTokenTextField.text)
             navigationController?.pushViewController(vc, animated: true)
         }
     }

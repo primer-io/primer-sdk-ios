@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Merchant Checkout View Controller-->
+        <!--Merchant Drop InUI View Controller-->
         <scene sceneID="Hnl-Pi-aw2">
             <objects>
-                <viewController storyboardIdentifier="MerchantCheckoutViewController" id="rv5-RJ-1cA" customClass="MerchantCheckoutViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MerchantCheckoutViewController" id="rv5-RJ-1cA" customClass="MerchantDropInUIViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1AU-v5-4lz">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1516,7 +1516,81 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="L0g-KT-ahP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3751" y="2296"/>
+            <point key="canvasLocation" x="3730" y="2591"/>
+        </scene>
+        <!--Merchant Headles Vaulted View Controller-->
+        <scene sceneID="2g9-tv-Raf">
+            <objects>
+                <viewController storyboardIdentifier="MerchantHeadlesVaultedViewController" id="Uat-Dw-yY9" customClass="MerchantHeadlesVaultedViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Vbb-y7-1MZ">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="UAe-Tx-aPV">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="862"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="MerchantVaultedPaymentMethodCell" rowHeight="89" id="SP8-Pj-FLg" customClass="MerchantVaultedPaymentMethodCell" customModule="Debug_App" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="50" width="414" height="89"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="SP8-Pj-FLg" id="MQW-G7-8Fa">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="89"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eWQ-oF-Azf">
+                                                    <rect key="frame" x="20" y="8" width="374" height="73"/>
+                                                    <subviews>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gjT-S5-r4c">
+                                                            <rect key="frame" x="0.0" y="0.0" width="292.5" height="73"/>
+                                                        </imageView>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dfL-QV-l1s">
+                                                            <rect key="frame" x="292.5" y="0.0" width="81.5" height="73"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="45" id="gD7-34-uvO"/>
+                                                    </constraints>
+                                                </stackView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="eWQ-oF-Azf" secondAttribute="bottom" constant="8" id="98j-Ht-l9q"/>
+                                                <constraint firstItem="eWQ-oF-Azf" firstAttribute="leading" secondItem="MQW-G7-8Fa" secondAttribute="leading" constant="20" id="hfD-aP-HFL"/>
+                                                <constraint firstItem="eWQ-oF-Azf" firstAttribute="top" secondItem="MQW-G7-8Fa" secondAttribute="top" constant="8" id="pew-Nn-jDF"/>
+                                                <constraint firstAttribute="trailing" secondItem="eWQ-oF-Azf" secondAttribute="trailing" constant="20" id="xSh-6S-mYQ"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="paymentMethodLabel" destination="dfL-QV-l1s" id="WMW-AS-6Oj"/>
+                                            <outlet property="paymentMethodLogoView" destination="gjT-S5-r4c" id="dQR-GH-58P"/>
+                                            <outlet property="stackView" destination="eWQ-oF-Azf" id="3vi-Gp-nee"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="HWB-lM-wQr" id="VsS-4G-qXX"/>
+                                    <outlet property="delegate" destination="HWB-lM-wQr" id="qaP-6c-DSD"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="srZ-gu-Kcn"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="srZ-gu-Kcn" firstAttribute="trailing" secondItem="UAe-Tx-aPV" secondAttribute="trailing" id="Pp0-pJ-Aaj"/>
+                            <constraint firstItem="UAe-Tx-aPV" firstAttribute="leading" secondItem="srZ-gu-Kcn" secondAttribute="leading" id="YG7-c5-r1g"/>
+                            <constraint firstItem="srZ-gu-Kcn" firstAttribute="bottom" secondItem="UAe-Tx-aPV" secondAttribute="bottom" id="xmM-eb-hBo"/>
+                            <constraint firstItem="UAe-Tx-aPV" firstAttribute="top" secondItem="Vbb-y7-1MZ" secondAttribute="top" id="zyQ-ck-ce8"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="UAe-Tx-aPV" id="Mej-Gb-YBl"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oLE-7C-bUs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4510" y="2591"/>
         </scene>
     </scenes>
     <resources>
