@@ -21,6 +21,7 @@ extension PrimerHeadlessUniversalCheckout {
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         
+        // MARK: Public functions
         public override init() {
             PrimerInternal.shared.sdkIntegrationType = .headless
             PrimerInternal.shared.intent = .checkout
@@ -258,6 +259,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
+        // MARK: Private functions
         private func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
             return Promise { seal in
                 if PrimerSettings.current.paymentHandling == .manual {

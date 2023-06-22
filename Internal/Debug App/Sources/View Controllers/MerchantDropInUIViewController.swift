@@ -1,5 +1,5 @@
 //
-//  MerchantCheckoutViewController.swift
+//  MerchantDropInUIViewController.swift
 //  PrimerSDK_Example
 //
 //  Created by Evangelos Pittas on 12/4/21.
@@ -9,10 +9,10 @@
 import PrimerSDK
 import UIKit
 
-class MerchantCheckoutViewController: UIViewController, PrimerDelegate {
+class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
     
-    class func instantiate(settings: PrimerSettings, clientSession: ClientSessionRequestBody?, clientToken: String?) -> MerchantCheckoutViewController {
-        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantCheckoutViewController
+    class func instantiate(settings: PrimerSettings, clientSession: ClientSessionRequestBody?, clientToken: String?) -> MerchantDropInUIViewController {
+        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantDropInUIViewController
         mcvc.settings = settings
         mcvc.clientSession = clientSession
         mcvc.clientToken = clientToken
@@ -153,7 +153,7 @@ class MerchantCheckoutViewController: UIViewController, PrimerDelegate {
 
 // MARK: Auto Payment Handling
 
-extension MerchantCheckoutViewController {
+extension MerchantDropInUIViewController {
     
     func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\n\nMERCHANT APP\n\(#function)\nPayment Success: \(data)\n")
@@ -164,7 +164,7 @@ extension MerchantCheckoutViewController {
 
 // MARK: Manual Payment Handling
 
-extension MerchantCheckoutViewController {
+extension MerchantDropInUIViewController {
     
     func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
@@ -262,7 +262,7 @@ extension MerchantCheckoutViewController {
 
 // MARK: Common
 
-extension MerchantCheckoutViewController {
+extension MerchantDropInUIViewController {
     
     func primerClientSessionWillUpdate() {
         print("\n\nMERCHANT APP\n\(#function)")
