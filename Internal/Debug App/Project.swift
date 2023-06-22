@@ -60,18 +60,6 @@ let project = Project(
                 .target(name: BaseSettings.appName)
             ],
             settings: TestAppSettings.settings
-        ),
-        Target(
-            name: "Debug App UITests",
-            platform: .iOS,
-            product: .uiTests,
-            bundleId: "com.primer.PrimerSDKExample-UITests",
-            infoPlist: .default,
-            sources: ["Tests/UI Tests/**"],
-            dependencies: [
-                .target(name: BaseSettings.appName)
-            ],
-            settings: TestAppSettings.settings
         )
     ],
     schemes: [
