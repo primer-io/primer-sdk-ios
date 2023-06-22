@@ -151,7 +151,7 @@ internal class URLSessionStack: NetworkService {
                 return
             }
             
-            guard var data = data else {
+            guard let data = data else {
                 if resEvent != nil {
                     resEventProperties?.errorBody = "No data received"
                     resEvent!.properties = resEventProperties

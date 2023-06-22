@@ -57,6 +57,7 @@ class MerchantResultViewController: UIViewController {
             logsTextView.text = "[\"No logs received\"]"
         }
 
+
         if let checkoutData {
             if let data = try? JSONEncoder().encode(checkoutData) {
                 if let prettyNSStr = data.prettyPrintedJSONString {

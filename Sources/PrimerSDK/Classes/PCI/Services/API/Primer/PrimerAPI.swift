@@ -288,7 +288,7 @@ internal extension PrimerAPI {
             return "/payments"
         case .resumePayment(_, let paymentId, _):
             return "/payments/\(paymentId)/resume"
-        case .testFinalizePolling(_, let testId):
+        case .testFinalizePolling(_, _):
             return "/finalize-polling"
         }
     }

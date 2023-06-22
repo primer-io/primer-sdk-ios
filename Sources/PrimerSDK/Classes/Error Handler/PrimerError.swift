@@ -761,7 +761,7 @@ public enum PrimerError: PrimerErrorProtocol {
     }
     
     public var errorUserInfo: [String : Any] {
-        var tmpUserInfo: [String: Any] = [
+        let tmpUserInfo: [String: Any] = [
             "createdAt": Date().toString(),
             "diagnosticsId": diagnosticsId
         ]
@@ -834,7 +834,7 @@ public enum PrimerError: PrimerErrorProtocol {
             } else {
                 return "Change the intent to .checkout"
             }
-        case .unsupportedPaymentMethod(let paymentMethodType, _, _):
+        case .unsupportedPaymentMethod(_, _, _):
             return "Change the payment method type"
         case .underlyingErrors:
             return "Check underlying errors for more information."
