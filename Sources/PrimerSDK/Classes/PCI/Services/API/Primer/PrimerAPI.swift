@@ -44,8 +44,6 @@ enum PrimerAPI: Endpoint, Equatable {
     case fetchConfiguration(clientToken: DecodedJWTToken, requestParameters: Request.URLParameters.Configuration?)
     case fetchVaultedPaymentMethods(clientToken: DecodedJWTToken)
     case deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String)
-    
-//    case createDirectDebitMandate(clientToken: DecodedClientToken, mandateRequest: DirectDebitCreateMandateRequest)
     case createPayPalOrderSession(clientToken: DecodedJWTToken, payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder)
     case createPayPalBillingAgreementSession(clientToken: DecodedJWTToken, payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement)
     case confirmPayPalBillingAgreement(clientToken: DecodedJWTToken, payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement)
@@ -260,8 +258,6 @@ internal extension PrimerAPI {
             return "/klarna/customer-tokens"
         case .finalizeKlarnaPaymentSession:
             return "/klarna/payment-sessions/finalize"
-//        case .createDirectDebitMandate:
-//            return "/gocardless/mandates"
         case .tokenizePaymentMethod:
             return "/payment-instruments"
         case .begin3DSRemoteAuth(_, let paymentMethodToken, _):
