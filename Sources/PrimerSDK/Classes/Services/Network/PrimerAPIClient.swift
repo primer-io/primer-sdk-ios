@@ -64,7 +64,8 @@ protocol PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void)
     func exchangePaymentMethodToken(
         clientToken: DecodedJWTToken,
-        paymentMethodId: String,
+        vaultedPaymentMethodId: String,
+        vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?,
         completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void)
     
     // 3DS
@@ -145,8 +146,13 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func exchangePaymentMethodToken(clientToken: DecodedJWTToken, paymentMethodId: String, completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void) {
-        let endpoint = PrimerAPI.exchangePaymentMethodToken(clientToken: clientToken, paymentMethodId: paymentMethodId)
+    func exchangePaymentMethodToken(
+        clientToken: DecodedJWTToken,
+        vaultedPaymentMethodId: String,
+        vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?,
+        completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void
+    ) {
+        let endpoint = PrimerAPI.exchangePaymentMethodToken(clientToken: clientToken, vaultedPaymentMethodId: vaultedPaymentMethodId, vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
         networkService.request(endpoint) { (result: Result<PrimerPaymentMethodTokenData, Error>) in
             switch result {
             case .success(let paymentInstrument):

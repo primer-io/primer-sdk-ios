@@ -40,7 +40,7 @@ enum PrimerAPI: Endpoint, Equatable {
     }
     
 
-    case exchangePaymentMethodToken(clientToken: DecodedJWTToken, paymentMethodId: String)
+    case exchangePaymentMethodToken(clientToken: DecodedJWTToken, vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?)
     case fetchConfiguration(clientToken: DecodedJWTToken, requestParameters: Request.URLParameters.Configuration?)
     case fetchVaultedPaymentMethods(clientToken: DecodedJWTToken)
     case deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String)
@@ -100,7 +100,7 @@ internal extension PrimerAPI {
         
         switch self {
         case .deleteVaultedPaymentMethod(let clientToken, _),
-                .exchangePaymentMethodToken(let clientToken, _),
+                .exchangePaymentMethodToken(let clientToken, _, _),
                 .fetchVaultedPaymentMethods(let clientToken),
                 .createPayPalOrderSession(let clientToken, _),
                 .createPayPalBillingAgreementSession(let clientToken, _),
@@ -216,7 +216,7 @@ internal extension PrimerAPI {
             return urlStr
         case .deleteVaultedPaymentMethod(let clientToken, _),
                 .fetchVaultedPaymentMethods(let clientToken),
-                .exchangePaymentMethodToken(let clientToken, _),
+                .exchangePaymentMethodToken(let clientToken, _, _),
                 .tokenizePaymentMethod(let clientToken, _),
                 .begin3DSRemoteAuth(let clientToken, _, _),
                 .continue3DSRemoteAuth(let clientToken, _, _),
@@ -246,7 +246,7 @@ internal extension PrimerAPI {
             return ""
         case .fetchVaultedPaymentMethods:
             return "/payment-instruments"
-        case .exchangePaymentMethodToken(_, let paymentMethodId):
+        case .exchangePaymentMethodToken(_, let paymentMethodId, _):
             return "/payment-instruments/\(paymentMethodId)/exchange"
         case .createPayPalOrderSession:
             return "/paypal/orders/create"
@@ -377,11 +377,16 @@ internal extension PrimerAPI {
         case .requestPrimerConfigurationWithActions(_, let request):
             return try? JSONEncoder().encode(request.actions)
         case .deleteVaultedPaymentMethod,
-                .exchangePaymentMethodToken,
                 .fetchVaultedPaymentMethods,
                 .poll,
                 .listRetailOutlets:
             return nil
+        case .exchangePaymentMethodToken(_, _, let vaultedPaymentMethodAdditionalData):
+            if let vaultedCardAdditionalData = vaultedPaymentMethodAdditionalData as? PrimerVaultedCardAdditionalData {
+                return try? JSONEncoder().encode(vaultedCardAdditionalData)
+            } else {
+                return nil
+            }
         case .sendAnalyticsEvents(_, _, let body):
             return try? JSONEncoder().encode(body)
         case .fetchPayPalExternalPayerInfo(_, let payPalExternalPayerInfoRequestBody):

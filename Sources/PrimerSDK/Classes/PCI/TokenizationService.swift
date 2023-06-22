@@ -9,7 +9,7 @@ internal protocol TokenizationServiceProtocol {
     var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
     
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData>
-    func exchangePaymentMethodToken(_ paymentMethodTokenId: String) -> Promise<PrimerPaymentMethodTokenData>
+    func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData>
 }
 
 internal class TokenizationService: TokenizationServiceProtocol {
@@ -66,7 +66,10 @@ internal class TokenizationService: TokenizationServiceProtocol {
         }
     }
     
-    func exchangePaymentMethodToken(_ paymentMethodTokenId: String) -> Promise<PrimerPaymentMethodTokenData> {
+    func exchangePaymentMethodToken(
+        _ vaultedPaymentMethodId: String,
+        vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
+    ) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -77,7 +80,10 @@ internal class TokenizationService: TokenizationServiceProtocol {
             
             let apiClient: PrimerAPIClientProtocol = CheckoutWithVaultedPaymentMethodViewModel.apiClient ?? PrimerAPIClient()
             
-            apiClient.exchangePaymentMethodToken(clientToken: decodedJWTToken, paymentMethodId: paymentMethodTokenId) { result in
+            apiClient.exchangePaymentMethodToken(
+                clientToken: decodedJWTToken,
+                vaultedPaymentMethodId: vaultedPaymentMethodId,
+                vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let singleUsePaymentMethod):
