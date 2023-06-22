@@ -8,7 +8,7 @@ target 'Debug App' do
   use_frameworks!
 
   # Pods for Debug App
-  pod 'PrimerSDK', :path => '../../'
+  pod 'PrimerSDK', :path => '../../../'
   pod 'Primer3DS', "~> 1.1.2"
   pod 'PrimerKlarnaSDK'
   # pod 'PrimerIPay88MYSDK' -> fails on arm64
@@ -47,7 +47,7 @@ def fix_linking(installer)
     project.targets.each do |target|
       if target.name == "PrimerSDK"
         target.build_configurations.each do |config|
-          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -framework "Primer3DS" -framework "PrimerKlarnaSDK" -framework "PrimerIPay88MYSDK"'
+          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -framework "Primer3DS" -framework "PrimerKlarnaSDK"'
         end
       end
     end
