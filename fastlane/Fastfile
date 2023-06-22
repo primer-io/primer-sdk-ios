@@ -96,7 +96,7 @@ platform :ios do
     cocoapods(
       clean_install: true,
       use_bundle_exec: true,
-      podfile: "Internal/Debug App/Podfile"
+      podfile: "Internal/Debug App/Appetize Podfile/Podfile"
     )
 
     # Build for appetize
