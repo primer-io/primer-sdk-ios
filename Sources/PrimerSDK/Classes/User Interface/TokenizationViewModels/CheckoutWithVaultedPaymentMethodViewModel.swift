@@ -108,7 +108,7 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 }
                 
                 let tokenizationService = TokenizationService()
-                return tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId)
+                return tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData: nil)
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
