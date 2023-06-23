@@ -35,6 +35,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
     case invalidPhoneNumber(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRetailer(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
+    case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String, validVaultedPaymentMethodAdditionalDataType: String, userInfo: [String: String]?, diagnosticsId: String)
     
     public var diagnosticsId: String {
         switch self {
@@ -67,6 +68,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
         case .invalidExpiryYear(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidRetailer(_, _, let diagnosticsId):
+            return diagnosticsId
+        case .vaultedPaymentMethodAdditionalDataMismatch(_, _, _, let diagnosticsId):
             return diagnosticsId
         }
     }
@@ -103,6 +106,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "invalid-raw-data"
         case .invalidRetailer:
             return "invalid-retailer"
+        case .vaultedPaymentMethodAdditionalDataMismatch:
+            return "vaulted-payment-method-additional-data-mismatch"
         }
     }
     
@@ -138,6 +143,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "[\(errorId)] Raw data is not valid."
         case .invalidRetailer(let message, _, _):
             return "[\(errorId)] \(message)"
+        case .vaultedPaymentMethodAdditionalDataMismatch(let paymentMethodType, let validVaultedPaymentMethodAdditionalDataType, _, _):
+            return "[\(errorId)] Vaulted payment method \(paymentMethodType) needs additional data of type \(validVaultedPaymentMethodAdditionalDataType)"
         }
     }
     
@@ -159,7 +166,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
                 .invalidCountry(_, let userInfo, _),
                 .invalidPhoneNumber(_, let userInfo, _),
                 .invalidRawData(let userInfo, _),
-                .invalidRetailer(_, let userInfo, _):
+                .invalidRetailer(_, let userInfo, _),
+                .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
 
@@ -218,6 +226,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
         case .invalidRetailer:
             return "RETAILER"
         case .invalidRawData:
+            return nil
+        case .vaultedPaymentMethodAdditionalDataMismatch:
             return nil
         }
     }
