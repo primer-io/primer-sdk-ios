@@ -14,7 +14,8 @@ extension PrimerHeadlessUniversalCheckout {
     
     public class VaultManager: NSObject {
         
-        private(set) var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?
+        private(set) var vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
+        internal(set) var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?
         private(set) var paymentMethodTokenData: PrimerPaymentMethodTokenData?
         private(set) var paymentCheckoutData: PrimerCheckoutData?
         private(set) var resumePaymentId: String?
@@ -22,6 +23,7 @@ extension PrimerHeadlessUniversalCheckout {
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         
         // MARK: Public functions
+        
         public override init() {
             PrimerInternal.shared.sdkIntegrationType = .headless
             PrimerInternal.shared.intent = .checkout
@@ -40,24 +42,80 @@ extension PrimerHeadlessUniversalCheckout {
             try self.validate()
         }
         
-        private func validate() throws {
-            guard PrimerAPIConfigurationModule.decodedJWTToken != nil,
-                  PrimerAPIConfigurationModule.apiConfiguration != nil
-            else {
-                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
+        internal func validateAdditionalDataSynchronously(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData) -> [Error]? {
+            self.vaultedPaymentMethodAdditionalData = nil
+            var errors: [Error] = []
             
-            guard let customerId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id else {
-                let err = PrimerError.invalidClientSessionValue(
-                    name: "customer.id",
-                    value: nil,
-                    allowedValue: "string",
-                    userInfo: nil,
+            guard let vaultedPaymentMethod = self.vaultedPaymentMethods?.first(where: { $0.id == vaultedPaymentMethodId }) else {
+                let err = PrimerError.invalidVaultedPaymentMethodId(
+                    vaultedPaymentMethodId: vaultedPaymentMethodId,
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
-                throw err
+                errors.append(err)
+                return errors
+            }
+            
+            if vaultedPaymentMethod.paymentMethodType == "PAYMENT_CARD" {
+                let cardNetwork = CardNetwork(cardNetworkStr: vaultedPaymentMethod.paymentInstrumentData.network ?? "")
+                
+                if let vaultedCardAdditionalData = vaultedPaymentMethodAdditionalData as? PrimerVaultedCardAdditionalData {
+                    if vaultedCardAdditionalData.cvv.isEmpty {
+                        let err = PrimerValidationError.invalidCvv(
+                            message: "CVV cannot be blank.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString)
+                        errors.append(err)
+    
+                    } else if !vaultedCardAdditionalData.cvv.isValidCVV(cardNetwork: cardNetwork) {
+                        let err = PrimerValidationError.invalidCvv(
+                            message: "CVV is not valid.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString)
+                        errors.append(err)
+                        
+                    } else {
+                        self.vaultedPaymentMethodAdditionalData = vaultedCardAdditionalData
+                    }
+                    
+                    return errors.isEmpty ? nil : errors
+                } else {
+                    let err = PrimerValidationError.vaultedPaymentMethodAdditionalDataMismatch(
+                        paymentMethodType: vaultedPaymentMethod.paymentMethodType,
+                        validVaultedPaymentMethodAdditionalDataType: String(describing: PrimerVaultedCardAdditionalData.self),
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                    errors.append(err)
+                    return errors
+                }
+            } else {
+                // There's no need to validate additional data for payment methods other than PAYMENT_CARD.
+                // Return nil to continue
+                return nil
+            }
+        }
+        
+        public func validate(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData, completion: @escaping (_ errors: [Error]?) -> Void) {
+            DispatchQueue.global(qos: .userInteractive).async {
+                let errors = self.validateAdditionalDataSynchronously(vaultedPaymentMethodId: vaultedPaymentMethodId, vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
+                DispatchQueue.main.async {
+                    completion(errors)
+                }
             }
         }
         
@@ -113,7 +171,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
         
-        public func startPaymentFlow(vaultedPaymentMethodId: String) {
+        public func startPaymentFlow(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData? = nil) {
             guard let vaultedPaymentMethod = self.vaultedPaymentMethods?.first(where: { $0.id == vaultedPaymentMethodId }) else {
                 let err = PrimerError.invalidVaultedPaymentMethodId(
                     vaultedPaymentMethodId: vaultedPaymentMethodId,
@@ -123,17 +181,46 @@ extension PrimerHeadlessUniversalCheckout {
                 
                 DispatchQueue.main.async {
                     PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
-                        // No need to pass anything
+                        // No need to do anything
                     }
                 }
                 return
+            }
+            
+            if let vaultedPaymentMethodAdditionalData = vaultedPaymentMethodAdditionalData {
+                if let errors = self.validateAdditionalDataSynchronously(vaultedPaymentMethodId: vaultedPaymentMethodId, vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData) {
+                    DispatchQueue.main.async {
+                        var primerError: PrimerErrorProtocol?
+                        
+                        if errors.count == 1 {
+                            if let primerErr = errors.first as? PrimerValidationError {
+                                primerError = primerErr
+                            } else if let primerErr = errors.first as? PrimerError {
+                                primerError = primerErr
+                            }
+                        }
+                        
+                        if primerError == nil {
+                            let primerErr = PrimerError.underlyingErrors(
+                                errors: errors,
+                                userInfo: nil,
+                                diagnosticsId: UUID().uuidString)
+                            primerError = primerErr
+                        }
+                        
+                        PrimerDelegateProxy.primerDidFailWithError(primerError!, data: self.paymentCheckoutData) { decision in
+                            // No need to do anything
+                        }
+                    }
+                    return
+                }
             }
             
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: vaultedPaymentMethod.paymentMethodType)
             
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {
-                tokenizationService.exchangePaymentMethodToken(vaultedPaymentMethod.id)
+                tokenizationService.exchangePaymentMethodToken(vaultedPaymentMethod.id, vaultedPaymentMethodAdditionalData: self.vaultedPaymentMethodAdditionalData)
             }
             .then { paymentMethodTokenData -> Promise<DecodedJWTToken?> in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -260,6 +347,28 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         // MARK: Private functions
+        
+        private func validate() throws {
+            guard PrimerAPIConfigurationModule.decodedJWTToken != nil,
+                  PrimerAPIConfigurationModule.apiConfiguration != nil
+            else {
+                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+            
+            guard let customerId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id else {
+                let err = PrimerError.invalidClientSessionValue(
+                    name: "customer.id",
+                    value: nil,
+                    allowedValue: "string",
+                    userInfo: nil,
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+        }
+        
         private func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
             return Promise { seal in
                 if PrimerSettings.current.paymentHandling == .manual {
