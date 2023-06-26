@@ -130,7 +130,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var clientSession = ClientSessionRequestBody(
         customerId: "customer8",
         orderId: "ios-order-\(String.randomString(length: 8))",
-        currencyCode: .GBP,
+        currencyCode: .EUR,
         amount: nil,
         metadata: nil,
         customer: ClientSessionRequestBody.Customer(
@@ -158,12 +158,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 postalCode: "EC53 8BT")
         ),
         order: ClientSessionRequestBody.Order(
-            countryCode: .gb,
+            countryCode: .nl,
             lineItems: [
                 ClientSessionRequestBody.Order.LineItem(
                     itemId: "fancy-shoes-\(String.randomString(length: 4))",
                     description: "Fancy Shoes",
-                    amount: 1000,
+                    amount: 11000,
                     quantity: 1,
                     discountAmount: nil,
                     taxAmount: nil),
