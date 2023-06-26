@@ -11,7 +11,7 @@ import XCTest
 
 final class HeadlessVaultManagerTests: XCTestCase {
     
-    func test_start_headless_vaulted() throws {
+    func test_start_headless_vault_manager() throws {
         let exp = expectation(description: "Start Headless Universal Checkout")
         
         let clientSession = ClientSession.APIResponse(
@@ -107,7 +107,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                                          tokenType: .multiUse,
                                          vaultData: nil)
         ])
-        var avaliableVaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
+        var availableVaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
         
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
@@ -119,12 +119,11 @@ final class HeadlessVaultManagerTests: XCTestCase {
             let vaultManager = PrimerHeadlessUniversalCheckout.VaultManager()
             try! vaultManager.configure()
             vaultManager.fetchVaultedPaymentMethods { vpm, err in
-                let testAppState = AppState.current.paymentMethods
-                print(testAppState)
                 if let unwrappedVaultedPaymentMethods = vpm {
-                    avaliableVaultedPaymentMethods = unwrappedVaultedPaymentMethods
-                    exp.fulfill()
+                    availableVaultedPaymentMethods = unwrappedVaultedPaymentMethods
                 }
+                
+                exp.fulfill()
             }
 
         }
@@ -133,9 +132,9 @@ final class HeadlessVaultManagerTests: XCTestCase {
         
         let apiConfiguration = AppState.current.apiConfiguration
         
-        XCTAssert(avaliableVaultedPaymentMethods.count == 1, "Primer Headless Vaulted Manager should return 1 available payment method")
-        XCTAssert(avaliableVaultedPaymentMethods.first?.paymentMethodType == "PAYPAL", "Primer Headless Universal Checkout should include Adyen Giropay in its available payment methods")
-        XCTAssert(avaliableVaultedPaymentMethods.first(where: { $0.paymentMethodType == "PAYPAL" }) != nil, "Primer Headless Universal Checkout should not include ADYEN_DOTPAY in its available payment methods")
+        XCTAssert(availableVaultedPaymentMethods.count == 1, "Primer Headless Vaulted Manager should return 1 available payment method")
+        XCTAssert(availableVaultedPaymentMethods.first?.paymentMethodType == "PAYPAL", "Primer Headless Universal Checkout should include Adyen Giropay in its available payment methods")
+        XCTAssert(availableVaultedPaymentMethods.first(where: { $0.paymentMethodType == "PAYPAL" }) != nil, "Primer Headless Universal Checkout should not include ADYEN_DOTPAY in its available payment methods")
         XCTAssert(apiConfiguration?.clientSession?.clientSessionId == clientSession.clientSessionId, "Primer configuration's client session's id should be \(clientSession.clientSessionId ?? "nil")")
         XCTAssert(apiConfiguration?.clientSession?.order != nil, "Primer configuration's client session's order should not be null")
         XCTAssert(apiConfiguration?.clientSession?.order?.currencyCode == clientSession.order?.currencyCode, "Primer configuration's client session's order currency should be \(clientSession.order?.currencyCode?.rawValue ?? "nil")")
@@ -144,7 +143,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
     }
     
     func test_headless_vaulted_configuration_fail() throws {
-        let exp = expectation(description: "Configuration of VaultManager should fail ")
+        let exp = expectation(description: "Configuration of VaultManager should fail")
         
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock-client-session-id-1",
