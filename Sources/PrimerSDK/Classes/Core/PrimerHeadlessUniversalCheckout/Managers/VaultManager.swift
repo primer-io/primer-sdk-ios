@@ -238,20 +238,23 @@ extension PrimerHeadlessUniversalCheckout {
                             }
                             .done { checkoutData in
                                 self.paymentCheckoutData = checkoutData
+                                
                                 DispatchQueue.main.async {
-                                    guard let checkoutData = self.paymentCheckoutData else {
-                                        let err = PrimerError.generic(
-                                            message: "Failed to find checkout data",
-                                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                                            diagnosticsId: UUID().uuidString)
-                                        ErrorHandler.handle(error: err)
-                                        PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
-                                            // No need to pass anything
+                                    if PrimerSettings.current.paymentHandling == .auto {
+                                        guard let checkoutData = self.paymentCheckoutData, PrimerSettings.current.paymentHandling == .auto else {
+                                            let err = PrimerError.generic(
+                                                message: "Failed to find checkout data",
+                                                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                                diagnosticsId: UUID().uuidString)
+                                            ErrorHandler.handle(error: err)
+                                            PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
+                                                // No need to pass anything
+                                            }
+                                            return
                                         }
-                                        return
+                                        
+                                        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                                     }
-                                    
-                                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                                 }
                             }
                             .catch { err in
@@ -310,19 +313,21 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                 } else {
                     DispatchQueue.main.async {
-                        guard let checkoutData = self.paymentCheckoutData else {
-                            let err = PrimerError.generic(
-                                message: "Failed to find checkout data",
-                                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                                diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
-                                // No need to pass anything
+                        if PrimerSettings.current.paymentHandling == .auto {
+                            guard let checkoutData = self.paymentCheckoutData, PrimerSettings.current.paymentHandling == .auto else {
+                                let err = PrimerError.generic(
+                                    message: "Failed to find checkout data",
+                                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                    diagnosticsId: UUID().uuidString)
+                                ErrorHandler.handle(error: err)
+                                PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
+                                    // No need to pass anything
+                                }
+                                return
                             }
-                            return
+                            
+                            PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                         }
-                        
-                        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     }
                 }
             }
