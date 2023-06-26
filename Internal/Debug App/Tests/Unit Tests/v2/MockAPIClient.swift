@@ -285,9 +285,10 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func exchangePaymentMethodToken(
-        clientToken: DecodedJWTToken,
-        paymentMethodId: String,
-        completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void
+        clientToken: PrimerSDK.DecodedJWTToken,
+        vaultedPaymentMethodId: String,
+        vaultedPaymentMethodAdditionalData: PrimerSDK.PrimerVaultedPaymentMethodAdditionalData?,
+        completion: @escaping (Result<PrimerSDK.PrimerPaymentMethodTokenData, Error>) -> Void
     ) {
         guard let result = exchangePaymentMethodTokenResult,
               (result.0 != nil || result.1 != nil)
