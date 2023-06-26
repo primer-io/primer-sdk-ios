@@ -130,7 +130,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var clientSession = ClientSessionRequestBody(
         customerId: "ios-customer-\(String.randomString(length: 8))",
         orderId: "ios-order-\(String.randomString(length: 8))",
-        currencyCode: .GBP,
+        currencyCode: .EUR,
         amount: nil,
         metadata: nil,
         customer: ClientSessionRequestBody.Customer(
