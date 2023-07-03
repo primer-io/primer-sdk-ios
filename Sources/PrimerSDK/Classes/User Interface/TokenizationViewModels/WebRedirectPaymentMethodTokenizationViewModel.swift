@@ -332,8 +332,6 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
                 messageType: .other,
                 severity: .debug))
         Analytics.Service.record(events: [messageEvent])
-        
-        self.cancel()
     }
     
     func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {

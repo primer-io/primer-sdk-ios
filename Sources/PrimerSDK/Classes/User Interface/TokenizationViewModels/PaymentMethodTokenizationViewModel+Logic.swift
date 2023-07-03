@@ -244,19 +244,19 @@ extension PaymentMethodTokenizationViewModel {
                             
                         case .continueWithNewClientToken(let newClientToken):
                             let apiConfigurationModule = PrimerAPIConfigurationModule()
-                        
-                        firstly {
-                            apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
-                        }
-                        .done {
-                            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                                ErrorHandler.handle(error: err)
-                                throw err
-                            }
                             
-                            seal.fulfill(decodedJWTToken)
-                        }
+                            firstly {
+                                apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
+                            }
+                            .done {
+                                guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                    ErrorHandler.handle(error: err)
+                                    throw err
+                                }
+                                
+                                seal.fulfill(decodedJWTToken)
+                            }
                             .catch { err in
                                 seal.reject(err)
                             }
