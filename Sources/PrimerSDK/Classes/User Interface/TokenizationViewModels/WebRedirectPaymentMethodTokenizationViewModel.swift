@@ -316,6 +316,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        if UIApplication.shared.applicationState != .active { return }
+        
         let messageEvent = Analytics.Event(
             eventType: .message,
             properties: MessageEventProperties(
