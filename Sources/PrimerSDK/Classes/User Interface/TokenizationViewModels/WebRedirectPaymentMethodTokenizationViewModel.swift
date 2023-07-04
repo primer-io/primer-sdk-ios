@@ -316,6 +316,15 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        /// ⚠️ The check below is done due to a bug noticed on some payment methods when there was
+        /// a redirection to a 3rd party app. The **safariViewControllerDidFinish** was getting called,
+        /// and the SDK behaved as it should when the user taps the "Done" button, i.e. cancelling the
+        /// payment.
+        ///
+        /// Fortunately at the time this gets called, the app is already in an **.inactive** state, so we can
+        /// ignore it, since the user wouldn't be able to tap the "Done" button in an **.inactive** state.
+        if UIApplication.shared.applicationState != .active { return }
+        
         let messageEvent = Analytics.Event(
             eventType: .message,
             properties: MessageEventProperties(
