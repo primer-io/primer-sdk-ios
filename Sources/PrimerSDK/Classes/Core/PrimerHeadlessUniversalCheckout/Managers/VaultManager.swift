@@ -14,7 +14,6 @@ extension PrimerHeadlessUniversalCheckout {
     
     public class VaultManager: NSObject {
         
-        private(set) var vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
         internal(set) var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?
         private(set) var paymentMethodTokenData: PrimerPaymentMethodTokenData?
         private(set) var paymentCheckoutData: PrimerCheckoutData?
@@ -43,7 +42,6 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         internal func validateAdditionalDataSynchronously(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData) -> [Error]? {
-            self.vaultedPaymentMethodAdditionalData = nil
             var errors: [Error] = []
             
             guard let vaultedPaymentMethod = self.vaultedPaymentMethods?.first(where: { $0.id == vaultedPaymentMethodId }) else {
@@ -84,11 +82,10 @@ extension PrimerHeadlessUniversalCheckout {
                             diagnosticsId: UUID().uuidString)
                         errors.append(err)
                         
-                    } else {
-                        self.vaultedPaymentMethodAdditionalData = vaultedCardAdditionalData
                     }
                     
                     return errors.isEmpty ? nil : errors
+                    
                 } else {
                     let err = PrimerValidationError.vaultedPaymentMethodAdditionalDataMismatch(
                         paymentMethodType: vaultedPaymentMethod.paymentMethodType,
@@ -220,7 +217,7 @@ extension PrimerHeadlessUniversalCheckout {
             
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {
-                tokenizationService.exchangePaymentMethodToken(vaultedPaymentMethod.id, vaultedPaymentMethodAdditionalData: self.vaultedPaymentMethodAdditionalData)
+                tokenizationService.exchangePaymentMethodToken(vaultedPaymentMethod.id, vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
             }
             .then { paymentMethodTokenData -> Promise<DecodedJWTToken?> in
                 self.paymentMethodTokenData = paymentMethodTokenData
