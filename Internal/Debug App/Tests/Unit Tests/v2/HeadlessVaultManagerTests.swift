@@ -364,6 +364,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
             PrimerHeadlessUniversalCheckout.VaultedPaymentMethod(
                 id: "id",
                 paymentMethodType: "PAYMENT_CARD",
+                paymentInstrumentType: .paymentCard,
                 paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData(
                     paypalBillingAgreementId: nil,
                     first6Digits: "411111",
@@ -443,6 +444,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
             PrimerHeadlessUniversalCheckout.VaultedPaymentMethod(
                 id: "id",
                 paymentMethodType: "PAYMENT_CARD",
+                paymentInstrumentType: .paymentCard,
                 paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData(
                     paypalBillingAgreementId: nil,
                     first6Digits: "378282",
@@ -484,6 +486,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
             PrimerHeadlessUniversalCheckout.VaultedPaymentMethod(
                 id: "id",
                 paymentMethodType: "PAYPAL",
+                paymentInstrumentType: .payPalBillingAgreement,
                 paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData(
                     paypalBillingAgreementId: "billing-agreement",
                     first6Digits: nil,
