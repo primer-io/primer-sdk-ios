@@ -901,17 +901,20 @@ extension PrimerHeadlessUniversalCheckout {
         
         public let id: String
         public let paymentMethodType: String
+        public let paymentInstrumentType: PaymentInstrumentType
         public let paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData
         public let analyticsId: String
         
         init(
             id: String,
             paymentMethodType: String,
+            paymentInstrumentType: PaymentInstrumentType,
             paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData,
             analyticsId: String
         ) {
             self.id = id
             self.paymentMethodType = paymentMethodType
+            self.paymentInstrumentType = paymentInstrumentType
             self.paymentInstrumentData = paymentInstrumentData
             self.analyticsId = analyticsId
         }
@@ -932,6 +935,7 @@ extension PrimerPaymentMethodTokenData {
         return PrimerHeadlessUniversalCheckout.VaultedPaymentMethod(
             id: id,
             paymentMethodType: paymentMethodType,
+            paymentInstrumentType: self.paymentInstrumentType,
             paymentInstrumentData: paymentInstrumentData,
             analyticsId: analyticsId
         )
