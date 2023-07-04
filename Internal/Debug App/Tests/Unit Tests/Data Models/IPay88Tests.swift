@@ -6,6 +6,7 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
+#if canImport(UIKit)
 #if canImport(PrimerIPay88MYSDK)
 import XCTest
 @testable import PrimerIPay88MYSDK
@@ -52,6 +53,7 @@ class IPay88Tests: XCTestCase {
     }
     
     func test_iPay88_validations() throws {
+#if canImport(PrimerIPay88MYSDK)
         let decodedClientToken = try DecodedJWTToken.createMock(supportedCurrencyCode: "MYR", supportedCountry: "MY")
         let clientToken = try decodedClientToken.toString()
         
@@ -156,12 +158,22 @@ class IPay88Tests: XCTestCase {
             let payment = try iPay88TokenizationViewModel.createPrimerIPay88Payment()
             XCTAssert(false, "Shoudln't succeed to create payment")
         } catch {
-            
+            if let primerError = error as? PrimerError {
+                switch primerError {
+                case .invalidClientToken:
+                    break
+                default:
+                    XCTAssert(false, error.localizedDescription)
+                }
+            }
         }
+#else
+        XCTAssert(false, "PrimerIPay88MYSDK hasn't been imported.")
+#endif
     }
     
     // MARK: Helpers
-    
+#if canImport(PrimerIPay88MYSDK)
     func createIPay88PaymentObjects(
         merchantCode: String = "merchant-code",
         paymentId: String = "payment-id",
@@ -208,6 +220,7 @@ class IPay88Tests: XCTestCase {
         
         return (primerIPay88Payment, primerIPay88Payment.iPay88Payment)
     }
+
     
     func testMapping(primerIPay88Payment: PrimerIPay88Payment, iPay88Payment: IpayPayment, scenario: String) throws {
         XCTAssert(primerIPay88Payment.merchantCode == iPay88Payment.merchantCode, "[Scenario: \(scenario)] merchantCode mismatch")
@@ -218,17 +231,19 @@ class IPay88Tests: XCTestCase {
         XCTAssert(primerIPay88Payment.prodDesc == iPay88Payment.prodDesc, "[Scenario: \(scenario)] prodDesc mismatch")
         XCTAssert(primerIPay88Payment.userName == iPay88Payment.userName, "[Scenario: \(scenario)] userName mismatch")
         XCTAssert(primerIPay88Payment.userEmail == iPay88Payment.userEmail, "[Scenario: \(scenario)] userEmail mismatch")
-        XCTAssert(primerIPay88Payment.userContact ?? "" == iPay88Payment.userContact, "[Scenario: \(scenario)] userContact mismatch")
-        XCTAssert(primerIPay88Payment.remark ?? "" == iPay88Payment.remark, "[Scenario: \(scenario)] remark mismatch")
-        XCTAssert(primerIPay88Payment.lang ?? "" == iPay88Payment.lang, "[Scenario: \(scenario)] lang mismatch")
+        XCTAssert(primerIPay88Payment.userContact == iPay88Payment.userContact, "[Scenario: \(scenario)] userContact mismatch")
+        XCTAssert(primerIPay88Payment.remark == iPay88Payment.remark, "[Scenario: \(scenario)] remark mismatch")
+        XCTAssert(primerIPay88Payment.lang == iPay88Payment.lang, "[Scenario: \(scenario)] lang mismatch")
         XCTAssert(primerIPay88Payment.country == iPay88Payment.country, "[Scenario: \(scenario)] country mismatch")
         XCTAssert(primerIPay88Payment.backendPostURL == iPay88Payment.backendPostURL, "[Scenario: \(scenario)] backendPostURL mismatch")
-        XCTAssert(primerIPay88Payment.appdeeplink ?? "" == iPay88Payment.appdeeplink, "[Scenario: \(scenario)] appdeeplink mismatch")
-        XCTAssert(primerIPay88Payment.actionType ?? "" == iPay88Payment.actionType, "[Scenario: \(scenario)] actionType mismatch")
+        XCTAssert(primerIPay88Payment.appdeeplink == iPay88Payment.appdeeplink, "[Scenario: \(scenario)] appdeeplink mismatch")
+        XCTAssert(primerIPay88Payment.actionType == iPay88Payment.actionType, "[Scenario: \(scenario)] actionType mismatch")
         XCTAssert("" == iPay88Payment.tokenId, "[Scenario: \(scenario)] tokenId mismatch")
-        XCTAssert(primerIPay88Payment.promoCode ?? "" == iPay88Payment.promoCode, "[Scenario: \(scenario)] promoCode mismatch")
-        XCTAssert(primerIPay88Payment.fixPaymentId ?? "" == iPay88Payment.fixPaymentId, "[Scenario: \(scenario)] fixPaymentId mismatch")
+        XCTAssert(primerIPay88Payment.promoCode == iPay88Payment.promoCode, "[Scenario: \(scenario)] promoCode mismatch")
+        XCTAssert(primerIPay88Payment.fixPaymentId == iPay88Payment.fixPaymentId, "[Scenario: \(scenario)] fixPaymentId mismatch")
     }
+#endif
 }
 
+#endif
 #endif

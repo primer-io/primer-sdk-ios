@@ -372,13 +372,9 @@ extension PaymentMethodTokenizationViewModel {
 
                     case .succeed:
                         seal.fulfill(nil)
-                        case .succeed:
-                            seal.fulfill(nil)
 
                     case .continueWithNewClientToken:
                         seal.fulfill(nil)
-                        case .continueWithNewClientToken:
-                            seal.fulfill(nil)
                         }
                         
                     } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {

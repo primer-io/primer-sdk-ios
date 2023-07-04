@@ -116,7 +116,8 @@ extension Networking {
                                 ]
                             ]
                         ]
-                    ]
+                    ],
+                paymentType: nil
             ),
             testParams: testParams
         )

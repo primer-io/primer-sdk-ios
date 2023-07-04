@@ -331,7 +331,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return
             }
             
-            var orderItems: [OrderItem]? = nil
+            //                This is not being used?
+//            var orderItems: [OrderItem]? = nil
             
             if case .hostedPaymentPage = klarnaSessionType {
                 if amount == nil {
@@ -362,8 +363,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     return
                 }
                 
-                orderItems = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() })
-                
+//                This is not being used?
+//                orderItems = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() })
+//
                 log(logLevel: .info, message: "Klarna amount: \(amount!) \(AppState.current.currency!.rawValue)")
                 
             } else if case .recurringPayment = klarnaSessionType {

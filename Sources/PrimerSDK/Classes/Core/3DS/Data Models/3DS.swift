@@ -348,6 +348,16 @@ public class ThreeDS {
             resumeToken = try container.decode(String.self, forKey: .resumeToken)
             token = try container.decode(PrimerPaymentMethodTokenData.self, forKey: .token)
         }
+        
+        init(
+            authentication: ThreeDSAuthenticationProtocol,
+            token: PrimerPaymentMethodTokenData,
+            resumeToken: String
+        ) {
+            self.authentication = authentication
+            self.token = token
+            self.resumeToken = resumeToken
+        }
     }
     
     internal struct PostAuthResponse: Codable {
@@ -371,6 +381,21 @@ public class ThreeDS {
         let eci: String?
         let protocolVersion: String?
         let xid: String?
+        
+        init(acsReferenceNumber: String?, acsSignedContent: String?, acsTransactionId: String?, responseCode: ThreeDS.ResponseCode, transactionId: String?, acsOperatorId: String?, cryptogram: String?, dsReferenceNumber: String?, dsTransactionId: String?, eci: String?, protocolVersion: String, xid: String?) {
+            self.acsReferenceNumber = acsReferenceNumber
+            self.acsSignedContent = acsSignedContent
+            self.acsTransactionId = acsTransactionId
+            self.responseCode = responseCode
+            self.transactionId = transactionId
+            self.acsOperatorId = acsOperatorId
+            self.cryptogram = cryptogram
+            self.dsReferenceNumber = dsReferenceNumber
+            self.dsTransactionId = dsTransactionId
+            self.eci = eci
+            self.protocolVersion = protocolVersion
+            self.xid = xid
+        }
     }
     
     internal struct SkippedAPIResponse: ThreeDSAuthenticationProtocol, Codable {
