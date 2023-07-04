@@ -57,7 +57,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
             
             if vaultedPaymentMethod.paymentMethodType == "PAYMENT_CARD" {
-                let cardNetwork = CardNetwork(cardNetworkStr: vaultedPaymentMethod.paymentInstrumentData.network ?? "")
+                let cardNetwork = CardNetwork(cardNetworkStr: vaultedPaymentMethod.paymentInstrumentData.binData?.network ?? "")
                 
                 if let vaultedCardAdditionalData = vaultedPaymentMethodAdditionalData as? PrimerVaultedCardAdditionalData {
                     if vaultedCardAdditionalData.cvv.isEmpty {
