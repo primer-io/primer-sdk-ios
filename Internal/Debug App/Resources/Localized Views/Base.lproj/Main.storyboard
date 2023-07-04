@@ -1493,7 +1493,7 @@
                                         <state key="normal" title="Vault">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
-                                        <buttonConfiguration key="configuration" style="filled" title="Vault">
+                                        <buttonConfiguration key="configuration" style="filled" title="Vault Manager">
                                             <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </buttonConfiguration>
@@ -1518,10 +1518,10 @@
             </objects>
             <point key="canvasLocation" x="3730" y="2591"/>
         </scene>
-        <!--Merchant Headles Vaulted View Controller-->
+        <!--Merchant Headles Vault Manager View Controller-->
         <scene sceneID="2g9-tv-Raf">
             <objects>
-                <viewController storyboardIdentifier="MerchantHeadlesVaultedViewController" id="Uat-Dw-yY9" customClass="MerchantHeadlesVaultedViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MerchantHeadlesVaultedViewController" id="Uat-Dw-yY9" customClass="MerchantHeadlesVaultManagerViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Vbb-y7-1MZ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

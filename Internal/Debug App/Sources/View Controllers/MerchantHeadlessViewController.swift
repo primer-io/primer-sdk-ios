@@ -31,7 +31,7 @@ class MerchantHeadlessViewController: UIViewController {
     }
     
     @IBAction func onVaultButtonTap(_ sender: Any) {
-        let vc = MerchantHeadlesVaultedViewController.instantiate(settings: settings,
+        let vc = MerchantHeadlesVaultManagerViewController.instantiate(settings: settings,
                                                                   clientSession: clientSession,
                                                                   clientToken: clientToken)
         self.navigationController?.pushViewController(vc, animated: true)
