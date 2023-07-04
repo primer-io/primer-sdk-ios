@@ -22,7 +22,6 @@ class PaymentMethodConfigTests: XCTestCase {
                 "paymentMethods": \(paymentMethods),
                 "checkoutModules": []
             }
-            
             """
     }
     var jsonData: Data? {
@@ -36,7 +35,7 @@ class PaymentMethodConfigTests: XCTestCase {
         return PaymentMethodConfigTests.buildPaymentMethodsArrayStr(paymentMethodsStr: paymentMethodsArr)
     }
     
-    static func buildPaymentMethodStr(id: Any?, type: Any?, processorConfigId: Any?, options: Any?) -> String {
+    static func buildPaymentMethodStr(id: Any?, implementationType: Any?, type: Any?, name: Any?, processorConfigId: Any?, options: Any?) -> String {
         var str = "{"
         
         if let id = id {
@@ -45,6 +44,14 @@ class PaymentMethodConfigTests: XCTestCase {
         
         if let type = type {
             str += "\"type\": \((type as? String != nil) ? "\"\(type)\"" : type),"
+        }
+        
+        if let implementationType = implementationType {
+            str += "\"implementationType\": \((implementationType as? String != nil) ? "\"\(implementationType)\"" : implementationType),"
+        }
+        
+        if let name = name {
+            str += "\"name\": \((name as? String != nil) ? "\"\(name)\"" : name),"
         }
         
         if let processorConfigId = processorConfigId {
@@ -93,21 +100,67 @@ class PaymentMethodConfigTests: XCTestCase {
         var payPalStr: String
         var unknownPaymentConfigStr: String
         
-        applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "APPLE_PAY", processorConfigId: String.randomString(length: 8), options: nil)
-        apayaStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "APAYA", processorConfigId: String.randomString(length: 8), options: "{\"merchantAccountId\": \"apaya_account_id\"}")
-        goCardlessStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "GOCARDLESS", processorConfigId: String.randomString(length: 8), options: nil)
-        googlePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "GOOGLE_PAY", processorConfigId: String.randomString(length: 8), options: nil)
-        klarnaStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "KLARNA", processorConfigId: String.randomString(length: 8), options: nil)
-        paymentCardStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "PAYMENT_CARD", processorConfigId: String.randomString(length: 8), options: nil)
-        payNLIdealStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "PAY_NL_IDEAL", processorConfigId: String.randomString(length: 8), options: nil)
-        payPalStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "PAYPAL", processorConfigId: String.randomString(length: 8), options: nil)
-        unknownPaymentConfigStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: String.randomString(length: 8), type: "test", processorConfigId: String.randomString(length: 8), options: nil)
+        applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(
+            id: String.randomString(length: 8),
+            implementationType: "NATIVE_SDK",
+            type: "APPLE_PAY",
+            name: "Apple Pay",
+            processorConfigId: String.randomString(length: 8),
+            options: nil)
+        apayaStr = PaymentMethodConfigTests.buildPaymentMethodStr(
+            id: String.randomString(length: 8),
+            implementationType: "NATIVE_SDK",
+            type: "APAYA",
+            name: "Apaya",
+            processorConfigId: String.randomString(length: 8),
+            options: "{\"merchantAccountId\": \"apaya_account_id\"}")
+        googlePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(
+            id: String.randomString(length: 8),
+            implementationType: "NATIVE_SDK",
+            type: "GOOGLE_PAY",
+            name: "Google Pay",
+            processorConfigId: String.randomString(length: 8),
+            options: nil)
+        klarnaStr = PaymentMethodConfigTests.buildPaymentMethodStr(
+            id: String.randomString(length: 8),
+            implementationType: "NATIVE_SDK",
+            type: "KLARNA",
+            name: "Klarna",
+            processorConfigId: String.randomString(length: 8),
+            options: nil)
+        paymentCardStr = PaymentMethodConfigTests.buildPaymentMethodStr(
+            id: String.randomString(length: 8),
+            implementationType: "NATIVE_SDK",
+            type: "PAYMENT_CARD",
+            name: "Payment Card",
+            processorConfigId: String.randomString(length: 8),
+            options: nil)
+        payNLIdealStr = PaymentMethodConfigTests.buildPaymentMethodStr(
+            id: String.randomString(length: 8),
+            implementationType: "WEB_REDIRECT",
+            type: "PAY_NL_IDEAL",
+            name: "iDeal",
+            processorConfigId: String.randomString(length: 8),
+            options: nil)
+        payPalStr = PaymentMethodConfigTests.buildPaymentMethodStr(
+            id: String.randomString(length: 8),
+            implementationType: "NATIVE_SDK",
+            type: "PAYPAL",
+            name: "PayPal",
+            processorConfigId: String.randomString(length: 8),
+            options: nil)
+        unknownPaymentConfigStr = PaymentMethodConfigTests.buildPaymentMethodStr(
+            id: String.randomString(length: 8),
+            implementationType: "WEB_REDIRECT",
+            type: "test",
+            name: "Test",
+            processorConfigId: String.randomString(length: 8),
+            options: nil)
         
         
         paymentMethodsArr = [
             applePayStr,
             apayaStr,
-            goCardlessStr,
             googlePayStr,
             klarnaStr,
             paymentCardStr,
@@ -115,7 +168,7 @@ class PaymentMethodConfigTests: XCTestCase {
             payPalStr,
             unknownPaymentConfigStr
         ]
-        
+                
         do {
             let config = try JSONParser().parse(PrimerAPIConfiguration.self, from: jsonData!)
             
@@ -145,10 +198,6 @@ class PaymentMethodConfigTests: XCTestCase {
                             XCTFail("Failed to parse merchant account id for Apaya")
                         }
                     }
-                } else if String(paymentMethodStr) == goCardlessStr {
-                    if config.paymentMethods?.contains(where: { $0.type == "GOCARDLESS" }) != true {
-                        XCTFail("Failed to parse Go Cardless")
-                    }
                 } else if String(paymentMethodStr) == googlePayStr {
                     if config.paymentMethods?.contains(where: { $0.type == "GOOGLE_PAY" }) != true {
                         XCTFail("Failed to parse Google Pay")
@@ -176,7 +225,13 @@ class PaymentMethodConfigTests: XCTestCase {
             XCTFail("\(error)")
         }
         
-        applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(id: 1, type: "APPLE_PAY", processorConfigId: String.randomString(length: 8), options: nil)
+        applePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(
+            id: 1,
+            implementationType: "NATIVE_SDK",
+            type: "APPLE_PAY",
+            name: "Apple Pay",
+            processorConfigId: String.randomString(length: 8),
+            options: nil)
         
         paymentMethodsArr = [
             applePayStr,

@@ -228,6 +228,10 @@ class AnalyticsTests: XCTestCase {
     }
     
     func test_sync() throws {
+        let mockApiClient = MockPrimerAPIClient()
+        mockApiClient.sendAnalyticsEventsResult = (Analytics.Service.Response(id: "mock-d", result: "success"), nil)
+        Analytics.apiClient = mockApiClient
+        
         self.createAnalyticsFileForRC3()
         
         let exp = expectation(description: "Await")
@@ -267,7 +271,6 @@ class AnalyticsTests: XCTestCase {
             }
         }
         .then { events -> Promise<Void> in
-            print("All events: \(events.compactMap({ $0.localId }))")
             return Analytics.Service.sync(batchSize: batchSize)
         }
         .then { () -> Promise<[Analytics.Event]> in
@@ -291,7 +294,7 @@ class AnalyticsTests: XCTestCase {
             exp.fulfill()
         }
         
-        waitForExpectations(timeout: 300000)
+        wait(for: [exp], timeout: 600)
                 
         let nonNetworkEvents = storedEvents?.filter({ $0.eventType != .networkCall && $0.eventType != .networkConnectivity })
         XCTAssert((nonNetworkEvents ?? []).count == 0, "nonNetworkEvents: \(nonNetworkEvents?.count)")
@@ -323,6 +326,8 @@ class AnalyticsTests: XCTestCase {
     func test_wrapped_error() throws {
         let recordEvent = expectation(description: "Record event")
         
+        self.cleanUpAnalytics()
+        
         let diagnosticsId = "diagnostics-id"
 
         let nsErrorUserInfo: [String: Any] = [
@@ -340,12 +345,12 @@ class AnalyticsTests: XCTestCase {
             code: 1,
             userInfo: nsErrorUserInfo)
         
-        let primerErr = PrimerError.failedToPerform3DS(
-            error: nsError,
+        let primer3DSErrorContainer = Primer3DSErrorContainer.underlyingError(
             userInfo: errorUserInfo,
-            diagnosticsId: diagnosticsId)
-        
-        ErrorHandler.handle(error: primerErr)
+            diagnosticsId: diagnosticsId,
+            error: nsError)
+                
+        ErrorHandler.handle(error: primer3DSErrorContainer)
         
         Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
             recordEvent.fulfill()
@@ -359,17 +364,16 @@ class AnalyticsTests: XCTestCase {
         
         XCTAssert(errorEvent != nil, "Should had written the error event")
         XCTAssert(errorEvent?.properties as? MessageEventProperties != nil, "Error should contain MessageEventProperties")
-        
+
         XCTAssert(errorEvent?.appIdentifier == "com.primerapi.PrimerSDKExample", "App identifier should be 'com.primerapi.PrimerSDKExample'")
         XCTAssert(errorEvent?.eventType == .message, "Event type should be '.message'")
         XCTAssert(errorEvent?.sdkType == "IOS_NATIVE", "SDK type should be 'IOS_NATIVE'")
-        
+
         let errorEventProperties = errorEvent?.properties as? MessageEventProperties
         XCTAssert(errorEventProperties!.diagnosticsId == diagnosticsId, "Error's diagnostic id should be \(diagnosticsId)")
-        XCTAssert(errorEventProperties!.context?["nsTestNumber"] as? Double == -3.14, "Context should include 'nsTestNumber == -3.14'")
-        XCTAssert(errorEventProperties!.context?["nsTestString"] as? String == "test", "Context should include 'nsTestString == test'")
-        XCTAssert(errorEventProperties!.context?["nsTestBoolean"] as? Bool == true, "Context should include 'nsTestBoolean == true'")
-        XCTAssert(errorEventProperties!.context?["testString"] as? String == "test", "Context should include 'testString == test'")
+        XCTAssert(errorEventProperties!.context?["threeDsSdkProvider"] as? String == "NETCETERA", "Context should include 'NETCETERA' as threeDsSdkProvider")
+        XCTAssert(errorEventProperties!.context?["threeDsWrapperSdkVersion"] as? String != nil, "Context should include threeDsWrapperSdkVersion'")
+        XCTAssert(errorEventProperties!.context?["threeDsSdkVersion"] as? String != nil, "Context should include threeDsSdkVersion")
     }
     
     func test_recording_race_conditions() throws {
@@ -512,22 +516,23 @@ class AnalyticsTests: XCTestCase {
     }
     
     func test_race_conditions_on_recording_and_deleting_events() throws {
+        let mockApiClient = MockPrimerAPIClient()
+        mockApiClient.sendAnalyticsEventsResult = (Analytics.Service.Response(id: "mock-d", result: "success"), nil)
+        Analytics.apiClient = mockApiClient
+        
         self.cleanUpAnalytics()
         self.createAnalyticsFileForRC3()
         var storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
         
         self.createAnalyticsFileForRC3()
 
-        let createClientSessionExpectation    = expectation(description: "Create client session")
-        var expectationsToBeFulfilled = [createClientSessionExpectation]
+        let createClientSessionExpectation = expectation(description: "Create client session")
+        let expectationsToBeFulfilled = [createClientSessionExpectation]
         
         firstly {
             self.createDemoClientSessionAndSetAppState()
         }
         .done { clientToken in
-            
-        }
-        .ensure {
             createClientSessionExpectation.fulfill()
         }
         .catch { err in
@@ -936,6 +941,10 @@ class AnalyticsTests: XCTestCase {
     }
     
     func test_race_conditions_on_syncing() throws {
+        let mockApiClient = MockPrimerAPIClient()
+        mockApiClient.mockSuccessfulResponses()
+        Analytics.apiClient = mockApiClient
+        
         self.cleanUpAnalytics()
         self.createAnalyticsFileForRC3()
         
@@ -1370,22 +1379,30 @@ class AnalyticsTests: XCTestCase {
     
     func createDemoClientSessionAndSetAppState() -> Promise<String> {
         return Promise { seal in
-            let networking = Networking()
-            networking.requestClientSession(
-                clientSessionRequestBody: ClientSessionRequestBody.demoClientSessionRequestBody) { clientToken, err in
-                    if let err = err {
-                        seal.reject(err)
-                    } else if let clientToken = clientToken {
-                        let settings = PrimerSettings()
-                        DependencyContainer.register(settings as PrimerSettingsProtocol)
-                        let appState = AppState()
-                        appState.clientToken = clientToken
-                        DependencyContainer.register(appState as AppStateProtocol)
-                        seal.fulfill(clientToken)
-                    } else {
-                        fatalError()
-                    }
-                }
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                let settings = PrimerSettings()
+                DependencyContainer.register(settings as PrimerSettingsProtocol)
+                let appState = AppState()
+                appState.clientToken = MockAppState.mockClientToken
+                DependencyContainer.register(appState as AppStateProtocol)
+                seal.fulfill(MockAppState.mockClientToken)
+            }
+//            let networking = Networking()
+//            networking.requestClientSession(
+//                clientSessionRequestBody: ClientSessionRequestBody.demoClientSessionRequestBody) { clientToken, err in
+//                    if let err = err {
+//                        seal.reject(err)
+//                    } else if let clientToken = clientToken {
+//                        let settings = PrimerSettings()
+//                        DependencyContainer.register(settings as PrimerSettingsProtocol)
+//                        let appState = AppState()
+//                        appState.clientToken = clientToken
+//                        DependencyContainer.register(appState as AppStateProtocol)
+//                        seal.fulfill(clientToken)
+//                    } else {
+//                        fatalError()
+//                    }
+//                }
         }
     }
     

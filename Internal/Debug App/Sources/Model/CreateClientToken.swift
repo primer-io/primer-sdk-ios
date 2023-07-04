@@ -314,8 +314,10 @@ struct ClientSessionRequestBody {
     }
     
     struct PaymentMethod {
+        
         let vaultOnSuccess: Bool?
         let options: [String: Any]?
+        let paymentType: String?
         
         var dictionaryValue: [String: Any]? {
             var dic: [String: Any] = [:]
@@ -326,6 +328,10 @@ struct ClientSessionRequestBody {
             
             if let options = options {
                 dic["options"] = options
+            }
+            
+            if let paymentType = paymentType {
+                dic["paymentType"] = paymentType
             }
             
             return dic.keys.count == 0 ? nil : dic

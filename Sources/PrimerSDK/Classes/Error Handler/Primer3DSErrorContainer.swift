@@ -97,7 +97,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     }
     
     internal var info: [String: Any]? {
-        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
+        let tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
         return tmpUserInfo
     }
     

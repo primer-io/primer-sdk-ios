@@ -167,7 +167,7 @@ extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController {
     }
     
     func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
-        print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(additionalInfo)")
+        print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(String(describing: additionalInfo))")
         self.logs.append(#function)
         DispatchQueue.main.async {
             self.hideLoadingOverlay()
@@ -175,7 +175,7 @@ extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController {
     }
     
     func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
-        print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(additionalInfo)")
+        print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(String(describing: additionalInfo))")
         self.logs.append(#function)
         self.hideLoadingOverlay()
     }
@@ -214,7 +214,7 @@ extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController: PrimerHeadle
     
     
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String : Any]?) {
-        print("\n\nMERCHANT APP\n\(#function)\nmetadataDidChange: \(metadata)")
+        print("\n\nMERCHANT APP\n\(#function)\nmetadataDidChange: \(String(describing: metadata))")
         self.logs.append(#function)
     }
 }

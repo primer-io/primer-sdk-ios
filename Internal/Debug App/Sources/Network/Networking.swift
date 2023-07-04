@@ -102,7 +102,7 @@ class Networking {
             let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments)
             msg += "Body:\n\(bodyJson ?? [:])\n"
         }
-        
+
         print(msg)
         msg = ""
         
@@ -263,7 +263,7 @@ class Networking {
 
         var bodyData: Data!
         var headers: [String: String]?
-        
+
         do {
             if let requestBodyJson = requestBody.dictionaryValue {
                 bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
@@ -278,10 +278,10 @@ class Networking {
         
         let networking = Networking()
         networking.request(
-            apiVersion: .v3,
+            apiVersion: .v2_2,
             url: url,
             method: .post,
-            headers: headers,
+            headers: nil,
             queryParameters: nil,
             body: bodyData
         ) { result in

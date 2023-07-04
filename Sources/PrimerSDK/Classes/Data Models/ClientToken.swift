@@ -11,14 +11,14 @@ extension Request.Body {
 
 struct DecodedJWTToken: Codable {
     
-    var accessToken: String?
+    var accessToken: String? // Always present
     var analyticsUrl: String?
     var analyticsUrlV2: String?
     var configurationUrl: String?
     var coreUrl: String?
     var env: String?
-    var expDate: Date?
-    var intent: String?
+    var expDate: Date? // Always present
+    var intent: String? // Always present
     var paymentFlow: String?
     var pciUrl: String?
     var redirectUrl: String?

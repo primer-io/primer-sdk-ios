@@ -35,6 +35,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
     case invalidPhoneNumber(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRetailer(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
+    case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String, validVaultedPaymentMethodAdditionalDataType: String, userInfo: [String: String]?, diagnosticsId: String)
     
     public var diagnosticsId: String {
         switch self {
@@ -67,6 +68,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
         case .invalidExpiryYear(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidRetailer(_, _, let diagnosticsId):
+            return diagnosticsId
+        case .vaultedPaymentMethodAdditionalDataMismatch(_, _, _, let diagnosticsId):
             return diagnosticsId
         }
     }
@@ -103,6 +106,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "invalid-raw-data"
         case .invalidRetailer:
             return "invalid-retailer"
+        case .vaultedPaymentMethodAdditionalDataMismatch:
+            return "vaulted-payment-method-additional-data-mismatch"
         }
     }
     
@@ -138,6 +143,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "[\(errorId)] Raw data is not valid."
         case .invalidRetailer(let message, _, _):
             return "[\(errorId)] \(message)"
+        case .vaultedPaymentMethodAdditionalDataMismatch(let paymentMethodType, let validVaultedPaymentMethodAdditionalDataType, _, _):
+            return "[\(errorId)] Vaulted payment method \(paymentMethodType) needs additional data of type \(validVaultedPaymentMethodAdditionalDataType)"
         }
     }
     
@@ -159,7 +166,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
                 .invalidCountry(_, let userInfo, _),
                 .invalidPhoneNumber(_, let userInfo, _),
                 .invalidRawData(let userInfo, _),
-                .invalidRetailer(_, let userInfo, _):
+                .invalidRetailer(_, let userInfo, _),
+                .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
 
@@ -218,6 +226,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
         case .invalidRetailer:
             return "RETAILER"
         case .invalidRawData:
+            return nil
+        case .vaultedPaymentMethodAdditionalDataMismatch:
             return nil
         }
     }
@@ -446,6 +456,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case failedToFindModule(name: String, userInfo: [String: String]?, diagnosticsId: String)
     case sdkDismissed
     case failedToProcessPayment(paymentId: String, status: String, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
     
     public var errorId: String {
@@ -524,6 +535,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "sdk-dismissed"
         case .failedToProcessPayment:
             return "failed-to-process-payment"
+        case .invalidVaultedPaymentMethodId:
+            return "invalid-vaulted-payment-method-id"
         case .unknown:
             return "unknown"
         }
@@ -604,6 +617,8 @@ public enum PrimerError: PrimerErrorProtocol {
         case .sdkDismissed:
             return UUID().uuidString
         case .failedToProcessPayment(_, _, _, let diagnosticsId):
+            return diagnosticsId
+        case .invalidVaultedPaymentMethodId(_, _, let diagnosticsId):
             return diagnosticsId
         case .unknown(_, let diagnosticsId):
             return diagnosticsId
@@ -693,6 +708,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "SDK has been dismissed"
         case .failedToProcessPayment(let paymentId, let status, _, _):
             return "The payment with id \(paymentId) was created but ended up in a \(status) status."
+        case .invalidVaultedPaymentMethodId(let vaultedPaymentMethodId, _, _):
+            return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
         case .unknown:
             return "Something went wrong"
         }
@@ -742,6 +759,7 @@ public enum PrimerError: PrimerErrorProtocol {
                 .applePayTimedOut(let userInfo, _),
                 .failedToFindModule(_, let userInfo, _),
                 .failedToProcessPayment(_, _, let userInfo, _),
+                .invalidVaultedPaymentMethodId(_, let userInfo, _),
                 .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
             
@@ -753,7 +771,7 @@ public enum PrimerError: PrimerErrorProtocol {
     }
     
     public var errorUserInfo: [String : Any] {
-        var tmpUserInfo: [String: Any] = [
+        let tmpUserInfo: [String: Any] = [
             "createdAt": Date().toString(),
             "diagnosticsId": diagnosticsId
         ]
@@ -826,7 +844,7 @@ public enum PrimerError: PrimerErrorProtocol {
             } else {
                 return "Change the intent to .checkout"
             }
-        case .unsupportedPaymentMethod(let paymentMethodType, _, _):
+        case .unsupportedPaymentMethod(_, _, _):
             return "Change the payment method type"
         case .underlyingErrors:
             return "Check underlying errors for more information."
@@ -846,6 +864,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return nil
         case .failedToProcessPayment:
             return nil
+        case .invalidVaultedPaymentMethodId:
+            return "Please provide the id of one of the vaulted payment methods that have been returned by the 'fetchVaultedPaymentMethods' function."
         case .unknown:
             return "Contact Primer and provide them diagnostics id \(self.diagnosticsId)"
         }
