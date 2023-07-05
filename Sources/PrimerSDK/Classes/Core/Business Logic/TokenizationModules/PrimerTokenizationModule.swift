@@ -18,7 +18,7 @@ internal class PrimerTokenizationModule {
         self.paymentMethodOrchestrator = paymentMethodOrchestrator
     }
     
-    final func start() -> Promise<PrimerPaymentMethodTokenData> {
+    final internal func start() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.paymentMethodOrchestrator.eventEmitter.fireWillStartTokenizationEvent()
             
@@ -48,15 +48,57 @@ internal class PrimerTokenizationModule {
     }
     
     internal func performPreTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            self.paymentMethodOrchestrator.eventEmitter.fireWillStartTokenizationEvent()
+            seal.fulfill()
+        }
+    }
+    
+    final private func performTokenizationStep() -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            firstly {
+                self.generatePaymentInstrument()
+            }
+            .then { paymentInstrument -> Promise<PrimerPaymentMethodTokenData> in
+                return self.tokenize(paymentInstrument: paymentInstrument)
+            }
+            .done { paymentMethodTokenData in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                seal.fulfill(paymentMethodTokenData)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
+    internal func generatePaymentInstrument() -> Promise<TokenizationRequestBodyPaymentInstrument> {
         fatalError("\(#function) must be overriden")
     }
     
-    internal func performTokenizationStep() -> Promise<PrimerPaymentMethodTokenData> {
-        fatalError("\(#function) must be overriden")
+    final private func tokenize(paymentInstrument: TokenizationRequestBodyPaymentInstrument) -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+            
+            let tokenizationService = TokenizationService()
+            
+            firstly {
+                tokenizationService.tokenize(requestBody: requestBody)
+            }
+            .done { paymentMethodTokenData in
+                seal.fulfill(paymentMethodTokenData)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
     }
     
     internal func performPostTokenizationSteps() -> Promise<Void> {
-        fatalError("\(#function) must be overriden")
+        return Promise { seal in
+            self.paymentMethodOrchestrator.eventEmitter.fireDidFinishTokenizationEvent()
+            seal.fulfill()
+        }
     }
     
     final private func selectPaymentMethodForClientSessionActionsIfNeeded() -> Promise<Void> {

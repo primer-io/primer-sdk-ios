@@ -11,30 +11,18 @@ import Foundation
 
 class PrimerApayaTokenizationModule: PrimerTokenizationModule {
     
-    override func performTokenizationStep() -> Promise<PrimerPaymentMethodTokenData> {
+    var apayaPaymentResponse: Apaya.WebViewResponse!
+    
+    override func generatePaymentInstrument() -> Promise<TokenizationRequestBodyPaymentInstrument> {
         return Promise { seal in
             let paymentInstrument = ApayaPaymentInstrument(
-                mx: "",
-                mnc: "",
-                mcc: "",
-                hashedIdentifier: "",
-                productId: "",
-                currencyCode: "")
-            
-            let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-            
-            let tokenizationService = TokenizationService()
-            
-            firstly {
-                tokenizationService.tokenize(requestBody: requestBody)
-            }
-            .done { paymentMethodTokenData in
-                self.paymentMethodTokenData = paymentMethodTokenData
-                seal.fulfill(paymentMethodTokenData)
-            }
-            .catch { err in
-                seal.reject(err)
-            }
+                mx: self.apayaPaymentResponse.mxNumber,
+                mnc: self.apayaPaymentResponse.mnc,
+                mcc: self.apayaPaymentResponse.mcc,
+                hashedIdentifier: self.apayaPaymentResponse.hashedIdentifier,
+                productId: self.apayaPaymentResponse.productId,
+                currencyCode: AppState.current.currency!.rawValue)
+            seal.fulfill(paymentInstrument)
         }
     }
 }
