@@ -13,6 +13,7 @@ class PrimerWebRedirectValidator: PrimerValidator {
     
     override func validateSynchronously() throws {
         try super.validateSynchronously()
+        try super.throwErrors()
     }
 }
 

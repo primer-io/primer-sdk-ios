@@ -13,6 +13,7 @@ class PrimerQRCodeValidator: PrimerValidator {
     
     override func validateSynchronously() throws {
         try super.validateSynchronously()
+        try super.throwErrors()
     }
 }
 
