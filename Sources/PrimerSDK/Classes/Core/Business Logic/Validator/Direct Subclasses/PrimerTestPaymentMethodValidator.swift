@@ -9,7 +9,7 @@
 
 import Foundation
 
-class PrimerVoucherValidator: PrimerValidator {
+class PrimerTestPaymentMethodValidator: PrimerValidator {
     
     override func validateSynchronously() throws {
         try super.validateSynchronously()

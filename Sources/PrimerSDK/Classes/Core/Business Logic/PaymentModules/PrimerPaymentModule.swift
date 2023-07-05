@@ -216,7 +216,7 @@ internal class PrimerPaymentModule {
     
     // MARK: - PAYMENT HANDLING: MANUAL
     
-    private func performManualPayment(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<Void> {
+    private final func performManualPayment(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<Void> {
         return Promise { seal in
             firstly {
                 self.createManualPayment(with: paymentMethodTokenData)
@@ -236,7 +236,7 @@ internal class PrimerPaymentModule {
         }
     }
     
-    private func createManualPayment(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
+    private final func createManualPayment(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
             PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
                 if let resumeType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
@@ -274,7 +274,7 @@ internal class PrimerPaymentModule {
         }
     }
     
-    private func resumeManualPaymentIfNeeded(resumeToken: String?) -> Promise<Void> {
+    private final func resumeManualPaymentIfNeeded(resumeToken: String?) -> Promise<Void> {
         return Promise { seal in
             guard let resumeToken = resumeToken else {
                 seal.fulfill()
@@ -333,7 +333,7 @@ internal class PrimerPaymentModule {
     /// Common logic between any actions will get handled in this class, but **handleDecodedClientTokenIfNeeded**
     /// must be overriden and handle payment method specific logic.
     
-    private func handlePaymentResponseOnAutoFlowIfNeeded(for paymentResponse: Response.Body.Payment) -> Promise<(paymentId: String?, resumeToken: String?)> {
+    private final func handlePaymentResponseOnAutoFlowIfNeeded(for paymentResponse: Response.Body.Payment) -> Promise<(paymentId: String?, resumeToken: String?)> {
         return Promise { seal in
             if let newClientToken = paymentResponse.requiredAction?.clientToken {
                 firstly {
@@ -371,7 +371,7 @@ internal class PrimerPaymentModule {
         }
     }
     
-    private func handleNewClientTokenOnManualFlowIfNeeded(_ newClientToken: String?) -> Promise<String?> {
+    private final func handleNewClientTokenOnManualFlowIfNeeded(_ newClientToken: String?) -> Promise<String?> {
         return Promise { seal in
             if let newClientToken = newClientToken {
                 firstly {
