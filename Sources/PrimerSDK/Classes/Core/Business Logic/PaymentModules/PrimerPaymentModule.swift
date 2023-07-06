@@ -9,12 +9,16 @@ import Foundation
 
 internal class PrimerPaymentModule {
     
-    let paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator
+    weak private(set) var paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator!
     // PrimerCheckoutData will be nil on manual flow
     internal var checkoutData: PrimerCheckoutData?
     private var paymentId: String?
     private var requiredAction: Response.Body.Payment.RequiredAction?
     private var resumeToken: String?
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
     
     init(paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator) {
         self.paymentMethodOrchestrator = paymentMethodOrchestrator
@@ -22,6 +26,8 @@ internal class PrimerPaymentModule {
     
     func start() -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
+            self.paymentMethodOrchestrator.eventEmitter.fireWillStartPaymentMethodFlowEvent()
+            
             firstly {
                 self.performPrePaymentSteps()
             }
@@ -46,6 +52,8 @@ internal class PrimerPaymentModule {
     }
     
     internal func performPayment(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<Void> {
+        self.paymentMethodOrchestrator.eventEmitter.fireDidStartPaymentMethodFlowEvent()
+        
         if PrimerSettings.current.paymentHandling == .auto {
             return self.performAutoPayment(with: paymentMethodTokenData)
         } else {

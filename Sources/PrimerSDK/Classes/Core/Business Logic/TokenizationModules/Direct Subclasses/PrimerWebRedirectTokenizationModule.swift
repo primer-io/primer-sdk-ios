@@ -34,10 +34,4 @@ class PrimerWebRedirectTokenizationModule: PrimerTokenizationModule {
             seal.fulfill(paymentInstrument)
         }
     }
-    
-    override func performPostTokenizationSteps() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
-        }
-    }
 }

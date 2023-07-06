@@ -116,7 +116,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         private func cancel() {
-            self.paymentMethod?.tokenizationViewModel?.cancel()
+            self.paymentMethod?.orchestrator?.cancel()
         }
     }
 }

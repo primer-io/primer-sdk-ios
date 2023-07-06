@@ -17,7 +17,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var payButton: PrimerButton!
     private var selectedPaymentMethod: PrimerPaymentMethodTokenData?
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private let paymentMethodConfigViewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
+    private let paymentMethodOrchestrators = PrimerAPIConfiguration.paymentMethodOrchestrators
     private var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     private var singleUsePaymentMethod: PrimerPaymentMethodTokenData?
     private var resumePaymentId: String?
@@ -243,7 +243,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     }
     
     private func renderAvailablePaymentMethods() {
-        PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
+        PrimerFormViewController.renderPaymentMethods(paymentMethodOrchestrators, on: verticalStackView)
     }
     
     @objc

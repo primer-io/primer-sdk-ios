@@ -9,9 +9,13 @@
 
 import Foundation
 
-class PrimerInputDataModule {
+internal class PrimerInputDataModule {
     
-    private let paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator
+    weak private(set) var paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator!
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
     
     init(paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator) {
         self.paymentMethodOrchestrator = paymentMethodOrchestrator

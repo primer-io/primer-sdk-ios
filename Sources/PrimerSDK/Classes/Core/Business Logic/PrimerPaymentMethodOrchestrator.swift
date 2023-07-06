@@ -14,7 +14,7 @@ protocol PaymentMethodOrchestratorConvertible {
 
 class PrimerPaymentMethodOrchestrator {
     
-    let paymentMethodConfig: PrimerPaymentMethod
+    weak private(set) var paymentMethodConfig: PrimerPaymentMethod!
     var validator: PrimerValidator!
     var dataInputModule: PrimerInputDataModule!
     var uiModule: PrimerPaymentMethodUIModule!
@@ -22,10 +22,20 @@ class PrimerPaymentMethodOrchestrator {
     var paymentModule: PrimerPaymentModule!
     var eventEmitter: PrimerEventEmitter!
     
-    init(paymentMethodConfig: PrimerPaymentMethod) {
+    var isCancelled: Bool = false
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
+    init?(paymentMethodConfig: PrimerPaymentMethod) {
         self.paymentMethodConfig = paymentMethodConfig
         
         if paymentMethodConfig.implementationType == .webRedirect {
+            if PrimerInternal.shared.intent == .vault {
+                return nil
+            }
+            
             self.validator = PrimerWebRedirectValidator(paymentMethodOrchestrator: self)
             self.tokenizationModule = PrimerWebRedirectTokenizationModule(paymentMethodOrchestrator: self)
             self.paymentModule = PrimerWebRedirectPaymentModule(paymentMethodOrchestrator: self)
@@ -39,6 +49,20 @@ class PrimerPaymentMethodOrchestrator {
             self.uiModule = PrimerWebRedirectUIModule(paymentMethodOrchestrator: self)
             self.dataInputModule = PrimerWebRedirectInputDataModule(paymentMethodOrchestrator: self)
             
+        } else if paymentMethodConfig.type == "APPLE_PAY" {
+            if PrimerInternal.shared.intent == .vault {
+                return nil
+            }
+            
+            if #available(iOS 11.0, *) {
+                self.validator = PrimerApplePayValidator(paymentMethodOrchestrator: self)
+                self.tokenizationModule = PrimerApplePayTokenizationModule(paymentMethodOrchestrator: self)
+                self.paymentModule = PrimerApplePayPaymentModule(paymentMethodOrchestrator: self)
+                self.uiModule = PrimerApplePayUIModule(paymentMethodOrchestrator: self)
+                self.dataInputModule = PrimerApplePayInputDataModule(paymentMethodOrchestrator: self)
+            } else {
+                return nil
+            }
         } else {
             self.validator = PrimerValidator(paymentMethodOrchestrator: self)
             self.tokenizationModule = PrimerTokenizationModule(paymentMethodOrchestrator: self)
@@ -47,9 +71,7 @@ class PrimerPaymentMethodOrchestrator {
             self.dataInputModule = PrimerInputDataModule(paymentMethodOrchestrator: self)
         }
 
-        
-        
-        self.eventEmitter = PrimerEventEmitter()
+        self.eventEmitter = PrimerEventEmitter(paymentMethodOrchestrator: self)
     }
     
     func start() -> Promise<Void> {
@@ -64,15 +86,37 @@ class PrimerPaymentMethodOrchestrator {
                 return self.paymentModule.start()
             }
             .done { checkoutData in
-                
+                if let checkoutData = checkoutData {
+                    /// We won't have **checkoutData** with the **manual** payment handling
+                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                }
+                self.uiModule.presentResultUIIfNeeded(forResult: .success, withMessage: nil)
             }
             .ensure {
                 
             }
             .catch { err in
-                
+                var primerError: PrimerError
+                if let primerErr = err as? PrimerError {
+                    primerError = primerErr
+                } else {
+                    primerError = PrimerError.underlyingErrors(
+                        errors: [err],
+                        userInfo: nil,
+                        diagnosticsId: UUID().uuidString)
+                }
+                PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentModule.checkoutData) { decisionHandler in
+                    switch decisionHandler.type {
+                    case .fail(errorMessage: let errorMessage):
+                        self.uiModule.presentResultUIIfNeeded(forResult: .failure, withMessage: errorMessage)
+                    }
+                }
             }
         }
+    }
+    
+    func cancel() {
+        self.isCancelled = true
     }
 }
 

@@ -14,7 +14,7 @@ struct ApplePayRequest {
     var items: [OrderItem]
 }
 
-struct ApplePayPaymentResponse {
+struct ApplePayPaymentResponse: PrimerInputDataProtocol {
     let token: ApplePayPaymentInstrument.PaymentResponseToken
     let billingAddress: ClientSession.Address?
 }

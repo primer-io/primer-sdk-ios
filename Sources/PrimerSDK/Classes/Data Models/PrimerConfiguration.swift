@@ -93,123 +93,124 @@ extension Response.Body {
             return pmSurcharge != nil || cardSurcharge != nil
         }
         
-        static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
-            var viewModels: [PaymentMethodTokenizationViewModelProtocol] = PrimerAPIConfiguration.paymentMethodConfigs?
+        static var paymentMethodOrchestrators: [PrimerPaymentMethodOrchestrator] {
+            var orchestrators: [PrimerPaymentMethodOrchestrator] = PrimerAPIConfiguration.paymentMethodConfigs?
                 .filter({ $0.isEnabled })
                 .filter({ $0.baseLogoImage != nil })
-                .compactMap({ $0.tokenizationViewModel })
+                .compactMap({ $0.orchestrator })
             ?? []
+            return orchestrators
             
-            let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
-            if !PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
-                if let applePayViewModel = viewModels.filter({ $0.config.type == PrimerPaymentMethodType.applePay.rawValue }).first,
-                   let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
-                    viewModels.remove(at: applePayViewModelIndex)
-                }
-            }
-            
-#if !canImport(PrimerKlarnaSDK)
-            if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
-                viewModels.remove(at: klarnaViewModelIndex)
-                print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
-                
-                let event = Analytics.Event(
-                    eventType: .message,
-                    properties: MessageEventProperties(
-                        message: "PrimerKlarnaSDK has not been integrated",
-                        messageType: .error,
-                        severity: .error))
-                Analytics.Service.record(events: [event])
-            }
-#endif
-            
-#if !canImport(PrimerIPay88MYSDK)
-            if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
-                viewModels.remove(at: iPay88ViewModelIndex)
-                print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.\n\n")
-                
-                let event = Analytics.Event(
-                    eventType: .message,
-                    properties: MessageEventProperties(
-                        message: "PrimerIPay88MYSDK has not been integrated",
-                        messageType: .error,
-                        severity: .error))
-                Analytics.Service.record(events: [event])
-            }
-#endif
-            
-            var validViewModels: [PaymentMethodTokenizationViewModelProtocol] = []
-            
-            for viewModel in viewModels {
-                do {
-                    try viewModel.validate()
-                    validViewModels.append(viewModel)
-                } catch {
-                    var warningStr = "\nWARNING!\n\(viewModel.config.type) configuration has been found, but it cannot be presented."
-                    
-                    if let primerErr = error as? PrimerError {
-                        if case .underlyingErrors(let errors, _, _) = primerErr {
-                            for err in errors {
-                                if let primerErr = err as? PrimerError {
-                                    var errLine: String = ""
-                                    if let errDescription = primerErr.plainDescription {
-                                        errLine += "\n-\(errDescription)"
-                                    }
-                                    
-                                    if let recoverySuggestion = primerErr.recoverySuggestion {
-                                        if errLine.count != 0 {
-                                            errLine += " | "
-                                        } else {
-                                            errLine += "\n-"
-                                        }
-                                        
-                                        errLine += recoverySuggestion
-                                    }
-                                    warningStr += errLine
-                                    
-                                } else {
-                                    warningStr += "\n-\(error.localizedDescription)"
-                                }
-                            }
-                        } else {
-                            var errLine: String = ""
-                            if let errDescription = primerErr.plainDescription {
-                                errLine += "\n-\(errDescription)"
-                            }
-                            
-                            if let recoverySuggestion = primerErr.recoverySuggestion {
-                                if errLine.count != 0 {
-                                    errLine += " | "
-                                } else {
-                                    errLine += "\n-"
-                                }
-                                
-                                errLine += recoverySuggestion
-                            }
-                            warningStr += errLine
-                        }
-                        
-                    } else {
-                        warningStr += "\n-\(error.localizedDescription)"
-                    }
-                    
-                    warningStr += "\n\n"
-                    
-                    print(warningStr)
-                }
-            }
-            
-            for (index, viewModel) in validViewModels.enumerated() {
-                if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
-                    validViewModels.swapAt(0, index)
-                }
-            }
-            
-            for (index, viewModel) in validViewModels.enumerated() {
-                viewModel.position = index
-            }
-            
-            return validViewModels
+//            let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
+//            if !PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
+//                if let applePayViewModel = viewModels.filter({ $0.config.type == PrimerPaymentMethodType.applePay.rawValue }).first,
+//                   let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
+//                    viewModels.remove(at: applePayViewModelIndex)
+//                }
+//            }
+//            
+//#if !canImport(PrimerKlarnaSDK)
+//            if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
+//                viewModels.remove(at: klarnaViewModelIndex)
+//                print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
+//                
+//                let event = Analytics.Event(
+//                    eventType: .message,
+//                    properties: MessageEventProperties(
+//                        message: "PrimerKlarnaSDK has not been integrated",
+//                        messageType: .error,
+//                        severity: .error))
+//                Analytics.Service.record(events: [event])
+//            }
+//#endif
+//            
+//#if !canImport(PrimerIPay88MYSDK)
+//            if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
+//                viewModels.remove(at: iPay88ViewModelIndex)
+//                print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.\n\n")
+//                
+//                let event = Analytics.Event(
+//                    eventType: .message,
+//                    properties: MessageEventProperties(
+//                        message: "PrimerIPay88MYSDK has not been integrated",
+//                        messageType: .error,
+//                        severity: .error))
+//                Analytics.Service.record(events: [event])
+//            }
+//#endif
+//            
+//            var validViewModels: [PaymentMethodTokenizationViewModelProtocol] = []
+//            
+//            for viewModel in viewModels {
+//                do {
+//                    try viewModel.validate()
+//                    validViewModels.append(viewModel)
+//                } catch {
+//                    var warningStr = "\nWARNING!\n\(viewModel.config.type) configuration has been found, but it cannot be presented."
+//                    
+//                    if let primerErr = error as? PrimerError {
+//                        if case .underlyingErrors(let errors, _, _) = primerErr {
+//                            for err in errors {
+//                                if let primerErr = err as? PrimerError {
+//                                    var errLine: String = ""
+//                                    if let errDescription = primerErr.plainDescription {
+//                                        errLine += "\n-\(errDescription)"
+//                                    }
+//                                    
+//                                    if let recoverySuggestion = primerErr.recoverySuggestion {
+//                                        if errLine.count != 0 {
+//                                            errLine += " | "
+//                                        } else {
+//                                            errLine += "\n-"
+//                                        }
+//                                        
+//                                        errLine += recoverySuggestion
+//                                    }
+//                                    warningStr += errLine
+//                                    
+//                                } else {
+//                                    warningStr += "\n-\(error.localizedDescription)"
+//                                }
+//                            }
+//                        } else {
+//                            var errLine: String = ""
+//                            if let errDescription = primerErr.plainDescription {
+//                                errLine += "\n-\(errDescription)"
+//                            }
+//                            
+//                            if let recoverySuggestion = primerErr.recoverySuggestion {
+//                                if errLine.count != 0 {
+//                                    errLine += " | "
+//                                } else {
+//                                    errLine += "\n-"
+//                                }
+//                                
+//                                errLine += recoverySuggestion
+//                            }
+//                            warningStr += errLine
+//                        }
+//                        
+//                    } else {
+//                        warningStr += "\n-\(error.localizedDescription)"
+//                    }
+//                    
+//                    warningStr += "\n\n"
+//                    
+//                    print(warningStr)
+//                }
+//            }
+//            
+//            for (index, viewModel) in validViewModels.enumerated() {
+//                if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
+//                    validViewModels.swapAt(0, index)
+//                }
+//            }
+//            
+//            for (index, viewModel) in validViewModels.enumerated() {
+//                viewModel.position = index
+//            }
+//            
+//            return validViewModels
         }
         
         let coreUrl: String?

@@ -85,57 +85,60 @@ class PrimerPaymentMethod: Codable {
     }
     
     var hasUnknownSurcharge: Bool = false
-    lazy var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? = {
-        if implementationType == .webRedirect {
-            return WebRedirectPaymentMethodTokenizationViewModel(config: self)
+    lazy var orchestrator: PrimerPaymentMethodOrchestrator? = {
+        if self.implementationType == .webRedirect {
+            return PrimerPaymentMethodOrchestrator(paymentMethodConfig: self)
             
-        } else if implementationType == .iPay88Sdk {
-            return IPay88TokenizationViewModel(config: self)
-            
-        } else if let internalPaymentMethodType = internalPaymentMethodType {
-            switch internalPaymentMethodType {
-            case PrimerPaymentMethodType.adyenBlik,
-                PrimerPaymentMethodType.rapydFast,
-                PrimerPaymentMethodType.adyenMBWay,
-                PrimerPaymentMethodType.adyenMultibanco:
-                return FormPaymentMethodTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.adyenDotPay,
-                PrimerPaymentMethodType.adyenIDeal:
-                return BankSelectorTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.apaya:
-                return ApayaTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.applePay:
-                if #available(iOS 11.0, *) {
-                    return ApplePayTokenizationViewModel(config: self)
-                }
-                
-            case PrimerPaymentMethodType.klarna:
-                return KlarnaTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.paymentCard,
-                PrimerPaymentMethodType.adyenBancontactCard:
-                return CardFormPaymentMethodTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.payPal:
-                return PayPalTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.primerTestKlarna,
-                PrimerPaymentMethodType.primerTestPayPal,
-                PrimerPaymentMethodType.primerTestSofort:
-                return PrimerTestPaymentMethodTokenizationViewModel(config: self)
-                
-            case PrimerPaymentMethodType.xfersPayNow,
-                PrimerPaymentMethodType.rapydPromptPay,
-                PrimerPaymentMethodType.omisePromptPay:
-                return QRCodeTokenizationViewModel(config: self)
-                
-            default:
-                break
-            }
+        } else if self.type == "APPLE_PAY" {
+            return PrimerPaymentMethodOrchestrator(paymentMethodConfig: self)
         }
+//        else if implementationType == .iPay88Sdk {
+//            return IPay88TokenizationViewModel(config: self)
+//            
+//        } else if let internalPaymentMethodType = internalPaymentMethodType {
+//            switch internalPaymentMethodType {
+//            case PrimerPaymentMethodType.adyenBlik,
+//                PrimerPaymentMethodType.rapydFast,
+//                PrimerPaymentMethodType.adyenMBWay,
+//                PrimerPaymentMethodType.adyenMultibanco:
+//                return FormPaymentMethodTokenizationViewModel(config: self)
+//                
+//            case PrimerPaymentMethodType.adyenDotPay,
+//                PrimerPaymentMethodType.adyenIDeal:
+//                return BankSelectorTokenizationViewModel(config: self)
+//                
+//            case PrimerPaymentMethodType.apaya:
+//                return ApayaTokenizationViewModel(config: self)
+//                
+//            case PrimerPaymentMethodType.applePay:
+//                if #available(iOS 11.0, *) {
+//                    return ApplePayTokenizationViewModel(config: self)
+//                }
+//                
+//            case PrimerPaymentMethodType.klarna:
+//                return KlarnaTokenizationViewModel(config: self)
+//                
+//            case PrimerPaymentMethodType.paymentCard,
+//                PrimerPaymentMethodType.adyenBancontactCard:
+//                return CardFormPaymentMethodTokenizationViewModel(config: self)
+//                
+//            case PrimerPaymentMethodType.payPal:
+//                return PayPalTokenizationViewModel(config: self)
+//                
+//            case PrimerPaymentMethodType.primerTestKlarna,
+//                PrimerPaymentMethodType.primerTestPayPal,
+//                PrimerPaymentMethodType.primerTestSofort:
+//                return PrimerTestPaymentMethodTokenizationViewModel(config: self)
+//                
+//            case PrimerPaymentMethodType.xfersPayNow,
+//                PrimerPaymentMethodType.rapydPromptPay,
+//                PrimerPaymentMethodType.omisePromptPay:
+//                return QRCodeTokenizationViewModel(config: self)
+//                
+//            default:
+//                break
+//            }
+//        }
         
         log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD TYPE", message: type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
         

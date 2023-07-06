@@ -9,6 +9,20 @@ import Foundation
 
 class PrimerEventEmitter {
     
+    weak private(set) var paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator!
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
+    init(paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator) {
+        self.paymentMethodOrchestrator = paymentMethodOrchestrator
+    }
+    
+    func fireWillStartPaymentMethodFlowEvent() {
+        
+    }
+    
     func fireDidStartPaymentMethodFlowEvent() {
         
     }
@@ -34,7 +48,7 @@ class PrimerEventEmitter {
     }
     
     func fireDidPresentPaymentMethodUIEvent() {
-        
+        PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.paymentMethodOrchestrator.paymentMethodConfig.type)
     }
     
     func fireWillStartTokenizationEvent() {

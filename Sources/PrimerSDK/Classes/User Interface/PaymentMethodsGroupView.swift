@@ -10,13 +10,13 @@
 import UIKit
 
 protocol PaymentMethodsGroupViewDelegate {
-    func paymentMethodsGroupView(_ paymentMethodsGroupView: PaymentMethodsGroupView, paymentMethodTapped paymentMethodTokenizationViewModels: PaymentMethodTokenizationViewModelProtocol)
+    func paymentMethodsGroupView(_ paymentMethodsGroupView: PaymentMethodsGroupView, paymentMethodTapped uiModules: PaymentMethodTokenizationViewModelProtocol)
 }
 
 class PaymentMethodsGroupView: PrimerView {
     
     internal private(set) var title: String?
-    internal private(set) var paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]!
+    internal private(set) var uiModules: [PrimerPaymentMethodUIModule]!
     private var verticalStackView: UIStackView = UIStackView()
     internal var delegate: PaymentMethodsGroupViewDelegate?
     internal var titleLabel: UILabel?
@@ -30,10 +30,10 @@ class PaymentMethodsGroupView: PrimerView {
         render()
     }
     
-    convenience init(frame: CGRect = .zero, title: String?, paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]) {
+    convenience init(frame: CGRect = .zero, title: String?, uiModules: [PrimerPaymentMethodUIModule]) {
         self.init(frame: frame)
         self.title = title
-        self.paymentMethodTokenizationViewModels = paymentMethodTokenizationViewModels
+        self.uiModules = uiModules
         render()
     }
     
@@ -66,8 +66,10 @@ class PaymentMethodsGroupView: PrimerView {
             verticalStackView.addArrangedSubview(titleLabel!)
         }
         
-        for viewModel in paymentMethodTokenizationViewModels {
-            verticalStackView.addArrangedSubview(viewModel.uiModule.paymentMethodButton)
+        for uiModule in uiModules {
+            if let paymentMethodButton = uiModule.paymentMethodButton {
+                verticalStackView.addArrangedSubview(paymentMethodButton)
+            }
         }
     }
     

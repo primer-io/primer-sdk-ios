@@ -11,8 +11,12 @@ import Foundation
 
 internal class PrimerTokenizationModule {
     
-    internal let paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator
+    weak private(set) var paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator!
     internal var paymentMethodTokenData: PrimerPaymentMethodTokenData?
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
     
     init(paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator) {
         self.paymentMethodOrchestrator = paymentMethodOrchestrator

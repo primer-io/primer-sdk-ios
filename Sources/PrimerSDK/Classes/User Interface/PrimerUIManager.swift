@@ -59,12 +59,10 @@ internal class PrimerUIManager {
     }
     
     static func presentPaymentMethod(type: String) {
-        let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first
-        
-        precondition(paymentMethodTokenizationViewModel != nil, "PrimerUIManager should have validated that the view model exists.")
-        
+        let paymentMethodOrchestrator = PrimerAPIConfiguration.paymentMethodOrchestrators.filter({ $0.paymentMethodConfig.type == type }).first
+                
         var imgView: UIImageView?
-        if let squareLogo = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.uiModule.icon {
+        if let squareLogo = PrimerAPIConfiguration.paymentMethodOrchestrators.filter({ $0.paymentMethodConfig.type == type }).first?.uiModule.icon {
             imgView = UIImageView()
             imgView?.image = squareLogo
             imgView?.contentMode = .scaleAspectFit
@@ -75,21 +73,21 @@ internal class PrimerUIManager {
         
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         
-        paymentMethodTokenizationViewModel?.checkouEventsNotifierModule.didStartTokenization = {
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-        }
+//        paymentMethodTokenizationViewModel?.checkouEventsNotifierModule.didStartTokenization = {
+//            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
+//        }
+//
+//        paymentMethodTokenizationViewModel?.willPresentPaymentMethodUI = {
+//            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
+//        }
+//
+//        paymentMethodTokenizationViewModel?.didPresentPaymentMethodUI = {}
+//
+//        paymentMethodTokenizationViewModel?.willDismissPaymentMethodUI = {
+//            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
+//        }
         
-        paymentMethodTokenizationViewModel?.willPresentPaymentMethodUI = {
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-        }
-        
-        paymentMethodTokenizationViewModel?.didPresentPaymentMethodUI = {}
-        
-        paymentMethodTokenizationViewModel?.willDismissPaymentMethodUI = {
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-        }
-        
-        paymentMethodTokenizationViewModel?.start()
+        paymentMethodOrchestrator?.start()
     }
     
     static func prepareRootViewController()  -> Promise<Void> {
@@ -136,7 +134,7 @@ internal class PrimerUIManager {
                     return
                 }
                 
-                guard PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0.config.type == paymentMethodType }) != nil else {
+                guard PrimerAPIConfiguration.paymentMethodOrchestrators.first(where: { $0.paymentMethodConfig.type == paymentMethodType }) != nil else {
                     let err = PrimerError.unableToPresentPaymentMethod(
                         paymentMethodType: paymentMethodType,
                         userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
@@ -229,12 +227,14 @@ internal class PrimerUIManager {
     }
     
     static func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, withMessage message: String? = nil) {
-        if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
-            showResultScreenForResultType(type: .success, message: message)
-        } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
-            showResultScreenForResultType(type: .failure, message: message)
-        } else {
-            PrimerInternal.shared.dismiss()
+        DispatchQueue.main.async {
+            if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
+                showResultScreenForResultType(type: .success, message: message)
+            } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
+                showResultScreenForResultType(type: .failure, message: message)
+            } else {
+                PrimerInternal.shared.dismiss()
+            }
         }
     }
     

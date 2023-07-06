@@ -93,33 +93,33 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     
     func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            firstly {
-                self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
-            }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                guard let paymentMethodTokenId = self.selectedPaymentMethodTokenData.id else {
-                    let err = PrimerError.invalidValue(
-                        key: "paymentMethodTokenId",
-                        value: nil,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
-                }
-                
-                let tokenizationService = TokenizationService()
-                return tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData: nil)
-            }
-            .then { paymentMethodTokenData -> Promise<Void> in
-                self.paymentMethodTokenData = paymentMethodTokenData
-                return self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
+//            firstly {
+//                self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+//            }
+//            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+//                guard let paymentMethodTokenId = self.selectedPaymentMethodTokenData.id else {
+//                    let err = PrimerError.invalidValue(
+//                        key: "paymentMethodTokenId",
+//                        value: nil,
+//                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+//                        diagnosticsId: UUID().uuidString)
+//                    ErrorHandler.handle(error: err)
+//                    throw err
+//                }
+//                
+//                let tokenizationService = TokenizationService()
+//                return tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData: nil)
+//            }
+//            .then { paymentMethodTokenData -> Promise<Void> in
+//                self.paymentMethodTokenData = paymentMethodTokenData
+//                return self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+//            }
+//            .done {
+//                seal.fulfill()
+//            }
+//            .catch { err in
+//                seal.reject(err)
+//            }
         }
     }
     

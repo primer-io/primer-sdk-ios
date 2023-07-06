@@ -12,7 +12,7 @@ import UIKit
 internal class PrimerVaultManagerViewController: PrimerFormViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    private let paymentMethodConfigViewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
+    private let paymentMethodOrchestrators = PrimerAPIConfiguration.paymentMethodOrchestrators
     
     override var title: String? {
         didSet {
@@ -41,13 +41,13 @@ internal class PrimerVaultManagerViewController: PrimerFormViewController {
         
         verticalStackView.spacing = 14.0
 
-        if !paymentMethodConfigViewModels.isEmpty {
+        if !paymentMethodOrchestrators.isEmpty {
             renderAvailablePaymentMethods()
         }
     }
     
     private func renderAvailablePaymentMethods() {
-        PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
+//        PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
     }
 }
 

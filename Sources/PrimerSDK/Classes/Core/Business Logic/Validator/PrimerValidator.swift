@@ -11,14 +11,20 @@ import Foundation
 
 class PrimerValidator {
     
-    let paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator
+    weak private(set) var paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator!
     var errors: [PrimerError] = []
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
     
     init(paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator) {
         self.paymentMethodOrchestrator = paymentMethodOrchestrator
     }
     
     func validateSynchronously() throws {
+        self.errors = []
+        
         // Client token and configuration validation
         
         if PrimerAPIConfigurationModule.decodedJWTToken == nil || PrimerAPIConfigurationModule.decodedJWTToken?.isValid != true {
@@ -27,20 +33,19 @@ class PrimerValidator {
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             self.errors.append(err)
-        }
-        
-        if PrimerAPIConfigurationModule.apiConfiguration == nil {
-            let err = PrimerError.missingPrimerConfiguration(
+            
+        } else if URL(string: PrimerAPIConfigurationModule.decodedJWTToken?.pciUrl ?? "") == nil {
+            let err = PrimerError.invalidValue(
+                key: "decodedClientToken.pciUrl",
+                value: nil,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             self.errors.append(err)
         }
         
-        if URL(string: PrimerAPIConfigurationModule.decodedJWTToken?.pciUrl ?? "") == nil {
-            let err = PrimerError.invalidValue(
-                key: "decodedClientToken.pciUrl",
-                value: nil,
+        if PrimerAPIConfigurationModule.apiConfiguration == nil {
+            let err = PrimerError.missingPrimerConfiguration(
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
@@ -81,6 +86,8 @@ class PrimerValidator {
                 self.errors.append(err)
             }
         }
+        
+        try self.throwErrors()
     }
     
     final func validate() -> Promise<Void> {

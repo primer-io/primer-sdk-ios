@@ -9,11 +9,15 @@ import Foundation
 
 class PrimerPaymentMethodUIModule: NSObject {
     
-    let paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator
+    weak private(set) var paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator!
     var paymentMethodAsset: PrimerPaymentMethodAsset?
     var paymentMethodButton: UIButton?
     var submitButton: UIButton?
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    
+    deinit {
+        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+    }
     
     init(paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator) {
         self.paymentMethodOrchestrator = paymentMethodOrchestrator
@@ -37,14 +41,19 @@ class PrimerPaymentMethodUIModule: NSObject {
     
     
     @discardableResult
-    func presentResultUIIfNeeded() -> Promise<Void> {
+    final func presentResultUIIfNeeded(forResult result: PrimerResultViewController.ScreenType, withMessage message: String?) -> Promise<Void> {
         return Promise { seal in
-            
+            PrimerUIManager.dismissOrShowResultScreen(type: result, withMessage: message)
+            seal.fulfill()
         }
     }
 }
 
 internal extension PrimerPaymentMethodUIModule {
+    
+    var icon: UIImage? {
+        return nil
+    }
     
     var logo: UIImage? {
         guard let baseLogoImage = self.paymentMethodOrchestrator.paymentMethodConfig.baseLogoImage else { return nil }
@@ -106,6 +115,20 @@ internal extension PrimerPaymentMethodUIModule {
             return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "multibanco-logo-light", in: Bundle.primerResources, compatibleWith: nil)
         default:
             return logo
+        }
+    }
+    
+    /// **surchargeSectionText** is the text above the payment method on the Drop In Universal Checkout
+    /// when surcharge has been added for the payment method in the client session.
+    var surchargeSectionText: String? {
+        switch self.paymentMethodOrchestrator.paymentMethodConfig.type {
+        case PrimerPaymentMethodType.paymentCard.rawValue:
+            return Strings.CardFormView.additionalFeesTitle
+        default:
+            guard let currency = AppState.current.currency else { return nil }
+            guard let availablePaymentMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
+            guard let str = availablePaymentMethods.filter({ $0.type == self.paymentMethodOrchestrator.paymentMethodConfig.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
+            return "+\(str)"
         }
     }
 }
@@ -182,8 +205,12 @@ fileprivate extension PrimerPaymentMethodUIModule {
         paymentMethodButton.layer.borderWidth = buttonBorderWidth
         paymentMethodButton.layer.borderColor = buttonBorderColor?.cgColor
         paymentMethodButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
-//        paymentMethodButton.addTarget(self, action: #selector(paymentMethodButtonTapped(_:)), for: .touchUpInside)
+        paymentMethodButton.addTarget(self, action: #selector(self.paymentMethodButtonTapped(_:)), for: .touchUpInside)
         return paymentMethodButton
+    }
+    
+    @objc func paymentMethodButtonTapped(_ sender: UIButton) {
+        self.paymentMethodOrchestrator.start()
     }
     
     /// Helper to build the payment method's submit button (e.g. on the card form) that's present on the
@@ -420,20 +447,6 @@ fileprivate extension PrimerPaymentMethodUIModule {
         submitButton.clipsToBounds = true
 //        submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
         return submitButton
-    }
-    
-    /// **surchargeSectionText** is the text above the payment method on the Drop In Universal Checkout
-    /// when surcharge has been added for the payment method in the client session.
-    var surchargeSectionText: String? {
-        switch self.paymentMethodOrchestrator.paymentMethodConfig.type {
-        case PrimerPaymentMethodType.paymentCard.rawValue:
-            return Strings.CardFormView.additionalFeesTitle
-        default:
-            guard let currency = AppState.current.currency else { return nil }
-            guard let availablePaymentMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
-            guard let str = availablePaymentMethods.filter({ $0.type == self.paymentMethodOrchestrator.paymentMethodConfig.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
-            return "+\(str)"
-        }
     }
     
     /// **localDisplayMetadata** will be used for building the UI for payment method buttons when the
