@@ -144,9 +144,7 @@ extension PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 
                 DispatchQueue.main.async {
-                    PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
-                        // No need to pass anything
-                    }
+                    completion(err)
                 }
                 return
             }
