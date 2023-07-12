@@ -99,6 +99,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
             
             self.threeDSSDKWindow?.isHidden = true
             self.threeDSSDKWindow = nil
+            self.primer3DS.cleanup()
         }
         .catch { err in
             var continueInfo: ThreeDS.ContinueInfo?
