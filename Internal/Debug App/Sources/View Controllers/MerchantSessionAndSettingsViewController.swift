@@ -128,7 +128,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
     
     var clientSession = ClientSessionRequestBody(
-        customerId: "customer8",
+        customerId: "ios-customer-\(String.randomString(length: 8))",
         orderId: "ios-order-\(String.randomString(length: 8))",
         currencyCode: .EUR,
         amount: nil,
@@ -158,7 +158,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 postalCode: "EC53 8BT")
         ),
         order: ClientSessionRequestBody.Order(
-            countryCode: .nl,
+            countryCode: .de,
             lineItems: [
                 ClientSessionRequestBody.Order.LineItem(
                     itemId: "fancy-shoes-\(String.randomString(length: 4))",
@@ -171,7 +171,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         paymentMethod: ClientSessionRequestBody.PaymentMethod(
             vaultOnSuccess: false,
             options: nil,
-            paymentType: "ECOMMERCE"
+            paymentType: nil
         ),
         testParams: nil)
     
