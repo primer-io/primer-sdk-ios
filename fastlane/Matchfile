@@ -7,6 +7,9 @@ type("development") # The default type, can be: appstore, adhoc, enterprise or d
 
 app_identifier("com.primerapi.PrimerSDKExample")
 username("sdk@primer.io") # Your Apple Developer Portal username
+# master branch is protected and Match cannot commit changes, change the line below to the branch
+# you want to use for a PR
+# git_branch("update-certs-profiles")
 
 platform("ios")
 shallow_clone true
