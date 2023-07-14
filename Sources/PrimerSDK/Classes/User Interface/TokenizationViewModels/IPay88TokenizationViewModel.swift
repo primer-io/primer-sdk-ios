@@ -420,7 +420,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             prodDesc: PrimerAPIConfiguration.current!.clientSession!.order!.lineItems!.compactMap({ $0.description }).joined(separator: ", "),
             userName: "\(PrimerAPIConfiguration.current!.clientSession!.customer!.firstName!) \(PrimerAPIConfiguration.current!.clientSession!.customer!.lastName!)",
             userEmail: PrimerAPIConfiguration.current!.clientSession!.customer!.emailAddress!,
-            userContact: PrimerAPIConfiguration.current!.clientSession!.customer!.mobileNumber ?? "",
+            userContact: "",
             remark: PrimerAPIConfiguration.current!.clientSession?.customer?.id,
             lang: "UTF-8",
             country: supportedCountry,
