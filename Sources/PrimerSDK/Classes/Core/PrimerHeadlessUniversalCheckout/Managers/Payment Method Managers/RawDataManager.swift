@@ -844,37 +844,45 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
-            return Promise { seal in
-                self.webViewController = SFSafariViewController(url: redirectUrl)
-                self.webViewController!.delegate = self
-                
-                self.webViewCompletion = { (id, err) in
-                    if let err = err {
-                        seal.reject(err)
-                    }
-                }
-                
-                DispatchQueue.main.async {
-                    if PrimerUIManager.primerRootViewController == nil {
-                        firstly {
-                            PrimerUIManager.prepareRootViewController()
+            if redirectUrl.isHttpOrHttpsURL {
+                return showSafariViewController()
+            } else {
+                return URLHandler.handleNonHttpUrl(url: redirectUrl)
+            }
+
+            func showSafariViewController() -> Promise<Void> {
+                return Promise { seal in
+                    self.webViewController = SFSafariViewController(url: redirectUrl)
+                    self.webViewController!.delegate = self
+                    
+                    self.webViewCompletion = { (id, err) in
+                        if let err = err {
+                            seal.reject(err)
                         }
-                        .done {
+                    }
+                    
+                    DispatchQueue.main.async {
+                        if PrimerUIManager.primerRootViewController == nil {
+                            firstly {
+                                PrimerUIManager.prepareRootViewController()
+                            }
+                            .done {
+                                PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                                    DispatchQueue.main.async {
+                                        seal.fulfill()
+                                    }
+                                })
+                            }
+                            .catch { _ in }
+                        } else {
                             PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                                 DispatchQueue.main.async {
                                     seal.fulfill()
                                 }
                             })
                         }
-                        .catch { _ in }
-                    } else {
-                        PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
-                            DispatchQueue.main.async {
-                                seal.fulfill()
-                            }
-                        })
+                        
                     }
-                    
                 }
             }
         }
