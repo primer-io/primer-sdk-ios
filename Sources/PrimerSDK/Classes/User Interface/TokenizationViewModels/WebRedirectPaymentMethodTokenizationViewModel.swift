@@ -142,64 +142,72 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
-        return Promise { seal in
-            DispatchQueue.main.async { [unowned self] in
-                self.webViewController = SFSafariViewController(url: self.redirectUrl)
-                self.webViewController?.delegate = self
-                
-                self.willPresentPaymentMethodUI?()
-                
-                self.redirectUrlComponents = URLComponents(string: self.redirectUrl.absoluteString)
-                self.redirectUrlComponents?.query = nil
-                
-                let presentEvent = Analytics.Event(
-                    eventType: .ui,
-                    properties: UIEventProperties(
-                        action: .present,
-                        context: Analytics.Event.Property.Context(
-                            paymentMethodType: self.config.type,
-                            url: self.redirectUrlComponents?.url?.absoluteString),
-                        extra: nil,
-                        objectType: .button,
-                        objectId: nil,
-                        objectClass: "\(Self.self)",
-                        place: .webview))
-                
-                self.redirectUrlRequestId = UUID().uuidString
-                
-                let networkEvent = Analytics.Event(
-                    eventType: .networkCall,
-                    properties: NetworkCallEventProperties(
-                        callType: .requestStart,
-                        id: self.redirectUrlRequestId!,
-                        url: self.redirectUrlComponents?.url?.absoluteString ?? "",
-                        method: .get,
-                        errorBody: nil,
-                        responseCode: nil))
-                
-                Analytics.Service.record(events: [presentEvent, networkEvent])
-                
-                PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
-                    DispatchQueue.main.async {
-                        let viewEvent = Analytics.Event(
-                            eventType: .ui,
-                            properties: UIEventProperties(
-                                action: .view,
-                                context: Analytics.Event.Property.Context(
-                                    paymentMethodType: self.config.type,
-                                    url: self.redirectUrlComponents?.url?.absoluteString ?? ""),
-                                extra: nil,
-                                objectType: .button,
-                                objectId: nil,
-                                objectClass: "\(Self.self)",
-                                place: .webview))
-                        Analytics.Service.record(events: [viewEvent])
-                        
-                        PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
-                        self.didPresentPaymentMethodUI?()
-                        seal.fulfill(())
-                    }
-                })
+        if redirectUrl.isHttpOrHttpsURL {
+            return showSafariViewController()
+        } else {
+            return URLHandler.handleNonHttpUrl(url: redirectUrl)
+        }
+        
+        func showSafariViewController() -> Promise<Void> {
+            return Promise { seal in
+                DispatchQueue.main.async { [unowned self] in
+                    self.webViewController = SFSafariViewController(url: self.redirectUrl)
+                    self.webViewController?.delegate = self
+                    
+                    self.willPresentPaymentMethodUI?()
+                    
+                    self.redirectUrlComponents = URLComponents(string: self.redirectUrl.absoluteString)
+                    self.redirectUrlComponents?.query = nil
+                    
+                    let presentEvent = Analytics.Event(
+                        eventType: .ui,
+                        properties: UIEventProperties(
+                            action: .present,
+                            context: Analytics.Event.Property.Context(
+                                paymentMethodType: self.config.type,
+                                url: self.redirectUrlComponents?.url?.absoluteString),
+                            extra: nil,
+                            objectType: .button,
+                            objectId: nil,
+                            objectClass: "\(Self.self)",
+                            place: .webview))
+                    
+                    self.redirectUrlRequestId = UUID().uuidString
+                    
+                    let networkEvent = Analytics.Event(
+                        eventType: .networkCall,
+                        properties: NetworkCallEventProperties(
+                            callType: .requestStart,
+                            id: self.redirectUrlRequestId!,
+                            url: self.redirectUrlComponents?.url?.absoluteString ?? "",
+                            method: .get,
+                            errorBody: nil,
+                            responseCode: nil))
+                    
+                    Analytics.Service.record(events: [presentEvent, networkEvent])
+                    
+                    PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                        DispatchQueue.main.async {
+                            let viewEvent = Analytics.Event(
+                                eventType: .ui,
+                                properties: UIEventProperties(
+                                    action: .view,
+                                    context: Analytics.Event.Property.Context(
+                                        paymentMethodType: self.config.type,
+                                        url: self.redirectUrlComponents?.url?.absoluteString ?? ""),
+                                    extra: nil,
+                                    objectType: .button,
+                                    objectId: nil,
+                                    objectClass: "\(Self.self)",
+                                    place: .webview))
+                            Analytics.Service.record(events: [viewEvent])
+                            
+                            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
+                            self.didPresentPaymentMethodUI?()
+                            seal.fulfill(())
+                        }
+                    })
+                }
             }
         }
     }
