@@ -39,6 +39,7 @@
 		<string>bankid</string>
 		<string>klarna</string>
 		<string>klarnaconsent</string>
+        <string>swish</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
