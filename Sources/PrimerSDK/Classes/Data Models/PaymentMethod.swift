@@ -91,6 +91,8 @@ class PrimerPaymentMethod: Codable {
             
         } else if self.type == "APPLE_PAY" {
             return PrimerPaymentMethodOrchestrator(paymentMethodConfig: self)
+        } else if self.type == "PAYMENT_CARD" {
+            return PrimerPaymentMethodOrchestrator(paymentMethodConfig: self)
         }
 //        else if implementationType == .iPay88Sdk {
 //            return IPay88TokenizationViewModel(config: self)

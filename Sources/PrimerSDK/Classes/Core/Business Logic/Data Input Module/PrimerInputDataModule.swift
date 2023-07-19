@@ -12,6 +12,7 @@ import Foundation
 internal class PrimerInputDataModule {
     
     weak private(set) var paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator!
+    internal var onInputDataSet: ((_ inputData: PrimerInputDataProtocol) -> Void)?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")

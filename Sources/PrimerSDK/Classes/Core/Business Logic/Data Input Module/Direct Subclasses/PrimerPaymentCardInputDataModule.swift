@@ -13,7 +13,9 @@ class PrimerPaymentCardInputDataModule: PrimerInputDataModule {
     
     override func awaitUserInput() -> Promise<PrimerInputDataProtocol> {
         return Promise { seal in
-            
+            self.onInputDataSet = { inputData in
+                seal.fulfill(inputData)
+            }
         }
     }
 }

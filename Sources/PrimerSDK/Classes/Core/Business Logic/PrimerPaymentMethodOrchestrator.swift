@@ -44,10 +44,10 @@ class PrimerPaymentMethodOrchestrator {
             
         } else if paymentMethodConfig.type == "PAYMENT_CARD" {
             self.validator = PrimerPaymentCardValidator(paymentMethodOrchestrator: self)
-            self.tokenizationModule = PrimerTokenizationModule(paymentMethodOrchestrator: self)
-            self.paymentModule = PrimerPaymentModule(paymentMethodOrchestrator: self)
-            self.uiModule = PrimerWebRedirectUIModule(paymentMethodOrchestrator: self)
-            self.dataInputModule = PrimerWebRedirectInputDataModule(paymentMethodOrchestrator: self)
+            self.tokenizationModule = PrimerPaymentCardTokenizationModule(paymentMethodOrchestrator: self)
+            self.paymentModule = PrimerPaymentCardPaymentModule(paymentMethodOrchestrator: self)
+            self.uiModule = PrimerPaymentCardUIModule(paymentMethodOrchestrator: self)
+            self.dataInputModule = PrimerPaymentCardInputDataModule(paymentMethodOrchestrator: self)
             
         } else if paymentMethodConfig.type == "APPLE_PAY" {
             if PrimerInternal.shared.intent == .vault {

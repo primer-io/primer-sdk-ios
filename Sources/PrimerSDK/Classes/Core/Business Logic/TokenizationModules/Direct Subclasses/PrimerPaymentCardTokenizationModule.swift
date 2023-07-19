@@ -16,6 +16,42 @@ class PrimerPaymentCardTokenizationModule: PrimerTokenizationModule {
     private var cvv: String?
     private var cardholderName: String?
     
+    override func performPreTokenizationSteps() -> Promise<Void> {
+        return Promise { seal in
+            firstly {
+                self.paymentMethodOrchestrator.uiModule.presentPreTokenizationUI()
+            }
+            .then { () -> Promise<PrimerInputDataProtocol> in
+                return self.paymentMethodOrchestrator.dataInputModule.awaitUserInput()
+            }
+            .done { inputData in
+                if let cardPaymentInstrument = inputData as? CardPaymentInstrument {
+                    self.isRequiringCVVInput = true
+                    self.cardNumber = cardPaymentInstrument.number
+                    self.expiryMonth = cardPaymentInstrument.expirationMonth
+                    self.expiryYear = "20" + cardPaymentInstrument.expirationYear
+                    self.cvv = cardPaymentInstrument.cvv
+                    self.cardholderName = cardPaymentInstrument.cardholderName
+                    seal.fulfill()
+                    
+                } else if let cardOffSessionPaymentInstrument = inputData as? CardOffSessionPaymentInstrument {
+                    self.isRequiringCVVInput = false
+                    self.cardNumber = cardOffSessionPaymentInstrument.number
+                    self.expiryMonth = cardOffSessionPaymentInstrument.expirationMonth
+                    self.expiryYear = "20" + cardOffSessionPaymentInstrument.expirationYear
+                    self.cardholderName = cardOffSessionPaymentInstrument.cardholderName
+                    seal.fulfill()
+                    
+                } else {
+                    fatalError("PrimerPaymentCardTokenizationModule should only receive one of the above")
+                }
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    
     override func generatePaymentInstrument() -> Promise<TokenizationRequestBodyPaymentInstrument> {
         return Promise { seal in
             guard let cardNumber = self.cardNumber else {

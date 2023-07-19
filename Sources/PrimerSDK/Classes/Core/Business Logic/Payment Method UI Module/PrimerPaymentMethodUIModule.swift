@@ -12,7 +12,7 @@ class PrimerPaymentMethodUIModule: NSObject {
     weak private(set) var paymentMethodOrchestrator: PrimerPaymentMethodOrchestrator!
     var paymentMethodAsset: PrimerPaymentMethodAsset?
     var paymentMethodButton: UIButton?
-    var submitButton: UIButton?
+    var submitButton: PrimerButton?
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     deinit {
@@ -46,6 +46,10 @@ class PrimerPaymentMethodUIModule: NSObject {
             PrimerUIManager.dismissOrShowResultScreen(type: result, withMessage: message)
             seal.fulfill()
         }
+    }
+    
+    internal func nonObjCSubmitButtonTapped() {
+        fatalError("Needs to be overriden")
     }
 }
 
@@ -215,7 +219,7 @@ fileprivate extension PrimerPaymentMethodUIModule {
     
     /// Helper to build the payment method's submit button (e.g. on the card form) that's present on the
     /// Drop In Universal Checkout
-    private func buildSubmitButton() -> UIButton? {
+    private func buildSubmitButton() -> PrimerButton? {
         var buttonTitle: String = ""
         
         switch self.paymentMethodOrchestrator.paymentMethodConfig.type {
@@ -445,8 +449,12 @@ fileprivate extension PrimerPaymentMethodUIModule {
         submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
         submitButton.layer.cornerRadius = 4
         submitButton.clipsToBounds = true
-//        submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
+        submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
         return submitButton
+    }
+    
+    @objc private func submitButtonTapped(_ sender: UIButton) {
+        self.nonObjCSubmitButtonTapped()
     }
     
     /// **localDisplayMetadata** will be used for building the UI for payment method buttons when the

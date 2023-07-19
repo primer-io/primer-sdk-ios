@@ -61,7 +61,6 @@ internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     
     var tableView: UITableView { get set }
     var searchableTextField: PrimerSearchTextField { get set }
-    var config: PrimerPaymentMethod! { get set }
     
     func cancel()
 }

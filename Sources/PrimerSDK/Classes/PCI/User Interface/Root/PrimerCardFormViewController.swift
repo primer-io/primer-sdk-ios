@@ -13,10 +13,10 @@ import UIKit
 class PrimerCardFormViewController: PrimerFormViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()    
-    private let formPaymentMethodTokenizationViewModel: CardFormPaymentMethodTokenizationViewModel
+    private let uiModule: PrimerPaymentCardUIModule
     
-    init(navigationBarLogo: UIImage? = nil, viewModel: CardFormPaymentMethodTokenizationViewModel) {
-        self.formPaymentMethodTokenizationViewModel = viewModel
+    init(navigationBarLogo: UIImage? = nil, uiModule: PrimerPaymentCardUIModule) {
+        self.uiModule = uiModule
         super.init(nibName: nil, bundle: nil)
         self.titleImage = navigationBarLogo
         if self.titleImage == nil {
@@ -37,7 +37,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
                 action: .view,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
-                    paymentMethodType: self.formPaymentMethodTokenizationViewModel.config.type,
+                    paymentMethodType: self.uiModule.paymentMethodOrchestrator.paymentMethodConfig.type,
                     url: nil),
                 extra: nil,
                 objectType: .view,
@@ -51,7 +51,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        _ = formPaymentMethodTokenizationViewModel.cardNumberField.becomeFirstResponder()
+        _ = uiModule.cardNumberField.becomeFirstResponder()
     }
     
     private func setupView() {
@@ -72,11 +72,11 @@ class PrimerCardFormViewController: PrimerFormViewController {
     }
     
     private func renderCardAndBillingAddressFields() {
-        verticalStackView.addArrangedSubview(formPaymentMethodTokenizationViewModel.formView)
+        verticalStackView.addArrangedSubview(uiModule.formView)
     }
     
     private func renderSubmitButton() {
-        guard let submitButton = formPaymentMethodTokenizationViewModel.uiModule.submitButton else { return }
+        guard let submitButton = uiModule.submitButton else { return }
         verticalStackView.addArrangedSubview(submitButton)
     }
 }

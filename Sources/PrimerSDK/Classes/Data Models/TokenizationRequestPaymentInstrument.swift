@@ -38,7 +38,7 @@ struct ApplePayPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     }
 }
 
-struct CardPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
+struct CardPaymentInstrument: TokenizationRequestBodyPaymentInstrument, PrimerInputDataProtocol {
     var number: String
     var cvv: String
     var expirationMonth: String
@@ -46,7 +46,7 @@ struct CardPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var cardholderName: String?
 }
 
-struct CardOffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
+struct CardOffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument, PrimerInputDataProtocol {
     var sessionInfo = CardOffSessionInfo()
     var type: PaymentInstrumentType = .cardOffSession
     var paymentMethodConfigId: String
