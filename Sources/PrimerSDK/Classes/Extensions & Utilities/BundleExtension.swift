@@ -33,7 +33,8 @@ internal extension Bundle {
             return reactNativeVersion
         }
         
-        return Primer.hardcodedVersion
+        let version = Bundle.primerFramework.infoDictionary?["CFBundleShortVersionString"] as? String
+        return version
     }
     
     var buildVersionNumber: String? {
