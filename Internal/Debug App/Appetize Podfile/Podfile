@@ -9,7 +9,7 @@ target 'Debug App' do
 
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../../../'
-  pod 'Primer3DS', "~> 1.1.2"
+  pod 'Primer3DS', "~> 1.2.0"
   pod 'PrimerKlarnaSDK'
   # pod 'PrimerIPay88MYSDK' -> fails on arm64
   
