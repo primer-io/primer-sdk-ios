@@ -1,5 +1,5 @@
 app_identifier("com.primerapi.PrimerSDKExample") # The bundle identifier of your app
-apple_id("sdk@primer.io") # Your Apple email address
+apple_id("security@primerapi.com") # Your Apple email address
 team_id "N8UN9TR5DY" # Developer Portal Team ID
 
 
