@@ -70,6 +70,7 @@ platform :ios do
       configuration: "Debug",
       include_bitcode: false,
       export_method: "development",
+      use_automatic_signing: true,
       skip_package_dependencies_resolution: true
     )
 
