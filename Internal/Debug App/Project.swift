@@ -14,7 +14,7 @@ enum AppSettings {
 
     static let settingsDictionary = SettingsDictionary()
         .merging(BaseSettings.settingsDictionary)
-        .merging(["CODE_SIGN_IDENTITY": .string("Apple Development: DX Primer (8B5K7AGMS8)")])
+        .merging(["CODE_SIGN_IDENTITY": .string("Apple Development: MOHAMMED TARIK ALADIN TALEB (P3K69N82DT)")])
         .manualCodeSigning(provisioningProfileSpecifier: "match Development com.primerapi.PrimerSDKExample")
 
     static let settingsConfigurations: [Configuration] = [.debug(name: "Debug", settings: settingsDictionary),
