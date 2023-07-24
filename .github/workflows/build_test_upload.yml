@@ -186,6 +186,12 @@ jobs:
       - name: Create the Xcode project and workspace
         run: sh ./Internal/Debug\ App/tuist-generate.sh is_ci
 
+      - name: Update fastlane
+        run: bundle exec fastlane update_fastlane
+        
+      - name: Update fastlane plugins
+        run: bundle exec fastlane update_plugins
+        
       - name: Distribute internally on Firebase and upload to Browserstack 🚀
         run: |
           bundle exec fastlane qa_release
