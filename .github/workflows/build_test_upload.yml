@@ -138,9 +138,6 @@ jobs:
     timeout-minutes: 20
     name: "Distribute app to Firebase and Browserstack"
     steps:
-      - name: Update plugins
-        run: bundle exec fastlane update_plugins 
-    
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@0.11.0
         with:
@@ -189,6 +186,9 @@ jobs:
       - name: Create the Xcode project and workspace
         run: sh ./Internal/Debug\ App/tuist-generate.sh is_ci
 
+      - name: Update plugins
+        run: bundle exec fastlane update_plugins 
+        
       - name: Distribute internally on Firebase and upload to Browserstack 🚀
         run: |
           bundle exec fastlane qa_release
