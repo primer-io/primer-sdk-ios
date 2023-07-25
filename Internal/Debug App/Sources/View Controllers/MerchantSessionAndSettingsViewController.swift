@@ -109,7 +109,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var applePaySurchargeTextField: UITextField!
     
     @IBOutlet weak var primerSDKButton: UIButton!
-    
+    @IBOutlet weak var primerHeadlessSDKButton: UIButton!
+
     var lineItems: [ClientSessionRequestBody.Order.LineItem] {
         get {
             return self.clientSession.order?.lineItems ?? []

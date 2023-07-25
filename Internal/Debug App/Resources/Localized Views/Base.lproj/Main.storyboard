@@ -1046,6 +1046,7 @@
                         <outlet property="merchantNameTextField" destination="PHb-NY-wz8" id="59v-8M-bqS"/>
                         <outlet property="orderIdTextField" destination="1XS-HX-uUR" id="H3x-3f-S4P"/>
                         <outlet property="orderStackView" destination="Wmb-0A-wCB" id="Pbr-Sp-L9J"/>
+                        <outlet property="primerHeadlessSDKButton" destination="0FS-cB-H3t" id="j9d-hB-VMw"/>
                         <outlet property="primerSDKButton" destination="QJ8-WE-cU8" id="qvf-xm-nfv"/>
                         <outlet property="sdkSettingsStackView" destination="f7f-4e-ZPN" id="2Vf-1J-enz"/>
                         <outlet property="shippinAddressCityTextField" destination="L7k-eG-AdP" id="eK3-8a-LzQ"/>
