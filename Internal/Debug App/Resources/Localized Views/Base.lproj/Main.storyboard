@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="YLF-5Z-Vka">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="YLF-5Z-Vka">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -1201,7 +1201,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="d8P-5j-5aq">
-                                <rect key="frame" x="20" y="48" width="374" height="814"/>
+                                <rect key="frame" x="20" y="48" width="374" height="734"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="MerchantPaymentMethodCell" rowHeight="89" id="3tb-mP-9fD" customClass="MerchantPaymentMethodCell" customModule="Debug_App" customModuleProvider="target">
@@ -1248,14 +1248,35 @@
                                     <outlet property="delegate" destination="HWB-lM-wQr" id="j1s-H8-MVU"/>
                                 </connections>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8I8-Gh-XJa">
+                                <rect key="frame" x="20" y="802" width="374" height="40"/>
+                                <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="ypm-Hq-69J"/>
+                                </constraints>
+                                <state key="normal" title="Vault">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <buttonConfiguration key="configuration" style="filled" title="Vault Manager">
+                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="onVaultManagerButtonTap:" destination="HWB-lM-wQr" eventType="touchUpInside" id="5kQ-cv-3of"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="58P-rc-tM8"/>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="d8P-5j-5aq" firstAttribute="top" secondItem="58P-rc-tM8" secondAttribute="top" id="6GQ-TQ-ya2"/>
+                            <constraint firstItem="8I8-Gh-XJa" firstAttribute="leading" secondItem="yVt-gx-xRg" secondAttribute="leading" constant="20" id="GXd-yU-Y9W"/>
                             <constraint firstAttribute="trailingMargin" secondItem="d8P-5j-5aq" secondAttribute="trailing" id="TMc-aA-7Yw"/>
+                            <constraint firstItem="58P-rc-tM8" firstAttribute="bottom" secondItem="8I8-Gh-XJa" secondAttribute="bottom" constant="20" id="XTi-X9-Kzq"/>
+                            <constraint firstItem="58P-rc-tM8" firstAttribute="trailing" secondItem="8I8-Gh-XJa" secondAttribute="trailing" constant="20" id="YjL-VG-fRR"/>
                             <constraint firstItem="d8P-5j-5aq" firstAttribute="leading" secondItem="yVt-gx-xRg" secondAttribute="leadingMargin" id="dMg-g1-NqJ"/>
-                            <constraint firstItem="58P-rc-tM8" firstAttribute="bottom" secondItem="d8P-5j-5aq" secondAttribute="bottom" id="scA-mb-9aZ"/>
+                            <constraint firstItem="8I8-Gh-XJa" firstAttribute="top" secondItem="d8P-5j-5aq" secondAttribute="bottom" constant="20" id="tiG-uT-ySz"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="8Pd-cw-qzf"/>
@@ -1265,7 +1286,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RGM-oR-3VK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4606" y="1821"/>
+            <point key="canvasLocation" x="4605.7971014492759" y="1820.7589285714284"/>
         </scene>
         <!--Merchant Headless Checkout Raw Data View Controller-->
         <scene sceneID="b45-kg-Ezl">
@@ -1454,70 +1475,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uza-Fh-Tqf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="6961" y="1820"/>
-        </scene>
-        <!--Merchant Headless View Controller-->
-        <scene sceneID="e5v-vF-GQc">
-            <objects>
-                <viewController storyboardIdentifier="MerchantHeadlessViewController" id="Exd-GC-dof" customClass="MerchantHeadlessViewController" customModule="Debug_App" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Py7-Ma-yKK">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="PVp-85-SY2">
-                                <rect key="frame" x="40" y="750" width="334" height="92"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QED-OX-lJS">
-                                        <rect key="frame" x="0.0" y="0.0" width="334" height="40"/>
-                                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <accessibility key="accessibilityConfiguration" identifier="Universal Checkout Button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="UEn-hV-WP4"/>
-                                        </constraints>
-                                        <state key="normal" title="Universal Checkout">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <buttonConfiguration key="configuration" style="filled" title="Checkout">
-                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </buttonConfiguration>
-                                        <connections>
-                                            <action selector="onCheckoutButtonTap:" destination="Exd-GC-dof" eventType="touchUpInside" id="pqY-wi-jtd"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="min-pU-amV">
-                                        <rect key="frame" x="0.0" y="52" width="334" height="40"/>
-                                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="xvm-vA-zmw"/>
-                                        </constraints>
-                                        <state key="normal" title="Vault">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <buttonConfiguration key="configuration" style="filled" title="Vault Manager">
-                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </buttonConfiguration>
-                                        <connections>
-                                            <action selector="onVaultButtonTap:" destination="Exd-GC-dof" eventType="touchUpInside" id="u4H-6K-9jX"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                            </stackView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="tFr-1I-U1Z"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="tFr-1I-U1Z" firstAttribute="bottom" secondItem="PVp-85-SY2" secondAttribute="bottom" constant="20" id="K0u-Lx-Gzf"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="PVp-85-SY2" secondAttribute="trailing" constant="20" id="QP7-L9-jPn"/>
-                            <constraint firstItem="PVp-85-SY2" firstAttribute="leading" secondItem="Py7-Ma-yKK" secondAttribute="leadingMargin" constant="20" id="srp-mb-lzA"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" id="xRF-cN-6YI"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="L0g-KT-ahP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3730" y="2591"/>
         </scene>
         <!--Merchant Headles Vault Manager View Controller-->
         <scene sceneID="2g9-tv-Raf">

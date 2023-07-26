@@ -110,7 +110,6 @@ class MerchantHeadlesVaultManagerViewController: UIViewController, PrimerHeadles
         let filteredVaultedPaymentMethods = vaultedPaymentMethods.filter({ !expiredVaultedCardsIds.contains($0.id) })
         // Comment out next line when you're not testing CVV recapture
         return vaultedPaymentMethods.filter({ $0.paymentInstrumentData.first6Digits == "411111" && $0.paymentInstrumentData.expirationMonth == "03" && $0.paymentInstrumentData.expirationYear == "2030" })
-        return filteredVaultedPaymentMethods
     }
     
     // MARK: - HELPERS

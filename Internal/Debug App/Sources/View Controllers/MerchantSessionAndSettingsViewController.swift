@@ -635,15 +635,16 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 clientSession.testParams = testParams
             }
             
-            let vc = MerchantHeadlessViewController.instantiate(settings: settings,
-                                                                clientSession: clientSession,
-                                                                clientToken: nil)
+            let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(settings: settings,
+                                                                                               clientSession: clientSession,
+                                                                                               clientToken: nil)
+
             navigationController?.pushViewController(vc, animated: true)
                         
         case .clientToken:
-            let vc = MerchantHeadlessViewController.instantiate(settings: settings,
-                                                                clientSession: nil,
-                                                                clientToken: clientTokenTextField.text)
+            let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(settings: settings,
+                                                                                               clientSession: nil,
+                                                                                               clientToken: clientTokenTextField.text)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
