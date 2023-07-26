@@ -325,7 +325,11 @@ internal extension URLSessionStack {
     private func url(for endpoint: Endpoint) -> URL? {
         guard let urlStr = endpoint.baseURL else { return nil }
         guard let baseUrl = URL(string: urlStr) else { return nil }
-        let url = baseUrl.appendingPathComponent(endpoint.path)
+        var url = baseUrl
+        
+        if endpoint.path != "" {
+            url = baseUrl.appendingPathComponent(endpoint.path)
+        }
         
         if let queryParameters = endpoint.queryParameters, !queryParameters.keys.isEmpty {
             var urlComponents = URLComponents(string: url.absoluteString)!
