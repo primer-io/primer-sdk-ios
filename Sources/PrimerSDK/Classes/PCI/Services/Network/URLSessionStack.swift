@@ -322,7 +322,7 @@ internal class URLSessionStack: NetworkService {
 
 internal extension URLSessionStack {
     
-    private func url(for endpoint: Endpoint) -> URL? {
+    func url(for endpoint: Endpoint) -> URL? {
         guard let urlStr = endpoint.baseURL else { return nil }
         guard let baseUrl = URL(string: urlStr) else { return nil }
         var url = baseUrl
