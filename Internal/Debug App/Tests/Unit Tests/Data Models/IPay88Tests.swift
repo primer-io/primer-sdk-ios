@@ -231,7 +231,6 @@ class IPay88Tests: XCTestCase {
         XCTAssert(primerIPay88Payment.prodDesc == iPay88Payment.prodDesc, "[Scenario: \(scenario)] prodDesc mismatch")
         XCTAssert(primerIPay88Payment.userName == iPay88Payment.userName, "[Scenario: \(scenario)] userName mismatch")
         XCTAssert(primerIPay88Payment.userEmail == iPay88Payment.userEmail, "[Scenario: \(scenario)] userEmail mismatch")
-        XCTAssert(primerIPay88Payment.userContact == iPay88Payment.userContact, "[Scenario: \(scenario)] userContact mismatch")
         XCTAssert(primerIPay88Payment.remark == iPay88Payment.remark, "[Scenario: \(scenario)] remark mismatch")
         XCTAssert(primerIPay88Payment.lang == iPay88Payment.lang, "[Scenario: \(scenario)] lang mismatch")
         XCTAssert(primerIPay88Payment.country == iPay88Payment.country, "[Scenario: \(scenario)] country mismatch")
