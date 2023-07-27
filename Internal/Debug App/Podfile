@@ -9,7 +9,7 @@ target 'Debug App' do
   pod 'PrimerSDK', :path => '../../'
   pod 'Primer3DS', "~> 1.2.0"
   pod 'PrimerKlarnaSDK'
-  pod 'PrimerIPay88MYSDK' , :git => 'https://github.com/primer-io/primer-ipay88-sdk-ios', :branch => 'master'
+  pod 'PrimerIPay88MYSDK'
   
   target 'Debug App Tests' do
     inherit! :search_paths
