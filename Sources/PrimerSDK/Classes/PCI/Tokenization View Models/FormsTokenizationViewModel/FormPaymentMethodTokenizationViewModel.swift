@@ -25,17 +25,16 @@ internal class Input {
     var primerTextFieldView: PrimerTextFieldView?
 }
 
-class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     
     // MARK: - Properties
     
     var inputs: [Input] = []
+    private var didCancelPolling: (() -> Void)?
     
-    private var cardComponentsManager: CardComponentsManager!
+    private var cardComponentsManager: InternalCardComponentsManager!
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
-    var didCancel: (() -> Void)?
-    
+        
     private static let countryCodeFlag = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.flag ?? ""
     private static let countryDialCode = CountryCode.phoneNumberCountryCodes.first(where: { $0.code == PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.rawValue})?.dialCode ?? ""
         
@@ -529,7 +528,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
             
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
@@ -585,6 +584,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     }
                     .done { resumeToken in
                         seal.fulfill(resumeToken)
+                    }
+                    .ensure {
+                        self.didCancel = nil
                     }
                     .catch { err in
                         seal.reject(err)
@@ -859,6 +861,14 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             super.handleSuccessfulFlow()
         }
     }
+    
+    override func cancel() {
+        didCancel?()
+        inputs = []
+        
+        let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+        ErrorHandler.handle(error: err)
+    }
 }
 
 extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
@@ -904,17 +914,6 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
             countryFieldView.validation = .valid
             countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
             PrimerUIManager.primerRootViewController?.popViewController()
-    }
-}
-
-extension FormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol {
-    
-    func cancel() {
-        didCancel?()
-        inputs = []
-        
-        let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: err)
     }
 }
 

@@ -29,7 +29,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var applePayReceiveDataCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?
     // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
     private var applePayControllerCompletion: ((PKPaymentAuthorizationResult) -> Void)?
-    private var isCancelled: Bool = false
     private var didTimeout: Bool = false
     
     deinit {
@@ -76,7 +75,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func start() {
         self.didFinishPayment = { err in
-            if let err = err {
+            if let _ = err {
                 self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .failure, errors: nil))
             } else {
                 self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .success, errors: nil))
@@ -135,8 +134,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
-            
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
+
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
@@ -229,7 +228,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         self.isCancelled = true
                         PrimerUIManager.primerRootViewController?.present(paymentVC, animated: true, completion: {
                             DispatchQueue.main.async {
-                                PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type)
+                                PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
                                 self.didPresentPaymentMethodUI?()
                                 seal.fulfill()
                             }
@@ -449,8 +448,16 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         didAuthorizePayment payment: PKPayment,
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
+        
+        var isMockedBE: Bool = false
+#if DEBUG
+        if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+            isMockedBE = true
+        }
+#endif
+        
 #if targetEnvironment(simulator)
-        if payment.token.paymentData.count == 0 {
+        if payment.token.paymentData.count == 0 && !isMockedBE {
             let err = PrimerError.invalidArchitecture(
                 description: "Apple Pay does not work with Primer when used in the simulator due to a limitation from Apple Pay.",
                 recoverSuggestion: "Use a real device instead of the simulator",
@@ -470,17 +477,29 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         self.isCancelled = false
         self.didTimeout = true
         
-        applePayControllerCompletion = { obj in
+        self.applePayControllerCompletion = { obj in
             self.didTimeout = false
             completion(obj)
         }
         
         do {
-            let tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self, from: payment.token.paymentData)
-            
+            let tokenPaymentData: ApplePayPaymentResponseTokenPaymentData
+            if isMockedBE {
+                tokenPaymentData = ApplePayPaymentResponseTokenPaymentData(
+                    data: "apple-pay-payment-response-mock-data",
+                    signature: "apple-pay-mock-signature",
+                    version: "apple-pay-mock-version",
+                    header: ApplePayTokenPaymentDataHeader(
+                        ephemeralPublicKey: "apple-pay-mock-ephemeral-key",
+                        publicKeyHash: "apple-pay-mock-public-key-hash",
+                        transactionId: "apple-pay-mock--transaction-id"))
+            } else {
+                tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self, from: payment.token.paymentData)
+            }
+                        
             let billingAddress = clientSessionBillingAddressFromApplePayBillingContact(payment.billingContact)
             
-            let applePayPaymentResponse = ApplePayPaymentResponse(
+            applePayPaymentResponse = ApplePayPaymentResponse(
                 token: ApplePayPaymentInstrument.PaymentResponseToken(
                     paymentMethod: ApplePayPaymentResponsePaymentMethod(
                         displayName: payment.token.paymentMethod.displayName,
@@ -491,10 +510,12 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
                     paymentData: tokenPaymentData
                 ), billingAddress: billingAddress)
             
+            
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
             controller.dismiss(animated: true, completion: nil)
             applePayReceiveDataCompletion?(.success(applePayPaymentResponse))
             applePayReceiveDataCompletion = nil
+            
         } catch {
             completion(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
             controller.dismiss(animated: true, completion: nil)

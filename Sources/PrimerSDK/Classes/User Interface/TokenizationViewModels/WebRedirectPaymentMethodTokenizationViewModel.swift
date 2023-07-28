@@ -22,7 +22,10 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
      must be set before presenting the webview and nullified once polling returns a result. At the same time the webview should be dismissed.
      */
     var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
-    var didCancel: (() -> Void)?
+    private var didCancelPolling: (() -> Void)?
+    
+    private var redirectUrlRequestId: String?
+    private var redirectUrlComponents: URLComponents?
     
     deinit {
         log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
@@ -31,8 +34,13 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     @objc
     override func receivedNotification(_ notification: Notification) {
         switch notification.name.rawValue {
-        case Notification.Name.urlSchemeRedirect.rawValue:
+        case Notification.Name.receivedUrlSchemeRedirect.rawValue:
             self.webViewController?.dismiss(animated: true)
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            
+        case Notification.Name.receivedUrlSchemeCancellation.rawValue:
+            self.webViewController?.dismiss(animated: true)
+            self.didCancel?()
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         default:
             super.receivedNotification(notification)
@@ -55,7 +63,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             })
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.urlSchemeRedirect, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeRedirect, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
         
         super.start()
     }
@@ -105,7 +114,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
             
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
@@ -139,9 +148,54 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 self.webViewController?.delegate = self
                 
                 self.willPresentPaymentMethodUI?()
+                
+                self.redirectUrlComponents = URLComponents(string: self.redirectUrl.absoluteString)
+                self.redirectUrlComponents?.query = nil
+                
+                let presentEvent = Analytics.Event(
+                    eventType: .ui,
+                    properties: UIEventProperties(
+                        action: .present,
+                        context: Analytics.Event.Property.Context(
+                            paymentMethodType: self.config.type,
+                            url: self.redirectUrlComponents?.url?.absoluteString),
+                        extra: nil,
+                        objectType: .button,
+                        objectId: nil,
+                        objectClass: "\(Self.self)",
+                        place: .webview))
+                
+                self.redirectUrlRequestId = UUID().uuidString
+                
+                let networkEvent = Analytics.Event(
+                    eventType: .networkCall,
+                    properties: NetworkCallEventProperties(
+                        callType: .requestStart,
+                        id: self.redirectUrlRequestId!,
+                        url: self.redirectUrlComponents?.url?.absoluteString ?? "",
+                        method: .get,
+                        errorBody: nil,
+                        responseCode: nil))
+                
+                Analytics.Service.record(events: [presentEvent, networkEvent])
+                
                 PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
-                        PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: self.config.type)
+                        let viewEvent = Analytics.Event(
+                            eventType: .ui,
+                            properties: UIEventProperties(
+                                action: .view,
+                                context: Analytics.Event.Property.Context(
+                                    paymentMethodType: self.config.type,
+                                    url: self.redirectUrlComponents?.url?.absoluteString ?? ""),
+                                extra: nil,
+                                objectType: .button,
+                                objectId: nil,
+                                objectClass: "\(Self.self)",
+                                place: .webview))
+                        Analytics.Service.record(events: [viewEvent])
+                        
+                        PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
                         self.didPresentPaymentMethodUI?()
                         seal.fulfill(())
                     }
@@ -162,12 +216,19 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 pollingModule.cancel(withError: err)
             }
             
-            firstly {
-                pollingModule.start()
+            firstly { () -> Promise<String> in
+                if self.isCancelled {
+                    let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
+                    throw err
+                }
+                return pollingModule.start()
             }
             .done { resumeToken in
                 self.resumeToken = resumeToken
                 seal.fulfill()
+            }
+            .ensure {
+                self.didCancel = nil
             }
             .catch { err in
                 seal.reject(err)
@@ -244,22 +305,71 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             }
         }
     }
+    
+    override func cancel() {
+        self.didCancelPolling?()
+        self.didCancelPolling = nil
+        super.cancel()
+    }
 }
 
 extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        self.didCancel?()
-        self.didCancel = nil
+        /// ⚠️ The check below is done due to a bug noticed on some payment methods when there was
+        /// a redirection to a 3rd party app. The **safariViewControllerDidFinish** was getting called,
+        /// and the SDK behaved as it should when the user taps the "Done" button, i.e. cancelling the
+        /// payment.
+        ///
+        /// Fortunately at the time this gets called, the app is already in an **.inactive** state, so we can
+        /// ignore it, since the user wouldn't be able to tap the "Done" button in an **.inactive** state.
+        if UIApplication.shared.applicationState != .active { return }
+        
+        let messageEvent = Analytics.Event(
+            eventType: .message,
+            properties: MessageEventProperties(
+                message: "safariViewControllerDidFinish called",
+                messageType: .other,
+                severity: .debug))
+        Analytics.Service.record(events: [messageEvent])
+        
+        self.cancel()
     }
     
     func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {
         if didLoadSuccessfully {
             self.didPresentPaymentMethodUI?()
         }
+        
+        if let redirectUrlRequestId = self.redirectUrlRequestId,
+           let redirectUrlComponents = self.redirectUrlComponents {
+            let networkEvent = Analytics.Event(
+                eventType: .networkCall,
+                properties: NetworkCallEventProperties(
+                    callType: .requestEnd,
+                    id: redirectUrlRequestId,
+                    url: redirectUrlComponents.url?.absoluteString ?? "",
+                    method: .get,
+                    errorBody: "didLoadSuccessfully: \(didLoadSuccessfully)",
+                    responseCode: nil))
+            
+            Analytics.Service.record(events: [networkEvent])
+        }
     }
     
     func safariViewController(_ controller: SFSafariViewController, initialLoadDidRedirectTo URL: URL) {
+        if var safariRedirectComponents = URLComponents(string: URL.absoluteString) {
+            safariRedirectComponents.query = nil
+            
+            let messageEvent = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "safariViewController(_:initialLoadDidRedirectTo: \(safariRedirectComponents.url?.absoluteString ?? "n/a")) called",
+                    messageType: .other,
+                    severity: .debug))
+            Analytics.Service.record(events: [messageEvent])
+        }
+        
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
             self.webViewController?.dismiss(animated: true)
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
@@ -273,10 +383,43 @@ enum PollingStatus: String, Codable {
 }
 
 struct PollingResponse: Decodable {
+    
     let status: PollingStatus
     let id: String
     let source: String
     let urls: PollingURLs
+    
+    enum CodingKeys: CodingKey {
+        case status
+        case id
+        case source
+        case urls
+    }
+    
+    init(
+        status: PollingStatus,
+        id: String,
+        source: String,
+        urls: PollingURLs
+    ) {
+        self.status = status
+        self.id = id
+        self.source = source
+        self.urls = urls
+    }
+    
+    init(from decoder: Decoder) throws {
+        do {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.status = try container.decode(PollingStatus.self, forKey: .status)
+            self.id = try container.decode(String.self, forKey: .id)
+            self.source = try container.decode(String.self, forKey: .source)
+            self.urls = try container.decode(PollingURLs.self, forKey: .urls)
+        } catch {
+            throw error
+        }
+        
+    }
 }
 
 struct PollingURLs: Decodable {

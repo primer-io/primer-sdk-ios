@@ -79,13 +79,6 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         requestVaultedPaymentMethods: Bool = false
     ) -> Promise<Void> {
         return Promise { seal in
-            if let currentClientToken = PrimerAPIConfigurationModule.clientToken,
-               currentClientToken == clientToken,
-               PrimerAPIConfigurationModule.apiConfiguration != nil {
-                seal.fulfill()
-                return
-            }
-            
             firstly {
                 self.validateClientToken(clientToken, requestRemoteClientTokenValidation: requestClientTokenValidation)
             }

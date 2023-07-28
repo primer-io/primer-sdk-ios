@@ -97,8 +97,18 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                guard let paymentMethodTokenId = self.selectedPaymentMethodTokenData.id else {
+                    let err = PrimerError.invalidValue(
+                        key: "paymentMethodTokenId",
+                        value: nil,
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
+                    throw err
+                }
+                
                 let tokenizationService = TokenizationService()
-                return tokenizationService.exchangePaymentMethodToken(self.selectedPaymentMethodTokenData)
+                return tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData: nil)
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -170,15 +180,27 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
                 let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
                 
-                PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
-                    switch paymentCreationDecision.type {
-                    case .abort(let errorMessage):
-                        let error = PrimerError.generic(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                        seal.reject(error)
-                    case .continue:
-                        seal.fulfill()
+                var decisionHandlerHasBeenCalled = false
+                
+                PrimerDelegateProxy.primerWillCreatePaymentWithData(
+                    checkoutPaymentMethodData,
+                    decisionHandler: { paymentCreationDecision in
+                        decisionHandlerHasBeenCalled = true
+                        
+                        switch paymentCreationDecision.type {
+                        case .abort(let errorMessage):
+                            let error = PrimerError.generic(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            seal.reject(error)
+                        case .continue:
+                            seal.fulfill()
+                        }
+                    })
+                
+                Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
+                    if !decisionHandlerHasBeenCalled {
+                        print("PRIMER SDK\nWARNING!\nThe 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.")
                     }
-                })
+                }
             }
         }
     }
@@ -225,22 +247,35 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
                 PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
-                    switch resumeDecision.type {
-                    case .fail(let message):
-                        var merchantErr: Error!
-                        if let message = message {
-                            let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                            merchantErr = err
-                        } else {
-                            merchantErr = NSError.emptyDescriptionError
+                    if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
+                        switch resumeDecisionType {
+                        case .fail(let message):
+                            var merchantErr: Error!
+                            if let message = message {
+                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                merchantErr = err
+                            } else {
+                                merchantErr = NSError.emptyDescriptionError
+                            }
+                            seal.reject(merchantErr)
+                            
+                        case .succeed:
+                            seal.fulfill(nil)
+                            
+                        case .continueWithNewClientToken:
+                            seal.fulfill(nil)
                         }
-                        seal.reject(merchantErr)
-
-                    case .succeed:
-                        seal.fulfill(nil)
-
-                    case .continueWithNewClientToken:
-                        seal.fulfill(nil)
+                        
+                    } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
+                        switch resumeDecisionType {
+                        case .continueWithNewClientToken:
+                            seal.fulfill(nil)
+                        case .complete:
+                            seal.fulfill(nil)
+                        }
+                        
+                    } else {
+                        precondition(false)
                     }
                 }
                 
@@ -275,33 +310,62 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     // Resume payment with Resume payment ID
     
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
-        
         return Promise { seal in
-            
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
                 
-                guard error == nil else {
-                    seal.reject(error!)
-                    return
-                }
-                
-                guard let status = paymentResponse?.status, status != .failed else {
-                    seal.reject(PrimerError.paymentFailed(
-                        description: "Failed to create/resume payment",
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                        diagnosticsId: UUID().uuidString))
-                    return
-                }
-                
-                if let paymentFailureReason = paymentResponse?.paymentFailureReason,
-                let paymentErrorCode = PrimerPaymentErrorCode(rawValue: paymentFailureReason),
-                   let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
+                if let error = error {
+                    if let paymentResponse {
+                        self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+                    }
+                    
                     seal.reject(error)
-                    return
+                    
+                } else if let paymentResponse = paymentResponse {
+                    if paymentResponse.id == nil {
+                        let err = PrimerError.paymentFailed(
+                            description: "Failed to resume payment",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                        
+                    } else if paymentResponse.status == .failed {
+                        let err = PrimerError.failedToProcessPayment(
+                            paymentId: paymentResponse.id ?? "nil",
+                            status: paymentResponse.status.rawValue,
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                        
+                    } else {
+                        seal.fulfill(paymentResponse)
+                    }
+                    
+                } else {
+                    let err = PrimerError.paymentFailed(
+                        description: "Failed to resume payment",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
                 }
-                                
-                seal.fulfill(paymentResponse)
             }
         }
     }
@@ -310,57 +374,90 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
                 PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
-                    switch resumeDecision.type {
-                    case .succeed:
-                        seal.fulfill(nil)
+                    if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
+                        switch resumeDecisionType {
+                        case .succeed:
+                            seal.fulfill(nil)
+                            
+                        case .continueWithNewClientToken(let newClientToken):
+                            let apiConfigurationModule = PrimerAPIConfigurationModule()
                         
-                    case .continueWithNewClientToken(let newClientToken):
-                        let apiConfigurationModule = PrimerAPIConfigurationModule()
-                        
-                        firstly {
-                            apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
-                        }
-                        .done {
-                            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                                ErrorHandler.handle(error: err)
-                                throw err
+                            firstly {
+                                apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
+                            }
+                            .done {
+                                guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                    ErrorHandler.handle(error: err)
+                                    throw err
+                                }
+                            
+                                seal.fulfill(decodedJWTToken)
+                            }
+                            .catch { err in
+                                seal.reject(err)
                             }
                             
-                            seal.fulfill(decodedJWTToken)
-                        }
-                        .catch { err in
-                            seal.reject(err)
+                        case .fail(let message):
+                            var merchantErr: Error!
+                            if let message = message {
+                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                merchantErr = err
+                            } else {
+                                merchantErr = NSError.emptyDescriptionError
+                            }
+                            seal.reject(merchantErr)
                         }
                         
-                    case .fail(let message):
-                        var merchantErr: Error!
-                        if let message = message {
-                            let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                            merchantErr = err
-                        } else {
-                            merchantErr = NSError.emptyDescriptionError
+                    } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
+                        switch resumeDecisionType {
+                        case .continueWithNewClientToken(let newClientToken):
+                            let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
+                            
+                            firstly {
+                                apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
+                            }
+                            .done {
+                                guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                    ErrorHandler.handle(error: err)
+                                    throw err
+                                }
+                                
+                                seal.fulfill(decodedJWTToken)
+                            }
+                            .catch { err in
+                                seal.reject(err)
+                            }
+                            
+                        case .complete:
+                            seal.fulfill(nil)
                         }
-                        seal.reject(merchantErr)
+                        
+                    } else {
+                        precondition(false)
                     }
                 }
-
+                
             } else {
-                guard let paymentMethodTokenString = paymentMethodTokenData.token else {
-                    let paymentMethodTokenError = PrimerError.invalidValue(key: "resumePaymentId", value: "Payment method token not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: paymentMethodTokenError)
-                    throw paymentMethodTokenError
+                guard let token = paymentMethodTokenData.token else {
+                    let err = PrimerError.invalidClientToken(
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
                 }
                 
                 firstly {
-                    self.handleCreatePaymentEvent(paymentMethodTokenString)
+                    self.handleCreatePaymentEvent(token)
                 }
                 .done { paymentResponse -> Void in
                     guard paymentResponse != nil else {
                         let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         throw err
                     }
-
+                    
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse!))
                     self.resumePaymentId = paymentResponse!.id
                     
@@ -397,7 +494,6 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-    #if canImport(Primer3DS)
                 guard let paymentMethodTokenData = self.paymentMethodTokenData else {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -407,26 +503,19 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                 }
                 
                 let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
-                    switch result {
-                    case .success(let resumeToken):
+                threeDSService.perform3DS(
+                    paymentMethodTokenData: paymentMethodTokenData,
+                    sdkDismissed: nil) { result in
                         DispatchQueue.main.async {
-                            seal.fulfill(resumeToken)
+                            switch result {
+                            case .success(let resumeToken):
+                                seal.fulfill(resumeToken)
+                                
+                            case .failure(let err):
+                                seal.reject(err)
+                            }
                         }
-                        
-                    case .failure(let err):
-                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: containerErr)
-                        seal.reject(containerErr)
                     }
-                }
-    #else
-                let err = PrimerError.failedToImport3DS(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-    #endif
                 
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -440,27 +529,59 @@ class CheckoutWithVaultedPaymentMethodViewModel {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
-                guard error == nil else {
-                    seal.reject(error!)
-                    return
-                }
                 
-                guard let status = paymentResponse?.status, status != .failed else {
-                    seal.reject(PrimerError.paymentFailed(
-                        description: "Failed to create/resume payment",
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                        diagnosticsId: UUID().uuidString))
-                    return
-                }
-                
-                if let paymentFailureReason = paymentResponse?.paymentFailureReason,
-                let paymentErrorCode = PrimerPaymentErrorCode(rawValue: paymentFailureReason),
-                   let error = PrimerError.simplifiedErrorFromErrorID(paymentErrorCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"]) {
+                if let error = error {
+                    if let paymentResponse {
+                        self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+                    }
+                    
                     seal.reject(error)
-                    return
+                    
+                } else if let paymentResponse = paymentResponse {
+                    if paymentResponse.id == nil {
+                        let err = PrimerError.paymentFailed(
+                            description: "Failed to create payment",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                        
+                    } else if paymentResponse.status == .failed {
+                        let err = PrimerError.failedToProcessPayment(
+                            paymentId: paymentResponse.id ?? "nil",
+                            status: paymentResponse.status.rawValue,
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                        
+                    } else {
+                        seal.fulfill(paymentResponse)
+                    }
+                    
+                } else {
+                    let err = PrimerError.paymentFailed(
+                        description: "Failed to create payment",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
                 }
-                                
-                seal.fulfill(paymentResponse)
             }
         }
     }

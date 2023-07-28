@@ -17,6 +17,7 @@ extension Response.Body {
         public var id: String?
         internal var isAlreadyVaulted: Bool?
         public var isVaulted: Bool?
+        public var paymentMethodType: String?
         public var paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData?
         public var paymentInstrumentType: PaymentInstrumentType
         public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
@@ -41,6 +42,7 @@ extension Response.Body {
             self.id = id
             self.isVaulted = isVaulted
             self.isAlreadyVaulted = isAlreadyVaulted
+            self.paymentMethodType = paymentMethodType
             self.paymentInstrumentType = paymentInstrumentType
             self.paymentInstrumentData = paymentInstrumentData
             self.threeDSecureAuthentication = threeDSecureAuthentication

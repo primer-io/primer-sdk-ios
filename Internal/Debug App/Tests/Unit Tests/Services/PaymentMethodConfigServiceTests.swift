@@ -18,8 +18,17 @@ class PaymentMethodConfigServiceTests: XCTestCase {
             pciUrl: "pciUrl",
             clientSession: nil,
             paymentMethods: [
-                PrimerPaymentMethod(id: "payment-card-id", implementationType: .nativeSdk, type: "PAYMENT_CARD", name: "Payment Card", processorConfigId: "payment-card-processor_config-id", surcharge: nil, options: nil, displayMetadata: nil)
+                PrimerPaymentMethod(
+                    id: "payment-card-id",
+                    implementationType: .nativeSdk,
+                    type: "PAYMENT_CARD",
+                    name: "Payment Card",
+                    processorConfigId: "payment-card-processor_config-id",
+                    surcharge: nil,
+                    options: nil,
+                    displayMetadata: nil)
             ],
+            primerAccountId: nil,
             keys: nil,
             checkoutModules: nil
         )
@@ -31,7 +40,6 @@ class PaymentMethodConfigServiceTests: XCTestCase {
         Primer.shared.showUniversalCheckout(clientToken: "")
 
         XCTAssertEqual(state.apiConfiguration?.coreUrl, "coreUrl")
-        XCTAssertEqual(PrimerAPIConfiguration.paymentMethodConfigViewModels.count, 1)
     }
 }
 

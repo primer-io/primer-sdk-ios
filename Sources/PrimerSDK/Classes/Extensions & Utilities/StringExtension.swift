@@ -147,6 +147,34 @@ internal extension String {
         return isValid
     }
     
+    var isValidExpiryDateWith4DigitYear: Bool {
+        // swiftlint:disable identifier_name
+        let _self = self.replacingOccurrences(of: "/", with: "")
+        // swiftlint:enable identifier_name
+        if _self.count != 6 {
+            return false
+        }
+        
+        if !_self.isNumeric {
+            return false
+        }
+        
+        guard let date = _self.toDate(withFormat: "MMyyyy") else { return false }
+        let isValid = date.endOfMonth > Date()
+        
+        if !isValid {
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Invalid expiry date",
+                    messageType: .validationFailed,
+                    severity: .error))
+            Analytics.Service.record(event: event)
+        }
+        
+        return isValid
+    }
+    
     func isTypingValidCVV(cardNetwork: CardNetwork?) -> Bool? {
         let maxDigits = cardNetwork?.validation?.code.length ?? 4
         if !isNumeric && !isEmpty { return false }
@@ -156,6 +184,10 @@ internal extension String {
     }
     
     func isValidCVV(cardNetwork: CardNetwork?) -> Bool {
+        if !self.isNumeric {
+            return false
+        }
+        
         if let numberOfDigits = cardNetwork?.validation?.code.length {
             return count == numberOfDigits
         }
@@ -296,11 +328,8 @@ internal extension String {
     mutating func capitalizeFirstLetter() {
         self = self.capitalizingFirstLetter()
     }
-}
-
-extension String {
     
-    internal func isValidPhoneNumberForPaymentMethodType(_ paymentMethodType: PrimerPaymentMethodType) -> Bool {
+    func isValidPhoneNumberForPaymentMethodType(_ paymentMethodType: PrimerPaymentMethodType) -> Bool {
         
         var regex = ""
         
@@ -313,6 +342,74 @@ extension String {
         
         let phoneNumber = NSPredicate(format: "SELF MATCHES %@", regex)
         return phoneNumber.evaluate(with: self)
+    }
+    
+    func validateExpiryDateString() throws {
+        if self.isEmpty {
+            let err = PrimerValidationError.invalidExpiryDate(
+                message: "Expiry date cannot be blank.",
+                userInfo: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ],
+                diagnosticsId: UUID().uuidString)
+            throw err
+            
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MM/yyyy"
+            
+            if let expiryDate = dateFormatter.date(from: self) {
+                if !expiryDate.isValidExpiryDate {
+                    let err = PrimerValidationError.invalidExpiryDate(
+                        message: "Card expiry date is not valid. Expiry date should not be less than a year in the past.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                    throw err
+                }
+                
+            } else {
+                let err = PrimerValidationError.invalidExpiryDate(
+                    message: "Card expiry date is not valid. Valid expiry date format is MM/YYYY.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                throw err
+            }
+        }
+    }
+    
+    func compareWithVersion(_ otherVersion: String) -> ComparisonResult {
+        let versionDelimiter = "."
+        
+        var versionComponents = self.components(separatedBy: versionDelimiter)
+        var otherVersionComponents = otherVersion.components(separatedBy: versionDelimiter)
+        
+        let zeroDiff = versionComponents.count - otherVersionComponents.count
+        
+        if zeroDiff == 0 {
+            return self.compare(otherVersion, options: .numeric)
+        } else {
+            let zeros = Array(repeating: "0", count: abs(zeroDiff))
+            if zeroDiff > 0 {
+                otherVersionComponents.append(contentsOf: zeros)
+            } else {
+                versionComponents.append(contentsOf: zeros)
+            }
+            return versionComponents.joined(separator: versionDelimiter)
+                .compare(otherVersionComponents.joined(separator: versionDelimiter), options: .numeric)
+        }
     }
 }
 

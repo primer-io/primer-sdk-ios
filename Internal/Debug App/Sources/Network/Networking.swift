@@ -91,6 +91,7 @@ class Networking {
         
         if let apiVersion = apiVersion {
             request.addValue(apiVersion.rawValue, forHTTPHeaderField: "x-api-version")
+            request.addValue("IOS", forHTTPHeaderField: "Client")
         }
                         
         msg += "Headers:\n\(request.allHTTPHeaderFields ?? [:])\n"
@@ -101,71 +102,71 @@ class Networking {
             let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments)
             msg += "Body:\n\(bodyJson ?? [:])\n"
         }
-        
+
         print(msg)
         msg = ""
         
         URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
-            msg += "RESPONSE\n"
-            msg += "URL: \(request.url?.absoluteString ?? "Invalid")\n"
-            
-            if err != nil {
-                msg += "Error: \(err!)\n"
-                print(msg)
-                completion(.failure(err!))
-                return
-            }
-
-            guard let httpResponse = response as? HTTPURLResponse else {
-                msg += "Error: Invalid response\n"
-                print(msg)
-                completion(.failure(NetworkError.invalidResponse))
-                return
-            }
-
-            if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
-                msg += "Status code: \(httpResponse.statusCode)\n"
-                if let data = data, let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                    msg += "Body:\n\(resJson)\n"
-                }
-                print(msg)
-                completion(.failure(NetworkError.invalidResponse))
+            DispatchQueue.main.async {
+                msg += "RESPONSE\n"
+                msg += "URL: \(request.url?.absoluteString ?? "Invalid")\n"
                 
+                if err != nil {
+                    msg += "Error: \(err!)\n"
+                    print(msg)
+                    completion(.failure(err!))
+                    return
+                }
+
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    msg += "Error: Invalid response\n"
+                    print(msg)
+                    completion(.failure(NetworkError.invalidResponse))
+                    return
+                }
+
+                if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
+                    msg += "Status code: \(httpResponse.statusCode)\n"
+                    if let data = data, let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
+                        msg += "Body:\n\(resJson)\n"
+                    }
+                    print(msg)
+                    completion(.failure(NetworkError.invalidResponse))
+                    
+                    guard let data = data else {
+                        print("No data")
+                        completion(.failure(NetworkError.invalidResponse))
+                        return
+                    }
+                    
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                        print("Response body: \(json)")
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                    return
+                }
+
                 guard let data = data else {
-                    print("No data")
+                    msg += "Status code: \(httpResponse.statusCode)\n"
+                    msg += "Body:\nNo data\n"
+                    print(msg)
                     completion(.failure(NetworkError.invalidResponse))
                     return
                 }
                 
-                do {
-                    let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                    print("Response body: \(json)")
-                } catch {
-                    print("Error: \(error)")
-                }
-                return
-            }
-            
-            print("Status code: \(httpResponse.statusCode)")
-
-            guard let data = data else {
                 msg += "Status code: \(httpResponse.statusCode)\n"
-                msg += "Body:\nNo data\n"
+                if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
+                    msg += "Body:\n\(resJson)\n"
+                } else {
+                    msg += "Body (String): \(String(describing: String(data: data, encoding: .utf8)))"
+                }
+                
                 print(msg)
-                completion(.failure(NetworkError.invalidResponse))
-                return
-            }
-            
-            msg += "Status code: \(httpResponse.statusCode)\n"
-            if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                msg += "Body:\n\(resJson)\n"
-            } else {
-                msg += "Body (String): \(String(describing: String(data: data, encoding: .utf8)))"
-            }
-            
-            print(msg)
 
-            completion(.success(data))
+                completion(.success(data))
+            }
         }).resume()
     }
     
@@ -208,18 +209,23 @@ class Networking {
             }
     }
     
-    static func createPayment(with paymentMethod: PrimerPaymentMethodTokenData,
-                              customDefinedApiKey: String? = nil,
-                              completion: @escaping (Payment.Response?, Error?) -> Void) {
-        guard let paymentMethodToken = paymentMethod.token else {
-            completion(nil, NetworkError.missingParams)
+    static func createPayment(
+        with paymentMethodTokenData: PrimerPaymentMethodTokenData,
+        customDefinedApiKey: String? = nil,
+        completion: @escaping (Payment.Response?, Error?) -> Void
+    ) {
+        let url = environment.baseUrl.appendingPathComponent("/api/payments/")
+        
+        guard let token = paymentMethodTokenData.token else {
+            let err = PrimerError.invalidClientToken(
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: UUID().uuidString)
+            completion(nil, err)
             return
         }
         
-        let url = environment.baseUrl.appendingPathComponent("/api/payments/")
-
-        let body = Payment.CreateRequest(token: paymentMethodToken)
-
+        let body = Payment.CreateRequest(token: token)
+        
         var bodyData: Data!
 
         do {
@@ -255,8 +261,9 @@ class Networking {
     static func requestClientSession(requestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil, completion: @escaping (String?, Error?) -> Void) {
         let url = environment.baseUrl.appendingPathComponent("/api/client-session")
 
-        let bodyData: Data!
-        
+        var bodyData: Data!
+        var headers: [String: String]?
+
         do {
             if let requestBodyJson = requestBody.dictionaryValue {
                 bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
@@ -271,12 +278,13 @@ class Networking {
         
         let networking = Networking()
         networking.request(
-            apiVersion: .v3,
+            apiVersion: .v2_2,
             url: url,
             method: .post,
             headers: nil,
             queryParameters: nil,
-            body: bodyData) { result in
+            body: bodyData
+        ) { result in
                 switch result {
                 case .success(let data):
                     do {

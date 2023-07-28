@@ -112,13 +112,29 @@ extension Response.Body {
             if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
                 viewModels.remove(at: klarnaViewModelIndex)
                 print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
+                
+                let event = Analytics.Event(
+                    eventType: .message,
+                    properties: MessageEventProperties(
+                        message: "PrimerKlarnaSDK has not been integrated",
+                        messageType: .error,
+                        severity: .error))
+                Analytics.Service.record(events: [event])
             }
 #endif
             
-#if !canImport(PrimerIPay88SDK)
+#if !canImport(PrimerIPay88MYSDK)
             if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
                 viewModels.remove(at: iPay88ViewModelIndex)
                 print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.\n\n")
+                
+                let event = Analytics.Event(
+                    eventType: .message,
+                    properties: MessageEventProperties(
+                        message: "PrimerIPay88MYSDK has not been integrated",
+                        messageType: .error,
+                        severity: .error))
+                Analytics.Service.record(events: [event])
             }
 #endif
             
@@ -200,6 +216,7 @@ extension Response.Body {
         let pciUrl: String?
         var clientSession: ClientSession.APIResponse?
         let paymentMethods: [PrimerPaymentMethod]?
+        let primerAccountId: String?
         let keys: ThreeDS.Keys?
         let checkoutModules: [Response.Body.Configuration.CheckoutModule]?
         
@@ -216,6 +233,7 @@ extension Response.Body {
             self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
             let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
             self.paymentMethods = throwables.compactMap({ $0.value })
+            self.primerAccountId = (try? container.decode(String?.self, forKey: .primerAccountId)) ?? nil
             self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
             let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
             self.checkoutModules = moduleThrowables.compactMap({ $0.value })
@@ -224,28 +242,23 @@ extension Response.Body {
                 for paymentMethodOption in options {
                     if let type = paymentMethodOption["type"] as? String {
                         if type == PrimerPaymentMethodType.paymentCard.rawValue,
-                            let networks = paymentMethodOption["networks"] as? [[String: Any]],
+                           let networks = paymentMethodOption["networks"] as? [[String: Any]],
                            !networks.isEmpty
                         {
                             for network in networks {
                                 guard network["type"] is String,
-                                network["surcharge"] is Int
+                                      network["surcharge"] is Int
                                 else { continue }
                                 
                             }
-                        } else if let surcharge = paymentMethodOption["surcharge"] as? Int,
-                                  let paymentMethod = self.paymentMethods?.filter({ $0.type == type }).first
-                        {
-                            paymentMethod.hasUnknownSurcharge = false
-                            paymentMethod.surcharge = surcharge
                         }
                     }
                 }
-            }
-            
-            if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
-                paymentMethod.hasUnknownSurcharge = true
-                paymentMethod.surcharge = nil
+                
+                if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
+                    paymentMethod.hasUnknownSurcharge = true
+                    paymentMethod.surcharge = nil
+                }
             }
         }
         
@@ -254,6 +267,7 @@ extension Response.Body {
             pciUrl: String?,
             clientSession: ClientSession.APIResponse?,
             paymentMethods: [PrimerPaymentMethod]?,
+            primerAccountId: String?,
             keys: ThreeDS.Keys?,
             checkoutModules: [PrimerAPIConfiguration.CheckoutModule]?
         ) {
@@ -261,6 +275,7 @@ extension Response.Body {
             self.pciUrl = pciUrl
             self.clientSession = clientSession
             self.paymentMethods = paymentMethods
+            self.primerAccountId = primerAccountId
             self.keys = keys
             self.checkoutModules = checkoutModules
         }

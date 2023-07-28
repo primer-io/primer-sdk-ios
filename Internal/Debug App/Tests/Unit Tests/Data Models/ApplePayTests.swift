@@ -58,7 +58,8 @@ class ApplePayTests: XCTestCase {
                             taxCode: nil),
                     ],
                     shippingAmount: nil),
-                customer: nil)
+                customer: nil,
+                testId: nil)
             
             var orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession)
             XCTAssert(orderItems.count == (clientSession.order?.lineItems?.count ?? 0) + 1, "Apple Pay order items should be \((clientSession.order?.lineItems?.count ?? 0) + 1)")
@@ -103,7 +104,8 @@ class ApplePayTests: XCTestCase {
                             taxCode: nil)
                     ],
                     shippingAmount: nil),
-                customer: nil)
+                customer: nil,
+                testId: nil)
             
             orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession)
             XCTAssert(orderItems.count == (clientSession.order?.lineItems?.count ?? 0) + 1, "Apple Pay order items should be \((clientSession.order?.lineItems?.count ?? 0) + 1)")
@@ -158,7 +160,8 @@ class ApplePayTests: XCTestCase {
                     fees: nil,
                     lineItems: nil,
                     shippingAmount: nil),
-                customer: nil)
+                customer: nil,
+                testId: nil)
             
             var orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession)
             XCTAssert(orderItems.count == (clientSession.order?.lineItems?.count ?? 0) + 1, "Apple Pay order items should be \((clientSession.order?.lineItems?.count ?? 0) + 1)")
@@ -183,12 +186,13 @@ class ApplePayTests: XCTestCase {
                     currencyCode: .GBP,
                     fees: [
                         ClientSession.Order.Fee(
-                            type: "surcharge",
+                            type: .surcharge,
                             amount: 19),
                     ],
                     lineItems: nil,
                     shippingAmount: nil),
-                customer: nil)
+                customer: nil,
+                testId: nil)
             
             orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession)
             XCTAssert(orderItems.count == 1, "Apple Pay order items should be 1, the summary order item")
@@ -227,7 +231,7 @@ class ApplePayTests: XCTestCase {
                 displayMetadata: nil))
         
         do {
-            var clientSession = ClientSession.APIResponse(
+            let clientSession = ClientSession.APIResponse(
                 clientSessionId: nil,
                 paymentMethod: nil,
                 order: ClientSession.Order(
@@ -277,7 +281,8 @@ class ApplePayTests: XCTestCase {
                             taxCode: nil),
                     ],
                     shippingAmount: nil),
-                customer: nil)
+                customer: nil,
+                testId: nil)
             
             let mockAppState = MockAppState(
                 clientToken: MockAppState.mockClientToken,
@@ -286,6 +291,7 @@ class ApplePayTests: XCTestCase {
                     pciUrl: "https://pci.url",
                     clientSession: clientSession,
                     paymentMethods: nil,
+                    primerAccountId: nil,
                     keys: nil,
                     checkoutModules: nil))
             

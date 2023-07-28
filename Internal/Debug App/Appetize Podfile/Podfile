@@ -9,14 +9,47 @@ target 'Debug App' do
 
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../../../'
-
+  pod 'Primer3DS', "~> 1.2.0"
+  pod 'PrimerKlarnaSDK'
+  # pod 'PrimerIPay88MYSDK' -> fails on arm64
+  
   target 'Debug App Tests' do
     inherit! :search_paths
     # Pods for testing
   end
-
-  target 'Debug App UITests' do
-    # Pods for testing
+  
+  post_install do |installer|
+    fix_code_signing(installer)
+    fix_linking(installer)
   end
+end
 
+
+def fix_code_signing(installer)
+  
+  installer.generated_projects.each do |project|
+    project.targets.each do |target|
+      if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
+        puts "Fixing code signing for #{target.name}..."
+        
+        target.build_configurations.each do |config|
+          config.build_settings["DEVELOPMENT_TEAM"] = "N8UN9TR5DY"
+        end
+      end
+    end
+  end
+end
+
+
+def fix_linking(installer)
+  
+  installer.generated_projects.each do |project|
+    project.targets.each do |target|
+      if target.name == "PrimerSDK"
+        target.build_configurations.each do |config|
+          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -framework "Primer3DS" -framework "PrimerKlarnaSDK"'
+        end
+      end
+    end
+  end
 end

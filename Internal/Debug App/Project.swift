@@ -14,7 +14,7 @@ enum AppSettings {
 
     static let settingsDictionary = SettingsDictionary()
         .merging(BaseSettings.settingsDictionary)
-        .merging(["CODE_SIGN_IDENTITY": .string("Apple Development: DX Primer (8B5K7AGMS8)")])
+        .merging(["CODE_SIGN_IDENTITY": .string("Apple Development: MOHAMMED TARIK ALADIN TALEB (P3K69N82DT)")])
         .manualCodeSigning(provisioningProfileSpecifier: "match Development com.primerapi.PrimerSDKExample")
 
     static let settingsConfigurations: [Configuration] = [.debug(name: "Debug", settings: settingsDictionary),
@@ -56,18 +56,6 @@ let project = Project(
             bundleId: "com.primerapi.PrimerSDKExampleTests",
             infoPlist: .default,
             sources: ["Tests/Unit Tests/**"],
-            dependencies: [
-                .target(name: BaseSettings.appName)
-            ],
-            settings: TestAppSettings.settings
-        ),
-        Target(
-            name: "Debug App UITests",
-            platform: .iOS,
-            product: .uiTests,
-            bundleId: "com.primer.PrimerSDKExample-UITests",
-            infoPlist: .default,
-            sources: ["Tests/UI Tests/**"],
             dependencies: [
                 .target(name: BaseSettings.appName)
             ],

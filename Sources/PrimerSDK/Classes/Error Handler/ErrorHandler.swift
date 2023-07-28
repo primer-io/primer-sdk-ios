@@ -23,26 +23,61 @@ internal class ErrorHandler {
 
         var event: Analytics.Event!
 
-        if let error = error as? PrimerErrorProtocol {
+        if let threeDsError = error as? Primer3DSErrorContainer {
+            var context: [String: Any] = [:]
+            
+            let continueInfo = threeDsError.continueInfo
+            context["initProtocolVersion"] = continueInfo.initProtocolVersion
+            context["threeDsSdkVersion"] = continueInfo.threeDsSdkVersion
+            context["threeDsSdkProvider"] = continueInfo.threeDsSdkProvider
+            context["threeDsWrapperSdkVersion"] = continueInfo.threeDsWrapperSdkVersion
+            
+            switch threeDsError {
+            case .primer3DSSdkError(_, _, _, let errorInfo):
+                context["reasonCode"] = errorInfo.errorId
+                context["reasonText"] = errorInfo.errorDescription
+                context["threeDsErrorCode"] = errorInfo.threeDsErrorCode
+                context["threeDsErrorComponent"] = errorInfo.threeDsErrorComponent
+                context["threeDsErrorDescription"] = errorInfo.errorDescription
+                context["threeDsErrorDetail"] = errorInfo.threeDsErrorDetail
+                context["threeDsSdkTranscationId"] = errorInfo.threeDsSdkTranscationId
+                context["protocolVersion"] = errorInfo.threeDsSErrorVersion
+            default:
+                break
+            }
+            
             event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
-                    message: error.localizedDescription,
+                    message: threeDsError.errorDescription,
                     messageType: .error,
                     severity: .error,
-                    diagnosticsId: error.diagnosticsId))
+                    diagnosticsId: threeDsError.diagnosticsId,
+                    context: context.isEmpty ? nil : context))
 
-            if let createdAt = error.info?["createdAt"]?.toDate() {
+            if let createdAt = (threeDsError.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
             }
             
+        } else if let primerError = error as? PrimerErrorProtocol {
+            event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: primerError.errorDescription,
+                    messageType: .error,
+                    severity: .error,
+                    diagnosticsId: primerError.diagnosticsId))
+
+            if let createdAt = (primerError.info?["createdAt"] as? String)?.toDate() {
+                event.createdAt = createdAt.millisecondsSince1970
+            }
 
         } else {
             let nsError = error as NSError
             var userInfo = nsError.userInfo
+            userInfo["description"] = nsError.description
             
-            if let nsLocalizedDescription = userInfo[NSLocalizedDescriptionKey] {
-                userInfo["description"] = nsLocalizedDescription
+            if let _ = userInfo[NSLocalizedDescriptionKey] {
                 userInfo[NSLocalizedDescriptionKey] = nil
             }
             

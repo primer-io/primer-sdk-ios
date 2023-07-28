@@ -21,11 +21,11 @@ internal class PrimerInternal {
     // MARK: - PROPERTIES
     
     internal var intent: PrimerSessionIntent?
-    internal private(set) var selectedPaymentMethodType: String?
+    internal var selectedPaymentMethodType: String?
     
     internal let sdkSessionId = UUID().uuidString
-    internal private(set) var checkoutSessionId: String?
-    internal private(set) var timingEventId: String?
+    internal var checkoutSessionId: String?
+    internal var timingEventId: String?
     internal var sdkIntegrationType: PrimerSDKIntegrationType?
     
     // MARK: - INITIALIZATION
@@ -39,41 +39,36 @@ internal class PrimerInternal {
     }
     
     fileprivate init() {
-#if canImport(Primer3DS)
-        print("Can import Primer3DS")
-#else
-        print("WARNING!\nFailed to import Primer3DS")
-#endif
-        
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
-        
-#if DEBUG
-        do {
-            try Analytics.Service.deleteEvents()
-        } catch {
-            fatalError(error.localizedDescription)
-        }
-#endif
     }
     
     internal func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+#if canImport(Primer3DS)
+        let is3DSHandled = Primer3DS.application(app, open: url, options: options)
+        
+        if is3DSHandled {
+            return true
+        }
+#endif
+        
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        if url.absoluteString == settings.paymentMethodOptions.urlScheme {
-            NotificationCenter.default.post(name: Notification.Name.urlSchemeRedirect, object: nil)
+        if let urlScheme = settings.paymentMethodOptions.urlScheme, url.absoluteString.contains(urlScheme) {
+            if url.absoluteString.contains("/cancel") {
+                NotificationCenter.default.post(name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
+            } else {
+                NotificationCenter.default.post(name: Notification.Name.receivedUrlSchemeRedirect, object: nil)
+            }
+            return true
         }
         
-#if canImport(Primer3DS)
-        return Primer3DS.application(app, open: url, options: options)
-#else
         return false
-#endif
     }
     
     internal func application(_ application: UIApplication,
-                            continue userActivity: NSUserActivity,
-                            restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+                              continue userActivity: NSUserActivity,
+                              restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
 #if canImport(Primer3DS)
         return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
 #else
@@ -93,26 +88,40 @@ internal class PrimerInternal {
      */
     
     internal func configure(settings: PrimerSettings? = nil) {
+        var events: [Analytics.Event] = []
+        
+#if canImport(Primer3DS)
+        print("Can import Primer3DS")
+#else
+        print("WARNING!\nFailed to import Primer3DS")
+        events.append(Analytics.Event(
+            eventType: .message,
+            properties: MessageEventProperties(
+                message: "Primer3DS has not been integrated",
+                messageType: .error,
+                severity: .error)))
+#endif
         let bundle = Bundle(identifier: "org.cocoapods.PrimerSDK") ?? Bundle(for: Primer.self)
         let bundleReleaseVersionNumber = bundle.infoDictionary?["CFBundleShortVersionString"] as? String
-        var event: Analytics.Event
-        if bundleReleaseVersionNumber != "2.16.5" {
-            event = Analytics.Event(
+        if bundleReleaseVersionNumber != "2.17.0-rc.9" {
+            events.append(Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
                     message: "Wrong release version number (\(bundleReleaseVersionNumber ?? "n/a")) detected.",
                     messageType: .error,
                     severity: .error))
+            )
         } else {
-            event = Analytics.Event(
+            events.append(Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
                     message: "Version number (\(bundleReleaseVersionNumber ?? "n/a")) detected correctly.",
                     messageType: .other,
-                    severity: .info))
+                    severity: .info)))
         }
         
-        Analytics.Service.record(event: event)
+        
+        Analytics.Service.record(events: events)
         
         DependencyContainer.register((settings ?? PrimerSettings()) as PrimerSettingsProtocol)
         
@@ -140,9 +149,7 @@ internal class PrimerInternal {
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
-                params: [
-                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
-                ]))
+                params: nil))
         
         let connectivityEvent = Analytics.Event(
             eventType: .networkConnectivity,
@@ -193,9 +200,7 @@ internal class PrimerInternal {
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
-                params: [
-                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
-                ]))
+                params: nil))
         
         let connectivityEvent = Analytics.Event(
             eventType: .networkConnectivity,
@@ -233,7 +238,6 @@ internal class PrimerInternal {
     }
     
     internal func showPaymentMethod(_ paymentMethodType: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
-        self.sdkIntegrationType = .dropIn
         self.intent = intent
         self.selectedPaymentMethodType = paymentMethodType
         
@@ -246,10 +250,7 @@ internal class PrimerInternal {
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: #function,
-                params: [
-                    "paymentMethodType": paymentMethodType,
-                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
-                ]))
+                params: nil))
         
         let connectivityEvent = Analytics.Event(
             eventType: .networkConnectivity,
@@ -285,7 +286,7 @@ internal class PrimerInternal {
             completion?(err)
         }
     }
-        
+    
     /** Dismisses any opened checkout sheet view. */
     internal func dismiss() {
         let sdkEvent = Analytics.Event(
@@ -302,13 +303,16 @@ internal class PrimerInternal {
         
         Analytics.Service.record(events: [sdkEvent, timingEvent])
         Analytics.Service.sync()
-                
+        
         self.checkoutSessionId = nil
         self.selectedPaymentMethodType = nil
         
         PrimerUIManager.dismissPrimerUI(animated: true) {
             PrimerDelegateProxy.primerDidDismiss()
-            PrimerAPIConfigurationModule.resetSession()
+            
+            if PrimerInternal.shared.sdkIntegrationType == .dropIn {
+                PrimerAPIConfigurationModule.resetSession()
+            }
         }
     }
 }

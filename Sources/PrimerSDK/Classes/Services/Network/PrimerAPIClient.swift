@@ -64,12 +64,17 @@ protocol PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void)
     func exchangePaymentMethodToken(
         clientToken: DecodedJWTToken,
-        paymentMethodId: String,
+        vaultedPaymentMethodId: String,
+        vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?,
         completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void)
     
     // 3DS
     func begin3DSAuth(clientToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void)
-    func continue3DSAuth(clientToken: DecodedJWTToken, threeDSTokenId: String, completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
+    func continue3DSAuth(
+        clientToken: DecodedJWTToken,
+        threeDSTokenId: String,
+        continueInfo: ThreeDS.ContinueInfo,
+        completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
     
     // Apaya
     func createApayaSession(
@@ -93,7 +98,7 @@ protocol PrimerAPIClientProtocol {
     
     func requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken, request: ClientSessionUpdateRequest, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
     
-    func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: Analytics.Service.Request?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
+    func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
     func fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void)
 
     
@@ -107,6 +112,11 @@ protocol PrimerAPIClientProtocol {
         paymentId: String,
         paymentResumeRequest: Request.Body.Payment.Resume,
         completion: @escaping (_ result: Result<Response.Body.Payment, Error>) -> Void)
+    
+    func testFinalizePolling(
+        clientToken: DecodedJWTToken,
+        testId: String,
+        completion: @escaping (_ result: Result<Void, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -136,8 +146,13 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func exchangePaymentMethodToken(clientToken: DecodedJWTToken, paymentMethodId: String, completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void) {
-        let endpoint = PrimerAPI.exchangePaymentMethodToken(clientToken: clientToken, paymentMethodId: paymentMethodId)
+    func exchangePaymentMethodToken(
+        clientToken: DecodedJWTToken,
+        vaultedPaymentMethodId: String,
+        vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?,
+        completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void
+    ) {
+        let endpoint = PrimerAPI.exchangePaymentMethodToken(clientToken: clientToken, vaultedPaymentMethodId: vaultedPaymentMethodId, vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
         networkService.request(endpoint) { (result: Result<PrimerPaymentMethodTokenData, Error>) in
             switch result {
             case .success(let paymentInstrument):
@@ -442,7 +457,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: Analytics.Service.Request?, completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void) {
+    func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?, completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void) {
         let endpoint = PrimerAPI.sendAnalyticsEvents(clientToken: clientToken, url: url, body: body)
         networkService.request(endpoint) { (result: Result<Analytics.Service.Response, Error>) in
             switch result {
@@ -498,6 +513,18 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let res):
                 completion(.success(res))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func testFinalizePolling(clientToken: DecodedJWTToken, testId: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        let endpoint = PrimerAPI.testFinalizePolling(clientToken: clientToken, testId: testId)
+        networkService.request(endpoint) { (result: Result<Response.Body.Payment, Error>) in
+            switch result {
+            case .success(_):
+                completion(.success(()))
             case .failure(let err):
                 completion(.failure(err))
             }

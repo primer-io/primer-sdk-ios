@@ -16,20 +16,15 @@ extension Networking {
         currency: Currency?,
         customerId: String,
         phoneNumber: String?,
-        countryCode: CountryCode?
+        countryCode: CountryCode?,
+        testParams: Test.Params?
     ) -> ClientSessionRequestBody {
-        
-        var metadataTestCaseDict: [String : Any]? = nil
-        if let metadataTestCaseStringValue = metadataTestCase {
-            metadataTestCaseDict = ["TEST_CASE": metadataTestCaseStringValue]
-        }
-        
         return ClientSessionRequestBody(
             customerId: customerId,
             orderId: "ios_order_id_\(String.randomString(length: 8))",
             currencyCode: currency,
             amount: nil,
-            metadata: metadataTestCaseDict,
+            metadata: nil,
             customer: ClientSessionRequestBody.Customer(
                 firstName: "John",
                 lastName: "Smith",
@@ -121,8 +116,10 @@ extension Networking {
                                 ]
                             ]
                         ]
-                    ]
-            )
+                    ],
+                paymentType: nil
+            ),
+            testParams: testParams
         )
     }
 }

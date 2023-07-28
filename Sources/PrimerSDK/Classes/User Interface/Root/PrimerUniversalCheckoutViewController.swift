@@ -79,6 +79,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         if let amountStr = universalCheckoutViewModel.amountStr {
             titleLabel = UILabel()
+            titleLabel.accessibilityIdentifier = "Amount Label"
             titleLabel.translatesAutoresizingMaskIntoConstraints = false
             titleLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
             titleLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
@@ -125,7 +126,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             
             let savedPaymentMethodLabel = UILabel()
             savedPaymentMethodLabel.translatesAutoresizingMaskIntoConstraints = false
-            savedPaymentMethodLabel.text = Strings.VaultPaymentMethodViewContent.savedPaymentMethod
+            savedPaymentMethodLabel.text = Strings.VaultPaymentMethodViewContent.savedPaymentMethodsTitle.localizedUppercase
             savedPaymentMethodLabel.adjustsFontSizeToFitWidth = true
             savedPaymentMethodLabel.minimumScaleFactor = 0.8
             savedPaymentMethodLabel.textColor = theme.text.subtitle.color
@@ -269,7 +270,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     @objc
     func payButtonTapped() {
         guard let selectedPaymentMethod = selectedPaymentMethod else { return }
-        guard let selectedPaymentMethodType = selectedPaymentMethod.paymentInstrumentData?.paymentMethodType else { return }
+        guard let selectedPaymentMethodType = selectedPaymentMethod.paymentMethodType else { return }
         guard let config = PrimerAPIConfiguration.paymentMethodConfigs?.filter({ $0.type == selectedPaymentMethodType }).first else {
             return
         }

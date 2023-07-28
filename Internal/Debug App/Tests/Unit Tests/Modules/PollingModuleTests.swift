@@ -84,6 +84,8 @@ class PollingModuleTests: XCTestCase {
         ]
         
         PollingModule.apiClient = mockApiClient
+        AppState.current.clientToken = nil
+        
         let pollingModule = PollingModule(url: URL(string: "https://random.url")!)
         
         firstly {
@@ -95,7 +97,7 @@ class PollingModuleTests: XCTestCase {
         }
         .catch { err in
             if let primerErr = err as? PrimerError, case .invalidClientToken = primerErr {
-                XCTAssert(true)
+
             } else {
                 XCTAssert(false, "Polling failed with error \(err.localizedDescription), but it should fail with error .invalidClientToken")
             }
