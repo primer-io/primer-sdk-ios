@@ -68,7 +68,7 @@ internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
 
-    weak var config: PrimerPaymentMethod!
+    var config: PrimerPaymentMethod!
     static var apiClient: PrimerAPIClientProtocol?
     
     // Events
