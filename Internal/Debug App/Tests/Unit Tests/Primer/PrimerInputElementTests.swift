@@ -22,12 +22,15 @@ final class PrimerInputElementTests: XCTestCase {
         XCTAssertTrue(sut.validate(value: "JoeBloggs", detectedValueType: nil))
         XCTAssertTrue(sut.validate(value: "Joe Bloggs Jr.", detectedValueType: nil))
        
-        let allTheLetters = CharacterSet.letters.characters().reduce("", { $0 + "\($1)"})
+        let allTheLetters = CharacterSet.letters.union(.whitespaces).characters().reduce("", { $0 + "\($1)"})
         XCTAssertTrue(sut.validate(value: allTheLetters, detectedValueType: nil))
         
+        // Test strings with numerics. Logic states these should fail
         XCTAssertFalse(sut.validate(value: "123", detectedValueType: nil))
         XCTAssertFalse(sut.validate(value: "Joe Bloggs the 3rd", detectedValueType: nil))
         
+        // Test non-string entry
+        XCTAssertFalse(sut.validate(value: 123, detectedValueType: nil))
     }
 
 }
