@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-platform :ios, '10.0'
+platform :ios, '13.1'
 
 target 'Debug App' do
   # Comment the next line if you don't want to use dynamic frameworks
@@ -7,9 +7,11 @@ target 'Debug App' do
   
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../../'
-  pod 'Primer3DS', "~> 1.2.1"
+  pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
   pod 'PrimerIPay88MYSDK'
+  pod 'PrimerNolPaySDK', :path => '../../../primer-nol-pay-sdk-ios'
+
   
   target 'Debug App Tests' do
     inherit! :search_paths

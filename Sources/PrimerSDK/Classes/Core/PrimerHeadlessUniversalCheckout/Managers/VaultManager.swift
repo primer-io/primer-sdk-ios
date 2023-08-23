@@ -14,7 +14,7 @@ extension PrimerHeadlessUniversalCheckout {
     
     public class VaultManager: NSObject {
         
-        internal(set) var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?
+        var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?
         private(set) var paymentMethodTokenData: PrimerPaymentMethodTokenData?
         private(set) var paymentCheckoutData: PrimerCheckoutData?
         private(set) var resumePaymentId: String?
@@ -136,7 +136,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public func deleteVaultedPaymentMethod(id: String, completion: @escaping (_ error: Error?) -> Void) {
-            guard let vaultedPaymentMethod = self.vaultedPaymentMethods?.first(where: { $0.id == id }) else {
+            guard let _ = self.vaultedPaymentMethods?.first(where: { $0.id == id }) else {
                 let err = PrimerError.invalidVaultedPaymentMethodId(
                     vaultedPaymentMethodId: id,
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
@@ -357,7 +357,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw err
             }
             
-            guard let customerId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id else {
+            guard let _ = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id else {
                 let err = PrimerError.invalidClientSessionValue(
                     name: "customer.id",
                     value: nil,
