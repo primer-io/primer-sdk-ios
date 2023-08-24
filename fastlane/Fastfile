@@ -91,7 +91,7 @@ platform :ios do
 
   end
 
-  desc 'This action builds the app and uplads it to Appetize'
+  desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
   lane :appetize_build_and_upload do
 
     common_pre_build_action
@@ -101,6 +101,9 @@ platform :ios do
       use_bundle_exec: true,
       podfile: "Internal/Debug App/Appetize Podfile/Podfile"
     )
+
+    # Run Unit Tests
+    run_tests
 
     # Build for appetize
 
