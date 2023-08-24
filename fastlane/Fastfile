@@ -33,7 +33,10 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :tests do
-    run_tests(workspace: app_workspace)
+    run_tests(workspace: app_workspace, 
+              scheme: "Debug App Tests",
+              destination: "platform=iOS Simulator,name=iPhone 14 Pro",
+              xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64")
   end
 
   lane :ui_tests do
@@ -98,8 +101,6 @@ platform :ios do
       use_bundle_exec: true,
       podfile: "Internal/Debug App/Appetize Podfile/Podfile"
     )
-
-    tests
 
     # Build for appetize
 

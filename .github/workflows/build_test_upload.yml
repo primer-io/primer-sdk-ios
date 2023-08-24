@@ -74,6 +74,10 @@ jobs:
       - name: Create the Xcode project and workspace
         run: sh ./Internal/Debug\ App/tuist-generate.sh is_ci
 
+      - name: Run Unit Tests
+        run: |
+          bundle exec fastlane tests
+
       - name: Distribute app to Appetize 🚀
         run: |
           bundle exec fastlane appetize_build_and_upload
