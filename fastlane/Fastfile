@@ -103,7 +103,7 @@ platform :ios do
     )
 
     # Run Unit Tests
-    run_tests
+    tests
 
     # Build for appetize
 
