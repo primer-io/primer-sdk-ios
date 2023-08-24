@@ -99,6 +99,8 @@ platform :ios do
       podfile: "Internal/Debug App/Appetize Podfile/Podfile"
     )
 
+    tests
+
     # Build for appetize
 
     build_app(
