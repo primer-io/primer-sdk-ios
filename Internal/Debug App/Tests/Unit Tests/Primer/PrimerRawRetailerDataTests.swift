@@ -33,7 +33,7 @@ class PrimerRawRetailerDataTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
     }
     
     func test_valid_raw_retail_data() throws {
@@ -54,7 +54,7 @@ class PrimerRawRetailerDataTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
     }
 
 }

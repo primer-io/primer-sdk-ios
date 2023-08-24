@@ -36,7 +36,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
     }
     
     // We are making the below tests as well to make sure that the standards validation of simple card data passes
@@ -62,7 +62,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
     }
     
     func test_invalid_cardnumber_in_raw_card_data() throws {
@@ -87,7 +87,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -102,7 +102,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -117,7 +117,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -132,7 +132,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
     }
     
     func test_invalid_expiry_date_in_raw_card_data() throws {
@@ -156,7 +156,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -171,7 +171,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
@@ -186,7 +186,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -201,7 +201,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -216,7 +216,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -231,7 +231,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -246,7 +246,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -261,7 +261,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -276,7 +276,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -291,7 +291,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
@@ -306,7 +306,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
@@ -321,7 +321,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -336,7 +336,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
@@ -351,7 +351,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
         exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
@@ -366,7 +366,7 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: expectationTimeout)
+        wait(for: [exp], timeout: Self.expectationTimeout)
     }
 }
 
