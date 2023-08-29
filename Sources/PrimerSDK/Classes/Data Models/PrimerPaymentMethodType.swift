@@ -60,6 +60,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case xenditOvo              = "XENDIT_OVO"
     case xenditRetailOutlets    = "XENDIT_RETAIL_OUTLETS"
     case xfersPayNow            = "XFERS_PAYNOW"
+    case nolPay                 = "NOL_PAY"
     
     var isEnabled: Bool {
         switch self {
@@ -146,6 +147,8 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
             
         case .xfersPayNow:
             return "XFERS"
+        case .nolPay:
+            return "NOL_PAY" // TODO: (NOL) Check if this is correct string, in android it is UNKNOWN?
         }
     }
     

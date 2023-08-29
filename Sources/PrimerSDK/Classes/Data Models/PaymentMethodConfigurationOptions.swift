@@ -28,6 +28,7 @@ struct CardOptions: PaymentMethodOptions {
 struct MerchantOptions: PaymentMethodOptions {
     let merchantId: String
     let merchantAccountId: String
+    let merchantAppId: String?
 }
 
 extension PrimerTestPaymentMethodSessionInfo.FlowDecision {

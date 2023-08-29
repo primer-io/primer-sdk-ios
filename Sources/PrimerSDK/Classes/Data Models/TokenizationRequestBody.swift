@@ -42,6 +42,8 @@ extension Request.Body {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
             }  else if let paymentInstrument = self.paymentInstrument as? CardOffSessionPaymentInstrument {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
+            } else if let paymentInstrument = self.paymentInstrument as? NolPaymentInstrument {
+                try container.encode(paymentInstrument, forKey: .paymentInstrument)
             } else {
                 let err = InternalError.invalidValue(key: "PaymentInstrument", value: self.paymentInstrument, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)

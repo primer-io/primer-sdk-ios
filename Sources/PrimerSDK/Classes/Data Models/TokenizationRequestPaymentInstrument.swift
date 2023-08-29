@@ -120,6 +120,14 @@ struct PayPalPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo?
 }
 
+struct NolPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
+    let paymentMethodType: String
+    let skdId: String
+    let regionCode: String
+    let mobileNumber: String
+    let cardNumber: String
+}
+
 /**
  Enum exposing available payment methods
   
@@ -142,7 +150,9 @@ struct PayPalPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
  `KLARNA_CUSTOMER_TOKEN`: Used for vaulted Klarna payment methods.
  
  `KLARNA`:
-  
+ 
+ `NOL_PAY`:
+ 
  `unknown`: Unknown payment instrument..
  
  - Author:
@@ -166,6 +176,7 @@ public enum PaymentInstrumentType: String, Codable {
     case klarnaCustomerToken    = "KLARNA_CUSTOMER_TOKEN"
     case apayaToken             = "APAYA"
     case hoolah                 = "HOOLAH"
+    case nol                    = "NOL_PAY"
     case unknown                = "UNKNOWN"
 
     public init(from decoder: Decoder) throws {

@@ -156,6 +156,9 @@ extension Response.Body.Tokenization {
             public let platform: String?
             public let redirectionUrl: String?
         }
+        
+        // TODO: (NOL) add something for nol?
+//        public let appId: String?
     }
 }
 

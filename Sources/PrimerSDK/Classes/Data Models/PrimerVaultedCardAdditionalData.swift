@@ -18,4 +18,14 @@ public class PrimerVaultedCardAdditionalData: PrimerVaultedPaymentMethodAddition
     }
 }
 
+public class PrimerNolSdkData: PrimerVaultedPaymentMethodAdditionalData {
+    
+    let sdkId: String
+    
+    public init(sdkId: String) {
+        self.sdkId = sdkId
+    }
+}
+
+
 #endif

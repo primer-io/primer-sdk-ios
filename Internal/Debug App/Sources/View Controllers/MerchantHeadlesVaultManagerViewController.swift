@@ -160,6 +160,8 @@ extension MerchantHeadlesVaultManagerViewController: UITableViewDataSource, UITa
 //            completion: { errors in
 //
 //        })
+        
+        // TODO: (NOL) Use same mechanism to send sdkId
         self.vaultedManager?.startPaymentFlow(vaultedPaymentMethodId: vaultedPaymentMethod.id, vaultedPaymentMethodAdditionalData: vaultedCardAdditionalData)
     }
 }

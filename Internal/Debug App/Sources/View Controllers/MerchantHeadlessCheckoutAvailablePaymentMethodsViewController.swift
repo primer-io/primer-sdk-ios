@@ -183,6 +183,8 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
         } else if paymentMethodType == "XENDIT_OVO" {
             let vc = MerchantHeadlessCheckoutRawPhoneNumberDataViewController.instantiate(paymentMethodType: paymentMethodType)
             self.navigationController?.pushViewController(vc, animated: true)
+        } else if paymentMethodType == "NOL_PAY" {
+            // TODO: (NOL) Push NolVC here?
         } else {
             redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
             try? redirectManager?.showPaymentMethod(intent: .checkout)
