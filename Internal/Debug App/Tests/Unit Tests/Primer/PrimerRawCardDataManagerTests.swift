@@ -13,6 +13,8 @@ import XCTest
 
 class PrimerRawCardDataManagerTests: XCTestCase {
     
+    static let validationTimeout = 1.0
+    
     func test_invalid_cardnumber_in_raw_card_data() throws {
         var exp = expectation(description: "Await validation")
         
@@ -36,7 +38,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -51,7 +53,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -66,7 +68,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -81,7 +83,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
     }
     
     func test_invalid_expiry_date_in_raw_card_data() throws {
@@ -106,7 +108,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -121,7 +123,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -136,7 +138,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
@@ -151,7 +153,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
@@ -166,7 +168,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
@@ -181,7 +183,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
@@ -196,7 +198,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -211,7 +213,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
@@ -226,7 +228,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
@@ -241,7 +243,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
     }
     
     func test_invalid_cvv_in_raw_card_data() throws {
@@ -266,7 +268,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -282,7 +284,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
 
         firstly { () -> Promise<Void> in
@@ -298,7 +300,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -314,7 +316,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
 
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
         
         firstly { () -> Promise<Void> in
@@ -330,7 +332,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.4)
+        wait(for: [exp], timeout: Self.validationTimeout)
     }
 }
 

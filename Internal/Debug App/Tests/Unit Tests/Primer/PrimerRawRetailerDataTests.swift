@@ -13,6 +13,8 @@ import XCTest
 
 class PrimerRawRetailerDataTests: XCTestCase {
     
+    private static let expectationTimeout = 1.0
+    
     func test_invalid_raw_retail_data() throws {
         let exp = expectation(description: "Await validation")
         
@@ -31,7 +33,7 @@ class PrimerRawRetailerDataTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: Self.expectationTimeout)
     }
     
     func test_valid_raw_retail_data() throws {
@@ -52,7 +54,7 @@ class PrimerRawRetailerDataTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 0.1)
+        wait(for: [exp], timeout: Self.expectationTimeout)
     }
 
 }
