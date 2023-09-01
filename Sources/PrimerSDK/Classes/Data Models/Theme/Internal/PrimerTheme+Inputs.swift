@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -34,4 +34,4 @@ internal class InputTheme {
     }
 }
 
-#endif
+

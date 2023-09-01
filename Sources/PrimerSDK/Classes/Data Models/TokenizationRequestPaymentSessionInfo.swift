@@ -5,7 +5,7 @@
 //  Created by Evangelos on 29/8/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -65,4 +65,4 @@ struct IPay88SessionInfo: OffSessionPaymentSessionInfo {
     var redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
 }
 
-#endif
+

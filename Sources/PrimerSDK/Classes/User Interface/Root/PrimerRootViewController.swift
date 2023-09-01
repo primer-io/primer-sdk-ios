@@ -5,7 +5,7 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -448,4 +448,4 @@ extension PrimerRootViewController: UIGestureRecognizerDelegate {
     }
 }
 
-#endif
+

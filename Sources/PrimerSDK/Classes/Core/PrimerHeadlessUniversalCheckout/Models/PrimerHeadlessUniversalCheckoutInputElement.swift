@@ -5,7 +5,7 @@
 //  Created by Evangelos on 4/10/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -193,5 +193,5 @@ public protocol PrimerHeadlessUniversalCheckoutInputElement {
     var isValid: Bool { get }
 }
 
-#endif
+
 

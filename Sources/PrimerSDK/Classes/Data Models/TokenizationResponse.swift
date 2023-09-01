@@ -5,7 +5,7 @@
 //  Created by Evangelos on 2/9/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -166,4 +166,4 @@ extension Response.Body.Tokenization {
     }
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 24/01/2021.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -18,4 +18,4 @@ public enum PrimerFormType: String, CaseIterable {
     case cardForm
 }
 
-#endif
+

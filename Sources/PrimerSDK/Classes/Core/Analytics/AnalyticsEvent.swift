@@ -5,7 +5,7 @@
 //  Created by Evangelos on 13/12/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -594,4 +594,4 @@ struct SDKProperties: Codable {
     }
 }
 
-#endif
+

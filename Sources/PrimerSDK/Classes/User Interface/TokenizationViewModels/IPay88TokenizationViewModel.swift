@@ -5,7 +5,7 @@
 //  Created by Evangelos on 12/12/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -631,5 +631,5 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
 }
 #endif
 
-#endif
+
 

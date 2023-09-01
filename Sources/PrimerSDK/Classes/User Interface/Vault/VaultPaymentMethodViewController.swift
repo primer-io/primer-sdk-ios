@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -346,4 +346,4 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
     }
 }
 
-#endif
+

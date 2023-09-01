@@ -5,7 +5,7 @@
 //  Created by Evangelos on 12/7/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import SafariServices
@@ -933,4 +933,4 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
     }
 }
 
-#endif
+

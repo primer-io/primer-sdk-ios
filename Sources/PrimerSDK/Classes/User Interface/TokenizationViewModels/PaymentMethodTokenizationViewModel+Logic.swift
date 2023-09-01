@@ -5,7 +5,7 @@
 //  Created by Evangelos on 6/5/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -598,4 +598,4 @@ extension PaymentMethodTokenizationViewModel {
     }
 }
 
-#endif
+

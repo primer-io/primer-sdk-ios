@@ -1,6 +1,6 @@
 // MARK: Light
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -39,4 +39,4 @@ public struct PrimerColors {
     static let blurredBackground = UIColor.black.withAlphaComponent(0.4)
 }
 
-#endif
+

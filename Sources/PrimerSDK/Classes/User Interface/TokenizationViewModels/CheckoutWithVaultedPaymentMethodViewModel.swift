@@ -5,7 +5,7 @@
 //  Created by Evangelos on 9/5/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -595,4 +595,4 @@ class CheckoutWithVaultedPaymentMethodViewModel {
     }
 }
 
-#endif
+

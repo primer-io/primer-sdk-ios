@@ -6,7 +6,7 @@
 //
 
 
-#if canImport(UIKit)
+
 
 protocol UserInterfaceModuleProtocol {
     
@@ -1076,4 +1076,4 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
 }
 
-#endif
+

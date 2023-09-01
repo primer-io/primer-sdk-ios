@@ -5,7 +5,7 @@
 //  Created by Evangelos on 26/9/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -182,4 +182,4 @@ public enum PrimerUserInterfaceStyle: CaseIterable, Hashable {
     case dark, light
 }
 
-#endif
+

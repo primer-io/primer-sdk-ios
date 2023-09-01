@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 30/7/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -65,4 +65,4 @@ class PrimerLoadingViewController: PrimerViewController {
     
 }
 
-#endif
+

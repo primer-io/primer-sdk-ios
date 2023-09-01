@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -30,4 +30,4 @@ public final class PrimerCityFieldView: PrimerSimpleCardFormTextFieldView {
     }
 }
 
-#endif
+

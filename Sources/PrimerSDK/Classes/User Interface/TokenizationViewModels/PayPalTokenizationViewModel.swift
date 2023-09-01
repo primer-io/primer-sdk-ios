@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 import AuthenticationServices
@@ -447,4 +447,4 @@ extension PayPalTokenizationViewModel: ASWebAuthenticationPresentationContextPro
     
 }
 
-#endif
+

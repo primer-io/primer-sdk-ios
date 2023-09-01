@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 10/02/2021.
 //
 
-#if canImport(UIKit)
+
 
 @propertyWrapper
 struct Dependency<T> {
@@ -75,4 +75,4 @@ final internal class DependencyContainer {
     }
 }
 
-#endif
+

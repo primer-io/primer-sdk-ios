@@ -6,7 +6,7 @@
 //
 
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -47,4 +47,4 @@ public protocol PrimerInputElementDelegate: AnyObject {
     @objc optional func inputElementDidDetectType(_ sender: PrimerHeadlessUniversalCheckoutInputElement, type: Any?)
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 4/10/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -73,4 +73,4 @@ class PaymentMethodsGroupView: PrimerView {
     
 }
 
-#endif
+

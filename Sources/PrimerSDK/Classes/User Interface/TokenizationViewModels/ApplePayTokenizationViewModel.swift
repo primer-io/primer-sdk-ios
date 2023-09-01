@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 import PassKit
@@ -525,4 +525,4 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
     }
 }
 
-#endif
+

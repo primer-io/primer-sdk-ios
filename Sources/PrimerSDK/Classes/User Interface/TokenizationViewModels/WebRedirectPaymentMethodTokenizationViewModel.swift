@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 11/10/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import SafariServices
@@ -442,4 +442,4 @@ struct QRCodePollingURLs: Decodable {
     let complete: String?
 }
 
-#endif
+

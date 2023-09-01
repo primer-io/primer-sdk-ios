@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -97,4 +97,4 @@ internal class TokenizationService: TokenizationServiceProtocol {
     }
 }
 
-#endif
+
