@@ -31,18 +31,6 @@ let swiftFilesWithCopyright = sdkEditedFiles.filter {
 //    warn("In Danger we don't include copyright headers, found them in: \(files)")
 //}
 
-// MARK: - Check UIKit import
-
-let swiftFilesNotContainingUIKitImport = sdkEditedFiles.filter {
-    $0.fileType == .swift &&
-    danger.utils.readFile($0).contains("#if canImport(UIKit)") == false
-}
-
-if swiftFilesNotContainingUIKitImport.count > 0 {
-    let files = swiftFilesNotContainingUIKitImport.joined(separator: ", ")
-    warn("Please check your 'canImport(UIKit)` in the following files: \(files)")
-}
-
 // MARK: - PR Contains Tests
 
 // Raw check based on created / updated files containing `import XCTest`
