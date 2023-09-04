@@ -268,9 +268,9 @@ class HUC_TokenizationViewModelTests: XCTestCase {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.validateClientTokenResult = (SuccessResponse(success: true), nil)
         mockApiClient.pollingResults = [
-            (PollingResponse(status: .pending, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil),
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
             (nil, NSError(domain: "dummy-network-error", code: 100)),
-            (PollingResponse(status: .complete, id: "resume_token", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil)
+            (PollingResponse(status: .complete, id: "resume_token", source: "src"), nil)
         ]
         mockApiClient.tokenizePaymentMethodResult = (Mocks.primerPaymentMethodTokenData, nil)
         mockApiClient.paymentResult = (Mocks.payment, nil)
