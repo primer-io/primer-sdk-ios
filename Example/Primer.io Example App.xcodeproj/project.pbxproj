@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -53,12 +53,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		02116605A1E96D499433F96E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
 		02D7561E1398C0ADA1737ED2 /* Apaya.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Apaya.swift; sourceTree = "<group>"; };
 		039407D5086E203DC6045382 /* MerchantPaymentMethodsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantPaymentMethodsViewController.swift; sourceTree = "<group>"; };
-		061680615A2680D7006D2296 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Main.strings; sourceTree = "<group>"; };
 		10CE43D6D07D278B7431E0D1 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		119AA56B32F9BFF97938AE77 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Main.strings; sourceTree = "<group>"; };
 		13CFE3F4F0D4B417BDAA109D /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		1AB8F174C9D72956737CC940 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		2018ECEDEE1D0C848A393150 /* Data+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extensions.swift"; sourceTree = "<group>"; };
@@ -66,12 +63,10 @@
 		2662E0CE510C3212B9037378 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		28965FF292CFF410748FF15C /* AppViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewController.swift; sourceTree = "<group>"; };
 		28B261F55C75DE0DB5DF2C3C /* Range+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Range+Extensions.swift"; sourceTree = "<group>"; };
-		320EE7E21F373BD8C077FBBC /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Main.strings; sourceTree = "<group>"; };
 		39DD62F1AD3F03BC44AEEF8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3B895D0AE659486A279559F2 /* ResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultViewController.swift; sourceTree = "<group>"; };
 		3FF8534423FE4ADE4A315A52 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		452748E90EBD80612FD2E6CB /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		4666040BB5D6BF28AB3F57CC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		4858286961084341956FC1F2 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		5045F38B730A4AC5FE545197 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		5B439157087213F04185D775 /* TuistBundle+ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TuistBundle+ExampleApp.swift"; sourceTree = "<group>"; };
@@ -79,29 +74,19 @@
 		61736E883839051F238D0B7C /* Pods_ExampleApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ExampleApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6222C7E77BA22DBC75094324 /* ExampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		64118C93BE15FD048E4EFB1E /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		730164333FC785669092EE1E /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Main.strings; sourceTree = "<group>"; };
 		74481977C9EE00F007C984B3 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		7CAFAB8D553A9360131F9F95 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		815E13DF90C85853901783E3 /* PaymentMethodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodCell.swift; sourceTree = "<group>"; };
 		829B5CA0FB0D9EF6F00D1E0D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		839379D0C84CF7AEF32FB96D /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Main.strings; sourceTree = "<group>"; };
 		8616E0741807A190E2AC796F /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		86895CB65FCBDDDF370D292E /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Main.strings"; sourceTree = "<group>"; };
 		8A62986D61EEE5D42C9132A5 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		8C45B6BE7CA1D9FE29912095 /* ViewController+PrimerUIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+PrimerUIHelpers.swift"; sourceTree = "<group>"; };
-		8F8AB2B91D2605B0EC0C8869 /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Main.strings; sourceTree = "<group>"; };
 		9139804620888B356ED74D93 /* MerchantCardFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantCardFormViewController.swift; sourceTree = "<group>"; };
 		93D316B32A9C3B1C95C78FEC /* TuistStrings+ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TuistStrings+ExampleApp.swift"; sourceTree = "<group>"; };
 		95D1DBF3E923B8CAA1D162B8 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
-		97B066A94C2978B3032DBED2 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
 		9969FC4E42A6647BA6B07F71 /* Networking+Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Networking+Models.swift"; sourceTree = "<group>"; };
-		9A68CDB8B3D8362DAB22DA47 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main.strings; sourceTree = "<group>"; };
-		9BF15595735E0C97657182EC /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
-		9CD5E3FEBABB907B4FC80D54 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Main.strings; sourceTree = "<group>"; };
 		AA1E843B55C39F28069F12D1 /* CreateClientToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateClientToken.swift; sourceTree = "<group>"; };
-		C438D00D26D6264FE4CDED30 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Main.strings; sourceTree = "<group>"; };
 		C44FF350AF51BCDA872AAD47 /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		C7955A158F6845A1E27C55DF /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Main.strings; sourceTree = "<group>"; };
 		CD6D218E3E6AE91CB3F38FFC /* ExampleApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ExampleApp.entitlements; sourceTree = "<group>"; };
 		D1E00B2EF0C45894BB80BB55 /* TuistAssets+ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TuistAssets+ExampleApp.swift"; sourceTree = "<group>"; };
 		D62798AF0D2CE127ECD257A4 /* HUCResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUCResultViewController.swift; sourceTree = "<group>"; };
@@ -190,7 +175,6 @@
 				FAA24E189186004B15F9D4C7 /* Pods-ExampleApp.debug.xcconfig */,
 				E33C8A9FA1ADB699685BEFCB /* Pods-ExampleApp.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -323,8 +307,6 @@
 			isa = PBXProject;
 			attributes = {
 				ORGANIZATIONNAME = "Primer API Ltd";
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = E5A40EB5B8D7EA735B2F82EC /* Build configuration list for PBXProject "Primer.io Example App" */;
 			compatibilityVersion = "Xcode 13.0";
@@ -475,22 +457,7 @@
 		546E4570624BC37A1FFBD185 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				9A68CDB8B3D8362DAB22DA47 /* ar */,
 				39DD62F1AD3F03BC44AEEF8C /* Base */,
-				839379D0C84CF7AEF32FB96D /* da */,
-				97B066A94C2978B3032DBED2 /* de */,
-				730164333FC785669092EE1E /* el */,
-				4666040BB5D6BF28AB3F57CC /* en */,
-				9BF15595735E0C97657182EC /* es */,
-				02116605A1E96D499433F96E /* fr */,
-				C7955A158F6845A1E27C55DF /* it */,
-				8F8AB2B91D2605B0EC0C8869 /* ka */,
-				9CD5E3FEBABB907B4FC80D54 /* nb */,
-				C438D00D26D6264FE4CDED30 /* nl */,
-				119AA56B32F9BFF97938AE77 /* pl */,
-				86895CB65FCBDDDF370D292E /* pt-PT */,
-				320EE7E21F373BD8C077FBBC /* sv */,
-				061680615A2680D7006D2296 /* tr */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";

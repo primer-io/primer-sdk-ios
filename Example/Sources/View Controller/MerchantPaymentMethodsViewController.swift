@@ -114,7 +114,7 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let paymentMethod = self.availablePaymentMethods[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "MerchantPaymentMethodCell", for: indexPath) as! MerchantPaymentMethodCell
-        cell.configure(paymentMethodType: paymentMethod, clientToken: clientToken)
+        cell.configure(paymentMethodType: paymentMethod)
         return cell
     }
     
@@ -124,9 +124,11 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            // JN TODO
-//            PrimerHeadlessUniversalCheckout.makeButton(for: "PAYPAL")
-//            PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
+            guard let clientToken = clientToken else {
+                print("\n\n🚨 No client session token available - failed to open payment method")
+                return
+            }
+            Primer.shared.showPaymentMethod(paymentMethodType, intent: .checkout, clientToken: clientToken)
         }
     }
 }
@@ -244,44 +246,10 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
 }
 
 class MerchantPaymentMethodCell: UITableViewCell {
-    
-    private var paymentMethodType: String?
-    private var clientToken: String?
-    
     @IBOutlet weak var paymentMethodLabel: UILabel!
-    @IBOutlet weak var buttonContainerView: UIView!
     
-    func configure(paymentMethodType: String, clientToken: String?) {
-        self.paymentMethodType = paymentMethodType
-        self.clientToken = clientToken
-        
+    func configure(paymentMethodType: String) {
         paymentMethodLabel.text = paymentMethodType
-        
-        let button = UIButton()
-        button.setTitle("Open", for: .normal)
-        button.addTarget(self, action: #selector(didTap), for: .touchUpInside)
-        button.setTitleColor(.blue, for: .normal)
-        buttonContainerView.addSubview(button)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        buttonContainerView.addConstraints([
-            button.trailingAnchor.constraint(equalTo: buttonContainerView.trailingAnchor),
-            button.topAnchor.constraint(equalTo: buttonContainerView.topAnchor),
-            button.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor)
-        ])
-        buttonContainerView.updateConstraints()
+  
     }
-    
-    @objc func didTap(sender: UIButton!) {
-        guard let paymentMethodType = paymentMethodType else {
-            print("\n\n🚨 No payment method set - failed to open payment method")
-            return
-        }
-        guard let clientToken = clientToken else {
-            print("\n\n🚨 No client session token available - failed to open payment method")
-            return
-        }
-        
-        Primer.shared.showPaymentMethod(paymentMethodType, intent: .checkout, clientToken: clientToken)
-    }
-    
 }
