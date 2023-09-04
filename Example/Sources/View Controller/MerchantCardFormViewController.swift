@@ -25,7 +25,7 @@ class MerchantCardFormViewController: UIViewController {
     var paymentButton: UIButton!
     var paymentId: String?
     
-    var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager?
+    var cardComponentsManager: PrimerHeadlessUniversalCheckout.CardComponentsManager?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,10 +57,10 @@ class MerchantCardFormViewController: UIViewController {
 
         PrimerHeadlessUniversalCheckout.current.delegate = self
 
-        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardFormUIManager()
+        self.cardComponentsManager = PrimerHeadlessUniversalCheckout.CardComponentsManager()
 
-        var tmpInputElements: [PrimerInputElement] = []
-        for inputElementType in self.cardFormUIManager!.requiredInputElementTypes {
+        var tmpInputElements: [PrimerInputTextField] = []
+        for inputElementType in self.cardComponentsManager!.requiredInputElementTypes {
             let textField = PrimerInputTextField(type: inputElementType, frame: .zero)
             textField.borderStyle = .line
             textField.layer.borderColor = UIColor.black.cgColor
@@ -86,12 +86,13 @@ class MerchantCardFormViewController: UIViewController {
             tmpInputElements.append(textField)
         }
 
-        self.cardFormUIManager?.inputElements = tmpInputElements
+        self.cardComponentsManager?.inputElements = tmpInputElements
     }
 
     @objc
     func paymentButtonTapped() {
-        self.cardFormUIManager?.tokenize()
+        // JN TODO
+//        self.cardComponentsManager?.tokenize()
     }
 }
 
@@ -182,15 +183,15 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
 
 extension MerchantCardFormViewController: PrimerInputElementDelegate {
     
-    func inputElementDidFocus(_ sender: PrimerInputElement) {
+    func inputElementDidFocus(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
 
     }
 
-    func inputElementDidBlur(_ sender: PrimerInputElement) {
+    func inputElementDidBlur(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
 
     }
 
-    func inputElementValueDidChange(_ sender: PrimerInputElement) {
+    func inputElementValueDidChange(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
 
     }
 }

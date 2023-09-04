@@ -76,7 +76,7 @@ class MerchantPaymentMethodsViewController: UIViewController {
                         self.activityIndicator?.removeFromSuperview()
                         self.activityIndicator = nil
                         
-                        self.availablePaymentMethods = pms ?? []
+                        self.availablePaymentMethods = (pms ?? []).map { $0.paymentMethodType }
                         self.tableView.reloadData()
                     }
                 })
@@ -120,8 +120,9 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            PrimerHeadlessUniversalCheckout.makeButton(for: "PAYPAL")
-            PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
+            // JN TODO
+//            PrimerHeadlessUniversalCheckout.makeButton(for: "PAYPAL")
+//            PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
         }
     }
 }
@@ -246,15 +247,16 @@ class MerchantPaymentMethodCell: UITableViewCell {
     func configure(paymentMethodType: String) {
         paymentMethodLabel.text = paymentMethodType
         
-        if let button = PrimerHeadlessUniversalCheckout.makeButton(for: paymentMethodType) {
-            buttonContainerView.addSubview(button)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            button.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-            button.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-            button.topAnchor.constraint(equalTo: topAnchor).isActive = true
-            button.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-            button.isUserInteractionEnabled = false
-        }
+        // JN TODO
+//        if let button = PrimerHeadlessUniversalCheckout.makeButton(for: paymentMethodType) {
+//            buttonContainerView.addSubview(button)
+//            button.translatesAutoresizingMaskIntoConstraints = false
+//            button.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+//            button.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+//            button.topAnchor.constraint(equalTo: topAnchor).isActive = true
+//            button.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+//            button.isUserInteractionEnabled = false
+//        }
     }
     
 }

@@ -75,8 +75,7 @@ class MerchantHUCRawCardDataViewController: UIViewController {
                         
                         self.rawCardData = PrimerCardData(
                             cardNumber: "42",
-                            expiryMonth: "99",
-                            expiryYear: "2025",
+                            expiryDate: "99/2025",
                             cvv: "1",
                             cardholderName: "John Smith")
                         primerRawDataManager.rawData = self.rawCardData!
@@ -85,7 +84,7 @@ class MerchantHUCRawCardDataViewController: UIViewController {
                             self.rawCardData!.cardNumber = "0"
                             
                             Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                                self.rawCardData!.expiryMonth = "04"
+                                self.rawCardData!.expiryDate = "04/2025"
 
                                 Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
                                     self.rawCardData!.cvv = "123"
@@ -225,7 +224,7 @@ extension MerchantHUCRawCardDataViewController: PrimerHeadlessUniversalCheckoutD
     }
 }
 
-extension MerchantHUCRawCardDataViewController: PrimerRawDataManagerDelegate {
+extension MerchantHUCRawCardDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
     
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
         print(errors)

@@ -19,7 +19,7 @@ class MerchantAssetsViewController: UIViewController {
             self.collectionView.reloadData()
         }
     }
-    var assetType: PrimerAsset.ImageType = .logo {
+    var assetType: PrimerPaymentMethodAsset.ImageType = .logo {
         didSet {
             self.reloadImages()
         }
@@ -40,10 +40,11 @@ class MerchantAssetsViewController: UIViewController {
     
     func reloadImages() {
         var tmpAssets: [(name: String, image: UIImage?)] = []
-        let brands = PrimerAsset.Brand.allCases
-        for brand in brands {
-            tmpAssets.append((brand.rawValue, PrimerHeadlessUniversalCheckout.getAsset(for: brand, assetType: self.assetType)))
-        }
+        // JN TODO
+//        let brands = PrimerPaymentMethodAsset.Brand.allCases
+//        for brand in brands {
+//            tmpAssets.append((brand.rawValue, PrimerHeadlessUniversalCheckout.getAsset(for: brand, assetType: self.assetType)))
+//        }
         self.assets = tmpAssets
     }
     
