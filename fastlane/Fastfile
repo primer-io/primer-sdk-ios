@@ -33,7 +33,10 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :tests do
-    run_tests(workspace: app_workspace)
+    run_tests(workspace: app_workspace, 
+              scheme: "Debug App Tests",
+              destination: "platform=iOS Simulator,name=iPhone 14 Pro",
+              xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64")
   end
 
   lane :ui_tests do
@@ -88,7 +91,7 @@ platform :ios do
 
   end
 
-  desc 'This action builds the app and uplads it to Appetize'
+  desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
   lane :appetize_build_and_upload do
 
     common_pre_build_action
@@ -98,6 +101,9 @@ platform :ios do
       use_bundle_exec: true,
       podfile: "Internal/Debug App/Appetize Podfile/Podfile"
     )
+
+    # Run Unit Tests
+    tests
 
     # Build for appetize
 

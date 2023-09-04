@@ -335,7 +335,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
                                         XCTAssert(true, "Failed with error \(err.localizedDescription)")
                                         
                                     } else if let updatedVaultedPaymentMethods = updatedVaultedPaymentMethods {
-                                        XCTAssert(!updatedVaultedPaymentMethods.isEmpty, "Failed to delete vaulted payment method")
+                                        XCTAssert(updatedVaultedPaymentMethods.isEmpty, "Failed to delete vaulted payment method")
+                                        exp.fulfill()
                                     } else {
                                         XCTAssert(true, "Should have received vaulted payment methods or error")
                                     }
@@ -349,10 +350,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                 } else {
                     XCTAssert(true, "Should have received vaulted payment methods or error")
                 }
-                
-                exp.fulfill()
             }
-
         }
         
         wait(for: [exp], timeout: 30)
