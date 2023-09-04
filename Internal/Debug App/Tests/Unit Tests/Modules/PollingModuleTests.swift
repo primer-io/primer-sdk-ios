@@ -20,9 +20,9 @@ class PollingModuleTests: XCTestCase {
         
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.pollingResults = [
-            (PollingResponse(status: .pending, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil),
-            (PollingResponse(status: .pending, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil),
-            (PollingResponse(status: .complete, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil)
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
+            (PollingResponse(status: .complete, id: "0", source: "src"), nil)
         ]
         
         PollingModule.apiClient = mockApiClient
@@ -50,9 +50,9 @@ class PollingModuleTests: XCTestCase {
         
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.pollingResults = [
-            (PollingResponse(status: .pending, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil),
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
             (nil, NSError(domain: "dummy-network-error", code: 100)),
-            (PollingResponse(status: .complete, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil)
+            (PollingResponse(status: .complete, id: "0", source: "src"), nil)
         ]
         
         PollingModule.apiClient = mockApiClient
@@ -78,9 +78,9 @@ class PollingModuleTests: XCTestCase {
                 
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.pollingResults = [
-            (PollingResponse(status: .pending, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil),
-            (PollingResponse(status: .pending, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil),
-            (PollingResponse(status: .complete, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil)
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
+            (PollingResponse(status: .complete, id: "0", source: "src"), nil)
         ]
         
         PollingModule.apiClient = mockApiClient
