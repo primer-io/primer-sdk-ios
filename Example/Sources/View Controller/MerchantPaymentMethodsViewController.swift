@@ -35,7 +35,9 @@ class MerchantPaymentMethodsViewController: UIViewController {
     var phoneNumber: String?
     private var paymentId: String?
     
-
+    private var clientToken: String?
+    
+    
     @IBOutlet weak var tableView: UITableView!
     var activityIndicator: UIActivityIndicatorView?
     
@@ -70,13 +72,15 @@ class MerchantPaymentMethodsViewController: UIViewController {
                     )
                 )
                 
+                self.clientToken = clientToken
+                
                 PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: settings, completion: { (pms, err) in
                     DispatchQueue.main.async {
                         self.activityIndicator?.stopAnimating()
                         self.activityIndicator?.removeFromSuperview()
                         self.activityIndicator = nil
                         
-                        self.availablePaymentMethods = pms ?? []
+                        self.availablePaymentMethods = (pms ?? []).map { $0.paymentMethodType }
                         self.tableView.reloadData()
                     }
                 })
@@ -120,8 +124,11 @@ extension MerchantPaymentMethodsViewController: UITableViewDataSource, UITableVi
             let mcfvc = MerchantCardFormViewController()
             self.navigationController?.pushViewController(mcfvc, animated: true)
         } else {
-            PrimerHeadlessUniversalCheckout.makeButton(for: "PAYPAL")
-            PrimerHeadlessUniversalCheckout.current.showPaymentMethod(paymentMethodType)
+            guard let clientToken = clientToken else {
+                print("\n\n🚨 No client session token available - failed to open payment method")
+                return
+            }
+            Primer.shared.showPaymentMethod(paymentMethodType, intent: .checkout, clientToken: clientToken)
         }
     }
 }
@@ -239,22 +246,10 @@ extension MerchantPaymentMethodsViewController: PrimerHeadlessUniversalCheckoutD
 }
 
 class MerchantPaymentMethodCell: UITableViewCell {
-    
     @IBOutlet weak var paymentMethodLabel: UILabel!
-    @IBOutlet weak var buttonContainerView: UIView!
     
     func configure(paymentMethodType: String) {
         paymentMethodLabel.text = paymentMethodType
-        
-        if let button = PrimerHeadlessUniversalCheckout.makeButton(for: paymentMethodType) {
-            buttonContainerView.addSubview(button)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            button.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-            button.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-            button.topAnchor.constraint(equalTo: topAnchor).isActive = true
-            button.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-            button.isUserInteractionEnabled = false
-        }
+  
     }
-    
 }

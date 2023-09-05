@@ -99,10 +99,13 @@
 "lOm-z1-x2I.text" = "Actions:";
 
 /* Class = "UISegmentedControl"; mct-co-cWD.segmentTitles[0] = "Logo"; ObjectID = "mct-co-cWD"; */
-"mct-co-cWD.segmentTitles[0]" = "Logo";
+"mct-co-cWD.segmentTitles[0]" = "Colored";
 
 /* Class = "UISegmentedControl"; mct-co-cWD.segmentTitles[1] = "Icon"; ObjectID = "mct-co-cWD"; */
-"mct-co-cWD.segmentTitles[1]" = "Icon";
+"mct-co-cWD.segmentTitles[1]" = "Light";
+
+/* Class = "UISegmentedControl"; mct-co-cWD.segmentTitles[1] = "Icon"; ObjectID = "mct-co-cWD"; */
+"mct-co-cWD.segmentTitles[2]" = "Dark";
 
 /* Class = "UITextField"; placeholder = "Phone number"; ObjectID = "qPf-Sa-EQI"; */
 "qPf-Sa-EQI.placeholder" = "Phone number";

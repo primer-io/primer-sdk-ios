@@ -25,7 +25,7 @@ class MerchantCardFormViewController: UIViewController {
     var paymentButton: UIButton!
     var paymentId: String?
     
-    var cardFormUIManager: PrimerHeadlessUniversalCheckout.CardFormUIManager?
+    var cardComponentsManager: PrimerHeadlessUniversalCheckout.CardComponentsManager?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,11 +56,11 @@ class MerchantCardFormViewController: UIViewController {
         self.stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
 
         PrimerHeadlessUniversalCheckout.current.delegate = self
+        self.cardComponentsManager = PrimerHeadlessUniversalCheckout.CardComponentsManager()
+        cardComponentsManager?.delegate = self
 
-        self.cardFormUIManager = try! PrimerHeadlessUniversalCheckout.CardFormUIManager()
-
-        var tmpInputElements: [PrimerInputElement] = []
-        for inputElementType in self.cardFormUIManager!.requiredInputElementTypes {
+        var tmpInputElements: [PrimerInputTextField] = []
+        for inputElementType in self.cardComponentsManager!.requiredInputElementTypes {
             let textField = PrimerInputTextField(type: inputElementType, frame: .zero)
             textField.borderStyle = .line
             textField.layer.borderColor = UIColor.black.cgColor
@@ -86,35 +86,35 @@ class MerchantCardFormViewController: UIViewController {
             tmpInputElements.append(textField)
         }
 
-        self.cardFormUIManager?.inputElements = tmpInputElements
+        self.cardComponentsManager?.inputElements = tmpInputElements
     }
 
     @objc
     func paymentButtonTapped() {
-        self.cardFormUIManager?.tokenize()
+        self.cardComponentsManager?.submit()
     }
 }
 
 extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegate {
 
     func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
-        print("🤯🤯🤯 \(#function)")
+        print("✅ \(#function)")
     }
     
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
-        print("🤯🤯🤯 \(#function)\npaymentMethodTypes: \(paymentMethodTypes)")
+        print("✅ \(#function)\npaymentMethodTypes: \(paymentMethodTypes)")
     }
     
     func primerHeadlessUniversalCheckoutTokenizationStarted(paymentMethodType: String) {
-        print("🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
+        print("ℹ️ \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
     
     func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
-        print("🤯🤯🤯 \(#function)\npaymentMethodType: \(paymentMethodType)")
+        print("✅ \(#function)\npaymentMethodType: \(paymentMethodType)")
     }
-    
+        
     func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
-        print("🤯🤯🤯 \(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
+        print("✅ \(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
         
         Networking.createPayment(with: paymentMethodTokenData) { (res, err) in
             DispatchQueue.main.async {
@@ -146,7 +146,7 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
     }
     
     func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
-        print("🤯🤯🤯 \(#function)\nresumeToken: \(resumeToken)")
+        print("ℹ️ \(#function)\nresumeToken: \(resumeToken)")
         
         Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
             if let err = err {
@@ -158,39 +158,57 @@ extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutDelegat
     }
     
     func primerHeadlessUniversalCheckoutDidFail(withError err: Error) {
-        print("🤯🤯🤯 \(#function)\nerror: \(err)")
+        print("🚨 \(#function)\nerror: \(err)")
     }
     
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
-        print("🤯🤯🤯 \(#function)\ndata: \(data)")
+        print("✅ \(#function)\ndata: \(data)")
+        
+        let message = """
+PaymentId: \(data.payment?.id ?? "unknown")
+OrderId: \(data.payment?.orderId ?? "unknown")
+"""
+        
+        let alert = UIAlertController(title: "Success", message: message, preferredStyle: .alert);
+        alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel) { _ in alert.dismiss(animated: true) })
+        self.navigationController?.present(alert, animated: true)
     }
     
     func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
-        print("🤯🤯🤯 \(#function)")
+        print("ℹ️ \(#function)")
     }
     
     func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
-        print("🤯🤯🤯 \(#function)\nclientSession: \(clientSession)")
+        print("ℹ️ \(#function)\nclientSession: \(clientSession)")
     }
     
     func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
-        print("🤯🤯🤯 \(#function)\ndata: \(data)")
+        print("ℹ️ \(#function)\ndata: \(data)")
         decisionHandler(.continuePaymentCreation())
     }
- 
+
 }
 
 extension MerchantCardFormViewController: PrimerInputElementDelegate {
     
-    func inputElementDidFocus(_ sender: PrimerInputElement) {
+    func inputElementDidFocus(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
 
     }
 
-    func inputElementDidBlur(_ sender: PrimerInputElement) {
+    func inputElementDidBlur(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
 
     }
 
-    func inputElementValueDidChange(_ sender: PrimerInputElement) {
+    func inputElementValueDidChange(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
 
     }
+}
+
+extension MerchantCardFormViewController: PrimerHeadlessUniversalCheckoutCardComponentsManagerDelegate {
+    func cardComponentsManager(_ cardComponentsManager: PrimerSDK.PrimerHeadlessUniversalCheckout.CardComponentsManager, isCardFormValid: Bool) {
+
+        print("ℹ️ \(#function)\nisCardFormValid: \(isCardFormValid)")
+    }
+    
+    
 }
