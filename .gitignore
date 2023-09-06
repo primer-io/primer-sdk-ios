@@ -28,22 +28,9 @@ Temporary Items
 xcuserdata/
 
 ### Xcode Patch ###
-Example/Primer.io Example App.xcodeproj/xcshareddata
-Example/Primer.io Example App.xcworkspace
 !*.xcodeproj/xcshareddata/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
-
-### Projects and Workspaces ###
-Internal/Debug App/*.xcodeproj
-Internal/Debug App/*.xcworkspace
-
-### Tuist derived files ###
-graph.dot
-Internal/Debug App/Derived
-
-### Tuist version files ###
-.tuist-bin
 
 ## Obj-C/Swift specific
 *.hmap

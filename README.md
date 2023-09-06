@@ -137,8 +137,6 @@ The payment’s data will be returned on `primerDidCompleteCheckoutWithData(:)`.
 
 [Contributing doc](Contributing.md)
 
-## Example app:
-
 ### Make sure you've got CocoaPods installed
 
 - At the root of this repo, open your Terminal
