@@ -211,14 +211,16 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         test3DSScenarioTextField.inputView = test3DSScenarioPicker
         
         switch environment {
+        case .dev:
+            environmentSegmentedControl.selectedSegmentIndex = 0
         case .staging:
-            environmentSegmentedControl.selectedSegmentIndex = 0
-        case .sandbox:
             environmentSegmentedControl.selectedSegmentIndex = 1
-        case .production:
+        case .sandbox:
             environmentSegmentedControl.selectedSegmentIndex = 2
+        case .production:
+            environmentSegmentedControl.selectedSegmentIndex = 3
         default:
-            environmentSegmentedControl.selectedSegmentIndex = 0
+            environmentSegmentedControl.selectedSegmentIndex = 1
         }
         
         self.apiKeyTextField.text = customDefinedApiKey
@@ -380,10 +382,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBAction func environmentSegmentedControlValuewChanged(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            environment = .staging
+            environment = .dev
         case 1:
-            environment = .sandbox
+            environment = .staging
         case 2:
+            environment = .sandbox
+        case 3:
             environment = .production
         default:
             fatalError()

@@ -164,6 +164,7 @@
                                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="ekZ-3s-TxK">
                                                         <rect key="frame" x="0.0" y="53.5" width="374" height="32"/>
                                                         <segments>
+                                                            <segment title="Dev"/>
                                                             <segment title="Staging"/>
                                                             <segment title="Sandbox"/>
                                                             <segment title="Production"/>
