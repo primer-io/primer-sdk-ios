@@ -12,8 +12,4 @@ target 'ExampleApp' do
   pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
 
-  target 'ExampleAppTests' do
-      inherit! :search_paths
-  end 
-
 end
