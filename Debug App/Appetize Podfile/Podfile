@@ -8,7 +8,7 @@ target 'Debug App' do
   use_frameworks!
 
   # Pods for Debug App
-  pod 'PrimerSDK', :path => '../../../'
+  pod 'PrimerSDK', :path => '../../'
   pod 'Primer3DS', "~> 2.0.0"
   pod 'PrimerKlarnaSDK'
   # pod 'PrimerIPay88MYSDK' -> fails on arm64
