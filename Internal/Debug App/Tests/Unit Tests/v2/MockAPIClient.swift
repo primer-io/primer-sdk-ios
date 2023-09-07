@@ -768,9 +768,9 @@ extension MockPrimerAPIClient {
                     type: "Visa",
                     expiryDate: "03/2030")))
         static let mockPollingResults: [(PollingResponse?, Error?)] = [
-            (PollingResponse(status: .pending, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil),
-            (PollingResponse(status: .pending, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil),
-            (PollingResponse(status: .complete, id: "0", source: "src", urls: PollingURLs(status: "", redirect: "", complete: "")), nil)
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
+            (PollingResponse(status: .complete, id: "0", source: "src"), nil)
         ]
         static let mockTokenizePaymentMethod = PrimerPaymentMethodTokenData(
             analyticsId: "mock_analytics_id",

@@ -164,7 +164,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 ClientSessionRequestBody.Order.LineItem(
                     itemId: "fancy-shoes-\(String.randomString(length: 4))",
                     description: "Fancy Shoes",
-                    amount: 11000,
+                    amount: 4500,
                     quantity: 1,
                     discountAmount: nil,
                     taxAmount: nil),

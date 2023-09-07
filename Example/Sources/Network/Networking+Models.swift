@@ -103,15 +103,15 @@ extension Networking {
                         ],
                         "PAYMENT_CARD": [
                             "networks": [
-                                "VISA": [
-                                    "surcharge": [
-                                        "amount": 109
-                                    ]
+                                "VISA": [:
+//                                    "surcharge": [
+//                                        "amount": 109
+//                                    ]
                                 ],
-                                "MASTERCARD": [
-                                    "surcharge": [
-                                        "amount": 129
-                                    ]
+                                "MASTERCARD": [:
+//                                    "surcharge": [
+//                                        "amount": 129
+//                                    ]
                                 ]
                             ]
                         ]

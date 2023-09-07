@@ -159,7 +159,7 @@ public enum PrimerInputElementType: Int {
             return CharacterSet(charactersIn: "0123456789")
             
         case .cardholderName:
-            return CharacterSet.letters
+            return CharacterSet.letters.union(.whitespaces)
             
         default:
             return nil
