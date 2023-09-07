@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 // MARK: - PRIMER SETTINGS
 
@@ -208,4 +208,4 @@ public class PrimerThreeDsOptions: PrimerThreeDsOptionsProtocol, Codable {
     }
 }
 
-#endif
+

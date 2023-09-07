@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 class PostalCode {
     
@@ -17,4 +17,4 @@ class PostalCode {
     }    
 }
 
-#endif
+

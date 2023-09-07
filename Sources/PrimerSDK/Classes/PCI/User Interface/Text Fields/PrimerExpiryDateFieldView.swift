@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 5/7/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -92,4 +92,4 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
     }    
 }
 
-#endif
+

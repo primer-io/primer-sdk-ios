@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -67,4 +67,4 @@ internal extension VaultPaymentMethodView {
     }
 }
 
-#endif
+

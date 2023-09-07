@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -151,4 +151,4 @@ internal class PrimerCustomStyleTextField: UITextField {
 
 }
 
-#endif
+

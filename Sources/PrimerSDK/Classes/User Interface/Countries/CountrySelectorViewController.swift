@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -78,4 +78,4 @@ internal class CountrySelectorViewController: PrimerFormViewController {
     }
 }
 
-#endif
+

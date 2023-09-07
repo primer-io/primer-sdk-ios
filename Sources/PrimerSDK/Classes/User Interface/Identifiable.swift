@@ -5,7 +5,7 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -19,4 +19,4 @@ protocol Identifiable where Self: UIView {
     var id: String? { get set }
 }
 
-#endif
+

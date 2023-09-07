@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 public enum MerchantCapability {
     case capability3DS
@@ -38,4 +38,4 @@ struct ApplePayTokenPaymentDataHeader: Codable {
     let transactionId: String
 }
 
-#endif
+

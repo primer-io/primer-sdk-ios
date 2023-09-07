@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -77,4 +77,4 @@ internal class VaultService: VaultServiceProtocol {
     }
 }
 
-#endif
+

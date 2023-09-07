@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 27/09/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -258,4 +258,4 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
     }
 }
 
-#endif
+

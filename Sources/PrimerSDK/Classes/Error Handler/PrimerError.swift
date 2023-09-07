@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 16/3/21.
 //
 
-#if canImport(UIKit)
+
 
 // swiftlint:disable file_length
 import Foundation
@@ -956,4 +956,4 @@ internal extension Error {
     }
 }
 
-#endif
+

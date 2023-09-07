@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 26/01/2021.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -240,4 +240,4 @@ internal class CardButton: PrimerButton {
     }
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Evangelos on 11/11/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -45,4 +45,4 @@ internal class PrimerInputViewController: PrimerFormViewController {
 
 }
 
-#endif
+

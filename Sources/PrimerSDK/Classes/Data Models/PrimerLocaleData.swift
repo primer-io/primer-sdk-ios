@@ -5,7 +5,7 @@
 //  Created by Evangelos on 2/9/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -27,4 +27,4 @@ public struct PrimerLocaleData: Codable {
     }
 }
 
-#endif
+

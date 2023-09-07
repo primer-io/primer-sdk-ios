@@ -5,7 +5,7 @@
 //  Created by Evangelos on 15/7/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -248,5 +248,5 @@ internal class ImageManager {
     }
 }
 
-#endif
+
 

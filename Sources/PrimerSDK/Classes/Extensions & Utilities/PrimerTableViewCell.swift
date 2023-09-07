@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 23/01/2021.
 //
 
-#if canImport(UIKit)
+
 import UIKit
 
 internal class PrimerTableViewCell: UITableViewCell {
@@ -35,4 +35,4 @@ internal class PrimerTableViewCell: UITableViewCell {
     }
     
 }
-#endif
+

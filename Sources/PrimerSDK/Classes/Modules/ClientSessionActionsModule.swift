@@ -5,7 +5,7 @@
 //  Created by Evangelos on 11/7/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -118,4 +118,4 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
     }
 }
 
-#endif
+

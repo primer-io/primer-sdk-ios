@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -83,4 +83,4 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
     
 }
 
-#endif
+

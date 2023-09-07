@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 15/9/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -16,4 +16,4 @@ public protocol ResumeHandlerProtocol {
     func handleSuccess()
 }
 
-#endif
+

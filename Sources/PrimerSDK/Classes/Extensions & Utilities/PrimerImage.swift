@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 20/10/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -71,4 +71,4 @@ internal enum PrimerImage {
     }
 }
 
-#endif
+

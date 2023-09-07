@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 6/8/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -41,4 +41,4 @@ internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol {
     }
 }
 
-#endif
+

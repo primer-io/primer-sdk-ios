@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import PassKit
@@ -523,4 +523,4 @@ public enum PaymentNetwork: String {
     
 }
 
-#endif
+

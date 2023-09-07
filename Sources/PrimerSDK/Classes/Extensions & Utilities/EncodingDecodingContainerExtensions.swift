@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 4/3/23.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -144,4 +144,4 @@ extension UnkeyedDecodingContainer {
     }
 }
 
-#endif
+
