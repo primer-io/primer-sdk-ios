@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
 		05FAC0D894B841B52E9E0A9A /* PrimerRawCardDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */; };
 		088961D00784BD296EA9745C /* EncodingDecodingContainerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D8E1E91CA11EC6831ADEE4 /* EncodingDecodingContainerTests.swift */; };
 		0BB8BB3F9A6AC28A0C107DC8 /* UIStackViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F15C1E46C70C3D73B50F31 /* UIStackViewExtensions.swift */; };
@@ -29,7 +30,6 @@
 		3D112A8DE292D097E651FCDB /* IPay88Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */; };
 		3EE90DEB1DB7BE9270FB17BF /* URLSessionStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4E35F809D3FAF4354D5B05 /* URLSessionStackTests.swift */; };
 		3FD160A4D951EA772ADF4E25 /* DecodedClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DC3341BDBB9AEDBE8D6DD /* DecodedClientToken.swift */; };
-		4A5041F7D2ECB42BCE8AA754 /* TuistAssets+DebugApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCF2D6B53311B7A115476B21 /* TuistAssets+DebugApp.swift */; };
 		4BD7794627267B40E9E10686 /* PrimerCheckoutTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9813BD518AC7C3F442B5075 /* PrimerCheckoutTheme.swift */; };
 		53E3182FFC4E5F05D866CFAE /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DE1E4FB055B60582977315 /* Networking.swift */; };
 		55B913E0B3159BBBE8C9D189 /* MerchantHeadlessCheckoutCardComponentsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6F4C147EC39B2735117041 /* MerchantHeadlessCheckoutCardComponentsViewController.swift */; };
@@ -61,7 +61,6 @@
 		A61B9E61EDCE18D34438352E /* PayPalConfirmBillingAgreementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D122A0B71B707C2110AB7F5 /* PayPalConfirmBillingAgreementTests.swift */; };
 		A7C46717FEC8D8FB47A2252E /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9543C140C2D099E34E95FDE /* Pods_Debug_App.framework */; };
 		AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229849A3DBE0858EE90673B9 /* CreateClientToken.swift */; };
-		AC651E341CCDECC77D5DFFEF /* TuistStrings+DebugApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77F0FE47DB60DE806B7B1D47 /* TuistStrings+DebugApp.swift */; };
 		AD9CF1073EE0676E6640481A /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */; };
 		C0115AC7BC96FDF49EF8E530 /* PaymentMethodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */; };
 		C29B625B5698094691227852 /* TokenizationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A003705AFF7F922BCFE75F /* TokenizationResponseTests.swift */; };
@@ -85,7 +84,6 @@
 		F2E6C6BA5E1E367E862408E3 /* Pods_Debug_App_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4A756EB43AB71D4C3270A7 /* Pods_Debug_App_Tests.framework */; };
 		F3B88F24999785898FE54C53 /* MerchantHeadlesVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698F95A8EC4DF45AFFDA783 /* MerchantHeadlesVaultManagerViewController.swift */; };
 		F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD381E7E16D01D8D743232F7 /* ThemeTests.swift */; };
-		FA011BA4C8211066AD6CE45C /* TuistBundle+DebugApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB97C84232895CDCB57C822C /* TuistBundle+DebugApp.swift */; };
 		FD5ADBCFA70DB606339F3AF2 /* TransactionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D3D6CF0F006A06B7CEC71B /* TransactionResponse.swift */; };
 /* End PBXBuildFile section */
 
@@ -126,6 +124,7 @@
 		00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantResultViewController.swift; sourceTree = "<group>"; };
 		01C09DEAB07F42004B26A278 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeDSProtocolVersionTests.swift; sourceTree = "<group>"; };
+		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
 		0DA32ABCF07A4EBED014327B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantNewLineItemViewController.swift; sourceTree = "<group>"; };
 		0FD08B8CE57A11D1E35A8684 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -176,7 +175,6 @@
 		7480FE5F665CC66C092BC95A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		752785ACCF65527C239391A8 /* PaymentMethodConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigTests.swift; sourceTree = "<group>"; };
 		77E08473D1DF8C47A6EB61B2 /* Networking+Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Networking+Models.swift"; sourceTree = "<group>"; };
-		77F0FE47DB60DE806B7B1D47 /* TuistStrings+DebugApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TuistStrings+DebugApp.swift"; sourceTree = "<group>"; };
 		7A3E75CD834937EF85DE1C14 /* MockVaultCheckoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockVaultCheckoutViewModel.swift; sourceTree = "<group>"; };
 		7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPay88Tests.swift; sourceTree = "<group>"; };
 		7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockModule.swift; sourceTree = "<group>"; };
@@ -221,7 +219,6 @@
 		D5C1B1F65A9382606A25CE77 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Main.strings; sourceTree = "<group>"; };
 		DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBC8EA85D1CBC1EC4AB3EB8C /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		DCF2D6B53311B7A115476B21 /* TuistAssets+DebugApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TuistAssets+DebugApp.swift"; sourceTree = "<group>"; };
 		DECCDC4079DC6471CEDDEA84 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		E1C3EF0BA039C0A50EDE13A5 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Main.strings; sourceTree = "<group>"; };
 		E63F5C5C1FD2F3E6CB02EC5A /* HeadlessUniversalCheckoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlessUniversalCheckoutTests.swift; sourceTree = "<group>"; };
@@ -231,13 +228,11 @@
 		E9899972360BCA5992CEE5BC /* PrimerBancontactCardDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerBancontactCardDataManagerTests.swift; sourceTree = "<group>"; };
 		EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerRawCardDataManagerTests.swift; sourceTree = "<group>"; };
 		F09934A8E7076E1A2F606E9E /* Pods-Debug App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.release.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.release.xcconfig"; sourceTree = "<group>"; };
-		F18F487C7B075A9CC540BFCD /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
 		F4AC1EC0F98CB56DA4D075CA /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		F816A2444633C4336A7CB071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		F9023841AFCE8E3205CB713A /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		F9543C140C2D099E34E95FDE /* Pods_Debug_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB1F71737862EF5D0F4FE5AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		FB97C84232895CDCB57C822C /* TuistBundle+DebugApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TuistBundle+DebugApp.swift"; sourceTree = "<group>"; };
 		FC8A21D574BAEF7E0ED9E9CD /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Main.strings"; sourceTree = "<group>"; };
 		FEEF675F553A6AD99750CB0F /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		FF4B1BBF378E48EBDBDCEE2A /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -351,16 +346,6 @@
 			path = Primer;
 			sourceTree = "<group>";
 		};
-		5CF3082F97CBB77AD6961EBA /* Sources */ = {
-			isa = PBXGroup;
-			children = (
-				DCF2D6B53311B7A115476B21 /* TuistAssets+DebugApp.swift */,
-				FB97C84232895CDCB57C822C /* TuistBundle+DebugApp.swift */,
-				77F0FE47DB60DE806B7B1D47 /* TuistStrings+DebugApp.swift */,
-			);
-			path = Sources;
-			sourceTree = "<group>";
-		};
 		5E99BB590FD6521F2D5403BB /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -421,14 +406,6 @@
 				2D4A756EB43AB71D4C3270A7 /* Pods_Debug_App_Tests.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		9DA19630F538C3816763A0C9 /* InfoPlists */ = {
-			isa = PBXGroup;
-			children = (
-				F18F487C7B075A9CC540BFCD /* Debug App Tests-Info.plist */,
-			);
-			path = InfoPlists;
 			sourceTree = "<group>";
 		};
 		9EE81958BB2BB34183F6C0AB /* Modules */ = {
@@ -535,6 +512,7 @@
 		D9FD37D45BD73B08D04AC94C /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */,
 				D99811C39E1808A948623732 /* Unit Tests */,
 			);
 			path = Tests;
@@ -576,15 +554,6 @@
 			path = Mocks;
 			sourceTree = "<group>";
 		};
-		EDAFC502147BA43379592396 /* Derived */ = {
-			isa = PBXGroup;
-			children = (
-				9DA19630F538C3816763A0C9 /* InfoPlists */,
-				5CF3082F97CBB77AD6961EBA /* Sources */,
-			);
-			path = Derived;
-			sourceTree = "<group>";
-		};
 		EF5FBE3673FBCB40F55F4DC0 /* New UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -604,7 +573,6 @@
 		FBDF3F8B5F93A0EC28048640 /* Project */ = {
 			isa = PBXGroup;
 			children = (
-				EDAFC502147BA43379592396 /* Derived */,
 				094077DEFDC2739B10CF4183 /* Resources */,
 				5E99BB590FD6521F2D5403BB /* Sources */,
 				D9FD37D45BD73B08D04AC94C /* Tests */,
@@ -709,6 +677,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */,
 				EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */,
 				F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */,
 				949864026D1CDE6F5C62C66E /* Main.storyboard in Resources */,
@@ -846,9 +815,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A5041F7D2ECB42BCE8AA754 /* TuistAssets+DebugApp.swift in Sources */,
-				FA011BA4C8211066AD6CE45C /* TuistBundle+DebugApp.swift in Sources */,
-				AC651E341CCDECC77D5DFFEF /* TuistStrings+DebugApp.swift in Sources */,
 				D886D8E47D883304B505CE11 /* AppDelegate.swift in Sources */,
 				60F7E716B34BE721651566DA /* Data+Extensions.swift in Sources */,
 				CE5E673A96BB5B96AE5EFC56 /* Range+Extensions.swift in Sources */,
@@ -1010,7 +976,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = N8UN9TR5DY;
-				INFOPLIST_FILE = "Derived/InfoPlists/Debug App Tests-Info.plist";
+				INFOPLIST_FILE = "Tests/Debug App Tests-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1093,7 +1059,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = N8UN9TR5DY;
-				INFOPLIST_FILE = "Derived/InfoPlists/Debug App Tests-Info.plist";
+				INFOPLIST_FILE = "Tests/Debug App Tests-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
