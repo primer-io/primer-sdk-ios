@@ -85,8 +85,5 @@ fastlane/test_output
 .DS_Store
 
 ### Primer
-
-Example/Pods
-Example/Podfile.lock
-Internal/Debug App/Pods
-Internal/Debug App/Podfile.lock
+Debug App/Pods
+Debug App/Podfile.lock

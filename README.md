@@ -137,8 +137,12 @@ The payment’s data will be returned on `primerDidCompleteCheckoutWithData(:)`.
 
 [Contributing doc](Contributing.md)
 
+## Using the Debug App
+
+The Debug App provides you with tools to test your Primer configuration and interact with different payment methods and Universal Checkout features
+
 ### Make sure you've got CocoaPods installed
 
 - At the root of this repo, open your Terminal
-  - `cd Example`
+  - `cd Debug\ App`
   - `pod install`
