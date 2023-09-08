@@ -225,6 +225,12 @@ class ThreeDSService: ThreeDSServiceProtocol {
 #if canImport(Primer3DS)
     private func initializePrimer3DSSdk() -> Promise<Void> {
         return Promise { seal in
+#if DEBUG
+            if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+                seal.fulfill()
+                return
+            }
+#endif
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
@@ -685,12 +691,3 @@ class ThreeDSService: ThreeDSServiceProtocol {
         }
     }
 }
-
-#if canImport(Primer3DS)
-internal class MockPrimer3DSCompletion: Primer3DSCompletion {
-    var sdkTransactionId: String = "sdk-transaction-id"
-    var transactionStatus: String = "transactionStatus"
-}
-#endif
-
-
