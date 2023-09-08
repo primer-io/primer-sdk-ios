@@ -36,6 +36,9 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
     var redirectManager: PrimerHeadlessUniversalCheckout.NativeUIManager?
     var logs: [String] = []
     
+    var sessionIntent: PrimerSessionIntent = .checkout
+    
+    @IBOutlet weak var sessionIntentControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
     var activityIndicator: UIActivityIndicatorView?
     
@@ -112,6 +115,19 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
+    @IBAction func onSessionIntentChange(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            // Session intent chosen is Checkout
+            sessionIntent = .checkout
+        case 1:
+            // Session intent chosen is Vault
+            sessionIntent = .vault
+        default:
+            // Default to Checkout
+            sessionIntent = .checkout
+        }
+    }
     
     // MARK: - HELPERS
     
@@ -185,7 +201,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             self.navigationController?.pushViewController(vc, animated: true)
         } else {
             redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
-            try? redirectManager?.showPaymentMethod(intent: .checkout)
+            try? redirectManager?.showPaymentMethod(intent: sessionIntent)
         }
     }
 }
