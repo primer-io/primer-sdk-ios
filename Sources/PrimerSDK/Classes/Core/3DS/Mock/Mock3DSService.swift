@@ -42,10 +42,3 @@ class Mock3DSService: ThreeDSServiceProtocol {
             }
         }
 }
-
-#if canImport(Primer3DS)
-internal class MockPrimer3DSCompletion: Primer3DSCompletion {
-    var sdkTransactionId: String = "sdk-transaction-id"
-    var transactionStatus: String = "transactionStatus"
-}
-#endif
