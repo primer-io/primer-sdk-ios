@@ -22,6 +22,8 @@ app_output_archive_path = "/var/tmp/Primer.io_Debug_App.xcarchive"
 sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
 pr_number = ENV['PR_NUMBER']
 
+podfile_path = "Internal/Debug App/Podfile"
+
 ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
 
 #--------------------- END CONSTANTS -----------------------#
@@ -63,7 +65,7 @@ platform :ios do
     cocoapods(
       clean_install: true,
       use_bundle_exec: true,
-      podfile: "Debug App/Podfile"
+      podfile: podfile_path
     )
 
     # Build for browserstack
@@ -99,7 +101,7 @@ platform :ios do
     cocoapods(
       clean_install: true,
       use_bundle_exec: true,
-      podfile: "Debug App/Appetize Podfile/Podfile"
+      podfile: podfile_path
     )
 
     # Run Unit Tests

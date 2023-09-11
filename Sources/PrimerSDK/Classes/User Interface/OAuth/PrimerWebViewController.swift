@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 28/07/2021.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 import WebKit
@@ -63,4 +63,4 @@ internal class PrimerWebViewController: PrimerViewController {
     
 }
 
-#endif
+

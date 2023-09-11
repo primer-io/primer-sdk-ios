@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 17/08/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -150,4 +150,4 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
     }
 }
 
-#endif
+

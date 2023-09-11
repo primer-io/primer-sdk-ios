@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 25/05/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -372,4 +372,4 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
     }
 }
 
-#endif
+

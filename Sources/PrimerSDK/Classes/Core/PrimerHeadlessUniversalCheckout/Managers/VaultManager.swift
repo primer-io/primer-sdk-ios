@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 13/6/23.
 //
 
-#if canImport(UIKit)
+
 
 import SafariServices
 import UIKit
@@ -937,4 +937,4 @@ extension PrimerPaymentMethodTokenData {
     }
 }
 
-#endif
+

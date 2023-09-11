@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 import UIKit
 
 // swiftlint:disable identifier_name
@@ -84,4 +84,4 @@ public class Primer {
     }
 }
 
-#endif
+

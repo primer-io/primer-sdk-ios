@@ -5,7 +5,7 @@
 //  Created by Evangelos on 20/9/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -20,4 +20,4 @@ internal extension Timer {
     }
 }
 
-#endif
+

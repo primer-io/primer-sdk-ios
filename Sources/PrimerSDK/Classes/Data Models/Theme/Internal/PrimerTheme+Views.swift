@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -22,4 +22,4 @@ internal struct ViewTheme {
     }
 }
 
-#endif
+

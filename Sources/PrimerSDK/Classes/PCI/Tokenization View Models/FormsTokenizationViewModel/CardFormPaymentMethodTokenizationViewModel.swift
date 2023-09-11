@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 11/10/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import SafariServices
@@ -946,4 +946,4 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
 }
 
 
-#endif
+

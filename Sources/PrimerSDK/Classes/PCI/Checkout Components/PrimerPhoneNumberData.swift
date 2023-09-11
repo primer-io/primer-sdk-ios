@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 27/09/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -34,4 +34,4 @@ public class PrimerPhoneNumberData: PrimerRawData {
     }
 }
 
-#endif
+

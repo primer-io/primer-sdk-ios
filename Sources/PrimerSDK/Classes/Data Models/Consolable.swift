@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 19/3/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -25,4 +25,4 @@ struct Consolable<T> {
     }
 }
 
-#endif
+

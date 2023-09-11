@@ -5,7 +5,7 @@
 //  Created by Evangelos on 12/11/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -72,4 +72,4 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
     
 }
 
-#endif
+

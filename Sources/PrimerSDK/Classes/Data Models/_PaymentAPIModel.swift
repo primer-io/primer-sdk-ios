@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 28/02/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -61,4 +61,4 @@ extension PrimerClientSession {
     
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Evangelos on 12/7/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -22,4 +22,4 @@ public class PrimerRawData: NSObject, PrimerRawDataProtocol {
     }
 }
 
-#endif
+

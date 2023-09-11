@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 1/4/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 #if canImport(Primer3DS)
@@ -611,4 +611,4 @@ public class ThreeDS {
     }
 }
 
-#endif
+

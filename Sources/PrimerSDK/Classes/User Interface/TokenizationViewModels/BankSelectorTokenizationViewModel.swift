@@ -5,7 +5,7 @@
 //  Created by Admin on 8/11/21.
 //
 
-#if canImport(UIKit)
+
 
 import SafariServices
 import UIKit
@@ -334,4 +334,4 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
     }
 }
 
-#endif
+

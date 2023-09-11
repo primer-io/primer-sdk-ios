@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -59,4 +59,4 @@ extension Request.Body {
     }
 }
 
-#endif
+

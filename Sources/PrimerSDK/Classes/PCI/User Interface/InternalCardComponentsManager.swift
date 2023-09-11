@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 6/7/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -418,4 +418,4 @@ internal class MockCardComponentsManager: InternalCardComponentsManagerProtocol 
     
 }
 
-#endif
+

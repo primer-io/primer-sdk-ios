@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 14/09/2021.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -40,4 +40,4 @@ internal extension Int {
     }
 }
 
-#endif
+

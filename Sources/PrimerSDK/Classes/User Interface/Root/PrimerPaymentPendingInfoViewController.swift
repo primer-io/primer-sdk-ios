@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 22/08/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -34,4 +34,4 @@ internal class PrimerPaymentPendingInfoViewController: PrimerFormViewController 
     }
 }
 
-#endif
+

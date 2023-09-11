@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 internal class CheckoutModule: Codable {
     let type: String
@@ -12,4 +12,4 @@ internal class CheckoutModule: Codable {
     }
 }
 
-#endif
+

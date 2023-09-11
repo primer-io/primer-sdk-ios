@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 08/11/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -18,4 +18,4 @@ public class PrimerIntegrationOptions: NSObject {
     }
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 29/12/2020.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -43,4 +43,4 @@ public enum ImageName: String {
     }
 }
 
-#endif
+

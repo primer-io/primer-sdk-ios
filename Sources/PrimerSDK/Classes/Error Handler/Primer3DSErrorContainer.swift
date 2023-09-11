@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 12/5/23.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -203,4 +203,4 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     }
 }
 
-#endif
+

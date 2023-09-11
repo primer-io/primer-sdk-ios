@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 04/01/2021.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -79,4 +79,4 @@ public class PrimerTheme: PrimerThemeProtocol {
     }
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 18/08/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -267,4 +267,4 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     }
 }
 
-#endif
+

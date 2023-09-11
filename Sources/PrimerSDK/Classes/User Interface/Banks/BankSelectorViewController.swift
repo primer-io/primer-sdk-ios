@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 25/10/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -97,4 +97,4 @@ internal class BankSelectorViewController: PrimerFormViewController {
     
 }
 
-#endif
+

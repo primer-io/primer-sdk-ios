@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 7/10/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -195,4 +195,4 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }
 }
 
-#endif
+

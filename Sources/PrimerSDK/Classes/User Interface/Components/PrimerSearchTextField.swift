@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 26/10/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -117,4 +117,4 @@ internal class PrimerSearchTextField: UITextField, UITextFieldDelegate {
     }
 }
 
-#endif
+

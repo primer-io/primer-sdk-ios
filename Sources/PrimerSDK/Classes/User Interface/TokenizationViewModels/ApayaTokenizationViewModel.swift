@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 12/10/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -310,4 +310,4 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
     
 }
 
-#endif
+
