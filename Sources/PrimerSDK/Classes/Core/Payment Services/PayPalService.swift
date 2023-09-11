@@ -10,14 +10,14 @@ internal protocol PayPalServiceProtocol {
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void)
 }
 
-internal class PayPalService: PayPalServiceProtocol {
+internal class PayPalService: PayPalServiceProtocol, LogReporter {
     
     static var apiClient: PrimerAPIClientProtocol?
     
     private var paypalTokenId: String?
     
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     private func prepareUrlAndTokenAndId(path: String) -> (DecodedJWTToken, URL, String)? {

@@ -66,7 +66,7 @@ internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     func cancel()
 }
 
-class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
+class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol, LogReporter {
 
     var config: PrimerPaymentMethod!
     static var apiClient: PrimerAPIClientProtocol?
@@ -89,7 +89,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var uiModule: UserInterfaceModule!
     
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
         NotificationCenter.default.removeObserver(self)
     }
     

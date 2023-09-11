@@ -103,7 +103,7 @@ class Networking {
             msg += "Body:\n\(bodyJson ?? [:])\n"
         }
 
-        print(msg)
+        Primer.shared.logger?.debug(message: msg)
         msg = ""
         
         URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
@@ -113,14 +113,14 @@ class Networking {
                 
                 if err != nil {
                     msg += "Error: \(err!)\n"
-                    print(msg)
+                    Primer.shared.logger?.debug(message: msg)
                     completion(.failure(err!))
                     return
                 }
 
                 guard let httpResponse = response as? HTTPURLResponse else {
                     msg += "Error: Invalid response\n"
-                    print(msg)
+                    Primer.shared.logger?.debug(message: msg)
                     completion(.failure(NetworkError.invalidResponse))
                     return
                 }
@@ -130,20 +130,20 @@ class Networking {
                     if let data = data, let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
                         msg += "Body:\n\(resJson)\n"
                     }
-                    print(msg)
+                    Primer.shared.logger?.debug(message: msg)
                     completion(.failure(NetworkError.invalidResponse))
                     
                     guard let data = data else {
-                        print("No data")
+                        Primer.shared.logger?.error(message: "No data")
                         completion(.failure(NetworkError.invalidResponse))
                         return
                     }
                     
                     do {
                         let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                        print("Response body: \(json)")
+                        Primer.shared.logger?.debug(message: "Response body: \(json)")
                     } catch {
-                        print("Error: \(error)")
+                        Primer.shared.logger?.error(message: "Error: \(error)")
                     }
                     return
                 }
@@ -151,7 +151,7 @@ class Networking {
                 guard let data = data else {
                     msg += "Status code: \(httpResponse.statusCode)\n"
                     msg += "Body:\nNo data\n"
-                    print(msg)
+                    Primer.shared.logger?.debug(message: msg)
                     completion(.failure(NetworkError.invalidResponse))
                     return
                 }
@@ -163,7 +163,7 @@ class Networking {
                     msg += "Body (String): \(String(describing: String(data: data, encoding: .utf8)))"
                 }
                 
-                print(msg)
+                Primer.shared.logger?.debug(message: msg)
 
                 completion(.success(data))
             }

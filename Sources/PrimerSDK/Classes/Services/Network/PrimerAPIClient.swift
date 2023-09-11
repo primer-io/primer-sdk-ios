@@ -119,14 +119,14 @@ protocol PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<Void, Error>) -> Void)
 }
 
-internal class PrimerAPIClient: PrimerAPIClientProtocol {
+internal class PrimerAPIClient: PrimerAPIClientProtocol, LogReporter {
         
     internal let networkService: NetworkService
 
     // MARK: - Object lifecycle
     
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     init(networkService: NetworkService = URLSessionStack()) {

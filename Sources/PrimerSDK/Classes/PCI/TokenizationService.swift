@@ -12,14 +12,14 @@ internal protocol TokenizationServiceProtocol {
     func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData>
 }
 
-internal class TokenizationService: TokenizationServiceProtocol {
+internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
     
     static var apiClient: PrimerAPIClientProtocol?
     
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
     
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData> {
@@ -31,7 +31,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 return
             }
 
-            log(logLevel: .verbose, title: nil, message: "Client Token: \(decodedJWTToken)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+            self.logger.debug(message: "Client Token: \(decodedJWTToken)")
 
             guard let pciURL = decodedJWTToken.pciUrl else {
                 let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -40,7 +40,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 return
             }
 
-            log(logLevel: .verbose, title: nil, message: "PCI URL: \(pciURL)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+            self.logger.debug(message: "PCI URL: \(pciURL)")
 
             guard let url = URL(string: "\(pciURL)/payment-instruments") else {
                 let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -49,7 +49,7 @@ internal class TokenizationService: TokenizationServiceProtocol {
                 return
             }
 
-            log(logLevel: .verbose, title: nil, message: "URL: \(url)", prefix: nil, suffix: nil, bundle: nil, file: #file, className: String(describing: Self.self), function: #function, line: #line)
+            self.logger.debug(message: "URL: \(url)")
                        
             let apiClient: PrimerAPIClientProtocol = TokenizationService.apiClient ?? PrimerAPIClient()
             

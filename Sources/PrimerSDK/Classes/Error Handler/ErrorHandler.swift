@@ -9,7 +9,7 @@
 
 import Foundation
 
-internal class ErrorHandler {
+internal class ErrorHandler: LogReporter {
     
     static func handle(error: Error) {
         _ = ErrorHandler.shared.handle(error: error)
@@ -19,7 +19,7 @@ internal class ErrorHandler {
 
     @discardableResult
     func handle(error: Error) -> Bool {
-        log(logLevel: .error, title: "ERROR!", message: error.localizedDescription, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
+        self.logger.error(message: error.localizedDescription)
 
         var event: Analytics.Event!
 

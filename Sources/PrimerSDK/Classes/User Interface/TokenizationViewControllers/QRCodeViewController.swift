@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class QRCodeViewController: PrimerFormViewController {
+internal class QRCodeViewController: PrimerFormViewController, LogReporter {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
@@ -20,7 +20,7 @@ internal class QRCodeViewController: PrimerFormViewController {
     deinit {
         viewModel.cancel()
         viewModel = nil
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(viewModel: QRCodeTokenizationViewModel) {

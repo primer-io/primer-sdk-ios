@@ -32,7 +32,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var didTimeout: Bool = false
     
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     override func validate() throws {
@@ -236,7 +236,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     }
                     
                 } else {
-                    log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
+                    self.logger.error(message: "APPLE PAY")
+                    self.logger.error(message: "Cannot make payments on the provided networks")
                     let err = PrimerError.unableToMakePaymentsOnProvidedNetworks(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)

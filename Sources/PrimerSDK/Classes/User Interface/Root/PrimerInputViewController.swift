@@ -9,12 +9,12 @@
 
 import UIKit
 
-internal class PrimerInputViewController: PrimerFormViewController {
+internal class PrimerInputViewController: PrimerFormViewController, LogReporter {
         
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
     
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(navigationBarLogo: UIImage?,

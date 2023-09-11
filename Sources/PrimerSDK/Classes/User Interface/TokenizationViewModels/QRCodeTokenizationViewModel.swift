@@ -21,7 +21,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
     deinit {
         tokenizationService = nil
         qrCode = nil
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     override func validate() throws {
@@ -313,7 +313,8 @@ extension QRCodeTokenizationViewModel {
                 }
                 
             default:
-                log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.config.type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
+                self.logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")
+                self.logger.info(message: self.config.type)
                 break
             }
                         

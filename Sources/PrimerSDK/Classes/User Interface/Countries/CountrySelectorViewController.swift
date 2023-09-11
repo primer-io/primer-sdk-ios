@@ -2,7 +2,7 @@
 
 import UIKit
 
-internal class CountrySelectorViewController: PrimerFormViewController {
+internal class CountrySelectorViewController: PrimerFormViewController, LogReporter {
     
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
@@ -13,7 +13,7 @@ internal class CountrySelectorViewController: PrimerFormViewController {
     deinit {
         viewModel.cancel()
         viewModel = nil
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(viewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol) {

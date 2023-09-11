@@ -15,7 +15,7 @@ internal protocol UniversalCheckoutViewModelProtocol {
     var amountStr: String? { get }
 }
 
-internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol {
+internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol, LogReporter {
 
     var amountStr: String? {
         if (PrimerInternal.shared.intent ?? .vault) == .vault { return nil }
@@ -37,7 +37,7 @@ internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol {
     }
 
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 }
 

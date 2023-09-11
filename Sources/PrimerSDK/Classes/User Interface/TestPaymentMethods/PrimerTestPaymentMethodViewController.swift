@@ -8,14 +8,14 @@
 
 import UIKit
 
-class PrimerTestPaymentMethodViewController: PrimerFormViewController {
+class PrimerTestPaymentMethodViewController: PrimerFormViewController, LogReporter {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private var viewModel: PrimerTestPaymentMethodTokenizationViewModel!
     
     deinit {
         viewModel = nil
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(viewModel: PrimerTestPaymentMethodTokenizationViewModel) {

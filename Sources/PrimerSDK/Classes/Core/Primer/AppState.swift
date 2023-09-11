@@ -19,7 +19,7 @@ internal protocol AppStateProtocol: AnyObject {
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? { get }
 }
 
-internal class AppState: AppStateProtocol {
+internal class AppState: AppStateProtocol, LogReporter {
     
     static var current: AppStateProtocol {
         let appState: AppStateProtocol = DependencyContainer.resolve()
@@ -44,7 +44,7 @@ internal class AppState: AppStateProtocol {
     }
 
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 }
 

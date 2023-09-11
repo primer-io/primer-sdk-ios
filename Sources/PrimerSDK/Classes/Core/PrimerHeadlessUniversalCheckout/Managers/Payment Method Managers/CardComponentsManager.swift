@@ -18,7 +18,7 @@ public protocol PrimerHeadlessUniversalCheckoutCardComponentsManagerDelegate: An
 
 extension PrimerHeadlessUniversalCheckout {
     
-    public final class CardComponentsManager: NSObject, PrimerInputElementDelegate {
+    public final class CardComponentsManager: NSObject, PrimerInputElementDelegate, LogReporter {
         
         private(set) public var paymentMethodType: String
         private let appState: AppStateProtocol = AppState.current
@@ -91,7 +91,7 @@ extension PrimerHeadlessUniversalCheckout {
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         
         deinit {
-            log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+            self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
         }
         
         public init(paymentMethodType: String) throws {

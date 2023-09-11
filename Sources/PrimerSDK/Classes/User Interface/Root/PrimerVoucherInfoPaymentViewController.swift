@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
+internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController, LogReporter {
         
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
     let textToShare: String?
@@ -27,7 +27,7 @@ internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController 
     }()
 
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(navigationBarLogo: UIImage?, formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel, shouldShareVoucherInfoWithText textToShare: String? = nil) {

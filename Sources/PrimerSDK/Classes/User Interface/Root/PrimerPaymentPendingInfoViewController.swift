@@ -9,13 +9,13 @@
 
 import UIKit
 
-internal class PrimerPaymentPendingInfoViewController: PrimerFormViewController {
+internal class PrimerPaymentPendingInfoViewController: PrimerFormViewController, LogReporter {
         
     private let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
     private let infoView: PrimerFormView
     
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel, infoView: PrimerFormView) {

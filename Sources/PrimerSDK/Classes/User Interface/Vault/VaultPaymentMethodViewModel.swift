@@ -7,7 +7,7 @@ internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void)
 }
 
-internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
+internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol, LogReporter {
 
     var paymentMethods: [PrimerPaymentMethodTokenData] {
         return AppState.current.paymentMethods
@@ -22,7 +22,7 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
     }
 
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     func reloadVault(with completion: @escaping (Error?) -> Void) {

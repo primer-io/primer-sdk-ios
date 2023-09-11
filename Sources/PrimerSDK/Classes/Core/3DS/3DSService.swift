@@ -24,7 +24,7 @@ protocol ThreeDSServiceProtocol {
         completion: @escaping (_ result: Result<String, Error>) -> Void)
 }
 
-class ThreeDSService: ThreeDSServiceProtocol {
+class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     
     static var apiClient: PrimerAPIClientProtocol?
     
@@ -39,7 +39,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
 #endif
     
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     internal func perform3DS(

@@ -19,7 +19,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var apayaWebViewResponse: Apaya.WebViewResponse!
     
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     override func validate() throws {
@@ -172,12 +172,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 completion(.failure(err))
                 
             case .success(let res):
-                log(
-                    logLevel: .info,
-                    message: "\(res)",
-                    className: "\(String(describing: self.self))",
-                    function: #function
-                )
+                self.logger.info(message: "\(res)")
                 completion(.success(res.url))
             }
         }

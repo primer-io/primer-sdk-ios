@@ -10,7 +10,7 @@
 import UIKit
 import WebKit
 
-internal class PrimerWebViewController: PrimerViewController {
+internal class PrimerWebViewController: PrimerViewController, LogReporter {
     
     private let webView: WKWebView! = WKWebView()
     internal private(set) var url: URL
@@ -25,7 +25,7 @@ internal class PrimerWebViewController: PrimerViewController {
     ]
 
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(with url: URL) {

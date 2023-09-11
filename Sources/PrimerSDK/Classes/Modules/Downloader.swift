@@ -61,7 +61,7 @@ internal class File {
                 try base64Data.write(to: fileLocalUrl)
                 
             } catch {
-                log(logLevel: .error, title: "Write failed", message: nil, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
+                Primer.shared.logger?.error(message: "Write failed")
             }
         }
     }

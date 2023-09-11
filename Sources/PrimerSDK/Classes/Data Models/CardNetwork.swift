@@ -24,7 +24,7 @@ struct CardNetworkCode {
     var length: Int
 }
 
-public enum CardNetwork: String, CaseIterable {
+public enum CardNetwork: String, CaseIterable, LogReporter {
     
     case amex
     case bancontact
@@ -320,7 +320,7 @@ public enum CardNetwork: String, CaseIterable {
                     }
                 }
             } else {
-                log(logLevel: .warning, message: "Card network patterns array must contain one or two Ints")
+                Primer.shared.logger?.debug(message: "Card network patterns array must contain one or two Ints")
             }
         }
         

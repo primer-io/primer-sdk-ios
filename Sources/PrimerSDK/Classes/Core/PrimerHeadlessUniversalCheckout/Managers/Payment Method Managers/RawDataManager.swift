@@ -32,7 +32,7 @@ protocol PrimerRawDataTokenizationBuilderProtocol {
 
 extension PrimerHeadlessUniversalCheckout {
     
-    public class RawDataManager: NSObject {
+    public class RawDataManager: NSObject, LogReporter {
         
         public var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
         public private(set) var paymentMethodType: String
@@ -637,7 +637,8 @@ extension PrimerHeadlessUniversalCheckout {
                         self.paymentCheckoutData?.additionalInfo = additionalInfo
                         
                     default:
-                        log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD RESULT", message: self.paymentMethodType, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
+                        self.logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")
+                        self.logger.info(message: self.paymentMethodType)
                         break
                     }
                     

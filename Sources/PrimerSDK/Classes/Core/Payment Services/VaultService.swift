@@ -8,12 +8,12 @@ internal protocol VaultServiceProtocol {
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void>
 }
 
-internal class VaultService: VaultServiceProtocol {
+internal class VaultService: VaultServiceProtocol, LogReporter {
     
     static var apiClient: PrimerAPIClientProtocol?
     
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     func fetchVaultedPaymentMethods() -> Promise<Void> {

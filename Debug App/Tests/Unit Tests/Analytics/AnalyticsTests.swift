@@ -1445,14 +1445,7 @@ class AnalyticsTests: XCTestCase {
             try eventsData.write(to: Analytics.Service.filepath)
             
         } catch {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: error.localizedDescription,
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
-                function: #function,
-                line: #line)
+            print("📚 ANALYTICS\n📚 \(error.localizedDescription)")
         }
     }
     

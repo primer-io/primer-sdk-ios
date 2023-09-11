@@ -15,12 +15,12 @@ internal protocol CreateResumePaymentServiceProtocol {
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Response.Body.Payment?, Error?) -> Void)
 }
 
-internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
+internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol, LogReporter {
     
     static var apiClient: PrimerAPIClientProtocol?
     
     deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
+        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     func createPayment(paymentRequest: Request.Body.Payment.Create, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {

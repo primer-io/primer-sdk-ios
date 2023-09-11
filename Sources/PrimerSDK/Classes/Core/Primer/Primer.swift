@@ -22,6 +22,8 @@ public class Primer {
     }
     public var integrationOptions: PrimerIntegrationOptions?
     
+    public var logger: PrimerLogger?
+    
     // MARK: - INITIALIZATION
     
     public static var shared: Primer {
@@ -47,8 +49,9 @@ public class Primer {
      Configure SDK's settings
      */
     
-    public func configure(settings: PrimerSettings? = nil, delegate: PrimerDelegate? = nil) {
+    public func configure(settings: PrimerSettings? = nil, logger: PrimerLogger? = nil, delegate: PrimerDelegate? = nil) {
         self.delegate = delegate
+        self.logger = logger
         PrimerInternal.shared.configure(settings: settings)
     }
     
