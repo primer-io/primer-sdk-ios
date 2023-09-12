@@ -83,9 +83,7 @@ internal class PrimerUIManager {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
         
-        paymentMethodTokenizationViewModel?.didPresentPaymentMethodUI = {
-            print("present payment")
-        }
+        paymentMethodTokenizationViewModel?.didPresentPaymentMethodUI = {}
         
         paymentMethodTokenizationViewModel?.willDismissPaymentMethodUI = {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)

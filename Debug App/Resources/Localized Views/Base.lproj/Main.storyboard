@@ -18,22 +18,22 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="32" translatesAutoresizingMaskIntoConstraints="NO" id="Fpg-xO-ASt">
-                                <rect key="frame" x="24" y="339" width="366" height="499"/>
+                                <rect key="frame" x="20" y="60" width="374" height="295.5"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="roR-sx-9OE">
-                                        <rect key="frame" x="0.0" y="0.0" width="366" height="101.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="374" height="101.5"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show Payment Method Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="caV-rt-GuC">
-                                                <rect key="frame" x="0.0" y="0.0" width="366" height="20.5"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="20.5"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="20.5" id="dJw-zB-gYD"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="jTw-JW-Dqe">
-                                                <rect key="frame" x="0.0" y="28.5" width="366" height="32"/>
+                                                <rect key="frame" x="0.0" y="28.5" width="374" height="32"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="31" id="Lf1-80-Eh1"/>
                                                 </constraints>
@@ -46,7 +46,7 @@
                                                 </connections>
                                             </segmentedControl>
                                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Payment method type" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="7ek-We-ggh">
-                                                <rect key="frame" x="0.0" y="67.5" width="366" height="34"/>
+                                                <rect key="frame" x="0.0" y="67.5" width="374" height="34"/>
                                                 <accessibility key="accessibilityConfiguration" label="Payment method type"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="34" id="au4-bi-aL2"/>
@@ -58,7 +58,7 @@
                                                 </connections>
                                             </textField>
                                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fWt-IP-YOw">
-                                                <rect key="frame" x="0.0" y="101.5" width="366" height="40"/>
+                                                <rect key="frame" x="0.0" y="101.5" width="374" height="40"/>
                                                 <color key="backgroundColor" systemColor="labelColor"/>
                                                 <accessibility key="accessibilityConfiguration" label="Show Payment Method"/>
                                                 <constraints>
@@ -72,18 +72,21 @@
                                                 </connections>
                                             </button>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstItem="jTw-JW-Dqe" firstAttribute="centerX" secondItem="roR-sx-9OE" secondAttribute="centerX" id="bub-yy-KI2"/>
+                                        </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Qkg-nw-pN7">
-                                        <rect key="frame" x="0.0" y="133.5" width="366" height="68.5"/>
+                                        <rect key="frame" x="0.0" y="133.5" width="374" height="65"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Universal Checkout Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cr0-c7-SYM">
-                                                <rect key="frame" x="0.0" y="0.0" width="366" height="20.5"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="17"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pnm-Mo-3XH">
-                                                <rect key="frame" x="0.0" y="28.5" width="366" height="40"/>
+                                                <rect key="frame" x="0.0" y="25" width="374" height="40"/>
                                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <accessibility key="accessibilityConfiguration" identifier="Universal Checkout Button"/>
                                                 <constraints>
@@ -102,16 +105,16 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="vRD-cN-8MP">
-                                        <rect key="frame" x="0.0" y="234" width="366" height="68.5"/>
+                                        <rect key="frame" x="0.0" y="230.5" width="374" height="65"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vault Manager Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a6o-tl-RK1">
-                                                <rect key="frame" x="0.0" y="0.0" width="366" height="20.5"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="17"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="but-Bs-no4">
-                                                <rect key="frame" x="0.0" y="28.5" width="366" height="40"/>
+                                                <rect key="frame" x="0.0" y="25" width="374" height="40"/>
                                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
                                                 <constraints>
@@ -129,77 +132,15 @@
                                             </button>
                                         </subviews>
                                     </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="AvL-GE-uUb">
-                                        <rect key="frame" x="0.0" y="334.5" width="366" height="164.5"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Other Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MAK-96-XWb" userLabel="Other Options">
-                                                <rect key="frame" x="0.0" y="0.0" width="366" height="20.5"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dOz-7I-M2H">
-                                                <rect key="frame" x="0.0" y="28.5" width="366" height="40"/>
-                                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="40" id="9pf-jw-sgz"/>
-                                                </constraints>
-                                                <state key="normal" title="Vault">
-                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </state>
-                                                <buttonConfiguration key="configuration" style="plain" title="Checkout with Apple Pay">
-                                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </buttonConfiguration>
-                                                <connections>
-                                                    <action selector="checkoutWithApplePayButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="BvT-WZ-rCP"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bu3-wF-6zB">
-                                                <rect key="frame" x="0.0" y="76.5" width="366" height="40"/>
-                                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="40" id="QVp-vl-HcT"/>
-                                                </constraints>
-                                                <state key="normal" title="Vault">
-                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </state>
-                                                <buttonConfiguration key="configuration" style="plain" title="Vault Klarna">
-                                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </buttonConfiguration>
-                                                <connections>
-                                                    <action selector="vaultKlarnaButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="Dgo-Yw-kqg"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="New-JD-waY">
-                                                <rect key="frame" x="0.0" y="124.5" width="366" height="40"/>
-                                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="40" id="PP7-S7-Yf0"/>
-                                                </constraints>
-                                                <state key="normal" title="Vault">
-                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </state>
-                                                <buttonConfiguration key="configuration" style="plain" title="Checkout with APM">
-                                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </buttonConfiguration>
-                                                <connections>
-                                                    <action selector="checkoutWithApmButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="kPc-eZ-2S0"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                    </stackView>
                                 </subviews>
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="gtf-1b-GN8"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="gtf-1b-GN8" firstAttribute="bottom" secondItem="Fpg-xO-ASt" secondAttribute="bottom" constant="24" id="00g-4C-qUZ"/>
-                            <constraint firstItem="gtf-1b-GN8" firstAttribute="trailing" secondItem="Fpg-xO-ASt" secondAttribute="trailing" constant="24" id="NfY-6c-nFc"/>
-                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="leading" secondItem="gtf-1b-GN8" secondAttribute="leading" constant="24" id="xq9-8g-qD7"/>
+                            <constraint firstItem="gtf-1b-GN8" firstAttribute="trailing" secondItem="Fpg-xO-ASt" secondAttribute="trailing" constant="20" id="NfY-6c-nFc"/>
+                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="top" secondItem="gtf-1b-GN8" secondAttribute="top" constant="12" id="dgV-Fv-J1C"/>
+                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="leading" secondItem="gtf-1b-GN8" secondAttribute="leading" constant="20" id="xq9-8g-qD7"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="0lO-Kc-k9w"/>

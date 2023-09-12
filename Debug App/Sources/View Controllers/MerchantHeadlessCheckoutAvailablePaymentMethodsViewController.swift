@@ -36,7 +36,7 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
     var redirectManager: PrimerHeadlessUniversalCheckout.NativeUIManager?
     var logs: [String] = []
     
-    var sessionIntent: PrimerSessionIntent = .checkout
+    private var sessionIntent: PrimerSessionIntent = .checkout
     
     @IBOutlet weak var sessionIntentControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
