@@ -102,7 +102,7 @@ internal class PrimerInternal {
                 severity: .error)))
 #endif
         
-        let bundleReleaseVersionNumber = Primer.bundle.releaseVersionNumber
+        let bundleReleaseVersionNumber = Bundle.primerFramework.releaseVersionNumber
         events.append(
             Analytics.Event(
                 eventType: .message,
