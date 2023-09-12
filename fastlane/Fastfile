@@ -10,8 +10,8 @@ github_run_id = ENV["GITHUB_RUN_ID"]
 github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
-app_workspace = "Internal/Debug App/Primer.io Debug App.xcworkspace"
-app_xcode_proj = "Internal/Debug App/Primer.io Debug App.xcodeproj"
+app_workspace = "Debug App/Primer.io Debug App.xcworkspace"
+app_xcode_proj = "Debug App/Primer.io Debug App.xcodeproj"
 app_scheme = "Debug App"
 
 # Packages
@@ -22,7 +22,7 @@ app_output_archive_path = "/var/tmp/Primer.io_Debug_App.xcarchive"
 sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
 pr_number = ENV['PR_NUMBER']
 
-podfile_path = "Internal/Debug App/Podfile"
+podfile_path = "Debug App/Podfile"
 
 ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
 
