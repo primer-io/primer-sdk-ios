@@ -1,0 +1,7 @@
+${PODS_ROOT}/Target Support Files/Pods-Debug App/Pods-Debug App-frameworks.sh
+${BUILT_PRODUCTS_DIR}/Primer3DS/Primer3DS.framework
+${BUILT_PRODUCTS_DIR}/PrimerIPay88MYSDK/PrimerIPay88MYSDK.framework
+${BUILT_PRODUCTS_DIR}/PrimerKlarnaSDK/PrimerKlarnaSDK.framework
+${BUILT_PRODUCTS_DIR}/PrimerSDK/PrimerSDK.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/KlarnaMobileSDK/full/KlarnaMobileSDK.framework/KlarnaMobileSDK
+${PODS_XCFRAMEWORKS_BUILD_DIR}/Primer3DS/ThreeDS_SDK.framework/ThreeDS_SDK
