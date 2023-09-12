@@ -22,8 +22,6 @@ public class Primer {
     }
     public var integrationOptions: PrimerIntegrationOptions?
     
-    static let bundle = Bundle(for: Primer.self)
-    
     // MARK: - INITIALIZATION
     
     public static var shared: Primer {
