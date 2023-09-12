@@ -244,6 +244,9 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
                         self.hideLoadingOverlay()
                     }
                     decisionHandler(.complete())
+                    
+                    let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
+                    self.navigationController?.pushViewController(rvc, animated: true)
                 }
                 
             } else {
