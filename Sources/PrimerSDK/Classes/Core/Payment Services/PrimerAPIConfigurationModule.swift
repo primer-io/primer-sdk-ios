@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -290,4 +290,4 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     }
 }
 
-#endif
+

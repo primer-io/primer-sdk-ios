@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 2/8/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -113,4 +113,4 @@ public extension UIColor {
     static let gray700  = #colorLiteral(red: 0.2666399777, green: 0.2666836977, blue: 0.2666304708, alpha: 1)
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Evangelos on 13/1/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -15,4 +15,4 @@ internal struct SuccessResponse: Codable {
     let success: Bool
 }
 
-#endif
+

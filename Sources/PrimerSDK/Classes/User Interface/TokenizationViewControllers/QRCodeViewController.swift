@@ -5,7 +5,7 @@
 //  Created by Evangelos on 11/1/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -161,5 +161,5 @@ internal class QRCodeViewController: PrimerFormViewController {
     }
 }
 
-#endif
+
 

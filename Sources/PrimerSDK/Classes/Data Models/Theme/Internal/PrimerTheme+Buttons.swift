@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -32,4 +32,4 @@ internal class ButtonTheme {
     }
 }
 
-#endif
+

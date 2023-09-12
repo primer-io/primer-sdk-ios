@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -59,4 +59,4 @@ internal class PrimerTextField: UITextField {
         
 }
 
-#endif
+

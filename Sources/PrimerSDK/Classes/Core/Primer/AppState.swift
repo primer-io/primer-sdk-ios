@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 16/01/2021.
 //
 
-#if canImport(UIKit)
+
 
 internal protocol AppStateProtocol: AnyObject {
     
@@ -48,4 +48,4 @@ internal class AppState: AppStateProtocol {
     }
 }
 
-#endif
+

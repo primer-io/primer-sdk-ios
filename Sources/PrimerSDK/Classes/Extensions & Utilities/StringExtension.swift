@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 10/3/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -413,4 +413,4 @@ internal extension String {
     }
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 17/3/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -52,4 +52,4 @@ internal class ClearViewController: UIViewController {
 
 }
 
-#endif
+

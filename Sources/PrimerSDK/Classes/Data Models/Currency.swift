@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 internal struct CurrencyElement: Codable {
     let name: String
@@ -204,4 +204,4 @@ public enum Currency: String, Codable, CaseIterable {
     }
 }
 
-#endif
+

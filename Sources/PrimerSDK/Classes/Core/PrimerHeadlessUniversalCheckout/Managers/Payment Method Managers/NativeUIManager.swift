@@ -5,7 +5,7 @@
 //  Created by Evangelos on 4/10/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -123,5 +123,5 @@ extension PrimerHeadlessUniversalCheckout {
 
 
 
-#endif
+
 

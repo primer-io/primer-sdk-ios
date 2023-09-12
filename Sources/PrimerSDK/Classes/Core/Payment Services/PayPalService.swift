@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -257,4 +257,4 @@ internal class PayPalService: PayPalServiceProtocol {
     }
 }
 
-#endif
+

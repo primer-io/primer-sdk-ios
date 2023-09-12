@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -507,4 +507,4 @@ extension KlarnaTokenizationViewModel: PrimerKlarnaViewControllerDelegate {
 }
 #endif
 
-#endif
+

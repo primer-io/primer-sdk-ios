@@ -5,7 +5,7 @@
 //  Created by Admin on 8/11/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -59,4 +59,4 @@ internal struct BanksListSessionResponse: Decodable {
     let result: [Response.Body.Adyen.Bank]
 }
 
-#endif
+

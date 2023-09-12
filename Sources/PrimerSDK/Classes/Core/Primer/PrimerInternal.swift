@@ -5,7 +5,7 @@
 //  Created by Evangelos on 20/9/22.
 //
 
-#if canImport(UIKit)
+
 import UIKit
 
 #if canImport(Primer3DS)
@@ -310,4 +310,4 @@ internal class PrimerInternal {
     }
 }
 
-#endif
+

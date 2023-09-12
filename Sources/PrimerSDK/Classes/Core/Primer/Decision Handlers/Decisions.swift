@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 02/05/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -123,4 +123,4 @@ public extension PrimerPaymentCreationDecision {
     }
 }
 
-#endif
+

@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -40,4 +40,4 @@ extension HeaderFooterLabelView {
     }
 }
 
-#endif
+

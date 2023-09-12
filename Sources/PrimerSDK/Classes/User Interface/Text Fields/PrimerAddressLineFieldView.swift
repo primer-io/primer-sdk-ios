@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -51,4 +51,4 @@ public final class PrimerAddressLine2FieldView: PrimerSimpleCardFormTextFieldVie
     }
 }
 
-#endif
+

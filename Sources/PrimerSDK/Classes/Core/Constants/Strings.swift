@@ -6,7 +6,7 @@
 //
 
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -1037,4 +1037,4 @@ extension Strings {
     }
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 18/3/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -42,4 +42,4 @@ internal extension Bundle {
     }
 }
 
-#endif
+

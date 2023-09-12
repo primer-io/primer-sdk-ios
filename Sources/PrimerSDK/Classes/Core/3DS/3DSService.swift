@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 17/6/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -693,4 +693,4 @@ internal class MockPrimer3DSCompletion: Primer3DSCompletion {
 }
 #endif
 
-#endif
+

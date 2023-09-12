@@ -5,7 +5,7 @@
 //  Created by Evangelos on 29/4/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -47,4 +47,4 @@ extension UINavigationController {
     }
 }
 
-#endif
+

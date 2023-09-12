@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 28/08/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -41,4 +41,4 @@ internal extension DateFormatter {
     
 }
 
-#endif
+

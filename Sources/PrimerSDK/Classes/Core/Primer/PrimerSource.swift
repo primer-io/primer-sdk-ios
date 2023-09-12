@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 25/04/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -27,4 +27,4 @@ extension PrimerSource {
     }
 }
 
-#endif
+

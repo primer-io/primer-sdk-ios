@@ -5,7 +5,7 @@
 //  Created by Evangelos on 14/7/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -250,4 +250,4 @@ extension Downloader: FileManagerDelegate {
     }
 }
 
-#endif
+

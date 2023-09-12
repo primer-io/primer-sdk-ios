@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 27/09/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -58,4 +58,4 @@ public class PrimerCardData: PrimerRawData {
     }
 }
 
-#endif
+

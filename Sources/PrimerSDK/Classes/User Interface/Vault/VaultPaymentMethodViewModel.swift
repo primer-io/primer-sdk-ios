@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
     var paymentMethods: [PrimerPaymentMethodTokenData] { get }
@@ -75,4 +75,4 @@ internal class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProto
     
 }
 
-#endif
+
