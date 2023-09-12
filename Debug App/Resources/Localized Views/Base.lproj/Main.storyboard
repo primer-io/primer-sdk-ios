@@ -17,110 +17,201 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Fpg-xO-ASt">
-                                <rect key="frame" x="40" y="594" width="334" height="248"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="32" translatesAutoresizingMaskIntoConstraints="NO" id="Fpg-xO-ASt">
+                                <rect key="frame" x="24" y="339" width="366" height="499"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pnm-Mo-3XH">
-                                        <rect key="frame" x="0.0" y="0.0" width="334" height="40"/>
-                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <accessibility key="accessibilityConfiguration" identifier="Universal Checkout Button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="9Ss-wu-T5y"/>
-                                        </constraints>
-                                        <state key="normal" title="Universal Checkout">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <buttonConfiguration key="configuration" style="plain" title="Universal Checkout">
-                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </buttonConfiguration>
-                                        <connections>
-                                            <action selector="openUniversalCheckoutTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="CNE-Rj-Cke"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="but-Bs-no4">
-                                        <rect key="frame" x="0.0" y="52" width="334" height="40"/>
-                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="95Q-oB-p6m"/>
-                                        </constraints>
-                                        <state key="normal" title="Vault">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <buttonConfiguration key="configuration" style="plain" title="Vault">
-                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </buttonConfiguration>
-                                        <connections>
-                                            <action selector="openVaultButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="oQm-Ri-3tu"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dOz-7I-M2H">
-                                        <rect key="frame" x="0.0" y="104" width="334" height="40"/>
-                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="9pf-jw-sgz"/>
-                                        </constraints>
-                                        <state key="normal" title="Vault">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <buttonConfiguration key="configuration" style="plain" title="Checkout with Apple Pay">
-                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </buttonConfiguration>
-                                        <connections>
-                                            <action selector="checkoutWithApplePayButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="BvT-WZ-rCP"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bu3-wF-6zB">
-                                        <rect key="frame" x="0.0" y="156" width="334" height="40"/>
-                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="QVp-vl-HcT"/>
-                                        </constraints>
-                                        <state key="normal" title="Vault">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <buttonConfiguration key="configuration" style="plain" title="Vault Klarna">
-                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </buttonConfiguration>
-                                        <connections>
-                                            <action selector="vaultKlarnaButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="Dgo-Yw-kqg"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="New-JD-waY">
-                                        <rect key="frame" x="0.0" y="208" width="334" height="40"/>
-                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="PP7-S7-Yf0"/>
-                                        </constraints>
-                                        <state key="normal" title="Vault">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <buttonConfiguration key="configuration" style="plain" title="Checkout with APM">
-                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </buttonConfiguration>
-                                        <connections>
-                                            <action selector="checkoutWithApmButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="kPc-eZ-2S0"/>
-                                        </connections>
-                                    </button>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="roR-sx-9OE">
+                                        <rect key="frame" x="0.0" y="0.0" width="366" height="101.5"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show Payment Method Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="caV-rt-GuC">
+                                                <rect key="frame" x="0.0" y="0.0" width="366" height="20.5"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="20.5" id="dJw-zB-gYD"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="jTw-JW-Dqe">
+                                                <rect key="frame" x="0.0" y="28.5" width="366" height="32"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="31" id="Lf1-80-Eh1"/>
+                                                </constraints>
+                                                <segments>
+                                                    <segment title="Checkout"/>
+                                                    <segment title="Vault"/>
+                                                </segments>
+                                                <connections>
+                                                    <action selector="paymentMethodSessionIntentChanged:" destination="rv5-RJ-1cA" eventType="valueChanged" id="QQB-DF-gfG"/>
+                                                </connections>
+                                            </segmentedControl>
+                                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Payment method type" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="7ek-We-ggh">
+                                                <rect key="frame" x="0.0" y="67.5" width="366" height="34"/>
+                                                <accessibility key="accessibilityConfiguration" label="Payment method type"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="34" id="au4-bi-aL2"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="paymentMethodTypeEditingDidChange:" destination="rv5-RJ-1cA" eventType="editingChanged" id="Jiz-ZX-sKK"/>
+                                                </connections>
+                                            </textField>
+                                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fWt-IP-YOw">
+                                                <rect key="frame" x="0.0" y="101.5" width="366" height="40"/>
+                                                <color key="backgroundColor" systemColor="labelColor"/>
+                                                <accessibility key="accessibilityConfiguration" label="Show Payment Method"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="AhD-Xy-HSf"/>
+                                                </constraints>
+                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Show Payment Method"/>
+                                                <connections>
+                                                    <action selector="showPaymentMethodButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="e47-Gc-NuJ"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Qkg-nw-pN7">
+                                        <rect key="frame" x="0.0" y="133.5" width="366" height="68.5"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Universal Checkout Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cr0-c7-SYM">
+                                                <rect key="frame" x="0.0" y="0.0" width="366" height="20.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pnm-Mo-3XH">
+                                                <rect key="frame" x="0.0" y="28.5" width="366" height="40"/>
+                                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="Universal Checkout Button"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="9Ss-wu-T5y"/>
+                                                </constraints>
+                                                <state key="normal" title="Universal Checkout">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <buttonConfiguration key="configuration" style="plain" title="Universal Checkout">
+                                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </buttonConfiguration>
+                                                <connections>
+                                                    <action selector="openUniversalCheckoutTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="CNE-Rj-Cke"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="vRD-cN-8MP">
+                                        <rect key="frame" x="0.0" y="234" width="366" height="68.5"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vault Manager Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a6o-tl-RK1">
+                                                <rect key="frame" x="0.0" y="0.0" width="366" height="20.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="but-Bs-no4">
+                                                <rect key="frame" x="0.0" y="28.5" width="366" height="40"/>
+                                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="95Q-oB-p6m"/>
+                                                </constraints>
+                                                <state key="normal" title="Vault">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <buttonConfiguration key="configuration" style="plain" title="Vault">
+                                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </buttonConfiguration>
+                                                <connections>
+                                                    <action selector="openVaultButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="oQm-Ri-3tu"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="AvL-GE-uUb">
+                                        <rect key="frame" x="0.0" y="334.5" width="366" height="164.5"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Other Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MAK-96-XWb" userLabel="Other Options">
+                                                <rect key="frame" x="0.0" y="0.0" width="366" height="20.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dOz-7I-M2H">
+                                                <rect key="frame" x="0.0" y="28.5" width="366" height="40"/>
+                                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="9pf-jw-sgz"/>
+                                                </constraints>
+                                                <state key="normal" title="Vault">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <buttonConfiguration key="configuration" style="plain" title="Checkout with Apple Pay">
+                                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </buttonConfiguration>
+                                                <connections>
+                                                    <action selector="checkoutWithApplePayButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="BvT-WZ-rCP"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bu3-wF-6zB">
+                                                <rect key="frame" x="0.0" y="76.5" width="366" height="40"/>
+                                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="QVp-vl-HcT"/>
+                                                </constraints>
+                                                <state key="normal" title="Vault">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <buttonConfiguration key="configuration" style="plain" title="Vault Klarna">
+                                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </buttonConfiguration>
+                                                <connections>
+                                                    <action selector="vaultKlarnaButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="Dgo-Yw-kqg"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="New-JD-waY">
+                                                <rect key="frame" x="0.0" y="124.5" width="366" height="40"/>
+                                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="Vault Manager Button"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="PP7-S7-Yf0"/>
+                                                </constraints>
+                                                <state key="normal" title="Vault">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <buttonConfiguration key="configuration" style="plain" title="Checkout with APM">
+                                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </buttonConfiguration>
+                                                <connections>
+                                                    <action selector="checkoutWithApmButtonTapped:" destination="rv5-RJ-1cA" eventType="touchUpInside" id="kPc-eZ-2S0"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
                                 </subviews>
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="gtf-1b-GN8"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="leading" secondItem="1AU-v5-4lz" secondAttribute="leadingMargin" constant="20" id="7ft-US-D2G"/>
-                            <constraint firstItem="gtf-1b-GN8" firstAttribute="bottom" secondItem="Fpg-xO-ASt" secondAttribute="bottom" constant="20" id="J3Q-UE-2ox"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="Fpg-xO-ASt" secondAttribute="trailing" constant="20" id="Zwa-lM-9Fh"/>
+                            <constraint firstItem="gtf-1b-GN8" firstAttribute="bottom" secondItem="Fpg-xO-ASt" secondAttribute="bottom" constant="24" id="00g-4C-qUZ"/>
+                            <constraint firstItem="gtf-1b-GN8" firstAttribute="trailing" secondItem="Fpg-xO-ASt" secondAttribute="trailing" constant="24" id="NfY-6c-nFc"/>
+                            <constraint firstItem="Fpg-xO-ASt" firstAttribute="leading" secondItem="gtf-1b-GN8" secondAttribute="leading" constant="24" id="xq9-8g-qD7"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="0lO-Kc-k9w"/>
+                    <connections>
+                        <outlet property="paymentMethodTypeSessionIntentControl" destination="jTw-JW-Dqe" id="RVe-Wk-t7B"/>
+                        <outlet property="paymentMethodTypeTextfield" destination="7ek-We-ggh" id="Kbf-jR-FWp"/>
+                        <outlet property="showPaymentMethodButton" destination="fWt-IP-YOw" id="sYX-h8-yKl"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IiI-j4-1kq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3745" y="1819"/>
+            <point key="canvasLocation" x="3744.9275362318845" y="1818.75"/>
         </scene>
         <!--Merchant Session And Settings View Controller-->
         <scene sceneID="DXc-vV-aPm">
@@ -145,7 +236,7 @@
                                 <rect key="frame" x="0.0" y="163" width="414" height="561"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="Yce-hH-uhX">
-                                        <rect key="frame" x="20" y="20" width="374" height="3404"/>
+                                        <rect key="frame" x="20" y="20" width="374" height="3455"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="oCT-9e-d89" userLabel="Environment Stack View">
                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="240.5"/>
@@ -298,7 +389,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="f7f-4e-ZPN" userLabel="SDK Settings Stack View">
-                                                <rect key="frame" x="0.0" y="745" width="374" height="403.5"/>
+                                                <rect key="frame" x="0.0" y="745" width="374" height="454.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SDK Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HZ9-hO-miI">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -366,8 +457,23 @@
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="dyw-4Y-N1z" userLabel="Disable Error Screen Stack View">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="4lC-2k-qct" userLabel="Disable Success Screen Stack View">
                                                         <rect key="frame" x="0.0" y="321.5" width="374" height="31"/>
+                                                        <subviews>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disable init screen" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wt0-U1-U8V" userLabel="Disable Success Screen Apply theming">
+                                                                <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
+                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                <nil key="textColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="9ji-Ev-HnU" userLabel="Disable Init Screen Switch">
+                                                                <rect key="frame" x="325" y="0.0" width="51" height="31"/>
+                                                                <accessibility key="accessibilityConfiguration" identifier="Disable Init Screen Switch" label="Disable Init Screen Switch"/>
+                                                            </switch>
+                                                        </subviews>
+                                                    </stackView>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="dyw-4Y-N1z" userLabel="Disable Error Screen Stack View">
+                                                        <rect key="frame" x="0.0" y="372.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disable error screen" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OHe-89-28f" userLabel="Disable Error Screen Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -381,7 +487,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="HFz-F7-hYN" userLabel="Perform Payment After Vaulting Stack View">
-                                                        <rect key="frame" x="0.0" y="372.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="423.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pay after vault success" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AkJ-aG-BmV" userLabel="Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -397,7 +503,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Wmb-0A-wCB" userLabel="Order Stack View">
-                                                <rect key="frame" x="0.0" y="1188.5" width="374" height="461"/>
+                                                <rect key="frame" x="0.0" y="1239.5" width="374" height="461"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Order" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rhW-8E-83f">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -508,7 +614,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="cka-yb-xqD" userLabel="Customer Stack View">
-                                                <rect key="frame" x="0.0" y="1689.5" width="374" height="1565.5"/>
+                                                <rect key="frame" x="0.0" y="1740.5" width="374" height="1565.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Customer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3y1-pX-UrW">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -909,7 +1015,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="32O-OV-0ey" userLabel="Surcharge Group Stack View">
-                                                <rect key="frame" x="0.0" y="3295" width="374" height="109"/>
+                                                <rect key="frame" x="0.0" y="3346" width="374" height="109"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hmO-CL-ebG">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="31"/>
@@ -1041,6 +1147,7 @@
                         <outlet property="customerMobileNumberTextField" destination="jJ3-t3-3b1" id="dUq-IG-rCj"/>
                         <outlet property="customerStackView" destination="cka-yb-xqD" id="TaX-cQ-OLn"/>
                         <outlet property="disableErrorScreenSwitch" destination="RC1-bw-dHB" id="8Vu-yw-7ka"/>
+                        <outlet property="disableInitScreenSwitch" destination="9ji-Ev-HnU" id="XJy-Z6-Jjc"/>
                         <outlet property="disableSuccessScreenSwitch" destination="h2a-FU-Cbb" id="dYl-8C-tNa"/>
                         <outlet property="environmentSegmentedControl" destination="ekZ-3s-TxK" id="SsX-7s-JaH"/>
                         <outlet property="environmentStackView" destination="oCT-9e-d89" id="JnB-93-2Gv"/>

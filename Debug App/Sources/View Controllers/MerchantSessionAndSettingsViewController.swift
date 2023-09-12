@@ -62,6 +62,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var applyThemingSwitch: UISwitch!
     @IBOutlet weak var disableSuccessScreenSwitch: UISwitch!
     @IBOutlet weak var disableErrorScreenSwitch: UISwitch!
+    @IBOutlet weak var disableInitScreenSwitch: UISwitch!
     
     
     // MARK: Order Inputs
@@ -434,7 +435,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
         
         let uiOptions = PrimerUIOptions(
-            isInitScreenEnabled: true,
+            isInitScreenEnabled: !disableInitScreenSwitch.isOn,
             isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
             isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
             theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
