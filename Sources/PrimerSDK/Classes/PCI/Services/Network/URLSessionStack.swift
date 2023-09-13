@@ -62,14 +62,16 @@ internal class URLSessionStack: NetworkService, LogReporter {
             request.allHTTPHeaderFields = headers
         }
         
-#if DEBUG
-        var msg = "\nHeaders: \(request.allHTTPHeaderFields ?? [:])"
+        var msg = ""
+        
+#if DEBUG && URLSessionStack_DebugHeaders
+        msg += "\nHeaders: \(request.allHTTPHeaderFields ?? [:])"
 #endif
         
         if let data = endpoint.body {
             request.httpBody = data
             let jsonStr = data.prettyPrintedJSONString
-#if DEBUG
+#if DEBUG && URLSessionStack_DebugBody
             msg += "\nBody:\n\(jsonStr ?? "Empty body")"
 #endif
         }

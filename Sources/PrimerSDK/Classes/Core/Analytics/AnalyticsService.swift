@@ -15,7 +15,7 @@ extension Analytics {
         
         static var filepath: URL = {
             let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
-            Primer.shared.logger?.debug(message: "Analytics URL:\n\(url)\n")
+            Primer.shared.logger?.debug(message: "Analytics URL: \(url)")
             return url
         }()
         
@@ -30,7 +30,7 @@ extension Analytics {
         internal static func record(events: [Analytics.Event]) -> Promise<Void> {
             return Promise { seal in
                 Analytics.queue.async {
-                    Primer.shared.logger?.debug(message: "📚 ANALYTICS\n📚 Recording \(events.count) events")
+                    Primer.shared.logger?.debug(message: "📚 Analytics: Recording \(events.count) events")
                     
                     do {
                         let storedEvents: [Analytics.Event] = try Analytics.Service.loadEventsSynchronously()
@@ -60,7 +60,7 @@ extension Analytics {
         internal static func sync(batchSize: UInt = 300) -> Promise<Void> {
             return Promise { seal in
                 Analytics.queue.async {
-                    Primer.shared.logger?.debug(message: "📚 ANALYTICS\n📚 Syncing...")
+                    Primer.shared.logger?.debug(message: "📚 Analytics: Syncing...")
                     
                     let promises: [Promise<Void>] = [
                         Analytics.Service.sendSkdLogEvents(batchSize: batchSize),
@@ -71,17 +71,17 @@ extension Analytics {
                         when(fulfilled: promises)
                     }
                     .done { responses in
-                        Primer.shared.logger?.debug(message: "📚 ANALYTICS\n📚 All events synced...")
+                        Primer.shared.logger?.debug(message: "📚 Analytics: All events synced...")
 
                     }
                     .ensure {
                         let remainingEvents = try? self.loadEventsSynchronously()
-                        Primer.shared.logger?.debug(message: "📚 ANALYTICS\n📚 Deleted synced events. There're \((remainingEvents ?? []).count) events remaining in the queue.")
+                        Primer.shared.logger?.debug(message: "📚 Analytics: Deleted synced events. There're \((remainingEvents ?? []).count) events remaining in the queue.")
                         seal.fulfill()
                         
                     }
                     .catch { err in
-                        Primer.shared.logger?.error(message: "📚 ANALYTICS\n📚 Failed to sync events with error \(err.localizedDescription)")
+                        Primer.shared.logger?.error(message: "📚 Analytics: Failed to sync events with error \(err.localizedDescription)")
                         seal.reject(err)
                     }
                 }
@@ -197,13 +197,13 @@ extension Analytics {
             ) { result in
                 switch result {
                 case .success:
-                    Primer.shared.logger?.debug(message: "📚 ANALYTICS\n📚 Finished syncing \(events.count) events on URL: \(url.absoluteString)")
+                    Primer.shared.logger?.debug(message: "📚 Analytics: Finished syncing \(events.count) events on URL: \(url.absoluteString)")
                     Analytics.Service.deleteEventsSynchronously(events)
                     
                     completion(nil)
                     
                 case .failure(let err):
-                    Primer.shared.logger?.error(message: "📚 ANALYTICS\n📚 Failed to sync \(events.count) events on URL \(url.absoluteString) with error \(err)")
+                    Primer.shared.logger?.error(message: "📚 Analytics: Failed to sync \(events.count) events on URL \(url.absoluteString) with error \(err)")
                     ErrorHandler.handle(error: err)
                     completion(err)
                 }
@@ -212,7 +212,7 @@ extension Analytics {
         
         internal static func loadEventsSynchronously() throws -> [Analytics.Event] {
             do {
-                Primer.shared.logger?.error(message: "📚 ANALYTICS\n📚 Loading events")
+                Primer.shared.logger?.error(message: "📚 Loading events")
                 
                 if #available(iOS 16.0, *) {
                     if !FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
@@ -237,21 +237,21 @@ extension Analytics {
         
         private static func saveSynchronously(events: [Analytics.Event]) {
             DispatchQueue.global(qos: .utility).sync {
-                Primer.shared.logger?.debug(message: "📚 ANALYTICS\n📚 Saving \(events.count) events")
+                Primer.shared.logger?.debug(message: "📚 Saving \(events.count) events")
                 
                 do {
                     let eventsData = try JSONEncoder().encode(events)
                     try eventsData.write(to: Analytics.Service.filepath)
                     
                 } catch {
-                    Primer.shared.logger?.error(message: "📚 ANALYTICS\n📚 \(error.localizedDescription)")
+                    Primer.shared.logger?.error(message: "📚 \(error.localizedDescription)")
                 }
             }
         }
         
         internal static func deleteEventsSynchronously(_ events: [Analytics.Event]? = nil)  {
             Analytics.queue.sync {
-                Primer.shared.logger?.debug(message: "📚 ANALYTICS\n📚 Deleting \(events == nil ? "all" : "\(events!.count)") events")
+                Primer.shared.logger?.debug(message: "📚 Deleting \(events == nil ? "all" : "\(events!.count)") events")
                 
                 do {
                     if let events = events {
@@ -263,14 +263,14 @@ extension Analytics {
                         Analytics.Service.deleteAnalyticsFile()
                     }
                 } catch {
-                    Primer.shared.logger?.error(message: "📚 ANALYTICS\n📚 Failed to save partial events before deleting file. Deleting file anyway.")
+                    Primer.shared.logger?.error(message: "📚 Analytics: Failed to save partial events before deleting file. Deleting file anyway.")
                     Analytics.Service.deleteAnalyticsFile()
                 }
             }
         }
         
         internal static func deleteAnalyticsFile() {
-            Primer.shared.logger?.debug(message: "📚 ANALYTICS\n📚 Deleting analytics file at \(Analytics.Service.filepath.absoluteString)")
+            Primer.shared.logger?.debug(message: "📚 Analytics: Deleting analytics file at \(Analytics.Service.filepath.absoluteString)")
             
             if #available(iOS 16.0, *) {
                 if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
