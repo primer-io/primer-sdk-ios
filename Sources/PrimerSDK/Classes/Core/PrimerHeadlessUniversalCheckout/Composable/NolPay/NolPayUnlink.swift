@@ -1,0 +1,175 @@
+//
+//  NolPayUnlink.swift
+//  PrimerSDK
+//
+//  Created by Boris on 13.9.23..
+//
+
+import Foundation
+import PrimerNolPaySDK
+
+public enum NolPayUnlinkDataStep: PrimerHeadlessStep {
+    case collectCardData
+    case collectPhoneData
+    case collectOtpData
+    case cardUnlinked
+}
+
+public enum NolPayUnlinkCollectableData: PrimerCollectableData {
+    case cardData(nolPaymentCard: PrimerNolPayCard)
+    case phoneData(mobileNumber: String, phoneCountryDiallingCode: String)
+    case otpData(otpCode: String)
+}
+
+public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
+    public typealias T = NolPayUnlinkCollectableData
+    
+    private var nolPay: PrimerNolPay!
+    public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
+    public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
+    public weak var stepDelegate: PrimerHeadlessStepableDelegate?
+    
+    private var mobileNumber: String?
+    private var phoneCountryDiallingCode: String?
+    private var otpCode: String?
+    private var cardNumber: String?
+    private var unlinkToken: String?
+    private var nextDataStep: NolPayUnlinkDataStep = .collectCardData
+
+    public func updateCollectedData(data: NolPayUnlinkCollectableData) {
+        switch data {
+        case .cardData(nolPaymentCard: let nolPaymentCard):
+            cardNumber = nolPaymentCard.cardNumber
+        case .phoneData(mobileNumber: let mobileNumber, phoneCountryDiallingCode: let phoneCountryDiallingCode):
+            self.mobileNumber = mobileNumber
+            self.phoneCountryDiallingCode = phoneCountryDiallingCode
+        case .otpData(otpCode: let otpCode):
+            self.otpCode = otpCode
+        }
+        
+        // Notify validation delegate after updating data
+        let validations = validateData(for: data)
+        validationDelegate?.didValidate(validations: validations, for: data)
+    }
+    
+    private func validateData(for data: NolPayUnlinkCollectableData) -> [PrimerValidationError] {
+        var errors: [PrimerValidationError] = []
+        
+        switch data {
+
+        case .phoneData(mobileNumber: let mobileNumber, phoneCountryDiallingCode: let phoneCountryDiallingCode):
+            if mobileNumber.isEmpty {
+                errors.append(PrimerValidationError.invalidPhoneNumber(
+                    message: "Phone number is not valid.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString))
+            }
+
+            if phoneCountryDiallingCode.isEmpty {
+                errors.append(PrimerValidationError.invalidPhoneNumberCountryCode(
+                    message: "Country code is not valid.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString))
+
+            }
+        case .otpData(otpCode: let otpCode):
+            if otpCode.isEmpty {
+            //                //                errors.append(PrimerValidationError(errorId: "invalid-otp", description: "Invalid OTP"))
+            }
+        default:
+            break
+        }
+        
+        return errors
+    }
+
+    public func submit() {
+        switch nextDataStep {
+
+        case .collectCardData:
+            nextDataStep = .collectPhoneData
+            stepDelegate?.didReceiveStep(step: NolPayUnlinkDataStep.collectPhoneData)
+        case .collectPhoneData:
+            guard let mobileNumber = mobileNumber,
+                  let phoneCountryDiallingCode = phoneCountryDiallingCode,
+                  let cardNumber = cardNumber
+            else {
+                //                self.errorDelegate?.didReceiveError(error: error)
+                return
+            }
+            nolPay.sendUnlinkOTPTo(mobileNumber: mobileNumber,
+                                   withCountryCode: phoneCountryDiallingCode,
+                                   andCardNumber: cardNumber) { result in
+                switch result {
+                    
+                case .success((_, let token)):
+                    self.unlinkToken = token
+                    self.nextDataStep = .collectOtpData
+                    self.stepDelegate?.didReceiveStep(step: NolPayUnlinkDataStep.collectOtpData)
+                case .failure(let error):
+                    self.errorDelegate?.didReceiveError(error: error)
+                }
+            }
+        case .collectOtpData:
+            guard let otpCode = otpCode,
+                  let unlinkToken = unlinkToken,
+                  let cardNumber = cardNumber
+            else {
+                //                self.errorDelegate?.didReceiveError(error: error)
+                return
+            }
+            
+            nolPay.unlinkCardWith(cardNumber: cardNumber, otp: otpCode, andUnlinkToken: unlinkToken) { result in
+                switch result {
+                case .success(let success):
+                    if success {
+                        self.nextDataStep = .cardUnlinked
+                        self.stepDelegate?.didReceiveStep(step: NolPayUnlinkDataStep.cardUnlinked)
+                    } else {
+                        //                        self.errorDelegate?.didReceiveError(error: error)
+                    }
+                case .failure(let error):
+                    self.errorDelegate?.didReceiveError(error: error)
+
+                }
+            }
+
+        default:
+            break
+        }
+    }
+    
+    public func start() {
+        guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
+              let appId = nolPaymentMethodOption.appId
+        else {
+            self.errorDelegate?.didReceiveError(error: PrimerError.generic(message: "Initialisation error",
+                                                                           userInfo: [
+                                                                               "file": #file,
+                                                                               "class": "\(Self.self)",
+                                                                               "function": #function,
+                                                                               "line": "\(#line)"
+                                                                           ],
+                                                                           diagnosticsId: UUID().uuidString))
+            return
+        }
+        
+        nolPay = PrimerNolPay(appId: appId, isDebug: true, isSandbox: true) { sdkId, deviceId in
+            // Implement your API call here and return the fetched secret key
+            //            Task {
+            //               ... async await
+            //                }
+            return "f335565cce50459d82e5542de7f56426"
+        }
+    }
+}

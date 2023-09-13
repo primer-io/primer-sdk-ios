@@ -131,6 +131,8 @@ class PrimerPaymentMethod: Codable {
                 PrimerPaymentMethodType.rapydPromptPay,
                 PrimerPaymentMethodType.omisePromptPay:
                 return QRCodeTokenizationViewModel(config: self)
+            case PrimerPaymentMethodType.nolPay:
+                return NolPayTokenizationViewModel(config: self)
                 
             default:
                 break

@@ -33,6 +33,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
     case invalidState(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidCountry(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidPhoneNumber(message: String, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidPhoneNumberCountryCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRetailer(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
     case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String, validVaultedPaymentMethodAdditionalDataType: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -71,6 +72,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return diagnosticsId
         case .vaultedPaymentMethodAdditionalDataMismatch(_, _, _, let diagnosticsId):
             return diagnosticsId
+        case .invalidPhoneNumberCountryCode(_, _, let diagnosticsId):
+            return diagnosticsId
         }
     }
 
@@ -108,6 +111,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "invalid-retailer"
         case .vaultedPaymentMethodAdditionalDataMismatch:
             return "vaulted-payment-method-additional-data-mismatch"
+        case .invalidPhoneNumberCountryCode:
+            return "invalid-phone-number-country-code"
         }
     }
     
@@ -145,6 +150,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "[\(errorId)] \(message)"
         case .vaultedPaymentMethodAdditionalDataMismatch(let paymentMethodType, let validVaultedPaymentMethodAdditionalDataType, _, _):
             return "[\(errorId)] Vaulted payment method \(paymentMethodType) needs additional data of type \(validVaultedPaymentMethodAdditionalDataType)"
+        case .invalidPhoneNumberCountryCode(message: let message, _, _):
+            return "[\(errorId)] \(message)"
         }
     }
     
@@ -167,7 +174,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
                 .invalidPhoneNumber(_, let userInfo, _),
                 .invalidRawData(let userInfo, _),
                 .invalidRetailer(_, let userInfo, _),
-                .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _):
+                .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _),
+                .invalidPhoneNumberCountryCode(_, let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
 
@@ -229,6 +237,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return nil
         case .vaultedPaymentMethodAdditionalDataMismatch:
             return nil
+        case .invalidPhoneNumberCountryCode:
+            return "PHONE_NUMBER_COUNTRY_CODE"
         }
     }
 }

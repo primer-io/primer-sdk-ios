@@ -70,7 +70,7 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .then { url -> Promise<Void> in
-                self.apayaUrl = url
+//                self.apayaUrl = url
                 return self.presentPaymentMethodUserInterface()
             }
             .then { () -> Promise<Void> in

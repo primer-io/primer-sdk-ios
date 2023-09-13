@@ -11,6 +11,7 @@ target 'Debug App' do
   pod 'PrimerKlarnaSDK'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerNolPaySDK', :path => '../../../primer-nol-pay-sdk-ios'
+  pod 'IQKeyboardManagerSwift'
 
   
   target 'Debug App Tests' do

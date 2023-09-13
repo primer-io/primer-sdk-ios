@@ -9,7 +9,7 @@
 import PrimerSDK
 import UIKit
 
-var environment: Environment = .sandbox
+var environment: Environment = .staging
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
 
@@ -131,7 +131,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var clientSession = ClientSessionRequestBody(
         customerId: "ios-customer-\(String.randomString(length: 8))",
         orderId: "ios-order-\(String.randomString(length: 8))",
-        currencyCode: .EUR,
+        currencyCode: .AED,
         amount: nil,
         metadata: nil,
         customer: ClientSessionRequestBody.Customer(
@@ -221,6 +221,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             environmentSegmentedControl.selectedSegmentIndex = 0
         }
         
+        customDefinedApiKey = "a33ab4fd-f5c7-4651-87c1-8e78dbdd61d7"
         self.apiKeyTextField.text = customDefinedApiKey
         
         let viewTap = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
