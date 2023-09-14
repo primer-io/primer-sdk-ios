@@ -21,7 +21,7 @@ jobs:
         name: Create bump and changelog
         uses: commitizen-tools/commitizen-action@master
         with:
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          github_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
           branch: release/next
       # - name: Create Pull Request
       #   uses: peter-evans/create-pull-request@v5
