@@ -1,0 +1,35 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    name: "Bump release version and create changelog"
+    steps:
+      - name: Check out release branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Create release branch
+        run: |
+          git checkout -b release/next
+          git push -u origin release/next
+      - id: cz
+        name: Create bump and changelog
+        uses: commitizen-tools/commitizen-action@master
+        with:
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          branch: release/next
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          base: master
+          branch: release/next
+          delete-branch: true
+          title: Release ${{ steps.cz.outputs.version }}
+          body: ''
+
