@@ -25,10 +25,6 @@ internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController 
         lazyShareButton.addTarget(self, action: #selector(shareVoucherInfoTapped(_:)), for: .touchUpInside)
         return lazyShareButton
     }()
-
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     init(navigationBarLogo: UIImage?, formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel, shouldShareVoucherInfoWithText textToShare: String? = nil) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel

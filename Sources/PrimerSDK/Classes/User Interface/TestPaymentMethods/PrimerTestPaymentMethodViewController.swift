@@ -14,8 +14,8 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
     private var viewModel: PrimerTestPaymentMethodTokenizationViewModel!
     
     deinit {
+        viewModel.cancel()
         viewModel = nil
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(viewModel: PrimerTestPaymentMethodTokenizationViewModel) {
