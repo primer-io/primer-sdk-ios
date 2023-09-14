@@ -2,5 +2,6 @@
 version_scheme = "semver"
 version = "2.17.2"
 version_files = [
-  "Sources/PrimerSDK/Classes/version.swift:let PrimerSDKVersion"
+  "Sources/PrimerSDK/Classes/version.swift:let PrimerSDKVersion",
+  "PrimerSDK.podspec:s.version"
 ]
