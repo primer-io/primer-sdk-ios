@@ -26,12 +26,12 @@ jobs:
           prerelease: rc
       - name: Print Version
         run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
-          base: master
-          branch: release-candidate
-          delete-branch: true
-          title: Release Candidate ${{ steps.cz.outputs.version }}
-          body: ''
+      # - name: Create Pull Request
+      #   uses: peter-evans/create-pull-request@v5
+      #   with:
+      #     token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+      #     base: master
+      #     branch: release-candidate
+      #     delete-branch: true
+      #     title: Release Candidate ${{ steps.cz.outputs.version }}
+      #     body: ''
