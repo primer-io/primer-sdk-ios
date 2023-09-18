@@ -62,24 +62,12 @@ internal class URLSessionStack: NetworkService, LogReporter {
             request.allHTTPHeaderFields = headers
         }
         
-        var msg = ""
-        
-#if DEBUG && URLSessionStack_DebugHeaders
-        msg += "\nHeaders: \(request.allHTTPHeaderFields ?? [:])"
-#endif
-        
         if let data = endpoint.body {
             request.httpBody = data
-            let jsonStr = data.prettyPrintedJSONString
-#if DEBUG && URLSessionStack_DebugBody
-            msg += "\nBody:\n\(jsonStr ?? "Empty body")"
-#endif
         }
         
 #if DEBUG
-        if let queryParams = endpoint.queryParameters {
-            msg += "\nQuery parameters: \(queryParams)"
-            
+        if let queryParams = endpoint.queryParameters {            
             var urlQueryItems: [URLQueryItem] = []
             
             for (key, val) in queryParams {
@@ -93,10 +81,14 @@ internal class URLSessionStack: NetworkService, LogReporter {
             }
         }
  
-        self.logger.debug(message: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!) \n\(msg)")
+        logger.debug(message: "🌎 Network request [\(request.httpMethod!)] \(request.url!)")
+        logger.debug(message: "📃 Request Headers: ")
+        request.allHTTPHeaderFields?.forEach { key, value in
+            logger.debug(message: " - \(key) = \(value)")
+        }
 #endif
         
-        let dataTask = session.dataTask(with: request) { data, response, error in
+        let dataTask = session.dataTask(with: request) { [logger] data, response, error in
             let httpResponse = response as? HTTPURLResponse
             
             var resEventProperties: NetworkCallEventProperties?
@@ -119,11 +111,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
             }
             
 #if DEBUG
-            msg = ""
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                msg += "\nStatus: \(httpResponse.statusCode)\nHeaders: \(httpResponse.allHeaderFields as! [String: String])"
-            }
+
 #endif
                         
             if let error = error {
@@ -134,8 +122,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
                 }
                 
 #if DEBUG
-                msg += "\nError: \(error)"
-                self.logger.error(message: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!) \n\(msg)")
+                logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)", userInfo: ["ErrorMessage" : error.localizedDescription])
 #endif
                 
                 let err = InternalError.underlyingErrors(errors: [error], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -152,8 +139,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
                 }
                 
 #if DEBUG
-                msg += "\nNo data received."
-                self.logger.error(message: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!) \n\(msg)")
+                self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                self.logger.error(message: "No data received.")
 #endif
                 
                 let err = InternalError.noData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -171,7 +158,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
 #if DEBUG
                 if endpoint.shouldParseResponseBody {
                     if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
-                        self.logger.debug(message: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)\n\(msg)")
+                        logger.debug(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                        logger.debug(message: "Analytics event sent")
                     } else {
                         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
                         let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
@@ -179,10 +167,16 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         if jsonData != nil {
                             jsonStr = String(data: jsonData!, encoding: .utf8 )
                         }
-                        
-                        msg += "\nBody:\n\(jsonStr ?? "Empty body")"
-                        
-                        self.logger.debug(message: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!) \n\(msg)")
+                        logger.debug(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                        if let httpResponse = response as? HTTPURLResponse {
+                            logger.debug(message: "✋ Status: \(httpResponse.statusCode)")
+                            logger.debug(message: "📃 Headers: ")
+                            httpResponse.allHeaderFields.forEach { key, value in
+                                logger.debug(message: " - \(key) = \(value)")
+                            }
+                        }
+                        logger.debug(message: "Body: ")
+                        logger.debug(message: jsonStr ?? "No body found")
                     }
                 }
 #endif
@@ -213,8 +207,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         ErrorHandler.handle(error: err)
                         
 #if DEBUG
-                        msg += "\nError: Status code \(statusCode)\n\(err)"
-                        self.logger.error(message: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!) \n\(msg)")
+                        logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                        logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
 #endif
                         
                         DispatchQueue.main.async { completion(.failure(err)) }
@@ -224,8 +218,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         ErrorHandler.handle(error: err)
                         
 #if DEBUG
-                        msg += "\nError: Status code \(statusCode)\n\(err)"
-                        self.logger.error(message: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!) \n\(msg)")
+                        self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                        logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
 #endif
                         
                         DispatchQueue.main.async { completion(.failure(err)) }
@@ -235,8 +229,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         ErrorHandler.handle(error: err)
                         
 #if DEBUG
-                        msg += "\nError: Status code \(statusCode)\n\(err)"
-                        self.logger.error(message: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!) \n\(msg)")
+                        self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                        logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
 #endif
                         
                         DispatchQueue.main.async { completion(.failure(err)) }
@@ -250,10 +244,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
                             resEvent!.properties = resEventProperties
                             Analytics.Service.record(event: resEvent!)
                         }
-                        
+
 #if DEBUG
-                        msg += "\nError: Status code \(statusCode)\n\(err.localizedDescription)"
-                        self.logger.error(message: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!) \n\(msg)")
+                        self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                        logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
 #endif
                         
                         DispatchQueue.main.async { completion(.failure(err)) }
@@ -270,8 +264,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     }
                     
 #if DEBUG
-                    msg += "\nError: Failed to parse."
-                    self.logger.error(message: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!) \n\(msg)")
+                    self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                    self.logger.error(message: "Error: Failed to parse")
 #endif
                     
                     DispatchQueue.main.async { completion(.failure(InternalError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))) }

@@ -100,7 +100,7 @@ class Networking {
             request.httpBody = body
             
             let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments)
-            msg += "Body:\n\(bodyJson ?? [:])\n"
+//            msg += "Body:\n\(bodyJson ?? [:])\n"
         }
 
         Primer.shared.logger?.debug(message: msg)
@@ -108,8 +108,8 @@ class Networking {
         
         URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
             DispatchQueue.main.async {
-                msg += "RESPONSE\n"
-                msg += "URL: \(request.url?.absoluteString ?? "Invalid")\n"
+//                msg += "RESPONSE\n"
+//                msg += "URL: \(request.url?.absoluteString ?? "Invalid")\n"
                 
                 if err != nil {
                     msg += "Error: \(err!)\n"
@@ -262,7 +262,6 @@ class Networking {
         let url = environment.baseUrl.appendingPathComponent("/api/client-session")
 
         var bodyData: Data!
-        var headers: [String: String]?
 
         do {
             if let requestBodyJson = requestBody.dictionaryValue {

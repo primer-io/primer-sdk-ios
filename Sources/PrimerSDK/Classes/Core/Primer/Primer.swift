@@ -49,9 +49,8 @@ public class Primer {
      Configure SDK's settings
      */
     
-    public func configure(settings: PrimerSettings? = nil, logger: PrimerLogger? = nil, delegate: PrimerDelegate? = nil) {
+    public func configure(settings: PrimerSettings? = nil, delegate: PrimerDelegate? = nil) {
         self.delegate = delegate
-        self.logger = logger
         PrimerInternal.shared.configure(settings: settings)
     }
     

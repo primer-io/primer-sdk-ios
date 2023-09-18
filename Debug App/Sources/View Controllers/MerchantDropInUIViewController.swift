@@ -33,7 +33,7 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Primer [\(environment.rawValue)]"
-        Primer.shared.configure(settings: settings, logger: ExampleLogger(), delegate: self)
+        Primer.shared.configure(settings: settings, delegate: self)
     }
     
     // MARK: - ACTIONS
