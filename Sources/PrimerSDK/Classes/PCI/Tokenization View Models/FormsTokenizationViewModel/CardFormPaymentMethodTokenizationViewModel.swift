@@ -506,7 +506,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     return
                 }
                 
-                let threeDSService = ThreeDSService()
+                var threeDSService: ThreeDSServiceProtocol = ThreeDSService()
+#if DEBUG
+                if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+                    threeDSService = Mock3DSService()
+                }
+#endif
                 threeDSService.perform3DS(
                     paymentMethodTokenData: paymentMethodTokenData,
                     sdkDismissed: nil) { result in
@@ -520,7 +525,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                             }
                         }
                     }
-                
             } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
                 if let redirectUrlStr = decodedJWTToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),
