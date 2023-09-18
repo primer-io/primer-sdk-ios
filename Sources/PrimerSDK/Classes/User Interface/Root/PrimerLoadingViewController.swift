@@ -52,6 +52,7 @@ class PrimerLoadingViewController: PrimerViewController {
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         activityIndicatorView.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
         activityIndicatorView.widthAnchor.constraint(equalToConstant: 50.0).isActive = true
+        activityIndicatorView.accessibilityIdentifier = "Loading Indicator"
         activityIndicatorView.startAnimating()
         
         resultView = PrimerResultComponentView(frame: .zero, imageView: self.imageView, message: self.message, loadingIndicator: self.activityIndicatorView)
