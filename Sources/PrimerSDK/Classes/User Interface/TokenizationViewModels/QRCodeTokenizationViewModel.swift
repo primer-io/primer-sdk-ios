@@ -21,7 +21,6 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
     deinit {
         tokenizationService = nil
         qrCode = nil
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     override func validate() throws {

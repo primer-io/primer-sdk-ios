@@ -42,10 +42,6 @@ internal class AppState: AppStateProtocol {
         guard let selectedPaymentMethodToken = selectedPaymentMethodId else { return nil }
         return paymentMethods.first(where: { $0.id == selectedPaymentMethodToken })
     }
-
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
 }
 
 

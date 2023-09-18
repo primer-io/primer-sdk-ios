@@ -38,10 +38,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
     private var primer3DS: Primer3DS!
 #endif
     
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
     internal func perform3DS(
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
         sdkDismissed: (() -> Void)?,

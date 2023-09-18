@@ -21,10 +21,6 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
         }
     }
 
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-
     func reloadVault(with completion: @escaping (Error?) -> Void) {
         let vaultService: VaultServiceProtocol = VaultService()
         firstly {

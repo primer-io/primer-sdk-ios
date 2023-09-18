@@ -18,10 +18,6 @@ internal protocol CreateResumePaymentServiceProtocol {
 internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     
     static var apiClient: PrimerAPIClientProtocol?
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
 
     func createPayment(paymentRequest: Request.Body.Payment.Create, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {

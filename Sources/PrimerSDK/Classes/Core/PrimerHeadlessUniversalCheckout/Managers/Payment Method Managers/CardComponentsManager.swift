@@ -89,11 +89,7 @@ extension PrimerHeadlessUniversalCheckout {
         private(set) public var paymentCheckoutData: PrimerCheckoutData?
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
-        
-        deinit {
-            log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-        }
-        
+                
         public init(paymentMethodType: String) throws {
             let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
