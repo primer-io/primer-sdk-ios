@@ -62,8 +62,7 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Cod
     
     // Was producing warning: Immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
     // Was it intentional?
-    @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
-    var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions(is3DSOnVaultingEnabled: false)
+    var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions()
     var threeDsOptions: PrimerThreeDsOptions?
     
     public init(
@@ -125,8 +124,13 @@ public class PrimerCardPaymentOptions: Codable {
     @available(*, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     let is3DSOnVaultingEnabled: Bool
     
-    public init(is3DSOnVaultingEnabled: Bool? = nil) {
+    @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
+    public init(is3DSOnVaultingEnabled: Bool?) {
         self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled != nil ? is3DSOnVaultingEnabled! : true
+    }
+    
+    public init() {
+        self.is3DSOnVaultingEnabled = true
     }
 }
 
