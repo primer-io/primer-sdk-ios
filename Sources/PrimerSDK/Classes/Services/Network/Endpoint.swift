@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 26/2/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -28,4 +28,4 @@ enum HTTPMethod: String, Codable {
     case delete = "DELETE"
 }
 
-#endif
+

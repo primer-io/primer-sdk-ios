@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 16/01/2021.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -135,4 +135,4 @@ internal func logJSON(obj: Any) {
     }
 }
 
-#endif
+

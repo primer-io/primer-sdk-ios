@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -55,4 +55,4 @@ class CountryTableViewCell: UITableViewCell {
     }
 }
 
-#endif
+

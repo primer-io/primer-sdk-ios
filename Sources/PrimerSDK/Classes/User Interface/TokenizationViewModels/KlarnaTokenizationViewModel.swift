@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -25,10 +25,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var klarnaCustomerTokenAPIResponse: Response.Body.Klarna.CustomerToken?
     private var klarnaPaymentSessionCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
@@ -507,4 +503,4 @@ extension KlarnaTokenizationViewModel: PrimerKlarnaViewControllerDelegate {
 }
 #endif
 
-#endif
+

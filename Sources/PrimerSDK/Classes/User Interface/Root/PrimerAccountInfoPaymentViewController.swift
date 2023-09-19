@@ -5,17 +5,13 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
 internal class PrimerAccountInfoPaymentViewController: PrimerFormViewController {
         
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     init(navigationBarLogo: UIImage?, formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
@@ -43,4 +39,4 @@ internal class PrimerAccountInfoPaymentViewController: PrimerFormViewController 
 
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 22/6/23.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -17,15 +17,3 @@ public class PrimerVaultedCardAdditionalData: PrimerVaultedPaymentMethodAddition
         self.cvv = cvv
     }
 }
-
-public class PrimerNolSdkData: PrimerVaultedPaymentMethodAdditionalData {
-    
-    let sdkId: String
-    
-    public init(sdkId: String) {
-        self.sdkId = sdkId
-    }
-}
-
-
-#endif

@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 15/6/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -26,4 +26,4 @@ extension PrimerAPIClient {
     
 }
 
-#endif
+

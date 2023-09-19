@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 18/10/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -59,4 +59,4 @@ import Foundation
     }
 }
 
-#endif
+

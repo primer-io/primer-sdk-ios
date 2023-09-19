@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 31/7/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -340,4 +340,4 @@ extension PrimerUniversalCheckoutViewController: ReloadDelegate {
     }
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 07/06/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -41,4 +41,4 @@ extension PrimerTextFieldView {
     }
 }
 
-#endif
+

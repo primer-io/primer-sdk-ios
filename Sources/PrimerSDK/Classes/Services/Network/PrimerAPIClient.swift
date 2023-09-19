@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 26/2/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -124,10 +124,6 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     internal let networkService: NetworkService
 
     // MARK: - Object lifecycle
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
 
     init(networkService: NetworkService = URLSessionStack()) {
         self.networkService = networkService
@@ -532,4 +528,4 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     }
 }
 
-#endif
+

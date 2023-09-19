@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -13,7 +13,6 @@ internal class CountrySelectorViewController: PrimerFormViewController {
     deinit {
         viewModel.cancel()
         viewModel = nil
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(viewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol) {
@@ -78,4 +77,4 @@ internal class CountrySelectorViewController: PrimerFormViewController {
     }
 }
 
-#endif
+

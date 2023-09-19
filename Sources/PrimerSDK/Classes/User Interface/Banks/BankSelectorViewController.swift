@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 25/10/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -19,7 +19,6 @@ internal class BankSelectorViewController: PrimerFormViewController {
     deinit {
         viewModel.cancel()
         viewModel = nil
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(viewModel: BankSelectorTokenizationViewModel) {
@@ -97,4 +96,4 @@ internal class BankSelectorViewController: PrimerFormViewController {
     
 }
 
-#endif
+

@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -71,4 +71,4 @@ internal class Mask {
     }
 }
 
-#endif
+

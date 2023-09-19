@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 25/05/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -41,13 +41,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         tableView.delegate = self
         return tableView
     }()
-    
-    // MARK: - Deinit
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
+        
     // MARK: - Overrides
     
     override func start() {
@@ -372,4 +366,4 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
     }
 }
 
-#endif
+

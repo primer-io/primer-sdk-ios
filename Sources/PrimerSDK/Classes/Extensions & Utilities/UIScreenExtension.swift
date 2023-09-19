@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 03/07/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -20,4 +20,4 @@ extension UIScreen {
     }
 }
 
-#endif
+

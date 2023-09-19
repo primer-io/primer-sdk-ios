@@ -5,7 +5,7 @@
 //  Created by Evangelos on 9/9/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -255,4 +255,4 @@ internal class PrimerUIManager {
     }
 }
 
-#endif
+

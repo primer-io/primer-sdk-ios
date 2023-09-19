@@ -5,7 +5,7 @@
 //  Created by Evangelos on 4/10/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -159,7 +159,7 @@ public enum PrimerInputElementType: Int {
             return CharacterSet(charactersIn: "0123456789")
             
         case .cardholderName:
-            return CharacterSet.letters
+            return CharacterSet.letters.union(.whitespaces)
             
         default:
             return nil
@@ -193,5 +193,5 @@ public protocol PrimerHeadlessUniversalCheckoutInputElement {
     var isValid: Bool { get }
 }
 
-#endif
+
 

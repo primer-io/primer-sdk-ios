@@ -5,7 +5,7 @@
 //  Created by Evangelos on 26/9/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -24,4 +24,4 @@ internal protocol PrimerPaymentMethodManager {
     func showPaymentMethod(intent: PrimerSessionIntent) throws
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -51,4 +51,4 @@ extension UserAgent {
     static var userAgentAsString: String = "\(appNameAndVersion()) \(deviceName()) \(deviceVersion()) \(CFNetworkVersion()) \(DarwinVersion())"
 }
 
-#endif
+

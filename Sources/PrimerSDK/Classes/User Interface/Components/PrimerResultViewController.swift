@@ -5,7 +5,7 @@
 //  Created by Evangelos on 3/2/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -80,4 +80,4 @@ internal class PrimerResultViewController: PrimerViewController {
 
 }
 
-#endif
+

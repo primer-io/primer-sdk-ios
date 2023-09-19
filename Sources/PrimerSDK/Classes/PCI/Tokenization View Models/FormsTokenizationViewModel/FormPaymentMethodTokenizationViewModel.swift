@@ -5,7 +5,7 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -448,11 +448,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     /// Input completion block callback
     var userInputCompletion: (() -> Void)?
     
-    // MARK: - Init
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
+    // MARK: - Payment Flow
     
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -960,4 +956,4 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
     }
 }
 
-#endif
+

@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 extension Request.Body {
     public class PayPal {}
@@ -80,4 +80,4 @@ extension Response.Body.Tokenization {
     }
 }
 
-#endif
+

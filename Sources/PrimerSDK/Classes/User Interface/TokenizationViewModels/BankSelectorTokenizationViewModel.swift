@@ -5,7 +5,7 @@
 //  Created by Admin on 8/11/21.
 //
 
-#if canImport(UIKit)
+
 
 import SafariServices
 import UIKit
@@ -62,10 +62,6 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }()
     
     private var selectedBank: AdyenBank?
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     override func cancel() {
         self.webViewController = nil
@@ -334,4 +330,4 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
     }
 }
 
-#endif
+

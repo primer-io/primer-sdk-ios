@@ -5,7 +5,7 @@
 //  Created by Evangelos on 13/12/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -86,4 +86,4 @@ struct Device: Codable {
     }
 }
 
-#endif
+

@@ -5,14 +5,14 @@
 //  Created by Evangelos Pittas on 18/3/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
 internal extension Bundle {
 
     static var primerFramework: Bundle {
-        return Bundle(identifier: "org.cocoapods.PrimerSDK") ?? Bundle(for: Primer.self)
+        return Bundle(for: Primer.self)
     }
 
     static var primerResources: Bundle {
@@ -25,7 +25,7 @@ internal extension Bundle {
     }
 
     static var primerFrameworkIdentifier: String {
-        return Bundle.primerFramework.bundleIdentifier!
+        return Bundle.primerFramework.bundleIdentifier ?? "org.cocoapods.PrimerSDK"
     }
     
     var releaseVersionNumber: String? {
@@ -42,4 +42,4 @@ internal extension Bundle {
     }
 }
 
-#endif
+

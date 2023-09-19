@@ -5,7 +5,7 @@
 //  Created by Evangelos on 22/11/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -371,4 +371,4 @@ internal extension Encodable {
     }
 }
 
-#endif
+

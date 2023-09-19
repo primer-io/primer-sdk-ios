@@ -5,7 +5,7 @@
 //  Created by Evangelos on 12/12/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -15,10 +15,6 @@ import PrimerIPay88MYSDK
 #endif
 
 class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
 #if canImport(PrimerIPay88MYSDK)
     private var backendCallbackUrl: URL!
@@ -631,5 +627,5 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
 }
 #endif
 
-#endif
+
 

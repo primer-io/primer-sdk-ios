@@ -5,7 +5,7 @@
 //  Created by Evangelos on 30/6/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -102,4 +102,4 @@ class PollingModule: Module {
     }
 }
 
-#endif
+

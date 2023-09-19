@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 12/10/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -17,10 +17,6 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ res: Apaya.WebViewResponse?, _ error: Error?) -> Void)?
     private var apayaWebViewResponse: Apaya.WebViewResponse!
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
@@ -310,4 +306,4 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
     
 }
 
-#endif
+

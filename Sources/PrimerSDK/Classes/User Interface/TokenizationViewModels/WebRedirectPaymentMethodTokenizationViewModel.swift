@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 11/10/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import SafariServices
@@ -26,10 +26,6 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     
     private var redirectUrlRequestId: String?
     private var redirectUrlComponents: URLComponents?
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     @objc
     override func receivedNotification(_ notification: Notification) {
@@ -387,25 +383,21 @@ struct PollingResponse: Decodable {
     let status: PollingStatus
     let id: String
     let source: String
-    let urls: PollingURLs
     
     enum CodingKeys: CodingKey {
         case status
         case id
         case source
-        case urls
     }
     
     init(
         status: PollingStatus,
         id: String,
-        source: String,
-        urls: PollingURLs
+        source: String
     ) {
         self.status = status
         self.id = id
         self.source = source
-        self.urls = urls
     }
     
     init(from decoder: Decoder) throws {
@@ -414,32 +406,9 @@ struct PollingResponse: Decodable {
             self.status = try container.decode(PollingStatus.self, forKey: .status)
             self.id = try container.decode(String.self, forKey: .id)
             self.source = try container.decode(String.self, forKey: .source)
-            self.urls = try container.decode(PollingURLs.self, forKey: .urls)
         } catch {
             throw error
         }
         
     }
 }
-
-struct PollingURLs: Decodable {
-    let status: String
-    lazy var statusUrl: URL? = {
-        return URL(string: status)
-    }()
-    let redirect: String
-    lazy var redirectUrl: URL? = {
-        return URL(string: redirect)
-    }()
-    let complete: String?
-}
-
-struct QRCodePollingURLs: Decodable {
-    let status: String
-    lazy var statusUrl: URL? = {
-        return URL(string: status)
-    }()
-    let complete: String?
-}
-
-#endif

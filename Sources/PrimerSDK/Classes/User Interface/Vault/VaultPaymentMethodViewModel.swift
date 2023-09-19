@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
     var paymentMethods: [PrimerPaymentMethodTokenData] { get }
@@ -19,10 +19,6 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
         set {
             AppState.current.selectedPaymentMethodId = newValue
         }
-    }
-
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
 
     func reloadVault(with completion: @escaping (Error?) -> Void) {
@@ -75,4 +71,4 @@ internal class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProto
     
 }
 
-#endif
+

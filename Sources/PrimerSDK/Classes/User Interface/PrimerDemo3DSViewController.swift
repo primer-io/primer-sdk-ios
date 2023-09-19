@@ -5,7 +5,7 @@
 //  Created by Evangelos on 7/12/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -152,4 +152,4 @@ class PrimerThirdPartySDKViewController: UIViewController {
     }
 }
 
-#endif
+

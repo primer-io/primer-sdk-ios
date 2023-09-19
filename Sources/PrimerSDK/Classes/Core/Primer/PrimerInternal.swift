@@ -5,7 +5,7 @@
 //  Created by Evangelos on 20/9/22.
 //
 
-#if canImport(UIKit)
+
 import UIKit
 
 #if canImport(Primer3DS)
@@ -101,25 +101,18 @@ internal class PrimerInternal {
                 messageType: .error,
                 severity: .error)))
 #endif
-        let bundle = Bundle(identifier: "org.cocoapods.PrimerSDK") ?? Bundle(for: Primer.self)
-        let bundleReleaseVersionNumber = bundle.infoDictionary?["CFBundleShortVersionString"] as? String
-        if bundleReleaseVersionNumber != "2.17.0-rc.9" {
-            events.append(Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "Wrong release version number (\(bundleReleaseVersionNumber ?? "n/a")) detected.",
-                    messageType: .error,
-                    severity: .error))
-            )
-        } else {
-            events.append(Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "Version number (\(bundleReleaseVersionNumber ?? "n/a")) detected correctly.",
-                    messageType: .other,
-                    severity: .info)))
-        }
         
+        let bundleReleaseVersionNumber = Bundle.primerFramework.releaseVersionNumber
+        events.append(
+            Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Version number (\(bundleReleaseVersionNumber ?? "n/a")) detected.",
+                    messageType: .other,
+                    severity: .info
+                )
+            )
+        )
         
         Analytics.Service.record(events: events)
         
@@ -317,4 +310,4 @@ internal class PrimerInternal {
     }
 }
 
-#endif
+

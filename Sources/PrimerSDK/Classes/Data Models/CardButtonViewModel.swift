@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -16,4 +16,4 @@ struct CardButtonViewModel {
     }
 }
 
-#endif
+

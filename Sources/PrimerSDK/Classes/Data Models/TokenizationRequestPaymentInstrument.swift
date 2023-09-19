@@ -5,7 +5,7 @@
 //  Created by Evangelos on 29/8/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -209,4 +209,4 @@ public struct BinData: Codable {
     public var productName: String?
 }
 
-#endif
+

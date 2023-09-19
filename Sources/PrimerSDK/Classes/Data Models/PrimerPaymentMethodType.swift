@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -157,4 +157,4 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     }
 }
 
-#endif
+

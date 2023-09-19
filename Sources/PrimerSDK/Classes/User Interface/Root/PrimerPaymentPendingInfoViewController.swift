@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 22/08/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -13,10 +13,6 @@ internal class PrimerPaymentPendingInfoViewController: PrimerFormViewController 
         
     private let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
     private let infoView: PrimerFormView
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     init(formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel, infoView: PrimerFormView) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
@@ -34,4 +30,4 @@ internal class PrimerPaymentPendingInfoViewController: PrimerFormViewController 
     }
 }
 
-#endif
+

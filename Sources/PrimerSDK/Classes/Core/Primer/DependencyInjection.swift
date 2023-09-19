@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 10/02/2021.
 //
 
-#if canImport(UIKit)
+
 
 @propertyWrapper
 struct Dependency<T> {
@@ -21,9 +21,6 @@ private let _DependencyContainer = DependencyContainer()
 // swiftlint:enable identifier_name
 
 final internal class DependencyContainer {
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     private var dependencies = [String: AnyObject]()
 
@@ -75,4 +72,4 @@ final internal class DependencyContainer {
     }
 }
 
-#endif
+

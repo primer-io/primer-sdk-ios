@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -266,4 +266,4 @@ extension DecodedJWTToken {
     }
 }
 
-#endif
+

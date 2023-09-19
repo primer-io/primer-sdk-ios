@@ -5,7 +5,7 @@
 //  Created by Evangelos on 11/1/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -20,7 +20,6 @@ internal class QRCodeViewController: PrimerFormViewController {
     deinit {
         viewModel.cancel()
         viewModel = nil
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(viewModel: QRCodeTokenizationViewModel) {
@@ -161,5 +160,5 @@ internal class QRCodeViewController: PrimerFormViewController {
     }
 }
 
-#endif
+
 

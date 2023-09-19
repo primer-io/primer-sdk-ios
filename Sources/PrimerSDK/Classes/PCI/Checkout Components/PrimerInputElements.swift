@@ -5,7 +5,7 @@
 //  Created by Evangelos on 28/1/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -132,4 +132,4 @@ public class PrimerPostalCodeInputElement: PrimerInputTextField {
     }
 }
 
-#endif
+

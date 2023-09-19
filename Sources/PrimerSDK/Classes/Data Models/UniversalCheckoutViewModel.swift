@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 6/8/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -35,10 +35,6 @@ internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol {
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? {
         return AppState.current.selectedPaymentMethod
     }
-
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
 }
 
-#endif
+

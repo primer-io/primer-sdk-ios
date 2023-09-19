@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 17/6/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -37,10 +37,6 @@ class ThreeDSService: ThreeDSServiceProtocol {
 #if canImport(Primer3DS)
     private var primer3DS: Primer3DS!
 #endif
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     internal func perform3DS(
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
@@ -471,131 +467,96 @@ class ThreeDSService: ThreeDSServiceProtocol {
         threeDsAppRequestorUrl: URL?
     ) -> Promise<Primer3DSCompletion> {
         return Promise { seal in
-            var isMockedBE = false
-#if DEBUG
-            if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
-                isMockedBE = true
-            }
-#endif
-            if !isMockedBE {
-                guard let primer3DS = primer3DS else {
-                    let uuid = UUID().uuidString
-                    
-                    let primer3DSError = Primer3DSError.initializationError(error: nil, warnings: "Uninitialized SDK")
-                    
-                    let err = Primer3DSErrorContainer.primer3DSSdkError(
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                        diagnosticsId: uuid,
-                        initProtocolVersion: self.initProtocolVersion?.rawValue,
-                        errorInfo: Primer3DSErrorInfo(
-                            errorId: primer3DSError.errorId,
-                            errorDescription: primer3DSError.errorDescription,
-                            recoverySuggestion: primer3DSError.recoverySuggestion,
-                            threeDsErrorCode: primer3DSError.threeDsErrorCode,
-                            threeDsErrorType: primer3DSError.threeDsErrorType,
-                            threeDsErrorComponent: primer3DSError.threeDsErrorComponent,
-                            threeDsSdkTranscationId: primer3DSError.threeDsSdkTranscationId,
-                            threeDsSErrorVersion: primer3DSError.threeDsSErrorVersion,
-                            threeDsErrorDetail: primer3DSError.threeDsErrorDetail))
-                    
-                    let internalErr = InternalError.failedToPerform3dsButShouldContinue(error: err)
-                    seal.reject(internalErr)
-                    return
-                }
+            guard let primer3DS = primer3DS else {
+                let uuid = UUID().uuidString
                 
-                if #available(iOS 13.0, *) {
-                    if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
-                        self.threeDSSDKWindow = UIWindow(windowScene: windowScene)
-                    } else {
-                        // Not opted-in in UISceneDelegate
-                        self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
-                    }
+                let primer3DSError = Primer3DSError.initializationError(error: nil, warnings: "Uninitialized SDK")
+                
+                let err = Primer3DSErrorContainer.primer3DSSdkError(
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: uuid,
+                    initProtocolVersion: self.initProtocolVersion?.rawValue,
+                    errorInfo: Primer3DSErrorInfo(
+                        errorId: primer3DSError.errorId,
+                        errorDescription: primer3DSError.errorDescription,
+                        recoverySuggestion: primer3DSError.recoverySuggestion,
+                        threeDsErrorCode: primer3DSError.threeDsErrorCode,
+                        threeDsErrorType: primer3DSError.threeDsErrorType,
+                        threeDsErrorComponent: primer3DSError.threeDsErrorComponent,
+                        threeDsSdkTranscationId: primer3DSError.threeDsSdkTranscationId,
+                        threeDsSErrorVersion: primer3DSError.threeDsSErrorVersion,
+                        threeDsErrorDetail: primer3DSError.threeDsErrorDetail))
+                
+                let internalErr = InternalError.failedToPerform3dsButShouldContinue(error: err)
+                seal.reject(internalErr)
+                return
+            }
+            
+            if #available(iOS 13.0, *) {
+                if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                    self.threeDSSDKWindow = UIWindow(windowScene: windowScene)
                 } else {
-                    // Fallback on earlier versions
+                    // Not opted-in in UISceneDelegate
                     self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
                 }
-                
-                self.threeDSSDKWindow!.rootViewController = ClearViewController()
-                self.threeDSSDKWindow!.backgroundColor = UIColor.clear
-                self.threeDSSDKWindow!.windowLevel = UIWindow.Level.normal
-                self.threeDSSDKWindow!.makeKeyAndVisible()
-                
-                let present3DSUIEvent = Analytics.Event(
-                    eventType: .ui,
-                    properties: UIEventProperties(
-                        action: Analytics.Event.Property.Action.present,
-                        context: nil,
-                        extra: nil,
-                        objectType: .thirdPartyView,
-                        objectId: nil,
-                        objectClass: nil,
-                        place: .threeDSScreen))
-                Analytics.Service.record(events: [present3DSUIEvent])
-                
-                primer3DS.performChallenge(
-                    threeDSAuthData: threeDSAuthData,
-                    threeDsAppRequestorUrl: threeDsAppRequestorUrl,
-                    presentOn: self.threeDSSDKWindow!.rootViewController!) { primer3DSCompletion, err in
-                        if let primer3DSError = err as? Primer3DSError {
-                            let err = Primer3DSErrorContainer.primer3DSSdkError(
-                                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                                diagnosticsId: UUID().uuidString,
-                                initProtocolVersion: self.initProtocolVersion?.rawValue,
-                                errorInfo: Primer3DSErrorInfo(
-                                    errorId: primer3DSError.errorId,
-                                    errorDescription: primer3DSError.errorDescription,
-                                    recoverySuggestion: primer3DSError.recoverySuggestion,
-                                    threeDsErrorCode: primer3DSError.threeDsErrorCode,
-                                    threeDsErrorType: primer3DSError.threeDsErrorType,
-                                    threeDsErrorComponent: primer3DSError.threeDsErrorComponent,
-                                    threeDsSdkTranscationId: primer3DSError.threeDsSdkTranscationId,
-                                    threeDsSErrorVersion: primer3DSError.threeDsSErrorVersion,
-                                    threeDsErrorDetail: primer3DSError.threeDsErrorDetail))
-                            
-                            let internalErr = InternalError.failedToPerform3dsButShouldContinue(error: err)
-                            seal.reject(internalErr)
-                            
-                        } else if let primer3DSCompletion = primer3DSCompletion {
-                            seal.fulfill(primer3DSCompletion)
-                            
-                        } else {
-                            let err = PrimerError.invalidValue(
-                                key: "performChallenge.result",
-                                value: nil,
-                                userInfo: nil,
-                                diagnosticsId: UUID().uuidString)
-                            let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
-                            seal.reject(internalErr)
-                        }
-                    }
-                
             } else {
-                if #available(iOS 13.0, *) {
-                    if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
-                        demo3DSWindow = UIWindow(windowScene: windowScene)
-                    } else {
-                        // Not opted-in in UISceneDelegate
-                        demo3DSWindow = UIWindow(frame: UIScreen.main.bounds)
-                    }
-                } else {
-                    // Fallback on earlier versions
-                    demo3DSWindow = UIWindow(frame: UIScreen.main.bounds)
-                }
-
-                demo3DSWindow!.rootViewController = ClearViewController()
-                demo3DSWindow!.backgroundColor = UIColor.clear
-                demo3DSWindow!.windowLevel = UIWindow.Level.alert
-                demo3DSWindow!.makeKeyAndVisible()
-                
-                let vc = PrimerDemo3DSViewController()
-                demo3DSWindow!.rootViewController?.present(vc, animated: true)
-                
-                vc.onSendCredentialsButtonTapped = {
-                    self.demo3DSWindow?.rootViewController = nil
-                    self.demo3DSWindow = nil
-                    seal.fulfill(MockPrimer3DSCompletion())
-                }
+                // Fallback on earlier versions
+                self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
             }
+            
+            self.threeDSSDKWindow!.rootViewController = ClearViewController()
+            self.threeDSSDKWindow!.backgroundColor = UIColor.clear
+            self.threeDSSDKWindow!.windowLevel = UIWindow.Level.normal
+            self.threeDSSDKWindow!.makeKeyAndVisible()
+            
+            let present3DSUIEvent = Analytics.Event(
+                eventType: .ui,
+                properties: UIEventProperties(
+                    action: Analytics.Event.Property.Action.present,
+                    context: nil,
+                    extra: nil,
+                    objectType: .thirdPartyView,
+                    objectId: nil,
+                    objectClass: nil,
+                    place: .threeDSScreen))
+            Analytics.Service.record(events: [present3DSUIEvent])
+            
+            primer3DS.performChallenge(
+                threeDSAuthData: threeDSAuthData,
+                threeDsAppRequestorUrl: threeDsAppRequestorUrl,
+                presentOn: self.threeDSSDKWindow!.rootViewController!) { primer3DSCompletion, err in
+                    if let primer3DSError = err as? Primer3DSError {
+                        let err = Primer3DSErrorContainer.primer3DSSdkError(
+                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                            diagnosticsId: UUID().uuidString,
+                            initProtocolVersion: self.initProtocolVersion?.rawValue,
+                            errorInfo: Primer3DSErrorInfo(
+                                errorId: primer3DSError.errorId,
+                                errorDescription: primer3DSError.errorDescription,
+                                recoverySuggestion: primer3DSError.recoverySuggestion,
+                                threeDsErrorCode: primer3DSError.threeDsErrorCode,
+                                threeDsErrorType: primer3DSError.threeDsErrorType,
+                                threeDsErrorComponent: primer3DSError.threeDsErrorComponent,
+                                threeDsSdkTranscationId: primer3DSError.threeDsSdkTranscationId,
+                                threeDsSErrorVersion: primer3DSError.threeDsSErrorVersion,
+                                threeDsErrorDetail: primer3DSError.threeDsErrorDetail))
+                        
+                        let internalErr = InternalError.failedToPerform3dsButShouldContinue(error: err)
+                        seal.reject(internalErr)
+                        
+                    } else if let primer3DSCompletion = primer3DSCompletion {
+                        seal.fulfill(primer3DSCompletion)
+                        
+                    } else {
+                        let err = PrimerError.invalidValue(
+                            key: "performChallenge.result",
+                            value: nil,
+                            userInfo: nil,
+                            diagnosticsId: UUID().uuidString)
+                        let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
+                        seal.reject(internalErr)
+                    }
+                }
         }
     }
     
@@ -691,6 +652,4 @@ internal class MockPrimer3DSCompletion: Primer3DSCompletion {
     var sdkTransactionId: String = "sdk-transaction-id"
     var transactionStatus: String = "transactionStatus"
 }
-#endif
-
 #endif

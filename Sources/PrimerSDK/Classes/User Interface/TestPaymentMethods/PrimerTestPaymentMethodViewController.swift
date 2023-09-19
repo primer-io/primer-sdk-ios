@@ -4,7 +4,7 @@
 //
 //  Created by Dario Carlomagno on 24/05/22.
 //
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -14,8 +14,8 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
     private var viewModel: PrimerTestPaymentMethodTokenizationViewModel!
     
     deinit {
+        viewModel.cancel()
         viewModel = nil
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(viewModel: PrimerTestPaymentMethodTokenizationViewModel) {
@@ -64,4 +64,4 @@ extension PrimerTestPaymentMethodViewController {
     }
 }
 
-#endif
+

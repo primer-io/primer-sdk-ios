@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -51,4 +51,4 @@ public class PrimerNibView: UIView {
     }
 }
 
-#endif
+

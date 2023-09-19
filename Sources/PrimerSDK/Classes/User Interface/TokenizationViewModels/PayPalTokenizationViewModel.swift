@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 import AuthenticationServices
@@ -19,10 +19,6 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private lazy var paypalService: PayPalServiceProtocol = {
         PayPalService()
     }()
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -447,4 +443,4 @@ extension PayPalTokenizationViewModel: ASWebAuthenticationPresentationContextPro
     
 }
 
-#endif
+

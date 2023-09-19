@@ -8,8 +8,7 @@ let isReleasePr = pr.head.ref.hasPrefix("release")
 let allCreatedAndModifiedFiles = danger.git.modifiedFiles + danger.git.createdFiles
 let sdkEditedFiles = allCreatedAndModifiedFiles
     .filter { $0.name != "Dangerfile.swift" }
-    .filter { !$0.hasPrefix("Example/") }
-    .filter { !$0.hasPrefix("Internal/") }
+    .filter { !$0.hasPrefix("Debug App/") }
 
 // You can use these functions to send feedback:
 // message("Highlight something in the table")
@@ -30,18 +29,6 @@ let swiftFilesWithCopyright = sdkEditedFiles.filter {
 //    let files = swiftFilesWithCopyright.joined(separator: ", ")
 //    warn("In Danger we don't include copyright headers, found them in: \(files)")
 //}
-
-// MARK: - Check UIKit import
-
-let swiftFilesNotContainingUIKitImport = sdkEditedFiles.filter {
-    $0.fileType == .swift &&
-    danger.utils.readFile($0).contains("#if canImport(UIKit)") == false
-}
-
-if swiftFilesNotContainingUIKitImport.count > 0 {
-    let files = swiftFilesNotContainingUIKitImport.joined(separator: ", ")
-    warn("Please check your 'canImport(UIKit)` in the following files: \(files)")
-}
 
 // MARK: - PR Contains Tests
 

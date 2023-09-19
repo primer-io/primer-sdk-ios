@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 import PassKit
@@ -30,10 +30,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
     private var applePayControllerCompletion: ((PKPaymentAuthorizationResult) -> Void)?
     private var didTimeout: Bool = false
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
@@ -525,4 +521,4 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
     }
 }
 
-#endif
+
