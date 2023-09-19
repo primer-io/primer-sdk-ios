@@ -41,6 +41,15 @@ public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
                            mobileNumber: String,
                            completion: @escaping (Result<[PrimerNolPayCard], PrimerError>) -> Void) {
         
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: NolPayAnalyticsConstants.LINKED_CARDS_GET_CARDS_METHOD,
+                params: [
+                    "category": "NOL_PAY",
+                ]))
+        Analytics.Service.record(events: [sdkEvent])
+
         nolPay.getAvaliableCardsFor(mobileNumber: mobileNumber, withCountryCode: phoneCountryDiallingCode) { result in
             switch result {
                 

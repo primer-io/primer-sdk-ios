@@ -37,6 +37,16 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     private var nextDataStep: NolPayUnlinkDataStep = .collectCardData
     
     public func updateCollectedData(data: NolPayUnlinkCollectableData) {
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: NolPayAnalyticsConstants.UNLINK_CARD_UPDATE_COLLECTED_DATA_METHOD,
+                params: [
+                    "category": "NOL_PAY",
+                ]))
+        Analytics.Service.record(events: [sdkEvent])
+
         switch data {
         case .cardData(nolPaymentCard: let nolPaymentCard):
             cardNumber = nolPaymentCard.cardNumber
@@ -106,6 +116,16 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     }
     
     public func submit() {
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: NolPayAnalyticsConstants.UNLINK_CARD_SUBMIT_DATA_METHOD,
+                params: [
+                    "category": "NOL_PAY",
+                ]))
+        Analytics.Service.record(events: [sdkEvent])
+
         switch nextDataStep {
             
         case .collectCardData:
@@ -210,6 +230,15 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     }
     
     public func start() {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: NolPayAnalyticsConstants.UNLINK_CARD_START_METHOD,
+                params: [
+                    "category": "NOL_PAY",
+                ]))
+        Analytics.Service.record(events: [sdkEvent])
+
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
