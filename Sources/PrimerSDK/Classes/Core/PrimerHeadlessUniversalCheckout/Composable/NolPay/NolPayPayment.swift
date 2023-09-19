@@ -1,28 +1,25 @@
 //
-//  NolPayUnlink.swift
+//  NolPayPayment.swift
 //  PrimerSDK
 //
-//  Created by Boris on 13.9.23..
+//  Created by Boris on 18.9.23..
 //
 
 import Foundation
 import PrimerNolPaySDK
 
-public enum NolPayUnlinkDataStep: PrimerHeadlessStep {
-    case collectCardData
-    case collectPhoneData
-    case collectOtpData
-    case cardUnlinked
+public enum NolPayStartPaymentCollectableData: PrimerCollectableData {
+    case paymentData(cardNumber: String, mobileNumber: String, phoneCountryDiallingCode: String)
 }
 
-public enum NolPayUnlinkCollectableData: PrimerCollectableData {
-    case cardData(nolPaymentCard: PrimerNolPayCard)
-    case phoneData(mobileNumber: String, phoneCountryDiallingCode: String)
-    case otpData(otpCode: String)
+public enum NolPayStartPaymentStep: PrimerHeadlessStep {
+    case collectStartPaymentData
+    case finishedPayment
 }
 
-public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
-    public typealias T = NolPayUnlinkCollectableData
+public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
+    
+    public typealias T = NolPayStartPaymentCollectableData
     
     private var nolPay: PrimerNolPay!
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
@@ -31,20 +28,15 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     
     private var mobileNumber: String?
     private var phoneCountryDiallingCode: String?
-    private var otpCode: String?
     private var cardNumber: String?
-    private var unlinkToken: String?
-    private var nextDataStep: NolPayUnlinkDataStep = .collectCardData
-    
-    public func updateCollectedData(data: NolPayUnlinkCollectableData) {
+    private var nextDataStep: NolPayStartPaymentStep = .collectStartPaymentData
+
+    public func updateCollectedData(data: NolPayStartPaymentCollectableData) {
         switch data {
-        case .cardData(nolPaymentCard: let nolPaymentCard):
-            cardNumber = nolPaymentCard.cardNumber
-        case .phoneData(mobileNumber: let mobileNumber, phoneCountryDiallingCode: let phoneCountryDiallingCode):
+        case let .paymentData(cardNumber, mobileNumber, phoneCountryDiallingCode):
+            self.cardNumber = cardNumber
             self.mobileNumber = mobileNumber
             self.phoneCountryDiallingCode = phoneCountryDiallingCode
-        case .otpData(otpCode: let otpCode):
-            self.otpCode = otpCode
         }
         
         // Notify validation delegate after updating data
@@ -52,16 +44,30 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         validationDelegate?.didValidate(validations: validations, for: data)
     }
     
-    private func validateData(for data: NolPayUnlinkCollectableData) -> [PrimerValidationError] {
+    private func validateData(for data: NolPayStartPaymentCollectableData) -> [PrimerValidationError] {
         var errors: [PrimerValidationError] = []
         
         switch data {
             
-        case .phoneData(mobileNumber: let mobileNumber,
-                        phoneCountryDiallingCode: let phoneCountryDiallingCode):
+        case .paymentData(cardNumber: let cardNumber,
+                          mobileNumber: let mobileNumber,
+                          phoneCountryDiallingCode: let phoneCountryDiallingCode):
+            if cardNumber.isEmpty {
+                errors.append(PrimerValidationError.invalidCardnumber(
+                    message: "Card number is not valid.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString))
+                ErrorHandler.handle(error: errors.last!)
+            }
+            
             if mobileNumber.isEmpty {
                 errors.append(PrimerValidationError.invalidPhoneNumber(
-                    message: "Phone number is not valid.",
+                    message: "Mobile number is not valid.",
                     userInfo: [
                         "file": #file,
                         "class": "\(Self.self)",
@@ -74,21 +80,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             
             if phoneCountryDiallingCode.isEmpty {
                 errors.append(PrimerValidationError.invalidPhoneNumberCountryCode(
-                    message: "Country code is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
-                ErrorHandler.handle(error: errors.last!)
-                
-            }
-        case .otpData(otpCode: let otpCode):
-            if otpCode.isEmpty {
-                errors.append(PrimerValidationError.invalidOTPCode(
-                    message: "OTP is not valid.",
+                    message: "Country code number is not valid.",
                     userInfo: [
                         "file": #file,
                         "class": "\(Self.self)",
@@ -98,23 +90,17 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                     diagnosticsId: UUID().uuidString))
                 ErrorHandler.handle(error: errors.last!)
             }
-        default:
-            break
+
         }
-        
         return errors
     }
     
     public func submit() {
         switch nextDataStep {
-            
-        case .collectCardData:
-            nextDataStep = .collectPhoneData
-            stepDelegate?.didReceiveStep(step: NolPayUnlinkDataStep.collectPhoneData)
-        case .collectPhoneData:
-            guard let mobileNumber = mobileNumber,
-                  let phoneCountryDiallingCode = phoneCountryDiallingCode,
-                  let cardNumber = cardNumber
+        case .collectStartPaymentData:
+            guard let cardNumber = cardNumber,
+                  let mobileNumber = mobileNumber,
+                  let phoneCountryDiallingCode = phoneCountryDiallingCode
             else {
                 let error = PrimerError.generic(message: "Invalid data, make sure you updated all needed data fields with 'updateCollectedData:' function first",
                                                 userInfo: [
@@ -126,58 +112,21 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                                                 diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 self.errorDelegate?.didReceiveError(error: error)
+
                 return
             }
-            nolPay.sendUnlinkOTPTo(mobileNumber: mobileNumber,
-                                   withCountryCode: phoneCountryDiallingCode,
-                                   andCardNumber: cardNumber) { result in
+
+            // TODO: Get transacton number for cardNumber, mobileNumber and phoneCountryDiallingCode
+            nolPay.requestPaymentFor(cardNumber: cardNumber, andTransactionNumber: "") { result in
                 switch result {
                     
-                case .success((_, let token)):
-                    self.unlinkToken = token
-                    self.nextDataStep = .collectOtpData
-                    self.stepDelegate?.didReceiveStep(step: NolPayUnlinkDataStep.collectOtpData)
-                case .failure(let error):
-                    let error = PrimerError.nolError(code: error.errorCode,
-                                                     message: error.description,
-                                                     userInfo: [
-                                                        "file": #file,
-                                                        "class": "\(Self.self)",
-                                                        "function": #function,
-                                                        "line": "\(#line)"
-                                                     ],
-                                                     diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: error)
-                    self.errorDelegate?.didReceiveError(error: error)
-                }
-            }
-        case .collectOtpData:
-            guard let otpCode = otpCode,
-                  let unlinkToken = unlinkToken,
-                  let cardNumber = cardNumber
-            else {
-                let error = PrimerError.generic(message: "Invalid data, make sure you updated all needed data fields with 'updateCollectedData:' function first",
-                                                userInfo: [
-                                                    "file": #file,
-                                                    "class": "\(Self.self)",
-                                                    "function": #function,
-                                                    "line": "\(#line)"
-                                                ],
-                                                diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: error)
-                self.errorDelegate?.didReceiveError(error: error)
-                return
-            }
-            
-            nolPay.unlinkCardWith(cardNumber: cardNumber, otp: otpCode, andUnlinkToken: unlinkToken) { result in
-                switch result {
                 case .success(let success):
                     if success {
-                        self.nextDataStep = .cardUnlinked
-                        self.stepDelegate?.didReceiveStep(step: NolPayUnlinkDataStep.cardUnlinked)
+                        self.nextDataStep = .finishedPayment
+                        self.stepDelegate?.didReceiveStep(step: NolPayStartPaymentStep.finishedPayment)
                     } else {
                         let error = PrimerError.nolError(code: -1,
-                                                         message: "Unlinking failed from unknown reason",
+                                                         message: "Payment failed from unknown reason",
                                                          userInfo: [
                                                             "file": #file,
                                                             "class": "\(Self.self)",
@@ -200,10 +149,9 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                                                      diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: error)
                     self.errorDelegate?.didReceiveError(error: error)
-                    
                 }
             }
-            
+
         default:
             break
         }
@@ -233,5 +181,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             //                }
             return "f335565cce50459d82e5542de7f56426"
         }
+        
+        stepDelegate?.didReceiveStep(step: NolPayStartPaymentStep.collectStartPaymentData)
     }
 }

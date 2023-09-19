@@ -347,15 +347,16 @@ extension MerchantHeadlessCheckoutNolPayViewController: UITableViewDataSource, U
     }
 }
 
+// MARK: - PrimerHeadlessErrorableDelegate, PrimerHeadlessValidatableDelegate, PrimerHeadlessStepableDelegate
 extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableDelegate,
                                                         PrimerHeadlessValidatableDelegate,
                                                         PrimerHeadlessStepableDelegate {
-    func didValidate(validations: [Error], for data: PrimerSDK.PrimerCollectableData) {
+    func didValidate(validations: [PrimerValidationError], for data: PrimerSDK.PrimerCollectableData) {
         
         if !validations.isEmpty {
             var message = ""
             for error in validations {
-                message += error.localizedDescription + "\n"
+                message += (error.errorDescription ?? error.localizedDescription) + "\n"
             }
             self.showAlert(title: "Validation Error", message: "\(message)")
         } else {
@@ -367,8 +368,8 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
         }
     }
     
-    func didReceiveError(error: Error) {
-        self.showAlert(title: "Error", message: error.localizedDescription)
+    func didReceiveError(error: PrimerError) {
+        self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
     }
     
     func didReceiveStep(step: PrimerHeadlessStep) {

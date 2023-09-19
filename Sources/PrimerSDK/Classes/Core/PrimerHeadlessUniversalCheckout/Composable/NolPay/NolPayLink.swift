@@ -51,8 +51,10 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         var errors: [PrimerValidationError] = []
         
         switch data {
-        case .phoneData(let mobile, let phoneCountryDiallingCode):
-            if mobile.isEmpty {
+            
+        case .phoneData(mobileNumber: let mobileNumber,
+                        phoneCountryDiallingCode: let phoneCountryDiallingCode):
+            if mobileNumber.isEmpty {
                 errors.append(PrimerValidationError.invalidPhoneNumber(
                     message: "Phone number is not valid.",
                     userInfo: [
@@ -62,6 +64,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                         "line": "\(#line)"
                     ],
                     diagnosticsId: UUID().uuidString))
+                ErrorHandler.handle(error: errors.last!)
             }
             
             if phoneCountryDiallingCode.isEmpty {
@@ -74,11 +77,21 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                         "line": "\(#line)"
                     ],
                     diagnosticsId: UUID().uuidString))
+                ErrorHandler.handle(error: errors.last!)
                 
             }
-        case .otpData(let otp):
-            if otp.isEmpty {
-                //                errors.append(PrimerValidationError(errorId: "invalid-otp", description: "Invalid OTP"))
+        case .otpData(otpCode: let otpCode):
+            if otpCode.isEmpty {
+                errors.append(PrimerValidationError.invalidOTPCode(
+                    message: "OTP is not valid.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString))
+                ErrorHandler.handle(error: errors.last!)
             }
         }
         
@@ -94,7 +107,16 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                   let phoneCountryDiallingCode = phoneCountryDiallingCode,
                   let linkToken = linkToken
             else {
-                //                self.errorDelegate?.didReceiveError(error: error)
+                let error = PrimerError.generic(message: "Invalid data, make sure you updated all needed data fields with 'updateCollectedData:' function first",
+                                                userInfo: [
+                                                    "file": #file,
+                                                    "class": "\(Self.self)",
+                                                    "function": #function,
+                                                    "line": "\(#line)"
+                                                ],
+                                                diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: error)
+                self.errorDelegate?.didReceiveError(error: error)
                 return
             }
             nolPay.sendLinkOTPTo(mobileNumber: mobileNumber,
@@ -106,17 +128,47 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                         self.nextDataStep = .collectOtpData
                         self.stepDelegate?.didReceiveStep(step: NolPayLinkDataStep.collectOtpData)
                     } else {
-                        //                        self.errorDelegate?.didReceiveError(error: error)
+                        let error = PrimerError.nolError(code: -1,
+                                                         message: "Sending of OTP SMS failed from unknown reason",
+                                                         userInfo: [
+                                                            "file": #file,
+                                                            "class": "\(Self.self)",
+                                                            "function": #function,
+                                                            "line": "\(#line)"
+                                                         ],
+                                                         diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: error)
+                        self.errorDelegate?.didReceiveError(error: error)
                     }
                 case .failure(let error):
+                    let error = PrimerError.nolError(code: error.errorCode,
+                                                     message: error.description,
+                                                     userInfo: [
+                                                        "file": #file,
+                                                        "class": "\(Self.self)",
+                                                        "function": #function,
+                                                        "line": "\(#line)"
+                                                     ],
+                                                     diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: error)
                     self.errorDelegate?.didReceiveError(error: error)
+
                 }
             }
         case .collectOtpData:
             guard let otpCode = otpCode,
                   let linkToken = linkToken
             else {
-                //                self.errorDelegate?.didReceiveError(error: error)
+                let error = PrimerError.generic(message: "Invalid data, make sure you updated all needed data fields with 'updateCollectedData:' function first",
+                                                userInfo: [
+                                                    "file": #file,
+                                                    "class": "\(Self.self)",
+                                                    "function": #function,
+                                                    "line": "\(#line)"
+                                                ],
+                                                diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: error)
+                self.errorDelegate?.didReceiveError(error: error)
                 return
             }
             
@@ -127,9 +179,29 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                         self.nextDataStep = .cardLinked
                         self.stepDelegate?.didReceiveStep(step: NolPayLinkDataStep.cardLinked)
                     } else {
-                        //                        self.errorDelegate?.didReceiveError(error: error)
+                        let error = PrimerError.nolError(code: -1,
+                                                         message: "Linking of the card failed failed from unknown reason",
+                                                         userInfo: [
+                                                            "file": #file,
+                                                            "class": "\(Self.self)",
+                                                            "function": #function,
+                                                            "line": "\(#line)"
+                                                         ],
+                                                         diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: error)
+                        self.errorDelegate?.didReceiveError(error: error)
                     }
                 case .failure(let error):
+                    let error = PrimerError.nolError(code: error.errorCode,
+                                                     message: error.description,
+                                                     userInfo: [
+                                                        "file": #file,
+                                                        "class": "\(Self.self)",
+                                                        "function": #function,
+                                                        "line": "\(#line)"
+                                                     ],
+                                                     diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: error)
                     self.errorDelegate?.didReceiveError(error: error)
                 }
             }
@@ -147,11 +219,31 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                             self.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
                             self.stepDelegate?.didReceiveStep(step: NolPayLinkDataStep.collectPhoneData(cardNumber: cardNumber))
                         case .failure(let error):
+                            let error = PrimerError.nolError(code: error.errorCode,
+                                                             message: error.description,
+                                                             userInfo: [
+                                                                "file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"
+                                                             ],
+                                                             diagnosticsId: UUID().uuidString)
+                            ErrorHandler.handle(error: error)
                             self.errorDelegate?.didReceiveError(error: error)
                         }
                     }
                     
                 case .failure(let error):
+                    let error = PrimerError.nolError(code: error.errorCode,
+                                                     message: error.description,
+                                                     userInfo: [
+                                                        "file": #file,
+                                                        "class": "\(Self.self)",
+                                                        "function": #function,
+                                                        "line": "\(#line)"
+                                                     ],
+                                                     diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: error)
                     self.errorDelegate?.didReceiveError(error: error)
                 }
             }
@@ -164,14 +256,16 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
-            self.errorDelegate?.didReceiveError(error: PrimerError.generic(message: "Initialisation error",
-                                                                           userInfo: [
-                                                                               "file": #file,
-                                                                               "class": "\(Self.self)",
-                                                                               "function": #function,
-                                                                               "line": "\(#line)"
-                                                                           ],
-                                                                           diagnosticsId: UUID().uuidString))
+            let error = PrimerError.generic(message: "Initialisation error",
+                                            userInfo: [
+                                                "file": #file,
+                                                "class": "\(Self.self)",
+                                                "function": #function,
+                                                "line": "\(#line)"
+                                            ],
+                                            diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: error)
+            self.errorDelegate?.didReceiveError(error: error)
             return
         }
         

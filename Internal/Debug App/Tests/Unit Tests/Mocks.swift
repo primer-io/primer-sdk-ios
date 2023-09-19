@@ -228,7 +228,7 @@ let mockPaymentMethodConfig = PrimerAPIConfiguration(
     paymentMethods: [
         PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
         PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
-        PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: MerchantOptions(merchantId: "merchant-id", merchantAccountId: "merchant-account-id"), displayMetadata: nil)
+        PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: MerchantOptions(merchantId: "merchant-id", merchantAccountId: "merchant-account-id", appId: "app-id"), displayMetadata: nil)
     ],
     primerAccountId: nil,
     keys: nil,
@@ -269,7 +269,7 @@ class MockAppState: AppStateProtocol {
             paymentMethods: [
                 PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
                 PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
-                PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: MerchantOptions(merchantId: "merchant-id", merchantAccountId: "merchant-account-id"), displayMetadata: nil)
+                PrimerPaymentMethod(id: "apaya-test", implementationType: .nativeSdk, type: "APAYA", name: "Apaya", processorConfigId: "apaya-processor-config-id", surcharge: nil, options: MerchantOptions(merchantId: "merchant-id", merchantAccountId: "merchant-account-id", appId: "app-id"), displayMetadata: nil)
             ],
             primerAccountId: nil,
             keys: nil,

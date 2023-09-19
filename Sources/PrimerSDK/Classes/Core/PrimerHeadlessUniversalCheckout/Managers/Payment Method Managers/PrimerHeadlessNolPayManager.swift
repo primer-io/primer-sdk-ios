@@ -8,33 +8,21 @@
 import Foundation
 import PrimerNolPaySDK
 
-
-extension PrimerNolPaySDK.PrimerNolPayError {
-    public static var invalidPhoneNumber: PrimerNolPayError {
-        return PrimerNolPayError(description: "The provided phone number is not valid.")
-    }
-    
-    public static var invalidOTPCode: PrimerNolPayError {
-        return PrimerNolPayError(description: "The provided OTP code is not valid.")
-    }
-    
-    public static func nolPaySdkError(message: String) -> PrimerNolPayError {
-        return PrimerNolPayError(description: "Nol SDK encountered an error: \(message)")
-    }
-}
-
 extension PrimerHeadlessUniversalCheckout {
     
     public class PrimerHeadlessNolPayManager: NSObject {
         
         // Components for linking and unlinking cards
-        private var linkCardComponent: NolPayLinkCardComponent
-        private var unlinkCardComponent: NolPayUnlinkCardComponent
-        private var listLinkedCardsComponent: NolPayGetLinkedCardsComponent
+        public var linkCardComponent: NolPayLinkCardComponent
+        public var unlinkCardComponent: NolPayUnlinkCardComponent
+        public var listLinkedCardsComponent: NolPayGetLinkedCardsComponent
+        public var startPaymentComponent: NolPayStartPaymentComponent
+        
         public override init() {
             self.linkCardComponent = NolPayLinkCardComponent()
             self.unlinkCardComponent = NolPayUnlinkCardComponent()
             self.listLinkedCardsComponent = NolPayGetLinkedCardsComponent()
+            self.startPaymentComponent = NolPayStartPaymentComponent()
             super.init()
         }
         
@@ -48,6 +36,10 @@ extension PrimerHeadlessUniversalCheckout {
         
         public func provideNolPayGetLinkedCardsComponent() -> NolPayGetLinkedCardsComponent {
             return self.listLinkedCardsComponent
+        }
+        
+        public func provideNolPayStartPaymentComponent() -> NolPayStartPaymentComponent {
+            return self.startPaymentComponent
         }
     }
 }

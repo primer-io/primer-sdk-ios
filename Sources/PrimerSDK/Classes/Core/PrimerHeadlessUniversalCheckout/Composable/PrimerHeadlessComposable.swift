@@ -12,11 +12,11 @@ public protocol PrimerHeadlessComponent { }
 public protocol PrimerCollectableData { }
 
 public protocol PrimerHeadlessErrorableDelegate: AnyObject {
-    func didReceiveError(error: Error)
+    func didReceiveError(error: PrimerError)
 }
 
 public protocol PrimerHeadlessValidatableDelegate: AnyObject {
-    func didValidate(validations: [Error], for data: PrimerCollectableData)
+    func didValidate(validations: [PrimerValidationError], for data: PrimerCollectableData)
 }
 
 public protocol PrimerHeadlessStep { }

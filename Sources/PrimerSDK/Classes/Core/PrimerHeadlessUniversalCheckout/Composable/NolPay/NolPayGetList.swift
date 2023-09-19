@@ -17,12 +17,12 @@ public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
-            self.errorDelegate?.didReceiveError(error: PrimerError.generic(message: "Initialisation error",
+            self.errorDelegate?.didReceiveError(error: PrimerError.generic(message: "Initialisation error, Nol AppId is not present",
                                                                            userInfo: [
-                                                                            "file": #file,
-                                                                            "class": "\(Self.self)",
-                                                                            "function": #function,
-                                                                            "line": "\(#line)"
+                                                                               "file": #file,
+                                                                               "class": "\(Self.self)",
+                                                                               "function": #function,
+                                                                               "line": "\(#line)"
                                                                            ],
                                                                            diagnosticsId: UUID().uuidString))
             return
@@ -39,7 +39,7 @@ public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
     
     public func getLinkedCardsFor(phoneCountryDiallingCode: String,
                            mobileNumber: String,
-                           completion: @escaping (Result<[PrimerNolPayCard], PrimerNolPayError>) -> Void) {
+                           completion: @escaping (Result<[PrimerNolPayCard], PrimerError>) -> Void) {
         
         nolPay.getAvaliableCardsFor(mobileNumber: mobileNumber, withCountryCode: phoneCountryDiallingCode) { result in
             switch result {
@@ -47,6 +47,17 @@ public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
             case .success(let cards):
                 completion(.success(cards))
             case .failure(let error):
+                let error = PrimerError.nolError(code: error.errorCode,
+                                                 message: error.description,
+                                                 userInfo: [
+                                                    "file": #file,
+                                                    "class": "\(Self.self)",
+                                                    "function": #function,
+                                                    "line": "\(#line)"
+                                                 ],
+                                                 diagnosticsId: UUID().uuidString)
+                self.errorDelegate?.didReceiveError(error: error)
+
                 completion(.failure(error))
             }
         }
