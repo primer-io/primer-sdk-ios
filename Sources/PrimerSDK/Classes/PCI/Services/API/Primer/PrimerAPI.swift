@@ -380,8 +380,6 @@ internal extension PrimerAPI {
         case .exchangePaymentMethodToken(_, _, let vaultedPaymentMethodAdditionalData):
             if let vaultedCardAdditionalData = vaultedPaymentMethodAdditionalData as? PrimerVaultedCardAdditionalData {
                 return try? JSONEncoder().encode(vaultedCardAdditionalData)
-            } else if let nolSdkId = vaultedPaymentMethodAdditionalData as? PrimerNolSdkData {
-                return try? JSONEncoder().encode(nolSdkId)
             } else {
                 return nil
             }
