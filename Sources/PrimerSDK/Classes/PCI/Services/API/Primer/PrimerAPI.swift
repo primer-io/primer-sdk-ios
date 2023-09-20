@@ -32,7 +32,8 @@ enum PrimerAPI: Endpoint, Equatable {
             (.poll, .poll),
             (.sendAnalyticsEvents, .sendAnalyticsEvents),
             (.createPayment, .createPayment),
-            (.validateClientToken, .validateClientToken):
+            (.validateClientToken, .validateClientToken),
+            (.getNolSdkSecret, .getNolSdkSecret):
             return true
         default:
             return false
@@ -76,6 +77,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume)
     
     case testFinalizePolling(clientToken: DecodedJWTToken, testId: String)
+    case getNolSdkSecret(clientToken: DecodedJWTToken, request: Request.Body.NolPay.NolPaySecretDataRequest)
 
 }
 
@@ -140,6 +142,8 @@ internal extension PrimerAPI {
             if let token = clientToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
+        case .getNolSdkSecret(clientToken: let clientToken, _):
+            tmpHeaders["Primer-Client-Token"] = clientToken.accessToken
         }
         
         switch self {
@@ -191,6 +195,8 @@ internal extension PrimerAPI {
             tmpHeaders["X-Api-Version"] = "2.2"
         case .testFinalizePolling:
             break
+        case .getNolSdkSecret:
+            break
         }
         
         return tmpHeaders
@@ -209,7 +215,8 @@ internal extension PrimerAPI {
                 .listAdyenBanks(let clientToken, _),
                 .listRetailOutlets(let clientToken, _),
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
-                .testFinalizePolling(let clientToken, _):
+                .testFinalizePolling(let clientToken, _),
+                .getNolSdkSecret(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .deleteVaultedPaymentMethod(let clientToken, _),
@@ -286,6 +293,8 @@ internal extension PrimerAPI {
             return "/payments/\(paymentId)/resume"
         case .testFinalizePolling(_, _):
             return "/finalize-polling"
+        case .getNolSdkSecret:
+            return "/nol-pay/sdk-secrets"
         }
     }
     
@@ -324,7 +333,8 @@ internal extension PrimerAPI {
                 .validateClientToken,
                 .createPayment,
                 .resumePayment,
-                .testFinalizePolling:
+                .testFinalizePolling,
+                .getNolSdkSecret:
             return .post
         case .poll:
             return .get
@@ -395,6 +405,8 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(paymentResumeRequestBody)
         case .testFinalizePolling:
             return nil
+        case .getNolSdkSecret(_, let requestBody):
+            return try? JSONEncoder().encode(requestBody)
         }
     }
     

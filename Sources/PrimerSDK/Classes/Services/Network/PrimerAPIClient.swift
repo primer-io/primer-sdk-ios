@@ -117,6 +117,11 @@ protocol PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         testId: String,
         completion: @escaping (_ result: Result<Void, Error>) -> Void)
+    
+    // NolPay
+    func fetchNolSdkSecret(clientToken: DecodedJWTToken,
+                           paymentRequestBody: Request.Body.NolPay.NolPaySecretDataRequest,
+                           completion: @escaping (_ result: Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -521,6 +526,19 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(_):
                 completion(.success(()))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func fetchNolSdkSecret(clientToken: DecodedJWTToken, paymentRequestBody: Request.Body.NolPay.NolPaySecretDataRequest, completion: @escaping (Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void) {
+        let endpoint = PrimerAPI.getNolSdkSecret(clientToken: clientToken, request: paymentRequestBody)
+        networkService.request(endpoint) { (result: Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>) in
+            switch result {
+                
+            case .success(let nolSdkSecret):
+                completion(.success(nolSdkSecret))
             case .failure(let err):
                 completion(.failure(err))
             }

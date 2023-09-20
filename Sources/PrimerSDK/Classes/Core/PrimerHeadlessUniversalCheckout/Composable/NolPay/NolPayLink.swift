@@ -297,12 +297,34 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             return
         }
         
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, 
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            return
+        }
+        
         nolPay = PrimerNolPay(appId: appId, isDebug: true, isSandbox: true) { sdkId, deviceId in
-            // Implement your API call here and return the fetched secret key
-            //            Task {
-            //               ... async await
-            //                }
-            return "f335565cce50459d82e5542de7f56426"
+            
+            let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId, 
+                                                                                nolAppId: sdkId,
+                                                                                phoneVendor: "Apple",
+                                                                                phoneModel: UIDevice.modelIdentifier!)
+            let client = PrimerAPIClient()
+            
+            return try await withCheckedThrowingContinuation { continuation in
+                client.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+                    switch result {
+                    case .success(let appSecret):
+                        continuation.resume(returning: appSecret.sdkSecret)
+                    case .failure(let error):
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
         }
     }
 }
