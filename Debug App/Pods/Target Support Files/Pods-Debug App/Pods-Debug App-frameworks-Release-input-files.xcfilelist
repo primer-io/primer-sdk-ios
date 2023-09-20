@@ -1,7 +1,10 @@
 ${PODS_ROOT}/Target Support Files/Pods-Debug App/Pods-Debug App-frameworks.sh
+${BUILT_PRODUCTS_DIR}/IQKeyboardManagerSwift/IQKeyboardManagerSwift.framework
 ${BUILT_PRODUCTS_DIR}/Primer3DS/Primer3DS.framework
 ${BUILT_PRODUCTS_DIR}/PrimerIPay88MYSDK/PrimerIPay88MYSDK.framework
 ${BUILT_PRODUCTS_DIR}/PrimerKlarnaSDK/PrimerKlarnaSDK.framework
+${PODS_ROOT}/PrimerNolPaySDK/Sources/Frameworks/TransitSDK.framework
+${BUILT_PRODUCTS_DIR}/PrimerNolPaySDK/PrimerNolPaySDK.framework
 ${BUILT_PRODUCTS_DIR}/PrimerSDK/PrimerSDK.framework
 ${PODS_XCFRAMEWORKS_BUILD_DIR}/KlarnaMobileSDK/full/KlarnaMobileSDK.framework/KlarnaMobileSDK
 ${PODS_XCFRAMEWORKS_BUILD_DIR}/Primer3DS/ThreeDS_SDK.framework/ThreeDS_SDK

@@ -176,17 +176,23 @@ code_sign_if_enabled() {
 }
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
+  install_framework "${BUILT_PRODUCTS_DIR}/IQKeyboardManagerSwift/IQKeyboardManagerSwift.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Primer3DS/Primer3DS.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/PrimerIPay88MYSDK/PrimerIPay88MYSDK.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/PrimerKlarnaSDK/PrimerKlarnaSDK.framework"
+  install_framework "${PODS_ROOT}/PrimerNolPaySDK/Sources/Frameworks/TransitSDK.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/PrimerNolPaySDK/PrimerNolPaySDK.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/PrimerSDK/PrimerSDK.framework"
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/KlarnaMobileSDK/full/KlarnaMobileSDK.framework"
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/Primer3DS/ThreeDS_SDK.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
+  install_framework "${BUILT_PRODUCTS_DIR}/IQKeyboardManagerSwift/IQKeyboardManagerSwift.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/Primer3DS/Primer3DS.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/PrimerIPay88MYSDK/PrimerIPay88MYSDK.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/PrimerKlarnaSDK/PrimerKlarnaSDK.framework"
+  install_framework "${PODS_ROOT}/PrimerNolPaySDK/Sources/Frameworks/TransitSDK.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/PrimerNolPaySDK/PrimerNolPaySDK.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/PrimerSDK/PrimerSDK.framework"
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/KlarnaMobileSDK/full/KlarnaMobileSDK.framework"
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/Primer3DS/ThreeDS_SDK.framework"

@@ -1,4 +1,5 @@
 PODS:
+  - IQKeyboardManagerSwift (6.5.12)
   - KlarnaMobileSDK (2.2.2):
     - KlarnaMobileSDK/full (= 2.2.2)
   - KlarnaMobileSDK/full (2.2.2)
@@ -6,18 +7,22 @@ PODS:
   - PrimerIPay88MYSDK (0.1.5)
   - PrimerKlarnaSDK (1.0.4):
     - KlarnaMobileSDK (= 2.2.2)
+  - PrimerNolPaySDK (1.0.0)
   - PrimerSDK (2.17.4):
     - PrimerSDK/Core (= 2.17.4)
   - PrimerSDK/Core (2.17.4)
 
 DEPENDENCIES:
+  - IQKeyboardManagerSwift
   - Primer3DS (~> 2.0.0)
   - PrimerIPay88MYSDK (from `https://github.com/primer-io/primer-ipay88-sdk-ios.git`, branch `master`)
   - PrimerKlarnaSDK
+  - PrimerNolPaySDK (from `https://github.com/primer-io/primer-nol-pay-sdk-ios.git`, branch `master`)
   - PrimerSDK (from `../`)
 
 SPEC REPOS:
   trunk:
+    - IQKeyboardManagerSwift
     - KlarnaMobileSDK
     - Primer3DS
     - PrimerKlarnaSDK
@@ -26,6 +31,9 @@ EXTERNAL SOURCES:
   PrimerIPay88MYSDK:
     :branch: master
     :git: https://github.com/primer-io/primer-ipay88-sdk-ios.git
+  PrimerNolPaySDK:
+    :branch: master
+    :git: https://github.com/primer-io/primer-nol-pay-sdk-ios.git
   PrimerSDK:
     :path: "../"
 
@@ -33,14 +41,19 @@ CHECKOUT OPTIONS:
   PrimerIPay88MYSDK:
     :commit: 32bc1782c8d172ed25fa501977a18c9d2a90a80d
     :git: https://github.com/primer-io/primer-ipay88-sdk-ios.git
+  PrimerNolPaySDK:
+    :commit: 9668cb728a75db75dcefe397c31d1fe399981c9f
+    :git: https://github.com/primer-io/primer-nol-pay-sdk-ios.git
 
 SPEC CHECKSUMS:
+  IQKeyboardManagerSwift: 371b08cb39664fb56030f5345c815a4ffc74bbc0
   KlarnaMobileSDK: 23b44390d06c6e3a90b5325bea6c10bf97ac6044
   Primer3DS: 109e46ed31726039b9fb0ee6e1a0948fda345b24
   PrimerIPay88MYSDK: 347ecaaa7b484cf8f1fb19384393e31695fdc36b
   PrimerKlarnaSDK: de4b8b8fda075e3e4ebbd4ab80bd141c76a30d85
-  PrimerSDK: f1f0615ae0a917ae90f09716538f4a9e14c2ee28
+  PrimerNolPaySDK: c9480120e24905372b64c4752229b9ba0b8cdb13
+  PrimerSDK: 81470ccb9374a473f2ea4e7e4644d3866cf39d71
 
-PODFILE CHECKSUM: b6c77786fa8316d9434fa57e0606ffe370fe5435
+PODFILE CHECKSUM: 93ab00540622e71bad066499c22abafb70866967
 
 COCOAPODS: 1.12.1
