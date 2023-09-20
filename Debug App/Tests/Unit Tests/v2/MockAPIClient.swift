@@ -38,9 +38,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var fetchPayPalExternalPayerInfoResult: (Response.Body.PayPal.PayerInfo?, Error?)?
     var resumePaymentResult: (Response.Body.Payment?, Error?)?
     var testFinalizePollingResult: (Void?, Error?)?
-    
     private var currentPollingIteration: Int = 0
-    
+    var testFetchNolSdkSecretResult: (Response.Body.NolPay.NolPaySecretDataResponse?, Error?)?
+
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
         completion: @escaping (_ result: Result<SuccessResponse, Error>) -> Void
@@ -578,6 +578,27 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
+    func fetchNolSdkSecret(clientToken: PrimerSDK.DecodedJWTToken, paymentRequestBody: PrimerSDK.Request.Body.NolPay.NolPaySecretDataRequest, completion: @escaping (Result<PrimerSDK.Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void) {
+        
+        guard let result = testFetchNolSdkSecretResult,
+              (result.0 != nil || result.1 != nil)
+        else {
+            XCTAssert(false, "Set 'testFetchNolSdkSecretResult' on your MockPrimerAPIClient")
+            return
+        }
+        
+        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+            DispatchQueue.main.async {
+                if let err = result.1 {
+                    completion(.failure(err))
+                } else if let successResult = result.0 {
+                    completion(.success(successResult))
+                }
+            }
+        }
+    }
+
+    
     func mockSuccessfulResponses() {
         self.validateClientTokenResult                  = (MockPrimerAPIClient.Samples.mockValidateClientToken, nil)
         self.fetchConfigurationResult                   = (MockPrimerAPIClient.Samples.mockPrimerAPIConfiguration, nil)
@@ -600,6 +621,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         self.resumePaymentResult                        = (MockPrimerAPIClient.Samples.mockResumePayment, nil)
         self.sendAnalyticsEventsResult                  = (MockPrimerAPIClient.Samples.mockSendAnalyticsEvents, nil)
         self.fetchPayPalExternalPayerInfoResult         = (MockPrimerAPIClient.Samples.mockFetchPayPalExternalPayerInfo, nil)
+        self.testFetchNolSdkSecretResult                = (MockPrimerAPIClient.Samples.mockFetchNolSdkSecret, nil)
     }
 }
 
@@ -872,6 +894,9 @@ extension MockPrimerAPIClient {
             requiredAction: nil,
             status: .success,
             paymentFailureReason: nil)
+        
+        static let mockFetchNolSdkSecret = Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: "")
+
     }
 }
 
