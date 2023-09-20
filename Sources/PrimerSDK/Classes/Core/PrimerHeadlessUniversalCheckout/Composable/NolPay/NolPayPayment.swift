@@ -52,7 +52,7 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
         case .paymentData(cardNumber: let cardNumber,
                           mobileNumber: let mobileNumber,
                           phoneCountryDiallingCode: let phoneCountryDiallingCode):
-            if cardNumber.isEmpty {
+            if cardNumber.isEmpty { //TODO: (NOL) validate card? maybe not needed
                 errors.append(PrimerValidationError.invalidCardnumber(
                     message: "Card number is not valid.",
                     userInfo: [
@@ -65,7 +65,7 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
                 ErrorHandler.handle(error: errors.last!)
             }
             
-            if mobileNumber.isEmpty {
+            if mobileNumber.isValidMobilePhoneNumber {
                 errors.append(PrimerValidationError.invalidPhoneNumber(
                     message: "Mobile number is not valid.",
                     userInfo: [
@@ -78,7 +78,7 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
                 ErrorHandler.handle(error: errors.last!)
             }
             
-            if phoneCountryDiallingCode.isEmpty {
+            if phoneCountryDiallingCode.isValidCountryCode {
                 errors.append(PrimerValidationError.invalidPhoneNumberCountryCode(
                     message: "Country code number is not valid.",
                     userInfo: [

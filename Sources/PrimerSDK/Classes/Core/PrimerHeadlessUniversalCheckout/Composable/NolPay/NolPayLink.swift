@@ -64,7 +64,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             
         case .phoneData(mobileNumber: let mobileNumber,
                         phoneCountryDiallingCode: let phoneCountryDiallingCode):
-            if mobileNumber.isEmpty {
+            if mobileNumber.isValidMobilePhoneNumber {
                 errors.append(PrimerValidationError.invalidPhoneNumber(
                     message: "Phone number is not valid.",
                     userInfo: [
@@ -77,7 +77,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 ErrorHandler.handle(error: errors.last!)
             }
             
-            if phoneCountryDiallingCode.isEmpty {
+            if phoneCountryDiallingCode.isValidCountryCode {
                 errors.append(PrimerValidationError.invalidPhoneNumberCountryCode(
                     message: "Country code is not valid.",
                     userInfo: [
@@ -91,7 +91,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 
             }
         case .otpData(otpCode: let otpCode):
-            if otpCode.isEmpty {
+            if otpCode.isValidOTP {
                 errors.append(PrimerValidationError.invalidOTPCode(
                     message: "OTP is not valid.",
                     userInfo: [
