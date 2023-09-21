@@ -28,7 +28,7 @@ internal class URLSessionStack: NetworkService {
         
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         let id = String.randomString(length: 32)
-                        
+        
         if let primerAPI = endpoint as? PrimerAPI, shouldReportNetworkEvents(for: primerAPI) {
             let reqEvent = Analytics.Event(
                 eventType: .networkCall,
