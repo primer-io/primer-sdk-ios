@@ -116,7 +116,8 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
                 return
             }
 
-            // TODO: Get transacton number for cardNumber, mobileNumber and phoneCountryDiallingCode
+            // TODO: (NOL) Get transacton number for cardNumber, mobileNumber and phoneCountryDiallingCode
+            
             nolPay.requestPaymentFor(cardNumber: cardNumber, andTransactionNumber: "") { result in
                 switch result {
                     
@@ -194,6 +195,7 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
                     case .success(let appSecret):
                         continuation.resume(returning: appSecret.sdkSecret)
                     case .failure(let error):
+                        ErrorHandler.handle(error: error)
                         continuation.resume(throwing: error)
                     }
                 }

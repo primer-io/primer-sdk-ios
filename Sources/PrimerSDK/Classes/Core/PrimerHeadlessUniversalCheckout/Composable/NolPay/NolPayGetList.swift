@@ -90,7 +90,7 @@ public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
                                                  ],
                                                  diagnosticsId: UUID().uuidString)
                 self.errorDelegate?.didReceiveError(error: error)
-                
+                ErrorHandler.handle(error: error)
                 completion(.failure(error))
             }
         }
