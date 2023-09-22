@@ -29,7 +29,7 @@ internal class URLSessionStack: NetworkService {
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         let id = String.randomString(length: 32)
         
-        if let primerAPI = endpoint as? PrimerAPI, primerAPI != PrimerAPI.poll(clientToken: nil, url: "") {
+        if let primerAPI = endpoint as? PrimerAPI, shouldReportNetworkEvents(for: primerAPI) {
             let reqEvent = Analytics.Event(
                 eventType: .networkCall,
                 properties: NetworkCallEventProperties(
@@ -349,6 +349,17 @@ internal extension URLSessionStack {
         }
         
         return url
+    }
+    
+    func shouldReportNetworkEvents(for primerAPI: PrimerAPI) -> Bool {
+        // Don't report events for polling requests
+        guard primerAPI != PrimerAPI.poll(clientToken: nil, url: "") else {
+            return false
+        }
+        guard let baseURL = primerAPI.baseURL, let url = URL(string: baseURL), url.path != "/sdk-logs" else {
+            return false
+        }
+        return true
     }
 }
 
