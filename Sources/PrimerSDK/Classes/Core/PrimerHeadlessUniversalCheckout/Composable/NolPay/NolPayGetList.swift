@@ -23,8 +23,9 @@ public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
-            let error = PrimerError.generic(message: "Initialisation error",
-                                            userInfo: [
+            let error = PrimerError.invalidValue(key: "Nol AppID",
+                                                 value: nil,
+                                                 userInfo: [
                                                 "file": #file,
                                                 "class": "\(Self.self)",
                                                 "function": #function,

@@ -141,22 +141,24 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             nextDataStep = .collectPhoneData
             stepDelegate?.didReceiveStep(step: NolPayUnlinkDataStep.collectPhoneData)
         case .collectPhoneData:
-            guard let mobileNumber = mobileNumber,
-                  let phoneCountryDiallingCode = phoneCountryDiallingCode,
-                  let cardNumber = cardNumber
+            guard let mobileNumber = mobileNumber
             else {
-                let error = PrimerError.generic(message: "Invalid data, make sure you updated all needed data fields with 'updateCollectedData:' function first",
-                                                userInfo: [
-                                                    "file": #file,
-                                                    "class": "\(Self.self)",
-                                                    "function": #function,
-                                                    "line": "\(#line)"
-                                                ],
-                                                diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: error)
-                self.errorDelegate?.didReceiveError(error: error)
+                makeAndHandleInvalidValueError(forKey: "mobileNumber")
                 return
             }
+            
+            guard let phoneCountryDiallingCode = phoneCountryDiallingCode
+            else {
+                makeAndHandleInvalidValueError(forKey: "phoneCountryDiallingCode")
+                return
+            }
+            
+            guard let cardNumber = cardNumber
+            else {
+                makeAndHandleInvalidValueError(forKey: "cardNumber")
+                return
+            }
+            
 #if canImport(PrimerNolPaySDK)
             nolPay.sendUnlinkOTPTo(mobileNumber: mobileNumber,
                                    withCountryCode: phoneCountryDiallingCode,
@@ -183,22 +185,24 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             }
 #endif
         case .collectOtpData:
-            guard let otpCode = otpCode,
-                  let unlinkToken = unlinkToken,
-                  let cardNumber = cardNumber
+            guard let otpCode = otpCode
             else {
-                let error = PrimerError.generic(message: "Invalid data, make sure you updated all needed data fields with 'updateCollectedData:' function first",
-                                                userInfo: [
-                                                    "file": #file,
-                                                    "class": "\(Self.self)",
-                                                    "function": #function,
-                                                    "line": "\(#line)"
-                                                ],
-                                                diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: error)
-                self.errorDelegate?.didReceiveError(error: error)
+                makeAndHandleInvalidValueError(forKey: "otpCode")
                 return
             }
+            
+            guard let unlinkToken = unlinkToken
+            else {
+                makeAndHandleInvalidValueError(forKey: "unlinkToken")
+                return
+            }
+            
+            guard let cardNumber = cardNumber
+            else {
+                makeAndHandleInvalidValueError(forKey: "cardNumber")
+                return
+            }
+            
 #if canImport(PrimerNolPaySDK)
             nolPay.unlinkCardWith(cardNumber: cardNumber, otp: otpCode, andUnlinkToken: unlinkToken) { result in
                 switch result {
@@ -253,16 +257,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
-            let error = PrimerError.generic(message: "Initialisation error",
-                                            userInfo: [
-                                                "file": #file,
-                                                "class": "\(Self.self)",
-                                                "function": #function,
-                                                "line": "\(#line)"
-                                            ],
-                                            diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: error)
-            self.errorDelegate?.didReceiveError(error: error)
+            makeAndHandleInvalidValueError(forKey: "Nol AppID")
             return
         }
         
@@ -297,6 +292,30 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                 }
             }
         }
+#else
+        let error = PrimerError.missingSDK(
+            paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue,
+            sdkName: "PrimerNolPaySDK",
+            userInfo: ["file": #file,
+                       "class": "\(Self.self)",
+                       "function": #function,
+                       "line": "\(#line)"],
+            diagnosticsId: UUID().uuidString)
+        ErrorHandler.handle(error: error)
+        errorDelegate?.didReceiveError(error: error)
 #endif
+    }
+    
+    // Helper method
+    private func makeAndHandleInvalidValueError(forKey key: String) {
+        let error = PrimerError.invalidValue(key: key, value: nil, userInfo: [
+            "file": #file,
+            "class": "\(Self.self)",
+            "function": #function,
+            "line": "\(#line)"
+        ],
+        diagnosticsId: UUID().uuidString)
+        ErrorHandler.handle(error: error)
+        self.errorDelegate?.didReceiveError(error: error)
     }
 }

@@ -42,7 +42,7 @@ CHECKOUT OPTIONS:
     :commit: 32bc1782c8d172ed25fa501977a18c9d2a90a80d
     :git: https://github.com/primer-io/primer-ipay88-sdk-ios.git
   PrimerNolPaySDK:
-    :commit: 9668cb728a75db75dcefe397c31d1fe399981c9f
+    :commit: 69239007b364bff948007372b92487cb33555bda
     :git: https://github.com/primer-io/primer-nol-pay-sdk-ios.git
 
 SPEC CHECKSUMS:
@@ -54,6 +54,6 @@ SPEC CHECKSUMS:
   PrimerNolPaySDK: c9480120e24905372b64c4752229b9ba0b8cdb13
   PrimerSDK: 81470ccb9374a473f2ea4e7e4644d3866cf39d71
 
-PODFILE CHECKSUM: 01ee6b255374a90c36065f87472a8b9038390e54
+PODFILE CHECKSUM: 80a03e1b725de041a9d623fc9e9bc50e640b425c
 
 COCOAPODS: 1.12.1
