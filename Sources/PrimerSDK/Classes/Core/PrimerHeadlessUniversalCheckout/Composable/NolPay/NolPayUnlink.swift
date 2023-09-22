@@ -23,12 +23,17 @@ public enum NolPayUnlinkCollectableData: PrimerCollectableData {
 
 public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public typealias T = NolPayUnlinkCollectableData
-    
+
+    init(isDebug: Bool) {
+        self.isDebug = isDebug
+    }
+
     private var nolPay: PrimerNolPay!
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessStepableDelegate?
-    
+    private var isDebug: Bool
+
     private var mobileNumber: String?
     private var phoneCountryDiallingCode: String?
     private var otpCode: String?
@@ -265,7 +270,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             return
         }
         
-        nolPay = PrimerNolPay(appId: appId, isDebug: true, isSandbox: true) { sdkId, deviceId in
+        nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: true) { sdkId, deviceId in
             
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
                                                                                 nolAppId: sdkId,

@@ -21,10 +21,15 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     
     public typealias T = NolPayLinkCollectableData
     
+    init(isDebug: Bool) {
+        self.isDebug = isDebug
+    }
+    
     private var nolPay: PrimerNolPay!
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessStepableDelegate?
+    private var isDebug: Bool
     
     private var mobileNumber: String?
     private var phoneCountryDiallingCode: String?
@@ -307,7 +312,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             return
         }
         
-        nolPay = PrimerNolPay(appId: appId, isDebug: true, isSandbox: true) { sdkId, deviceId in
+        nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: true) { sdkId, deviceId in
             
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId, 
                                                                                 nolAppId: sdkId,

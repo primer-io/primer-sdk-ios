@@ -48,7 +48,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         
         setupUI()
         
-        nolPayManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager()
+        nolPayManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager(isDebug: true)
         linkCardComponent = nolPayManager.provideNolPayLinkCardComponent()
         linkCardComponent.errorDelegate = self
         linkCardComponent.validationDelegate = self

@@ -18,14 +18,14 @@ extension PrimerHeadlessUniversalCheckout {
         public var listLinkedCardsComponent: NolPayGetLinkedCardsComponent
         public var startPaymentComponent: NolPayStartPaymentComponent
         
-        public override init() {
-            self.linkCardComponent = NolPayLinkCardComponent()
-            self.unlinkCardComponent = NolPayUnlinkCardComponent()
-            self.listLinkedCardsComponent = NolPayGetLinkedCardsComponent()
-            self.startPaymentComponent = NolPayStartPaymentComponent()
+        public init(isDebug: Bool) {
+            self.linkCardComponent = NolPayLinkCardComponent(isDebug: isDebug)
+            self.unlinkCardComponent = NolPayUnlinkCardComponent(isDebug: isDebug)
+            self.listLinkedCardsComponent = NolPayGetLinkedCardsComponent(isDebug: isDebug)
+            self.startPaymentComponent = NolPayStartPaymentComponent(isDebug: isDebug)
             super.init()
         }
-        
+                
         public func provideNolPayLinkCardComponent() -> NolPayLinkCardComponent {
             return self.linkCardComponent
         }

@@ -21,11 +21,16 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
     
     public typealias T = NolPayStartPaymentCollectableData
     
+    init(isDebug: Bool) {
+        self.isDebug = isDebug
+    }
+
     private var nolPay: PrimerNolPay!
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessStepableDelegate?
-    
+    private var isDebug: Bool
+
     private var mobileNumber: String?
     private var phoneCountryDiallingCode: String?
     private var cardNumber: String?
@@ -181,7 +186,7 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
             return
         }
         
-        nolPay = PrimerNolPay(appId: appId, isDebug: true, isSandbox: true) { sdkId, deviceId in
+        nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: true) { sdkId, deviceId in
             
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
                                                                                 nolAppId: sdkId,
