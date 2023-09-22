@@ -15,7 +15,7 @@ class PrimerHeadlessNolPayManagerTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        sut = PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager()
+        sut = PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager(isDebug: false)
     }
     
     override func tearDown() {

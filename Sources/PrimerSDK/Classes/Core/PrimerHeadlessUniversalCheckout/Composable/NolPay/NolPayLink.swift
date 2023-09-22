@@ -312,7 +312,8 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             return
         }
         
-        nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: true) { sdkId, deviceId in
+        let isSandbox = clientToken.env == "SANDBOX"
+        nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
             
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId, 
                                                                                 nolAppId: sdkId,
