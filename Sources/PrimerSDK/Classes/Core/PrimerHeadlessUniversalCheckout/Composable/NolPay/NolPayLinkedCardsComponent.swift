@@ -1,5 +1,5 @@
 //
-//  NolPayGetLinkedCardsComponent.swift
+//  NolPayLinkedCardsComponent.swift
 //  PrimerSDK
 //
 //  Created by Boris on 15.9.23..
@@ -10,7 +10,7 @@ import Foundation
 import PrimerNolPaySDK
 #endif
 
-public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
+public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
     
 #if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPay!
@@ -47,7 +47,7 @@ public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
             return
         }
         
-        let isSandbox = clientToken.env == "SANDBOX"
+        let isSandbox = clientToken.env != "PRODUCTION"
 #if canImport(PrimerNolPaySDK)
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
             

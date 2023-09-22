@@ -14,14 +14,14 @@ extension PrimerHeadlessUniversalCheckout {
         // Components for linking and unlinking cards
         public var linkCardComponent: NolPayLinkCardComponent
         public var unlinkCardComponent: NolPayUnlinkCardComponent
-        public var listLinkedCardsComponent: NolPayGetLinkedCardsComponent
+        public var listLinkedCardsComponent: NolPayLinkedCardsComponent
         public var startPaymentComponent: NolPayStartPaymentComponent
         
-        public init(isDebug: Bool) {
-            self.linkCardComponent = NolPayLinkCardComponent(isDebug: isDebug)
-            self.unlinkCardComponent = NolPayUnlinkCardComponent(isDebug: isDebug)
-            self.listLinkedCardsComponent = NolPayGetLinkedCardsComponent(isDebug: isDebug)
-            self.startPaymentComponent = NolPayStartPaymentComponent(isDebug: isDebug)
+        public override init() {
+            self.linkCardComponent = NolPayLinkCardComponent(isDebug: true)
+            self.unlinkCardComponent = NolPayUnlinkCardComponent(isDebug: true)
+            self.listLinkedCardsComponent = NolPayLinkedCardsComponent(isDebug: true)
+            self.startPaymentComponent = NolPayStartPaymentComponent(isDebug: true)
             super.init()
         }
                 
@@ -33,7 +33,7 @@ extension PrimerHeadlessUniversalCheckout {
             return self.unlinkCardComponent
         }
         
-        public func provideNolPayGetLinkedCardsComponent() -> NolPayGetLinkedCardsComponent {
+        public func provideNolPayGetLinkedCardsComponent() -> NolPayLinkedCardsComponent {
             return self.listLinkedCardsComponent
         }
         

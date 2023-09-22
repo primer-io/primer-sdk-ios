@@ -72,7 +72,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             
         case .phoneData(mobileNumber: let mobileNumber,
                         phoneCountryDiallingCode: let phoneCountryDiallingCode):
-            if mobileNumber.isValidMobilePhoneNumber {
+            if !mobileNumber.isValidMobilePhoneNumber {
                 errors.append(PrimerValidationError.invalidPhoneNumber(
                     message: "Phone number is not valid.",
                     userInfo: [
@@ -85,7 +85,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 ErrorHandler.handle(error: errors.last!)
             }
             
-            if phoneCountryDiallingCode.isValidCountryCode {
+            if !phoneCountryDiallingCode.isValidCountryCode {
                 errors.append(PrimerValidationError.invalidPhoneNumberCountryCode(
                     message: "Country code is not valid.",
                     userInfo: [
@@ -99,7 +99,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 
             }
         case .otpData(otpCode: let otpCode):
-            if otpCode.isValidOTP {
+            if !otpCode.isValidOTP {
                 errors.append(PrimerValidationError.invalidOTPCode(
                     message: "OTP is not valid.",
                     userInfo: [
@@ -308,7 +308,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             return
         }
         
-        let isSandbox = clientToken.env == "SANDBOX"
+        let isSandbox = clientToken.env != "PRODUCTION"
 #if canImport(PrimerNolPaySDK)
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
             

@@ -15,7 +15,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     private var nolPayManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager!
     private var linkCardComponent: NolPayLinkCardComponent!
     private var unlinkCardComponent: NolPayUnlinkCardComponent!
-    private var getLinkedCardsComponent: NolPayGetLinkedCardsComponent!
+    private var getLinkedCardsComponent: NolPayLinkedCardsComponent!
     
     // data
     private var linkedCards: [PrimerNolPaymentCard] = []
@@ -47,7 +47,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         
         setupUI()
         
-        nolPayManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager(isDebug: true)
+        nolPayManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager()
         linkCardComponent = nolPayManager.provideNolPayLinkCardComponent()
         linkCardComponent.errorDelegate = self
         linkCardComponent.validationDelegate = self
@@ -221,12 +221,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         ])
         
     }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        view.endEditing(true)
-        super.touchesBegan(touches, with: event)
-    }
-    
+        
     private func setupTableView() {
         linkedCardsTableView = UITableView()
         linkedCardsTableView.dataSource = self

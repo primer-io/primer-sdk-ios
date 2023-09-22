@@ -30,7 +30,17 @@ private struct DummyEndpoint: Endpoint {
 
 final class URLSessionStackTests: XCTestCase {
     
-    var sut: URLSessionStack = URLSessionStack()
+    var sut: URLSessionStack!
+    
+    override func setUp() {
+        super.setUp()
+        sut = URLSessionStack()
+    }
+    
+    override func tearDown() {
+        sut = nil
+        super.tearDown()
+    }
     
     // Test for base URL and path
     func testBaseURLWithPath() {
@@ -67,6 +77,23 @@ final class URLSessionStackTests: XCTestCase {
         let url = sut.url(for: endpoint)
         XCTAssertTrue(url?.absoluteString.contains("key1=value1") == true)
         XCTAssertTrue(url?.absoluteString.contains("key2=value2") == true)
+    }
+    
+    // Test that /sdk-logs and polling endpoints are omitted from network analytics reporting
+    func testAnalyticsReportingForOmitted() {
+        // Test endpoints that shouldn't cause a network event to be reported
+        XCTAssertFalse(sut.shouldReportNetworkEvents(for: .poll(clientToken: nil, url: "")))
+        XCTAssertFalse(sut.shouldReportNetworkEvents(for: .sendAnalyticsEvents(clientToken: nil, url: Analytics.Service.sdkLogsUrl, body: nil)))
+        XCTAssertFalse(sut.shouldReportNetworkEvents(for: .sendAnalyticsEvents(clientToken: nil, url: URL(string: "https://anything-that-ends.with/sdk-logs")!, body: nil)))
+
+        // Test selection of endpoints that should cause a network event to be reported
+        XCTAssertTrue(sut.shouldReportNetworkEvents(for: .createPayment(clientToken: mockClientToken, paymentRequest: .init(token: ""))))
+        XCTAssertTrue(sut.shouldReportNetworkEvents(for: .fetchConfiguration(clientToken: mockClientToken, requestParameters: .init(skipPaymentMethodTypes: nil, requestDisplayMetadata: nil))))
+        XCTAssertTrue(sut.shouldReportNetworkEvents(for: .fetchVaultedPaymentMethods(clientToken: mockClientToken)))
+        let paymentInstrument = CardPaymentInstrument(number: "", cvv: "", expirationMonth: "", expirationYear: "")
+        XCTAssertTrue(sut.shouldReportNetworkEvents(for: .tokenizePaymentMethod(clientToken: mockClientToken, tokenizationRequestBody: .init(paymentInstrument: paymentInstrument))))
+        let klarnaCreatePaymentSession = Request.Body.Klarna.CreatePaymentSession(paymentMethodConfigId: "", sessionType: .hostedPaymentPage, description: nil, redirectUrl: nil, totalAmount: nil, orderItems: nil)
+        XCTAssertTrue(sut.shouldReportNetworkEvents(for: .createKlarnaPaymentSession(clientToken: mockClientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSession)))
     }
     
 }
