@@ -6,11 +6,15 @@
 //
 
 import Foundation
+#if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
+#endif
 
 public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
     
+#if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPay!
+#endif
     public var errorDelegate: PrimerHeadlessErrorableDelegate?
     private var isDebug: Bool
 
@@ -43,6 +47,7 @@ public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
         }
         
         let isSandbox = clientToken.env == "SANDBOX"
+#if canImport(PrimerNolPaySDK)
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
             
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
@@ -62,11 +67,12 @@ public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
                 }
             }
         }
+#endif
     }
     
     public func getLinkedCardsFor(phoneCountryDiallingCode: String,
                                   mobileNumber: String,
-                                  completion: @escaping (Result<[PrimerNolPayCard], PrimerError>) -> Void) {
+                                  completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
         
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
@@ -76,12 +82,12 @@ public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
                     "category": "NOL_PAY",
                 ]))
         Analytics.Service.record(events: [sdkEvent])
-        
+#if canImport(PrimerNolPaySDK)
         nolPay.getAvaliableCardsFor(mobileNumber: mobileNumber, withCountryCode: phoneCountryDiallingCode) { result in
             switch result {
                 
             case .success(let cards):
-                completion(.success(cards))
+                completion(.success(PrimerNolPaymentCard.makeFrom(arrayOf: cards)))
             case .failure(let error):
                 let error = PrimerError.nolError(code: error.errorCode,
                                                  message: error.description,
@@ -97,5 +103,6 @@ public class NolPayGetLinkedCardsComponent: PrimerHeadlessComponent {
                 completion(.failure(error))
             }
         }
+#endif
     }
 }

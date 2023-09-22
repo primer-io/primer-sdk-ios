@@ -6,7 +6,9 @@
 //
 
 import Foundation
+#if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
+#endif
 
 public enum NolPayLinkCollectableData: PrimerCollectableData {
     case phoneData(mobileNumber: String, phoneCountryDiallingCode: String)
@@ -24,8 +26,9 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     init(isDebug: Bool) {
         self.isDebug = isDebug
     }
-    
+#if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPay!
+#endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessStepableDelegate?
@@ -143,6 +146,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 self.errorDelegate?.didReceiveError(error: error)
                 return
             }
+#if canImport(PrimerNolPaySDK)
             nolPay.sendLinkOTPTo(mobileNumber: mobileNumber,
                                  withCountryCode: phoneCountryDiallingCode,
                                  andToken: linkToken) { result in
@@ -179,6 +183,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
 
                 }
             }
+            #endif
         case .collectOtpData:
             guard let otpCode = otpCode,
                   let linkToken = linkToken
@@ -195,7 +200,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 self.errorDelegate?.didReceiveError(error: error)
                 return
             }
-            
+#if canImport(PrimerNolPaySDK)
             nolPay.linkCardFor(otp: otpCode, andLinkToken: linkToken) { result in
                 switch result {
                 case .success(let success):
@@ -229,7 +234,9 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                     self.errorDelegate?.didReceiveError(error: error)
                 }
             }
+#endif
         case .collectTagData:
+#if canImport(PrimerNolPaySDK)
             nolPay.scanNFCCard { result in
                 switch result {
                     
@@ -271,6 +278,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                     self.errorDelegate?.didReceiveError(error: error)
                 }
             }
+#endif
             
         default: break
         }
@@ -313,6 +321,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         }
         
         let isSandbox = clientToken.env == "SANDBOX"
+#if canImport(PrimerNolPaySDK)
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
             
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId, 
@@ -332,5 +341,6 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 }
             }
         }
+#endif
     }
 }

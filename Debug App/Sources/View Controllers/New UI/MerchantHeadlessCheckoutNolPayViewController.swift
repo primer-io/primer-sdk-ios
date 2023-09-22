@@ -8,7 +8,6 @@
 
 import UIKit
 import PrimerSDK
-import PrimerNolPaySDK
 import IQKeyboardManagerSwift
 
 class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
@@ -19,7 +18,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     private var getLinkedCardsComponent: NolPayGetLinkedCardsComponent!
     
     // data
-    private var linkedCards: [PrimerNolPayCard] = []
+    private var linkedCards: [PrimerNolPaymentCard] = []
     
     // UI Components
     private var startLinkingFlowButton: UIButton!

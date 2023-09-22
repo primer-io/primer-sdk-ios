@@ -6,7 +6,9 @@
 //
 
 import Foundation
+#if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
+#endif
 
 public enum NolPayStartPaymentCollectableData: PrimerCollectableData {
     case paymentData(cardNumber: String, mobileNumber: String, phoneCountryDiallingCode: String)
@@ -24,8 +26,9 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
     init(isDebug: Bool) {
         self.isDebug = isDebug
     }
-
+#if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPay!
+#endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessStepableDelegate?
@@ -122,7 +125,7 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
             }
 
             // TODO: (NOL) Get transacton number for cardNumber, mobileNumber and phoneCountryDiallingCode
-            
+#if canImport(PrimerNolPaySDK)
             nolPay.requestPaymentFor(cardNumber: cardNumber, andTransactionNumber: "") { result in
                 switch result {
                     
@@ -157,7 +160,7 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
                     self.errorDelegate?.didReceiveError(error: error)
                 }
             }
-
+#endif
         default:
             break
         }
@@ -187,6 +190,7 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
         }
         
         let isSandbox = clientToken.env == "SANDBOX"
+#if canImport(PrimerNolPaySDK)
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
             
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
@@ -207,7 +211,7 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
                 }
             }
         }
-        
+#endif
         stepDelegate?.didReceiveStep(step: NolPayStartPaymentStep.collectStartPaymentData)
     }
 }

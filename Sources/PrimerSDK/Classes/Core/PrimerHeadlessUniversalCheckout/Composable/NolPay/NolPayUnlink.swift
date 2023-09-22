@@ -6,7 +6,9 @@
 //
 
 import Foundation
+#if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
+#endif
 
 public enum NolPayUnlinkDataStep: PrimerHeadlessStep {
     case collectCardData
@@ -16,7 +18,7 @@ public enum NolPayUnlinkDataStep: PrimerHeadlessStep {
 }
 
 public enum NolPayUnlinkCollectableData: PrimerCollectableData {
-    case cardData(nolPaymentCard: PrimerNolPayCard)
+    case cardData(nolPaymentCard: PrimerNolPaymentCard)
     case phoneData(mobileNumber: String, phoneCountryDiallingCode: String)
     case otpData(otpCode: String)
 }
@@ -28,7 +30,9 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         self.isDebug = isDebug
     }
 
+#if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPay!
+#endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessStepableDelegate?
@@ -153,6 +157,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                 self.errorDelegate?.didReceiveError(error: error)
                 return
             }
+#if canImport(PrimerNolPaySDK)
             nolPay.sendUnlinkOTPTo(mobileNumber: mobileNumber,
                                    withCountryCode: phoneCountryDiallingCode,
                                    andCardNumber: cardNumber) { result in
@@ -176,6 +181,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                     self.errorDelegate?.didReceiveError(error: error)
                 }
             }
+#endif
         case .collectOtpData:
             guard let otpCode = otpCode,
                   let unlinkToken = unlinkToken,
@@ -193,7 +199,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                 self.errorDelegate?.didReceiveError(error: error)
                 return
             }
-            
+#if canImport(PrimerNolPaySDK)
             nolPay.unlinkCardWith(cardNumber: cardNumber, otp: otpCode, andUnlinkToken: unlinkToken) { result in
                 switch result {
                 case .success(let success):
@@ -228,7 +234,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                     
                 }
             }
-            
+#endif
         default:
             break
         }
@@ -271,6 +277,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         }
         
         let isSandbox = clientToken.env == "SANDBOX"
+#if canImport(PrimerNolPaySDK)
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
             
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
@@ -290,5 +297,6 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                 }
             }
         }
+#endif
     }
 }
