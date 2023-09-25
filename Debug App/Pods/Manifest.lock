@@ -6,9 +6,9 @@ PODS:
   - PrimerIPay88MYSDK (0.1.5)
   - PrimerKlarnaSDK (1.0.4):
     - KlarnaMobileSDK (= 2.2.2)
-  - PrimerSDK (2.17.3):
-    - PrimerSDK/Core (= 2.17.3)
-  - PrimerSDK/Core (2.17.3)
+  - PrimerSDK (2.17.5):
+    - PrimerSDK/Core (= 2.17.5)
+  - PrimerSDK/Core (2.17.5)
 
 DEPENDENCIES:
   - Primer3DS (~> 2.0.0)
@@ -39,7 +39,7 @@ SPEC CHECKSUMS:
   Primer3DS: 109e46ed31726039b9fb0ee6e1a0948fda345b24
   PrimerIPay88MYSDK: 347ecaaa7b484cf8f1fb19384393e31695fdc36b
   PrimerKlarnaSDK: de4b8b8fda075e3e4ebbd4ab80bd141c76a30d85
-  PrimerSDK: 6f861f34b8c43951bbbb147f4b534858ad3c6603
+  PrimerSDK: 68ed0270e950874a7a23929bf86f66b132ba048c
 
 PODFILE CHECKSUM: b6c77786fa8316d9434fa57e0606ffe370fe5435
 
