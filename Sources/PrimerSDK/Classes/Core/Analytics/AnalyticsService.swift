@@ -212,7 +212,7 @@ extension Analytics {
         
         internal static func loadEventsSynchronously() throws -> [Analytics.Event] {
             do {
-                Primer.shared.logger?.error(message: "📚 Loading events")
+                Primer.shared.logger?.info(message: "📚 Loading events")
                 
                 if #available(iOS 16.0, *) {
                     if !FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
