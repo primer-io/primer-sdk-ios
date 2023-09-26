@@ -20,7 +20,7 @@ final class VersionUtilsTests: XCTestCase {
     }
 
     func test_reactNativeVersion() throws {
-        Primer.shared.integrationOptions = .init(reactNativeVersion: "1.0.0")
+        Primer.shared.integrationOptions = PrimerIntegrationOptions(reactNativeVersion: "1.0.0")
         XCTAssertEqual(VersionUtils.releaseVersionNumber, "1.0.0")
     }
 }
