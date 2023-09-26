@@ -27,19 +27,5 @@ internal extension Bundle {
     static var primerFrameworkIdentifier: String {
         return Bundle.primerFramework.bundleIdentifier ?? "org.cocoapods.PrimerSDK"
     }
-    
-    var releaseVersionNumber: String? {
-        if let reactNativeVersion = Primer.shared.integrationOptions?.reactNativeVersion {
-            return reactNativeVersion
-        }
-        
-        let version = Bundle.primerFramework.infoDictionary?["CFBundleShortVersionString"] as? String
-        return version
-    }
-    
-    var buildVersionNumber: String? {
-        return Bundle.primerFramework.infoDictionary?["CFBundleVersion"] as? String
-    }
+
 }
-
-
