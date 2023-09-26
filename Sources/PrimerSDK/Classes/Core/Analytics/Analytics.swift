@@ -53,7 +53,7 @@ class Analytics {
             self.properties = properties
             self.sdkSessionId = PrimerInternal.shared.sdkSessionId
             self.sdkType = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
-            self.sdkVersion = Bundle.primerFramework.releaseVersionNumber
+            self.sdkVersion = VersionUtils.releaseVersionNumber
             self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
             self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
             
