@@ -35,8 +35,10 @@ jobs:
       - name: Create bump and changelog
         if: ${{ inputs.releaseType != 'default' }}
         run: 'cz bump --files-only --yes --changelog --prerelease ${{ inputs.releaseType }}'
-      - name: Create bump commit
-        run: 'git commit -m "bump: release $(cz version --project)"'
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Bumped version and updated CHANGELOG
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
