@@ -196,7 +196,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 )
                 
                 let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
-                if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks) {
+                if PKPaymentAuthorizationViewController.canMakePayments() {
                     let request = PKPaymentRequest()
                     let isBillingContactFieldsRequired = PrimerSettings.current.paymentMethodOptions.applePayOptions?.isCaptureBillingAddressEnabled == true
                     request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
