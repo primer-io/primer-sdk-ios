@@ -23,6 +23,8 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+      - name: Install cz
+        run: pip install --user -U Commitizen
       - name: Create release branch
         run: |
           git checkout -b release/next
