@@ -25,7 +25,7 @@ jobs:
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
       - name: Install cz
         run: pip install --user -U Commitizen
-      - id: from-version
+      - name: Record from version
         run: |
           echo "FROM_VERSION=$(cz version --project)" >> $GITHUB_ENV
       - name: Create release branch
@@ -38,7 +38,7 @@ jobs:
       - name: Create bump and changelog
         if: ${{ inputs.releaseType != 'default' }}
         run: 'cz bump --files-only --yes --changelog --prerelease ${{ inputs.releaseType }}'
-      - id: to-version
+      - name: Record to version
         run: |
           echo "TO_VERSION=$(cz version --project)" >> $GITHUB_ENV
       - name: Create Pull Request
