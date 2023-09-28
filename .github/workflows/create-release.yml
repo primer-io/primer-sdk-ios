@@ -22,7 +22,7 @@ jobs:
         uses: commitizen-tools/commitizen-action@master
         with:
           github_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
-          branch: release
+          branch: release/next
       - name: Print Version
         run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
       - name: Create Pull Request
