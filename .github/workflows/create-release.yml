@@ -37,20 +37,18 @@ jobs:
         run: 'cz bump --files-only --yes --changelog --prerelease ${{ inputs.releaseType }}'
       - name: Git Status
         run: git status
-      - name: Commit and push Changes
-        run: |
-          git config user.name "Github Actions [Bot]"
-          git commit -a -m "Bumped version and updated CHANGELOG"
-          git push -u origin release/next
-      - name: Git Status
-        run: git status
-      # - name: Create Pull Request
-      #   uses: peter-evans/create-pull-request@v5
-      #   with:
-      #     token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
-      #     base: nq/release_flow_tests
-      #     branch: release/next
-      #     delete-branch: true
-      #     title: Release
-      #     body: ''
+      # - name: Commit and push Changes
+      #   run: |
+      #     git config user.name "Github Actions [Bot]"
+      #     git commit -a -m "Bumped version and updated CHANGELOG"
+      #     git push -u origin release/next
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+          base: nq/release_flow_tests
+          branch: release/next
+          delete-branch: true
+          title: Release
+          body: ''
 
