@@ -50,9 +50,3 @@ jobs:
           delete-branch: true
           title: Release ${{env.TO_VERSION}}
           body: 'Bumped ${{ env.FROM_VERSION}} -> ${{ env.TO_VERSION }}'
-      - name: Tag release
-        uses: tvdias/github-tagger@v0.0.1
-        with:
-          repo-token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
-          tag: ${{ env.TO_VERSION }}
-
