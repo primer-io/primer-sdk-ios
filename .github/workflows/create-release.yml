@@ -39,7 +39,7 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
-          base: master
+          base: nq/release_flow_tests
           branch: release/next
           delete-branch: true
           title: Release
