@@ -54,5 +54,5 @@ jobs:
         uses: tvdias/github-tagger@v0.0.1
         with:
           repo-token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
-          tag: ${{ env.RELEASE_VERSION }}
+          tag: ${{ env.TO_VERSION }}
 
