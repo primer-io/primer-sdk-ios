@@ -25,6 +25,9 @@ jobs:
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
       - name: Install cz
         run: pip install --user -U Commitizen
+      - id: from-version
+        run: |
+          echo "FROM_VERSION=$(cz version --project)" >> $GITHUB_ENV
       - name: Create release branch
         run: |
           git checkout -b release/next
@@ -35,13 +38,9 @@ jobs:
       - name: Create bump and changelog
         if: ${{ inputs.releaseType != 'default' }}
         run: 'cz bump --files-only --yes --changelog --prerelease ${{ inputs.releaseType }}'
-      - name: Git Status
-        run: git status
-      # - name: Commit and push Changes
-      #   run: |
-      #     git config user.name "Github Actions [Bot]"
-      #     git commit -a -m "Bumped version and updated CHANGELOG"
-      #     git push -u origin release/next
+      - id: to-version
+        run: |
+          echo "TO_VERSION=$(cz version --project)" >> $GITHUB_ENV
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -49,6 +48,6 @@ jobs:
           base: nq/release_flow_tests
           branch: release/next
           delete-branch: true
-          title: Release
-          body: ''
+          title: Release ${{env.TO_VERSION}}
+          body: 'Bumped ${{ env.FROM_VERSION}} -> ${{ env.TO_VERSION }}'
 
