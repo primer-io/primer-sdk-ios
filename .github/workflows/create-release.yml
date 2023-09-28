@@ -35,12 +35,11 @@ jobs:
       - name: Create bump and changelog
         if: ${{ inputs.releaseType != 'default' }}
         run: 'cz bump --files-only --yes --changelog --prerelease ${{ inputs.releaseType }}'
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Bumped version and updated CHANGELOG
-      - name: Push Changes
-        run: git push -u origin release/next
+      - name: Commit and push Changes
+        run: |
+          git config user.name "Github Actions [Bot]"
+          git commit -am "Bumped version and updated CHANGELOG"
+          git push -u origin release/next
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
