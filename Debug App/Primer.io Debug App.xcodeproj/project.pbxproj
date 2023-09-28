@@ -79,6 +79,7 @@
 		E6F85ECD80B64754E7A6D35E /* RawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
+		F03699592AC2E63700E4179D /* VersionUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F03699582AC2E63700E4179D /* VersionUtilsTests.swift */; };
 		F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F1A71C2E0D900FEB9AF1351C /* ThreeDSProtocolVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */; };
 		F2E6C6BA5E1E367E862408E3 /* Pods_Debug_App_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4A756EB43AB71D4C3270A7 /* Pods_Debug_App_Tests.framework */; };
@@ -227,6 +228,7 @@
 		E90441E821B5FE76643B62A6 /* AnalyticsTests+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsTests+Constants.swift"; sourceTree = "<group>"; };
 		E9899972360BCA5992CEE5BC /* PrimerBancontactCardDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerBancontactCardDataManagerTests.swift; sourceTree = "<group>"; };
 		EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerRawCardDataManagerTests.swift; sourceTree = "<group>"; };
+		F03699582AC2E63700E4179D /* VersionUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionUtilsTests.swift; sourceTree = "<group>"; };
 		F09934A8E7076E1A2F606E9E /* Pods-Debug App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.release.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.release.xcconfig"; sourceTree = "<group>"; };
 		F4AC1EC0F98CB56DA4D075CA /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		F816A2444633C4336A7CB071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
@@ -457,6 +459,7 @@
 				BD26E8C6074BB89ACBD5B8B9 /* MaskTests.swift */,
 				872A0647D4136E27365FB7F8 /* StringTests.swift */,
 				CA30891B2D5F9B6B97E56B99 /* WebViewUtilTests.swift */,
+				F03699582AC2E63700E4179D /* VersionUtilsTests.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -786,6 +789,7 @@
 				583EBAA90902121CEA479416 /* VaultService.swift in Sources */,
 				961B5D18058EF4CFCD0185AE /* MockVaultCheckoutViewModel.swift in Sources */,
 				622A605DDEA98D981670B53F /* DropInUI_TokenizationViewModelTests.swift in Sources */,
+				F03699592AC2E63700E4179D /* VersionUtilsTests.swift in Sources */,
 				208CA849F3187C2DA63CC17B /* HUC_TokenizationViewModelTests.swift in Sources */,
 				213196DEDF2A3A84037ED884 /* PollingModuleTests.swift in Sources */,
 				1589385B62C86DE7C735F3EC /* PrimerAPIConfigurationModuleTests.swift in Sources */,
