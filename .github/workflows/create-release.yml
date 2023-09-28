@@ -27,21 +27,14 @@ jobs:
         run: |
           git checkout -b release/next
           git push -u origin release/next
-      - id: cz
+      - name: Create bump and changelog
         if: ${{ inputs.releaseType == 'default' }}
-        name: Create bump and changelog
-        uses: commitizen-tools/commitizen-action@master
-        with:
-          github_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
-          branch: release/next
-      - id: cz
+        run: cz bump --files-only --yes --changelog
+      - name: Create bump and changelog
         if: ${{ inputs.releaseType != 'default' }}
-        name: Create bump and changelog
-        uses: commitizen-tools/commitizen-action@master
-        with:
-          github_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
-          branch: release/next
-          prerelease: ${{ inputs.releaseType }}
+        run: 'cz bump --files-only --yes --changelog --prerelease ${{ inputs.releaseType }}'
+      - name: Create bump commit
+        run: 'git commit -m "bump: release $(cz version --project)"'
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -49,6 +42,6 @@ jobs:
           base: master
           branch: release/next
           delete-branch: true
-          title: Release ${{ steps.cz.outputs.version }}
-          body: "Bumped to version ${{ steps.cz.outputs.version }}"
+          title: Release
+          body: ''
 
