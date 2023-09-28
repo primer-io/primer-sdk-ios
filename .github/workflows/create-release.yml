@@ -44,13 +44,13 @@ jobs:
           git push -u origin release/next
       - name: Git Status
         run: git status
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
-          base: nq/release_flow_tests
-          branch: release/next
-          delete-branch: true
-          title: Release
-          body: ''
+      # - name: Create Pull Request
+      #   uses: peter-evans/create-pull-request@v5
+      #   with:
+      #     token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+      #     base: nq/release_flow_tests
+      #     branch: release/next
+      #     delete-branch: true
+      #     title: Release
+      #     body: ''
 
