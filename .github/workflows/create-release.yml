@@ -2,6 +2,16 @@ name: Create Release
 
 on:
   workflow_dispatch:
+    inputs:
+      releaseType:
+        description: 'Release Type'
+        required: true
+        type: choice
+        options:
+          - default
+          - alpha
+          - beta
+          - rc
 
 jobs:
   bump-version:
@@ -18,13 +28,20 @@ jobs:
           git checkout -b release/next
           git push -u origin release/next
       - id: cz
+        if: ${{ inputs.releaseType == 'default' }}
         name: Create bump and changelog
         uses: commitizen-tools/commitizen-action@master
         with:
           github_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
           branch: release/next
-      - name: Print Version
-        run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
+      - id: cz
+        if: ${{ inputs.releaseType != 'default' }}
+        name: Create bump and changelog
+        uses: commitizen-tools/commitizen-action@master
+        with:
+          github_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+          branch: release/next
+          prerelease: ${{ inputs.releaseType }}
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -33,5 +50,5 @@ jobs:
           branch: release/next
           delete-branch: true
           title: Release ${{ steps.cz.outputs.version }}
-          body: ''
+          body: "Bumped to version ${{ steps.cz.outputs.version }}"
 
