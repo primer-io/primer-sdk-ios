@@ -25,3 +25,9 @@ jobs:
         with:
           repo-token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
           tag: ${{ env.RELEASE_VERSION }}
+      - name: Create a Release
+        uses: elgohr/Github-Release-Action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+        with:
+          title: ${{ env.RELEASE_VERSION }}
