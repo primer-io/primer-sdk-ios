@@ -52,17 +52,6 @@ if (additions + deletions > bigPRThreshold) {
     warn("> Pull Request size seems relatively large. If this Pull Request contains multiple changes, please split each into separate PR will helps faster, easier review.");
 }
 
-// MARK: - PR Title
-
-// The PR title needs to start with any of the following prefixes contained
-// in the array
-
-let ticketPrefixes = ["DEVX-", "CHKT-", "DXS-"]
-
-if !isReleasePr && ticketPrefixes.first(where: { pr.title.hasPrefix($0) }) != nil {
-    warn("Please add ticket number prefix to the PR")
-}
-
 // MARK: - PR WIP
 
 if pr.title.contains("WIP") || pr.draft == true {
