@@ -77,9 +77,6 @@ if pr.assignees?.count == 0 {
     warn("Please assign someone aside from CODEOWNERS (@checkout-pci-reviewers) to review this PR.")
 }
 
-if !isConventionalCommitTitle() {
-    error("Please use a conventional commit title for this PR. See [Conventional Commits and SemVer](https://www.notion.so/primerio/Automating-Version-Bumping-and-Changelog-Creation-c13e32fea11447069dea76f966f4b0fb?pvs=4#c55764aa2f2748eb988d581a456e61e7)")
-}
 
 // MARK: - SwiftLint
 
@@ -94,12 +91,16 @@ if !isConventionalCommitTitle() {
 //Coverage.xcodeBuildCoverage(.derivedDataFolder("Build"),
 //                            minimumCoverage: 30)
 
+// MARK: - Conventional Commit Title
 func isConventionalCommitTitle() -> Bool {
-    // Commitizen-conpatible conventional commit titles
-    ["BREAKING CHANGE:", "feat:", "fix:", "chore:"].forEach { prefix in
-        if pr.title.hasPrefix(prefix) {
-            return true
-        }
-    }
-    return false
+    // Commitizen-compatible conventional commit titles
+    prTitle.hasPrefix("BREAKING CHANGE:") ||
+    prTitle.hasPrefix("chore:") ||
+    prTitle.hasPrefix("fix:") ||
+    prTitle.hasPrefix("feat:")
 }
+
+if !isConventionalCommitTitle() {
+    fail("Please use a conventional commit title for this PR. See [Conventional Commits and SemVer](https://www.notion.so/primerio/Automating-Version-Bumping-and-Changelog-Creation-c13e32fea11447069dea76f966f4b0fb?pvs=4#c55764aa2f2748eb988d581a456e61e7)")
+}
+
