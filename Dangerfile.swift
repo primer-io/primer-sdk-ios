@@ -94,10 +94,10 @@ if pr.assignees?.count == 0 {
 // MARK: - Conventional Commit Title
 func isConventionalCommitTitle() -> Bool {
     // Commitizen-compatible conventional commit titles
-    prTitle.hasPrefix("BREAKING CHANGE:") ||
-    prTitle.hasPrefix("chore:") ||
-    prTitle.hasPrefix("fix:") ||
-    prTitle.hasPrefix("feat:")
+    pr.title.hasPrefix("BREAKING CHANGE:") ||
+    pr.title.hasPrefix("chore:") ||
+    pr.title.hasPrefix("fix:") ||
+    pr.title.hasPrefix("feat:")
 }
 
 if !isConventionalCommitTitle() {
