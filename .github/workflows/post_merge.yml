@@ -2,17 +2,19 @@ name: Post PR Merge
 
 on:
   pull_request:
+    branches:
+      - master
     types: [ closed ]
 
 jobs:
   release_merge:
-    if: (github.event.pull_request.merged == true && github.head_ref == "release/next" && github.base_ref == "master")
+    if: (github.event.pull_request.merged == true && github.head_ref == "release/next")
     runs-on: ubuntu-latest
     steps:
       - name: Git - Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.ref }}
+          ref: master
       - name: Install cz
         run: pip install --user -U Commitizen
       - name: Record release version

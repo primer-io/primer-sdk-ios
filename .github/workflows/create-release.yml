@@ -32,12 +32,14 @@ jobs:
         run: |
           git checkout -b release/next
           git push -u origin release/next
+      # Bump version and create CHANGELOG - default release
       - name: Create bump and changelog
         if: ${{ inputs.releaseType == 'default' }}
         run: cz bump --files-only --yes --changelog
+      # Bump version and create CHANGELOG - prereleasee
       - name: Create bump and changelog
         if: ${{ inputs.releaseType != 'default' }}
-        run: 'cz bump --files-only --yes --changelog --prerelease ${{ inputs.releaseType }}'
+        run: cz bump --files-only --yes --changelog --prerelease ${{ inputs.releaseType }}
       - name: Record to version
         run: |
           echo "TO_VERSION=$(cz version --project)" >> $GITHUB_ENV
