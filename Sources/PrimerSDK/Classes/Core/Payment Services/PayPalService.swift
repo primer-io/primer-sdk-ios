@@ -15,10 +15,6 @@ internal class PayPalService: PayPalServiceProtocol, LogReporter {
     static var apiClient: PrimerAPIClientProtocol?
     
     private var paypalTokenId: String?
-    
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
 
     private func prepareUrlAndTokenAndId(path: String) -> (DecodedJWTToken, URL, String)? {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {

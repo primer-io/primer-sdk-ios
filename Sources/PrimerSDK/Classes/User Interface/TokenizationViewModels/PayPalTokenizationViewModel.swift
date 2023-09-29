@@ -20,10 +20,6 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         PayPalService()
     }()
     
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)

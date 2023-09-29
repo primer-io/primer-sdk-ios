@@ -17,10 +17,6 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
     static var apiClient: PrimerAPIClientProtocol?
     
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
-    
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
 
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in

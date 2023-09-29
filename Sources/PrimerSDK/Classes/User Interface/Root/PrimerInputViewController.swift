@@ -13,10 +13,6 @@ internal class PrimerInputViewController: PrimerFormViewController, LogReporter 
         
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
     
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
     init(navigationBarLogo: UIImage?,
          formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel,
          inputsDistribution: NSLayoutConstraint.Axis = .vertical) {

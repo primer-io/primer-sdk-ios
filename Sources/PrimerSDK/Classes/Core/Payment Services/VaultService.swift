@@ -11,10 +11,6 @@ internal protocol VaultServiceProtocol {
 internal class VaultService: VaultServiceProtocol, LogReporter {
     
     static var apiClient: PrimerAPIClientProtocol?
-    
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
 
     func fetchVaultedPaymentMethods() -> Promise<Void> {
         return Promise { seal in

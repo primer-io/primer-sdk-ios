@@ -31,10 +31,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var applePayControllerCompletion: ((PKPaymentAuthorizationResult) -> Void)?
     private var didTimeout: Bool = false
     
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)

@@ -36,6 +36,9 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
     var redirectManager: PrimerHeadlessUniversalCheckout.NativeUIManager?
     var logs: [String] = []
     
+    private var sessionIntent: PrimerSessionIntent = .checkout
+    
+    @IBOutlet weak var sessionIntentControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
     var activityIndicator: UIActivityIndicatorView?
     
@@ -112,6 +115,19 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
+    @IBAction func onSessionIntentChange(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            // Session intent chosen is Checkout
+            sessionIntent = .checkout
+        case 1:
+            // Session intent chosen is Vault
+            sessionIntent = .vault
+        default:
+            // Default to Checkout
+            sessionIntent = .checkout
+        }
+    }
     
     // MARK: - HELPERS
     
@@ -185,7 +201,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             self.navigationController?.pushViewController(vc, animated: true)
         } else {
             redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
-            try? redirectManager?.showPaymentMethod(intent: .checkout)
+            try? redirectManager?.showPaymentMethod(intent: sessionIntent)
         }
     }
 }
@@ -228,6 +244,9 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
                         self.hideLoadingOverlay()
                     }
                     decisionHandler(.complete())
+                    
+                    let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
+                    self.navigationController?.pushViewController(rvc, animated: true)
                 }
                 
             } else {

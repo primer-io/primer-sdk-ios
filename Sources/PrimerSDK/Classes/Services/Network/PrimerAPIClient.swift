@@ -124,10 +124,6 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol, LogReporter {
     internal let networkService: NetworkService
 
     // MARK: - Object lifecycle
-    
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
 
     init(networkService: NetworkService = URLSessionStack()) {
         self.networkService = networkService

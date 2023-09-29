@@ -89,7 +89,6 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var uiModule: UserInterfaceModule!
     
     deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
         NotificationCenter.default.removeObserver(self)
     }
     

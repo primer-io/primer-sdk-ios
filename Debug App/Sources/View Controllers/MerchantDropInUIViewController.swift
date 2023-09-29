@@ -36,6 +36,13 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
         Primer.shared.configure(settings: settings, delegate: self)
     }
     
+    private var paymentMethodTypeSessionIntent = PrimerSessionIntent.checkout
+    
+    // MARK: - OUTLETS
+    @IBOutlet weak var paymentMethodTypeSessionIntentControl: UISegmentedControl!
+    @IBOutlet weak var paymentMethodTypeTextfield: UITextField!
+    @IBOutlet weak var showPaymentMethodButton: UIButton!
+    
     // MARK: - ACTIONS
     
     @IBAction func openVaultButtonTapped(_ sender: Any) {
@@ -81,13 +88,18 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
         }
     }
     
-    @IBAction func checkoutWithApplePayButtonTapped(_ sender: Any) {
+    @IBAction func showPaymentMethodButtonTapped(_ sender: Any) {
+        guard let paymentMethod = paymentMethodTypeTextfield.text else {
+            return
+        }
+        
         print("\n\nMERCHANT APP\n\(#function)\n")
         self.logs.append(#function)
         
         if let clientToken = clientToken {
-            Primer.shared.showPaymentMethod("APPLE_PAY", intent: .checkout, clientToken: clientToken)
-            
+            Primer.shared.showPaymentMethod(paymentMethod,
+                                            intent: paymentMethodTypeSessionIntent,
+                                            clientToken: clientToken)
         } else if let clientSession = clientSession {
             Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
                 if let err = err {
@@ -95,57 +107,32 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
                     let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
                     print(merchantErr)
                 } else if let clientToken = clientToken {
-                    Primer.shared.showPaymentMethod("APPLE_PAY", intent: .checkout, clientToken: clientToken)
+                    Primer.shared.showPaymentMethod(paymentMethod,
+                                                    intent: self.paymentMethodTypeSessionIntent,
+                                                    clientToken: clientToken)
                 }
             }
-        } else {
-            fatalError()
         }
     }
     
-    @IBAction func vaultKlarnaButtonTapped(_ sender: Any) {
-        print("\n\nMERCHANT APP\n\(#function)\n")
-        self.logs.append(#function)
-        
-        if let clientToken = clientToken {
-            Primer.shared.showPaymentMethod("KLARNA", intent: .vault, clientToken: clientToken)
-            
-        } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
-                if let err = err {
-                    print(err)
-                    let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
-                    print(merchantErr)
-                } else if let clientToken = clientToken {
-                    Primer.shared.showPaymentMethod("KLARNA", intent: .vault, clientToken: clientToken)
-                }
-            }
-        } else {
-            fatalError()
+    
+    @IBAction func paymentMethodSessionIntentChanged(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            paymentMethodTypeSessionIntent = .checkout
+        case 1:
+            paymentMethodTypeSessionIntent = .vault
+        default:
+            paymentMethodTypeSessionIntent = .checkout
         }
     }
     
-    @IBAction func checkoutWithApmButtonTapped(_ sender: Any) {
-        print("\n\nMERCHANT APP\n\(#function)\n")
-        self.logs.append(#function)
-        
-        if let clientToken = clientToken {
-            Primer.shared.showPaymentMethod("ADYEN_GIROPAY", intent: .checkout, clientToken: clientToken)
-            
-        } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
-                if let err = err {
-                    print(err)
-                    let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
-                    print(merchantErr)
-                } else if let clientToken = clientToken {
-                    Primer.shared.showPaymentMethod("ADYEN_GIROPAY", intent: .checkout, clientToken: clientToken)
-                }
-            }
-        } else {
-            fatalError()
+    @IBAction func paymentMethodTypeEditingDidChange(_ sender: UITextField) {
+        if let text = sender.text {
+            showPaymentMethodButton.isHidden = text.isEmpty
         }
     }
+    
     
 }
 

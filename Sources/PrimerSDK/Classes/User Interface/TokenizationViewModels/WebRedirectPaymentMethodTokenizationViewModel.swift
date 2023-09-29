@@ -27,10 +27,6 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     private var redirectUrlRequestId: String?
     private var redirectUrlComponents: URLComponents?
     
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
     @objc
     override func receivedNotification(_ notification: Notification) {
         switch notification.name.rawValue {

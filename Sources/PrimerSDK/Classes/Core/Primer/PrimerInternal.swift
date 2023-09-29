@@ -102,12 +102,12 @@ internal class PrimerInternal: LogReporter {
                 severity: .error)))
 #endif
         
-        let bundleReleaseVersionNumber = Bundle.primerFramework.releaseVersionNumber
+        let releaseVersionNumber = VersionUtils.releaseVersionNumber
         events.append(
             Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
-                    message: "Version number (\(bundleReleaseVersionNumber ?? "n/a")) detected.",
+                    message: "Version number (\(releaseVersionNumber ?? "n/a")) detected.",
                     messageType: .other,
                     severity: .info
                 )

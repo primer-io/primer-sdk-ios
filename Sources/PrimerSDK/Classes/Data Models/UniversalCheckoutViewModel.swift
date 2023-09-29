@@ -35,10 +35,6 @@ internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol, L
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? {
         return AppState.current.selectedPaymentMethod
     }
-
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
 }
 
 

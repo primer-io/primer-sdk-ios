@@ -16,10 +16,6 @@ import PrimerIPay88MYSDK
 
 class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
 #if canImport(PrimerIPay88MYSDK)
     private var backendCallbackUrl: URL!
     private var primerTransactionId: String!

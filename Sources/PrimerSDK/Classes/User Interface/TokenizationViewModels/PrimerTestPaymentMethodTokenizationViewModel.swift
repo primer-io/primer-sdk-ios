@@ -41,13 +41,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         tableView.delegate = self
         return tableView
     }()
-    
-    // MARK: - Deinit
-    
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
+        
     // MARK: - Overrides
     
     override func start() {

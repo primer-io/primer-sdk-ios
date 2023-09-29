@@ -13,7 +13,6 @@ internal class CountrySelectorViewController: PrimerFormViewController, LogRepor
     deinit {
         viewModel.cancel()
         viewModel = nil
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(viewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol) {

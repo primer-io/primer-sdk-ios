@@ -20,7 +20,6 @@ internal class QRCodeViewController: PrimerFormViewController, LogReporter {
     deinit {
         viewModel.cancel()
         viewModel = nil
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     init(viewModel: QRCodeTokenizationViewModel) {

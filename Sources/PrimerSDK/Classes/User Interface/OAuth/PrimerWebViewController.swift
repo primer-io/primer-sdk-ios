@@ -23,10 +23,6 @@ internal class PrimerWebViewController: PrimerViewController, LogReporter {
         "primer.io",
         "livedemostore.primer.io"
     ]
-
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     init(with url: URL) {
         self.url = url

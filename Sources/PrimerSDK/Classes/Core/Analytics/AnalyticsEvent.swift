@@ -552,7 +552,7 @@ struct SDKProperties: Codable {
         self.sdkSessionId = PrimerInternal.shared.checkoutSessionId
         
         self.sdkType = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
-        self.sdkVersion = Bundle.primerFramework.releaseVersionNumber
+        self.sdkVersion = VersionUtils.releaseVersionNumber
         
         if let settingsData = try? JSONEncoder().encode(PrimerSettings.current) {
             let decoder = JSONDecoder()

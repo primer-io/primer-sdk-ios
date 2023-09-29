@@ -13,10 +13,6 @@ internal class PrimerAccountInfoPaymentViewController: PrimerFormViewController,
         
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
     
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
     init(navigationBarLogo: UIImage?, formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
         super.init(nibName: nil, bundle: nil)

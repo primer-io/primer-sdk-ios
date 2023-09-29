@@ -20,10 +20,7 @@ struct Dependency<T> {
 private let _DependencyContainer = DependencyContainer()
 // swiftlint:enable identifier_name
 
-final internal class DependencyContainer: LogReporter {
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
+final internal class DependencyContainer {
     
     private var dependencies = [String: AnyObject]()
 

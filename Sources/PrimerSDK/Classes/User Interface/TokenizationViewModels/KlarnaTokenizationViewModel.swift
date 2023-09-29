@@ -26,10 +26,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var klarnaPaymentSessionCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
     
-    deinit {
-        self.logger.debug(message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
