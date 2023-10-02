@@ -15,7 +15,7 @@ jobs:
       - name: Git - Checkout
         uses: actions/checkout@v3
         with:
-          ref: release/next
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Install cz
         run: pip install --user -U Commitizen
       - name: Record release version

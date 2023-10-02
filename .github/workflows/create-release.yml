@@ -49,6 +49,6 @@ jobs:
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
           base: master
           branch: release/next
-          delete-branch: false
+          delete-branch: true
           title: Release ${{ env.TO_VERSION }}
           body: 'Bumped ${{ env.FROM_VERSION}} -> ${{ env.TO_VERSION }}'
