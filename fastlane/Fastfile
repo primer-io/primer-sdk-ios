@@ -13,6 +13,7 @@ github_run_number = ENV["GITHUB_RUN_NUMBER"]
 app_workspace = "Debug App/Primer.io Debug App.xcworkspace"
 app_xcode_proj = "Debug App/Primer.io Debug App.xcodeproj"
 app_scheme = "Debug App"
+spm_app_scheme = "Debug App SPM"
 
 # Packages
 app_output_path = "/var/tmp/Primer.io_Debug_App.xcarchive/Products/Applications/Debug App.app"
@@ -91,6 +92,23 @@ platform :ios do
       release_notes: "QA release: #{sdk_version_name_source_branch} PR number: #{pr_number}"
     )
 
+  end
+
+  desc 'This action builds the app using the SPM integration'
+  lane :build_spm do
+    common_pre_build_action
+
+    build_app(
+        scheme: spm_app_scheme,
+        sdk: "iphonesimulator",
+        workspace: app_workspace,
+        configuration: "Debug",
+        destination: "generic/platform=iOS Simulator",
+        xcart: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
+        export_method: "development",
+        skip_package_ipa: true,
+        skip_package_pkg: true
+        )
   end
 
   desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'

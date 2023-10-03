@@ -64,6 +64,10 @@ jobs:
 
       - run: npm install --save slack-message-builder
 
+      - name: Build SPM App
+        run: |
+          bundle exec fastlane build_spm
+
       - name: Test, Build, and Distribute app to Appetize 🚀
         run: |
           bundle exec fastlane appetize_build_and_upload
