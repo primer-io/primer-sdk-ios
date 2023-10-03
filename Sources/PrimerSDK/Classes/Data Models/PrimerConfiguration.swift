@@ -101,7 +101,14 @@ extension Response.Body {
             ?? []
             
             let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
-            if !PKPaymentAuthorizationViewController.canMakePayments() {
+            var canMakePayment: Bool
+            if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
+                canMakePayment = PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks)
+            } else {
+                canMakePayment = PKPaymentAuthorizationViewController.canMakePayments()
+            }
+
+            if !canMakePayment {
                 if let applePayViewModel = viewModels.filter({ $0.config.type == PrimerPaymentMethodType.applePay.rawValue }).first,
                    let applePayViewModelIndex = viewModels.firstIndex(where: { $0 == applePayViewModel }) {
                     viewModels.remove(at: applePayViewModelIndex)

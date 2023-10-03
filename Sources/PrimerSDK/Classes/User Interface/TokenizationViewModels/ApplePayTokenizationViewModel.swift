@@ -196,7 +196,14 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 )
                 
                 let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
-                if PKPaymentAuthorizationViewController.canMakePayments() {
+                var canMakePayment: Bool
+                if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
+                    canMakePayment = PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks)
+                } else {
+                    canMakePayment = PKPaymentAuthorizationViewController.canMakePayments()
+                }
+                
+                if canMakePayment {
                     let request = PKPaymentRequest()
                     let isBillingContactFieldsRequired = PrimerSettings.current.paymentMethodOptions.applePayOptions?.isCaptureBillingAddressEnabled == true
                     request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
@@ -232,10 +239,18 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     }
                     
                 } else {
-                    log(logLevel: .error, title: "APPLE PAY", message: "Cannot make payments on the provided networks")
-                    let err = PrimerError.unableToMakePaymentsOnProvidedNetworks(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
+                    if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
+                        log(logLevel: .error, title: "APPLE PAY", message: "Cannot run ApplePay on this device")
+                        let err = PrimerError.unableToMakePaymentsOnProvidedNetworks(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                    } else {
+                        log(logLevel: .error, title: "APPLE PAY", message: "Cannot run ApplePay on this device")
+                        let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: "APPLE_PAY", userInfo: ["message:": "Cannot run ApplePay on this device", "file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                    }
+
                 }
             }
         }
