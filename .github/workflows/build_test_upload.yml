@@ -64,10 +64,7 @@ jobs:
 
       - run: npm install --save slack-message-builder
 
-      - name: Build SPM App
-        run: |
-          bundle exec fastlane build_spm
-
+      
       - name: Test, Build, and Distribute app to Appetize 🚀
         run: |
           bundle exec fastlane appetize_build_and_upload
@@ -81,7 +78,11 @@ jobs:
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
           SOURCE_BRANCH: ${{ github.head_ref }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          
+      
+      - name: Build SPM App
+        run: |
+          bundle exec fastlane build_spm
+
       - uses: peter-evans/find-comment@v2
         if: ${{ success() }}
         id: find_comment

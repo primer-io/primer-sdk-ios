@@ -96,7 +96,6 @@ platform :ios do
 
   desc 'This action builds the app using the SPM integration'
   lane :build_spm do
-    common_pre_build_action
 
     build_app(
         scheme: spm_app_scheme,
