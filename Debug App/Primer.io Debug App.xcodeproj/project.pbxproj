@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -113,6 +113,7 @@
 		F00C662B2ACC851900187028 /* PrimerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F00C662A2ACC851900187028 /* PrimerSDK */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
 		F03699592AC2E63700E4179D /* VersionUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F03699582AC2E63700E4179D /* VersionUtilsTests.swift */; };
+		F04510DA2ACCACCE00A0A48C /* PrimerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510D92ACCACCE00A0A48C /* PrimerSDK */; };
 		F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F1A71C2E0D900FEB9AF1351C /* ThreeDSProtocolVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */; };
 		F3B88F24999785898FE54C53 /* MerchantHeadlesVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698F95A8EC4DF45AFFDA783 /* MerchantHeadlesVaultManagerViewController.swift */; };
@@ -275,6 +276,7 @@
 		EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerRawCardDataManagerTests.swift; sourceTree = "<group>"; };
 		F00C661E2ACC67FA00187028 /* Debug App SPM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Debug App SPM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F03699582AC2E63700E4179D /* VersionUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionUtilsTests.swift; sourceTree = "<group>"; };
+		F04510DB2ACCAF0900A0A48C /* primer-sdk-ios */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "primer-sdk-ios"; path = ..; sourceTree = "<group>"; };
 		F4AC1EC0F98CB56DA4D075CA /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		F816A2444633C4336A7CB071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		F9023841AFCE8E3205CB713A /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 			files = (
 				F00C662B2ACC851900187028 /* PrimerSDK in Frameworks */,
 				F00C66252ACC684800187028 /* Primer3DS in Frameworks */,
+				F04510DA2ACCACCE00A0A48C /* PrimerSDK in Frameworks */,
 				F00C66282ACC686300187028 /* PrimerKlarnaSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -343,6 +346,7 @@
 		1C9799A622D0CCDBBF94925B = {
 			isa = PBXGroup;
 			children = (
+				F04510DB2ACCAF0900A0A48C /* primer-sdk-ios */,
 				FBDF3F8B5F93A0EC28048640 /* Project */,
 				DF30711EB149C64C364BB79A /* Products */,
 				61E8D69DF93462D748F446DF /* Pods */,
@@ -701,6 +705,7 @@
 				F00C66242ACC684800187028 /* Primer3DS */,
 				F00C66272ACC686300187028 /* PrimerKlarnaSDK */,
 				F00C662A2ACC851900187028 /* PrimerSDK */,
+				F04510D92ACCACCE00A0A48C /* PrimerSDK */,
 			);
 			productName = "Debug App";
 			productReference = F00C661E2ACC67FA00187028 /* Debug App SPM.app */;
@@ -746,7 +751,6 @@
 			packageReferences = (
 				F00C66232ACC684800187028 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */,
 				F00C66262ACC686300187028 /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */,
-				F00C66292ACC851900187028 /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = DF30711EB149C64C364BB79A /* Products */;
 			projectDirPath = "";
@@ -1378,13 +1382,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		F00C66292ACC851900187028 /* XCLocalSwiftPackageReference ".." */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ..;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
 		F00C66232ACC684800187028 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -1416,6 +1413,10 @@
 			productName = PrimerKlarnaSDK;
 		};
 		F00C662A2ACC851900187028 /* PrimerSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PrimerSDK;
+		};
+		F04510D92ACCACCE00A0A48C /* PrimerSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PrimerSDK;
 		};
