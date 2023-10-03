@@ -1,4 +1,4 @@
-name: Post PR Merge
+name: Post Release PR Merge
 
 on:
   pull_request:
