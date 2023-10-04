@@ -68,9 +68,9 @@ platform :ios do
   desc 'This action builds the app using the SPM integration'
   lane :build_spm do
     common_pre_build_action
-    build_app(scheme: spm_app_scheme,
+    build_app(project: spm_app_xcode_proj,
+              scheme: spm_app_scheme,
               sdk: "iphonesimulator",
-              workspace: app_workspace,
               configuration: "Debug",
               destination: "generic/platform=iOS Simulator",
               xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
