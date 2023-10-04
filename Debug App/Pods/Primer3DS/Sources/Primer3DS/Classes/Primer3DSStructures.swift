@@ -8,7 +8,6 @@ public enum Environment: String, Codable {
     case staging = "STAGING"
     case sandbox = "SANDBOX"
     case local = "LOCAL"
-    case dev = "DEV"
 }
 
 @objc public enum ResponseCode: Int {

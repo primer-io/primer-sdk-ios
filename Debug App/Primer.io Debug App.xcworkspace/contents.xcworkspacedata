@@ -5,6 +5,9 @@
       location = "group:Primer.io Debug App.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:/Users/niallquinn/Code/iOS/primer-sdk-ios/Debug App/Primer.io Debug App SPM.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Pods/Pods.xcodeproj">
    </FileRef>
 </Workspace>
