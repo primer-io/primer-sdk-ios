@@ -11,9 +11,12 @@ github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
 app_workspace = "Debug App/Primer.io Debug App.xcworkspace"
+
 app_xcode_proj = "Debug App/Primer.io Debug App.xcodeproj"
 app_scheme = "Debug App"
+
 spm_app_scheme = "Debug App SPM"
+spm_app_xcode_proj = "Debug App/Primer.io Debug App SPM.xcodeproj"
 
 # Packages
 app_output_path = "/var/tmp/Primer.io_Debug_App.xcarchive/Products/Applications/Debug App.app"
@@ -62,7 +65,7 @@ platform :ios do
 
   lane :qa_release do
 
-    common_pre_build_action
+    common_pre_build_action(xcode_proj: app_xcode_proj)
 
     cocoapods(
       clean_install: true,
@@ -97,7 +100,7 @@ platform :ios do
 
   desc 'This action builds the app using the SPM integration'
   lane :build_spm do
-    common_pre_build_action
+    common_pre_build_action(xcode_proj: spm_app_xcode_proj)
     build_app(
         scheme: spm_app_scheme,
         sdk: "iphonesimulator",
@@ -114,7 +117,7 @@ platform :ios do
   desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
   lane :appetize_build_and_upload do
 
-    common_pre_build_action
+    common_pre_build_action(xcode_proj: app_xcode_proj)
 
     cocoapods(
       clean_install: true,
@@ -174,9 +177,9 @@ platform :ios do
   ######################### PRIVATE LANES #########################
 
   desc 'Common build pre-action'
-  private_lane :common_pre_build_action do
+  private_lane :common_pre_build_action do |options|
 
-    set_version_and_build_number
+    set_version_and_build_number(xcode_proj: options[:xcode_proj])
 
     setup_signing(
       match_type: "development"
@@ -219,7 +222,7 @@ platform :ios do
   end
 
   desc 'This action sets the version and build number'
-  private_lane :set_version_and_build_number do
+  lane :set_version_and_build_number do |options|
 
     # We don't really need the version number
     # at this moment.
@@ -233,9 +236,9 @@ platform :ios do
     # )
 
     # Set build number
-    increment_build_number(
+    increment_build_number_in_plist(
       build_number: "#{github_run_id}.#{github_run_number}",
-      xcodeproj: app_xcode_proj
+      xcodeproj: options[:xcode_proj],
     )
 
   end

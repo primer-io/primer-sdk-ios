@@ -157,6 +157,7 @@ GEM
     fastlane-plugin-browserstack (0.3.2)
       rest-client (~> 2.0, >= 2.0.2)
     fastlane-plugin-firebase_app_distribution (0.3.4)
+    fastlane-plugin-versioning (0.5.2)
     ffi (1.16.2)
     fourflusher (2.3.1)
     fuzzy_match (2.0.4)
@@ -294,6 +295,7 @@ DEPENDENCIES
   fastlane
   fastlane-plugin-browserstack
   fastlane-plugin-firebase_app_distribution
+  fastlane-plugin-versioning
 
 BUNDLED WITH
    2.4.10
