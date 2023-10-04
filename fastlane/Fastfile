@@ -224,7 +224,7 @@ platform :ios do
   end
 
   desc 'This action sets the version and build number'
-  private lane :set_build_number_cocoapods do
+  private lane :set_build_number_cocoapods do |options|
     increment_build_number_in_plist(
       build_number: "#{github_run_id}.#{github_run_number}",
       xcodeproj: app_xcode_proj,
@@ -232,7 +232,7 @@ platform :ios do
     )
   end
 
-  private lane :set_build_number_spm do 
+  private lane :set_build_number_spm do |options|
     increment_build_number_in_plist(
       build_number: "#{github_run_id}.#{github_run_number}",
       xcodeproj: spm_app_xcode_proj,
