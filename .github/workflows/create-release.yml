@@ -2,6 +2,16 @@ name: Create Release
 
 on:
   workflow_dispatch:
+    inputs:
+      releaseType:
+        description: 'Release Type'
+        required: true
+        type: choice
+        options:
+          - default
+          - alpha
+          - beta
+          - rc
 
 jobs:
   bump-version:
@@ -13,18 +23,26 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+      - name: Install cz
+        run: pip install --user -U Commitizen
+      - name: Record from version
+        run: |
+          echo "FROM_VERSION=$(cz version --project)" >> $GITHUB_ENV
       - name: Create release branch
         run: |
           git checkout -b release/next
           git push -u origin release/next
-      - id: cz
-        name: Create bump and changelog
-        uses: commitizen-tools/commitizen-action@master
-        with:
-          github_token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
-          branch: release
-      - name: Print Version
-        run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
+      # Bump version and create CHANGELOG - default release
+      - name: Create bump and changelog
+        if: ${{ inputs.releaseType == 'default' }}
+        run: cz bump --files-only --yes --changelog
+      # Bump version and create CHANGELOG - prereleasee
+      - name: Create bump and changelog
+        if: ${{ inputs.releaseType != 'default' }}
+        run: cz bump --files-only --yes --changelog --prerelease ${{ inputs.releaseType }}
+      - name: Record to version
+        run: |
+          echo "TO_VERSION=$(cz version --project)" >> $GITHUB_ENV
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -32,6 +50,5 @@ jobs:
           base: master
           branch: release/next
           delete-branch: true
-          title: Release ${{ steps.cz.outputs.version }}
-          body: ''
-
+          title: Release ${{ env.TO_VERSION }}
+          body: 'Bumped ${{ env.FROM_VERSION}} -> ${{ env.TO_VERSION }}'
