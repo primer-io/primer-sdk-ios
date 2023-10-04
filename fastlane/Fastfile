@@ -100,7 +100,7 @@ platform :ios do
 
   desc 'This action builds the app using the SPM integration'
   lane :build_spm do
-    common_pre_build_action(spm: true)
+    common_pre_build_action
     build_app(scheme: spm_app_scheme,
               sdk: "iphonesimulator",
               workspace: app_workspace,
@@ -175,13 +175,9 @@ platform :ios do
   ######################### PRIVATE LANES #########################
 
   desc 'Common build pre-action'
-  private_lane :common_pre_build_action do |options|
+  private_lane :common_pre_build_action do
 
-    if options[:spm]
-      set_build_number_spm
-    else 
-      set_build_number_cocoapods
-    end
+    set_version_and_build_number
 
     setup_signing(
       match_type: "development"
@@ -224,19 +220,12 @@ platform :ios do
   end
 
   desc 'This action sets the version and build number'
-  private lane :set_build_number_cocoapods do |options|
+  private_lane :set_version_and_build_number do
+    # Set build number
     increment_build_number_in_plist(
       build_number: "#{github_run_id}.#{github_run_number}",
       xcodeproj: app_xcode_proj,
       scheme: app_scheme
-    )
-  end
-
-  private lane :set_build_number_spm do |options|
-    increment_build_number_in_plist(
-      build_number: "#{github_run_id}.#{github_run_number}",
-      xcodeproj: spm_app_xcode_proj,
-      scheme: spm_app_scheme
     )
   end
   
