@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -558,7 +558,6 @@
 			packageReferences = (
 				F00C66232ACC684800187028 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */,
 				F00C66262ACC686300187028 /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */,
-				F04510DF2ACD4F1800A0A48C /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = DF30711EB149C64C364BB79A /* Products */;
 			projectDirPath = "";
@@ -869,13 +868,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		F04510DF2ACD4F1800A0A48C /* XCLocalSwiftPackageReference ".." */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ..;
-		};
-/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
 		F00C66232ACC684800187028 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */ = {
