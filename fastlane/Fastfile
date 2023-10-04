@@ -246,12 +246,12 @@ platform :ios do
 
   end
 
-  private lane :set_build_number_cocoapods do 
-    set_version_and_build_number(project: app_xcode_proj, scheme: app_scheme)
+  private lane :set_build_number_cocoapods do
+    set_version_and_build_number(xcode_proj: app_xcode_proj, scheme: app_scheme)
   end
 
   private lane :set_build_number_spm do 
-    set_version_and_build_number(project: spm_app_xcode_proj, scheme: spm_app_scheme)
+    set_version_and_build_number(xcode_proj: spm_app_xcode_proj, scheme: spm_app_scheme)
   end
   
   def update_deployment_url(pub_url)
