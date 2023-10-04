@@ -39,7 +39,8 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :tests do
-    run_tests(workspace: app_workspace, 
+    run_tests(workspace: app_workspace,
+              project: app_xcode_proj,
               scheme: "Debug App Tests",
               destination: "platform=iOS Simulator,name=iPhone 14 Pro",
               xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
@@ -48,6 +49,7 @@ platform :ios do
 
   lane :ui_tests do
     run_tests(workspace: app_workspace,
+              project: app_xcode_proj,
               devices: ["iPhone SE", "iPhone 8"])
   end
 
@@ -76,6 +78,7 @@ platform :ios do
     # Build for browserstack
     build_app(
       scheme: app_scheme,
+      project: app_xcode_proj,
       workspace: app_workspace,
       configuration: "Debug",
       include_bitcode: false,
@@ -103,6 +106,7 @@ platform :ios do
     common_pre_build_action(xcode_proj: spm_app_xcode_proj)
     build_app(
         scheme: spm_app_scheme,
+        project: spm_app_xcode_proj,
         sdk: "iphonesimulator",
         workspace: app_workspace,
         configuration: "Debug",
@@ -132,6 +136,7 @@ platform :ios do
 
     build_app(
       scheme: app_scheme,
+      project: app_xcode_proj,
       sdk: "iphonesimulator", # Appetize needs a simulator app
       workspace: app_workspace,
       configuration: "Debug",
