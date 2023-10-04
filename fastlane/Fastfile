@@ -68,7 +68,7 @@ platform :ios do
   desc 'This action builds the app using the SPM integration'
   lane :build_spm do
     common_pre_build_action
-    build_app(project: spm_app_xcode_proj,
+    build_app(workspace: app_workspace,
               scheme: spm_app_scheme,
               sdk: "iphonesimulator",
               configuration: "Debug",
