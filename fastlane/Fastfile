@@ -18,6 +18,8 @@ app_scheme = "Debug App"
 spm_app_scheme = "Debug App SPM"
 spm_app_xcode_proj = "Debug App/Primer.io Debug App SPM.xcodeproj"
 
+info_plist_path = "Debug App/Info.plist"
+
 # Packages
 app_output_path = "/var/tmp/Primer.io_Debug_App.xcarchive/Products/Applications/Debug App.app"
 app_output_archive_path = "/var/tmp/Primer.io_Debug_App.xcarchive"
@@ -234,11 +236,7 @@ platform :ios do
     # )
 
     # Set build number
-    increment_build_number(
-      build_number: "#{github_run_id}.#{github_run_number}",
-      xcodeproj: app_xcode_proj
-    )
-
+    set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: "#{github_run_id}.#{github_run_number}")
   end
   
   def update_deployment_url(pub_url)
