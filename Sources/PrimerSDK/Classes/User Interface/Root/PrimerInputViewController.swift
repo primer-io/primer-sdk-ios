@@ -5,17 +5,13 @@
 //  Created by Evangelos on 11/11/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
 internal class PrimerInputViewController: PrimerFormViewController {
         
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     init(navigationBarLogo: UIImage?,
          formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel,
@@ -45,4 +41,4 @@ internal class PrimerInputViewController: PrimerFormViewController {
 
 }
 
-#endif
+

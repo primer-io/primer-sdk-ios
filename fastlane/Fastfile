@@ -10,8 +10,8 @@ github_run_id = ENV["GITHUB_RUN_ID"]
 github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
-app_workspace = "Internal/Debug App/Primer.io Debug App.xcworkspace"
-app_xcode_proj = "Internal/Debug App/Primer.io Debug App.xcodeproj"
+app_workspace = "Debug App/Primer.io Debug App.xcworkspace"
+app_xcode_proj = "Debug App/Primer.io Debug App.xcodeproj"
 app_scheme = "Debug App"
 
 # Packages
@@ -21,6 +21,8 @@ app_output_archive_path = "/var/tmp/Primer.io_Debug_App.xcarchive"
 # Utils
 sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
 pr_number = ENV['PR_NUMBER']
+
+podfile_path = "Debug App/Podfile"
 
 ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
 
@@ -33,7 +35,10 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :tests do
-    run_tests(workspace: app_workspace)
+    run_tests(workspace: app_workspace, 
+              scheme: "Debug App Tests",
+              destination: "platform=iOS Simulator,name=iPhone 14 Pro",
+              xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64")
   end
 
   lane :ui_tests do
@@ -60,7 +65,7 @@ platform :ios do
     cocoapods(
       clean_install: true,
       use_bundle_exec: true,
-      podfile: "Internal/Debug App/Podfile"
+      podfile: podfile_path
     )
 
     # Build for browserstack
@@ -88,7 +93,7 @@ platform :ios do
 
   end
 
-  desc 'This action builds the app and uplads it to Appetize'
+  desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
   lane :appetize_build_and_upload do
 
     common_pre_build_action
@@ -96,8 +101,11 @@ platform :ios do
     cocoapods(
       clean_install: true,
       use_bundle_exec: true,
-      podfile: "Internal/Debug App/Appetize Podfile/Podfile"
+      podfile: podfile_path
     )
+
+    # Run Unit Tests
+    tests
 
     # Build for appetize
 
@@ -128,7 +136,7 @@ platform :ios do
     )
 
     # Find public key of appetize
-    uri = URI('https://livedemostore.shared.primer.io/appetize/ios/preview_' + "#{pr_number}_#{github_run_id}_#{github_run_number}")
+    uri = URI('https://livedemostore.common.primer.io/appetize/ios/preview_' + "#{pr_number}_#{github_run_id}_#{github_run_number}")
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
 

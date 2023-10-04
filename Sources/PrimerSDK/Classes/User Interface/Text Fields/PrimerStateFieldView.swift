@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -15,7 +15,15 @@ public final class PrimerStateFieldView: PrimerSimpleCardFormTextFieldView {
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressState
-        validationError = .invalidState(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+        validationError = .invalidState(
+            message: "State is not valid.",
+            userInfo: [
+                "file": #file,
+                "class": "\(Self.self)",
+                "function": #function,
+                "line": "\(#line)"
+            ],
+            diagnosticsId: UUID().uuidString)
         isValid = { text in
             return text.isTypingNonDecimalCharacters
         }
@@ -27,4 +35,4 @@ public final class PrimerStateFieldView: PrimerSimpleCardFormTextFieldView {
     }
 }
 
-#endif
+

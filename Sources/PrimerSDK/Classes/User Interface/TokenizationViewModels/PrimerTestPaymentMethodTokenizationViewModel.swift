@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 25/05/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -41,35 +41,29 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         tableView.delegate = self
         return tableView
     }()
-    
-    // MARK: - Deinit
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
-    
+        
     // MARK: - Overrides
     
     override func start() {
         
         self.checkouEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = false
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
         }
         
         self.checkouEventsNotifierModule.didFinishTokenization = {
             self.uiModule.submitButton?.stopAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = true
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
         }
         
         self.didStartPayment = {
             self.uiModule.submitButton?.startAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = false
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
         }
         
         self.didFinishPayment = { err in
             self.uiModule.submitButton?.stopAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = true
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
         }
         
         super.start()
@@ -372,4 +366,4 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
     }
 }
 
-#endif
+

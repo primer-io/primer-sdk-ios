@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 27/7/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -44,7 +44,7 @@ class PrimerFormViewController: PrimerViewController {
         let otherPaymentMethodsTitleLabel = UILabel()
         otherPaymentMethodsTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         otherPaymentMethodsTitleLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
-        otherPaymentMethodsTitleLabel.text = Strings.VaultPaymentMethodViewContent.mainTitleText.localizedUppercase
+        otherPaymentMethodsTitleLabel.text = Strings.VaultPaymentMethodViewContent.availablePaymentMethodsTitle.localizedUppercase
         
         otherPaymentMethodsTitleLabel.textColor = theme.text.subtitle.color
         otherPaymentMethodsTitleLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
@@ -118,4 +118,4 @@ class PrimerFormViewController: PrimerViewController {
     
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Evangelos on 28/12/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -45,5 +45,5 @@ extension PrimerTestPaymentMethodSessionInfo.FlowDecision {
     
 }
 
-#endif
+
 

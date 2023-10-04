@@ -5,17 +5,17 @@
 //  Created by Evangelos Pittas on 11/10/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import SafariServices
 import UIKit
 
-class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     
     // MARK: - Properties
     
-    private var cardComponentsManager: CardComponentsManager!
+    private var cardComponentsManager: InternalCardComponentsManager!
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     
     private var userInputCompletion: (() -> Void)?
@@ -286,7 +286,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     required init(config: PrimerPaymentMethod) {
         super.init(config: config)
                         
-        self.cardComponentsManager = CardComponentsManager(
+        self.cardComponentsManager = InternalCardComponentsManager(
             cardnumberField: cardNumberField,
             expiryDateField: expiryDateField,
             cvvField: cvvField,
@@ -301,22 +301,22 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func start() {
         self.checkouEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = false
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
         }
         
         self.checkouEventsNotifierModule.didFinishTokenization = {
             self.uiModule.submitButton?.stopAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = true
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
         }
         
         self.didStartPayment = {
             self.uiModule.submitButton?.startAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = false
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
         }
         
         self.didFinishPayment = { err in
             self.uiModule.submitButton?.stopAnimating()
-            PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = true
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
             
             self.willDismissPaymentMethodUI?()
             self.webViewController?.dismiss(animated: true, completion: {
@@ -387,9 +387,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .done {
-                seal.fulfill()
-            }
             .done { paymentMethodTokenData in
                 seal.fulfill(paymentMethodTokenData)
             }
@@ -401,7 +398,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
 
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
@@ -501,7 +498,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 }
                 
             } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-    #if canImport(Primer3DS)
                 guard let paymentMethodTokenData = paymentMethodTokenData else {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -510,28 +506,25 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     return
                 }
                 
-                let threeDSService = ThreeDSService()
-                threeDSService.perform3DS(paymentMethodTokenData: paymentMethodTokenData, protocolVersion: decodedJWTToken.env == "PRODUCTION" ? .v1 : .v2, sdkDismissed: nil) { result in
-                    switch result {
-                    case .success(let resumeToken):
-                        DispatchQueue.main.async {
-                            seal.fulfill(resumeToken)
-                        }
-                        
-                    case .failure(let err):
-                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: containerErr)
-                        seal.reject(containerErr)
-                    }
+                var threeDSService: ThreeDSServiceProtocol = ThreeDSService()
+#if DEBUG
+                if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+                    threeDSService = Mock3DSService()
                 }
-    #else
-                let err = PrimerError.failedToImport3DS(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-    #endif
-                
+#endif
+                threeDSService.perform3DS(
+                    paymentMethodTokenData: paymentMethodTokenData,
+                    sdkDismissed: nil) { result in
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .success(let resumeToken):
+                                seal.fulfill(resumeToken)
+                                
+                            case .failure(let err):
+                                seal.reject(err)
+                            }
+                        }
+                    }
             } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
                 if let redirectUrlStr = decodedJWTToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),
@@ -547,7 +540,18 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                         self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                     }
                     .then { () -> Promise<String> in
-                        return PollingModule(url: statusUrl).start()
+                        let pollingModule = PollingModule(url: statusUrl)
+                        
+                        self.didCancel = {
+                            let err = PrimerError.cancelled(
+                                paymentMethodType: self.config.type,
+                                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                diagnosticsId: UUID().uuidString)
+                            ErrorHandler.handle(error: err)
+                            pollingModule.cancel(withError: err)
+                        }
+                        
+                        return pollingModule.start()
                     }
                     .done { resumeToken in
                         seal.fulfill(resumeToken)
@@ -630,6 +634,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         
         self.userInputCompletion?()
     }
+    
+    override func cancel() {
+        self.didCancel?()
+        self.didCancel = nil
+        super.cancel()
+    }
 }
 
 extension CardFormPaymentMethodTokenizationViewModel {
@@ -680,14 +690,14 @@ extension CardFormPaymentMethodTokenizationViewModel {
     }
 }
 
-extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDelegate {
+extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsManagerDelegate {
     
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData) {
+    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData) {
         self.cardComponentsManagerTokenizationCompletion?(paymentMethodToken, nil)
         self.cardComponentsManagerTokenizationCompletion = nil
     }
     
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
+    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
         if let clientToken = PrimerAPIConfigurationModule.clientToken {
             completion(clientToken, nil)
         } else {
@@ -697,16 +707,16 @@ extension CardFormPaymentMethodTokenizationViewModel: CardComponentsManagerDeleg
         }
     }
     
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, tokenizationFailedWith errors: [Error]) {
+    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, tokenizationFailedWith errors: [Error]) {
         let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: err)
         self.cardComponentsManagerTokenizationCompletion?(nil, err)
         self.cardComponentsManagerTokenizationCompletion = nil
     }
     
-    func cardComponentsManager(_ cardComponentsManager: CardComponentsManager, isLoading: Bool) {
+    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, isLoading: Bool) {
         isLoading ? self.uiModule.submitButton?.startAnimating() : self.uiModule.submitButton?.stopAnimating()
-        PrimerUIManager.primerRootViewController?.view.isUserInteractionEnabled = !isLoading
+        PrimerUIManager.primerRootViewController?.enableUserInteraction(!isLoading)
     }
     
     fileprivate func autofocusToNextFieldIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
@@ -875,13 +885,6 @@ extension CardFormPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
     }
 }
 
-extension CardFormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol {
-    
-    func cancel() {
-        
-    }
-}
-
 extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -947,4 +950,4 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
 }
 
 
-#endif
+

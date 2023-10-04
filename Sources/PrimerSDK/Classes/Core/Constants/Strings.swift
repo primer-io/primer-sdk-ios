@@ -6,7 +6,7 @@
 //
 
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -933,6 +933,21 @@ extension Strings {
     }
 }
 
+// MARK: - Apple Pay
+
+extension Strings {
+    
+    struct ApplePay {
+        
+        static let surcharge = NSLocalizedString(
+            "surcharge",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Additional fees",
+            comment: "Surcharge - Apple Pay label")
+    }
+}
+
 // MARK: - Blik
 
 extension Strings {
@@ -1022,4 +1037,4 @@ extension Strings {
     }
 }
 
-#endif
+

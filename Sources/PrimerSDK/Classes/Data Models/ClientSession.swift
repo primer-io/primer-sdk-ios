@@ -5,7 +5,7 @@
 //  Created by Evangelos on 22/11/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -158,6 +158,28 @@ internal class ClientSession {
             case id = "orderId", merchantAmount, totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, lineItems, shippingAmount
         }
         
+        internal init(
+            id: String?,
+            merchantAmount: Int?,
+            totalOrderAmount: Int?,
+            totalTaxAmount: Int?,
+            countryCode: CountryCode?,
+            currencyCode: Currency?,
+            fees: [ClientSession.Order.Fee]?,
+            lineItems: [ClientSession.Order.LineItem]?,
+            shippingAmount: Int?
+        ) {
+            self.id = id
+            self.merchantAmount = merchantAmount
+            self.totalOrderAmount = totalOrderAmount
+            self.totalTaxAmount = totalTaxAmount
+            self.countryCode = countryCode
+            self.currencyCode = currencyCode
+            self.fees = fees
+            self.lineItems = lineItems
+            self.shippingAmount = shippingAmount
+        }
+        
         internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             id = (try? container.decode(String?.self, forKey: .id)) ?? nil
@@ -186,20 +208,43 @@ internal class ClientSession {
         // MARK: ClientSession.Order.LineItem
         
         internal struct LineItem: Codable {
-            
+
             let itemId: String?
             let quantity: Int
             let amount: Int?
             let discountAmount: Int?
-            let reference: String?
             let name: String?
             let description: String?
+            let taxAmount: Int?
+            let taxCode: String?
+            
+            init(
+                itemId: String?,
+                quantity: Int,
+                amount: Int?,
+                discountAmount: Int?,
+                name: String?,
+                description: String?,
+                taxAmount: Int?,
+                taxCode: String?
+            ) {
+                self.itemId = itemId
+                self.quantity = quantity
+                self.amount = amount
+                self.discountAmount = discountAmount
+                self.name = name
+                self.description = description
+                self.taxAmount = taxAmount
+                self.taxCode = taxCode
+            }
             
             func toOrderItem() throws -> OrderItem {
                 return try OrderItem(
                     name: (self.description ?? PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName) ?? "Item",
                     unitAmount: self.amount,
                     quantity: self.quantity,
+                    discountAmount: self.discountAmount,
+                    taxAmount: self.taxAmount,
                     isPending: false)
             }
         }
@@ -207,23 +252,24 @@ internal class ClientSession {
         // MARK: ClientSession.Order.Fee
         
         internal struct Fee: Codable {
-            let type: String
+            
+            let type: FeeType
             let amount: Int
             
             enum CodingKeys: String, CodingKey {
                 case type, amount
             }
             
-            internal init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                type = try container.decode(String.self, forKey: .type)
-                amount = try container.decode(Int.self, forKey: .amount)
+            init(
+                type: FeeType,
+                amount: Int
+            ) {
+                self.type = type
+                self.amount = amount
             }
             
-            internal func encode(to encoder: Encoder) throws {
-                var container = encoder.container(keyedBy: CodingKeys.self)
-                try container.encode(type, forKey: .type)
-                try container.encode(amount, forKey: .amount)
+            enum FeeType: String, Codable {
+                case surcharge = "SURCHARGE"
             }
         }
     }
@@ -276,21 +322,24 @@ internal class ClientSession {
         let paymentMethod: ClientSession.PaymentMethod?
         let order: ClientSession.Order?
         let customer: ClientSession.Customer?
+        let testId: String?
         
         enum CodingKeys: String, CodingKey {
-            case clientSessionId, paymentMethod, order, customer // metadata
+            case clientSessionId, paymentMethod, order, customer, testId // metadata
         }
         
         init(
             clientSessionId: String?,
             paymentMethod: ClientSession.PaymentMethod?,
             order: ClientSession.Order?,
-            customer: ClientSession.Customer?
+            customer: ClientSession.Customer?,
+            testId: String?
         ) {
             self.clientSessionId = clientSessionId
             self.paymentMethod = paymentMethod
             self.order = order
             self.customer = customer
+            self.testId = testId
         }
         
         required internal init(from decoder: Decoder) throws {
@@ -299,6 +348,7 @@ internal class ClientSession {
             self.paymentMethod = (try? container.decode(ClientSession.PaymentMethod?.self, forKey: .paymentMethod)) ?? nil
             self.order = (try? container.decode(ClientSession.Order?.self, forKey: .order)) ?? nil
             self.customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
+            self.testId = (try? container.decode(String?.self, forKey: .testId)) ?? nil
         }
         
         internal func encode(to encoder: Encoder) throws {
@@ -306,6 +356,7 @@ internal class ClientSession {
             try container.encode(paymentMethod, forKey: .paymentMethod)
             try container.encode(order, forKey: .order)
             try container.encode(customer, forKey: .customer)
+            try? container.encode(testId, forKey: .testId)
         }
     }
 }
@@ -320,4 +371,4 @@ internal extension Encodable {
     }
 }
 
-#endif
+

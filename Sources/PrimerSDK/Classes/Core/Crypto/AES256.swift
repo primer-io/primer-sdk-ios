@@ -5,7 +5,7 @@
 //  Created by Evangelos on 13/12/21.
 //
 
-#if canImport(UIKit)
+
 
 import CommonCrypto
 import Foundation
@@ -169,4 +169,4 @@ internal struct AES256 {
     }
 }
 
-#endif
+

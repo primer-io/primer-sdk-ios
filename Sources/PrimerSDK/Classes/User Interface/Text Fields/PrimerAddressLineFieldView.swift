@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -12,7 +12,15 @@ public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
         isValid = { text in
             return !text.isEmpty
         }
-        validationError = .invalidAddress(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+        validationError = .invalidAddress(
+            message: "Address is not valid.",
+            userInfo: [
+                "file": #file,
+                "class": "\(Self.self)",
+                "function": #function,
+                "line": "\(#line)"
+            ],
+            diagnosticsId: UUID().uuidString)
     }
 }
 
@@ -43,4 +51,4 @@ public final class PrimerAddressLine2FieldView: PrimerSimpleCardFormTextFieldVie
     }
 }
 
-#endif
+

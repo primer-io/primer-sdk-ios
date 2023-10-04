@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 extension Request.Body {
     public class PayPal {}
@@ -44,7 +44,7 @@ extension Response.Body.PayPal {
         
         let billingAgreementId: String
         let externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo
-        let shippingAddress: Response.Body.Tokenization.PayPal.ShippingAddress
+        let shippingAddress: Response.Body.Tokenization.PayPal.ShippingAddress?
     }
     
     struct CreateBillingAgreement: Codable {
@@ -80,4 +80,4 @@ extension Response.Body.Tokenization {
     }
 }
 
-#endif
+

@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -15,10 +15,6 @@ internal class PayPalService: PayPalServiceProtocol {
     static var apiClient: PrimerAPIClientProtocol?
     
     private var paypalTokenId: String?
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
 
     private func prepareUrlAndTokenAndId(path: String) -> (DecodedJWTToken, URL, String)? {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -257,4 +253,4 @@ internal class PayPalService: PayPalServiceProtocol {
     }
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import UIKit
@@ -25,17 +25,16 @@ internal class Input {
     var primerTextFieldView: PrimerTextFieldView?
 }
 
-class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel, SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     
     // MARK: - Properties
     
     var inputs: [Input] = []
+    private var didCancelPolling: (() -> Void)?
     
-    private var cardComponentsManager: CardComponentsManager!
+    private var cardComponentsManager: InternalCardComponentsManager!
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
-    var didCancel: (() -> Void)?
-    
+        
     private static let countryCodeFlag = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.flag ?? ""
     private static let countryDialCode = CountryCode.phoneNumberCountryCodes.first(where: { $0.code == PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode?.rawValue})?.dialCode ?? ""
         
@@ -449,11 +448,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     /// Input completion block callback
     var userInputCompletion: (() -> Void)?
     
-    // MARK: - Init
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
+    // MARK: - Payment Flow
     
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -529,7 +524,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
             
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
@@ -585,6 +580,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     }
                     .done { resumeToken in
                         seal.fulfill(resumeToken)
+                    }
+                    .ensure {
+                        self.didCancel = nil
                     }
                     .catch { err in
                         seal.reject(err)
@@ -859,6 +857,14 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             super.handleSuccessfulFlow()
         }
     }
+    
+    override func cancel() {
+        didCancel?()
+        inputs = []
+        
+        let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+        ErrorHandler.handle(error: err)
+    }
 }
 
 extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
@@ -907,17 +913,6 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
     }
 }
 
-extension FormPaymentMethodTokenizationViewModel: SearchableItemsPaymentMethodTokenizationViewModelProtocol {
-    
-    func cancel() {
-        didCancel?()
-        inputs = []
-        
-        let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: err)
-    }
-}
-
 extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -961,4 +956,4 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
     }
 }
 
-#endif
+

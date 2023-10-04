@@ -5,7 +5,7 @@
 //  Created by Evangelos on 5/9/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -14,4 +14,4 @@ public class Request {
     internal class URLParameters {}
 }
 
-#endif
+

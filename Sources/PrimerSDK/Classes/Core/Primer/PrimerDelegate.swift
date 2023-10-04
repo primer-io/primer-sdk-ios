@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -43,68 +43,104 @@ public protocol PrimerDelegate {
 
 internal class PrimerDelegateProxy {
     
-    static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecisionProtocol) -> Void) {
         DispatchQueue.main.async {
-            if Primer.shared.delegate?.primerDidTokenizePaymentMethod != nil {
+            if PrimerInternal.shared.sdkIntegrationType == .headless,
+               (decisionHandler as ((PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)?) != nil
+            {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
+                
+            } else if PrimerInternal.shared.sdkIntegrationType == .dropIn,
+                      (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil
+            {
                 Primer.shared.delegate?.primerDidTokenizePaymentMethod?(paymentMethodTokenData, decisionHandler: decisionHandler)
-            }
-            
-            if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod != nil {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidTokenizePaymentMethod!(paymentMethodTokenData, decisionHandler: decisionHandler)
             }
         }
     }
     
-    static func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
+    static func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecisionProtocol) -> Void) {
         DispatchQueue.main.async {
-            if Primer.shared.delegate?.primerDidResumeWith != nil {
+            if PrimerInternal.shared.sdkIntegrationType == .headless,
+               (decisionHandler as ((PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)?) != nil
+            {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
+            } else if PrimerInternal.shared.sdkIntegrationType == .dropIn,
+                      (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil
+            {
                 Primer.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
-            }
-            
-            if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith != nil {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidResumeWith!(resumeToken, decisionHandler: decisionHandler)
             }
         }
     }
     
     static func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         DispatchQueue.main.async {
-            if Primer.shared.delegate?.primerWillCreatePaymentWithData != nil || PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData != nil {
-                Primer.shared.delegate?.primerWillCreatePaymentWithData?(data, decisionHandler: decisionHandler)
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData?(data, decisionHandler: decisionHandler)
-            } else {
-                decisionHandler(.continuePaymentCreation())
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData != nil {
+                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData?(data, decisionHandler: decisionHandler)
+                } else {
+                    decisionHandler(.continuePaymentCreation())
+                }
+                
+            } else if PrimerInternal.shared.sdkIntegrationType == .dropIn {
+                if Primer.shared.delegate?.primerWillCreatePaymentWithData != nil {
+                    Primer.shared.delegate?.primerWillCreatePaymentWithData?(data, decisionHandler: decisionHandler)
+                } else {
+                    decisionHandler(.continuePaymentCreation())
+                }
             }
         }
     }
     
-    static var isOnCheckoutDismissedImplemented: Bool {
-        return Primer.shared.delegate?.primerDidDismiss != nil
-    }
-    
     static func primerDidDismiss() {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.primerDidDismiss?()
+            if PrimerInternal.shared.sdkIntegrationType == .dropIn {
+                Primer.shared.delegate?.primerDidDismiss?()
+            }
         }
     }
     
     static func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.primerDidCompleteCheckoutWithData(data)
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(data)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(data)
+                
+                if let timingEventId = PrimerHeadlessUniversalCheckout.current.timingEventId,
+                   PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData != nil
+                {
+                    let timingEndEvent = Analytics.Event(
+                        eventType: .timerEvent,
+                        properties: TimerEventProperties(
+                            momentType: .start,
+                            id: timingEventId))
+                    
+                    Analytics.Service.record(events: [timingEndEvent])
+                }
+                
+                PrimerUIManager.dismissPrimerUI(animated: true)
+                
+            } else if PrimerInternal.shared.sdkIntegrationType == .dropIn {
+                Primer.shared.delegate?.primerDidCompleteCheckoutWithData(data)
+            }
         }
     }
     
     static func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.primerDidEnterResumePendingWithPaymentAdditionalInfo?(additionalInfo)
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo?(additionalInfo)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo?(additionalInfo)
+                
+                
+            } else if PrimerInternal.shared.sdkIntegrationType == .dropIn {
+                Primer.shared.delegate?.primerDidEnterResumePendingWithPaymentAdditionalInfo?(additionalInfo)
+            }
         }
     }
     
     static func primerDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo?(additionalInfo)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo?(additionalInfo)
+            }
         }
     }
     
@@ -122,29 +158,46 @@ internal class PrimerDelegateProxy {
             
             let exposedError: Error = error.exposedError
             
-            if Primer.shared.delegate?.primerDidFailWithError == nil,
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail == nil
-            {
-                print("WARNING!\nDelegate function '\(#function)' hasn't been implemented. No custom error message will be displayed on the error screen.")
-                decisionHandler(.fail(withErrorMessage: nil))
-                return
-            }
-            
-            if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail != nil {
-                DispatchQueue.main.async {
-                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail!(withError: exposedError)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail == nil {
+                    print("WARNING!\nDelegate function 'primerHeadlessUniversalCheckoutDidFail' hasn't been implemented.")
+                    decisionHandler(.fail(withErrorMessage: nil))
+                    
+                } else {
+                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail!(withError: exposedError, checkoutData: data)
                     decisionHandler(.fail(withErrorMessage: nil))
                 }
                 
-            } else if Primer.shared.delegate?.primerDidFailWithError != nil {
-                Primer.shared.delegate?.primerDidFailWithError?(exposedError, data: data, decisionHandler: { errorDecision in
-                    switch errorDecision.type {
-                    case .fail(let message):
-                        DispatchQueue.main.async {
-                            decisionHandler(.fail(withErrorMessage: message))
+                if let timingEventId = PrimerHeadlessUniversalCheckout.current.timingEventId,
+                   PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData != nil
+                {
+                    let timingEndEvent = Analytics.Event(
+                        eventType: .timerEvent,
+                        properties: TimerEventProperties(
+                            momentType: .end,
+                            id: timingEventId))
+                    
+                    Analytics.Service.record(events: [timingEndEvent])
+                    Analytics.Service.sync()
+                }
+                
+                PrimerUIManager.dismissPrimerUI(animated: true)
+                
+            } else if PrimerInternal.shared.sdkIntegrationType == .dropIn {
+                if Primer.shared.delegate?.primerDidFailWithError == nil {
+                    print("WARNING!\nDelegate function 'primerDidFailWithError' hasn't been implemented. No custom error message will be displayed on the error screen.")
+                    decisionHandler(.fail(withErrorMessage: nil))
+                    
+                } else {
+                    Primer.shared.delegate?.primerDidFailWithError?(exposedError, data: data, decisionHandler: { errorDecision in
+                        switch errorDecision.type {
+                        case .fail(let message):
+                            DispatchQueue.main.async {
+                                decisionHandler(.fail(withErrorMessage: message))
+                            }
                         }
-                    }
-                })
+                    })
+                }
                 
             }
         }
@@ -168,41 +221,56 @@ internal class PrimerDelegateProxy {
     
     static func primerClientSessionWillUpdate() {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.primerClientSessionWillUpdate?()
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutClientSessionWillUpdate?()
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutWillUpdateClientSession?()
+                
+            } else if PrimerInternal.shared.sdkIntegrationType == .dropIn {
+                Primer.shared.delegate?.primerClientSessionWillUpdate?()
+            }
         }
     }
     
     static func primerClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
         DispatchQueue.main.async {
-            Primer.shared.delegate?.primerClientSessionDidUpdate?(clientSession)
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutClientSessionDidUpdate?(clientSession)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidUpdateClientSession?(clientSession)
+            } else if PrimerInternal.shared.sdkIntegrationType == .dropIn {
+                Primer.shared.delegate?.primerClientSessionDidUpdate?(clientSession)
+            }
         }
     }
     
-    static func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
+    static func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(paymentMethodTypes)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(paymentMethods)
+            }
         }
     }
     
-    static func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
+    static func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPreparationDidStart?(for: paymentMethodType)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidStartPreparation?(for: paymentMethodType)
+            }
         }
     }
     
-    static func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
+    static func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutTokenizationDidStart?(for: paymentMethodType)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidStartTokenization?(for: paymentMethodType)
+            }
         }
     }
     
-    static func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
+    static func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String) {
         DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutPaymentMethodDidShow?(for: paymentMethodType)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: paymentMethodType)
+            }
         }
     }
 }
 
-#endif
+

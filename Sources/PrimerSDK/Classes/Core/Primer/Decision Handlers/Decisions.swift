@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 02/05/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -33,15 +33,21 @@ public extension PrimerErrorDecision {
 
 // MARK: - RESUME DECISION
 
-@objc public class PrimerResumeDecision: NSObject {
+public protocol PrimerResumeDecisionProtocol: NSObject {
+    var type: PrimerResumeDecisionTypeProtocol { get set }
+}
+
+public protocol PrimerResumeDecisionTypeProtocol {}
+
+@objc public class PrimerResumeDecision: NSObject, PrimerResumeDecisionProtocol {
     
-    public enum DecisionType {
+    public enum DecisionType: PrimerResumeDecisionTypeProtocol {
         case succeed
         case fail(errorMessage: String?)
         case continueWithNewClientToken(_ newClientToken: String)
     }
         
-    var type: DecisionType
+    public var type: PrimerResumeDecisionTypeProtocol
     
     private init(type: DecisionType) {
         self.type = type
@@ -60,6 +66,33 @@ public extension PrimerResumeDecision {
     
     static func continueWithNewClientToken(_ newClientToken: String) -> PrimerResumeDecision {
         PrimerResumeDecision(type: .continueWithNewClientToken(newClientToken))
+    }
+}
+
+// MARK: - HUC RESUME DECISION
+
+@objc public class PrimerHeadlessUniversalCheckoutResumeDecision: NSObject, PrimerResumeDecisionProtocol {
+    
+    public enum DecisionType: PrimerResumeDecisionTypeProtocol {
+        case continueWithNewClientToken(_ newClientToken: String)
+        case complete
+    }
+        
+    public var type: PrimerResumeDecisionTypeProtocol
+    
+    private init(type: DecisionType) {
+        self.type = type
+    }
+}
+
+public extension PrimerHeadlessUniversalCheckoutResumeDecision {
+    
+    static func continueWithNewClientToken(_ newClientToken: String) -> PrimerHeadlessUniversalCheckoutResumeDecision {
+        PrimerHeadlessUniversalCheckoutResumeDecision(type: .continueWithNewClientToken(newClientToken))
+    }
+    
+    static func complete() -> PrimerHeadlessUniversalCheckoutResumeDecision {
+        PrimerHeadlessUniversalCheckoutResumeDecision(type: .complete)
     }
 }
 
@@ -90,4 +123,4 @@ public extension PrimerPaymentCreationDecision {
     }
 }
 
-#endif
+

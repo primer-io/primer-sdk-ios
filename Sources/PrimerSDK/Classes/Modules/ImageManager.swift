@@ -5,7 +5,7 @@
 //  Created by Evangelos on 15/7/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -32,7 +32,7 @@ internal class ImageFile: File {
     static func getBundledImageFileName(
         forPaymentMethodType paymentMethodType: String,
         themeMode: PrimerTheme.Mode,
-        assetType: PrimerAsset.ImageType
+        assetType: PrimerPaymentMethodAsset.ImageType
     ) -> String? {
         
         var tmpPaymentMethodFileNameFirstComponent: String?
@@ -248,5 +248,5 @@ internal class ImageManager {
     }
 }
 
-#endif
+
 

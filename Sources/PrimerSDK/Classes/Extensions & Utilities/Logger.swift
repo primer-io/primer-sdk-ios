@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 16/01/2021.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -19,7 +19,7 @@ internal func primerLogAnalytics(title: String? = nil, message: String? = nil, p
         return
     }
     
-    log(logLevel: .verbose, title: title, message: message, prefix: prefix, suffix: suffix, bundle: bundle, file: file, className: className, function: function, line: line)
+    log(logLevel: .debug, title: title, message: message, prefix: prefix, suffix: suffix, bundle: bundle, file: file, className: className, function: function, line: line)
 }
 
 // swiftlint:disable cyclomatic_complexity
@@ -135,4 +135,4 @@ internal func logJSON(obj: Any) {
     }
 }
 
-#endif
+

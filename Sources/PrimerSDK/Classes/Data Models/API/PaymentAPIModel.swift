@@ -5,7 +5,7 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -132,22 +132,10 @@ extension Response.Body {
             public let description: String?
         }
         
-        /// This enum is giong to be simplified removing the following cases:
-        /// - authorized
-        /// - settled
-        /// - declined
-        /// We are going to have only the following
-        /// - pending
-        /// - success
-        /// - failed
         public enum Status: String, Codable {
-            case authorized = "AUTHORIZED"
-            case settled = "SETTLED"
-            case settling = "SETTLING"
-            case declined = "DECLINED"
-            case failed = "FAILED"
-            case pending = "PENDING"
-            case success = "SUCCESS"
+            case failed     = "FAILED"
+            case pending    = "PENDING"
+            case success    = "SUCCESS"
         }
     }
 }
@@ -220,6 +208,7 @@ extension PrimerCheckoutDataPayment {
 // MARK: Checkout Data Payment Error
 
 @objc public enum PrimerPaymentErrorCode: Int, RawRepresentable, Codable {
+    
     case failed
     case cancelledByCustomer
     
@@ -379,4 +368,4 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-#endif
+

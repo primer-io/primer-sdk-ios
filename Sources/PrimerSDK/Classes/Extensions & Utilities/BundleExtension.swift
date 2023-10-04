@@ -5,14 +5,14 @@
 //  Created by Evangelos Pittas on 18/3/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
 internal extension Bundle {
 
     static var primerFramework: Bundle {
-        return Bundle(identifier: "org.cocoapods.PrimerSDK") ?? Bundle(for: Primer.self)
+        return Bundle(for: Primer.self)
     }
 
     static var primerResources: Bundle {
@@ -25,25 +25,8 @@ internal extension Bundle {
     }
 
     static var primerFrameworkIdentifier: String {
-        return Bundle.primerFramework.bundleIdentifier!
-    }
-    
-    var releaseVersionNumber: String? {
-        if let reactNativeVersion = Primer.shared.integrationOptions?.reactNativeVersion {
-            return reactNativeVersion
-        }
-        let version = Bundle.primerFramework.infoDictionary?["CFBundleShortVersionString"] as? String
-        
-        if version != "2.16.5" {
-            return "2.16.5"
-        } else {
-            return version
-        }
-    }
-    
-    var buildVersionNumber: String? {
-        return Bundle.primerFramework.infoDictionary?["CFBundleVersion"] as? String
+        return Bundle.primerFramework.bundleIdentifier ?? "org.cocoapods.PrimerSDK"
     }
 }
 
-#endif
+

@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -330,4 +330,4 @@ public class PrimerThemeData {
     }
 }
 
-#endif
+

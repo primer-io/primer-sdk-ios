@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 import UIKit
 
 // swiftlint:disable identifier_name
@@ -9,7 +9,11 @@ public class Primer {
     
     // MARK: - PROPERTIES
     
-    public weak var delegate: PrimerDelegate?
+    public weak var delegate: PrimerDelegate? {
+        didSet {
+            PrimerInternal.shared.sdkIntegrationType = .dropIn
+        }
+    }
     public var intent: PrimerSessionIntent? {
         return PrimerInternal.shared.intent
     }
@@ -65,10 +69,11 @@ public class Primer {
     }
     
     /**
-     Show Primer Payment Method
+     Show a payment method with the speicified intent (if applicable)
      */
-    public func showPaymentMethod(_ paymentMethodType: String, withIntent intent: PrimerSessionIntent, andClientToken clientToken: String, completion: ((Error?) -> Void)? = nil) {
-        PrimerInternal.shared.showPaymentMethod(paymentMethodType, withIntent: intent, andClientToken: clientToken)
+    public func showPaymentMethod(_ paymentMethodType: String, intent: PrimerSessionIntent, clientToken: String, completion: ((Error?) -> Void)? = nil) {
+        PrimerInternal.shared.sdkIntegrationType = .dropIn
+        PrimerInternal.shared.showPaymentMethod(paymentMethodType, withIntent: intent, andClientToken: clientToken, completion: completion)
     }
         
     /**
@@ -79,4 +84,4 @@ public class Primer {
     }
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Evangelos on 30/6/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -68,7 +68,9 @@ class PollingModule: Module {
         }
         
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.sdkDismissed
+            let err = PrimerError.invalidClientToken(
+                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
@@ -100,4 +102,4 @@ class PollingModule: Module {
     }
 }
 
-#endif
+

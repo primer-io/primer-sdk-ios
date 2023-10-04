@@ -64,17 +64,7 @@ jobs:
 
       - run: npm install --save slack-message-builder
 
-      - name: Install Tuist.io
-        run: |
-          if [ ! -d ".tuist-bin" ]
-          then
-            curl -Ls https://install.tuist.io | bash
-          fi
-
-      - name: Create the Xcode project and workspace
-        run: sh ./Internal/Debug\ App/tuist-generate.sh is_ci
-
-      - name: Distribute app to Appetize 🚀
+      - name: Test, Build, and Distribute app to Appetize 🚀
         run: |
           bundle exec fastlane appetize_build_and_upload
         env:
@@ -175,16 +165,6 @@ jobs:
           base64 -d -i firebase_credentials.json.b64 > firebase_credentials.json
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
-
-      - name: Install Tuist.io
-        run: |
-          if [ ! -d ".tuist-bin" ]
-          then
-            curl -Ls https://install.tuist.io | bash
-          fi
-
-      - name: Create the Xcode project and workspace
-        run: sh ./Internal/Debug\ App/tuist-generate.sh is_ci
 
       - name: Distribute internally on Firebase and upload to Browserstack 🚀
         run: |

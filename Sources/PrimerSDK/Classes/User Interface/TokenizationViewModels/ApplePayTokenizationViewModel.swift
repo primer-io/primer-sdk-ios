@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import Foundation
 import PassKit
@@ -29,12 +29,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var applePayReceiveDataCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?
     // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
     private var applePayControllerCompletion: ((PKPaymentAuthorizationResult) -> Void)?
-    private var isCancelled: Bool = false
     private var didTimeout: Bool = false
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
@@ -76,7 +71,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func start() {
         self.didFinishPayment = { err in
-            if let err = err {
+            if let _ = err {
                 self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .failure, errors: nil))
             } else {
                 self.applePayControllerCompletion?(PKPaymentAuthorizationResult(status: .success, errors: nil))
@@ -135,8 +130,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
-            
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
+
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
@@ -183,29 +178,15 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let currency = AppState.current.currency!
                 let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions!.merchantIdentifier
                 
-                var orderItems: [OrderItem]
+                let orderItems: [OrderItem]
                 
-                if let lineItems = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() }) {
-                    orderItems = lineItems
-                } else {
-                    orderItems = [try! OrderItem(name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "", unitAmount: AppState.current.amount ?? 0, quantity: 1)]
+                do {
+                    orderItems = try self.createOrderItemsFromClientSession(AppState.current.apiConfiguration!.clientSession!)
+                } catch {
+                    seal.reject(error)
+                    return
                 }
                 
-                // Add fees, if present
-                if let fees = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.fees {
-                    for fee in fees {
-                        let feeItem = try! OrderItem(name: fee.type.lowercased().capitalizingFirstLetter(), unitAmount: fee.amount, quantity: 1)
-                        orderItems.append(feeItem)
-                    }
-                }
-                
-                // Create the last object of the orderItems array, which is the order summary
-                var totalAmount = 0
-                for orderItem in orderItems {
-                    totalAmount += (orderItem.unitAmount ?? 0) * orderItem.quantity
-                }
-                let summaryItem = try! OrderItem(name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "", unitAmount: totalAmount, quantity: 1)
-                orderItems.append(summaryItem)
                 
                 let applePayRequest = ApplePayRequest(
                     currency: currency,
@@ -243,7 +224,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         self.isCancelled = true
                         PrimerUIManager.primerRootViewController?.present(paymentVC, animated: true, completion: {
                             DispatchQueue.main.async {
-                                PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: self.config.type)
+                                PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
                                 self.didPresentPaymentMethodUI?()
                                 seal.fulfill()
                             }
@@ -364,6 +345,72 @@ extension ApplePayTokenizationViewModel {
             }
         }
     }
+    
+    internal func createOrderItemsFromClientSession(_ clientSession: ClientSession.APIResponse) throws -> [OrderItem] {
+        var orderItems: [OrderItem] = []
+        
+        if let merchantAmount = clientSession.order?.merchantAmount {
+            // If there's a hardcoded amount, create an order item with the merchant name as its title
+            let summaryItem = try OrderItem(
+                name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "",
+                unitAmount: merchantAmount,
+                quantity: 1,
+                discountAmount: nil,
+                taxAmount: nil)
+            orderItems.append(summaryItem)
+            
+        } else if let lineItems = clientSession.order?.lineItems {
+            // If there's no hardcoded amount, map line items to order items
+            guard !lineItems.isEmpty else {
+                let err = PrimerError.invalidValue(
+                    key: "clientSession.order.lineItems",
+                    value: "[]",
+                    userInfo: nil,
+                    diagnosticsId: UUID().uuidString)
+                throw err
+            }
+            
+            for lineItem in lineItems {
+                let orderItem = try lineItem.toOrderItem()
+                orderItems.append(orderItem)
+            }
+            
+            // Add fees, if present
+            if let fees = clientSession.order?.fees {
+                for fee in fees {
+                    switch fee.type {
+                    case .surcharge:
+                        let feeItem = try OrderItem(
+                            name: Strings.ApplePay.surcharge,
+                            unitAmount: fee.amount,
+                            quantity: 1,
+                            discountAmount: nil,
+                            taxAmount: nil)
+                        orderItems.append(feeItem)
+                    }
+                }
+            }
+            
+            let summaryItem = try OrderItem(
+                name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "",
+                unitAmount: clientSession.order?.totalOrderAmount,
+                quantity: 1,
+                discountAmount: nil,
+                taxAmount: nil)
+            orderItems.append(summaryItem)
+            
+        } else {
+            // Throw error that neither a hardcoded amount, nor line items exist
+            let err = PrimerError.invalidValue(
+                key: "clientSession.order.lineItems or clientSession.order.amount",
+                value: nil,
+                userInfo: nil,
+                diagnosticsId: UUID().uuidString)
+            throw err
+        }
+        
+        return orderItems
+    }
 }
 
 @available(iOS 11.0, *)
@@ -397,8 +444,16 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         didAuthorizePayment payment: PKPayment,
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
+        
+        var isMockedBE: Bool = false
+#if DEBUG
+        if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+            isMockedBE = true
+        }
+#endif
+        
 #if targetEnvironment(simulator)
-        if payment.token.paymentData.count == 0 {
+        if payment.token.paymentData.count == 0 && !isMockedBE {
             let err = PrimerError.invalidArchitecture(
                 description: "Apple Pay does not work with Primer when used in the simulator due to a limitation from Apple Pay.",
                 recoverSuggestion: "Use a real device instead of the simulator",
@@ -418,17 +473,29 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
         self.isCancelled = false
         self.didTimeout = true
         
-        applePayControllerCompletion = { obj in
+        self.applePayControllerCompletion = { obj in
             self.didTimeout = false
             completion(obj)
         }
         
         do {
-            let tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self, from: payment.token.paymentData)
-            
+            let tokenPaymentData: ApplePayPaymentResponseTokenPaymentData
+            if isMockedBE {
+                tokenPaymentData = ApplePayPaymentResponseTokenPaymentData(
+                    data: "apple-pay-payment-response-mock-data",
+                    signature: "apple-pay-mock-signature",
+                    version: "apple-pay-mock-version",
+                    header: ApplePayTokenPaymentDataHeader(
+                        ephemeralPublicKey: "apple-pay-mock-ephemeral-key",
+                        publicKeyHash: "apple-pay-mock-public-key-hash",
+                        transactionId: "apple-pay-mock--transaction-id"))
+            } else {
+                tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self, from: payment.token.paymentData)
+            }
+                        
             let billingAddress = clientSessionBillingAddressFromApplePayBillingContact(payment.billingContact)
             
-            let applePayPaymentResponse = ApplePayPaymentResponse(
+            applePayPaymentResponse = ApplePayPaymentResponse(
                 token: ApplePayPaymentInstrument.PaymentResponseToken(
                     paymentMethod: ApplePayPaymentResponsePaymentMethod(
                         displayName: payment.token.paymentMethod.displayName,
@@ -439,10 +506,12 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
                     paymentData: tokenPaymentData
                 ), billingAddress: billingAddress)
             
+            
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
             controller.dismiss(animated: true, completion: nil)
             applePayReceiveDataCompletion?(.success(applePayPaymentResponse))
             applePayReceiveDataCompletion = nil
+            
         } catch {
             completion(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
             controller.dismiss(animated: true, completion: nil)
@@ -452,4 +521,4 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
     }
 }
 
-#endif
+

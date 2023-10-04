@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 27/07/2021.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -221,4 +221,4 @@ public struct Apaya {
     }
 }
 
-#endif
+

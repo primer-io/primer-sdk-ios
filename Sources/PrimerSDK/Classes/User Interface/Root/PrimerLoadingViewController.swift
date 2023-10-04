@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 30/7/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -52,6 +52,7 @@ class PrimerLoadingViewController: PrimerViewController {
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         activityIndicatorView.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
         activityIndicatorView.widthAnchor.constraint(equalToConstant: 50.0).isActive = true
+        activityIndicatorView.accessibilityIdentifier = "Loading Indicator"
         activityIndicatorView.startAnimating()
         
         resultView = PrimerResultComponentView(frame: .zero, imageView: self.imageView, message: self.message, loadingIndicator: self.activityIndicatorView)
@@ -65,4 +66,4 @@ class PrimerLoadingViewController: PrimerViewController {
     
 }
 
-#endif
+

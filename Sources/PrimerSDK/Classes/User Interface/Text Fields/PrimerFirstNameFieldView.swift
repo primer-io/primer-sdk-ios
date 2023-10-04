@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -15,7 +15,15 @@ public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         editingAnalyticsObjectId = .billingAddressFirstName
-        validationError = .invalidFirstName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+        validationError = .invalidFirstName(
+            message: "First name is not valid.",
+            userInfo: [
+                "file": #file,
+                "class": "\(Self.self)",
+                "function": #function,
+                "line": "\(#line)"
+            ],
+            diagnosticsId: UUID().uuidString)
         isValid = { text in
             return text.isTypingNonDecimalCharacters
         }
@@ -27,4 +35,4 @@ public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
     }
 }
 
-#endif
+

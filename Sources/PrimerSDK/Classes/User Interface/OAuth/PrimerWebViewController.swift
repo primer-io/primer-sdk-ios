@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 28/07/2021.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 import WebKit
@@ -23,10 +23,6 @@ internal class PrimerWebViewController: PrimerViewController {
         "primer.io",
         "livedemostore.primer.io"
     ]
-
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self.self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     init(with url: URL) {
         self.url = url
@@ -63,4 +59,4 @@ internal class PrimerWebViewController: PrimerViewController {
     
 }
 
-#endif
+

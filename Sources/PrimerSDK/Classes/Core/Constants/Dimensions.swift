@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -33,4 +33,4 @@ public struct PrimerDimensions {
     }
 }
 
-#endif
+

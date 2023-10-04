@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -16,4 +16,4 @@ internal class BorderTheme {
     }
 }
 
-#endif
+

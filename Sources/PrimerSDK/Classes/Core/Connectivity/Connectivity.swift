@@ -5,7 +5,7 @@
 //  Created by Evangelos on 15/12/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 import SystemConfiguration
@@ -50,4 +50,4 @@ internal class Connectivity {
     
 }
 
-#endif
+

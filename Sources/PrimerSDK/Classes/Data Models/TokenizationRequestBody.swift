@@ -1,4 +1,6 @@
-#if canImport(UIKit)
+
+
+import Foundation
 
 public enum TokenType: String, Codable {
     case multiUse = "MULTI_USE"
@@ -57,4 +59,4 @@ extension Request.Body {
     }
 }
 
-#endif
+

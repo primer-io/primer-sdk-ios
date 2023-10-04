@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 5/7/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -39,7 +39,15 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         if (self.isValid?(newText) ?? false) {
             validation = .valid
         } else {
-            let err = PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerValidationError.invalidExpiryDate(
+                message: "Expiry date is not valid. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year separated by '/'.",
+                userInfo: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ],
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             validation = .invalid(err)
         }
@@ -84,4 +92,4 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
     }    
 }
 
-#endif
+

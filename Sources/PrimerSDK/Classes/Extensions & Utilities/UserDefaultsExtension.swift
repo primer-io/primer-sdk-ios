@@ -5,14 +5,18 @@
 //  Created by Evangelos Pittas on 18/3/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
 internal extension UserDefaults {
 
     static var primerFramework: UserDefaults {
-        return UserDefaults(suiteName: Bundle.primerFrameworkIdentifier) ?? UserDefaults.standard
+        if Primer.shared.integrationOptions?.reactNativeVersion == nil {
+            return UserDefaults(suiteName: Bundle.primerFrameworkIdentifier) ?? UserDefaults.standard
+        } else {
+            return UserDefaults.standard
+        }
     }
 
     func clearPrimerFramework() {
@@ -22,4 +26,4 @@ internal extension UserDefaults {
 
 }
 
-#endif
+

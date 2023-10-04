@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 18/10/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -38,6 +38,11 @@ internal struct RetailOutletTokenizationSessionRequestParameters: OffSessionPaym
         case result
     }
     
+    init(result: [RetailOutletsRetail]) {
+        self.result = result
+        super.init()
+    }
+    
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         result = try container.decode([RetailOutletsRetail].self, forKey: .result)
@@ -51,4 +56,4 @@ internal struct RetailOutletTokenizationSessionRequestParameters: OffSessionPaym
 }
 
 
-#endif
+

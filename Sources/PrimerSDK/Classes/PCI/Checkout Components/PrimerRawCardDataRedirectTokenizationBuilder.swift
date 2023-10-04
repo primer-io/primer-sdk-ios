@@ -5,7 +5,7 @@
 //  Created by Dario Carlomagno on 27/09/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -42,7 +42,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
     
     var rawData: PrimerRawData? {
         didSet {
-            if let rawCardData = self.rawData as? PrimerBancontactCardRedirectData {
+            if let rawCardData = self.rawData as? PrimerBancontactCardData {
                 rawCardData.onDataDidChange = {
                     _ = self.validateRawData(rawCardData)
                     
@@ -72,7 +72,6 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
     var isDataValid: Bool = false
     var paymentMethodType: String
-    var delegate: PrimerRawDataManagerDelegate?
     
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
@@ -80,7 +79,9 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                 return
             }
             
-            rawDataManager.delegate?.primerRawDataManager?(rawDataManager, metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue])
+            DispatchQueue.main.async {
+                rawDataManager.delegate?.primerRawDataManager?(rawDataManager, metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue])
+            }
         }
     }
     
@@ -107,19 +108,24 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                 return
             }
                         
-            guard let rawData = data as? PrimerBancontactCardRedirectData else {
+            guard let rawData = data as? PrimerCardData,
+                  (rawData.expiryDate.split(separator: "/")).count == 2
+            else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
             
+            let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
+            let expiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
+            
             let paymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
                                                                     paymentMethodType: paymentMethodType,
                                                                     number: PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as! String,
-                                                                    expirationMonth: rawData.expiryMonth,
-                                                                    expirationYear: rawData.expiryYear,
-                                                                    cardholderName: rawData.cardholderName)
+                                                                    expirationMonth: expiryMonth,
+                                                                    expirationYear: expiryYear,
+                                                                    cardholderName: rawData.cardholderName ?? "")
             
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             seal.fulfill(requestBody)
@@ -128,45 +134,128 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
     
     func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
         return Promise { seal in
-            
-            var errors: [PrimerValidationError] = []
-            
-            guard let rawData = data as? PrimerBancontactCardRedirectData, let rawDataManager = rawDataManager else {
-                let err = PrimerValidationError.invalidRawData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                errors.append(err)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
-            }
-            
-            if !rawData.cardNumber.isValidCardNumber {
-                errors.append(PrimerValidationError.invalidCardnumber(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
-            }
-            
-            let expiryDate = rawData.expiryMonth + "/" + rawData.expiryYear.suffix(2)
-            
-            if !expiryDate.isValidExpiryDate {
-                errors.append(PrimerValidationError.invalidExpiryDate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
-            }
-            
-            if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
-                if !(rawData.cardholderName).isValidCardholderName {
-                    errors.append(PrimerValidationError.invalidCardholderName(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+            DispatchQueue.global(qos: .userInteractive).async {
+                var errors: [PrimerValidationError] = []
+                
+                guard let rawData = data as? PrimerBancontactCardData else {
+                    let err = PrimerValidationError.invalidRawData(
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                    errors.append(err)
+                    ErrorHandler.handle(error: err)
+                    
+                    self.isDataValid = false
+                                        
+                    DispatchQueue.main.async {
+                        if let rawDataManager = self.rawDataManager {
+                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
+                                                                                 dataIsValid: self.isDataValid,
+                                                                                 errors: errors.count == 0 ? nil : errors)
+                        }
+                        
+                        seal.reject(err)
+                    }
+                    return
                 }
-            }
-            
-            if !errors.isEmpty {
-                let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                self.isDataValid = false
-                self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: false, errors: errors)
-                seal.reject(err)
-            } else {
-                self.isDataValid = true
-                self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager, dataIsValid: true, errors: nil)
-                seal.fulfill()
+                
+                if rawData.cardNumber.isEmpty {
+                    let err = PrimerValidationError.invalidCardnumber(
+                        message: "Card number can not be blank.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                    errors.append(err)
+                    
+                } else if !rawData.cardNumber.isValidCardNumber {
+                    let err = PrimerValidationError.invalidCardnumber(
+                        message: "Card number is not valid.",
+                        userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                    errors.append(err)
+                }
+                
+                do {
+                    try rawData.expiryDate.validateExpiryDateString()
+                } catch {
+                    if let err = error as? PrimerValidationError {
+                        errors.append(err)
+                    }
+                }
+                
+                if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
+                    if rawData.cardholderName.isEmpty {
+                        errors.append(PrimerValidationError.invalidCardholderName(
+                            message: "Cardholder name cannot be blank.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString))
+                        
+                    } else if !(rawData.cardholderName).isValidCardholderName {
+                        errors.append(PrimerValidationError.invalidCardholderName(
+                            message: "Cardholder name is not valid.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString))
+                    }
+                }
+                
+                if !errors.isEmpty {
+                    let err = PrimerError.underlyingErrors(
+                        errors: errors,
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
+                    
+                    self.isDataValid = false
+                    
+                    DispatchQueue.main.async {
+                        if let rawDataManager = self.rawDataManager {
+                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
+                                                                                 dataIsValid: self.isDataValid,
+                                                                                 errors: errors.count == 0 ? nil : errors)
+                        }
+                        
+                        seal.reject(err)
+                    }
+                    
+                } else {
+                    self.isDataValid = true
+                    
+                    DispatchQueue.main.async {
+                        if let rawDataManager = self.rawDataManager {
+                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
+                                                                                 dataIsValid: self.isDataValid,
+                                                                                 errors: errors.count == 0 ? nil : errors)
+                        }
+                        
+                        seal.fulfill()
+                    }
+                }
             }
         }
     }
 }
 
-#endif
+

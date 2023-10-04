@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 import AuthenticationServices
@@ -19,10 +19,6 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private lazy var paypalService: PayPalServiceProtocol = {
         PayPalService()
     }()
-    
-    deinit {
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
-    }
     
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -53,7 +49,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func start() {
         self.didPresentExternalView = { [weak self] in
             if let strongSelf = self {
-                PrimerDelegateProxy.primerHeadlessUniversalCheckoutPaymentMethodDidShow(for: strongSelf.config.type)
+                PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: strongSelf.config.type)
             }
         }
         
@@ -111,7 +107,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
 
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
@@ -235,14 +231,27 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     url: url,
                     callbackURLScheme: urlScheme,
                     completionHandler: { [weak self] (url, error) in
+                        guard let strongSelf = self else { return }
+                        
                         if let error = error {
-                            seal.reject(error)
+                            let nsError = (error as NSError)
+                            if nsError.domain == "com.apple.AuthenticationServices.WebAuthenticationSession" && nsError.code == 1 {
+                                let cancelErr = PrimerError.cancelled(
+                                    paymentMethodType: strongSelf.config.type,
+                                    userInfo: nil,
+                                    diagnosticsId: UUID().uuidString)
+                                seal.reject(cancelErr)
+                                
+                            } else {
+                                seal.reject(error)
+                            }
+                            
                             
                         } else if let url = url {
                             seal.fulfill(url)
                         }
 
-                        (self?.session as? ASWebAuthenticationSession)?.cancel()
+                        (strongSelf.session as? ASWebAuthenticationSession)?.cancel()
                     }
                 )
                 session = webAuthSession
@@ -434,4 +443,4 @@ extension PayPalTokenizationViewModel: ASWebAuthenticationPresentationContextPro
     
 }
 
-#endif
+

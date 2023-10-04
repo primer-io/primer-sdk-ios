@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 31/7/21.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -79,6 +79,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         
         if let amountStr = universalCheckoutViewModel.amountStr {
             titleLabel = UILabel()
+            titleLabel.accessibilityIdentifier = "Amount Label"
             titleLabel.translatesAutoresizingMaskIntoConstraints = false
             titleLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
             titleLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
@@ -125,7 +126,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             
             let savedPaymentMethodLabel = UILabel()
             savedPaymentMethodLabel.translatesAutoresizingMaskIntoConstraints = false
-            savedPaymentMethodLabel.text = Strings.VaultPaymentMethodViewContent.savedPaymentMethod
+            savedPaymentMethodLabel.text = Strings.VaultPaymentMethodViewContent.savedPaymentMethodsTitle.localizedUppercase
             savedPaymentMethodLabel.adjustsFontSizeToFitWidth = true
             savedPaymentMethodLabel.minimumScaleFactor = 0.8
             savedPaymentMethodLabel.textColor = theme.text.subtitle.color
@@ -339,4 +340,4 @@ extension PrimerUniversalCheckoutViewController: ReloadDelegate {
     }
 }
 
-#endif
+

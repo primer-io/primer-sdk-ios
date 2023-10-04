@@ -5,7 +5,7 @@
 //  Created by Evangelos Pittas on 26/2/21.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -29,7 +29,7 @@ internal class URLSessionStack: NetworkService {
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         let id = String.randomString(length: 32)
         
-        if let primerAPI = endpoint as? PrimerAPI, primerAPI != PrimerAPI.poll(clientToken: nil, url: "") {
+        if let primerAPI = endpoint as? PrimerAPI, shouldReportNetworkEvents(for: primerAPI) {
             let reqEvent = Analytics.Event(
                 eventType: .networkCall,
                 properties: NetworkCallEventProperties(
@@ -151,7 +151,7 @@ internal class URLSessionStack: NetworkService {
                 return
             }
             
-            guard var data = data else {
+            guard let data = data else {
                 if resEvent != nil {
                     resEventProperties?.errorBody = "No data received"
                     resEvent!.properties = resEventProperties
@@ -181,24 +181,22 @@ internal class URLSessionStack: NetworkService {
                 }
                 
 #if DEBUG
-                
                 if endpoint.shouldParseResponseBody {
-                    let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                    let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
-                    var jsonStr: String?
-                    if jsonData != nil {
-                        jsonStr = String(data: jsonData!, encoding: .utf8 )
-                    }
-                    
-                    msg += "\nBody:\n\(jsonStr ?? "Empty body")"
-                    
                     if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
                         primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                     } else {
+                        let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                        let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
+                        var jsonStr: String?
+                        if jsonData != nil {
+                            jsonStr = String(data: jsonData!, encoding: .utf8 )
+                        }
+                        
+                        msg += "\nBody:\n\(jsonStr ?? "Empty body")"
+                        
                         log(logLevel: .debug, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
                     }
                 }
-                
 #endif
                 
                 if endpoint.shouldParseResponseBody == false, httpResponse?.statusCode == 200 {
@@ -324,10 +322,14 @@ internal class URLSessionStack: NetworkService {
 
 internal extension URLSessionStack {
     
-    private func url(for endpoint: Endpoint) -> URL? {
+    func url(for endpoint: Endpoint) -> URL? {
         guard let urlStr = endpoint.baseURL else { return nil }
         guard let baseUrl = URL(string: urlStr) else { return nil }
-        let url = baseUrl.appendingPathComponent(endpoint.path)
+        var url = baseUrl
+        
+        if endpoint.path != "" {
+            url = baseUrl.appendingPathComponent(endpoint.path)
+        }
         
         if let queryParameters = endpoint.queryParameters, !queryParameters.keys.isEmpty {
             var urlComponents = URLComponents(string: url.absoluteString)!
@@ -348,9 +350,20 @@ internal extension URLSessionStack {
         
         return url
     }
+    
+    func shouldReportNetworkEvents(for primerAPI: PrimerAPI) -> Bool {
+        // Don't report events for polling requests
+        guard primerAPI != PrimerAPI.poll(clientToken: nil, url: "") else {
+            return false
+        }
+        guard let baseURL = primerAPI.baseURL, let url = URL(string: baseURL), url.path != "/sdk-logs" else {
+            return false
+        }
+        return true
+    }
 }
 
-#endif
+
 
 
 let mockedConfigResponse = """

@@ -5,7 +5,7 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
+
 
 import SafariServices
 import UIKit
@@ -16,11 +16,11 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
     private var statusUrl: URL!
     internal var qrCode: String?
     private var resumeToken: String!
+    private var didCancelPolling: (() -> Void)?
     
     deinit {
         tokenizationService = nil
         qrCode = nil
-        log(logLevel: .debug, message: "🧨 deinit: \(self) \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     override func validate() throws {
@@ -65,7 +65,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutTokenizationDidStart(for: self.config.type)
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
             
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
@@ -124,14 +124,13 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                 self.resumeToken = resumeToken
                 seal.fulfill()
             }
+            .ensure {
+                self.didCancel = nil
+            }
             .catch { err in
                 seal.reject(err)
             }
         }
-    }
-    
-    func cancel() {
-        didCancel?()
     }
     
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
@@ -195,6 +194,12 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                 seal.reject(error)
             }
         }
+    }
+    
+    override func cancel() {
+        self.didCancelPolling?()
+        self.didCancelPolling = nil
+        super.cancel()
     }
 }
 
@@ -323,5 +328,5 @@ extension QRCodeTokenizationViewModel {
     }
 }
 
-#endif
+
 

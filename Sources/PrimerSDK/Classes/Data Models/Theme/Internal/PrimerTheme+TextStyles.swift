@@ -1,4 +1,4 @@
-#if canImport(UIKit)
+
 
 import UIKit
 
@@ -36,4 +36,4 @@ internal class TextTheme {
     }
 }
 
-#endif
+

@@ -5,7 +5,7 @@
 //  Created by Evangelos on 2/9/22.
 //
 
-#if canImport(UIKit)
+
 
 import Foundation
 
@@ -15,11 +15,11 @@ extension Response.Body {
         
         public var analyticsId: String?
         public var id: String?
-        public var isVaulted: Bool?
         internal var isAlreadyVaulted: Bool?
-        public var paymentInstrumentType: PaymentInstrumentType
+        public var isVaulted: Bool?
         public var paymentMethodType: String?
         public var paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData?
+        public var paymentInstrumentType: PaymentInstrumentType
         public var threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
         public var token: String?
         public var tokenType: TokenType?
@@ -42,6 +42,7 @@ extension Response.Body {
             self.id = id
             self.isVaulted = isVaulted
             self.isAlreadyVaulted = isAlreadyVaulted
+            self.paymentMethodType = paymentMethodType
             self.paymentInstrumentType = paymentInstrumentType
             self.paymentInstrumentData = paymentInstrumentData
             self.threeDSecureAuthentication = threeDSecureAuthentication
@@ -145,6 +146,16 @@ extension Response.Body.Tokenization {
         public let mx: String?
         public let currencyCode: Currency?
         public let productId: String?
+        
+        public let paymentMethodConfigId: String?
+        public let paymentMethodType: String?
+        public let sessionInfo: SessionInfo?
+        
+        public struct SessionInfo: Codable {
+            public let locale: String?
+            public let platform: String?
+            public let redirectionUrl: String?
+        }
     }
 }
 
@@ -155,4 +166,4 @@ extension Response.Body.Tokenization {
     }
 }
 
-#endif
+

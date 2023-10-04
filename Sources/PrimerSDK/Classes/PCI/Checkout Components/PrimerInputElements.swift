@@ -5,21 +5,22 @@
 //  Created by Evangelos on 28/1/22.
 //
 
-#if canImport(UIKit)
+
 
 import UIKit
 
 public class PrimerInputElementDelegateContainer {
-    var element: PrimerInputElement
+    
+    var element: PrimerHeadlessUniversalCheckoutInputElement
     var delegate: PrimerInputElementDelegate
     
-    init(element: PrimerInputElement, delegate: PrimerInputElementDelegate) {
+    init(element: PrimerHeadlessUniversalCheckoutInputElement, delegate: PrimerInputElementDelegate) {
         self.element = element
         self.delegate = delegate
     }
 }
 
-public class PrimerInputTextField: UITextField, PrimerInputElement {
+public class PrimerInputTextField: UITextField, PrimerHeadlessUniversalCheckoutInputElement {
     public weak var inputElementDelegate: PrimerInputElementDelegate! {
         didSet {
             self.checkoutModulesTextFieldDelegate = PrimerHeadlessUniversalCheckout.Delegate(inputElement: self, inputElementDelegate: inputElementDelegate)
@@ -131,4 +132,4 @@ public class PrimerPostalCodeInputElement: PrimerInputTextField {
     }
 }
 
-#endif
+
