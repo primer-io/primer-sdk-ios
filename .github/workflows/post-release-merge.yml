@@ -1,11 +1,11 @@
 name: Post Release PR Merge
 
-on:
-  pull_request:
-    # Patterns matched against refs/heads
-    branches:
-      - release/next
-    types: [ closed ]
+on: workflow_dispatch
+  # pull_request:
+  #   # Patterns matched against refs/heads
+  #   branches:
+  #     - release/next
+  #   types: [ closed ]
 
 jobs:
   release_merge:
