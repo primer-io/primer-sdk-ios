@@ -22,7 +22,7 @@ jobs:
 
   spm-build:
     needs: danger
-    runs-on: macos-latest
+    runs-on: macos-13
     timeout-minutes: 20
     name: "Build app with SPM Integration"
     steps:
@@ -37,7 +37,7 @@ jobs:
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: '15.0'
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
