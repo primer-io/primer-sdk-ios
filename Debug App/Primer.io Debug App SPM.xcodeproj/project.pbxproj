@@ -37,9 +37,9 @@
 		F00C66142ACC67FA00187028 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F00C66152ACC67FA00187028 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F00C66162ACC67FA00187028 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
-		F00C66252ACC684800187028 /* Primer3DS in Frameworks */ = {isa = PBXBuildFile; productRef = F00C66242ACC684800187028 /* Primer3DS */; };
-		F00C66282ACC686300187028 /* PrimerKlarnaSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F00C66272ACC686300187028 /* PrimerKlarnaSDK */; };
-		F04510E12ACD4F1800A0A48C /* PrimerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E02ACD4F1800A0A48C /* PrimerSDK */; };
+		F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E22ACD98E100A0A48C /* PrimerSDK */; };
+		F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */; };
+		F04510E92ACD991200A0A48C /* Primer3DS in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E82ACD991200A0A48C /* Primer3DS */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -175,9 +175,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F04510E12ACD4F1800A0A48C /* PrimerSDK in Frameworks */,
-				F00C66252ACC684800187028 /* Primer3DS in Frameworks */,
-				F00C66282ACC686300187028 /* PrimerKlarnaSDK in Frameworks */,
+				F04510E92ACD991200A0A48C /* Primer3DS in Frameworks */,
+				F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */,
+				F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -515,9 +515,9 @@
 			);
 			name = "Debug App SPM";
 			packageProductDependencies = (
-				F00C66242ACC684800187028 /* Primer3DS */,
-				F00C66272ACC686300187028 /* PrimerKlarnaSDK */,
-				F04510E02ACD4F1800A0A48C /* PrimerSDK */,
+				F04510E22ACD98E100A0A48C /* PrimerSDK */,
+				F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */,
+				F04510E82ACD991200A0A48C /* Primer3DS */,
 			);
 			productName = "Debug App";
 			productReference = F00C661E2ACC67FA00187028 /* Debug App SPM.app */;
@@ -556,8 +556,8 @@
 			);
 			mainGroup = 1C9799A622D0CCDBBF94925B;
 			packageReferences = (
-				F00C66232ACC684800187028 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */,
-				F00C66262ACC686300187028 /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */,
+				F04510E42ACD990A00A0A48C /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */,
+				F04510E72ACD991200A0A48C /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */,
 			);
 			productRefGroup = DF30711EB149C64C364BB79A /* Products */;
 			projectDirPath = "";
@@ -870,15 +870,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		F00C66232ACC684800187028 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/primer-io/primer-sdk-3ds-ios";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
-		F00C66262ACC686300187028 /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */ = {
+		F04510E42ACD990A00A0A48C /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/primer-io/primer-klarna-sdk-ios";
 			requirement = {
@@ -886,22 +878,30 @@
 				minimumVersion = 1.0.4;
 			};
 		};
+		F04510E72ACD991200A0A48C /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/primer-io/primer-sdk-3ds-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F00C66242ACC684800187028 /* Primer3DS */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F00C66232ACC684800187028 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */;
-			productName = Primer3DS;
-		};
-		F00C66272ACC686300187028 /* PrimerKlarnaSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F00C66262ACC686300187028 /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */;
-			productName = PrimerKlarnaSDK;
-		};
-		F04510E02ACD4F1800A0A48C /* PrimerSDK */ = {
+		F04510E22ACD98E100A0A48C /* PrimerSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PrimerSDK;
+		};
+		F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F04510E42ACD990A00A0A48C /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */;
+			productName = PrimerKlarnaSDK;
+		};
+		F04510E82ACD991200A0A48C /* Primer3DS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F04510E72ACD991200A0A48C /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */;
+			productName = Primer3DS;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
