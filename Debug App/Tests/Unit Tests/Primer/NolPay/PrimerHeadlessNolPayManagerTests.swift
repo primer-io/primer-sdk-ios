@@ -6,9 +6,11 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
+#if canImport(PrimerNolPaySDK)
 import XCTest
-@testable import PrimerSDK // Replace with your actual app target name
+@testable import PrimerSDK
 
+import PrimerNolPaySDK
 class PrimerHeadlessNolPayManagerTests: XCTestCase {
     
     var sut: PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager!
@@ -107,3 +109,4 @@ class PrimerHeadlessNolPayManagerTests: XCTestCase {
         XCTAssertEqual(componentsSet.count, 4)
     }
 }
+#endif

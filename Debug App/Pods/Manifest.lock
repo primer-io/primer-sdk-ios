@@ -7,7 +7,7 @@ PODS:
   - PrimerIPay88MYSDK (0.1.5)
   - PrimerKlarnaSDK (1.0.4):
     - KlarnaMobileSDK (= 2.2.2)
-  - PrimerNolPaySDK (1.0.0)
+  - PrimerNolPaySDK (0.0.0)
   - PrimerSDK (2.17.4):
     - PrimerSDK/Core (= 2.17.4)
   - PrimerSDK/Core (2.17.4)
@@ -42,7 +42,7 @@ CHECKOUT OPTIONS:
     :commit: 32bc1782c8d172ed25fa501977a18c9d2a90a80d
     :git: https://github.com/primer-io/primer-ipay88-sdk-ios.git
   PrimerNolPaySDK:
-    :commit: 69239007b364bff948007372b92487cb33555bda
+    :commit: 2c56ac747edbcc81c6639a20527083b08202d079
     :git: https://github.com/primer-io/primer-nol-pay-sdk-ios.git
 
 SPEC CHECKSUMS:
@@ -51,7 +51,7 @@ SPEC CHECKSUMS:
   Primer3DS: 109e46ed31726039b9fb0ee6e1a0948fda345b24
   PrimerIPay88MYSDK: 347ecaaa7b484cf8f1fb19384393e31695fdc36b
   PrimerKlarnaSDK: de4b8b8fda075e3e4ebbd4ab80bd141c76a30d85
-  PrimerNolPaySDK: c9480120e24905372b64c4752229b9ba0b8cdb13
+  PrimerNolPaySDK: 84a3cb55559dc85d674592fdedcffe910b85a9f2
   PrimerSDK: 81470ccb9374a473f2ea4e7e4644d3866cf39d71
 
 PODFILE CHECKSUM: 80a03e1b725de041a9d623fc9e9bc50e640b425c

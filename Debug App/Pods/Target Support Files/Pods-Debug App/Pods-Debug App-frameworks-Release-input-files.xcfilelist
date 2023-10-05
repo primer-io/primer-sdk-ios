@@ -3,7 +3,6 @@ ${BUILT_PRODUCTS_DIR}/IQKeyboardManagerSwift/IQKeyboardManagerSwift.framework
 ${BUILT_PRODUCTS_DIR}/Primer3DS/Primer3DS.framework
 ${BUILT_PRODUCTS_DIR}/PrimerIPay88MYSDK/PrimerIPay88MYSDK.framework
 ${BUILT_PRODUCTS_DIR}/PrimerKlarnaSDK/PrimerKlarnaSDK.framework
-${PODS_ROOT}/PrimerNolPaySDK/Sources/Frameworks/TransitSDK.framework
 ${BUILT_PRODUCTS_DIR}/PrimerNolPaySDK/PrimerNolPaySDK.framework
 ${BUILT_PRODUCTS_DIR}/PrimerSDK/PrimerSDK.framework
 ${PODS_XCFRAMEWORKS_BUILD_DIR}/KlarnaMobileSDK/full/KlarnaMobileSDK.framework/KlarnaMobileSDK

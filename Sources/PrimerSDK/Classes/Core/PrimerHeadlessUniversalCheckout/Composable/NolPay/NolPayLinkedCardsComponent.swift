@@ -12,9 +12,7 @@ import PrimerNolPaySDK
 
 public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
     
-#if canImport(PrimerNolPaySDK)
-    private var nolPay: PrimerNolPay!
-#endif
+    var nolPay: PrimerNolPayProtocol?
     public var errorDelegate: PrimerHeadlessErrorableDelegate?
     private var isDebug: Bool
 
@@ -84,6 +82,23 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
                 ]))
         Analytics.Service.record(events: [sdkEvent])
 #if canImport(PrimerNolPaySDK)
+        guard let nolPay = nolPay else {
+            // TODO: (NOL) Add new errors
+            let error = PrimerError.nolError(code: 1,
+                                             message: "error.description",
+                                             userInfo: [
+                                                "file": #file,
+                                                "class": "\(Self.self)",
+                                                "function": #function,
+                                                "line": "\(#line)"
+                                             ],
+                                             diagnosticsId: UUID().uuidString)
+            self.errorDelegate?.didReceiveError(error: error)
+            ErrorHandler.handle(error: error)
+            completion(.failure(error))
+            return
+        }
+        
         nolPay.getAvaliableCardsFor(mobileNumber: mobileNumber, withCountryCode: phoneCountryDiallingCode) { result in
             switch result {
                 
