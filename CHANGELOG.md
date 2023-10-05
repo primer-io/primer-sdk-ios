@@ -6,368 +6,446 @@
 - release workflow - update branch name (#682)
 - Remove deinits + logs inside relevant deinits (#670)
 
-## 2.6.0 (2022-08-23)
-
-## 2.5.0 (2022-08-15)
-
-## 2.4.0 (2022-08-09)
-
-## 2.3.0 (2022-07-28)
-
-## 2.2.1 (2022-07-18)
-
-## 2.2.0 (2022-07-13)
-
-## 2.1.0 (2022-07-06)
-
-## 2.0.1 (2022-07-04)
-
-## 2.0.0 (2022-06-08)
-
-## 1.36.0 (2022-06-01)
-
-## 1.28.0-beta.11 (2022-05-27)
-
-## 1.28.0-beta.10 (2022-05-25)
-
-## 1.28.0-beta.9 (2022-05-19)
-
-## 1.28.0-beta.8 (2022-04-14)
-
-## 1.28.0-beta.7 (2022-04-12)
-
-## 1.28.0-beta.6 (2022-03-17)
-
-## 1.35.0 (2022-05-27)
-
-## 1.34.2 (2022-05-26)
-
-## 1.34.0 (2022-05-20)
-
-## 1.33.2 (2022-05-20)
-
-## 1.33.1 (2022-05-19)
-
-## 1.33.0 (2022-05-09)
-
-## 1.32.5 (2022-05-03)
-
-## 1.32.4 (2022-04-22)
-
-## 1.32.3 (2022-04-19)
-
-## 1.32.2 (2022-04-13)
-
-## 1.32.1 (2022-04-12)
-
-## 1.32.0 (2022-04-11)
-
-## 1.31.0 (2022-04-06)
-
-## 1.30.2 (2022-04-06)
-
-## 1.30.1 (2022-04-05)
-
-## 1.30.0 (2022-03-24)
-
-## 1.29.2 (2022-03-16)
-
-## 1.28.0-beta.5 (2022-03-15)
-
-## 1.29.0 (2022-03-11)
-
-## 1.28.0-beta.4 (2022-03-10)
-
-## 1.28.0-beta.3 (2022-03-03)
-
-## 1.27.6 (2022-02-22)
-
-## 1.27.5 (2022-02-22)
-
-## 1.28.0-beta.2 (2022-02-24)
-
-## 1.27.4 (2022-02-17)
-
-## 1.27.3 (2022-02-14)
-
-## 1.27.2 (2022-02-14)
-
-## 1.27.1 (2022-02-08)
-
-## 1.27.0 (2022-02-07)
-
-## 1.26.0 (2022-02-03)
-
-## 1.25.0 (2022-02-01)
-
-## 1.24.0 (2022-01-27)
-
-## 1.23.0 (2022-01-18)
-
-## 1.22.0 (2022-01-11)
-
-## 1.20.1 (2021-12-23)
-
-## 1.20.0 (2021-12-22)
-
-## 1.19.7 (2021-12-21)
-
-## 1.19.6 (2021-12-20)
-
-## 1.19.5 (2021-12-16)
-
-## 1.19.4 (2021-12-14)
-
-## 1.19.3 (2021-12-13)
-
-## 1.19.2 (2021-12-13)
-
-## 1.19.1 (2021-12-08)
-
-## 1.19.0 (2021-12-06)
-
-## 1.19.0-beta.3 (2021-12-03)
-
-## 1.19.0-beta.2 (2021-12-03)
-
-## 1.19.0-beta.1 (2021-11-30)
-
-## 1.18.0 (2021-11-30)
-
-## 1.17.0 (2021-11-24)
-
-## 1.16.0 (2021-11-17)
-
-## 1.15.1 (2021-11-11)
-
-## 1.15.0 (2021-11-04)
-
-## 1.14.3 (2021-11-04)
-
-## 1.14.1 (2021-11-01)
-
-## 1.14.0 (2021-10-25)
-
-## 1.13.4 (2021-10-13)
-
-## 1.13.3 (2021-10-06)
-
-## 1.13.2 (2021-10-06)
-
-## 1.13.1 (2021-10-05)
-
-## 1.13.0 (2021-10-04)
-
-## 1.12.3 (2021-09-30)
-
-## 1.9.0-beta.16 (2021-09-29)
-
-## 1.9.0-beta.15 (2021-09-29)
-
-## 1.12.2 (2021-09-29)
-
-## 1.12.1 (2021-09-28)
-
-## 1.9.0-beta.14 (2021-09-28)
-
-## 1.12.0 (2021-09-27)
-
-## 1.9.0-beta.13 (2021-09-27)
-
-## 1.9.0-beta.12 (2021-09-27)
-
-## 1.11.4 (2021-09-23)
-
-## 1.11.3 (2021-09-22)
-
-## 1.11.2 (2021-09-22)
-
-## 1.11.1 (2021-09-22)
-
-## 1.11.0 (2021-09-22)
-
-## 0.3.1 (2021-07-22)
-
-## 0.3 (2021-07-22)
-
-## 0.2.23-alpha (2021-07-22)
-
-## 0.2.21 (2021-07-22)
-
-## 0.2.20 (2021-07-22)
-
-## 0.2.19 (2021-07-22)
-
-## 0.2.18 (2021-07-22)
-
-## 0.2.17 (2021-07-22)
-
-## 0.2.16 (2021-07-22)
-
-## 1.0.20 (2021-07-22)
-
-## 0.2.14 (2021-07-22)
-
-## 0.2.13 (2021-07-22)
-
-## 0.2.11 (2021-07-22)
-
-## 0.2.10 (2021-07-22)
-
-## 0.2.9 (2021-07-22)
-
-## 0.2.8 (2021-07-22)
-
-## 0.2.7 (2021-07-22)
-
-## 0.2.5 (2021-07-22)
-
-## 0.2.4 (2021-07-22)
-
-## 0.2.3 (2021-07-22)
-
-## 0.2.2-alpha (2021-07-22)
-
-## 0.2.1 (2021-07-22)
-
-## 0.2.0 (2021-07-22)
-
-## 0.1.3 (2021-07-22)
-
-## 1.10.1 (2021-09-20)
-
-## 1.10.0 (2021-09-03)
-
-## 1.9.0-beta.10 (2021-09-02)
-
-## 1.8.5 (2021-07-24)
-
-## 1.8.4 (2021-07-19)
-
-## 1.8.1 (2021-07-19)
-
-## 1.8.2 (2021-07-19)
-
-## 1.8.0 (2021-07-08)
-
-## 1.7.3 (2021-06-28)
-
-## 1.7.1 (2021-06-25)
-
-## 1.7.0 (2021-06-17)
-
-## 1.6.1 (2021-06-14)
-
-## 1.6.0 (2021-05-31)
-
-## 1.5.5 (2021-05-21)
-
-## 1.5.4 (2021-05-18)
-
-## 1.5.3 (2021-05-18)
-
-## 1.5.2 (2021-05-12)
-
-## 1.5.1 (2021-05-07)
-
-## 1.4.4 (2021-04-27)
-
-## 1.4.3 (2021-04-22)
-
-## 1.4.2 (2021-04-15)
-
-## 1.4.1 (2021-04-15)
-
-## 1.4.0 (2021-04-14)
-
-## 1.3.2 (2021-04-09)
-
-## 1.3.1 (2021-03-30)
-
-## 1.3.0 (2021-03-28)
+## 2.17.5 (2023-09-25)
 
 ### Fix
 
-- add all klarna locales to enum
-- add unit tests
-- klarna vaulting & display
+- Removed noisy analytics events during SDK init
 
-## 1.2.3 (2021-03-21)
+## 2.17.4 (2023-09-19)
 
-## 1.2.2 (2021-03-11)
+### Fix
 
-## 1.2.1 (2021-03-11)
+- Upgrades for Xcode 15
 
-## 1.2.0 (2021-03-08)
+## 2.17.3 (2023-09-08)
 
-## 1.1.20 (2021-02-24)
+### Fix
 
-## 1.1.19 (2021-02-24)
+- We’ve removed the UIKit import guards from all files
 
-## 1.1.18 (2021-02-17)
+## 2.17.2 (2023-09-06)
 
-## 1.1.17 (2021-02-16)
+### Fix
 
-## 1.1.16 (2021-02-16)
+- Fix issue where Cardholder Name field would not accept spaces in Headless Integration.
 
-## 1.1.15 (2021-02-15)
+## 2.17.1 | 2023-08-09
 
-## 1.1.14 (2021-02-07)
+### Fix
 
-## 1.1.13 (2021-02-04)
+- Fix Apple Pay crash
 
-## 1.1.12 (2021-02-03)
+## 2.17.0 | (2023-07-28)
 
-## 1.1.11 (2021-02-03)
+### Feature
 
-## 1.1.10 (2021-01-31)
+- Added Headless Vault Manager
+- Revamped 3DS Service
+- `PrimerPaymentMethodAsset` now exposes the payment method’s friendly name
+- Reintroduce showing a payment method directly with the Drop-In UI integration.
+- Support for iPay88
 
-## 1.1.9 (2021-01-28)
+### Fix
 
-## 1.1.8 (2021-01-28)
+- Fix vaulted payment method on Drop In not getting tapped
+- Enhance 3DS auth rates
+- Fix checkout not rendering when there are vaulted payment methods
+- Make performance improvements on raw data manager validation delegate
+- Fix the scenario where the payment method’s image file is missing
+- Print console warning when a **`decisionHandler`** is not implemented
+- Observability improvements
+- Improves cancellation happening from 3rd party payment apps through deep links
+- Fix Atome cancellation from within the web view
+- Fix UI unresponsiveness happening on iOS 16.0.x in certain cases
 
-## 1.1.7 (2021-01-26)
+## 2.17.0-rc.17 | 2023-07-17
 
-## 1.1.6 (2021-01-18)
+### Fix
 
-## 1.1.5 (2021-01-18)
+- Fix vaulted payment method on Drop In not getting tapped
 
-## 1.1.4 (2021-01-18)
+## 2.17.0-rc.16 | 2023-07-12
 
-## 1.1.3 (2021-01-18)
+### Fix
 
-## 1.1.2 (2021-01-18)
+- Enhance 3DS auth rates
 
-## 1.1.0 (2021-01-17)
+## 2.17.0-rc.15 | 2023-07-10
 
-## 1.1.1 (2021-01-14)
+### Feature
 
-## 1.0.5 (2021-01-14)
+**Headless Vault Manager**
 
-## 1.0.4 (2021-01-14)
+- Add `PrimerHeadlessUniversalCheckout.VaultManager()` which returns an instance of `PrimerHeadlessUniversalCheckout.VaultManager`.
 
-## 1.0.3 (2021-01-14)
+### Fix
 
-## 1.0.2 (2021-01-14)
+- Fix issue with Vipps getting presented
 
-## 1.0.0+1 (2021-01-14)
+## 2.17.0-rc.14 | 2023-06-07
 
-## 1.0.0 (2021-01-14)
+### Feature
 
-## 0.1.2+1 (2021-01-08)
+- Reintroduce showing a payment method directly with the Drop In UI integration
 
-## 0.1.2 (2021-01-04)
+### Fix
 
-## 0.1.1 (2020-12-21)
+- Fix checkout not rendering when there are vaulted payment methods
+- Make performance improvements on raw data manager validation delegate
 
-## 0.1.0+3 (2020-12-15)
+## 2.17.0-rc.13 | 2023-05-31
 
-## 0.1.0+2 (2020-12-10)
+### Fix
 
-## 0.1.0+1 (2020-12-09)
+- Apply fix on PayPal vaulting
+- Fix Klarna archiving issue
 
-## 0.1.0 (2020-12-09)
+## 2.17.0-rc.12 | 2023-05-30
 
-## 0.0.1+1 (2020-12-09)
+### Feature
 
-## 0.0.1 (2020-12-09)
+- Our 3DS service has been completely revamped. Primer SDK now supports 3DS protocol version `2.2.0`
+- Support 3DS weak validation
+- Support 3DS OOB flow
+- Improve 3DS reporting
+- Set 3DS sanity check in `PrimerSettings` to `false` when you are in `DEBUG` mode, to disable the device check when testing on the simulator.
+
+Check out our detailed documentation [here](https://primer.io/docs/payments/3ds/ios)
+
+### Fix
+
+- Minor fixes
+
+## 2.17.0-rc.11 | 2023-05-10
+
+### Fix
+
+- Take into account tax and discount on Apple Pay items
+- Prioritize merchant amount over total amount
+- Only take into account surcharge when merchant amount is not set
+
+## 2.16.7 | 2023-05-10
+
+### Fix
+
+- Take into account tax and discount on Apple Pay items
+- Prioritize merchant amount over total amount
+- Only take into account surcharge when merchant amount is not set
+
+## 2.17.0-rc.10 | 2023-04-24
+
+### Fix
+
+- Expose payment instrument data on tokenization callback
+- Fix issue that prevented the client session from being updated when restarting headless checkout
+- Make iPay88 `userContact` optional
+
+## 2.16.6 | 2023-04-24
+
+### Fix
+
+- Expose payment instrument data on tokenization callback
+
+## 2.17.0-rc.9 | 2023-04-17
+
+### Fix
+
+- Fixed SDK crashing when Primer3DS is not included
+- Fixed build issue due to iPay88 when archiving
+
+## 2.17.0-rc.8 | 2023-04-10
+
+### Fix
+
+- Modify iPay88 validation rules
+
+## 2.17.0-rc.7 | 2023-04-06
+
+### Fix
+
+- Improved analytics
+
+## 2.17.0-rc.6 | 2023-04-03
+
+### Fix
+
+- Improved analytics
+
+## 2.17.0-rc.5 | 2023-03-28
+
+### Feature
+
+- `PrimerPaymentMethodAsset` now exposes the payment method’s friendly name
+
+### Fix
+
+- Improved analytics
+- Fix scenario where payment method’s image file is missing
+- Print console warning when a `decisionHandler` is not implemented
+
+## 2.17.0-rc.4 | 2023-03-20
+
+### Fix
+
+- Fix for React Native
+
+## 2.17.0-rc.3 | 2023-03-15
+
+### Feature
+
+- This version is adding support for iPay88 payments in Malaysia.
+
+### Fix
+
+- Contains the features and improvements of 2.16.5
+- Observability improvements
+- Improves cancellation happening from 3rd party payment apps through deep links
+- Fix Atome cancellation from within the webview
+- Fix UI unresponsiveness happening on iOS 16.0.x on certain cases
+- Fix iOS console warnings
+
+## 2.16.5 | 2023-03-06
+
+### Fix
+
+- Fix an issue that prevented 3DS from working with some card networks (AMEX, Maestro, Discover, and JCB)
+- Fix an issue that prevented 3DS from working when the billing address is set or updated after the SDK is initialized with a client session
+- Improve 3DS visibility
+
+## 2.17.0-rc.2 | 2023-01-23
+
+### Feature
+
+- Headless Checkout
+
+### Fix
+
+- Contains the features and improvements of 2.16.3 and 2.16.4
+- Remove Google Pay from the list of payment methods
+
+## 2.16.4 | 2023-02-09
+
+### Feature
+
+- Fix translations
+
+### Fix
+
+- Fix build issue on Xcode 13
+
+## 2.16.3 | 2023-02-03
+
+### Feature
+
+- Add translations
+- Add analytics events and errors
+
+### Fix
+
+- Fix theming issue
+
+## 2.17.0-rc.1 | 2023-01-23
+
+### Feature
+
+- Headless Checkout
+
+## 2.16.2 | 2023-01-20
+
+### Fix
+
+- Fix Xendit OVO redirect
+
+## 2.16.1 | 2022-12-29
+
+### Fix
+
+- Fix Klarna payment category
+
+## 2.16.0 | 2022-12-21
+
+### Feature
+
+In this version we are adding support for iPay88 card payments.
+
+We have also added events to monitor the Headless flow.
+
+### Fix
+
+- Remove Xcode configuration flags from podspec.
+- Apple Pay will return an error on simulator
+
+## 2.15.1 | 2022-11-29
+
+### Fix
+
+- Fixing the MBWay local asset loading
+- Removed the `GENERATE_INFOPLIST_FILE` as part of the `xcconfig` of the `PrimerSDK` podspec as it was causing an issue upon archiving the hosting apps
+- Added `CODE_SIGNING_ALLOWED => NO` to `xcconfig` in `podspec` to remove the Signing requirement introduced in Xcode 14+
+
+## 2.15.0 | 2022-11-17
+
+### Fix
+
+- Fixed the Contributing link in our SDK Readme
+- Added the `GENERATE_INFOPLIST_FILE` as part of the `xcconfig` of the `PrimerSDK` podspec
+- Improved the Cardholder Name field availability in Card form
+
+## 2.14.3 | 2022-11-11
+
+### Fix
+
+- Fixed an issue with regards to the availability of retrieving some assets
+- Small improvements in the way the Country selector in billing address gets loaded
+
+## 2.14.2 | 2022-11-08
+
+### Fix
+
+- Fixed 3DS on frictionless flows
+- Sending analytics events with correct `sdkVersion`
+
+## 2.14.1 | 2022-11-04
+
+### Fix
+
+- Fixed the PayPal vaulting service
+
+## 2.14.0 | 2022-10-27
+
+In this version we are obsoleting the 3DS vaulting via the `**PrimerSettings.PrimerCardPaymentOptions**` .
+
+Above flow is now obsoleted and 3DS will always follow workflows.
+
+### Fix
+
+- We have fixed wrong cardholder name checkout modules evaluations which resulted in not requesting cardholder name on headless
+- We have fixed raw data validation callbacks not being fired on headless
+
+## 2.13.1 | 2022-10-24
+
+### Fix
+
+- Fixing the Blik flow.
+
+## 2.13.0 | 2022-10-21
+
+### Feature
+
+- New APMs support
+
+## 2.12.2 | 2022-10-19
+
+### Fix
+
+-Fixed on Headless Universal Checkout with `ADYEN_BANCONTACT_CARD` flow failing on some scenarios.
+
+## 2.12.1 | 2022-10-10
+
+### Fix
+
+- Fix Klarna vault flow failing on some scenarios.
+
+## 2.12.0 | 2022-10-06
+
+### Feature
+
+- New APMs support: Bancontact via Adyen
+- Capture Apple Pay billing address
+
+## 2.11.1 | 2022-10-03
+
+### Fix
+
+Fix crash with Primer’s raw data manager on HUC and processor 3DS
+
+## 2.11.0 | 2022-09-30
+
+### Feature
+
+- In this version of the SDK we improved the raw data validation in the Headless Universal Checkout flow.
+
+## 2.9.0 | 2022-09-16
+
+### Feature
+
+- Multibanco via Universal Checkout.
+
+## 2.8.0 | 2022-09-08
+
+### Feature
+
+- Swift Package Manager Integration
+
+## 2.7.0 | 2022-09-01
+
+### Feature
+
+- This release changes the way that Klarna is integrated, and switches on Klarna’s native iOS SDK (with CocoaPods, SPM will soon follow). It also add **MultiBanco** and **MBWay** support on Headless Universal Checkout raw data manager. 
+
+## 1.37.0 | 2022-09-01
+
+### Feature
+
+- This release changes the way that Klarna is integrated, and switches on Klarna’s native iOS SDK (with CocoaPods, SPM will soon follow).
+
+## 2.5.0 | 2022-08-16
+
+### Feature
+
+- This release enhance the capabilities of our SDK in its Headless Checkout feature, bringing the possibility of utilizing your fully customized UI and still use all of the features that make Primer great. We now give to our developers all the raw data a card contains.
+
+## 2.4.0 | 2022-08-10
+
+### Feature
+
+- This release brings a totally new way of retrieving the APMs.
+
+## 2.3.0 | 2022-07-29
+
+### Feature
+
+- New APM: Fast and PromptPay via Rapyd
+
+## 2.2.1 | 2022-07-18
+
+### Fix
+
+- Internal codebase refactors
+- Fix Danger check
+
+## 2.2.0 | 2022-07-13
+
+### Feature
+
+- New APMs support: Grab Pay, Poli and GCash via Rapyd
+- Billing address support
+
+## 1.36.2 | 2022-07-13
+
+## Fix
+
+- Fix checkout with Adyen iDeal
+
+## 2.1.0 | 2022-07-07
+
+### Feature
+
+- The version 2 of the Headless Universal Checkout is out!
+- Payments created automatically
+
+## 2.0.1 | 2022-06-20
+
+- Fix Klarna checkout
+- Dummy APMs
+
+## 2.0.0 | 2022-06-08
+
+### Feature
+
+- The version 2 of the SDK is out! This includes a simplified way to integrate Primer
+- Payments created automatically
+
+***In the past, creating payments involved manual payment handling:***
+On the **client side**, you would have had to implement the dreaded `clientTokenCallback`, `onTokenizeSuccess` and `onResumeSuccess` delegate functions:
