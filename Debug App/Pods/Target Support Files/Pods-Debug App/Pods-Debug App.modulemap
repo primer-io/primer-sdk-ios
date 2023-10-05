@@ -1,6 +1,0 @@
-framework module Pods_Debug_App {
-  umbrella header "Pods-Debug App-umbrella.h"
-
-  export *
-  module * { export * }
-}
