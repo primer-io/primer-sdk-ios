@@ -3,8 +3,6 @@
 ### Fix
 
 - Add UIKit import to Mock3DSService.swift (#696)
-- release workflow - update branch name (#682)
-- Remove deinits + logs inside relevant deinits (#670)
 
 ## 2.17.5 (2023-09-25)
 
