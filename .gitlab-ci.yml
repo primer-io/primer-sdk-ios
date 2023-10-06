@@ -9,7 +9,7 @@ build-and-release:
   stage: build
   image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION
   script:
-    - gem install cocoapods
+    - bundle install
     - pod trunk push --allow-root
   when: manual
   environment: production
