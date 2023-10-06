@@ -10,6 +10,7 @@ build-and-release:
   image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION
   script:
     - bundle install
+    - pod trunk register dx@primer.io 'Primer' --description='Release CI'
     - pod trunk push --allow-root
   when: manual
   environment: production
