@@ -3,3 +3,6 @@
 
 /Sources/PrimerSDK/Classes/PCI            @primer-io/checkout-pci-reviewers
 /fastlane                                 @primer-io/checkout-pci-reviewers
+
+PrimerSDK.podspec                         @primer-io/checkout-pci-reviewers
+/Sources/PrimerSDK/Classes/version.swift  @primer-io/checkout-pci-reviewers
