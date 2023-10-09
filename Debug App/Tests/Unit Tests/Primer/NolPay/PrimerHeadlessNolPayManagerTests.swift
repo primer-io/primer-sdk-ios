@@ -58,7 +58,7 @@ class PrimerHeadlessNolPayManagerTests: XCTestCase {
     }
         
     func testProvideNolPayStartPaymentComponent_ReturnsStoredInstance() {
-        XCTAssertTrue(sut.provideNolPayStartPaymentComponent() === sut.startPaymentComponent)
+        XCTAssertTrue(sut.provideNolPayStartPaymentComponent() === sut.paymentComponent)
     }
     
     func testLinkCardComponent_SingletonBehavior() {

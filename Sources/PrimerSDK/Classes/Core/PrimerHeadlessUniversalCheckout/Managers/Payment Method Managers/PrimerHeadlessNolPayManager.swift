@@ -12,16 +12,16 @@ extension PrimerHeadlessUniversalCheckout {
     public class PrimerHeadlessNolPayManager: NSObject {
         
         // Components for linking and unlinking cards
-        public var linkCardComponent: NolPayLinkCardComponent
-        public var unlinkCardComponent: NolPayUnlinkCardComponent
-        public var listLinkedCardsComponent: NolPayLinkedCardsComponent
-        public var startPaymentComponent: NolPayStartPaymentComponent
+        var linkCardComponent: NolPayLinkCardComponent
+        var unlinkCardComponent: NolPayUnlinkCardComponent
+        var listLinkedCardsComponent: NolPayLinkedCardsComponent
+        var paymentComponent: NolPayPaymentComponent
         
         public override init() {
             self.linkCardComponent = NolPayLinkCardComponent(isDebug: true)
             self.unlinkCardComponent = NolPayUnlinkCardComponent(isDebug: true)
             self.listLinkedCardsComponent = NolPayLinkedCardsComponent(isDebug: true)
-            self.startPaymentComponent = NolPayStartPaymentComponent(isDebug: true)
+            self.paymentComponent = NolPayPaymentComponent(isDebug: true)
             super.init()
         }
                 
@@ -37,8 +37,8 @@ extension PrimerHeadlessUniversalCheckout {
             return self.listLinkedCardsComponent
         }
         
-        public func provideNolPayStartPaymentComponent() -> NolPayStartPaymentComponent {
-            return self.startPaymentComponent
+        public func provideNolPayStartPaymentComponent() -> NolPayPaymentComponent {
+            return self.paymentComponent
         }
     }
 }

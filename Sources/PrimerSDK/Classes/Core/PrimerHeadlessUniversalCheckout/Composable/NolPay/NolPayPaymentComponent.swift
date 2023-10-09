@@ -1,5 +1,5 @@
 //
-//  NolPayPayment.swift
+//  NolPayPaymentComponent.swift
 //  PrimerSDK
 //
 //  Created by Boris on 18.9.23..
@@ -10,18 +10,18 @@ import Foundation
 import PrimerNolPaySDK
 #endif
 
-public enum NolPayStartPaymentCollectableData: PrimerCollectableData {
+public enum NolPayPaymentCollectableData: PrimerCollectableData {
     case paymentData(cardNumber: String, mobileNumber: String, phoneCountryDiallingCode: String)
 }
 
-public enum NolPayStartPaymentStep: PrimerHeadlessStep {
-    case collectStartPaymentData
+public enum NolPayPaymentStep: PrimerHeadlessStep {
+    case collectCardAndPhoneData
     case finishedPayment
 }
 
-public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
+public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     
-    public typealias T = NolPayStartPaymentCollectableData
+    public typealias T = NolPayPaymentCollectableData
     
     init(isDebug: Bool) {
         self.isDebug = isDebug
@@ -37,9 +37,9 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
     private var mobileNumber: String?
     private var phoneCountryDiallingCode: String?
     private var cardNumber: String?
-    private var nextDataStep: NolPayStartPaymentStep = .collectStartPaymentData
+    private var nextDataStep: NolPayPaymentStep = .collectCardAndPhoneData
 
-    public func updateCollectedData(data: NolPayStartPaymentCollectableData) {
+    public func updateCollectedData(data: NolPayPaymentCollectableData) {
         switch data {
         case let .paymentData(cardNumber, mobileNumber, phoneCountryDiallingCode):
             self.cardNumber = cardNumber
@@ -52,7 +52,7 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
         validationDelegate?.didValidate(validations: validations, for: data)
     }
     
-    private func validateData(for data: NolPayStartPaymentCollectableData) -> [PrimerValidationError] {
+    private func validateData(for data: NolPayPaymentCollectableData) -> [PrimerValidationError] {
         var errors: [PrimerValidationError] = []
         
         switch data {
@@ -105,7 +105,7 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
     
     public func submit() {
         switch nextDataStep {
-        case .collectStartPaymentData:
+        case .collectCardAndPhoneData:
             guard let cardNumber = cardNumber
             else {
                 makeAndHandleInvalidValueError(forKey: "cardNumber")
@@ -124,42 +124,56 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
                 return
             }
 
+            // TODO: (NOL) Tokenize
+            guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == "NOL_PAY" }).first as? NolPayTokenizationViewModel else {
+                return
+            }
+            
+            paymentMethod.nolPayCardNumber = cardNumber
+            paymentMethod.mobileNumber = mobileNumber
+            paymentMethod.mobileCountryCode = phoneCountryDiallingCode
+            
+            paymentMethod.completion = {
+                print("nol tokenisation completed")
+            }
+            paymentMethod.start()
+            
             // TODO: (NOL) Get transacton number for cardNumber, mobileNumber and phoneCountryDiallingCode
 #if canImport(PrimerNolPaySDK)
-            nolPay.requestPaymentFor(cardNumber: cardNumber, andTransactionNumber: "") { result in
-                switch result {
-                    
-                case .success(let success):
-                    if success {
-                        self.nextDataStep = .finishedPayment
-                        self.stepDelegate?.didReceiveStep(step: NolPayStartPaymentStep.finishedPayment)
-                    } else {
-                        let error = PrimerError.nolError(code: -1,
-                                                         message: "Payment failed from unknown reason",
-                                                         userInfo: [
-                                                            "file": #file,
-                                                            "class": "\(Self.self)",
-                                                            "function": #function,
-                                                            "line": "\(#line)"
-                                                         ],
-                                                         diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: error)
-                        self.errorDelegate?.didReceiveError(error: error)
-                    }
-                case .failure(let error):
-                    let error = PrimerError.nolError(code: error.errorCode,
-                                                     message: error.description,
-                                                     userInfo: [
-                                                        "file": #file,
-                                                        "class": "\(Self.self)",
-                                                        "function": #function,
-                                                        "line": "\(#line)"
-                                                     ],
-                                                     diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: error)
-                    self.errorDelegate?.didReceiveError(error: error)
-                }
-            }
+//            nolPay.requestPaymentFor(cardNumber: cardNumber, andTransactionNumber: "") { result in
+//                switch result {
+//                    
+//                case .success(let success):
+//                    if success {
+//                        self.nextDataStep = .finishedPayment
+//                        self.stepDelegate?.didReceiveStep(step: NolPayStartPaymentStep.finishedPayment)
+//                    } else {
+//                        let error = PrimerError.nolError(code: -1,
+//                                                         message: "Payment failed from unknown reason",
+//                                                         userInfo: [
+//                                                            "file": #file,
+//                                                            "class": "\(Self.self)",
+//                                                            "function": #function,
+//                                                            "line": "\(#line)"
+//                                                         ],
+//                                                         diagnosticsId: UUID().uuidString)
+//                        ErrorHandler.handle(error: error)
+//                        self.errorDelegate?.didReceiveError(error: error)
+//                    }
+//                case .failure(let error):
+//                    let error = PrimerError.nolError(code: error.errorCode,
+//                                                     message: error.description,
+//                                                     userInfo: [
+//                                                        "file": #file,
+//                                                        "class": "\(Self.self)",
+//                                                        "function": #function,
+//                                                        "line": "\(#line)"
+//                                                     ],
+//                                                     diagnosticsId: UUID().uuidString)
+//                    ErrorHandler.handle(error: error)
+//                    self.errorDelegate?.didReceiveError(error: error)
+//                }
+//            }
 #endif
         default:
             break
@@ -214,7 +228,6 @@ public class NolPayStartPaymentComponent: PrimerHeadlessCollectDataComponent {
         ErrorHandler.handle(error: error)
         errorDelegate?.didReceiveError(error: error)
 #endif
-        stepDelegate?.didReceiveStep(step: NolPayStartPaymentStep.collectStartPaymentData)
     }
     
     // Helper method

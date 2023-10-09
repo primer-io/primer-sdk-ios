@@ -99,6 +99,8 @@ class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
             try container.encode(sessionInfo, forKey: .sessionInfo)
         } else if let sessionInfo = sessionInfo as? IPay88SessionInfo {
             try container.encode(sessionInfo, forKey: .sessionInfo)
+        } else if let sessionInfo = sessionInfo as? NolPaySessionInfo {
+            try container.encode(sessionInfo, forKey: .sessionInfo)
         } else {
             let err = InternalError.invalidValue(
                 key: "SessionInfo",
@@ -118,14 +120,6 @@ struct PayPalPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var paypalBillingAgreementId: String?
     var shippingAddress: Response.Body.Tokenization.PayPal.ShippingAddress?
     var externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo?
-}
-
-struct NolPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
-    let paymentMethodType: String
-    let skdId: String
-    let regionCode: String
-    let mobileNumber: String
-    let cardNumber: String
 }
 
 /**
@@ -150,9 +144,7 @@ struct NolPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
  `KLARNA_CUSTOMER_TOKEN`: Used for vaulted Klarna payment methods.
  
  `KLARNA`:
- 
- `NOL_PAY`:
- 
+  
  `unknown`: Unknown payment instrument..
  
  - Author:
@@ -176,15 +168,12 @@ public enum PaymentInstrumentType: String, Codable {
     case klarnaCustomerToken    = "KLARNA_CUSTOMER_TOKEN"
     case apayaToken             = "APAYA"
     case hoolah                 = "HOOLAH"
-    case nol                    = "NOL_PAY"
     case unknown                = "UNKNOWN"
 
     public init(from decoder: Decoder) throws {
         self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
     }
 }
-
-
 
 /**
  Contains extra information about the payment method.

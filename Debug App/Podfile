@@ -21,7 +21,6 @@ target 'Debug App' do
   post_install do |installer|
     fix_code_signing(installer)
     fix_linking(installer)
-    fix_xcode15_errors(installer)
   end
 end
 
@@ -54,19 +53,3 @@ def fix_linking(installer)
     end
   end
 end
-
-
-def fix_xcode15_errors(installer)
-  
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      if config.base_configuration_reference
-        xcconfig_path = config.base_configuration_reference.real_path
-        xcconfig = File.read(xcconfig_path)
-        xcconfig_mod = xcconfig.gsub(/DT_TOOLCHAIN_DIR/, "TOOLCHAIN_DIR")
-        File.open(xcconfig_path, "w") { |file| file << xcconfig_mod }
-      end
-    end
-  end
-end
-

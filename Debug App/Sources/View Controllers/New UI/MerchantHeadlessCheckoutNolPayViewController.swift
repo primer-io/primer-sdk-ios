@@ -16,9 +16,13 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     private var linkCardComponent: NolPayLinkCardComponent!
     private var unlinkCardComponent: NolPayUnlinkCardComponent!
     private var getLinkedCardsComponent: NolPayLinkedCardsComponent!
-    
+    private var paymentComponent: NolPayPaymentComponent!
+
     // data
     private var linkedCards: [PrimerNolPaymentCard] = []
+    private var selectedCardForPayment: PrimerNolPaymentCard?
+    private var selectedCardForUnlinking: PrimerNolPaymentCard?
+    private var paymentInProgress = false
     
     // UI Components
     private var startLinkingFlowButton: UIButton!
@@ -42,6 +46,11 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         
     private var linkedCardsTableView: UITableView!
     
+    private var startPaymentFlowButton: UIButton!
+    private var startPaymentPhoneNumberTextField: UITextField!
+    private var startPaymentCountryCodeTextField: UITextField!
+    private var startPaymentSubmitPhoneNumberButton: UIButton!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -60,6 +69,11 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         
         getLinkedCardsComponent = nolPayManager.provideNolPayGetLinkedCardsComponent()
         getLinkedCardsComponent.errorDelegate = self
+        
+        paymentComponent = nolPayManager.provideNolPayStartPaymentComponent()
+        paymentComponent.errorDelegate = self
+        paymentComponent.validationDelegate = self
+        paymentComponent.stepDelegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -185,7 +199,36 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         unlinkSubmitOTPButton = UIButton(type: .roundedRect)
         unlinkSubmitOTPButton.setTitle("6. Submit unlink OTP", for: .normal)
         unlinkSubmitOTPButton.addTarget(self, action: #selector(submitUnlinkOTPTapped), for: .touchUpInside)
-                                
+              
+        // Start payment
+        let startPaymentLabel = UILabel()
+        startPaymentLabel.textAlignment = .left
+        startPaymentLabel.text = "PAYMENT FLOW"
+
+        startPaymentFlowButton = UIButton(type: .roundedRect)
+        startPaymentFlowButton.setTitle("1. Start Payment flow", for: .normal)
+        startPaymentFlowButton.addTarget(self, action: #selector(startPaymentFlowButtonTapped), for: .touchUpInside)
+        
+        startPaymentCountryCodeTextField = UITextField()
+        startPaymentCountryCodeTextField.placeholder = "2. Country Code"
+        startPaymentCountryCodeTextField.borderStyle = .roundedRect
+        startPaymentCountryCodeTextField.keyboardType = .phonePad
+        
+        startPaymentPhoneNumberTextField = UITextField()
+        startPaymentPhoneNumberTextField.placeholder = "3 .Phone Number"
+        startPaymentPhoneNumberTextField.borderStyle = .roundedRect
+        startPaymentPhoneNumberTextField.keyboardType = .phonePad
+        
+        let startPaymentPhoneStackView = UIStackView(arrangedSubviews: [startPaymentCountryCodeTextField, startPaymentPhoneNumberTextField])
+        startPaymentPhoneStackView.axis = .horizontal
+        startPaymentPhoneStackView.spacing = 10
+        startPaymentPhoneStackView.distribution = .fillEqually
+        
+        startPaymentSubmitPhoneNumberButton = UIButton(type: .roundedRect)
+        startPaymentSubmitPhoneNumberButton.setTitle("4. Submit phone", for: .normal)
+        startPaymentSubmitPhoneNumberButton.addTarget(self, action: #selector(submitPaymentPhoneNumberButtonTapped), for: .touchUpInside)
+        
+        
         func makeSpacerLabel() -> UILabel {
             let spacerLabel = UILabel()
             spacerLabel.textColor = .black
@@ -194,7 +237,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         }
         setupTableView()
         
-        let stackView = UIStackView(arrangedSubviews: [makeSpacerLabel(), linkLabel, startLinkingFlowButton, scanCardButton, phoneStackView, submitPhoneNumberButton, otpTextField, submitOTPButton, makeSpacerLabel(), listCardsLabel, listPhoneStackView, listCardsButton, linkedCardsTableView, makeSpacerLabel(), unlinkLabel, startUnlinkingFlowButton, unlinkPhoneStackView, unlinkSubmitPhoneNumberButton, unlinkOtpTextField, unlinkSubmitOTPButton])
+        let stackView = UIStackView(arrangedSubviews: [makeSpacerLabel(), linkLabel, startLinkingFlowButton, scanCardButton, phoneStackView, submitPhoneNumberButton, otpTextField, submitOTPButton, makeSpacerLabel(), listCardsLabel, listPhoneStackView, listCardsButton, linkedCardsTableView, makeSpacerLabel(), unlinkLabel, startUnlinkingFlowButton, unlinkPhoneStackView, unlinkSubmitPhoneNumberButton, unlinkOtpTextField, unlinkSubmitOTPButton, makeSpacerLabel(), startPaymentLabel, startPaymentFlowButton, startPaymentPhoneStackView, startPaymentSubmitPhoneNumberButton])
         
         stackView.axis = .vertical
         stackView.spacing = 15
@@ -231,6 +274,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     
     // MARK: - Link
     @objc func startLinkingFlowButtonTapped() {
+        paymentInProgress = false
         linkCardComponent.start()
         self.showAlert(title: "Linking started", message: "Linking process started, please tap on 'Scan' button.")
     }
@@ -263,20 +307,23 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     
     // MARK: - Unlink
     @objc func startUnlinkingFlowButtonTapped() {
+        paymentInProgress = false
         unlinkCardComponent.start()
+        selectedCardForUnlinking = nil
         showAlert(title: "Unlink card", message: "To unlink a card select it from the list of linked cards, enter phone number and country code, and then enter unlink OTP.")
     }
     
     @objc func submitUnlinkPhoneNumberTapped() {
         guard let countryCode = unlinkCountryCodeTextField.text, !countryCode.isEmpty,
-              let mobileNumber = unlinkPhoneNumberTextField.text, !mobileNumber.isEmpty
+              let mobileNumber = unlinkPhoneNumberTextField.text, !mobileNumber.isEmpty,
+              let card = selectedCardForUnlinking
         else {
             showAlert(title: "Error", message: "Please enter both country code and phone number.")
             return
         }
         
-        unlinkCardComponent.updateCollectedData(data: .phoneData(mobileNumber: mobileNumber,
-                                                                 phoneCountryDiallingCode: countryCode))
+        unlinkCardComponent.updateCollectedData(data: .cardAndPhoneData(nolPaymentCard: card,
+                                                                        mobileNumber: mobileNumber, phoneCountryDiallingCode: countryCode))
     }
     
     @objc func submitUnlinkOTPTapped() {
@@ -313,6 +360,30 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         }
     }
     
+    // MARK: - Payment flow
+    
+    
+    @objc func startPaymentFlowButtonTapped() {
+        paymentComponent.start()
+        paymentInProgress = true
+        selectedCardForPayment = nil
+        showAlert(title: "Select card", message: "Select a card to be used for payment from the list of linked cards")
+    }
+    
+    @objc func submitPaymentPhoneNumberButtonTapped() {
+        guard let countryCode = startPaymentCountryCodeTextField.text, !countryCode.isEmpty,
+              let phoneNumber = startPaymentPhoneNumberTextField.text, !phoneNumber.isEmpty
+        else {
+            showAlert(title: "Error", message: "Please enter both country code and phone number.")
+            return
+        }
+        
+        paymentComponent.updateCollectedData(data: NolPayPaymentCollectableData.paymentData(
+            cardNumber: selectedCardForPayment?.cardNumber ?? "",
+            mobileNumber: phoneNumber,
+            phoneCountryDiallingCode: countryCode))
+    }
+        
     // MARK: - Helper
     func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -335,9 +406,18 @@ extension MerchantHeadlessCheckoutNolPayViewController: UITableViewDataSource, U
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        let card = linkedCards[indexPath.row]
-        unlinkCardComponent.updateCollectedData(data: NolPayUnlinkCollectableData.cardData(nolPaymentCard: card))
+        if paymentInProgress {
+            // payment
+            tableView.deselectRow(at: indexPath, animated: true)
+            let card = linkedCards[indexPath.row]
+            selectedCardForPayment = card
+            showAlert(title: "Card selected", message: "You selected the card for payment, enter your phone number and country code.")
+        } else {
+            // unlinking
+            tableView.deselectRow(at: indexPath, animated: true)
+            selectedCardForUnlinking = linkedCards[indexPath.row]
+            showAlert(title: "Card selected", message: "You selected the card for unlinking, enter your phone number and country code and hit the submit button.")
+        }
     }
 }
 
@@ -358,6 +438,8 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
                 linkCardComponent.submit()
             } else if data is NolPayUnlinkCollectableData {
                 unlinkCardComponent.submit()
+            } else if data is NolPayPaymentCollectableData {
+                paymentComponent.submit()
             }
         }
     }
@@ -382,14 +464,21 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
         } else if let step = step as? NolPayUnlinkDataStep {
             switch step {
                 
-            case .collectCardData:
-                self.showAlert(title: "Next step", message: "Select card to be unlinked")
-            case .collectPhoneData:
-                self.showAlert(title: "Next step", message: "Enter phone number and country code")
+            case .collectCardAndPhoneData:
+                self.showAlert(title: "Next step", message: "Select card to be unlinked, and enter phone number and country code")
             case .collectOtpData:
                 self.showAlert(title: "OTP Sent", message: "Check you SMS inbox")
             case .cardUnlinked:
                 self.showAlert(title: "Success", message: "Card unlinked successfully!")
+            }
+        } else if let step = step as? NolPayPaymentStep {
+            switch step {
+                
+            case .collectCardAndPhoneData:
+                self.showAlert(title: "Payment started", message: "Please wait")
+            case .finishedPayment:
+                paymentInProgress = false
+                self.showAlert(title: "Payment finished", message: "You made a succesfull payment with your Nol card")
             }
         }
     }

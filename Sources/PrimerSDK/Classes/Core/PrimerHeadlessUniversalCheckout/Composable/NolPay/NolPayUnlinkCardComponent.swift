@@ -11,15 +11,13 @@ import PrimerNolPaySDK
 #endif
 
 public enum NolPayUnlinkDataStep: PrimerHeadlessStep {
-    case collectCardData
-    case collectPhoneData
+    case collectCardAndPhoneData
     case collectOtpData
     case cardUnlinked
 }
 
 public enum NolPayUnlinkCollectableData: PrimerCollectableData {
-    case cardData(nolPaymentCard: PrimerNolPaymentCard)
-    case phoneData(mobileNumber: String, phoneCountryDiallingCode: String)
+    case cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard, mobileNumber: String, phoneCountryDiallingCode: String)
     case otpData(otpCode: String)
 }
 
@@ -43,7 +41,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     private var otpCode: String?
     private var cardNumber: String?
     private var unlinkToken: String?
-    private var nextDataStep: NolPayUnlinkDataStep = .collectCardData
+    private var nextDataStep: NolPayUnlinkDataStep = .collectCardAndPhoneData
     
     public func updateCollectedData(data: NolPayUnlinkCollectableData) {
         
@@ -57,11 +55,15 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         Analytics.Service.record(events: [sdkEvent])
         
         switch data {
-        case .cardData(nolPaymentCard: let nolPaymentCard):
+        
+        case .cardAndPhoneData(nolPaymentCard: let nolPaymentCard,
+                               mobileNumber: let mobileNumber,
+                               phoneCountryDiallingCode: let phoneCountryDiallingCode):
+            
             cardNumber = nolPaymentCard.cardNumber
-        case .phoneData(mobileNumber: let mobileNumber, phoneCountryDiallingCode: let phoneCountryDiallingCode):
             self.mobileNumber = mobileNumber
             self.phoneCountryDiallingCode = phoneCountryDiallingCode
+
         case .otpData(otpCode: let otpCode):
             self.otpCode = otpCode
         }
@@ -76,8 +78,20 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         
         switch data {
             
-        case .phoneData(mobileNumber: let mobileNumber,
+        case .cardAndPhoneData(nolPaymentCard: let card, mobileNumber: let mobileNumber,
                         phoneCountryDiallingCode: let phoneCountryDiallingCode):
+            
+            if self.cardNumber ?? "" != card.cardNumber {
+                errors.append(PrimerValidationError.invalidCardnumber(
+                    message: "Invalid Nol card number",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ], diagnosticsId: UUID().uuidString))
+            }
+            
             if !mobileNumber.isValidMobilePhoneNumber {
                 errors.append(PrimerValidationError.invalidPhoneNumber(
                     message: "Phone number is not valid.",
@@ -117,15 +131,12 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                     diagnosticsId: UUID().uuidString))
                 ErrorHandler.handle(error: errors.last!)
             }
-        default:
-            break
         }
         
         return errors
     }
     
     public func submit() {
-        
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
@@ -137,10 +148,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         
         switch nextDataStep {
             
-        case .collectCardData:
-            nextDataStep = .collectPhoneData
-            stepDelegate?.didReceiveStep(step: NolPayUnlinkDataStep.collectPhoneData)
-        case .collectPhoneData:
+        case .collectCardAndPhoneData:
             guard let mobileNumber = mobileNumber
             else {
                 makeAndHandleInvalidValueError(forKey: "mobileNumber")
