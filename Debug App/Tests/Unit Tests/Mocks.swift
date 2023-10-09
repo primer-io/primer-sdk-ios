@@ -602,6 +602,34 @@ class MockPrimerNolPay: PrimerNolPayProtocol {
         completion(.success(mockCards))
     }
 }
+
+class MockValidationDelegate: PrimerHeadlessValidatableDelegate {
+    var validationsReceived: [PrimerValidationError]?
+    var wasValidatedCalled = false
+
+    func didValidate(validations: [PrimerValidationError], for data: PrimerCollectableData) {
+        validationsReceived = validations
+        wasValidatedCalled = true
+    }
+}
+
+
+class MockStepDelegate: PrimerHeadlessStepableDelegate {
+    var stepReceived: PrimerHeadlessStep?
+    
+    func didReceiveStep(step: PrimerHeadlessStep) {
+        stepReceived = step
+    }
+}
+
+class MockErrorDelegate: PrimerHeadlessErrorableDelegate {
+    var errorReceived: Error?
+    
+    func didReceiveError(error: PrimerSDK.PrimerError) {
+        errorReceived = error
+    }
+}
+
 #endif
 
 #endif

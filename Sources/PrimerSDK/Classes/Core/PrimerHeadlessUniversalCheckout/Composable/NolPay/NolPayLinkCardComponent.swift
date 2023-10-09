@@ -27,19 +27,19 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         self.isDebug = isDebug
     }
 #if canImport(PrimerNolPaySDK)
-    private var nolPay: PrimerNolPay!
+    private var nolPay: PrimerNolPayProtocol!
 #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessStepableDelegate?
     private var isDebug: Bool
     
-    private var mobileNumber: String?
-    private var phoneCountryDiallingCode: String?
-    private var otpCode: String?
-    private var cardNumber: String?
-    private var linkToken: String?
-    private var nextDataStep: NolPayLinkDataStep = .collectTagData
+    public var mobileNumber: String?
+    public var phoneCountryDiallingCode: String?
+    public var otpCode: String?
+    public var cardNumber: String?
+    public var linkToken: String?
+    public var nextDataStep: NolPayLinkDataStep = .collectTagData
     
     public func updateCollectedData(data: NolPayLinkCollectableData) {
         
@@ -65,7 +65,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         validationDelegate?.didValidate(validations: validations, for: data)
     }
     
-    private func validateData(for data: NolPayLinkCollectableData) -> [PrimerValidationError] {
+    func validateData(for data: NolPayLinkCollectableData) -> [PrimerValidationError] {
         var errors: [PrimerValidationError] = []
         
         switch data {
