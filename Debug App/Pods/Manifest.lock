@@ -39,10 +39,10 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   PrimerIPay88MYSDK:
-    :commit: 32bc1782c8d172ed25fa501977a18c9d2a90a80d
+    :commit: ef0fd73733a74393538c542572d63e5e2f1e75ad
     :git: https://github.com/primer-io/primer-ipay88-sdk-ios.git
   PrimerNolPaySDK:
-    :commit: 2c56ac747edbcc81c6639a20527083b08202d079
+    :commit: faf655eb556eaa56616fdfe6840c8b638dd1f11b
     :git: https://github.com/primer-io/primer-nol-pay-sdk-ios.git
 
 SPEC CHECKSUMS:

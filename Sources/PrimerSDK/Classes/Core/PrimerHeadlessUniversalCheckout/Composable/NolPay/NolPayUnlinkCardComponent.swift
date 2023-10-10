@@ -36,12 +36,12 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public weak var stepDelegate: PrimerHeadlessStepableDelegate?
     private var isDebug: Bool
 
-    private var mobileNumber: String?
-    private var phoneCountryDiallingCode: String?
-    private var otpCode: String?
-    private var cardNumber: String?
+    public var mobileNumber: String?
+    public var phoneCountryDiallingCode: String?
+    public var otpCode: String?
+    public var cardNumber: String?
     private var unlinkToken: String?
-    private var nextDataStep: NolPayUnlinkDataStep = .collectCardAndPhoneData
+    public var nextDataStep: NolPayUnlinkDataStep = .collectCardAndPhoneData
     
     public func updateCollectedData(data: NolPayUnlinkCollectableData) {
         
@@ -73,7 +73,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         validationDelegate?.didValidate(validations: validations, for: data)
     }
     
-    private func validateData(for data: NolPayUnlinkCollectableData) -> [PrimerValidationError] {
+    public func validateData(for data: NolPayUnlinkCollectableData) -> [PrimerValidationError] {
         var errors: [PrimerValidationError] = []
         
         switch data {
@@ -81,7 +81,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         case .cardAndPhoneData(nolPaymentCard: let card, mobileNumber: let mobileNumber,
                         phoneCountryDiallingCode: let phoneCountryDiallingCode):
             
-            if self.cardNumber ?? "" != card.cardNumber {
+            if card.cardNumber.isEmpty || !card.cardNumber.isNumeric {
                 errors.append(PrimerValidationError.invalidCardnumber(
                     message: "Invalid Nol card number",
                     userInfo: [
