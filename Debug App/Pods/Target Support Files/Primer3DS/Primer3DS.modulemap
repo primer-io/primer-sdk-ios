@@ -1,6 +1,0 @@
-framework module Primer3DS {
-  umbrella header "Primer3DS-umbrella.h"
-
-  export *
-  module * { export * }
-}

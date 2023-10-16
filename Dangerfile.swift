@@ -89,7 +89,7 @@ func isConventionalCommitTitle() -> Bool {
     pr.title.hasPrefix("feat:")
 }
 
-if !isConventionalCommitTitle() {
+if !pr.head.ref.hasPrefix("release") && !isConventionalCommitTitle() {
     fail("Please use a conventional commit title for this PR. See [Conventional Commits and SemVer](https://www.notion.so/primerio/Automating-Version-Bumping-and-Changelog-Creation-c13e32fea11447069dea76f966f4b0fb?pvs=4#c55764aa2f2748eb988d581a456e61e7)")
 }
 

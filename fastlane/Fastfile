@@ -11,8 +11,14 @@ github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
 app_workspace = "Debug App/Primer.io Debug App.xcworkspace"
+
 app_xcode_proj = "Debug App/Primer.io Debug App.xcodeproj"
 app_scheme = "Debug App"
+
+spm_app_scheme = "Debug App SPM"
+spm_app_xcode_proj = "Debug App/Primer.io Debug App SPM.xcodeproj"
+
+info_plist_path = "Debug App/Info.plist"
 
 # Packages
 app_output_path = "/var/tmp/Primer.io_Debug_App.xcarchive/Products/Applications/Debug App.app"
@@ -38,7 +44,8 @@ platform :ios do
     run_tests(workspace: app_workspace, 
               scheme: "Debug App Tests",
               destination: "platform=iOS Simulator,name=iPhone 14 Pro",
-              xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64")
+              xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
+              skip_package_dependencies_resolution: true)
   end
 
   lane :ui_tests do
@@ -74,8 +81,7 @@ platform :ios do
       workspace: app_workspace,
       configuration: "Debug",
       include_bitcode: false,
-      export_method: "development",
-      skip_package_dependencies_resolution: true
+      export_method: "development"
     )
 
     # Upload to Browserstack
@@ -91,6 +97,21 @@ platform :ios do
       release_notes: "QA release: #{sdk_version_name_source_branch} PR number: #{pr_number}"
     )
 
+  end
+
+  desc 'This action builds the app using the SPM integration'
+  lane :build_spm do
+    common_pre_build_action
+    build_app(workspace: app_workspace,
+              scheme: spm_app_scheme,
+              sdk: "iphonesimulator",
+              configuration: "Debug",
+              destination: "generic/platform=iOS Simulator",
+              xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
+              export_method: "development",
+              skip_package_ipa: true,
+              skip_package_pkg: true
+              )
   end
 
   desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
@@ -121,8 +142,7 @@ platform :ios do
       archive_path: app_output_archive_path,
       # Build speed optimisation
       skip_package_ipa: true,
-      skip_package_pkg: true,
-      skip_package_dependencies_resolution: true
+      skip_package_pkg: true
     )
 
     # Appetize needs the .app to be zipped
@@ -215,11 +235,7 @@ platform :ios do
     # )
 
     # Set build number
-    increment_build_number(
-      build_number: "#{github_run_id}.#{github_run_number}",
-      xcodeproj: app_xcode_proj
-    )
-
+    set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: "#{github_run_id}.#{github_run_number}")
   end
   
   def update_deployment_url(pub_url)
