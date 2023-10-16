@@ -56,7 +56,6 @@ class Networking {
         body: Data?,
         completion: @escaping (_ result: Result<Data, Error>) -> Void)
     {
-        var msg = "REQUEST\n"
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         
         if let queryParameters = queryParameters {
@@ -66,7 +65,7 @@ class Networking {
         }
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         
-        msg += "URL: \(components.url!.absoluteString )\n"
+        Primer.shared.logger?.debug(message: "URL: \(components.url!.absoluteString )")
         
         var request = URLRequest(url: components.url!)
         request.httpMethod = method.rawValue
@@ -94,43 +93,35 @@ class Networking {
             request.addValue("IOS", forHTTPHeaderField: "Client")
         }
                         
-        msg += "Headers:\n\(request.allHTTPHeaderFields ?? [:])\n"
+        Primer.shared.logger?.debug(message: "Headers: \(request.allHTTPHeaderFields ?? [:])")
                 
         if let body = body {
             request.httpBody = body
-            
             let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments)
-//            msg += "Body:\n\(bodyJson ?? [:])\n"
+            Primer.shared.logger?.debug(message: "Body: \(bodyJson ?? [:])")
         }
-
-        Primer.shared.logger?.debug(message: msg)
-        msg = ""
         
         URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
             DispatchQueue.main.async {
-//                msg += "RESPONSE\n"
-//                msg += "URL: \(request.url?.absoluteString ?? "Invalid")\n"
-                
+                Primer.shared.logger?.debug(message: "Url: \(request.url?.absoluteString ?? "unknown")")
+
                 if err != nil {
-                    msg += "Error: \(err!)\n"
-                    Primer.shared.logger?.debug(message: msg)
+                    Primer.shared.logger?.debug(message: "Error: \(err!)")
                     completion(.failure(err!))
                     return
                 }
 
                 guard let httpResponse = response as? HTTPURLResponse else {
-                    msg += "Error: Invalid response\n"
-                    Primer.shared.logger?.debug(message: msg)
+                    Primer.shared.logger?.debug(message: "Error: Invalid response")
                     completion(.failure(NetworkError.invalidResponse))
                     return
                 }
 
                 if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
-                    msg += "Status code: \(httpResponse.statusCode)\n"
+                    Primer.shared.logger?.debug(message: "Status code: \(httpResponse.statusCode)")
                     if let data = data, let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                        msg += "Body:\n\(resJson)\n"
+                        Primer.shared.logger?.debug(message: "Body: \(resJson)")
                     }
-                    Primer.shared.logger?.debug(message: msg)
                     completion(.failure(NetworkError.invalidResponse))
                     
                     guard let data = data else {
@@ -149,21 +140,18 @@ class Networking {
                 }
 
                 guard let data = data else {
-                    msg += "Status code: \(httpResponse.statusCode)\n"
-                    msg += "Body:\nNo data\n"
-                    Primer.shared.logger?.debug(message: msg)
+                    Primer.shared.logger?.debug(message: "Status code: \(httpResponse.statusCode)")
+                    Primer.shared.logger?.debug(message: "Body: No data")
                     completion(.failure(NetworkError.invalidResponse))
                     return
                 }
                 
-                msg += "Status code: \(httpResponse.statusCode)\n"
+                Primer.shared.logger?.debug(message: "Status code: \(httpResponse.statusCode)")
                 if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                    msg += "Body:\n\(resJson)\n"
+                    Primer.shared.logger?.debug(message: "Body (json): \(resJson)")
                 } else {
-                    msg += "Body (String): \(String(describing: String(data: data, encoding: .utf8)))"
+                    Primer.shared.logger?.debug(message: "Body (text): \(String(describing: String(data: data, encoding: .utf8)))")
                 }
-                
-                Primer.shared.logger?.debug(message: msg)
 
                 completion(.success(data))
             }
