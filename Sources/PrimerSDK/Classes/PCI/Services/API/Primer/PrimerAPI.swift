@@ -196,7 +196,7 @@ internal extension PrimerAPI {
         case .testFinalizePolling:
             break
         case .listCardNetworks:
-            tmpHeaders["X-Api-Version"] = "2.1"
+            tmpHeaders["X-Api-Version"] = "2.2"
         }
         
         return tmpHeaders
