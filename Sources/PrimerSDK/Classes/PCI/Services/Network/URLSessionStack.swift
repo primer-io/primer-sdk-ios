@@ -173,11 +173,11 @@ internal class URLSessionStack: NetworkService, LogReporter {
                             let headerDescriptions = httpResponse.allHeaderFields.map { key, value in
                                 return " - \(key) = \(value)"
                             }
-                            logger.debug(message: "📃 Response headers:\n\(headerDescriptions.joined(separator: "\n"))")
+                            logger.debug(message: "📃 Response Headers:\n\(headerDescriptions.joined(separator: "\n"))")
                             
                         }
                         let bodyDescription = jsonStr ?? "No body found"
-                        logger.debug(message: "Body: \(bodyDescription)")
+                        logger.debug(message: "Body:\n\(bodyDescription)")
                     }
                 }
 #endif
