@@ -38,6 +38,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var fetchPayPalExternalPayerInfoResult: (Response.Body.PayPal.PayerInfo?, Error?)?
     var resumePaymentResult: (Response.Body.Payment?, Error?)?
     var testFinalizePollingResult: (Void?, Error?)?
+    var listCardNetworksResult: (Response.Body.Bin.Networks?, Error?)?
     
     private var currentPollingIteration: Int = 0
     
@@ -573,6 +574,23 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
                     completion(.failure(err))
                 } else {
                     completion(.success(()))
+                }
+            }
+        }
+    }
+    
+    func listCardNetworks(clientToken: DecodedJWTToken, bin: String, completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) {
+        guard let result = listCardNetworksResult, (result.0 != nil || result.1 != nil) else {
+            XCTFail("Set 'listCardNetworksResult' on your MockPrimerAPIClient")
+            return
+        }
+        
+        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+            DispatchQueue.main.async {
+                if let err = result.1 {
+                    completion(.failure(err))
+                } else if let res = result.0 {
+                    completion(.success(res))
                 }
             }
         }

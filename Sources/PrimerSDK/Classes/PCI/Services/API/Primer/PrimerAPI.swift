@@ -76,6 +76,9 @@ enum PrimerAPI: Endpoint, Equatable {
     case resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume)
     
     case testFinalizePolling(clientToken: DecodedJWTToken, testId: String)
+    
+    // BIN Data
+    case listCardNetworks(clientToken: DecodedJWTToken, bin: String)
 
 }
 
@@ -116,7 +119,8 @@ internal extension PrimerAPI {
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
                 .createPayment(let clientToken, _),
                 .resumePayment(let clientToken, _, _),
-                .testFinalizePolling(let clientToken, _):
+                .testFinalizePolling(let clientToken, _),
+                .listCardNetworks(let clientToken, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -191,6 +195,8 @@ internal extension PrimerAPI {
             tmpHeaders["X-Api-Version"] = "2.2"
         case .testFinalizePolling:
             break
+        case .listCardNetworks:
+            tmpHeaders["X-Api-Version"] = "2.1"
         }
         
         return tmpHeaders
@@ -209,7 +215,8 @@ internal extension PrimerAPI {
                 .listAdyenBanks(let clientToken, _),
                 .listRetailOutlets(let clientToken, _),
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
-                .testFinalizePolling(let clientToken, _):
+                .testFinalizePolling(let clientToken, _),
+                .listCardNetworks(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .deleteVaultedPaymentMethod(let clientToken, _),
@@ -286,6 +293,8 @@ internal extension PrimerAPI {
             return "/payments/\(paymentId)/resume"
         case .testFinalizePolling(_, _):
             return "/finalize-polling"
+        case .listCardNetworks(_, let bin):
+            return "/bin-data/\(bin)/networks"
         }
     }
     
@@ -304,7 +313,8 @@ internal extension PrimerAPI {
             return .delete
         case .fetchConfiguration,
                 .fetchVaultedPaymentMethods,
-                .listRetailOutlets:
+                .listRetailOutlets,
+                .listCardNetworks:
             return .get
         case .createPayPalOrderSession,
                 .createPayPalBillingAgreementSession,
@@ -393,7 +403,7 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(paymentCreateRequestBody)
         case .resumePayment(_, _, let paymentResumeRequestBody):
             return try? JSONEncoder().encode(paymentResumeRequestBody)
-        case .testFinalizePolling:
+        case .testFinalizePolling, .listCardNetworks:
             return nil
         }
     }
