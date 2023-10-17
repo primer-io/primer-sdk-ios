@@ -53,7 +53,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) { 
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -74,7 +74,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -94,7 +94,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -126,7 +126,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else {
@@ -148,7 +148,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -169,7 +169,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -190,7 +190,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -212,7 +212,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -233,7 +233,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -254,7 +254,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -276,7 +276,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -298,7 +298,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -317,7 +317,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -334,13 +334,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let successResult = result.0 {
-                    completion(.success(successResult))
-                }
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+            if let err = result.1 {
+                completion(.failure(err))
+            } else if let successResult = result.0 {
+                completion(.success(successResult))
             }
         }
     }
@@ -358,13 +356,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let successResult = result.0 {
-                    completion(.success(successResult))
-                }
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+            if let err = result.1 {
+                completion(.failure(err))
+            } else if let successResult = result.0 {
+                completion(.success(successResult))
             }
         }
     }
@@ -381,13 +377,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let successResult = result.0 {
-                    completion(.success(successResult))
-                }
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+            if let err = result.1 {
+                completion(.failure(err))
+            } else if let successResult = result.0 {
+                completion(.success(successResult))
             }
         }
     }
@@ -404,13 +398,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let successResult = result.0 {
-                    completion(.success(successResult))
-                }
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+            if let err = result.1 {
+                completion(.failure(err))
+            } else if let successResult = result.0 {
+                completion(.success(successResult))
             }
         }
     }
@@ -427,27 +419,25 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                let pollingResult = pollingResults[self.currentPollingIteration]
-                self.currentPollingIteration += 1
-                
-                if pollingResult.0 == nil && pollingResult.1 == nil {
-                    XCTAssert(false, "Each 'pollingResult' must have a response or an error.")
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+            let pollingResult = pollingResults[self.currentPollingIteration]
+            self.currentPollingIteration += 1
+            
+            if pollingResult.0 == nil && pollingResult.1 == nil {
+                XCTAssert(false, "Each 'pollingResult' must have a response or an error.")
+            }
+            
+            if let err = pollingResult.1 {
+                if self.currentPollingIteration == pollingResults.count {
+                    XCTAssert(false, "Polling finished with error")
+                } else {
+                    self.poll(clientToken: clientToken, url: url, completion: completion)
                 }
-                
-                if let err = pollingResult.1 {
-                    if self.currentPollingIteration == pollingResults.count {
-                        XCTAssert(false, "Polling finished with error")
-                    } else {
-                        self.poll(clientToken: clientToken, url: url, completion: completion)
-                    }
-                } else if let res = pollingResult.0 {
-                    if res.status == .complete {
-                        completion(.success(res))
-                    } else {
-                        self.poll(clientToken: clientToken, url: url, completion: completion)
-                    }
+            } else if let res = pollingResult.0 {
+                if res.status == .complete {
+                    completion(.success(res))
+                } else {
+                    self.poll(clientToken: clientToken, url: url, completion: completion)
                 }
             }
         }
@@ -465,13 +455,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let successResult = result.0 {
-                    completion(.success(successResult))
-                }
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+            if let err = result.1 {
+                completion(.failure(err))
+            } else if let successResult = result.0 {
+                completion(.success(successResult))
             }
         }
     }
@@ -505,13 +493,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let successResult = result.0 {
-                    completion(.success(successResult))
-                }
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+            if let err = result.1 {
+                completion(.failure(err))
+            } else if let successResult = result.0 {
+                completion(.success(successResult))
             }
         }
     }
@@ -530,13 +516,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let successResult = result.0 {
-                    completion(.success(successResult))
-                }
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+            if let err = result.1 {
+                completion(.failure(err))
+            } else if let successResult = result.0 {
+                completion(.success(successResult))
             }
         }
     }
@@ -549,13 +533,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let successResult = result.0 {
-                    completion(.success(successResult))
-                }
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+            if let err = result.1 {
+                completion(.failure(err))
+            } else if let successResult = result.0 {
+                completion(.success(successResult))
             }
         }
     }
@@ -568,13 +550,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else {
-                    completion(.success(()))
-                }
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+            if let err = result.1 {
+                completion(.failure(err))
+            } else {
+                completion(.success(()))
             }
         }
     }
@@ -585,13 +565,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let res = result.0 {
-                    completion(.success(res))
-                }
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+            if let err = result.1 {
+                completion(.failure(err))
+            } else if let res = result.0 {
+                completion(.success(res))
             }
         }
     }

@@ -524,7 +524,7 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
                 return
             }
             
-            Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
                 PrimerAPIConfigurationModule.clientToken = clientToken
                 PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
                 seal.fulfill()
@@ -539,7 +539,7 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
                 return
             }
             
-            Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
                 PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
             }
         }
@@ -547,7 +547,7 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
     
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
         return Promise { seal in
-            Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
                 PrimerAPIConfigurationModule.clientToken = newClientToken
             }
         }
