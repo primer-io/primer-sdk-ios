@@ -31,7 +31,6 @@ class MockNetworkService: NetworkService {
             } else {
                 XCTFail("Failed to produce either a valid result or an error for requested endpoint")
             }
-            
         }
     }
 }
