@@ -7,7 +7,7 @@ internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void)
 }
 
-internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol, LogReporter {
+internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
 
     var paymentMethods: [PrimerPaymentMethodTokenData] {
         return AppState.current.paymentMethods

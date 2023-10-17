@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class PrimerInputViewController: PrimerFormViewController, LogReporter {
+internal class PrimerInputViewController: PrimerFormViewController {
         
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
     

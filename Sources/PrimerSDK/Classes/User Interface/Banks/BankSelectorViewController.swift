@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class BankSelectorViewController: PrimerFormViewController, LogReporter {
+internal class BankSelectorViewController: PrimerFormViewController {
     
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     

@@ -15,7 +15,7 @@ internal protocol CreateResumePaymentServiceProtocol {
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Response.Body.Payment?, Error?) -> Void)
 }
 
-internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol, LogReporter {
+internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     
     static var apiClient: PrimerAPIClientProtocol?
 

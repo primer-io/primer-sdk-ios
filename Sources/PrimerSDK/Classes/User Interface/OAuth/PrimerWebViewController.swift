@@ -10,7 +10,7 @@
 import UIKit
 import WebKit
 
-internal class PrimerWebViewController: PrimerViewController, LogReporter {
+internal class PrimerWebViewController: PrimerViewController {
     
     private let webView: WKWebView! = WKWebView()
     internal private(set) var url: URL

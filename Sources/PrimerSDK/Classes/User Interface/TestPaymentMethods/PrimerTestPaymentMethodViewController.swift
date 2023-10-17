@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PrimerTestPaymentMethodViewController: PrimerFormViewController, LogReporter {
+class PrimerTestPaymentMethodViewController: PrimerFormViewController {
     
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private var viewModel: PrimerTestPaymentMethodTokenizationViewModel!

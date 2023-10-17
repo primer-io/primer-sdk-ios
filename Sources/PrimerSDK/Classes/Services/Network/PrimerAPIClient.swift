@@ -119,7 +119,7 @@ protocol PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<Void, Error>) -> Void)
 }
 
-internal class PrimerAPIClient: PrimerAPIClientProtocol, LogReporter {
+internal class PrimerAPIClient: PrimerAPIClientProtocol {
         
     internal let networkService: NetworkService
 

@@ -2,7 +2,7 @@
 
 import UIKit
 
-internal class CountrySelectorViewController: PrimerFormViewController, LogReporter {
+internal class CountrySelectorViewController: PrimerFormViewController {
     
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     

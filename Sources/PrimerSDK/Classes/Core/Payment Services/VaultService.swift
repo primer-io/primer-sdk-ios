@@ -8,7 +8,7 @@ internal protocol VaultServiceProtocol {
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void>
 }
 
-internal class VaultService: VaultServiceProtocol, LogReporter {
+internal class VaultService: VaultServiceProtocol {
     
     static var apiClient: PrimerAPIClientProtocol?
 

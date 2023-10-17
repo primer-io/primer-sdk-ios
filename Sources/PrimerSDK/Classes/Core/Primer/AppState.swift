@@ -19,7 +19,7 @@ internal protocol AppStateProtocol: AnyObject {
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? { get }
 }
 
-internal class AppState: AppStateProtocol, LogReporter {
+internal class AppState: AppStateProtocol {
     
     static var current: AppStateProtocol {
         let appState: AppStateProtocol = DependencyContainer.resolve()

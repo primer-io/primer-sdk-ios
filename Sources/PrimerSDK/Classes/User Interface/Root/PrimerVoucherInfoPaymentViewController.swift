@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController, LogReporter {
+internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
         
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
     let textToShare: String?
