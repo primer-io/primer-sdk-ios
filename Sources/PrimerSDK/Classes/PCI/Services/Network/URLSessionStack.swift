@@ -82,10 +82,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
         }
  
         logger.debug(message: "🌎 Network request [\(request.httpMethod!)] \(request.url!)")
-        let headersDescription = request.allHTTPHeaderFields?.map { key, value in
+        let headerDescriptions = request.allHTTPHeaderFields?.map { key, value in
             return " - \(key) = \(value)"
         } ?? []
-        logger.debug(message: "📃 Request Headers:\n\(headersDescription.joined(separator: "\n"))")
+        logger.debug(message: "📃 Request Headers:\n\(headerDescriptions.joined(separator: "\n"))")
 #endif
         
         let dataTask = session.dataTask(with: request) { [logger] data, response, error in
@@ -173,7 +173,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
                             let headerDescriptions = httpResponse.allHeaderFields.map { key, value in
                                 return " - \(key) = \(value)"
                             }
-                            logger.debug(message: "📃 Response Headers:\n\(headerDescriptions.joined(separator: "\n"))")
+                            logger.debug(message: "📃 Response headers:\n\(headerDescriptions.joined(separator: "\n"))")
                             
                         }
                         let bodyDescription = jsonStr ?? "No body found"
