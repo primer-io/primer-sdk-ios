@@ -148,9 +148,9 @@ class Networking {
                 
                 Primer.shared.logger?.debug(message: "Status code: \(httpResponse.statusCode)")
                 if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                    Primer.shared.logger?.debug(message: "Body (json): \(resJson)")
+                    Primer.shared.logger?.debug(message: "Response body (json): \(resJson)")
                 } else {
-                    Primer.shared.logger?.debug(message: "Body (text): \(String(describing: String(data: data, encoding: .utf8)))")
+                    Primer.shared.logger?.debug(message: "Response body (text): \(String(describing: String(data: data, encoding: .utf8)))")
                 }
 
                 completion(.success(data))

@@ -10,8 +10,7 @@ import Foundation
 import PrimerSDK
 import OSLog
 
-@available(iOS 14.0, *)
-class ExampleOSLogger: PrimerLogger {
+class ExampleLogger: PrimerLogger {
     
     private let defaultLogger = os.Logger()
     
@@ -48,20 +47,5 @@ class ExampleOSLogger: PrimerLogger {
         let logger = Logger.init(subsystem: subsystem, category: category)
         categoryLoggers[category] = logger
         return logger
-    }
-}
-
-class ExampleLogger: PrimerLogger {
-        
-    func log(level: LogLevel, message: String, userInfo: Encodable?, metadata: PrimerLogMetadata) {
-        print("💰" + format(level: level, message: message, metadata: metadata))
-        if let userInfoMessage = try? userInfo?.asDictionary() {
-            print("💰" + format(level: level, message: userInfoMessage.debugDescription, metadata: metadata))
-        }
-    }
-    
-    private func format(level: LogLevel, message: String, metadata: PrimerLogMetadata) -> String {
-        let filename = metadata.file.split(separator: "/").last
-        return "\(level.prefix) [\(filename != nil ? String(filename!) : metadata.file):\(metadata.line) → \(metadata.function)] \(message)"
     }
 }

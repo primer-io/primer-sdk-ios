@@ -82,10 +82,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
         }
  
         logger.debug(message: "🌎 Network request [\(request.httpMethod!)] \(request.url!)")
-        logger.debug(message: "📃 Request Headers: ")
-        request.allHTTPHeaderFields?.forEach { key, value in
-            logger.debug(message: " - \(key) = \(value)")
-        }
+        let headersDescription = request.allHTTPHeaderFields?.map { key, value in
+            return " - \(key) = \(value)"
+        } ?? []
+        logger.debug(message: "📃 Request Headers:\n\(headersDescription.joined(separator: "\n"))")
 #endif
         
         let dataTask = session.dataTask(with: request) { [logger] data, response, error in
@@ -170,13 +170,14 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         logger.debug(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         if let httpResponse = response as? HTTPURLResponse {
                             logger.debug(message: "✋ Status: \(httpResponse.statusCode)")
-                            logger.debug(message: "📃 Headers: ")
-                            httpResponse.allHeaderFields.forEach { key, value in
-                                logger.debug(message: " - \(key) = \(value)")
+                            let headerDescriptions = httpResponse.allHeaderFields.map { key, value in
+                                return " - \(key) = \(value)"
                             }
+                            logger.debug(message: "📃 Response Headers:\n\(headerDescriptions.joined(separator: "\n"))")
+                            
                         }
-                        logger.debug(message: "Body: ")
-                        logger.debug(message: jsonStr ?? "No body found")
+                        let bodyDescription = jsonStr ?? "No body found"
+                        logger.debug(message: "Body: \(bodyDescription)")
                     }
                 }
 #endif
