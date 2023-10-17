@@ -1445,7 +1445,7 @@ class AnalyticsTests: XCTestCase {
             try eventsData.write(to: Analytics.Service.filepath)
             
         } catch {
-            print("📚 ANALYTICS\n📚 \(error.localizedDescription)")
+            XCTFail("Failed to create analytics file for RC3 - error message: \(error.localizedDescription)")
         }
     }
     
