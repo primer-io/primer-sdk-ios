@@ -58,7 +58,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case sdkDismissed
     case failedToProcessPayment(paymentId: String, status: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
-    case nolError(code: Int?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
     
     public var errorId: String {
@@ -143,6 +143,15 @@ public enum PrimerError: PrimerErrorProtocol {
             return "nol-pay-sdk-error"
         case .unknown:
             return "unknown"
+        }
+    }
+    
+    public var underlyingErrorCode: String? {
+        switch self {
+        case .nolError(let code, _, _, _):
+            return String(describing: code)
+        default:
+            return nil
         }
     }
     
@@ -382,7 +391,7 @@ public enum PrimerError: PrimerErrorProtocol {
     public var errorUserInfo: [String : Any] {
         let tmpUserInfo: [String: Any] = [
             "createdAt": Date().toString(),
-            "diagnosticsId": diagnosticsId
+            "diagnosticsId": diagnosticsId,
         ]
         
         return tmpUserInfo

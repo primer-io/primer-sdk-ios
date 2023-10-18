@@ -84,7 +84,7 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
 #if canImport(PrimerNolPaySDK)
         guard let nolPay = nolPay else {
             // TODO: (NOL) Add new errors
-            let error = PrimerError.nolError(code: 1,
+            let error = PrimerError.nolError(code: "unknown",
                                              message: "error.description",
                                              userInfo: [
                                                 "file": #file,

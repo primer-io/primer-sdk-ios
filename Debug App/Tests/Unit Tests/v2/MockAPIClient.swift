@@ -598,7 +598,14 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    
+    func genericAPICall(clientToken: PrimerSDK.DecodedJWTToken, url: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
+        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+            DispatchQueue.main.async {
+                completion(.success(true))
+            }
+        }
+    }
+
     func mockSuccessfulResponses() {
         self.validateClientTokenResult                  = (MockPrimerAPIClient.Samples.mockValidateClientToken, nil)
         self.fetchConfigurationResult                   = (MockPrimerAPIClient.Samples.mockPrimerAPIConfiguration, nil)

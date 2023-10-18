@@ -27,13 +27,13 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     
     
     func testUpdateCollectedData_PhoneData_Success() {
-        sut.updateCollectedData(data: .phoneData(mobileNumber: "1234567890", phoneCountryDiallingCode: "+1"))
+        sut.updateCollectedData(collectableData: .phoneData(mobileNumber: "1234567890", phoneCountryDiallingCode: "+1"))
         XCTAssertEqual(sut.mobileNumber, "1234567890")
         XCTAssertEqual(sut.phoneCountryDiallingCode, "+1")
     }
     
     func testUpdateCollectedData_OTPData_Success() {
-        sut.updateCollectedData(data: .otpData(otpCode: "1234"))
+        sut.updateCollectedData(collectableData: .otpData(otpCode: "1234"))
         XCTAssertEqual(sut.otpCode, "1234")
     }
     
@@ -116,7 +116,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     func testUpdateCollectedData_ValidationDelegateCalled() {
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
-        sut.updateCollectedData(data: .phoneData(mobileNumber: "abc", phoneCountryDiallingCode: "+1"))
+        sut.updateCollectedData(collectableData: .phoneData(mobileNumber: "abc", phoneCountryDiallingCode: "+1"))
         XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
     }
 
@@ -158,7 +158,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     }
 
     func testSubmit_CollectOtpData_OtpCodeNil() {
-        sut.nextDataStep = .collectOtpData
+        sut.nextDataStep = .collectOtpData(phoneNumber: "")
         let mockErrorDelegate = MockErrorDelegate()
         sut.errorDelegate = mockErrorDelegate
         sut.submit()
@@ -175,7 +175,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     func testUpdateCollectedData_InvalidPhoneData() {
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
-        sut.updateCollectedData(data: .phoneData(mobileNumber: "invalidPhoneNumber", phoneCountryDiallingCode: "invalidCountryCode"))
+        sut.updateCollectedData(collectableData: .phoneData(mobileNumber: "invalidPhoneNumber", phoneCountryDiallingCode: "invalidCountryCode"))
         XCTAssertEqual(mockValidationDelegate.validationsReceived?.count, 2)
         XCTAssertTrue(mockValidationDelegate.validationsReceived?.contains(where: { $0.errorId == "invalid-phone-number" }) == true)
         XCTAssertTrue(mockValidationDelegate.validationsReceived?.contains(where: { $0.errorId == "invalid-phone-number-country-code" }) == true)
@@ -184,7 +184,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     func testUpdateCollectedData_InvalidOTPCode() {
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
-        sut.updateCollectedData(data: .otpData(otpCode: "invalidOTP"))
+        sut.updateCollectedData(collectableData: .otpData(otpCode: "invalidOTP"))
         XCTAssertEqual(mockValidationDelegate.validationsReceived?.count, 1)
         XCTAssertTrue(mockValidationDelegate.validationsReceived?.contains(where: { $0.errorId == "invalid-otp-code" }) == true)
     }
@@ -193,7 +193,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
         // Assuming "1234567890" and "+1" are valid for phone number and country code respectively.
-        sut.updateCollectedData(data: .phoneData(mobileNumber: "1234567890", phoneCountryDiallingCode: "+1"))
+        sut.updateCollectedData(collectableData: .phoneData(mobileNumber: "1234567890", phoneCountryDiallingCode: "+1"))
         XCTAssert(mockValidationDelegate.validationsReceived?.isEmpty == true)
     }
 
@@ -201,7 +201,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
         // Assuming "123456" is a valid OTP code.
-        sut.updateCollectedData(data: .otpData(otpCode: "123456"))
+        sut.updateCollectedData(collectableData: .otpData(otpCode: "123456"))
         XCTAssert(mockValidationDelegate.validationsReceived?.isEmpty == true)
     }
     
@@ -226,7 +226,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     func testSubmit_CollectOtpData_NoOTP() {
         let mockErrorDelegate = MockErrorDelegate()
         sut.errorDelegate = mockErrorDelegate
-        sut.nextDataStep = .collectOtpData
+        sut.nextDataStep = .collectOtpData(phoneNumber: "")
         sut.linkToken = "linkToken123"
         sut.submit()
         XCTAssertTrue(mockErrorDelegate.errorReceived is PrimerError)
@@ -235,7 +235,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     func testSubmit_CollectOtpData_NoLinkToken() {
         let mockErrorDelegate = MockErrorDelegate()
         sut.errorDelegate = mockErrorDelegate
-        sut.nextDataStep = .collectOtpData
+        sut.nextDataStep = .collectOtpData(phoneNumber: "")
         sut.otpCode = "123456"
         sut.submit()
         XCTAssertTrue(mockErrorDelegate.errorReceived is PrimerError)

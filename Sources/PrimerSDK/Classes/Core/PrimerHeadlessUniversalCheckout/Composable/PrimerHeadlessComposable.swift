@@ -30,7 +30,7 @@ public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent {
     var errorDelegate: PrimerHeadlessErrorableDelegate? { get set }
     var validationDelegate: PrimerHeadlessValidatableDelegate? { get set }
     var stepDelegate: PrimerHeadlessStepableDelegate? { get set }
-    func updateCollectedData(data: T)
+    func updateCollectedData(collectableData: T)
     func submit()
     func start()
 }

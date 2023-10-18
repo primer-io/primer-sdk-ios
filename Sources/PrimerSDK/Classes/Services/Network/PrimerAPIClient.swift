@@ -11,6 +11,10 @@ import Foundation
 
 protocol PrimerAPIClientProtocol {
     
+    func genericAPICall(clientToken: DecodedJWTToken,
+                        url: URL,
+                        completion: @escaping (_ result: Result<Bool, Error>) -> Void)
+    
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
         completion: @escaping (_ result: Result<SuccessResponse, Error>) -> Void)
@@ -125,7 +129,7 @@ protocol PrimerAPIClientProtocol {
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
-        
+    
     internal let networkService: NetworkService
 
     // MARK: - Object lifecycle
@@ -133,7 +137,21 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     init(networkService: NetworkService = URLSessionStack()) {
         self.networkService = networkService
     }
-
+    
+    func genericAPICall(clientToken: DecodedJWTToken, url: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
+        let endpoint = PrimerAPI.genericEndpoint(clientToken: clientToken, url: url)
+        networkService.request(endpoint) { (result: Result<SuccessResponse, Error>) in
+            
+            switch result {
+                
+            case .success(_):
+                completion(.success(true))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken, completion: @escaping (_ result: Result<Response.Body.VaultedPaymentMethods, Error>) -> Void) {
         let endpoint = PrimerAPI.fetchVaultedPaymentMethods(clientToken: clientToken)
         networkService.request(endpoint) { (result: Result<Response.Body.VaultedPaymentMethods, Error>) in

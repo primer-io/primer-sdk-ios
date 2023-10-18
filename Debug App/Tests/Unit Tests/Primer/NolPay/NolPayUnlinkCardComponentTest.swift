@@ -30,7 +30,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         sut.validationDelegate = mockValidationDelegate
         
         // Provide data to component
-        sut.updateCollectedData(data: .cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard(cardNumber: "", expiredTime: ""), mobileNumber: "", phoneCountryDiallingCode: ""))
+        sut.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard(cardNumber: "", expiredTime: ""), mobileNumber: "", phoneCountryDiallingCode: ""))
         
         XCTAssertTrue(mockValidationDelegate.wasValidatedCalled, "Validation was not triggered when updating collected data.")
     }
@@ -41,7 +41,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         sut.validationDelegate = mockValidationDelegate
         
         // Provide data with invalid phone number to component
-        sut.updateCollectedData(data: .cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard(cardNumber: "", expiredTime: ""), mobileNumber: "invalidNumber", phoneCountryDiallingCode: "..."))
+        sut.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard(cardNumber: "", expiredTime: ""), mobileNumber: "invalidNumber", phoneCountryDiallingCode: "..."))
         
         XCTAssertNotNil(mockValidationDelegate.validationsReceived, "No validations received.")
         XCTAssertTrue(mockValidationDelegate.validationsReceived?.contains(where: { $0.errorId == "invalid-phone-number" }) == true, "Expected invalid phone number validation error.")
@@ -53,7 +53,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         sut.validationDelegate = mockValidationDelegate
         
         // Provide valid data to component
-        sut.updateCollectedData(data: .cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard(cardNumber: "1234567890", expiredTime: "12/25"), mobileNumber: "1234567890", phoneCountryDiallingCode: "+1"))
+        sut.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard(cardNumber: "1234567890", expiredTime: "12/25"), mobileNumber: "1234567890", phoneCountryDiallingCode: "+1"))
         
         XCTAssertNotNil(mockValidationDelegate.validationsReceived, "No validations received.")
         XCTAssertTrue(mockValidationDelegate.validationsReceived?.isEmpty == true, "Unexpected validation errors received.")
@@ -61,14 +61,14 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     
     func testUpdateCollectedData_CardAndPhoneData_Success() {
         let dummyCard = PrimerNolPaymentCard(cardNumber: "1234567890123456", expiredTime: "12/25")
-        sut.updateCollectedData(data: .cardAndPhoneData(nolPaymentCard: dummyCard, mobileNumber: "1234567890", phoneCountryDiallingCode: "+1"))
+        sut.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: dummyCard, mobileNumber: "1234567890", phoneCountryDiallingCode: "+1"))
         XCTAssertEqual(sut.cardNumber, "1234567890123456")
         XCTAssertEqual(sut.mobileNumber, "1234567890")
         XCTAssertEqual(sut.phoneCountryDiallingCode, "+1")
     }
     
     func testUpdateCollectedData_OTPData_Success() {
-        sut.updateCollectedData(data: .otpData(otpCode: "1234"))
+        sut.updateCollectedData(collectableData: .otpData(otpCode: "1234"))
         XCTAssertEqual(sut.otpCode, "1234")
     }
     
@@ -158,7 +158,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         let dummyCard = PrimerNolPaymentCard(cardNumber: "", expiredTime: "12/25")
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
-        sut.updateCollectedData(data: .cardAndPhoneData(nolPaymentCard: dummyCard, mobileNumber: "1234567890", phoneCountryDiallingCode: "+1"))
+        sut.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: dummyCard, mobileNumber: "1234567890", phoneCountryDiallingCode: "+1"))
         
         XCTAssertTrue(mockValidationDelegate.validationsReceived?.contains(where: { $0.errorId == "invalid-card-number" }) == true, "Expected empty card number validation error.")
     }
@@ -166,7 +166,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     func testUpdateCollectedData_EmptyOTPCode() {
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
-        sut.updateCollectedData(data: .otpData(otpCode: ""))
+        sut.updateCollectedData(collectableData: .otpData(otpCode: ""))
         
         XCTAssertTrue(mockValidationDelegate.validationsReceived?.contains(where: { $0.errorId == "invalid-otp-code" }) == true, "Expected empty OTP code validation error.")
     }
@@ -185,7 +185,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         let dummyCard = PrimerNolPaymentCard(cardNumber: "1234567890123456", expiredTime: "12/25")
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
-        sut.updateCollectedData(data: .cardAndPhoneData(nolPaymentCard: dummyCard, mobileNumber: "", phoneCountryDiallingCode: "+1"))
+        sut.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: dummyCard, mobileNumber: "", phoneCountryDiallingCode: "+1"))
         
         XCTAssertTrue(mockValidationDelegate.validationsReceived?.contains(where: { $0.errorId == "invalid-phone-number" }) == true, "Expected empty phone number validation error.")
     }
@@ -194,7 +194,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         let dummyCard = PrimerNolPaymentCard(cardNumber: "1234567890123456", expiredTime: "12/25")
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
-        sut.updateCollectedData(data: .cardAndPhoneData(nolPaymentCard: dummyCard, mobileNumber: "1234567890", phoneCountryDiallingCode: ""))
+        sut.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: dummyCard, mobileNumber: "1234567890", phoneCountryDiallingCode: ""))
         
         XCTAssertTrue(mockValidationDelegate.validationsReceived?.contains(where: { $0.errorId == "invalid-phone-number-country-code" }) == true, "Expected empty country dialling code validation error.")
     }

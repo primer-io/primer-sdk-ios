@@ -291,7 +291,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
             return
         }
         
-        linkCardComponent.updateCollectedData(data: NolPayLinkCollectableData.phoneData(mobileNumber: phoneNumber,
+        linkCardComponent.updateCollectedData(collectableData: NolPayLinkCollectableData.phoneData(mobileNumber: phoneNumber,
                                                                                         phoneCountryDiallingCode: countryCode))
     }
     
@@ -302,7 +302,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
             return
         }
         
-        linkCardComponent.updateCollectedData(data: .otpData(otpCode: otp))
+        linkCardComponent.updateCollectedData(collectableData: .otpData(otpCode: otp))
     }
     
     // MARK: - Unlink
@@ -322,7 +322,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
             return
         }
         
-        unlinkCardComponent.updateCollectedData(data: .cardAndPhoneData(nolPaymentCard: card,
+        unlinkCardComponent.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: card,
                                                                         mobileNumber: mobileNumber, phoneCountryDiallingCode: countryCode))
     }
     
@@ -333,7 +333,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
             return
         }
         
-        unlinkCardComponent.updateCollectedData(data: .otpData(otpCode: otp))
+        unlinkCardComponent.updateCollectedData(collectableData: .otpData(otpCode: otp))
     }
     
     // MARK: - Listing of the linked cards
@@ -378,7 +378,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
             return
         }
         
-        paymentComponent.updateCollectedData(data: NolPayPaymentCollectableData.paymentData(
+        paymentComponent.updateCollectedData(collectableData: NolPayPaymentCollectableData.paymentData(
             cardNumber: selectedCardForPayment?.cardNumber ?? "",
             mobileNumber: phoneNumber,
             phoneCountryDiallingCode: countryCode))
@@ -454,8 +454,8 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
                 
             case let .collectPhoneData(cardNumber):
                 self.showAlert(title: "Next step", message: "Enter phone number and country code, for card number: \(cardNumber)")
-            case .collectOtpData:
-                self.showAlert(title: "OTP Sent", message: "Check you SMS inbox")
+            case let .collectOtpData(phoneNumber):
+                self.showAlert(title: "OTP Sent", message: "Check \(phoneNumber) SMS inbox")
             case .cardLinked:
                 self.showAlert(title: "Success", message: "Card linked successfully! To list it use LIST LINKED CARDS FLOW")
             default: break
@@ -476,9 +476,9 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
                 
             case .collectCardAndPhoneData:
                 self.showAlert(title: "Payment started", message: "Please wait")
-            case .finishedPayment:
+            case .paymentRequested:
                 paymentInProgress = false
-                self.showAlert(title: "Payment finished", message: "You made a succesfull payment with your Nol card")
+                self.showAlert(title: "Payment requested", message: "You made a succesfull payment request with your Nol card, show spinner and wait for the successful payment")
             }
         }
     }

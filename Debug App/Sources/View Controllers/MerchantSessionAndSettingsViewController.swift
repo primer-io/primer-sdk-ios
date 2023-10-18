@@ -132,7 +132,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var clientSession = ClientSessionRequestBody(
         customerId: "ios-customer-\(String.randomString(length: 8))",
         orderId: "ios-order-\(String.randomString(length: 8))",
-        currencyCode: .EUR,
+        currencyCode: .AED,
         amount: nil,
         metadata: nil,
         customer: ClientSessionRequestBody.Customer(
@@ -165,7 +165,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 ClientSessionRequestBody.Order.LineItem(
                     itemId: "fancy-shoes-\(String.randomString(length: 4))",
                     description: "Fancy Shoes",
-                    amount: 4500,
+                    amount: 600,
                     quantity: 1,
                     discountAmount: nil,
                     taxAmount: nil),
@@ -198,7 +198,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         super.viewDidLoad()
         
         self.setAccessibilityIds()
-        
         testScenarioPicker.dataSource = self
         testScenarioPicker.delegate = self
         testScenarioTextField.inputView = testScenarioPicker

@@ -43,7 +43,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     private var unlinkToken: String?
     public var nextDataStep: NolPayUnlinkDataStep = .collectCardAndPhoneData
     
-    public func updateCollectedData(data: NolPayUnlinkCollectableData) {
+    public func updateCollectedData(collectableData: NolPayUnlinkCollectableData) {
         
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
@@ -54,7 +54,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                 ]))
         Analytics.Service.record(events: [sdkEvent])
         
-        switch data {
+        switch collectableData {
         
         case .cardAndPhoneData(nolPaymentCard: let nolPaymentCard,
                                mobileNumber: let mobileNumber,
@@ -69,8 +69,8 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         }
         
         // Notify validation delegate after updating data
-        let validations = validateData(for: data)
-        validationDelegate?.didValidate(validations: validations, for: data)
+        let validations = validateData(for: collectableData)
+        validationDelegate?.didValidate(validations: validations, for: collectableData)
     }
     
     public func validateData(for data: NolPayUnlinkCollectableData) -> [PrimerValidationError] {
@@ -176,7 +176,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                 case .success((_, let token)):
                     self.unlinkToken = token
                     self.nextDataStep = .collectOtpData
-                    self.stepDelegate?.didReceiveStep(step: NolPayUnlinkDataStep.collectOtpData)
+                    self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
                 case .failure(let error):
                     let error = PrimerError.nolError(code: error.errorCode,
                                                      message: error.description,
@@ -217,9 +217,9 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                 case .success(let success):
                     if success {
                         self.nextDataStep = .cardUnlinked
-                        self.stepDelegate?.didReceiveStep(step: NolPayUnlinkDataStep.cardUnlinked)
+                        self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
                     } else {
-                        let error = PrimerError.nolError(code: -1,
+                        let error = PrimerError.nolError(code: "unknown",
                                                          message: "Unlinking failed from unknown reason",
                                                          userInfo: [
                                                             "file": #file,

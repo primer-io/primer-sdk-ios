@@ -16,7 +16,7 @@ public enum NolPayLinkCollectableData: PrimerCollectableData {
 }
 
 public enum NolPayLinkDataStep: PrimerHeadlessStep {
-    case collectPhoneData(cardNumber: String), collectOtpData, collectTagData, cardLinked
+    case collectPhoneData(cardNumber: String), collectOtpData(phoneNumber: String), collectTagData, cardLinked
 }
 
 public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
@@ -41,7 +41,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public var linkToken: String?
     public var nextDataStep: NolPayLinkDataStep = .collectTagData
     
-    public func updateCollectedData(data: NolPayLinkCollectableData) {
+    public func updateCollectedData(collectableData: NolPayLinkCollectableData) {
         
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
@@ -52,7 +52,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 ]))
         Analytics.Service.record(events: [sdkEvent])
 
-        switch data {
+        switch collectableData {
         case .phoneData(let mobileNumber, let phoneCountryDiallingCode):
             self.mobileNumber = mobileNumber
             self.phoneCountryDiallingCode = phoneCountryDiallingCode
@@ -61,8 +61,8 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         }
         
         // Notify validation delegate after updating data
-        let validations = validateData(for: data)
-        validationDelegate?.didValidate(validations: validations, for: data)
+        let validations = validateData(for: collectableData)
+        validationDelegate?.didValidate(validations: validations, for: collectableData)
     }
     
     func validateData(for data: NolPayLinkCollectableData) -> [PrimerValidationError] {
@@ -153,10 +153,10 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 switch result {
                 case .success(let success):
                     if success {
-                        self.nextDataStep = .collectOtpData
-                        self.stepDelegate?.didReceiveStep(step: NolPayLinkDataStep.collectOtpData)
+                        self.nextDataStep = .collectOtpData(phoneNumber: "\(phoneCountryDiallingCode) \(mobileNumber)")
+                        self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
                     } else {
-                        let error = PrimerError.nolError(code: -1,
+                        let error = PrimerError.nolError(code: "unknown",
                                                          message: "Sending of OTP SMS failed from unknown reason",
                                                          userInfo: [
                                                             "file": #file,
@@ -203,9 +203,9 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 case .success(let success):
                     if success {
                         self.nextDataStep = .cardLinked
-                        self.stepDelegate?.didReceiveStep(step: NolPayLinkDataStep.cardLinked)
+                        self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
                     } else {
-                        let error = PrimerError.nolError(code: -1,
+                        let error = PrimerError.nolError(code: "unknown",
                                                          message: "Linking of the card failed failed from unknown reason",
                                                          userInfo: [
                                                             "file": #file,
@@ -245,9 +245,9 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                         case .success(let token):
                             self.linkToken = token
                             self.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
-                            self.stepDelegate?.didReceiveStep(step: NolPayLinkDataStep.collectPhoneData(cardNumber: cardNumber))
+                            self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
                         case .failure(let error):
-                            let error = PrimerError.nolError(code: error.errorCode,
+                            let primerError = PrimerError.nolError(code: error.errorCode,
                                                              message: error.description,
                                                              userInfo: [
                                                                 "file": #file,
@@ -256,8 +256,8 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                                                                 "line": "\(#line)"
                                                              ],
                                                              diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: error)
-                            self.errorDelegate?.didReceiveError(error: error)
+                            ErrorHandler.handle(error: primerError)
+                            self.errorDelegate?.didReceiveError(error: primerError)
                         }
                     }
                     

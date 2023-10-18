@@ -13,7 +13,7 @@ import XCTest
 import PrimerNolPaySDK
 #endif
 
-var mockClientToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil)
+var mockClientToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil, nolPayTransactionNo: nil)
 
 //(
 //    accessToken: "bla",
@@ -42,7 +42,7 @@ class Mocks {
         )
     )
     
-    static var decodedJWTToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil)
+    static var decodedJWTToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil, nolPayTransactionNo: nil)
     
     static var primerPaymentMethodTokenData = PrimerPaymentMethodTokenData(
         analyticsId: "mock_analytics_id",
@@ -291,7 +291,7 @@ extension MockAppState {
     }
     
     static var mockDecodedClientToken: DecodedJWTToken {
-        return DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSinceNow: 1000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: "account-number", backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil)
+        return DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSinceNow: 1000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: "account-number", backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil, nolPayTransactionNo: nil)
     }
     
     static var mockPrimerAPIConfigurationJsonString: String {
@@ -627,6 +627,117 @@ class MockErrorDelegate: PrimerHeadlessErrorableDelegate {
     
     func didReceiveError(error: PrimerSDK.PrimerError) {
         errorReceived = error
+    }
+}
+
+class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
+    
+    // Mock response values
+    var mockValidateError: Error?
+    var mockTokenizationResult: Result<PrimerPaymentMethodTokenData, Error>?
+    var mockAwaitUserInputResult: Result<Void, Error>?
+    var mockPresentPaymentMethodUIResult: Result<Void, Error>?
+    var mockHandleDecodedClientTokenResult: Result<String?, Error>?
+    var mockPreTokenizationStepsResult: Result<Void, Error>?
+    var mockTokenizationStepResult: Result<Void, Error>?
+    var mockPostTokenizationStepsResult: Result<Void, Error>?
+    var resultToReturn: Result<Bool, Error>?
+
+    override func validate() throws {
+        if let error = mockValidateError {
+            throw error
+        }
+    }
+
+    override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+        switch resultToReturn {
+        case .success:
+            return .value(Response.Body.Tokenization(analyticsId: "1",
+                                                     id: "1",
+                                                     isVaulted: false,
+                                                     isAlreadyVaulted: false,
+                                                     paymentInstrumentType: PaymentInstrumentType.unknown,
+                                                     paymentMethodType: "NOL_PAY",
+                                                     paymentInstrumentData: nil,
+                                                     threeDSecureAuthentication: nil,
+                                                     token: "123qwe",
+                                                     tokenType: nil,
+                                                     vaultData: nil))
+        case .failure(let error):
+            return .init(error: error)
+        default:
+            return super.tokenize() // fallback to the real implementation
+        }
+    }
+
+    override func awaitUserInput() -> Promise<Void> {
+        switch mockAwaitUserInputResult {
+        case .success:
+            return .value(())
+        case .failure(let error):
+            return .init(error: error)
+        default:
+            return .value(()) // Default stubbed value
+        }
+    }
+
+    override func presentPaymentMethodUserInterface() -> Promise<Void> {
+        switch mockPresentPaymentMethodUIResult {
+        case .success:
+            return .value(())
+        case .failure(let error):
+            return .init(error: error)
+        default:
+            return .value(()) // Default stubbed value
+        }
+    }
+
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+        switch mockHandleDecodedClientTokenResult {
+        case .success(let token):
+            return .value(token)
+        case .failure(let error):
+            return .init(error: error)
+        default:
+            return .value(nil) // Default stubbed value
+        }
+    }
+
+    override func performPreTokenizationSteps() -> Promise<Void> {
+        switch mockPreTokenizationStepsResult {
+        case .success:
+            return .value(())
+        case .failure(let error):
+            return .init(error: error)
+        default:
+            return .value(()) // Default stubbed value
+        }
+    }
+    
+    override func performTokenizationStep() -> Promise<Void> {
+        switch mockTokenizationStepResult {
+        case .success:
+            return .value(())
+        case .failure(let error):
+            return .init(error: error)
+        default:
+            return .value(()) // Default stubbed value
+        }
+    }
+    
+    override func performPostTokenizationSteps() -> Promise<Void> {
+        switch mockPostTokenizationStepsResult {
+        case .success:
+            return .value(())
+        case .failure(let error):
+            return .init(error: error)
+        default:
+            return .value(()) // Default stubbed value
+        }
+    }
+    
+    override func submitButtonTapped() {
+        // No-op for mock
     }
 }
 
