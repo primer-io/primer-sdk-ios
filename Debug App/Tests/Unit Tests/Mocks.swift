@@ -574,31 +574,31 @@ class MockPrimerNolPay: PrimerNolPayProtocol {
         completion(.success(mockCardNumber))
     }
     
-    func makeLinkingTokenFor(cardNumber: String, completion: @escaping (Result<String, PrimerNolPayError>) -> Void) {
+    func makeLinkingToken(for cardNumber: String, completion: @escaping (Result<String, PrimerNolPayError>) -> Void) {
         completion(.success("mockLinkingToken"))
     }
     
-    func sendLinkOTPTo(mobileNumber: String, withCountryCode countryCode: String, andToken token: String, completion: ((Result<Bool, PrimerNolPayError>) -> Void)?) {
+    func sendLinkOTP(to mobileNumber: String, with countryCode: String, and token: String, completion: ((Result<Bool, PrimerNolPayError>) -> Void)?) {
         completion?(.success(mockBoolResponse))
     }
     
-    func linkCardFor(otp: String, andLinkToken linkToken: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
+    func linkCard(for otp: String, and linkToken: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
         completion(.success(mockBoolResponse))
     }
     
-    func sendUnlinkOTPTo(mobileNumber: String, withCountryCode countryCode: String, andCardNumber cardNumber: String, completion: @escaping (Result<(String, String), PrimerNolPayError>) -> Void) {
+    func sendUnlinkOTP(to mobileNumber: String, with countryCode: String, and cardNumber: String, completion: @escaping (Result<(String, String), PrimerNolPayError>) -> Void) {
         completion(.success(mockOTPResponse))
     }
     
-    func unlinkCardWith(cardNumber: String, otp: String, andUnlinkToken unlinkToken: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
+    func unlinkCard(with cardNumber: String, otp: String, and unlinkToken: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
         completion(.success(mockBoolResponse))
     }
     
-    func requestPaymentFor(cardNumber: String, andTransactionNumber transactionNumber: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
+    func requestPayment(for cardNumber: String, and transactionNumber: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
         completion(.success(mockBoolResponse))
     }
     
-    func getAvaliableCardsFor(mobileNumber: String, withCountryCode countryCode: String, completion: @escaping (Result<[PrimerNolPayCard], PrimerNolPayError>) -> Void) {
+    func getAvaliableCards(for mobileNumber: String, with countryCode: String, completion: @escaping (Result<[PrimerNolPayCard], PrimerNolPayError>) -> Void) {
         completion(.success(mockCards))
     }
 }
@@ -614,7 +614,7 @@ class MockValidationDelegate: PrimerHeadlessValidatableDelegate {
 }
 
 
-class MockStepDelegate: PrimerHeadlessStepableDelegate {
+class MockStepDelegate: PrimerHeadlessSteppableDelegate {
     var stepReceived: PrimerHeadlessStep?
     
     func didReceiveStep(step: PrimerHeadlessStep) {

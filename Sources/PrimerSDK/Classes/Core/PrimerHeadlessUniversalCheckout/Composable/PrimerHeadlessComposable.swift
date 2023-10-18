@@ -21,7 +21,7 @@ public protocol PrimerHeadlessValidatableDelegate: AnyObject {
 
 public protocol PrimerHeadlessStep { }
 
-public protocol PrimerHeadlessStepableDelegate: AnyObject {
+public protocol PrimerHeadlessSteppableDelegate: AnyObject {
     func didReceiveStep(step: PrimerHeadlessStep)
 }
 
@@ -29,7 +29,7 @@ public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent {
     associatedtype T: PrimerCollectableData
     var errorDelegate: PrimerHeadlessErrorableDelegate? { get set }
     var validationDelegate: PrimerHeadlessValidatableDelegate? { get set }
-    var stepDelegate: PrimerHeadlessStepableDelegate? { get set }
+    var stepDelegate: PrimerHeadlessSteppableDelegate? { get set }
     func updateCollectedData(collectableData: T)
     func submit()
     func start()

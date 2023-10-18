@@ -17,33 +17,33 @@ protocol PrimerNolPayProtocol {
     
     func scanNFCCard(completion: @escaping (Result<String, PrimerNolPayError>) -> Void)
     
-    func makeLinkingTokenFor(cardNumber: String, completion: @escaping (Result<String, PrimerNolPayError>) -> Void)
+    func makeLinkingToken(for cardNumber: String, completion: @escaping (Result<String, PrimerNolPayError>) -> Void)
     
-    func sendLinkOTPTo(mobileNumber: String,
-                       withCountryCode countryCode: String,
-                       andToken token: String,
-                       completion: ((Result<Bool, PrimerNolPayError>) -> Void)?)
+    func sendLinkOTP(to mobileNumber: String,
+                     with countryCode: String,
+                     and token: String,
+                     completion: ((Result<Bool, PrimerNolPayError>) -> Void)?)
     
-    func linkCardFor(otp: String,
-                     andLinkToken linkToken: String,
-                     completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void)
+    func linkCard(for otp: String,
+                  and linkToken: String,
+                  completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void)
     
-    func sendUnlinkOTPTo(mobileNumber: String,
-                         withCountryCode countryCode: String,
-                         andCardNumber cardNumber: String,
-                         completion: @escaping (Result<(String, String), PrimerNolPayError>) -> Void)
+    func sendUnlinkOTP(to mobileNumber: String,
+                       with countryCode: String,
+                       and cardNumber: String,
+                       completion: @escaping (Result<(String, String), PrimerNolPayError>) -> Void)
     
-    func unlinkCardWith(cardNumber: String,
-                        otp: String,
-                        andUnlinkToken unlinkToken: String,
+    func unlinkCard(with cardNumber: String,
+                    otp: String,
+                    and unlinkToken: String,
+                    completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void)
+    
+    func getAvaliableCards(for mobileNumber: String,
+                           with countryCode: String,
+                           completion: @escaping (Result<[PrimerNolPayCard], PrimerNolPayError>) -> Void)
+    
+    func requestPayment(for cardNumber: String,
+                        and transactionNumber: String,
                         completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void)
-    
-    func getAvaliableCardsFor(mobileNumber: String,
-                              withCountryCode countryCode: String,
-                              completion: @escaping (Result<[PrimerNolPayCard], PrimerNolPayError>) -> Void)
-    
-    func requestPaymentFor(cardNumber: String,
-                           andTransactionNumber transactionNumber: String,
-                           completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void)
 }
 #endif

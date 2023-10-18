@@ -587,13 +587,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
         
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let successResult = result.0 {
-                    completion(.success(successResult))
-                }
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+            if let err = result.1 {
+                completion(.failure(err))
+            } else if let successResult = result.0 {
+                completion(.success(successResult))
             }
         }
     }
