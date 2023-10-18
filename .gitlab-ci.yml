@@ -1,0 +1,15 @@
+variables:
+  RUBY_VERSION: 3.2.2
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG
+
+build-and-release:
+  stage: build
+  image:  ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/ruby:$RUBY_VERSION
+  script:
+    - bundle install
+    - pod trunk push --allow-root
+  when: manual
+  environment: production

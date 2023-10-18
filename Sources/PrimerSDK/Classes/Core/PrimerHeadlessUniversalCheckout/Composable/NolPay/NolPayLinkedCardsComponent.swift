@@ -13,6 +13,7 @@ import PrimerNolPaySDK
 public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
     
     var nolPay: PrimerNolPayProtocol?
+    
     public var errorDelegate: PrimerHeadlessErrorableDelegate?
     private var isDebug: Bool
 

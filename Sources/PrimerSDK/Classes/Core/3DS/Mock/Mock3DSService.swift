@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 class Mock3DSService: ThreeDSServiceProtocol {
     static var apiClient: PrimerAPIClientProtocol?

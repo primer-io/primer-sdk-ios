@@ -8,9 +8,9 @@ PODS:
   - PrimerKlarnaSDK (1.0.4):
     - KlarnaMobileSDK (= 2.2.2)
   - PrimerNolPaySDK (0.0.0)
-  - PrimerSDK (2.17.4):
-    - PrimerSDK/Core (= 2.17.4)
-  - PrimerSDK/Core (2.17.4)
+  - PrimerSDK (2.17.6):
+    - PrimerSDK/Core (= 2.17.6)
+  - PrimerSDK/Core (2.17.6)
 
 DEPENDENCIES:
   - IQKeyboardManagerSwift
@@ -52,8 +52,8 @@ SPEC CHECKSUMS:
   PrimerIPay88MYSDK: a3097799a9ced2db623b2d8a3fbc226be7051f20
   PrimerKlarnaSDK: de4b8b8fda075e3e4ebbd4ab80bd141c76a30d85
   PrimerNolPaySDK: 84a3cb55559dc85d674592fdedcffe910b85a9f2
-  PrimerSDK: 81470ccb9374a473f2ea4e7e4644d3866cf39d71
+  PrimerSDK: af61094d65560301a08bb6d72102a889b06d2769
 
-PODFILE CHECKSUM: 93ab00540622e71bad066499c22abafb70866967
+PODFILE CHECKSUM: 7d391710bcd64a12bbd1571cfef36555eed30b2a
 
 COCOAPODS: 1.13.0
