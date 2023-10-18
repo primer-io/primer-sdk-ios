@@ -31,7 +31,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
 #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
-    public weak var stepDelegate: PrimerHeadlessStepableDelegate?
+    public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     private var isDebug: Bool
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol!
     
@@ -61,7 +61,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         case .paymentData(cardNumber: let cardNumber,
                           mobileNumber: let mobileNumber,
                           phoneCountryDiallingCode: let phoneCountryDiallingCode):
-            if cardNumber.isEmpty { //TODO: (NOL) validate card? maybe not needed
+            if cardNumber.isEmpty {
                 errors.append(PrimerValidationError.invalidCardnumber(
                     message: "Card number is not valid.",
                     userInfo: [
@@ -135,7 +135,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
             
             paymentMethod.triggerAsyncAction = { (transactionNumber: String, completion: ((Result<Bool, Error>) -> Void)?)  in
     #if canImport(PrimerNolPaySDK)
-                self.nolPay.requestPaymentFor(cardNumber: cardNumber, andTransactionNumber: transactionNumber) { result in
+                self.nolPay.requestPayment(for: cardNumber, and: transactionNumber) { result in
                     switch result {
     
                     case .success(let success):

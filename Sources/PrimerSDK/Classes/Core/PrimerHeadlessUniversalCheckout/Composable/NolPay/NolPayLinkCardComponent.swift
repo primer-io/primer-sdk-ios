@@ -31,7 +31,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
 #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
-    public weak var stepDelegate: PrimerHeadlessStepableDelegate?
+    public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     private var isDebug: Bool
     
     public var mobileNumber: String?
@@ -147,9 +147,9 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             }
             
 #if canImport(PrimerNolPaySDK)
-            nolPay.sendLinkOTPTo(mobileNumber: mobileNumber,
-                                 withCountryCode: phoneCountryDiallingCode,
-                                 andToken: linkToken) { result in
+            nolPay.sendLinkOTP(to: mobileNumber,
+                               with: phoneCountryDiallingCode,
+                               and: linkToken) { result in
                 switch result {
                 case .success(let success):
                     if success {
@@ -198,7 +198,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             }
             
 #if canImport(PrimerNolPaySDK)
-            nolPay.linkCardFor(otp: otpCode, andLinkToken: linkToken) { result in
+            nolPay.linkCard(for: otpCode, and: linkToken) { result in
                 switch result {
                 case .success(let success):
                     if success {
@@ -239,7 +239,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                     
                 case .success(let cardNumber):
                     self.cardNumber = cardNumber
-                    self.nolPay.makeLinkingTokenFor(cardNumber: cardNumber) { result in
+                    self.nolPay.makeLinkingToken(for: cardNumber) { result in
                         switch result {
                             
                         case .success(let token):

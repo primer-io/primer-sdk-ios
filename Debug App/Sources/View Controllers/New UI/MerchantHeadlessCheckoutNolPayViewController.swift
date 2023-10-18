@@ -424,7 +424,7 @@ extension MerchantHeadlessCheckoutNolPayViewController: UITableViewDataSource, U
 // MARK: - PrimerHeadlessErrorableDelegate, PrimerHeadlessValidatableDelegate, PrimerHeadlessStepableDelegate
 extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableDelegate,
                                                         PrimerHeadlessValidatableDelegate,
-                                                        PrimerHeadlessStepableDelegate {
+                                                        PrimerHeadlessSteppableDelegate {
     func didValidate(validations: [PrimerValidationError], for data: PrimerSDK.PrimerCollectableData) {
         
         if !validations.isEmpty {

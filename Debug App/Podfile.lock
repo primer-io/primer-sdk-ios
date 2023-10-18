@@ -42,7 +42,7 @@ CHECKOUT OPTIONS:
     :commit: e870b41ba067dfe6ad72ca5446260a4363f9f494
     :git: https://github.com/primer-io/primer-ipay88-sdk-ios.git
   PrimerNolPaySDK:
-    :commit: bf1a201e8b41384c8fc9ce8db341673d132401b7
+    :commit: 5ce228f85de8348b50b9f076df7fc95d474122b9
     :git: https://github.com/primer-io/primer-nol-pay-sdk-ios.git
 
 SPEC CHECKSUMS:

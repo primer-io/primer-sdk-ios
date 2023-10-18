@@ -136,7 +136,8 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public func deleteVaultedPaymentMethod(id: String, completion: @escaping (_ error: Error?) -> Void) {
-            guard let _ = self.vaultedPaymentMethods?.first(where: { $0.id == id }) else {
+            guard let vaultedPaymentMethods = self.vaultedPaymentMethods,
+               vaultedPaymentMethods.contains(where: { $0.id == id }) else {
                 let err = PrimerError.invalidVaultedPaymentMethodId(
                     vaultedPaymentMethodId: id,
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],

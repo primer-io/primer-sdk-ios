@@ -41,7 +41,7 @@ enum PrimerAPI: Endpoint, Equatable {
     }
     
 
-    case genericEndpoint(clientToken: DecodedJWTToken, url: URL)
+    case redirect(clientToken: DecodedJWTToken, url: URL)
     case exchangePaymentMethodToken(clientToken: DecodedJWTToken, vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?)
     case fetchConfiguration(clientToken: DecodedJWTToken, requestParameters: Request.URLParameters.Configuration?)
     case fetchVaultedPaymentMethods(clientToken: DecodedJWTToken)
@@ -100,7 +100,7 @@ internal extension PrimerAPI {
         }
         
         switch self {
-        case .genericEndpoint(let clientToken, _),
+        case .redirect(let clientToken, _),
                 .deleteVaultedPaymentMethod(let clientToken, _),
                 .exchangePaymentMethodToken(let clientToken, _, _),
                 .fetchVaultedPaymentMethods(let clientToken),
@@ -199,7 +199,7 @@ internal extension PrimerAPI {
             break
         case .getNolSdkSecret:
             break
-        case .genericEndpoint:
+        case .redirect:
             break
         }
         
@@ -243,7 +243,7 @@ internal extension PrimerAPI {
             return url.absoluteString
         case .validateClientToken(let request):
             return request.clientToken.decodedJWTToken?.pciUrl
-        case .genericEndpoint(_, let url):
+        case .redirect(_, let url):
             return url.absoluteString
         }
     }
@@ -301,7 +301,7 @@ internal extension PrimerAPI {
             return "/finalize-polling"
         case .getNolSdkSecret:
             return "/nol-pay/sdk-secrets"
-        case .genericEndpoint:
+        case .redirect:
             return ""
         }
     }
@@ -319,7 +319,7 @@ internal extension PrimerAPI {
         switch self {
         case .deleteVaultedPaymentMethod:
             return .delete
-        case .genericEndpoint,
+        case .redirect,
                 .fetchConfiguration,
                 .fetchVaultedPaymentMethods,
                 .listRetailOutlets:
@@ -391,7 +391,7 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(request)
         case .requestPrimerConfigurationWithActions(_, let request):
             return try? JSONEncoder().encode(request.actions)
-        case .genericEndpoint,
+        case .redirect,
                 .deleteVaultedPaymentMethod,
                 .fetchVaultedPaymentMethods,
                 .poll,
@@ -424,7 +424,7 @@ internal extension PrimerAPI {
     
     var shouldParseResponseBody: Bool {
         switch self {
-        case .genericEndpoint(_, _),
+        case .redirect(_, _),
                 .deleteVaultedPaymentMethod(_, _):
             return false
         default:

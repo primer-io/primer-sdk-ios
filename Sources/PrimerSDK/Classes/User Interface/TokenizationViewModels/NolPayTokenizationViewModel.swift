@@ -12,10 +12,10 @@ import UIKit
 
 class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
-    private var redirectUrl: URL!
-    private var statusUrl: URL!
-    private var resumeToken: String!
-    private var transactionNo: String!
+    private var redirectUrl: URL?
+    private var statusUrl: URL?
+    private var resumeToken: String?
+    private var transactionNo: String?
     
     var mobileCountryCode: String!
     var mobileNumber: String!
@@ -156,8 +156,15 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                             return
                         }
                         
+                        guard let redirectUrl = self.redirectUrl else {
+                            let error = PrimerError.invalidUrl(url: self.redirectUrl?.absoluteString, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            ErrorHandler.handle(error: error)
+                            seal.reject(error)
+                            return
+                        }
+                        
                         let apiclient = PrimerAPIClient()
-                        apiclient.genericAPICall(clientToken: decodedJWTToken, url: self.redirectUrl) { result in
+                        apiclient.genericAPICall(clientToken: decodedJWTToken, url: redirectUrl) { result in
                             switch result {
                                 
                             case .success(_):
@@ -178,7 +185,15 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
-            let pollingModule = PollingModule(url: self.statusUrl)
+            
+            guard let statusUrl = self.statusUrl else {
+                let error = PrimerError.invalidUrl(url: self.statusUrl?.absoluteString, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: error)
+                seal.reject(error)
+                return
+            }
+
+            let pollingModule = PollingModule(url: statusUrl)
             self.didCancel = {
                 let err = PrimerError.cancelled(
                     paymentMethodType: self.config.type,

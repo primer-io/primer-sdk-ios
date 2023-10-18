@@ -139,7 +139,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func genericAPICall(clientToken: DecodedJWTToken, url: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
-        let endpoint = PrimerAPI.genericEndpoint(clientToken: clientToken, url: url)
+        let endpoint = PrimerAPI.redirect(clientToken: clientToken, url: url)
         networkService.request(endpoint) { (result: Result<SuccessResponse, Error>) in
             
             switch result {

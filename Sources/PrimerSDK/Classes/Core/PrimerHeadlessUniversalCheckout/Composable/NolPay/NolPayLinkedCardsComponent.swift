@@ -100,7 +100,7 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
             return
         }
         
-        nolPay.getAvaliableCardsFor(mobileNumber: mobileNumber, withCountryCode: phoneCountryDiallingCode) { result in
+        nolPay.getAvailableCards(for: mobileNumber, with: phoneCountryDiallingCode) { result in
             switch result {
                 
             case .success(let cards):

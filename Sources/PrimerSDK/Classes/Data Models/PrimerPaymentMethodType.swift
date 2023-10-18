@@ -148,7 +148,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
         case .xfersPayNow:
             return "XFERS"
         case .nolPay:
-            return "NOL_PAY" // TODO: (NOL) Check if this is correct string, in android it is UNKNOWN?
+            return "NOL_PAY"
         }
     }
     
