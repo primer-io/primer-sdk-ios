@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Pods/../Primer.io Debug App SPM.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Primer.io Debug App.xcodeproj">
    </FileRef>
    <FileRef

@@ -8,7 +8,7 @@
 import Foundation
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
-#endif
+
 
 public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
     
@@ -47,7 +47,7 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
         }
         
         let isSandbox = clientToken.env != "PRODUCTION"
-#if canImport(PrimerNolPaySDK)
+        
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
             
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
@@ -67,7 +67,6 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
                 }
             }
         }
-#endif
     }
     
     public func getLinkedCardsFor(phoneCountryDiallingCode: String,
@@ -82,7 +81,6 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
                     "category": "NOL_PAY",
                 ]))
         Analytics.Service.record(events: [sdkEvent])
-#if canImport(PrimerNolPaySDK)
         guard let nolPay = nolPay else {
             // TODO: (NOL) Add new errors
             let error = PrimerError.nolError(code: "unknown",
@@ -120,6 +118,7 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
                 completion(.failure(error))
             }
         }
-#endif
     }
 }
+
+#endif

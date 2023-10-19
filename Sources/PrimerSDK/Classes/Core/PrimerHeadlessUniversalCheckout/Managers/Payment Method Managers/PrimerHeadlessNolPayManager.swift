@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+#if canImport(PrimerNolPaySDK)
 extension PrimerHeadlessUniversalCheckout {
     
     public class PrimerHeadlessNolPayManager: NSObject {
@@ -42,3 +42,4 @@ extension PrimerHeadlessUniversalCheckout {
         }
     }
 }
+#endif
