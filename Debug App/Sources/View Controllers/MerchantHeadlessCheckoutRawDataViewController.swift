@@ -31,6 +31,8 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     var cardholderNameTextField: UITextField?
     var payButton: UIButton!
     
+    var cardsLabel: UILabel!
+    
     var logs: [String] = []
     
     override func viewDidLoad() {
@@ -131,8 +133,13 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             self.payButton.isEnabled = false
             self.payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
             
-        } catch {
+            self.cardsLabel = UILabel(frame: .zero)
+            self.stackView.addArrangedSubview(cardsLabel)
+            self.cardsLabel.translatesAutoresizingMaskIntoConstraints = false
+            self.cardsLabel.heightAnchor.constraint(equalToConstant: 45).isActive = true
             
+        } catch {
+            print("[MerchantHeadlessCheckoutRawDataViewController] ERROR: Failed to set up card entry fields")
         }
     }
     
@@ -194,7 +201,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: self.cvvTextField?.text ?? "",
                 cardholderName: self.cardholderNameTextField?.text ?? "")
-            
+            cardsLabel.text = (self.cardnumberTextField?.text ?? "").isEmpty ? "" : "⌨️"
+
         } else if textField == self.expiryDateTextField {
             self.rawCardData = PrimerCardData(
                 cardNumber: self.cardnumberTextField?.text ?? "",
@@ -237,5 +245,17 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String : Any]?) {
         print("\n\nMERCHANT APP\n\(#function)\nmetadataDidChange: \(String(describing: metadata))")
         self.logs.append(#function)
+    }
+    
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, willFetchCardMetadataForState cardState: PrimerCardValidationState) {
+        // TODO
+        print("[MerchantHeadlessCheckoutRawDataViewController] willFetchCardMetadataForState")
+        cardsLabel.text = "🌏"
+    }
+    
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, didReceiveCardMetadata metadata: PrimerCardMetadata, forCardValidationState cardState: PrimerCardValidationState) {
+        let printableNetworks = metadata.availableCardNetworks.map { $0.networkIdentifier }.joined(separator: ", ")
+        print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
+        cardsLabel.text = printableNetworks
     }
 }

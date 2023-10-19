@@ -12,8 +12,18 @@ import SafariServices
 
 @objc
 public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?)
-    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?)
+    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, 
+                                             metadataDidChange metadata: [String: Any]?)
+
+    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, 
+                                             dataIsValid isValid: Bool, errors: [Error]?)
+    
+    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                                             willFetchCardMetadataForState cardState: PrimerCardValidationState)
+    
+    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                                             didReceiveCardMetadata metadata: PrimerCardMetadata,
+                                             forCardValidationState cardState: PrimerCardValidationState)
 }
 
 protocol PrimerRawDataTokenizationBuilderProtocol {

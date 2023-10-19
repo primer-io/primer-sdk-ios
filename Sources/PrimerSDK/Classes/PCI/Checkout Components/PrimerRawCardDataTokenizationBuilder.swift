@@ -8,6 +8,7 @@
 
 
 import Foundation
+import Combine
 
 class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
     
@@ -41,9 +42,13 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     }
     
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
+    
+    var binDataService: BinDataService?
+    
     var isDataValid: Bool = false
     var paymentMethodType: String
-    var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
+    
+    var cardNumberPublisher = PassthroughSubject<String, Never>()
     
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
@@ -74,8 +79,18 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         return mutableRequiredInputElementTypes
     }
     
+    var cancellables: Set<AnyCancellable> = .init()
+    
     required init(paymentMethodType: String) {
         self.paymentMethodType = paymentMethodType
+        cardNumberPublisher
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.current)
+            .sink(receiveValue: { [self] in validateCardNetworks($0) })
+            .store(in: &cancellables)
+    }
+    
+    deinit {
+        cancellables.removeAll()
     }
     
     func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
@@ -115,9 +130,23 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         }
     }
     
+    
+    func validateCardNetworks(_ cardNumber: String) {
+        if binDataService == nil {
+            guard let delegate = rawDataManager?.delegate else {
+                print("[PrimerRawCardDataTokenizationBuilder] Error: delegate was nil")
+                return
+            }
+            binDataService = DefaultBinDataService(rawDataManager: rawDataManager!,
+                                                 delegate: delegate)
+        }
+        
+        self.binDataService?.validateCardNetworks(withCardNumber: cardNumber)
+    }
+    
     func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
         return Promise { seal in
-            DispatchQueue.global(qos: .userInteractive).async {
+            DispatchQueue.global(qos: .userInteractive).async { [self] in
                 var errors: [PrimerValidationError] = []
                 
                 guard let rawData = data as? PrimerCardData else {
@@ -180,7 +209,8 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 }
                 
                 let cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
-                
+                cardNumberPublisher.send(rawData.cardNumber)
+                                
                 if rawData.cvv.isEmpty {
                     let err = PrimerValidationError.invalidCvv(
                         message: "CVV cannot be blank.",
@@ -192,7 +222,6 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         ],
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
-                    
                 } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
                     let err = PrimerValidationError.invalidCvv(
                         message: "CVV is not valid.",

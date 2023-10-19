@@ -95,6 +95,10 @@ internal extension PrimerAPI {
     var headers: [String: String]? {
         var tmpHeaders = PrimerAPI.headers
         
+        if method == .get {
+            tmpHeaders.removeValue(forKey: "Content-Type")
+        }
+        
         if let checkoutSessionId = PrimerInternal.shared.checkoutSessionId {
             tmpHeaders["Primer-SDK-Checkout-Session-ID"] = checkoutSessionId
         }
@@ -215,10 +219,11 @@ internal extension PrimerAPI {
                 .listAdyenBanks(let clientToken, _),
                 .listRetailOutlets(let clientToken, _),
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
-                .testFinalizePolling(let clientToken, _),
-                .listCardNetworks(let clientToken, _):
+                .testFinalizePolling(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
+        case .listCardNetworks(_, _):
+            return "http://localhost:3000"
         case .deleteVaultedPaymentMethod(let clientToken, _),
                 .fetchVaultedPaymentMethods(let clientToken),
                 .exchangePaymentMethodToken(let clientToken, _, _),

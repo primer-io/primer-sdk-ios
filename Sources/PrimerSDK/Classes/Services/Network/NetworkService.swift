@@ -12,7 +12,8 @@ import Foundation
 typealias ResultCallback<T> = (Result<T, Error>) -> Void
 
 internal protocol NetworkService {
-    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>)
+    @discardableResult
+    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) -> URLSessionDataTask?
 }
 
 

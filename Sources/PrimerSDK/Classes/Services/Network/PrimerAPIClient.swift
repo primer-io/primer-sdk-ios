@@ -122,7 +122,7 @@ protocol PrimerAPIClientProtocol {
     func listCardNetworks(
         clientToken: DecodedJWTToken,
         bin: String,
-        completion: @escaping (_ result: Result<Response.Body.Bin.Networks, Error>) -> Void)
+        completion: @escaping (_ result: Result<Response.Body.Bin.Networks, Error>) -> Void) -> Cancellable?
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -533,9 +533,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func listCardNetworks(clientToken: DecodedJWTToken, bin: String, completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) {
+    func listCardNetworks(clientToken: DecodedJWTToken, bin: String, completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) -> Cancellable? {
         let endpoint = PrimerAPI.listCardNetworks(clientToken: clientToken, bin: bin)
-        networkService.request(endpoint) { (result: Result<Response.Body.Bin.Networks, Error>) in
+        let dataTask = networkService.request(endpoint) { (result: Result<Response.Body.Bin.Networks, Error>) in
             switch result {
             case .success(let res):
                 completion(.success(res))
@@ -543,5 +543,13 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                 completion(.failure(err))
             }
         }
+        
+        return dataTask
+    }
+}
+
+extension URLSessionDataTask: Cancellable {
+    var isCancelled: Bool {
+        return [.canceling, .completed].contains(state)
     }
 }
