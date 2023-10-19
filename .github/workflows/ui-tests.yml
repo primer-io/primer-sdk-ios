@@ -2,7 +2,7 @@ name: UI Tests
 
 on:
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '20 20 * * *'
   pull_request:
     branches:
       - release/next
