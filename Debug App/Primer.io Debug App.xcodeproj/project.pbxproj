@@ -279,6 +279,7 @@
 				04979F652AB1A6FA00469C99 /* ExampleLogger.swift */,
 			);
 			path = Utility;
+		};
 		0283A80BA4B23F3E11168A46 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
