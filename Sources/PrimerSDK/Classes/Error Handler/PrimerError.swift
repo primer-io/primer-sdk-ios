@@ -11,410 +11,11 @@
 import Foundation
 import UIKit
 
-internal protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
+protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var errorId: String { get }
     var exposedError: Error { get }
     var info: [String: Any]? { get }
     var diagnosticsId: String { get }
-}
-
-public enum PrimerValidationError: PrimerErrorProtocol {
-    
-    case invalidCardholderName(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidCardnumber(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidCvv(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidExpiryMonth(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidExpiryYear(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidExpiryDate(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidPostalCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidFirstName(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidLastName(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidAddress(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidState(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidCountry(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidPhoneNumber(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidRetailer(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
-    case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String, validVaultedPaymentMethodAdditionalDataType: String, userInfo: [String: String]?, diagnosticsId: String)
-    
-    public var diagnosticsId: String {
-        switch self {
-        case .invalidCardholderName(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidCardnumber(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidCvv(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidExpiryDate(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidPostalCode(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidFirstName(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidLastName(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidAddress(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidState(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidCountry(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidPhoneNumber(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidRawData(_, let diagnosticsId):
-            return diagnosticsId
-        case .invalidExpiryMonth(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidExpiryYear(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidRetailer(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .vaultedPaymentMethodAdditionalDataMismatch(_, _, _, let diagnosticsId):
-            return diagnosticsId
-        }
-    }
-
-    public var errorId: String {
-        switch self {
-        case .invalidCardholderName:
-            return "invalid-cardholder-name"
-        case .invalidCardnumber:
-            return "invalid-card-number"
-        case .invalidCvv:
-            return "invalid-cvv"
-        case .invalidExpiryMonth:
-            return "invalid-expiry-month"
-        case .invalidExpiryYear:
-            return "invalid-expiry-year"
-        case .invalidExpiryDate:
-            return "invalid-expiry-date"
-        case .invalidPostalCode:
-            return "invalid-postal-code"
-        case .invalidFirstName:
-            return "invalid-first-name"
-        case .invalidLastName:
-            return "invalid-last-name"
-        case .invalidAddress:
-            return "invalid-address"
-        case .invalidState:
-            return "invalid-state"
-        case .invalidCountry:
-            return "invalid-country"
-        case .invalidPhoneNumber:
-            return "invalid-phone-number"
-        case .invalidRawData:
-            return "invalid-raw-data"
-        case .invalidRetailer:
-            return "invalid-retailer"
-        case .vaultedPaymentMethodAdditionalDataMismatch:
-            return "vaulted-payment-method-additional-data-mismatch"
-        }
-    }
-    
-    public var errorDescription: String? {
-        switch self {
-        case .invalidCardholderName(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidCardnumber(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidCvv(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidExpiryMonth(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidExpiryYear(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidExpiryDate(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidPostalCode(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidFirstName(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidLastName(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidAddress(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidState(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidCountry(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidPhoneNumber(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidRawData:
-            return "[\(errorId)] Raw data is not valid."
-        case .invalidRetailer(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .vaultedPaymentMethodAdditionalDataMismatch(let paymentMethodType, let validVaultedPaymentMethodAdditionalDataType, _, _):
-            return "[\(errorId)] Vaulted payment method \(paymentMethodType) needs additional data of type \(validVaultedPaymentMethodAdditionalDataType)"
-        }
-    }
-    
-    var info: [String: Any]? {
-        var tmpUserInfo: [String: Any] = errorUserInfo
-
-        switch self {
-        case .invalidCardholderName(_, let userInfo, _),
-                .invalidCardnumber(_, let userInfo, _),
-                .invalidCvv(_, let userInfo, _),
-                .invalidExpiryMonth(_, let userInfo, _),
-                .invalidExpiryYear(_, let userInfo, _),
-                .invalidExpiryDate(_, let userInfo, _),
-                .invalidPostalCode(_, let userInfo, _),
-                .invalidFirstName(_, let userInfo, _),
-                .invalidLastName(_, let userInfo, _),
-                .invalidAddress(_, let userInfo, _),
-                .invalidState(_, let userInfo, _),
-                .invalidCountry(_, let userInfo, _),
-                .invalidPhoneNumber(_, let userInfo, _),
-                .invalidRawData(let userInfo, _),
-                .invalidRetailer(_, let userInfo, _),
-                .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-        }
-
-        return tmpUserInfo
-    }
-    
-    public var errorUserInfo: [String : Any] {
-        var tmpUserInfo: [String: Any] = [
-            "createdAt": Date().toString(),
-            "diagnosticsId": diagnosticsId
-        ]
-        
-        if let inputElementType {
-            tmpUserInfo["inputElementType"] = inputElementType
-        }
-        
-        return tmpUserInfo
-    }
-    
-    public var recoverySuggestion: String? {
-        return nil
-    }
-    
-    var exposedError: Error {
-        return self
-    }
-    
-    var inputElementType: String? {
-        switch self {
-        case .invalidCardholderName:
-            return "CARDHOLDER_NAME"
-        case .invalidCardnumber:
-            return "CARD_NUMBER"
-        case .invalidCvv:
-            return "CVV"
-        case .invalidExpiryMonth:
-            return "EXPIRY_MONTH"
-        case .invalidExpiryYear:
-            return "EXPIRY_YEAR"
-        case .invalidExpiryDate:
-            return "EXPIRY_DATE"
-        case .invalidPostalCode:
-            return nil
-        case .invalidFirstName:
-            return nil
-        case .invalidLastName:
-            return nil
-        case .invalidAddress:
-            return nil
-        case .invalidState:
-            return nil
-        case .invalidCountry:
-            return nil
-        case .invalidPhoneNumber:
-            return "PHONE_NUMBER"
-        case .invalidRetailer:
-            return "RETAILER"
-        case .invalidRawData:
-            return nil
-        case .vaultedPaymentMethodAdditionalDataMismatch:
-            return nil
-        }
-    }
-}
-
-internal enum InternalError: PrimerErrorProtocol {
-    
-    case failedToEncode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToDecode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToSerialize(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case connectivityErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String?)
-    case noData(userInfo: [String: String]?, diagnosticsId: String?)
-    case serverError(status: Int, response: PrimerServerErrorResponse?, userInfo: [String: String]?, diagnosticsId: String?)
-    case unauthorized(url: String, method: HTTPMethod, userInfo: [String: String]?, diagnosticsId: String?)
-    case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToPerform3dsButShouldContinue(error: Primer3DSErrorContainer)
-    case failedToPerform3dsAndShouldBreak(error: Error)
-    case noNeedToPerform3ds(status: String)
-    
-    var errorId: String {
-        switch self {
-        case .failedToEncode:
-            return "failed-to-encode"
-        case .failedToDecode:
-            return "failed-to-decode"
-        case .failedToSerialize:
-            return "failed-to-serialize"
-        case .connectivityErrors:
-            return "connectivity-errors"
-        case .invalidUrl:
-            return "invalid-url"
-        case .invalidValue:
-            return "invalid-value"
-        case .noData:
-            return "no-data"
-        case .serverError:
-            return "server-error"
-        case .unauthorized:
-            return "unauthorized"
-        case .underlyingErrors:
-            return "underlying-errors"
-        case .failedToPerform3dsButShouldContinue:
-            return "failed-to-perform-3ds-but-should-continue"
-        case .failedToPerform3dsAndShouldBreak:
-            return "failed-to-perform-3ds-and-should-break"
-        case .noNeedToPerform3ds:
-            return "no-need-to-perform-3ds"
-        }
-    }
-    
-    var diagnosticsId: String {
-        switch self {
-        case .failedToEncode(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
-        case .failedToDecode(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
-        case .failedToSerialize(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
-        case .connectivityErrors(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
-        case .invalidUrl(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
-        case .invalidValue(_, _, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
-        case .noData(_, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
-        case .serverError(_, _, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
-        case .unauthorized(_, _, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
-        case .underlyingErrors(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
-        case .failedToPerform3dsButShouldContinue,
-                .failedToPerform3dsAndShouldBreak,
-                .noNeedToPerform3ds:
-            return UUID().uuidString
-        }
-    }
-    
-    var errorDescription: String? {
-        switch self {
-        case .failedToEncode(let message, _, _):
-            return "[\(errorId)] Failed to encode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId))"
-        case .failedToDecode(let message, _, _):
-            return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId))"
-        case .failedToSerialize(let message, _, _):
-            return "[\(errorId)] Failed to serialize\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId))"
-        case .connectivityErrors(let errors, _, _):
-            return "[\(errorId)] Connectivity failure | Errors: \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId))"
-        case .invalidUrl(let url, _, _):
-            return "[\(errorId)] Invalid URL \(url ?? "nil") (diagnosticsId: \(self.diagnosticsId))"
-        case .invalidValue(let key, let value, _, _):
-            return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key) (diagnosticsId: \(self.diagnosticsId))"
-        case .noData:
-            return "[\(errorId)] No data"
-        case .serverError(let status, let response, _, _):
-            var resStr: String = "nil"
-            if let response = response,
-               let resData = try? JSONEncoder().encode(response),
-                let str = resData.prettyPrintedJSONString as String?
-            {
-                resStr = str
-            }
-            return "[\(errorId)] Server error [\(status)] Response: \(resStr) (diagnosticsId: \(self.diagnosticsId))"
-        case .unauthorized(let url, let method, _, _):
-            return "[\(errorId)] Unauthorized response for URL \(url) [\(method.rawValue)] (diagnosticsId: \(self.diagnosticsId))"
-        case .underlyingErrors(let errors, _, _):
-            return "[\(errorId)] Multiple errors occured | Errors \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId))"
-        case .failedToPerform3dsButShouldContinue:
-            return "[\(errorId)] Failed to perform 3DS but should continue"
-        case .failedToPerform3dsAndShouldBreak(let error):
-            return "[\(errorId)] Failed to perform 3DS with error \(error.localizedDescription), and should break"
-        case .noNeedToPerform3ds(let status):
-            return "[\(errorId)] No need to perform 3DS because status is \(status)"
-        }
-    }
-    
-    var info: [String: Any]? {
-        var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
-        
-        switch self {
-        case .failedToEncode(_, let userInfo, _),
-                .failedToDecode(_, let userInfo, _),
-                .failedToSerialize(_, let userInfo, _),
-                .connectivityErrors(_, let userInfo, _),
-                .invalidUrl(_, let userInfo, _),
-                .invalidValue(_, _, let userInfo, _),
-                .noData(let userInfo, _),
-                .serverError(_, _, let userInfo, _),
-                .unauthorized(_, _, let userInfo, _),
-                .underlyingErrors(_, let userInfo, _):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-            tmpUserInfo["diagnosticsId"] = self.diagnosticsId
-        case .failedToPerform3dsButShouldContinue,
-                .failedToPerform3dsAndShouldBreak,
-                .noNeedToPerform3ds:
-            break
-        }
-        
-        return tmpUserInfo
-    }
-    
-    var errorUserInfo: [String : Any] {
-        return info ?? [:]
-    }
-    
-    var recoverySuggestion: String? {
-        switch self {
-        case .failedToEncode:
-            return "Check object's encode(to:) function for wrong CodingKeys, or unexpected values."
-        case .failedToDecode:
-            return "Check object's init(from:) function for wrong CodingKeys, or unexpected values."
-        case .failedToSerialize:
-            return "Check if all object's properties can be serialized."
-        case .connectivityErrors:
-            return "Check underlying conectivity errors for more information."
-        case .invalidUrl:
-            return "Provide a valid URL, meaning that it must include http(s):// at the begining and also follow URL formatting rules."
-        case .invalidValue(let key, let value, _, _):
-            return "Check if value \(value ?? "nil") is valid for key \(key)"
-        case .noData:
-            return "If you were expecting data on this response, check that your backend has sent the appropriate data."
-        case .serverError:
-            return "Check the server's response to debug this error further."
-        case .unauthorized:
-            return "Check that the you have provided the SDK with a client token."
-        case .underlyingErrors(let errors, _, _):
-            return "Check underlying errors' recovery suggestions for more information.\nRecovery Suggestions:\n\(errors.compactMap({ ($0 as NSError).localizedRecoverySuggestion }))"
-        case .failedToPerform3dsButShouldContinue,
-                .failedToPerform3dsAndShouldBreak,
-                .noNeedToPerform3ds:
-            return nil
-        }
-    }
-
-    var exposedError: Error {
-        switch self {
-        case .failedToPerform3dsButShouldContinue(let error):
-            return error.primerError
-        case .failedToPerform3dsAndShouldBreak(let error):
-            return error.primerError
-        default:
-            return PrimerError.unknown(userInfo: self.errorUserInfo as? [String: String], diagnosticsId: self.diagnosticsId)
-        }
-    }
 }
 
 public enum PrimerError: PrimerErrorProtocol {
@@ -457,6 +58,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case sdkDismissed
     case failedToProcessPayment(paymentId: String, status: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
+    case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
     
     public var errorId: String {
@@ -537,8 +139,19 @@ public enum PrimerError: PrimerErrorProtocol {
             return "failed-to-process-payment"
         case .invalidVaultedPaymentMethodId:
             return "invalid-vaulted-payment-method-id"
+        case .nolError:
+            return "nol-pay-sdk-error"
         case .unknown:
             return "unknown"
+        }
+    }
+    
+    public var underlyingErrorCode: String? {
+        switch self {
+        case .nolError(let code, _, _, _):
+            return String(describing: code)
+        default:
+            return nil
         }
     }
     
@@ -619,6 +232,8 @@ public enum PrimerError: PrimerErrorProtocol {
         case .failedToProcessPayment(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .invalidVaultedPaymentMethodId(_, _, let diagnosticsId):
+            return diagnosticsId
+        case .nolError(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .unknown(_, let diagnosticsId):
             return diagnosticsId
@@ -710,6 +325,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "The payment with id \(paymentId) was created but ended up in a \(status) status."
         case .invalidVaultedPaymentMethodId(let vaultedPaymentMethodId, _, _):
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
+        case .nolError(let code, let message, _, _):
+            return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
         case .unknown:
             return "Something went wrong"
         }
@@ -760,6 +377,7 @@ public enum PrimerError: PrimerErrorProtocol {
                 .failedToFindModule(_, let userInfo, _),
                 .failedToProcessPayment(_, _, let userInfo, _),
                 .invalidVaultedPaymentMethodId(_, let userInfo, _),
+                .nolError(_, _, let userInfo, _),
                 .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
             
@@ -773,7 +391,7 @@ public enum PrimerError: PrimerErrorProtocol {
     public var errorUserInfo: [String : Any] {
         let tmpUserInfo: [String: Any] = [
             "createdAt": Date().toString(),
-            "diagnosticsId": diagnosticsId
+            "diagnosticsId": diagnosticsId,
         ]
         
         return tmpUserInfo
@@ -866,6 +484,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return nil
         case .invalidVaultedPaymentMethodId:
             return "Please provide the id of one of the vaulted payment methods that have been returned by the 'fetchVaultedPaymentMethods' function."
+        case .nolError:
+            return nil
         case .unknown:
             return "Contact Primer and provide them diagnostics id \(self.diagnosticsId)"
         }
@@ -876,7 +496,7 @@ public enum PrimerError: PrimerErrorProtocol {
     }
 }
 
-// TODO: Reiew custom initializer for simplified payment error
+// TODO: Review custom initializer for simplified payment error
 extension PrimerError {
     
     internal static func simplifiedErrorFromErrorID(_ errorCode: PrimerPaymentErrorCode, message: String? = nil, userInfo: [String: String]?) -> PrimerError? {
@@ -891,69 +511,3 @@ extension PrimerError {
         }
     }
 }
-
-fileprivate extension Array where Element == Error {
-    
-    var combinedDescription: String {
-        var message: String = ""
-        
-        self.forEach { err in
-            if let primerError = err as? PrimerErrorProtocol {
-                message += "\(primerError.localizedDescription) | "
-            } else {
-                let nsErr = err as NSError
-                message += "Domain: \(nsErr.domain), Code: \(nsErr.code), Description: \(nsErr.localizedDescription)  | "
-            }
-        }
-        
-        if message.hasSuffix(" | ") {
-            message = String(message.dropLast(3))
-        }
-        
-        return "[\(message)]"
-    }
-}
-
-internal struct PrimerServerErrorResponse: Codable {
-    var errorId: String
-    var `description`: String
-    var diagnosticsId: String
-    var validationErrors: [String]?
-}
-
-internal extension Error {
-    
-    var primerError: Error {
-        if let internalErr = self as? InternalError {
-            return internalErr.exposedError
-        } else if let primer3DSErr = self as? Primer3DSErrorContainer {
-            return primer3DSErr
-        } else if let primerErr = self as? PrimerError {
-            switch primerErr {
-            case .underlyingErrors(let errors, _, _):
-                if errors.isEmpty {
-                    let unknownErr = PrimerError.unknown(
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                        diagnosticsId: UUID().uuidString)
-                    return unknownErr
-                } else if errors.count == 1 {
-                    return errors.first!.primerError
-                } else {
-                    return primerErr
-                }
-            default:
-                return primerErr
-            }
-        } else if let validationErr = self as? PrimerValidationError {
-            return validationErr
-        } else {
-            let primerErr = PrimerError.underlyingErrors(
-                errors: [self],
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                diagnosticsId: UUID().uuidString)
-            return primerErr
-        }
-    }
-}
-
-

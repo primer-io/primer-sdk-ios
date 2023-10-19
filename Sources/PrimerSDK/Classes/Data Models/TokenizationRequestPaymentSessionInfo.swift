@@ -65,4 +65,12 @@ struct IPay88SessionInfo: OffSessionPaymentSessionInfo {
     var redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
 }
 
-
+struct NolPaySessionInfo: OffSessionPaymentSessionInfo {
+    let platform: String
+    let locale: String = PrimerSettings.current.localeData.localeCode
+    let mobileCountryCode: String
+    let mobileNumber: String
+    let nolPayCardNumber: String
+    let phoneVendor: String
+    let phoneModel: String
+}

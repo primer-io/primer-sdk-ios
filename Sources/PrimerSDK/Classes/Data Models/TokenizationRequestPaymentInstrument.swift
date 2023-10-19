@@ -99,6 +99,8 @@ class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
             try container.encode(sessionInfo, forKey: .sessionInfo)
         } else if let sessionInfo = sessionInfo as? IPay88SessionInfo {
             try container.encode(sessionInfo, forKey: .sessionInfo)
+        } else if let sessionInfo = sessionInfo as? NolPaySessionInfo {
+            try container.encode(sessionInfo, forKey: .sessionInfo)
         } else {
             let err = InternalError.invalidValue(
                 key: "SessionInfo",
@@ -172,8 +174,6 @@ public enum PaymentInstrumentType: String, Codable {
         self = try PaymentInstrumentType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
     }
 }
-
-
 
 /**
  Contains extra information about the payment method.

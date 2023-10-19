@@ -17,5 +17,3 @@ public class PrimerVaultedCardAdditionalData: PrimerVaultedPaymentMethodAddition
         self.cvv = cvv
     }
 }
-
-
