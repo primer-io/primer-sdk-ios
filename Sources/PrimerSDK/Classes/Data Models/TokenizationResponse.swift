@@ -120,7 +120,7 @@ extension Response.Body.Tokenization {
 }
 
 extension Response.Body.Tokenization {
-
+    
     public struct PaymentInstrumentData: Codable {
         
         public let paypalBillingAgreementId: String?
@@ -155,7 +155,7 @@ extension Response.Body.Tokenization {
             public let locale: String?
             public let platform: String?
             public let redirectionUrl: String?
-        }
+        }        
     }
 }
 
@@ -165,5 +165,3 @@ extension Response.Body.Tokenization {
         public var customerId: String
     }
 }
-
-

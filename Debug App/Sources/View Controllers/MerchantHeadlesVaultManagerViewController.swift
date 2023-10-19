@@ -154,12 +154,7 @@ extension MerchantHeadlesVaultManagerViewController: UITableViewDataSource, UITa
         showLoadingOverlay()
         let vaultedPaymentMethod = self.availablePaymentMethods[indexPath.row]
         let vaultedCardAdditionalData = PrimerVaultedCardAdditionalData(cvv: "737")
-//        self.vaultedManager?.validate(
-//            vaultedPaymentMethodId: vaultedPaymentMethod.id,
-//            vaultedPaymentMethodAdditionalData: vaultedCardAdditionalData,
-//            completion: { errors in
-//
-//        })
+        
         self.vaultedManager?.startPaymentFlow(vaultedPaymentMethodId: vaultedPaymentMethod.id, vaultedPaymentMethodAdditionalData: vaultedCardAdditionalData)
     }
 }

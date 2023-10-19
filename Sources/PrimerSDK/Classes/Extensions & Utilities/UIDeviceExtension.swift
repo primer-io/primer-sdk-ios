@@ -31,11 +31,13 @@ internal enum Model: String, Codable {
          iPadAir2           = "iPad Air 2",
          iPadAir3           = "iPad Air 3",
          iPadAir4           = "iPad Air 4",
+         iPadAir5           = "iPad Air 5",
          iPad5              = "iPad 5", //iPad 2017
          iPad6              = "iPad 6", //iPad 2018
          iPad7              = "iPad 7", //iPad 2019
          iPad8              = "iPad 8", //iPad 2020
          iPad9              = "iPad 9", //iPad 2021
+         iPad10             = "iPad 10", //iPad 2022
          
          //iPad Mini
          iPadMini           = "iPad Mini",
@@ -88,6 +90,15 @@ internal enum Model: String, Codable {
          iPhone13           = "iPhone 13",
          iPhone13Pro        = "iPhone 13 Pro",
          iPhone13ProMax     = "iPhone 13 Pro Max",
+         iPhoneSE3          = "iPhone SE 3nd gen",
+         iPhone14           = "iPhone 14",
+         iPhone14Plus       = "iPhone 14 Plus",
+         iPhone14Pro        = "iPhone 14 Pro",
+         iPhone14ProMax     = "iPhone 14 Pro Max",
+         iPhone15           = "iPhone 15",
+         iPhone15Plus       = "iPhone 15 Plus",
+         iPhone15Pro        = "iPhone 15 Pro",
+         iPhone15ProMax     = "iPhone 15 Pro Max",
          
          // Apple Watch
          AppleWatch1         = "Apple Watch 1gen",
@@ -162,6 +173,8 @@ internal extension UIDevice {
             "iPad11,7"  : .iPad8,
             "iPad12,1"  : .iPad9, //iPad 2021
             "iPad12,2"  : .iPad9,
+            "iPad13,18" : .iPad10,
+            "iPad13,19" : .iPad10,
             
             //iPad Mini
             "iPad2,5"   : .iPadMini,
@@ -220,7 +233,8 @@ internal extension UIDevice {
             "iPad11,4"  : .iPadAir3,
             "iPad13,1"  : .iPadAir4,
             "iPad13,2"  : .iPadAir4,
-            
+            "iPad13,16" : .iPadAir5,
+            "iPad13,17" : .iPadAir5,
             
             //iPhone
             "iPhone3,1" : .iPhone4,
@@ -264,6 +278,15 @@ internal extension UIDevice {
             "iPhone14,5" : .iPhone13,
             "iPhone14,2" : .iPhone13Pro,
             "iPhone14,3" : .iPhone13ProMax,
+            "iPhone14,6" : .iPhoneSE3,
+            "iPhone14,7" : .iPhone14,
+            "iPhone14,8" : .iPhone14Plus,
+            "iPhone15,2" : .iPhone14Pro,
+            "iPhone15,3" : .iPhone14ProMax,
+            "iPhone15,4" : .iPhone15,
+            "iPhone15,5" : .iPhone15Plus,
+            "iPhone16,1" : .iPhone15Pro,
+            "iPhone16,2" : .iPhone15ProMax,
             
             // Apple Watch
             "Watch1,1" : .AppleWatch1,

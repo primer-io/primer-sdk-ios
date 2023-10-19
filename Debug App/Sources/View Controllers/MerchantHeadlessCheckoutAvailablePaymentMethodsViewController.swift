@@ -167,7 +167,8 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let paymentMethodType = self.availablePaymentMethods[indexPath.row].paymentMethodType
+        let paymentMethod = self.availablePaymentMethods[indexPath.row]
+        let paymentMethodType = paymentMethod.paymentMethodType
         if paymentMethodType == "PAYMENT_CARD" ||
             paymentMethodType == "ADYEN_BANCONTACT_CARD"
         {
@@ -199,6 +200,11 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
         } else if paymentMethodType == "XENDIT_OVO" {
             let vc = MerchantHeadlessCheckoutRawPhoneNumberDataViewController.instantiate(paymentMethodType: paymentMethodType)
             self.navigationController?.pushViewController(vc, animated: true)
+        } else if paymentMethodType == "NOL_PAY" {
+#if canImport(PrimerNolPaySDK)
+            let vc = MerchantHeadlessCheckoutNolPayViewController()
+            self.navigationController?.pushViewController(vc, animated: true)
+#endif
         } else {
             redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
             try? redirectManager?.showPaymentMethod(intent: sessionIntent)

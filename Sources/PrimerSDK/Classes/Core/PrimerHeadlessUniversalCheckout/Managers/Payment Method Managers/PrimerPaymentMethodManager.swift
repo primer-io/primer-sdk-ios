@@ -13,6 +13,7 @@ public enum PrimerPaymentMethodManagerCategory: String {
     case nativeUI       = "NATIVE_UI"
     case rawData        = "RAW_DATA"
     case cardComponents = "CARD_COMPONENTS"
+    case nolPay         = "NOL_PAY"
 }
 
 internal protocol PrimerPaymentMethodManager {
