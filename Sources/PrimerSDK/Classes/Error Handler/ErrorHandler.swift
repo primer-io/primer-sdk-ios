@@ -5,24 +5,23 @@
 //  Created by Evangelos Pittas on 16/3/21.
 //
 
-
-
 import Foundation
 
 internal class ErrorHandler: LogReporter {
     
+    // Call this function to log any error to Analytics
     static func handle(error: Error) {
         _ = ErrorHandler.shared.handle(error: error)
     }
-
+    
     static var shared = ErrorHandler()
-
+    
     @discardableResult
     func handle(error: Error) -> Bool {
         self.logger.error(message: error.localizedDescription)
 
         var event: Analytics.Event!
-
+        
         if let threeDsError = error as? Primer3DSErrorContainer {
             var context: [String: Any] = [:]
             
@@ -54,7 +53,7 @@ internal class ErrorHandler: LogReporter {
                     severity: .error,
                     diagnosticsId: threeDsError.diagnosticsId,
                     context: context.isEmpty ? nil : context))
-
+            
             if let createdAt = (threeDsError.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
             }
@@ -67,11 +66,11 @@ internal class ErrorHandler: LogReporter {
                     messageType: .error,
                     severity: .error,
                     diagnosticsId: primerError.diagnosticsId))
-
+            
             if let createdAt = (primerError.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
             }
-
+            
         } else {
             let nsError = error as NSError
             var userInfo = nsError.userInfo
@@ -92,10 +91,7 @@ internal class ErrorHandler: LogReporter {
         }
         
         Analytics.Service.record(event: event)
-
+        
         return false
     }
-
 }
-
-

@@ -122,7 +122,11 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         .done {
             let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
             if (availablePaymentMethodsTypes ?? []).isEmpty {
-                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, 
+                                                                             "class": "\(Self.self)",
+                                                                             "function": #function,
+                                                                             "line": "\(#line)"],
+                                                                  diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 DispatchQueue.main.async {
                     completion(nil, err)
@@ -250,6 +254,21 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
                 eventType: .message,
                 properties: MessageEventProperties(
                     message: "PrimerIPay88MYSDK has not been integrated",
+                    messageType: .error,
+                    severity: .error))
+            Analytics.Service.record(events: [event])
+        }
+#endif
+        
+#if !canImport(PrimerNolPaySDK)
+        if let nolPayViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.nolPay.rawValue }) {
+            paymentMethods?.remove(at: nolPayViewModelIndex)
+            print("\nWARNING!\nNolPay configuration has been found but module 'PrimerNolPaySDK' is missing. Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your podfile, so you can perform payments with NolPay.\n\n")
+            
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "PrimerNolPaySDK has not been integrated",
                     messageType: .error,
                     severity: .error))
             Analytics.Service.record(events: [event])
