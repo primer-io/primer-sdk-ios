@@ -4,12 +4,12 @@ on:
   schedule:
     - cron: '0 1 * * *'
   pull_request:
-    # branches:
-    #   - release/next
     types:
       - opened
       - edited
       - synchronize
+    branches:
+      - 'release/next'
 
 jobs:
   build-and-upload-to-firebase-and-browserstack:
