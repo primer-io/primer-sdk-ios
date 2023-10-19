@@ -201,8 +201,10 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             let vc = MerchantHeadlessCheckoutRawPhoneNumberDataViewController.instantiate(paymentMethodType: paymentMethodType)
             self.navigationController?.pushViewController(vc, animated: true)
         } else if paymentMethodType == "NOL_PAY" {
+#if canImport(PrimerNolPaySDK)
             let vc = MerchantHeadlessCheckoutNolPayViewController()
             self.navigationController?.pushViewController(vc, animated: true)
+#endif
         } else {
             redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
             try? redirectManager?.showPaymentMethod(intent: sessionIntent)
