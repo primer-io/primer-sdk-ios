@@ -449,7 +449,7 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
     }
     
     func didReceiveStep(step: PrimerHeadlessStep) {
-        if let step = step as? NolPayLinkDataStep {
+        if let step = step as? NolPayLinkCardStep {
             switch step {
                 
             case let .collectPhoneData(cardNumber):
