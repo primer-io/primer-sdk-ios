@@ -38,6 +38,9 @@ struct DecodedJWTToken: Codable {
     var supportedCurrencyCode: String?
     var supportedCountry: String?
     
+    // Nol
+    var nolPayTransactionNo: String?
+    
     // Voucher info
     var expiresAt: Date?
     var entity: String?
@@ -86,6 +89,8 @@ struct DecodedJWTToken: Codable {
         case expiresAt
         case entity
         case reference
+        // Nol
+        case nolPayTransactionNo
     }
     
     init(
@@ -109,7 +114,8 @@ struct DecodedJWTToken: Codable {
         iPay88PaymentMethodId: String?,
         iPay88ActionType: String?,
         supportedCurrencyCode: String?,
-        supportedCountry: String?
+        supportedCountry: String?,
+        nolPayTransactionNo: String?
     ) {
         self.accessToken = accessToken
         self.expDate = expDate
@@ -132,6 +138,7 @@ struct DecodedJWTToken: Codable {
         self.iPay88ActionType = iPay88ActionType
         self.supportedCurrencyCode = supportedCurrencyCode
         self.supportedCountry = supportedCountry
+        self.nolPayTransactionNo = nolPayTransactionNo
     }
     
     init(from decoder: Decoder) throws {
@@ -153,7 +160,7 @@ struct DecodedJWTToken: Codable {
         self.statusUrl = try? container.decode(String.self, forKey: .statusUrl)
         self.redirectUrl = try? container.decode(String.self, forKey: .redirectUrl)
         self.accountNumber = try? container.decode(String.self, forKey: .accountNumber)
-        
+        self.nolPayTransactionNo = try? container.decode(String.self, forKey: .nolPayTransactionNo)
         // For some APMs we receive another value out of the client token `expiration`
         // They may have different values.
         // We understand this should be changed in the future
@@ -240,6 +247,9 @@ struct DecodedJWTToken: Codable {
         try? container.encode(expiresAt, forKey: .expiresAt)
         try? container.encode(reference, forKey: .reference)
         try? container.encode(entity, forKey: .entity)
+        
+        // Nol
+        try? container.encode(nolPayTransactionNo, forKey: .nolPayTransactionNo)
     }
 }
 

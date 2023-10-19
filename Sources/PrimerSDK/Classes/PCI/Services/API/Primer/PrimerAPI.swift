@@ -32,7 +32,8 @@ enum PrimerAPI: Endpoint, Equatable {
             (.poll, .poll),
             (.sendAnalyticsEvents, .sendAnalyticsEvents),
             (.createPayment, .createPayment),
-            (.validateClientToken, .validateClientToken):
+            (.validateClientToken, .validateClientToken),
+            (.getNolSdkSecret, .getNolSdkSecret):
             return true
         default:
             return false
@@ -40,6 +41,7 @@ enum PrimerAPI: Endpoint, Equatable {
     }
     
 
+    case redirect(clientToken: DecodedJWTToken, url: URL)
     case exchangePaymentMethodToken(clientToken: DecodedJWTToken, vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?)
     case fetchConfiguration(clientToken: DecodedJWTToken, requestParameters: Request.URLParameters.Configuration?)
     case fetchVaultedPaymentMethods(clientToken: DecodedJWTToken)
@@ -79,6 +81,7 @@ enum PrimerAPI: Endpoint, Equatable {
     
     // BIN Data
     case listCardNetworks(clientToken: DecodedJWTToken, bin: String)
+    case getNolSdkSecret(clientToken: DecodedJWTToken, request: Request.Body.NolPay.NolPaySecretDataRequest)
 
 }
 
@@ -104,7 +107,8 @@ internal extension PrimerAPI {
         }
         
         switch self {
-        case .deleteVaultedPaymentMethod(let clientToken, _),
+        case .redirect(let clientToken, _),
+                .deleteVaultedPaymentMethod(let clientToken, _),
                 .exchangePaymentMethodToken(let clientToken, _, _),
                 .fetchVaultedPaymentMethods(let clientToken),
                 .createPayPalOrderSession(let clientToken, _),
@@ -148,6 +152,8 @@ internal extension PrimerAPI {
             if let token = clientToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
+        case .getNolSdkSecret(clientToken: let clientToken, _):
+            tmpHeaders["Primer-Client-Token"] = clientToken.accessToken
         }
         
         switch self {
@@ -201,6 +207,10 @@ internal extension PrimerAPI {
             break
         case .listCardNetworks:
             tmpHeaders["X-Api-Version"] = "2.2"
+        case .getNolSdkSecret:
+            break
+        case .redirect:
+            break
         }
         
         return tmpHeaders
@@ -219,7 +229,8 @@ internal extension PrimerAPI {
                 .listAdyenBanks(let clientToken, _),
                 .listRetailOutlets(let clientToken, _),
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
-                .testFinalizePolling(let clientToken, _):
+                .testFinalizePolling(let clientToken, _),
+                .getNolSdkSecret(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
         case .listCardNetworks(_, _):
@@ -244,6 +255,8 @@ internal extension PrimerAPI {
             return url.absoluteString
         case .validateClientToken(let request):
             return request.clientToken.decodedJWTToken?.pciUrl
+        case .redirect(_, let url):
+            return url.absoluteString
         }
     }
     // MARK: Path
@@ -300,6 +313,10 @@ internal extension PrimerAPI {
             return "/finalize-polling"
         case .listCardNetworks(_, let bin):
             return "/bin-data/\(bin)/networks"
+        case .getNolSdkSecret:
+            return "/nol-pay/sdk-secrets"
+        case .redirect:
+            return ""
         }
     }
     
@@ -316,7 +333,8 @@ internal extension PrimerAPI {
         switch self {
         case .deleteVaultedPaymentMethod:
             return .delete
-        case .fetchConfiguration,
+        case .redirect,
+                .fetchConfiguration,
                 .fetchVaultedPaymentMethods,
                 .listRetailOutlets,
                 .listCardNetworks:
@@ -339,7 +357,8 @@ internal extension PrimerAPI {
                 .validateClientToken,
                 .createPayment,
                 .resumePayment,
-                .testFinalizePolling:
+                .testFinalizePolling,
+                .getNolSdkSecret:
             return .post
         case .poll:
             return .get
@@ -387,7 +406,8 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(request)
         case .requestPrimerConfigurationWithActions(_, let request):
             return try? JSONEncoder().encode(request.actions)
-        case .deleteVaultedPaymentMethod,
+        case .redirect,
+                .deleteVaultedPaymentMethod,
                 .fetchVaultedPaymentMethods,
                 .poll,
                 .listRetailOutlets:
@@ -410,6 +430,8 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(paymentResumeRequestBody)
         case .testFinalizePolling, .listCardNetworks:
             return nil
+        case .getNolSdkSecret(_, let requestBody):
+            return try? JSONEncoder().encode(requestBody)
         }
     }
     
@@ -417,7 +439,8 @@ internal extension PrimerAPI {
     
     var shouldParseResponseBody: Bool {
         switch self {
-        case .deleteVaultedPaymentMethod(_, _):
+        case .redirect(_, _),
+                .deleteVaultedPaymentMethod(_, _):
             return false
         default:
             return true

@@ -439,7 +439,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     text: nil,
                     textColor: nil))
             
-        case PrimerPaymentMethodType.atome:
+        case .atome:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,
@@ -770,6 +770,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
+        case .nolPay:
+            return nil
         }
     }
     
@@ -811,7 +813,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             
         case PrimerPaymentMethodType.twoCtwoP.rawValue:
             return Strings.PaymentButton.payInInstallments
-            
+                    
         default:
             return metadataButtonText
         }

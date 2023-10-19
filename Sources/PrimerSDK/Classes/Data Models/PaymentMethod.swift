@@ -131,6 +131,8 @@ class PrimerPaymentMethod: Codable {
                 PrimerPaymentMethodType.rapydPromptPay,
                 PrimerPaymentMethodType.omisePromptPay:
                 return QRCodeTokenizationViewModel(config: self)
+            case PrimerPaymentMethodType.nolPay:
+                return NolPayTokenizationViewModel(config: self)
                 
             default:
                 break
@@ -174,7 +176,8 @@ class PrimerPaymentMethod: Codable {
         case PrimerPaymentMethodType.applePay.rawValue,
             PrimerPaymentMethodType.goCardless.rawValue,
             PrimerPaymentMethodType.googlePay.rawValue,
-            PrimerPaymentMethodType.iPay88Card.rawValue:
+            PrimerPaymentMethodType.iPay88Card.rawValue,
+            PrimerPaymentMethodType.nolPay.rawValue:
             return false
         default:
             return true
@@ -234,6 +237,8 @@ class PrimerPaymentMethod: Codable {
         case .xenditRetailOutlets:
             categories.append(PrimerPaymentMethodManagerCategory.rawData)
 
+        case .nolPay:
+            categories.append(PrimerPaymentMethodManagerCategory.nolPay)
         default:
             break
         }

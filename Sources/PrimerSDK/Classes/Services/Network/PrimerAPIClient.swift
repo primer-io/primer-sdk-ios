@@ -11,6 +11,10 @@ import Foundation
 
 protocol PrimerAPIClientProtocol {
     
+    func genericAPICall(clientToken: DecodedJWTToken,
+                        url: URL,
+                        completion: @escaping (_ result: Result<Bool, Error>) -> Void)
+    
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
         completion: @escaping (_ result: Result<SuccessResponse, Error>) -> Void)
@@ -123,10 +127,14 @@ protocol PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         bin: String,
         completion: @escaping (_ result: Result<Response.Body.Bin.Networks, Error>) -> Void) -> Cancellable?
+    // NolPay
+    func fetchNolSdkSecret(clientToken: DecodedJWTToken,
+                           paymentRequestBody: Request.Body.NolPay.NolPaySecretDataRequest,
+                           completion: @escaping (_ result: Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
-        
+    
     internal let networkService: NetworkService
 
     // MARK: - Object lifecycle
@@ -134,7 +142,21 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     init(networkService: NetworkService = URLSessionStack()) {
         self.networkService = networkService
     }
-
+    
+    func genericAPICall(clientToken: DecodedJWTToken, url: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
+        let endpoint = PrimerAPI.redirect(clientToken: clientToken, url: url)
+        networkService.request(endpoint) { (result: Result<SuccessResponse, Error>) in
+            
+            switch result {
+                
+            case .success(_):
+                completion(.success(true))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken, completion: @escaping (_ result: Result<Response.Body.VaultedPaymentMethods, Error>) -> Void) {
         let endpoint = PrimerAPI.fetchVaultedPaymentMethods(clientToken: clientToken)
         networkService.request(endpoint) { (result: Result<Response.Body.VaultedPaymentMethods, Error>) in
@@ -539,12 +561,22 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let res):
                 completion(.success(res))
+            }
+        }
+        return dataTask
+    }
+
+    func fetchNolSdkSecret(clientToken: DecodedJWTToken, paymentRequestBody: Request.Body.NolPay.NolPaySecretDataRequest, completion: @escaping (Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void) {
+        let endpoint = PrimerAPI.getNolSdkSecret(clientToken: clientToken, request: paymentRequestBody)
+        networkService.request(endpoint) { (result: Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>) in
+            switch result {
+                
+            case .success(let nolSdkSecret):
+                completion(.success(nolSdkSecret))
             case .failure(let err):
                 completion(.failure(err))
             }
         }
-        
-        return dataTask
     }
 }
 
