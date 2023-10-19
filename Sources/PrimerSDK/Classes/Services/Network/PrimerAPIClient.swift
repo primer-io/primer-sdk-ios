@@ -117,6 +117,12 @@ protocol PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         testId: String,
         completion: @escaping (_ result: Result<Void, Error>) -> Void)
+    
+    // BIN Data
+    func listCardNetworks(
+        clientToken: DecodedJWTToken,
+        bin: String,
+        completion: @escaping (_ result: Result<Response.Body.Bin.Networks, Error>) -> Void)
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -526,6 +532,16 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
+    
+    func listCardNetworks(clientToken: DecodedJWTToken, bin: String, completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) {
+        let endpoint = PrimerAPI.listCardNetworks(clientToken: clientToken, bin: bin)
+        networkService.request(endpoint) { (result: Result<Response.Body.Bin.Networks, Error>) in
+            switch result {
+            case .success(let res):
+                completion(.success(res))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
 }
-
-
