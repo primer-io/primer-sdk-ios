@@ -1,1 +1,1 @@
-let PrimerSDKVersion = "2.18.0-b0"
+let PrimerSDKVersion = "2.18.0-b1"
