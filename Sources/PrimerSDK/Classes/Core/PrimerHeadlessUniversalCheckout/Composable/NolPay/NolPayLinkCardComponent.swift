@@ -15,7 +15,7 @@ public enum NolPayLinkCollectableData: PrimerCollectableData {
     case otpData(otpCode: String)
 }
 
-public enum NolPayLinkDataStep: PrimerHeadlessStep {
+public enum NolPayLinkCardStep: PrimerHeadlessStep {
     case collectPhoneData(cardNumber: String), collectOtpData(phoneNumber: String), collectTagData, cardLinked
 }
 
@@ -39,7 +39,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public var otpCode: String?
     public var cardNumber: String?
     public var linkToken: String?
-    public var nextDataStep: NolPayLinkDataStep = .collectTagData
+    public var nextDataStep: NolPayLinkCardStep = .collectTagData
     
     public func updateCollectedData(collectableData: NolPayLinkCollectableData) {
         
