@@ -561,6 +561,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let res):
                 completion(.success(res))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
         return dataTask

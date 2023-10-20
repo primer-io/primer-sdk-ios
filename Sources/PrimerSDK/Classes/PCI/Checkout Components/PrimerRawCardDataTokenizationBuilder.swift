@@ -8,7 +8,6 @@
 
 
 import Foundation
-import Combine
 
 class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
     
@@ -47,9 +46,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     
     var isDataValid: Bool = false
     var paymentMethodType: String
-    
-    var cardNumberPublisher = PassthroughSubject<String, Never>()
-    
+        
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
             guard let rawDataManager = rawDataManager else {
@@ -78,23 +75,14 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         
         return mutableRequiredInputElementTypes
     }
-    
-    var cancellables: Set<AnyCancellable> = .init()
-    
+        
     required init(paymentMethodType: String) {
         self.paymentMethodType = paymentMethodType
-        cardNumberPublisher
-            .debounce(for: .seconds(0.5), scheduler: RunLoop.current)
-            .sink(receiveValue: { [self] in validateCardNetworks($0) })
-            .store(in: &cancellables)
-    }
-    
-    deinit {
-        cancellables.removeAll()
     }
     
     func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
+        self.binDataService = DefaultBinDataService(rawDataManager: rawDataManager, delegate: rawDataManager.delegate)
     }
     
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
@@ -208,8 +196,10 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     }
                 }
                 
+                // Legacy
                 let cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
-                cardNumberPublisher.send(rawData.cardNumber)
+                // New and shiny
+                binDataService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
                                 
                 if rawData.cvv.isEmpty {
                     let err = PrimerValidationError.invalidCvv(

@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		041F52092ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */; };
-		047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D8E882ADEA4C700A5E7BD /* NetworkService.swift */; };
 		041295AA2AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		041295AD2AB9E2C100A4F243 /* PrimerHeadlessNolPayManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */; };
+		041F52092ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */; };
+		047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D8E882ADEA4C700A5E7BD /* NetworkService.swift */; };
 		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
 		05FAC0D894B841B52E9E0A9A /* PrimerRawCardDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */; };
 		088961D00784BD296EA9745C /* EncodingDecodingContainerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D8E1E91CA11EC6831ADEE4 /* EncodingDecodingContainerTests.swift */; };
@@ -29,7 +29,6 @@
 		2C98B33ECA68109C7A6AA134 /* PrimerBancontactCardDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9899972360BCA5992CEE5BC /* PrimerBancontactCardDataManagerTests.swift */; };
 		2E0D85B7343377F1319902AD /* MockPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A23886804B13FA754E775D0 /* MockPaymentMethodTokenizationViewModel.swift */; };
 		33EA4F728A7984997A0EF515 /* TokenizationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952364FBFD6FA09653ECA37E /* TokenizationServiceTests.swift */; };
-		348FB986DF7377534836FA8F /* Pods_Debug_App_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 473182771D010E9326817292 /* Pods_Debug_App_Tests.framework */; };
 		34CDCA7B403C001E4C55D26D /* MerchantSessionAndSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18C9664115CFDEB59FED19A /* MerchantSessionAndSettingsViewController.swift */; };
 		3BB02CA24B6B3EF458326B7D /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = D038BDB23C062D362AAA09BE /* Networking.swift */; };
 		3D112A8DE292D097E651FCDB /* IPay88Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */; };
@@ -47,7 +46,6 @@
 		60F7E716B34BE721651566DA /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1594BC5C96ECC3F46C811B2F /* Data+Extensions.swift */; };
 		622A605DDEA98D981670B53F /* DropInUI_TokenizationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB3B88857B810440CDA881E /* DropInUI_TokenizationViewModelTests.swift */; };
 		6B2212601374387CB004DA86 /* MaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD26E8C6074BB89ACBD5B8B9 /* MaskTests.swift */; };
-		6E9ABDB0E67AC3448697E3A9 /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44DF9E15A2AB448960B440C7 /* Pods_Debug_App.framework */; };
 		70EAA3B33425CC9D16239BB0 /* ApplePayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CFA93A373A7DB78DA77283 /* ApplePayTests.swift */; };
 		72F8D6065334FCD5B726A52C /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */; };
 		77A8EFBA78D6C6B95A400C74 /* WebViewUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA30891B2D5F9B6B97E56B99 /* WebViewUtilTests.swift */; };
@@ -135,13 +133,12 @@
 		00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantResultViewController.swift; sourceTree = "<group>"; };
 		01C09DEAB07F42004B26A278 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeDSProtocolVersionTests.swift; sourceTree = "<group>"; };
-		041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCardNetworksEndpointTests.swift; sourceTree = "<group>"; };
-		047D8E882ADEA4C700A5E7BD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutNolPayViewController.swift; sourceTree = "<group>"; };
 		041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessNolPayManagerTests.swift; sourceTree = "<group>"; };
+		041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCardNetworksEndpointTests.swift; sourceTree = "<group>"; };
+		047D8E882ADEA4C700A5E7BD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
 		0DA32ABCF07A4EBED014327B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		0E9FA0BCBEB4CCEFB586DD51 /* Pods-Debug App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.debug.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.debug.xcconfig"; sourceTree = "<group>"; };
 		0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantNewLineItemViewController.swift; sourceTree = "<group>"; };
 		0FD08B8CE57A11D1E35A8684 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		13FA89917603E4BA5BB66AFC /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -154,7 +151,6 @@
 		229849A3DBE0858EE90673B9 /* CreateClientToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateClientToken.swift; sourceTree = "<group>"; };
 		25FD540BEA16ABBDFE7DE182 /* PayPalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPalService.swift; sourceTree = "<group>"; };
 		2A328E38DA586FFE0ED2894B /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
-		2B5438243F11136EEC5C29AF /* Pods-Debug App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.release.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.release.xcconfig"; sourceTree = "<group>"; };
 		2E64F057A39A91CA01CCB57F /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Main.strings; sourceTree = "<group>"; };
 		2E8F69253D85350BB7A1A761 /* TokenizationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenizationService.swift; sourceTree = "<group>"; };
 		31CFA93A373A7DB78DA77283 /* ApplePayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayTests.swift; sourceTree = "<group>"; };
@@ -179,7 +175,6 @@
 		5DB3B88857B810440CDA881E /* DropInUI_TokenizationViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropInUI_TokenizationViewModelTests.swift; sourceTree = "<group>"; };
 		5E8D7F3C53F8CCE4A03C975E /* VaultService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultService.swift; sourceTree = "<group>"; };
 		5F8DC3341BDBB9AEDBE8D6DD /* DecodedClientToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodedClientToken.swift; sourceTree = "<group>"; };
-		61CA279B1BECC6686D6D1550 /* Pods-Debug App Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App Tests.release.xcconfig"; path = "Target Support Files/Pods-Debug App Tests/Pods-Debug App Tests.release.xcconfig"; sourceTree = "<group>"; };
 		6493EA8D95DDA066DE982B24 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
 		68E2722188A5A2948DB31144 /* Debug App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Debug App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C690FB7E6E8C942C87B1A1B /* PrimerAPIConfigurationModuleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerAPIConfigurationModuleTests.swift; sourceTree = "<group>"; };
@@ -198,7 +193,6 @@
 		7A3E75CD834937EF85DE1C14 /* MockVaultCheckoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockVaultCheckoutViewModel.swift; sourceTree = "<group>"; };
 		7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPay88Tests.swift; sourceTree = "<group>"; };
 		7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockModule.swift; sourceTree = "<group>"; };
-		859BFCC9E143770FB968A5D7 /* Pods-Debug App Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App Tests.debug.xcconfig"; path = "Target Support Files/Pods-Debug App Tests/Pods-Debug App Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		872A0647D4136E27365FB7F8 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
 		8A23886804B13FA754E775D0 /* MockPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		8A3FDC6FE0EB5AB5828D4D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -314,15 +308,6 @@
 				C18C9664115CFDEB59FED19A /* MerchantSessionAndSettingsViewController.swift */,
 			);
 			path = "View Controllers";
-			sourceTree = "<group>";
-		};
-		1150E948884E0A5909729EFB /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				44DF9E15A2AB448960B440C7 /* Pods_Debug_App.framework */,
-				473182771D010E9326817292 /* Pods_Debug_App_Tests.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		1C9799A622D0CCDBBF94925B = {
@@ -1106,7 +1091,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
@@ -1194,7 +1179,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

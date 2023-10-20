@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 protocol BinDataService {
     var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? { get }
@@ -18,10 +19,23 @@ class DefaultBinDataService: BinDataService {
     
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
     
+    var cardNumberPublisher = PassthroughSubject<PrimerCardValidationState, Never>()
+    
+    var cancellables: Set<AnyCancellable> = .init()
+
     init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
          delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?) {
         self.rawDataManager = rawDataManager
         self.delegate = delegate
+        
+        cardNumberPublisher
+            .debounce(for: .seconds(0.35), scheduler: RunLoop.current)
+            .sink(receiveValue: { [self] in callAPI(withValidationState: $0) })
+            .store(in: &cancellables)
+    }
+    
+    deinit {
+        cancellables.removeAll()
     }
     
     func validateCardNetworks(withCardNumber cardNumber: String) {
@@ -30,17 +44,34 @@ class DefaultBinDataService: BinDataService {
             return
         }
         
-        // TODO: proper validation
-        guard cardNumber.count > 0 else {
-            print("[DefaultBinDataService] WARNING: cardNumber length was zero, so didn't fetch card networks")
+        let cardValidationState = PrimerCardValidationState(cardNumber: cardNumber)
+        // JN TODO: full local fallback validation
+        guard cardNumber.count >= 6 else {
+            delegate?.primerRawDataManager?(rawDataManager,
+                                            willFetchCardMetadataForState: cardValidationState)
+                        print("[DefaultBinDataService] WARNING: cardNumber length was zero, so didn't fetch card networks")
+            print("[DefaultBinDataService] WARNING: ↳ falling back to local validation")
+            useLocalValidation(withCardState: cardValidationState)
             return
         }
         
-        let cardValidationState = PrimerCardValidationState(cardNumber: cardNumber)
+        cardNumberPublisher.send(cardValidationState)
+    }
+    
+    private func callAPI(withValidationState cardValidationState: PrimerCardValidationState) {
+        guard let rawDataManager = rawDataManager else {
+            print("[DefaultBinDataService] ERROR: rawDataManager was nil")
+            return
+        }
+        
         delegate?.primerRawDataManager?(rawDataManager,
                                         willFetchCardMetadataForState: cardValidationState)
         
-        _ = listCardNetworks(cardNumber).done { [weak self] result in
+        _ = listCardNetworks(cardValidationState.cardNumber).done { [weak self] result in
+            guard result.networks.count > 0 else {
+                self?.useLocalValidation(withCardState: cardValidationState)
+                return
+            }
             let cardMetadata = PrimerCardMetadata(availableCardNetworks: result.networks.map { network in
                 PrimerCardNetwork(displayName: network.displayName, networkIdentifier: network.value)
             })
@@ -53,6 +84,20 @@ class DefaultBinDataService: BinDataService {
             print("[DefaultBinDataService] ERROR: \(error.localizedDescription)")
         }
         // TODO: catch: send local validation instead
+    }
+    
+    func useLocalValidation(withCardState cardValidationState: PrimerCardValidationState) {
+        guard let rawDataManager = rawDataManager else {
+            print("[DefaultBinDataService] ERROR: rawDataManager was nil")
+            return
+        }
+
+        let localValidationNetwork = CardNetwork(cardNumber: cardValidationState.cardNumber)
+        // JN TODO: display name from where?
+        let cardNetwork = PrimerCardNetwork(displayName: localValidationNetwork.rawValue, networkIdentifier: localValidationNetwork.rawValue)
+        delegate?.primerRawDataManager?(rawDataManager,
+                                        didReceiveCardMetadata: .init(availableCardNetworks: [cardNetwork]),
+                                        forCardValidationState: cardValidationState)
     }
     
     // MARK: API Logic

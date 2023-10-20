@@ -48,11 +48,41 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
         self.stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
 
         self.renderInputs()
+        
+        self.cardnumberTextField?.becomeFirstResponder()
     }
     
+    // 4111 1234 1234 1234
+    // 5522 1234 1234 1234
+
     
+    func renderAutoInputUI() {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        
+        let updateCardData = {
+            (self.primerRawDataManager?.rawData as? PrimerCardData)?.cardNumber = self.cardnumberTextField!.text!.replacingOccurrences(of: " ", with: "")
+        }
+        
+        let visaButton = UIButton(primaryAction: UIAction(title: "VISA", handler: { _ in
+            self.cardnumberTextField?.text = "4111 1234 1234 1234"
+            updateCardData()
+        }))
+        let mcButton = UIButton(primaryAction: UIAction(title: "MasterCard", handler: { _ in
+            self.cardnumberTextField?.text = "5522 1234 1234 1234"
+            updateCardData()
+        }))
+        
+        stack.addArrangedSubview(visaButton)
+        stack.addArrangedSubview(mcButton)
+        stack.distribution = .fillEqually
+        
+        self.stackView.addArrangedSubview(stack)
+    }
     
     func renderInputs() {
+        renderAutoInputUI()
+        
         do {
             self.primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType, delegate: self)
             let inputElementTypes = self.primerRawDataManager!.listRequiredInputElementTypes(for: self.paymentMethodType)
@@ -60,49 +90,17 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             for inputElementType in inputElementTypes {
                 switch inputElementType {
                 case .cardNumber:
-                    self.cardnumberTextField = UITextField(frame: .zero)
-                    self.cardnumberTextField!.accessibilityIdentifier = "card_txt_fld"
-                    self.cardnumberTextField!.borderStyle = .line
-                    self.cardnumberTextField!.layer.borderColor = UIColor.black.cgColor
-                    self.stackView.addArrangedSubview(self.cardnumberTextField!)
-                    self.cardnumberTextField!.translatesAutoresizingMaskIntoConstraints = false
-                    self.cardnumberTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
-                    self.cardnumberTextField!.delegate = self
-                    self.cardnumberTextField!.placeholder = "4242 4242 4242 4242"
-                    
+                    self.cardnumberTextField = styledTextField(forAccessibilityId: "card_txt_fld",
+                                                               withPlaceholderText: "4242 4242 4242 4242")
                 case .expiryDate:
-                    self.expiryDateTextField = UITextField(frame: .zero)
-                    self.expiryDateTextField!.accessibilityIdentifier = "expiry_txt_fld"
-                    self.expiryDateTextField!.borderStyle = .line
-                    self.expiryDateTextField!.layer.borderColor = UIColor.black.cgColor
-                    self.stackView.addArrangedSubview(self.expiryDateTextField!)
-                    self.expiryDateTextField!.translatesAutoresizingMaskIntoConstraints = false
-                    self.expiryDateTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
-                    self.expiryDateTextField!.delegate = self
-                    self.expiryDateTextField!.placeholder = "03/2030"
-                    
+                    self.expiryDateTextField = styledTextField(forAccessibilityId: "expiry_txt_fld",
+                                                               withPlaceholderText: "03/2030")
                 case .cvv:
-                    self.cvvTextField = UITextField(frame: .zero)
-                    self.cvvTextField!.accessibilityIdentifier = "cvc_txt_fld"
-                    self.cvvTextField!.borderStyle = .line
-                    self.cvvTextField!.layer.borderColor = UIColor.black.cgColor
-                    self.stackView.addArrangedSubview(self.cvvTextField!)
-                    self.cvvTextField!.translatesAutoresizingMaskIntoConstraints = false
-                    self.cvvTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
-                    self.cvvTextField!.delegate = self
-                    self.cvvTextField!.placeholder = "123"
-                    
+                    self.cvvTextField = styledTextField(forAccessibilityId: "cvc_txt_fld",
+                                                        withPlaceholderText: "123")
                 case .cardholderName:
-                    self.cardholderNameTextField = UITextField(frame: .zero)
-                    self.cardholderNameTextField!.accessibilityIdentifier = "card_holder_txt_fld"
-                    self.cardholderNameTextField!.borderStyle = .line
-                    self.cardholderNameTextField!.layer.borderColor = UIColor.black.cgColor
-                    self.stackView.addArrangedSubview(self.cardholderNameTextField!)
-                    self.cardholderNameTextField!.translatesAutoresizingMaskIntoConstraints = false
-                    self.cardholderNameTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
-                    self.cardholderNameTextField!.delegate = self
-                    self.cardholderNameTextField!.placeholder = "John Smith"
-                    
+                    self.cardholderNameTextField = styledTextField(forAccessibilityId: "card_holder_txt_fld",
+                                                                   withPlaceholderText: "John Smith")
                 case .otp:
                     break
                     
@@ -134,6 +132,9 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             self.payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
             
             self.cardsLabel = UILabel(frame: .zero)
+            self.cardsLabel.font = .systemFont(ofSize: 24)
+            self.cardsLabel.textAlignment = .center
+            self.cardsLabel.numberOfLines = 0
             self.stackView.addArrangedSubview(cardsLabel)
             self.cardsLabel.translatesAutoresizingMaskIntoConstraints = false
             self.cardsLabel.heightAnchor.constraint(equalToConstant: 45).isActive = true
@@ -141,6 +142,22 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
         } catch {
             print("[MerchantHeadlessCheckoutRawDataViewController] ERROR: Failed to set up card entry fields")
         }
+    }
+    
+    private func styledTextField(forAccessibilityId accessibilityId: String,
+                                 withPlaceholderText placeholderText: String) -> UITextField {
+        let textField = UITextField(frame: .zero)
+        textField.accessibilityIdentifier = accessibilityId
+        textField.borderStyle = .none
+        textField.layer.borderColor = UIColor.lightGray.cgColor
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        textField.delegate = self
+        textField.placeholder = placeholderText
+        
+        self.stackView.addArrangedSubview(textField)
+        
+        return textField
     }
     
     @IBAction func payButtonTapped(_ sender: UIButton) {
@@ -250,12 +267,16 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, willFetchCardMetadataForState cardState: PrimerCardValidationState) {
         // TODO
         print("[MerchantHeadlessCheckoutRawDataViewController] willFetchCardMetadataForState")
-        cardsLabel.text = "🌏"
+        DispatchQueue.main.async {
+            self.cardsLabel.text = "🌏"
+        }
     }
     
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, didReceiveCardMetadata metadata: PrimerCardMetadata, forCardValidationState cardState: PrimerCardValidationState) {
         let printableNetworks = metadata.availableCardNetworks.map { $0.networkIdentifier }.joined(separator: ", ")
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
-        cardsLabel.text = printableNetworks
+        DispatchQueue.main.async {
+            self.cardsLabel.text = printableNetworks
+        }
     }
 }
