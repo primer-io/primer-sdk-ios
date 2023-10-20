@@ -23,7 +23,8 @@ class IPay88Tests: XCTestCase {
         surcharge: nil,
         options: MerchantOptions(
             merchantId: "merchant-id",
-            merchantAccountId: "merchant-account-id"),
+            merchantAccountId: "merchant-account-id",
+            appId: "app-id"),
         displayMetadata: nil)
     
     func test_iPay88_payment_object_mapping() throws {

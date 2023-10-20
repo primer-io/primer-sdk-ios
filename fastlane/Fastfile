@@ -81,7 +81,8 @@ platform :ios do
       workspace: app_workspace,
       configuration: "Debug",
       include_bitcode: false,
-      export_method: "development"
+      export_method: "development",
+      xcargs: "-allowProvisioningUpdates"
     )
 
     # Upload to Browserstack
