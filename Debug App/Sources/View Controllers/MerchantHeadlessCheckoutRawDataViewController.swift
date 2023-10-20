@@ -60,8 +60,9 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
         let stack = UIStackView()
         stack.axis = .horizontal
         
-        let updateCardData = {
-            (self.primerRawDataManager?.rawData as? PrimerCardData)?.cardNumber = self.cardnumberTextField!.text!.replacingOccurrences(of: " ", with: "")
+        let updateCardData = { [self] in
+            rawCardData.cardNumber = cardnumberTextField!.text!.replacingOccurrences(of: " ", with: "")
+            primerRawDataManager?.rawData = rawCardData
         }
         
         let visaButton = UIButton(primaryAction: UIAction(title: "VISA", handler: { _ in
@@ -135,9 +136,10 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             self.cardsLabel.font = .systemFont(ofSize: 24)
             self.cardsLabel.textAlignment = .center
             self.cardsLabel.numberOfLines = 0
+            self.cardsLabel.lineBreakMode = .byWordWrapping
             self.stackView.addArrangedSubview(cardsLabel)
             self.cardsLabel.translatesAutoresizingMaskIntoConstraints = false
-            self.cardsLabel.heightAnchor.constraint(equalToConstant: 45).isActive = true
+            self.cardsLabel.heightAnchor.constraint(equalToConstant: 120).isActive = true
             
         } catch {
             print("[MerchantHeadlessCheckoutRawDataViewController] ERROR: Failed to set up card entry fields")
