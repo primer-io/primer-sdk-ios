@@ -203,16 +203,21 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                                                                                 phoneModel: UIDevice.modelIdentifier!)
             let client = PrimerAPIClient()
             
-            return try await withCheckedThrowingContinuation { continuation in
-                client.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
-                    switch result {
-                    case .success(let appSecret):
-                        continuation.resume(returning: appSecret.sdkSecret)
-                    case .failure(let error):
-                        ErrorHandler.handle(error: error)
-                        continuation.resume(throwing: error)
+            if #available(iOS 13, *) {
+                return try await withCheckedThrowingContinuation { continuation in
+                    client.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+                        switch result {
+                        case .success(let appSecret):
+                            continuation.resume(returning: appSecret.sdkSecret)
+                        case .failure(let error):
+                            ErrorHandler.handle(error: error)
+                            continuation.resume(throwing: error)
+                        }
                     }
                 }
+            } else {
+                assertionFailure("Nol pay SDK requires iOS 13")
+                return ""
             }
         }
 #else
