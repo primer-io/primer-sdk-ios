@@ -57,7 +57,7 @@ class Analytics {
             self.sdkVersion = VersionUtils.releaseVersionNumber
             self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
             self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
-            self.minDeploymentTarget = Analytics.deploymentTarget()
+            self.minDeploymentTarget = Bundle.main.minimumOSVersion ?? "Unknown"
             
 #if COCOAPODS
             self.integrationType = "COCOAPODS"
@@ -183,14 +183,6 @@ class Analytics {
                 self.properties = nil
             }
         }
-    }
-    
-    static func deploymentTarget(for version: Int = Int(__IPHONE_OS_VERSION_MIN_REQUIRED)) -> String {
-        let majorVersion = version / 10000
-        let minorVersion = (version / 100) % 100
-        let patchVersion = version % 100
-        
-        return "\(majorVersion).\(minorVersion).\(patchVersion)"
     }
 }
 

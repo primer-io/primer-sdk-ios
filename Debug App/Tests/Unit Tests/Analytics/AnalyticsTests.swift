@@ -1491,31 +1491,6 @@ class AnalyticsTests: XCTestCase {
             Analytics.Service.deleteAnalyticsFile()
         }
     }
-    
-    func testMinDeploymentTargetParsesCorrectly() {
-        XCTAssertEqual(Analytics.deploymentTarget(for: 100000), "10.0.0")
-        XCTAssertEqual(Analytics.deploymentTarget(for: 123456), "12.34.56")
-        XCTAssertEqual(Analytics.deploymentTarget(for: 160500), "16.5.0")
-        XCTAssertEqual(Analytics.deploymentTarget(for: 170101), "17.1.1")
-    }
-    
-    func testMinDeploymentTargetCorrectOnEncodedEvent() {
-        let event = Analytics.Event(eventType: .message,
-                                    properties: MessageEventProperties.init(
-                                        message: "",
-                                        messageType: .other,
-                                        severity: .debug
-                                    )
-        )
-        
-        XCTAssertEqual(event.minDeploymentTarget, Analytics.deploymentTarget())
-        
-        let encodedEventData = try! JSONEncoder().encode(event)
-        
-        let decodedEvent = try! JSONDecoder().decode(Analytics.Event.self, from: encodedEventData)
-        
-        XCTAssertEqual(decodedEvent.minDeploymentTarget, Analytics.deploymentTarget())
-    }
 }
 
 
