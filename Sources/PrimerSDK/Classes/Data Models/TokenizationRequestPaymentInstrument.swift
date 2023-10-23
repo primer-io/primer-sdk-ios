@@ -44,6 +44,7 @@ struct CardPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var expirationMonth: String
     var expirationYear: String
     var cardholderName: String?
+    var cardNetwork: String?
 }
 
 struct CardOffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
