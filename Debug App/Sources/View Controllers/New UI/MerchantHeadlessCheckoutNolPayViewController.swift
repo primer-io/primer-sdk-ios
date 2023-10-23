@@ -10,6 +10,7 @@ import UIKit
 import PrimerSDK
 import IQKeyboardManagerSwift
 
+#if canImport(PrimerNolPaySDK)
 class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     
     private var nolPayManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager!
@@ -483,3 +484,4 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
         }
     }
 }
+#endif
