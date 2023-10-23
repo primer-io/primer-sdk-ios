@@ -33,4 +33,10 @@ class MockNetworkService: NetworkService {
             }
         }
     }
+    
+    func request<T>(_ endpoint: PrimerSDK.Endpoint, completion: @escaping PrimerSDK.ResultCallback<T>) -> URLSessionDataTask? where T : Decodable {
+        XCTFail()
+        // JN TODO
+        return nil
+    }
 }

@@ -12,7 +12,6 @@
 import XCTest
 
 class MockPrimerAPIClient: PrimerAPIClientProtocol {
-    
     var mockedNetworkDelay: TimeInterval = 2
     var validateClientTokenResult: (SuccessResponse?, Error?)?
     var fetchConfigurationResult: (Response.Body.Configuration?, Error?)?
@@ -559,10 +558,10 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func listCardNetworks(clientToken: DecodedJWTToken, bin: String, completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) {
+    func listCardNetworks(clientToken: PrimerSDK.DecodedJWTToken, bin: String, completion: @escaping (Result<PrimerSDK.Response.Body.Bin.Networks, Error>) -> Void) -> Cancellable? {
         guard let result = listCardNetworksResult, (result.0 != nil || result.1 != nil) else {
             XCTFail("Set 'listCardNetworksResult' on your MockPrimerAPIClient")
-            return
+            return nil
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
@@ -572,6 +571,8 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
                 completion(.success(res))
             }
         }
+        
+        return nil
     }
     
     func fetchNolSdkSecret(clientToken: PrimerSDK.DecodedJWTToken, paymentRequestBody: PrimerSDK.Request.Body.NolPay.NolPaySecretDataRequest, completion: @escaping (Result<PrimerSDK.Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void) {
