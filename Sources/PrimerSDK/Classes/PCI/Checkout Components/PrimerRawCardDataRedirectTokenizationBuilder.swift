@@ -208,7 +208,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                             ],
                             diagnosticsId: UUID().uuidString))
                         
-                    } else if !(rawData.cardholderName).isValidCardholderName {
+                    } else if !(rawData.cardholderName).isValidNonDecimalString {
                         errors.append(PrimerValidationError.invalidCardholderName(
                             message: "Cardholder name is not valid.",
                             userInfo: [

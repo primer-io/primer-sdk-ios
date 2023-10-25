@@ -12,6 +12,7 @@
 		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
 		04F6EF722AE69FC500115D05 /* AnalyticsTests+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */; };
 		04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */; };
+		04FAF9EC2AE7B33E002E4BAE /* StringExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FAF9EB2AE7B33E002E4BAE /* StringExtensionTests.swift */; };
 		05FAC0D894B841B52E9E0A9A /* PrimerRawCardDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */; };
 		088961D00784BD296EA9745C /* EncodingDecodingContainerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D8E1E91CA11EC6831ADEE4 /* EncodingDecodingContainerTests.swift */; };
 		0BB8BB3F9A6AC28A0C107DC8 /* UIStackViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F15C1E46C70C3D73B50F31 /* UIStackViewExtensions.swift */; };
@@ -138,6 +139,7 @@
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
 		04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsTests+Helpers.swift"; sourceTree = "<group>"; };
 		04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventsTests.swift; sourceTree = "<group>"; };
+		04FAF9EB2AE7B33E002E4BAE /* StringExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensionTests.swift; sourceTree = "<group>"; };
 		0DA32ABCF07A4EBED014327B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantNewLineItemViewController.swift; sourceTree = "<group>"; };
 		0FD08B8CE57A11D1E35A8684 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -413,6 +415,7 @@
 			isa = PBXGroup;
 			children = (
 				C7D8E1E91CA11EC6831ADEE4 /* EncodingDecodingContainerTests.swift */,
+				04FAF9EB2AE7B33E002E4BAE /* StringExtensionTests.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -808,6 +811,7 @@
 				F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */,
 				24C060A48D4A2670FFC3426F /* ThreeDSErrorTests.swift in Sources */,
 				F1A71C2E0D900FEB9AF1351C /* ThreeDSProtocolVersionTests.swift in Sources */,
+				04FAF9EC2AE7B33E002E4BAE /* StringExtensionTests.swift in Sources */,
 				C29B625B5698094691227852 /* TokenizationResponseTests.swift in Sources */,
 				A1585C752ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift in Sources */,
 				088961D00784BD296EA9745C /* EncodingDecodingContainerTests.swift in Sources */,
