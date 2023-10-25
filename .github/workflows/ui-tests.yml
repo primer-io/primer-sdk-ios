@@ -118,12 +118,10 @@ jobs:
             npx wdio config/wdio.ios.bs.conf.js
             
         - name: Create Slack Report
-          if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master'  }}
           run: |
             node report-script/slack-report-script.js createSlackReport iOS
 
         - name: Post summary message to a Slack channel
-          if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master' }}
           id: slack
           uses: slackapi/slack-github-action@v1.23.0
           with:
@@ -133,7 +131,7 @@ jobs:
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
 
         - name: Create Slack Failed Summary Report
-          if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
+          if: ${{ failure() }}
           run: |
             node report-script/slack-failed-report-script.js createSlackFailedSummaryReport ${{ steps.slack.outputs.thread_ts }}
           env:
@@ -141,7 +139,7 @@ jobs:
             BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
 
         - name: Post detailed summary to Slack channel thread
-          if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
+          if: ${{ failure() }}
           id: slack_thread
           uses: slackapi/slack-github-action@v1.23.0
           with:
@@ -151,7 +149,6 @@ jobs:
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
 
         - name: Create and post Github summary
-          if: ${{ success() || failure() }}
           run: |
             node report-script/github-tests-summary-script.js createGithubSummaryReport
   
