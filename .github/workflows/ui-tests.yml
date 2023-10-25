@@ -100,7 +100,7 @@ jobs:
             path: /var/tmp
 
         - name: Setup node
-          uses: actions/setup-node@v1
+          uses: actions/setup-node@v4
           with:
             node-version: 18.3.0
 
