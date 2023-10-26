@@ -197,7 +197,8 @@ final class StringExtensionTests: XCTestCase {
     
     func testIsValidExpiryDateString() {
         XCTAssertThrowsError(try "".validateExpiryDateString())
-        XCTAssertThrowsError(try "01/2023".validateExpiryDateString())
+        XCTAssertThrowsError(try "01/2022".validateExpiryDateString())
+        XCTAssertThrowsError(try "08/2022".validateExpiryDateString())
         XCTAssertNoThrow(try "01/2023".validateExpiryDateString())
         XCTAssertNoThrow(try "01/2028".validateExpiryDateString())
         XCTAssertNoThrow(try "02/2028".validateExpiryDateString())
