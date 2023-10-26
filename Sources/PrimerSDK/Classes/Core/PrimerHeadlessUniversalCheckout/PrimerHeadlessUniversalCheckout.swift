@@ -263,7 +263,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
 #if !canImport(PrimerNolPaySDK)
         if let nolPayViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.nolPay.rawValue }) {
             paymentMethods?.remove(at: nolPayViewModelIndex)
-            print("\nWARNING!\nNolPay configuration has been found but module 'PrimerNolPaySDK' is missing. Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your podfile, so you can perform payments with NolPay.\n\n")
+            logger.warn("NolPay configuration has been found but module 'PrimerNolPaySDK' is missing. Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your podfile, so you can perform payments with NolPay.")
             
             let event = Analytics.Event(
                 eventType: .message,

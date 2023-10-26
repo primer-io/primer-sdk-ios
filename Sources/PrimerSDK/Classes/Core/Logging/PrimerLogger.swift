@@ -40,7 +40,7 @@ extension PrimerLogger {
                      line: Int = #line,
                      function: String = #function) {
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
-        log(level: .debug, message: message, userInfo: nil, metadata: metadata)
+        logProxy(level: .debug, message: message, userInfo: nil, metadata: metadata)
     }
     
     public func info(message: String,
@@ -49,7 +49,7 @@ extension PrimerLogger {
                     line: Int = #line,
                     function: String = #function) {
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
-        log(level: .info, message: message, userInfo: userInfo, metadata: metadata)
+        logProxy(level: .info, message: message, userInfo: userInfo, metadata: metadata)
     }
     
     public func warn(message: String,
@@ -58,7 +58,7 @@ extension PrimerLogger {
                     line: Int = #line,
                     function: String = #function) {
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
-        log(level: .warning, message: message, userInfo: userInfo, metadata: metadata)
+        logProxy(level: .warning, message: message, userInfo: userInfo, metadata: metadata)
     }
     
     public func error(message: String,
@@ -67,7 +67,7 @@ extension PrimerLogger {
                      line: Int = #line,
                      function: String = #function) {
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
-        log(level: .error, message: message, userInfo: userInfo, metadata: metadata)
+        logProxy(level: .error, message: message, userInfo: userInfo, metadata: metadata)
     }
     
     private func logUserInfo(level: LogLevel,
@@ -75,7 +75,18 @@ extension PrimerLogger {
         guard let userInfo = userInfo, let dictionary = try? userInfo.asDictionary() else {
             return
         }
-        log(level: level, message: dictionary.debugDescription, userInfo: nil, metadata: metadata)
+        logProxy(level: level, message: dictionary.debugDescription, userInfo: nil, metadata: metadata)
+    }
+    
+    private func logProxy(level: LogLevel,
+                          message: String,
+                          userInfo: Encodable?,
+                          metadata: PrimerLogMetadata) {
+        #if DEBUG
+        if RuntimeEnvironment.contains(variableNamed: "PrimerLoggingEnabled1") {
+            log(level: level, message: message, userInfo: nil, metadata: metadata)
+        }
+        #endif
     }
 }
 
