@@ -71,7 +71,7 @@ jobs:
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
           BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          SOURCE_BRANCH: ${{ github.head_ref }}
+          SOURCE_BRANCH: ${{ github.ref }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
 
       - name: Save Browserstack ID
@@ -100,7 +100,7 @@ jobs:
             path: /var/tmp
 
         - name: Setup node
-          uses: actions/setup-node@v1
+          uses: actions/setup-node@v4
           with:
             node-version: 18.3.0
 
@@ -118,12 +118,12 @@ jobs:
             npx wdio config/wdio.ios.bs.conf.js
             
         - name: Create Slack Report
-          if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master'  }}
+          if: ${{ success() || failure() }}
           run: |
             node report-script/slack-report-script.js createSlackReport iOS
 
         - name: Post summary message to a Slack channel
-          if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master' }}
+          if: ${{ success() || failure() }}
           id: slack
           uses: slackapi/slack-github-action@v1.23.0
           with:
@@ -133,7 +133,7 @@ jobs:
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
 
         - name: Create Slack Failed Summary Report
-          if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
+          if: ${{ failure() }}
           run: |
             node report-script/slack-failed-report-script.js createSlackFailedSummaryReport ${{ steps.slack.outputs.thread_ts }}
           env:
@@ -141,7 +141,7 @@ jobs:
             BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
 
         - name: Post detailed summary to Slack channel thread
-          if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
+          if: ${{ failure() }}
           id: slack_thread
           uses: slackapi/slack-github-action@v1.23.0
           with:
