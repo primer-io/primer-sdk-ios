@@ -32,12 +32,12 @@ public final class PrimerCardholderNameFieldView: PrimerSimpleCardFormTextFieldV
             ],
             diagnosticsId: UUID().uuidString)
         isValid = { text in
-            return text.isTypingNonDecimalCharacters
+            return text.isValidNonDecimalString
         }
     }
     
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        guard string.isTypingNonDecimalCharacters == true || string.isEmpty else { return false }
+        guard string.isValidNonDecimalString == true || string.isEmpty else { return false }
         return super.textField(textField, shouldChangeCharactersIn: range, replacementString: string)
     }
 }
