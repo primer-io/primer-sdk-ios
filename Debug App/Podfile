@@ -2,10 +2,7 @@
 platform :ios, '14.0'
 project 'Primer.io Debug App.xcodeproj'
 
-target 'Debug App' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-  
+def main_pods
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../'
   pod 'Primer3DS', "~> 2.0.0"
@@ -13,17 +10,21 @@ target 'Debug App' do
   pod 'PrimerIPay88MYSDK', :git => 'https://github.com/primer-io/primer-ipay88-sdk-ios.git', :branch => 'master'
   pod 'PrimerNolPaySDK', :git => 'https://github.com/primer-io/primer-nol-pay-sdk-ios.git', :branch => 'master'
   pod 'IQKeyboardManagerSwift'
-  
-  target 'Debug App Tests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-  
-  post_install do |installer|
-    fix_code_signing(installer)
-  end
 end
 
+target 'Debug App' do
+  use_frameworks!
+  main_pods
+end
+
+target 'Debug App Tests' do
+  use_frameworks!
+  main_pods
+end
+
+post_install do |installer|
+  fix_code_signing(installer)
+end
 
 def fix_code_signing(installer)
   
