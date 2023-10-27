@@ -37,6 +37,7 @@ class Analytics {
         let sdkIntegrationType: PrimerSDKIntegrationType?
         let sdkPaymentHandling: PrimerPaymentHandling?
         let integrationType: String
+        let minDeploymentTarget: String
         
         init(eventType: Analytics.Event.EventType, properties: AnalyticsEventProperties?) {
             self.analyticsUrl = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2
@@ -56,6 +57,7 @@ class Analytics {
             self.sdkVersion = VersionUtils.releaseVersionNumber
             self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
             self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
+            self.minDeploymentTarget = Bundle.main.minimumOSVersion ?? "Unknown"
             
 #if COCOAPODS
             self.integrationType = "COCOAPODS"
@@ -81,7 +83,8 @@ class Analytics {
                  sdkVersion,
                  sdkIntegrationType,
                  sdkPaymentHandling,
-                 integrationType
+                 integrationType,
+                 minDeploymentTarget
         }
         
         func encode(to encoder: Encoder) throws {
@@ -101,6 +104,7 @@ class Analytics {
             try? container.encode(sdkVersion, forKey: .sdkVersion)
             try? container.encode(sdkIntegrationType?.rawValue, forKey: .sdkIntegrationType)
             try? container.encode(integrationType, forKey: .integrationType)
+            try? container.encode(minDeploymentTarget, forKey: .minDeploymentTarget)
             
             if sdkPaymentHandling == .auto {
                 try? container.encode("AUTO", forKey: .sdkPaymentHandling)
@@ -141,6 +145,7 @@ class Analytics {
             self.sdkType = try container.decode(String.self, forKey: .sdkType)
             self.sdkVersion = try container.decode(String.self, forKey: .sdkVersion)
             self.integrationType = try container.decode(String.self, forKey: .integrationType)
+            self.minDeploymentTarget = try container.decode(String.self, forKey: .minDeploymentTarget)
             
             if let sdkIntegrationTypeStr = try? container.decode(String.self, forKey: .sdkIntegrationType) {
                 self.sdkIntegrationType = PrimerSDKIntegrationType(rawValue: sdkIntegrationTypeStr)
