@@ -6,9 +6,8 @@
 //
 
 import Foundation
-#if canImport(PrimerNolPaySDK)
 extension PrimerHeadlessUniversalCheckout {
-    
+#if canImport(PrimerNolPaySDK)
     public class PrimerHeadlessNolPayManager: NSObject {
         
         // Components for linking and unlinking cards
@@ -41,5 +40,5 @@ extension PrimerHeadlessUniversalCheckout {
             return self.paymentComponent
         }
     }
-}
 #endif
+}
