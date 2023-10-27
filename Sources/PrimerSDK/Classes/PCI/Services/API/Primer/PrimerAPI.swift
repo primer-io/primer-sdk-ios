@@ -226,7 +226,7 @@ internal extension PrimerAPI {
                 .listRetailOutlets(let clientToken, _),
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
                 .testFinalizePolling(let clientToken, _),
-                .listCardNetworks(let clientToken, _):
+                .listCardNetworks(let clientToken, _),
                 .getNolSdkSecret(let clientToken, _):
             guard let urlStr = clientToken.coreUrl else { return nil }
             return urlStr
