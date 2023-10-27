@@ -6,11 +6,12 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
+#if canImport(PrimerNolPaySDK)
 import UIKit
 import PrimerSDK
 import IQKeyboardManagerSwift
+import PrimerNolPaySDK
 
-#if canImport(PrimerNolPaySDK)
 class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     
     private var nolPayManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager!
