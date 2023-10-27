@@ -13,7 +13,7 @@ import IQKeyboardManagerSwift
 #if canImport(PrimerNolPaySDK)
 class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     
-    private var nolPayManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager!
+    private var nolPayManager: PrimerSDK.PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager!
     private var linkCardComponent: NolPayLinkCardComponent!
     private var unlinkCardComponent: NolPayUnlinkCardComponent!
     private var getLinkedCardsComponent: NolPayLinkedCardsComponent!
@@ -28,28 +28,24 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     // UI Components
     private var startLinkingFlowButton: UIButton!
     private var scanCardButton: UIButton!
-    private var countryCodeTextField: UITextField!
-    private var phoneNumberTextField: UITextField!
+    private var linkMobileNumberTextField: UITextField!
     private var submitPhoneNumberButton: UIButton!
     private var otpTextField: UITextField!
     private var submitOTPButton: UIButton!
     
     private var startUnlinkingFlowButton: UIButton!
     private var unlinkPhoneNumberTextField: UITextField!
-    private var unlinkCountryCodeTextField: UITextField!
     private var unlinkSubmitPhoneNumberButton: UIButton!
     private var unlinkOtpTextField: UITextField!
     private var unlinkSubmitOTPButton: UIButton!
     
     private var listCardsPhoneNumberTextField: UITextField!
-    private var listCardsCountryCodeTextField: UITextField!
     private var listCardsButton: UIButton!
         
     private var linkedCardsTableView: UITableView!
     
     private var startPaymentFlowButton: UIButton!
     private var startPaymentPhoneNumberTextField: UITextField!
-    private var startPaymentCountryCodeTextField: UITextField!
     private var startPaymentSubmitPhoneNumberButton: UIButton!
 
     override func viewDidLoad() {
@@ -70,6 +66,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         
         getLinkedCardsComponent = nolPayManager.provideNolPayGetLinkedCardsComponent()
         getLinkedCardsComponent.errorDelegate = self
+        getLinkedCardsComponent.validationDelegate = self
         
         paymentComponent = nolPayManager.provideNolPayStartPaymentComponent()
         paymentComponent.errorDelegate = self
@@ -111,55 +108,35 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         scanCardButton = UIButton(type: .roundedRect)
         scanCardButton.setTitle("2 .Scan NOL NFC Card", for: .normal)
         scanCardButton.addTarget(self, action: #selector(scanCardButtonTapped), for: .touchUpInside)
-        
-        countryCodeTextField = UITextField()
-        countryCodeTextField.placeholder = "3. Country Code"
-        countryCodeTextField.borderStyle = .roundedRect
-        countryCodeTextField.keyboardType = .phonePad
-        
-        phoneNumberTextField = UITextField()
-        phoneNumberTextField.placeholder = "4. Phone Number"
-        phoneNumberTextField.borderStyle = .roundedRect
-        phoneNumberTextField.keyboardType = .phonePad
-        
-        let phoneStackView = UIStackView(arrangedSubviews: [countryCodeTextField, phoneNumberTextField])
-        phoneStackView.axis = .horizontal
-        phoneStackView.spacing = 10
-        phoneStackView.distribution = .fillEqually
-        
+                
+        linkMobileNumberTextField = UITextField()
+        linkMobileNumberTextField.placeholder = "3. Mobile Number"
+        linkMobileNumberTextField.borderStyle = .roundedRect
+        linkMobileNumberTextField.keyboardType = .phonePad
+                
         submitPhoneNumberButton = UIButton(type: .roundedRect)
-        submitPhoneNumberButton.setTitle("5. Submit Phone Number", for: .normal)
+        submitPhoneNumberButton.setTitle("4. Submit Phone Number", for: .normal)
         submitPhoneNumberButton.addTarget(self, action: #selector(submitPhoneNumberTapped), for: .touchUpInside)
         
         otpTextField = UITextField()
-        otpTextField.placeholder = "6. Enter OTP"
+        otpTextField.placeholder = "5. Enter OTP"
         otpTextField.borderStyle = .roundedRect
         otpTextField.keyboardType = .numberPad
         
         submitOTPButton = UIButton(type: .roundedRect)
-        submitOTPButton.setTitle("7. Submit OTP", for: .normal)
+        submitOTPButton.setTitle("6. Submit OTP", for: .normal)
         submitOTPButton.addTarget(self, action: #selector(submitLinkOTPTapped), for: .touchUpInside)
         
         // List linked cards
         let listCardsLabel = UILabel()
         listCardsLabel.textAlignment = .left
         listCardsLabel.text = "LIST LINKED CARDS FLOW"
-        
-        listCardsCountryCodeTextField = UITextField()
-        listCardsCountryCodeTextField.placeholder = "Country Code"
-        listCardsCountryCodeTextField.borderStyle = .roundedRect
-        listCardsCountryCodeTextField.keyboardType = .phonePad
-        
+                
         listCardsPhoneNumberTextField = UITextField()
         listCardsPhoneNumberTextField.placeholder = "Phone Number"
         listCardsPhoneNumberTextField.borderStyle = .roundedRect
         listCardsPhoneNumberTextField.keyboardType = .phonePad
-        
-        let listPhoneStackView = UIStackView(arrangedSubviews: [listCardsCountryCodeTextField, listCardsPhoneNumberTextField])
-        listPhoneStackView.axis = .horizontal
-        listPhoneStackView.spacing = 10
-        listPhoneStackView.distribution = .fillEqually
-        
+                
         listCardsButton = UIButton(type: .roundedRect)
         listCardsButton.setTitle("List liked cards", for: .normal)
         listCardsButton.addTarget(self, action: #selector(getLinkedCards), for: .touchUpInside)
@@ -172,33 +149,23 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         startUnlinkingFlowButton = UIButton(type: .roundedRect)
         startUnlinkingFlowButton.setTitle("1. Start unlinking flow", for: .normal)
         startUnlinkingFlowButton.addTarget(self, action: #selector(startUnlinkingFlowButtonTapped), for: .touchUpInside)
-        
-        unlinkCountryCodeTextField = UITextField()
-        unlinkCountryCodeTextField.placeholder = "2. Country Code"
-        unlinkCountryCodeTextField.borderStyle = .roundedRect
-        unlinkCountryCodeTextField.keyboardType = .phonePad
-        
+                
         unlinkPhoneNumberTextField = UITextField()
-        unlinkPhoneNumberTextField.placeholder = "3 .Phone Number"
+        unlinkPhoneNumberTextField.placeholder = "2. Phone Number"
         unlinkPhoneNumberTextField.borderStyle = .roundedRect
         unlinkPhoneNumberTextField.keyboardType = .phonePad
-        
-        let unlinkPhoneStackView = UIStackView(arrangedSubviews: [unlinkCountryCodeTextField, unlinkPhoneNumberTextField])
-        unlinkPhoneStackView.axis = .horizontal
-        unlinkPhoneStackView.spacing = 10
-        unlinkPhoneStackView.distribution = .fillEqually
-        
+                
         unlinkSubmitPhoneNumberButton = UIButton(type: .roundedRect)
-        unlinkSubmitPhoneNumberButton.setTitle("4. Submit Phone Number", for: .normal)
+        unlinkSubmitPhoneNumberButton.setTitle("3. Submit Phone Number", for: .normal)
         unlinkSubmitPhoneNumberButton.addTarget(self, action: #selector(submitUnlinkPhoneNumberTapped), for: .touchUpInside)
         
         unlinkOtpTextField = UITextField()
-        unlinkOtpTextField.placeholder = "5. Enter Unlink OTP"
+        unlinkOtpTextField.placeholder = "4. Enter Unlink OTP"
         unlinkOtpTextField.borderStyle = .roundedRect
         unlinkOtpTextField.keyboardType = .numberPad
         
         unlinkSubmitOTPButton = UIButton(type: .roundedRect)
-        unlinkSubmitOTPButton.setTitle("6. Submit unlink OTP", for: .normal)
+        unlinkSubmitOTPButton.setTitle("5. Submit unlink OTP", for: .normal)
         unlinkSubmitOTPButton.addTarget(self, action: #selector(submitUnlinkOTPTapped), for: .touchUpInside)
               
         // Start payment
@@ -209,24 +176,15 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         startPaymentFlowButton = UIButton(type: .roundedRect)
         startPaymentFlowButton.setTitle("1. Start Payment flow", for: .normal)
         startPaymentFlowButton.addTarget(self, action: #selector(startPaymentFlowButtonTapped), for: .touchUpInside)
-        
-        startPaymentCountryCodeTextField = UITextField()
-        startPaymentCountryCodeTextField.placeholder = "2. Country Code"
-        startPaymentCountryCodeTextField.borderStyle = .roundedRect
-        startPaymentCountryCodeTextField.keyboardType = .phonePad
-        
+                
         startPaymentPhoneNumberTextField = UITextField()
-        startPaymentPhoneNumberTextField.placeholder = "3 .Phone Number"
+        startPaymentPhoneNumberTextField.placeholder = "2. Phone Number"
         startPaymentPhoneNumberTextField.borderStyle = .roundedRect
         startPaymentPhoneNumberTextField.keyboardType = .phonePad
         
-        let startPaymentPhoneStackView = UIStackView(arrangedSubviews: [startPaymentCountryCodeTextField, startPaymentPhoneNumberTextField])
-        startPaymentPhoneStackView.axis = .horizontal
-        startPaymentPhoneStackView.spacing = 10
-        startPaymentPhoneStackView.distribution = .fillEqually
         
         startPaymentSubmitPhoneNumberButton = UIButton(type: .roundedRect)
-        startPaymentSubmitPhoneNumberButton.setTitle("4. Submit phone", for: .normal)
+        startPaymentSubmitPhoneNumberButton.setTitle("3. Submit phone", for: .normal)
         startPaymentSubmitPhoneNumberButton.addTarget(self, action: #selector(submitPaymentPhoneNumberButtonTapped), for: .touchUpInside)
         
         
@@ -238,7 +196,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         }
         setupTableView()
         
-        let stackView = UIStackView(arrangedSubviews: [makeSpacerLabel(), linkLabel, startLinkingFlowButton, scanCardButton, phoneStackView, submitPhoneNumberButton, otpTextField, submitOTPButton, makeSpacerLabel(), listCardsLabel, listPhoneStackView, listCardsButton, linkedCardsTableView, makeSpacerLabel(), unlinkLabel, startUnlinkingFlowButton, unlinkPhoneStackView, unlinkSubmitPhoneNumberButton, unlinkOtpTextField, unlinkSubmitOTPButton, makeSpacerLabel(), startPaymentLabel, startPaymentFlowButton, startPaymentPhoneStackView, startPaymentSubmitPhoneNumberButton])
+        let stackView = UIStackView(arrangedSubviews: [makeSpacerLabel(), linkLabel, startLinkingFlowButton, scanCardButton, linkMobileNumberTextField, submitPhoneNumberButton, otpTextField, submitOTPButton, makeSpacerLabel(), listCardsLabel, listCardsPhoneNumberTextField, listCardsButton, linkedCardsTableView, makeSpacerLabel(), unlinkLabel, startUnlinkingFlowButton, unlinkPhoneNumberTextField, unlinkSubmitPhoneNumberButton, unlinkOtpTextField, unlinkSubmitOTPButton, makeSpacerLabel(), startPaymentLabel, startPaymentFlowButton, startPaymentPhoneNumberTextField, startPaymentSubmitPhoneNumberButton])
         
         stackView.axis = .vertical
         stackView.spacing = 15
@@ -285,15 +243,13 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     }
     
     @objc func submitPhoneNumberTapped() {
-        guard let countryCode = countryCodeTextField.text, !countryCode.isEmpty,
-              let phoneNumber = phoneNumberTextField.text, !phoneNumber.isEmpty
+        guard let mobileNumber = linkMobileNumberTextField.text, !mobileNumber.isEmpty
         else {
             showAlert(title: "Error", message: "Please enter both country code and phone number.")
             return
         }
         
-        linkCardComponent.updateCollectedData(collectableData: NolPayLinkCollectableData.phoneData(mobileNumber: phoneNumber,
-                                                                                        phoneCountryDiallingCode: countryCode))
+        linkCardComponent.updateCollectedData(collectableData: NolPayLinkCollectableData.phoneData(mobileNumber: mobileNumber))
     }
     
     @objc func submitLinkOTPTapped() {
@@ -315,16 +271,17 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     }
     
     @objc func submitUnlinkPhoneNumberTapped() {
-        guard let countryCode = unlinkCountryCodeTextField.text, !countryCode.isEmpty,
-              let mobileNumber = unlinkPhoneNumberTextField.text, !mobileNumber.isEmpty,
+        guard let mobileNumber = unlinkPhoneNumberTextField.text, !mobileNumber.isEmpty,
               let card = selectedCardForUnlinking
         else {
             showAlert(title: "Error", message: "Please enter both country code and phone number.")
             return
         }
         
-        unlinkCardComponent.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: card,
-                                                                        mobileNumber: mobileNumber, phoneCountryDiallingCode: countryCode))
+        unlinkCardComponent.updateCollectedData(
+            collectableData: .cardAndPhoneData(nolPaymentCard: card,
+                                               mobileNumber: mobileNumber)
+        )
     }
     
     @objc func submitUnlinkOTPTapped() {
@@ -340,15 +297,13 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     // MARK: - Listing of the linked cards
     @objc private func getLinkedCards() {
         
-        guard let phoneNumber = self.listCardsPhoneNumberTextField.text, !phoneNumber.isEmpty,
-              let countryCode = self.listCardsCountryCodeTextField.text, !countryCode.isEmpty
+        guard let phoneNumber = self.listCardsPhoneNumberTextField.text, !phoneNumber.isEmpty
         else {
             showAlert(title: "Error", message: "Invalid phone number or country code")
             return
         }
         
-        getLinkedCardsComponent.getLinkedCardsFor(phoneCountryDiallingCode: countryCode,
-                                                  mobileNumber: phoneNumber) { result in
+        getLinkedCardsComponent.getLinkedCardsFor(mobileNumber: phoneNumber) { result in
             switch result {
                 
             case .success(let cards):
@@ -372,8 +327,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     }
     
     @objc func submitPaymentPhoneNumberButtonTapped() {
-        guard let countryCode = startPaymentCountryCodeTextField.text, !countryCode.isEmpty,
-              let phoneNumber = startPaymentPhoneNumberTextField.text, !phoneNumber.isEmpty
+        guard let phoneNumber = startPaymentPhoneNumberTextField.text, !phoneNumber.isEmpty
         else {
             showAlert(title: "Error", message: "Please enter both country code and phone number.")
             return
@@ -381,8 +335,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         
         paymentComponent.updateCollectedData(collectableData: NolPayPaymentCollectableData.paymentData(
             cardNumber: selectedCardForPayment?.cardNumber ?? "",
-            mobileNumber: phoneNumber,
-            phoneCountryDiallingCode: countryCode))
+            mobileNumber: phoneNumber))
     }
         
     // MARK: - Helper
@@ -426,15 +379,13 @@ extension MerchantHeadlessCheckoutNolPayViewController: UITableViewDataSource, U
 extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableDelegate,
                                                         PrimerHeadlessValidatableDelegate,
                                                         PrimerHeadlessSteppableDelegate {
-    func didValidate(validations: [PrimerValidationError], for data: PrimerSDK.PrimerCollectableData) {
-        
-        if !validations.isEmpty {
-            var message = ""
-            for error in validations {
-                message += (error.errorDescription ?? error.localizedDescription) + "\n"
-            }
-            self.showAlert(title: "Validation Error", message: "\(message)")
-        } else {
+    
+    func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
+        switch validationStatus {
+            
+        case .validating:
+            print("NOL data validation in progress")
+        case .valid:
             if data is NolPayLinkCollectableData {
                 linkCardComponent.submit()
             } else if data is NolPayUnlinkCollectableData {
@@ -442,6 +393,14 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
             } else if data is NolPayPaymentCollectableData {
                 paymentComponent.submit()
             }
+        case .invalid(errors: let errors):
+            var message = ""
+            for error in errors {
+                message += (error.errorDescription ?? error.localizedDescription) + "\n"
+            }
+            self.showAlert(title: "Validation Error", message: "\(message)")
+        case .error(error: let error):
+            self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
         }
     }
     

@@ -11,7 +11,7 @@ import PrimerNolPaySDK
 #endif
 
 public enum NolPayLinkCollectableData: PrimerCollectableData {
-    case phoneData(mobileNumber: String, phoneCountryDiallingCode: String)
+    case phoneData(mobileNumber: String)
     case otpData(otpCode: String)
 }
 
@@ -32,10 +32,11 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
+    var phoneMetadataService = NolPayPhoneMetadataService()
     private var isDebug: Bool
     
     public var mobileNumber: String?
-    public var phoneCountryDiallingCode: String?
+    public var countryCode: String?
     public var otpCode: String?
     public var cardNumber: String?
     public var linkToken: String?
@@ -53,50 +54,40 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         Analytics.Service.record(events: [sdkEvent])
 
         switch collectableData {
-        case .phoneData(let mobileNumber, let phoneCountryDiallingCode):
+        case .phoneData(let mobileNumber):
             self.mobileNumber = mobileNumber
-            self.phoneCountryDiallingCode = phoneCountryDiallingCode
         case .otpData(let otpCode):
             self.otpCode = otpCode
         }
         
-        // Notify validation delegate after updating data
-        let validations = validateData(for: collectableData)
-        validationDelegate?.didValidate(validations: validations, for: collectableData)
+        validateData(for: collectableData)
     }
     
-    func validateData(for data: NolPayLinkCollectableData) -> [PrimerValidationError] {
+    func validateData(for data: NolPayLinkCollectableData){
+        validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         var errors: [PrimerValidationError] = []
         
         switch data {
             
-        case .phoneData(mobileNumber: let mobileNumber,
-                        phoneCountryDiallingCode: let phoneCountryDiallingCode):
-            if !mobileNumber.isValidMobilePhoneNumber {
-                errors.append(PrimerValidationError.invalidPhoneNumber(
-                    message: "Phone number is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
-                ErrorHandler.handle(error: errors.last!)
-            }
-            
-            if !phoneCountryDiallingCode.isValidCountryCode {
-                errors.append(PrimerValidationError.invalidPhoneNumberCountryCode(
-                    message: "Country code is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
-                ErrorHandler.handle(error: errors.last!)
-                
+        case .phoneData(mobileNumber: let mobileNumber):
+            phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
+                switch result {
+                    
+                case let .success((validationStatus, countryCode, mobileNumber)):
+                    switch validationStatus {
+                        
+                    case .valid:
+                        self?.countryCode = countryCode
+                        self?.mobileNumber = mobileNumber
+                        self?.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+                    case .invalid(errors: let validationErrors):
+                        errors += validationErrors
+                        self?.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                    default: break
+                    }
+                case .failure(let error):
+                    self?.validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
+                }
             }
         case .otpData(otpCode: let otpCode):
             if !otpCode.isValidOTP {
@@ -110,10 +101,12 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                     ],
                     diagnosticsId: UUID().uuidString))
                 ErrorHandler.handle(error: errors.last!)
+                validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+            } else {
+                validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+
             }
         }
-        
-        return errors
     }
     
     public func submit() {
@@ -135,11 +128,13 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 makeAndHandleInvalidValueError(forKey: "mobileNumber")
                 return
             }
-            guard let phoneCountryDiallingCode = phoneCountryDiallingCode 
+            
+            guard let countryCode = countryCode
             else {
-                makeAndHandleInvalidValueError(forKey: "phoneCountryDiallingCode")
+                makeAndHandleInvalidValueError(forKey: "countryCode")
                 return
             }
+            
             guard let linkToken = linkToken
             else {
                 makeAndHandleInvalidValueError(forKey: "linkToken")
@@ -148,12 +143,12 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             
 #if canImport(PrimerNolPaySDK)
             nolPay.sendLinkOTP(to: mobileNumber,
-                               with: phoneCountryDiallingCode,
+                               with: countryCode,
                                and: linkToken) { result in
                 switch result {
                 case .success(let success):
                     if success {
-                        self.nextDataStep = .collectOtpData(phoneNumber: "\(phoneCountryDiallingCode) \(mobileNumber)")
+                        self.nextDataStep = .collectOtpData(phoneNumber: "\(countryCode) \(mobileNumber)")
                         self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
                     } else {
                         let error = PrimerError.nolError(code: "unknown",

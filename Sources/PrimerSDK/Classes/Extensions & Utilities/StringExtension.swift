@@ -412,21 +412,6 @@ internal extension String {
         }
     }
     
-    var isValidCountryCode: Bool {
-        let pattern = "^\\+\\d{1,3}(-\\d{1,4})?$"
-        let regex = try? NSRegularExpression(pattern: pattern, options: [])
-        let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: self.count))
-        return matches?.count ?? 0 > 0
-    }
-    
-    var isValidMobilePhoneNumber: Bool {
-        let sanitizedInput = self.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "-", with: "")
-        let pattern = "^\\d{7,15}$"
-        let regex = try? NSRegularExpression(pattern: pattern, options: [])
-        let matches = regex?.matches(in: sanitizedInput, options: [], range: NSRange(location: 0, length: sanitizedInput.count))
-        return matches?.count ?? 0 > 0
-    }
-    
     var isValidOTP: Bool {
         let pattern = "^\\d{6}$"
         let regex = try? NSRegularExpression(pattern: pattern, options: [])

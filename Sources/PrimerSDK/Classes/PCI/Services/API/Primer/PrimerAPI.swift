@@ -33,7 +33,8 @@ enum PrimerAPI: Endpoint, Equatable {
             (.sendAnalyticsEvents, .sendAnalyticsEvents),
             (.createPayment, .createPayment),
             (.validateClientToken, .validateClientToken),
-            (.getNolSdkSecret, .getNolSdkSecret):
+            (.getNolSdkSecret, .getNolSdkSecret),
+            (.getPhoneMetadata, .getPhoneMetadata):
             return true
         default:
             return false
@@ -79,6 +80,7 @@ enum PrimerAPI: Endpoint, Equatable {
     
     case testFinalizePolling(clientToken: DecodedJWTToken, testId: String)
     case getNolSdkSecret(clientToken: DecodedJWTToken, request: Request.Body.NolPay.NolPaySecretDataRequest)
+    case getPhoneMetadata(clientToken: DecodedJWTToken, request: Request.Body.PhoneMetadata.PhoneMetadataDataRequest)
 
 }
 
@@ -120,7 +122,8 @@ internal extension PrimerAPI {
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
                 .createPayment(let clientToken, _),
                 .resumePayment(let clientToken, _, _),
-                .testFinalizePolling(let clientToken, _):
+                .testFinalizePolling(let clientToken, _),
+                .getPhoneMetadata(let clientToken, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -201,6 +204,8 @@ internal extension PrimerAPI {
             break
         case .redirect:
             break
+        case .getPhoneMetadata:
+            break
         }
         
         return tmpHeaders
@@ -231,7 +236,8 @@ internal extension PrimerAPI {
                 .continue3DSRemoteAuth(let clientToken, _, _),
                 .createPayment(let clientToken, _),
                 .resumePayment(let clientToken, _, _),
-                .requestPrimerConfigurationWithActions(let clientToken, _):
+                .requestPrimerConfigurationWithActions(let clientToken, _),
+                .getPhoneMetadata(let clientToken, _):
             guard let urlStr = clientToken.pciUrl else { return nil }
             return urlStr
         case .fetchConfiguration(let clientToken, _):
@@ -303,6 +309,8 @@ internal extension PrimerAPI {
             return "/nol-pay/sdk-secrets"
         case .redirect:
             return ""
+        case .getPhoneMetadata(_, let request):
+            return "phone-number-lookups/\(request.phoneNumber)"
         }
     }
     
@@ -322,7 +330,8 @@ internal extension PrimerAPI {
         case .redirect,
                 .fetchConfiguration,
                 .fetchVaultedPaymentMethods,
-                .listRetailOutlets:
+                .listRetailOutlets,
+                .getPhoneMetadata:
             return .get
         case .createPayPalOrderSession,
                 .createPayPalBillingAgreementSession,
@@ -417,6 +426,8 @@ internal extension PrimerAPI {
             return nil
         case .getNolSdkSecret(_, let requestBody):
             return try? JSONEncoder().encode(requestBody)
+        case .getPhoneMetadata:
+            return nil
         }
     }
     
