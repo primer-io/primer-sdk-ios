@@ -26,6 +26,7 @@ app_output_archive_path = "/var/tmp/Primer.io_Debug_App.xcarchive"
 
 # Utils
 sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
+source_branch_trimmed = ENV['SOURCE_BRANCH'].gsub("refs/heads/", "")
 pr_number = ENV['PR_NUMBER']
 
 podfile_path = "Debug App/Podfile"
@@ -95,7 +96,7 @@ platform :ios do
       service_credentials_file: "firebase_credentials.json",
       app: "1:1024117832450:ios:d8c2e74c66341d8cf3201b",
       groups: ENV["FIREBASE_COMMA_SEPARATED_TEST_GROUPS"],
-      release_notes: "QA release: #{sdk_version_name_source_branch} PR number: #{pr_number}"
+      release_notes: "QA release: #{source_branch_trimmed}"
     )
 
   end

@@ -15,38 +15,10 @@ internal extension String {
         return self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    var isNotValidIBAN: Bool {
-        return self.withoutWhiteSpace.count < 6
-    }
-
-    var urlEscaped: String? {
-        return addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
-    }
-
-    var utf8EncodedData: Data? {
-        return data(using: .utf8)
-    }
-
-    var utf8EncodedStringRepresentation: String? {
-        guard let data = utf8EncodedData else { return nil }
-        return String(data: data, encoding: .utf8)
-    }
-    
     var isNumeric: Bool {
         guard !self.isEmpty else { return false }
         let nums: Set<Character> = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         return Set(self).isSubset(of: nums)
-    }
-
-    var isAlphaNumeric: Bool {
-        let regex = "^[a-zA-Z0-9]*$"
-        let inputP = NSPredicate(format: "SELF MATCHES %@", regex)
-        return inputP.evaluate(with: self)
-    }
-    
-    var isOnlyLatinCharacters: Bool {
-        let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ")
-        return !(self.rangeOfCharacter(from: set.inverted) != nil)
     }
 
     var isValidCardNumber: Bool {
@@ -84,41 +56,6 @@ internal extension String {
         return withoutWhiteSpace.filter("0123456789".contains)
     }
     
-    var isTypingValidExpiryDate: Bool? {
-        // swiftlint:disable identifier_name
-        let _self = self.replacingOccurrences(of: "/", with: "")
-        // swiftlint:enable identifier_name
-        if _self.count > 4 {
-            return false
-            
-        } else if _self.count == 3 {
-            return nil
-            
-        } else if _self.count == 2 {
-            if let month = Int(_self) {
-                if month < 1 || month > 12 {
-                    return false
-                } else {
-                    return nil
-                }
-            }
-            
-        } else if _self.count == 1 {
-            if ["0", "1"].contains(_self.prefix(1)) {
-                return nil
-            } else {
-                return false
-            }
-            
-        } else if _self.isEmpty {
-            return nil
-        }
-        
-        // Case where count is 4 will arrive here
-        guard let date = _self.toDate(withFormat: "MMyy") else { return false }
-        return date.endOfMonth > Date()
-    }
-    
     var isValidExpiryDate: Bool {
         // swiftlint:disable identifier_name
         let _self = self.replacingOccurrences(of: "/", with: "")
@@ -132,34 +69,6 @@ internal extension String {
         }
         
         guard let date = _self.toDate(withFormat: "MMyy") else { return false }
-        let isValid = date.endOfMonth > Date()
-        
-        if !isValid {
-            let event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "Invalid expiry date",
-                    messageType: .validationFailed,
-                    severity: .error))
-            Analytics.Service.record(event: event)
-        }
-        
-        return isValid
-    }
-    
-    var isValidExpiryDateWith4DigitYear: Bool {
-        // swiftlint:disable identifier_name
-        let _self = self.replacingOccurrences(of: "/", with: "")
-        // swiftlint:enable identifier_name
-        if _self.count != 6 {
-            return false
-        }
-        
-        if !_self.isNumeric {
-            return false
-        }
-        
-        guard let date = _self.toDate(withFormat: "MMyyyy") else { return false }
         let isValid = date.endOfMonth > Date()
         
         if !isValid {
@@ -207,21 +116,9 @@ internal extension String {
         return isValid
     }
     
-    var isTypingNonDecimalCharacters: Bool {
-        isValidNonDecimalString
-    }
-    
     var isValidNonDecimalString: Bool {
         if isEmpty { return false }
         return rangeOfCharacter(from: .decimalDigits) == nil
-    }
-    
-    var isValidCardholderName: Bool {
-        return isValidNonDecimalString
-    }
-    
-    var isTypingValidCardholderName: Bool {
-        isValidCardholderName
     }
     
     var isValidPostalCode: Bool {
@@ -230,21 +127,9 @@ internal extension String {
         return !(self.rangeOfCharacter(from: set.inverted) != nil)
     }
 
-    var isValidEmail: Bool {
-        let emailRegEx = "(?:[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}~-]+(?:\\.[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}" +
-            "~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\" +
-            "x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[\\p{L}0-9](?:[a-" +
-            "z0-9-]*[\\p{L}0-9])?\\.)+[\\p{L}0-9](?:[\\p{L}0-9-]*[\\p{L}0-9])?|\\[(?:(?:25[0-5" +
-            "]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-" +
-            "9][0-9]?|[\\p{L}0-9-]*[\\p{L}0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21" +
-            "-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
-        let emailP = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
-        return emailP.evaluate(with: self)
-    }
-
     var isValidLuhn: Bool {
         var sum = 0
-        let digitStrings = self.reversed().map { String($0) }
+        let digitStrings = self.withoutWhiteSpace.reversed().map { String($0) }
 
         for tuple in digitStrings.enumerated() {
             if let digit = Int(tuple.element) {
@@ -273,7 +158,7 @@ internal extension String {
         return try? JSONParser().parse(DecodedJWTToken.self, from: data)
     }
     
-    var base64IOSFormat: Self {
+    private var base64IOSFormat: Self {
         let str = self.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
         let offset = str.count % 4
         guard offset != 0 else { return str }
@@ -297,36 +182,11 @@ internal extension String {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         return String((0..<length).map { _ in letters.randomElement()! })
     }
-
-    var isValidAccountNumber: Bool {
-        return !self.isEmpty
-    }
     
     func separate(every: Int, with separator: String) -> String {
         return String(stride(from: 0, to: Array(self).count, by: every).map {
             Array(Array(self)[$0..<min($0 + every, Array(self).count)])
         }.joined(separator: separator))
-    }
-
-    func separate(on gaps: [Int], with separator: String) -> String {
-        let sortedReversedGaps = gaps.sorted(by: { $0 > $1 })
-        
-        var str = self
-        for gap in sortedReversedGaps {
-            if str.count > gap {
-                str.insert(" ", at: str.index(str.startIndex, offsetBy: gap))
-            }
-        }
-        
-        return str
-    }
-    
-    func capitalizingFirstLetter() -> String {
-        return prefix(1).capitalized + dropFirst()
-    }
-    
-    mutating func capitalizeFirstLetter() {
-        self = self.capitalizingFirstLetter()
     }
     
     func isValidPhoneNumberForPaymentMethodType(_ paymentMethodType: PrimerPaymentMethodType) -> Bool {
@@ -410,6 +270,21 @@ internal extension String {
             return versionComponents.joined(separator: versionDelimiter)
                 .compare(otherVersionComponents.joined(separator: versionDelimiter), options: .numeric)
         }
+    }
+    
+    var isValidCountryCode: Bool {
+        let pattern = "^\\+\\d{1,3}(-\\d{1,4})?$"
+        let regex = try? NSRegularExpression(pattern: pattern, options: [])
+        let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: self.count))
+        return matches?.count ?? 0 > 0
+    }
+    
+    var isValidMobilePhoneNumber: Bool {
+        let sanitizedInput = self.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "-", with: "")
+        let pattern = "^\\d{7,15}$"
+        let regex = try? NSRegularExpression(pattern: pattern, options: [])
+        let matches = regex?.matches(in: sanitizedInput, options: [], range: NSRange(location: 0, length: sanitizedInput.count))
+        return matches?.count ?? 0 > 0
     }
     
     var isValidOTP: Bool {
