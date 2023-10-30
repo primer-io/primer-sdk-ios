@@ -65,7 +65,7 @@ public enum PrimerInputElementType: Int {
             
         case .cardholderName:
             guard let text = value as? String else { return false }
-            return text.isValidCardholderName
+            return text.isValidNonDecimalString
             
         case .otp:
             guard let text = value as? String else { return false }
