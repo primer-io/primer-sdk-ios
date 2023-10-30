@@ -3,11 +3,10 @@ PODS:
   - KlarnaMobileSDK (2.2.2):
     - KlarnaMobileSDK/full (= 2.2.2)
   - KlarnaMobileSDK/full (2.2.2)
-  - Primer3DS (2.0.0)
+  - Primer3DS (2.0.1)
   - PrimerIPay88MYSDK (0.1.6)
   - PrimerKlarnaSDK (1.0.4):
     - KlarnaMobileSDK (= 2.2.2)
-  - PrimerNolPaySDK (0.1.0)
   - PrimerSDK (2.18.0-b1):
     - PrimerSDK/Core (= 2.18.0-b1)
   - PrimerSDK/Core (2.18.0-b1)
@@ -17,7 +16,6 @@ DEPENDENCIES:
   - Primer3DS (~> 2.0.0)
   - PrimerIPay88MYSDK (from `https://github.com/primer-io/primer-ipay88-sdk-ios.git`, branch `master`)
   - PrimerKlarnaSDK
-  - PrimerNolPaySDK (from `https://github.com/primer-io/primer-nol-pay-sdk-ios.git`, branch `master`)
   - PrimerSDK (from `../`)
 
 SPEC REPOS:
@@ -31,9 +29,6 @@ EXTERNAL SOURCES:
   PrimerIPay88MYSDK:
     :branch: master
     :git: https://github.com/primer-io/primer-ipay88-sdk-ios.git
-  PrimerNolPaySDK:
-    :branch: master
-    :git: https://github.com/primer-io/primer-nol-pay-sdk-ios.git
   PrimerSDK:
     :path: "../"
 
@@ -41,19 +36,15 @@ CHECKOUT OPTIONS:
   PrimerIPay88MYSDK:
     :commit: e870b41ba067dfe6ad72ca5446260a4363f9f494
     :git: https://github.com/primer-io/primer-ipay88-sdk-ios.git
-  PrimerNolPaySDK:
-    :commit: 886712516afebdcebb3bf65312ad9026680fe4b9
-    :git: https://github.com/primer-io/primer-nol-pay-sdk-ios.git
 
 SPEC CHECKSUMS:
   IQKeyboardManagerSwift: 12d89768845bb77b55cc092ecc2b1f9370f06b76
   KlarnaMobileSDK: 23b44390d06c6e3a90b5325bea6c10bf97ac6044
-  Primer3DS: 109e46ed31726039b9fb0ee6e1a0948fda345b24
+  Primer3DS: 16a0c0d48d83dcfe9fc5c213338bf5d48eeeb1de
   PrimerIPay88MYSDK: a3097799a9ced2db623b2d8a3fbc226be7051f20
   PrimerKlarnaSDK: de4b8b8fda075e3e4ebbd4ab80bd141c76a30d85
-  PrimerNolPaySDK: 4dff49bddbf2cfa0aec4ac287c947b1f0e4cf42d
   PrimerSDK: 96f02df6d33c0033d71fd4079ff59d18281271a9
 
-PODFILE CHECKSUM: d357adcab3027cd41e830e0baea07629c8eec6c3
+PODFILE CHECKSUM: 54b644168ed2a28518d9eddbceb44ac2fd40129b
 
 COCOAPODS: 1.13.0

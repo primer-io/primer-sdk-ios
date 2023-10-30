@@ -24,7 +24,8 @@ internal class URLSessionStack: NetworkService {
     // MARK: - Network Stack logic
     
     // swiftlint:disable function_body_length
-    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) {
+    @discardableResult
+    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) -> PrimerCancellable? {
         
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         let id = String.randomString(length: 32)
@@ -52,7 +53,7 @@ internal class URLSessionStack: NetworkService {
             let err = InternalError.invalidUrl(url: "Base URL: \(endpoint.baseURL ?? "nil") | Endpoint: \(endpoint.path)", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
-            return
+            return nil
         }
         
         var request = URLRequest(url: url)
@@ -184,7 +185,7 @@ internal class URLSessionStack: NetworkService {
                 if endpoint.shouldParseResponseBody {
                     if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
                         primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                    } else {
+                    } else if !data.isEmpty  {
                         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
                         let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
                         var jsonStr: String?
@@ -317,6 +318,7 @@ internal class URLSessionStack: NetworkService {
             }
         }
         dataTask.resume()
+        return dataTask
     }
 }
 

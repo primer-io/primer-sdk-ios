@@ -19,7 +19,8 @@ class MockNetworkService: NetworkService {
     
     var onReceiveEndpoint: ((Endpoint) -> Void)?
     
-    func request<T>(_ endpoint: PrimerSDK.Endpoint, completion: @escaping PrimerSDK.ResultCallback<T>) where T : Decodable {
+    func request<T>(_ endpoint: PrimerSDK.Endpoint, 
+                    completion: @escaping PrimerSDK.ResultCallback<T>) -> PrimerCancellable? where T : Decodable {
         
         onReceiveEndpoint?(endpoint)
         
@@ -32,5 +33,7 @@ class MockNetworkService: NetworkService {
                 XCTFail("Failed to produce either a valid result or an error for requested endpoint")
             }
         }
+        
+        return nil
     }
 }

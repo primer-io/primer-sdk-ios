@@ -11,7 +11,7 @@ target 'Debug App' do
   pod 'Primer3DS', "~> 2.0.0"
   pod 'PrimerKlarnaSDK'
   pod 'PrimerIPay88MYSDK', :git => 'https://github.com/primer-io/primer-ipay88-sdk-ios.git', :branch => 'master'
-  pod 'PrimerNolPaySDK', :git => 'https://github.com/primer-io/primer-nol-pay-sdk-ios.git', :branch => 'master'
+  #pod 'PrimerNolPaySDK', :git => 'https://github.com/primer-io/primer-nol-pay-sdk-ios.git', :branch => 'master'
   pod 'IQKeyboardManagerSwift'
   
   target 'Debug App Tests' do

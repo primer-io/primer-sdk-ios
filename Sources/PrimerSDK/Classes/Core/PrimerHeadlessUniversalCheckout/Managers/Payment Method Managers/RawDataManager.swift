@@ -12,8 +12,24 @@ import SafariServices
 
 @objc
 public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?)
-    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?)
+
+    @objc optional 
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              metadataDidChange metadata: [String: Any]?)
+
+    @objc optional 
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              dataIsValid isValid: Bool,
+                              errors: [Error]?)
+    
+    @objc optional 
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              willFetchCardMetadataForState cardState: PrimerCardValidationState)
+    
+    @objc optional 
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              didReceiveCardMetadata metadata: PrimerCardMetadata,
+                              forCardValidationState cardState: PrimerCardValidationState)
 }
 
 protocol PrimerRawDataTokenizationBuilderProtocol {
@@ -25,7 +41,7 @@ protocol PrimerRawDataTokenizationBuilderProtocol {
     var rawData: PrimerRawData? { get set }
     
     init(paymentMethodType: String)
-    func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager)
+    func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager)
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization>
     func validateRawData(_ data: PrimerRawData) -> Promise<Void>
 }
@@ -113,7 +129,7 @@ extension PrimerHeadlessUniversalCheckout {
             
             super.init()
             
-            self.rawDataTokenizationBuilder.configureRawDataManager(self)
+            self.rawDataTokenizationBuilder.configure(withRawDataManager: self)
         }
         
         /// The provided function provides additional data after initializing a Raw Data Manager.
