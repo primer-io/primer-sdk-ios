@@ -32,20 +32,32 @@ public class PrimerCardData: PrimerRawData {
         }
     }
     
+    public var cardNetworkIdentifier: String? {
+        didSet {
+            self.onDataDidChange?()
+        }
+    }
+    
     private enum CodingKeys: String, CodingKey {
-        case cardNumber, expiryDate, cvv, cardholderName
+        case cardNumber,
+             expiryDate,
+             cvv,
+             cardholderName,
+             cardNetworkIdentifier
     }
         
     public required init(
         cardNumber: String,
         expiryDate: String,
         cvv: String,
-        cardholderName: String?
+        cardholderName: String?,
+        cardNetworkIdentifier: String?
     ) {
         self.cardNumber = cardNumber
         self.expiryDate = expiryDate
         self.cvv = cvv
         self.cardholderName = cardholderName
+        self.cardNetworkIdentifier = cardNetworkIdentifier
         super.init()
     }
     
@@ -55,6 +67,9 @@ public class PrimerCardData: PrimerRawData {
         try container.encode(expiryDate, forKey: .expiryDate)
         try container.encode(cvv, forKey: .cvv)
         try container.encode(cardholderName, forKey: .cardholderName)
+        if let cardNetworkIdentifier = cardNetworkIdentifier {
+            try container.encode(cardNetworkIdentifier, forKey: .cardNetworkIdentifier)
+        }
     }
 }
 
