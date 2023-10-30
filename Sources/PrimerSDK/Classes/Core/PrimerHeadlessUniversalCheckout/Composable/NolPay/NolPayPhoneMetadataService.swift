@@ -32,10 +32,10 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
         client.getPhoneMetadata(clientToken: clientToken, paymentRequestBody: requestBody) { result in
 
             switch result {
-            case .success(let phoneMedatadaResponse):
-                let countryCode = phoneMedatadaResponse.countryCode
-                let mobileNumber = phoneMedatadaResponse.nationalNumber
-                if phoneMedatadaResponse.isValid {
+            case .success(let phoneMetadataResponse):
+                let countryCode = phoneMetadataResponse.countryCode
+                let mobileNumber = phoneMetadataResponse.nationalNumber
+                if phoneMetadataResponse.isValid {
                     completion(.success((.valid, countryCode, mobileNumber)))
                 } else {
                     let validationError = PrimerValidationError.invalidPhoneNumber(
