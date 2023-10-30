@@ -38,13 +38,21 @@ class DefaultBinDataService: BinDataService {
         cancellables.removeAll()
     }
     
+    var mostRecentCardNumber: String?
+    
     func validateCardNetworks(withCardNumber cardNumber: String) {
         guard let rawDataManager = rawDataManager else {
             print("[DefaultBinDataService] ERROR: rawDataManager was nil")
             return
         }
         
-        let cardValidationState = PrimerCardValidationState(cardNumber: cardNumber)
+        let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
+        guard sanitizedCardNumber != mostRecentCardNumber else {
+            return
+        }
+        mostRecentCardNumber = sanitizedCardNumber
+        
+        let cardValidationState = PrimerCardValidationState(cardNumber: sanitizedCardNumber)
         // JN TODO: full local fallback validation
         guard cardNumber.count >= 6 else {
             delegate?.primerRawDataManager?(rawDataManager,

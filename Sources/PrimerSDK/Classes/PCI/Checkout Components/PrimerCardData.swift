@@ -46,13 +46,14 @@ public class PrimerCardData: PrimerRawData {
         cardNumber: String,
         expiryDate: String,
         cvv: String,
-        cardholderName: String?
+        cardholderName: String?,
+        cardNetworkIdentifier: String?
     ) {
         self.cardNumber = cardNumber
         self.expiryDate = expiryDate
         self.cvv = cvv
         self.cardholderName = cardholderName
-        self.cardNetworkIdentifier = nil
+        self.cardNetworkIdentifier = cardNetworkIdentifier
         super.init()
     }
     

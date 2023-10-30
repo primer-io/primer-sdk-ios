@@ -23,7 +23,13 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     var paymentMethodType: String!
     var paymentId: String?
     var activityIndicator: UIActivityIndicatorView?
-    var rawCardData = PrimerCardData(cardNumber: "", expiryDate: "", cvv: "", cardholderName: "")
+    var rawCardData = PrimerCardData(
+        cardNumber: "",
+        expiryDate: "",
+        cvv: "",
+        cardholderName: "",
+        cardNetworkIdentifier: nil
+    )
     
     var cardnumberTextField: UITextField?
     var expiryDateTextField: UITextField?
@@ -219,7 +225,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 cardNumber: newText.replacingOccurrences(of: " ", with: ""),
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: self.cvvTextField?.text ?? "",
-                cardholderName: self.cardholderNameTextField?.text ?? "")
+                cardholderName: self.cardholderNameTextField?.text ?? "",
+                cardNetworkIdentifier: self.rawCardData.cardNetworkIdentifier)
             cardsLabel.text = (self.cardnumberTextField?.text ?? "").isEmpty ? "" : "⌨️"
 
         } else if textField == self.expiryDateTextField {
@@ -227,21 +234,24 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 cardNumber: self.cardnumberTextField?.text ?? "",
                 expiryDate: newText,
                 cvv: self.cvvTextField?.text ?? "",
-                cardholderName: self.cardholderNameTextField?.text ?? "")
+                cardholderName: self.cardholderNameTextField?.text ?? "",
+                cardNetworkIdentifier: self.rawCardData.cardNetworkIdentifier)
             
         } else if textField == self.cvvTextField {
             self.rawCardData = PrimerCardData(
                 cardNumber: self.cardnumberTextField?.text ?? "",
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: newText,
-                cardholderName: self.cardholderNameTextField?.text ?? "")
+                cardholderName: self.cardholderNameTextField?.text ?? "",
+                cardNetworkIdentifier: self.rawCardData.cardNetworkIdentifier)
             
         } else if textField == self.cardholderNameTextField {
             self.rawCardData = PrimerCardData(
                 cardNumber: self.cardnumberTextField?.text ?? "",
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: self.cvvTextField?.text ?? "",
-                cardholderName: newText.count == 0 ? nil : newText)
+                cardholderName: newText.count == 0 ? nil : newText,
+                cardNetworkIdentifier: self.rawCardData.cardNetworkIdentifier)
         }
         
         print("self.rawCardData\ncardNumber: \(self.rawCardData.cardNumber)\nexpiryDate: \(self.rawCardData.expiryDate)\ncvv: \(self.rawCardData.cvv)\ncardholderName: \(self.rawCardData.cardholderName ?? "nil")")
@@ -279,6 +289,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
         DispatchQueue.main.async {
             self.cardsLabel.text = printableNetworks
+            self.rawCardData.cardNetworkIdentifier = metadata.preferredCardNetwork?.networkIdentifier
         }
     }
 }
