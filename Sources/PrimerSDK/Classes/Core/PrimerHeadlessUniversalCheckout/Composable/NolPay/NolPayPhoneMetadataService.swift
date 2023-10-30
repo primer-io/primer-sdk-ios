@@ -51,7 +51,7 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
 
                     completion(.success((.invalid(errors: [validationError]), nil, nil)))
                 }
-            case .failure(let error ):
+            case .failure(let error):
                 let primerError = PrimerError.underlyingErrors(
                     errors: [error],
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
