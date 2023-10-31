@@ -10,7 +10,7 @@
 import Foundation
 import Combine
 
-protocol PrimerAPIClientProtocol {
+protocol PrimerAPIClientProtocol: PrimerAPIClientBINDataProtocol {
     
     func genericAPICall(clientToken: DecodedJWTToken,
                         url: URL,
@@ -122,12 +122,6 @@ protocol PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         testId: String,
         completion: @escaping (_ result: Result<Void, Error>) -> Void)
-    
-    // BIN Data
-    func listCardNetworks(
-        clientToken: DecodedJWTToken,
-        bin: String,
-        completion: @escaping (_ result: Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable?
 
     // NolPay
     func fetchNolSdkSecret(clientToken: DecodedJWTToken,

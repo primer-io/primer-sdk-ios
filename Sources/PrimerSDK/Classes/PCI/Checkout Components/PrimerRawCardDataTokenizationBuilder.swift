@@ -83,7 +83,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     
     func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
-        self.binDataService = DefaultBinDataService(rawDataManager: rawDataManager)
+        self.binDataService = DefaultBINDataService(rawDataManager: rawDataManager)
     }
     
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {

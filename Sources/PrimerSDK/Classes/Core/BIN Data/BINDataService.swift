@@ -12,23 +12,27 @@ protocol BinDataService {
     func validateCardNetworks(withCardNumber cardNumber: String)
 }
 
-class DefaultBinDataService: BinDataService {
+class DefaultBINDataService: BinDataService {
     
     let delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
     
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
     
+    let apiClient: PrimerAPIClientBINDataProtocol
+    
     let debouncer: Debouncer
     
+    var mostRecentCardNumber: String?
+
     init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+         apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
          debouncer: Debouncer = .init(delay: 0.35, labelIdentifier: "DefaultBinDataService")) {
         self.rawDataManager = rawDataManager
         self.delegate = rawDataManager.delegate
+        self.apiClient = apiClient
         self.debouncer = debouncer
     }
-    
-    var mostRecentCardNumber: String?
-    
+        
     func validateCardNetworks(withCardNumber cardNumber: String) {
         guard let rawDataManager = rawDataManager else {
             print("[DefaultBinDataService] ERROR: rawDataManager was nil")
@@ -44,10 +48,6 @@ class DefaultBinDataService: BinDataService {
         let cardValidationState = PrimerCardValidationState(cardNumber: sanitizedCardNumber)
         // JN TODO: full local fallback validation
         guard cardNumber.count >= 6 else {
-            delegate?.primerRawDataManager?(rawDataManager,
-                                            willFetchCardMetadataForState: cardValidationState)
-                        print("[DefaultBinDataService] WARNING: cardNumber length was zero, so didn't fetch card networks")
-            print("[DefaultBinDataService] WARNING: ↳ falling back to local validation")
             useLocalValidation(withCardState: cardValidationState)
             return
         }
@@ -115,7 +115,7 @@ class DefaultBinDataService: BinDataService {
                 cancellable.cancel()
             }
             
-            validateCardNetworksCancellable = PrimerAPIClient().listCardNetworks(clientToken: decodedJWTToken, bin: cardNumber) { result in
+            validateCardNetworksCancellable = apiClient.listCardNetworks(clientToken: decodedJWTToken, bin: cardNumber) { result in
                 switch result {
                 case .success(let networks):
                     resolver.fulfill(networks)
