@@ -320,7 +320,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                     }
                 }
             } else {
-                Primer.shared.logger?.debug(message: "Card network patterns array must contain one or two Ints")
+                logger.debug(message: "Card network patterns array must contain one or two Ints")
             }
         }
         

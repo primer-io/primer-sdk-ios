@@ -244,9 +244,9 @@ extension PrimerHeadlessUniversalCheckout {
                             }
                         })
                     
-                    Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
+                    Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
                         if !decisionHandlerHasBeenCalled {
-                            Primer.shared.logger?.warn(message: "The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.")
+                            self?.logger.warn(message: "The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.")
                         }
                     }
                 }

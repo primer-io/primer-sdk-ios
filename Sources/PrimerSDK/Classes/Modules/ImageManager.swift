@@ -241,8 +241,8 @@ internal class ImageManager: LogReporter {
             }
                         
         } catch {
-            Primer.shared.logger?.error(message: "IMAGE MANAGER")
-            Primer.shared.logger?.error(message: "Clean failed with error: \(error)")
+            logger.error(message: "IMAGE MANAGER")
+            logger.error(message: "Clean failed with error: \(error)")
         }
     }
 }

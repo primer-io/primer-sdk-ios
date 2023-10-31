@@ -160,16 +160,3 @@ public class DefaultLogger: PrimerLogger {
         return logger
     }
 }
-
-
-private let silentLogger = DefaultLogger(logLevel: .none)
-
-protocol LogReporter {}
-extension LogReporter {
-    
-    var logger: PrimerLogger {
-        return Primer.shared.logger ?? silentLogger
-    }
-}
-
-
