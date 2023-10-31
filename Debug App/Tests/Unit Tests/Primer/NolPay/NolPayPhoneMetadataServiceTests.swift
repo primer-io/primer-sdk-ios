@@ -12,10 +12,12 @@ import XCTest
 import PrimerNolPaySDK
 
 final class NolPayPhoneMetadataServiceTests: XCTestCase {
+    
+    typealias ValidationResult = Result<(PrimerValidationStatus, String?, String?), PrimerError>
 
     func testGetPhoneMetadata() {
         let mockService = MockPhoneMetadataService()
-        let expectedResult = Result<(PrimerValidationStatus, String?, String?), PrimerError>.success((.valid, "+123", "1234567890"))
+        let expectedResult = ValidationResult.success((.valid, "+123", "1234567890"))
         
         mockService.resultToReturn = expectedResult
         
@@ -40,7 +42,7 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
     func testGetPhoneMetadata_InvalidPhoneNumber() {
         let mockService = MockPhoneMetadataService()
         let validationError = PrimerValidationError.invalidPhoneNumber(message: "Invalid", userInfo: [:], diagnosticsId: "1")
-        let expectedResult = Result<(PrimerValidationStatus, String?, String?), PrimerError>.success((.invalid(errors: [validationError]), nil, nil))
+        let expectedResult = ValidationResult.success((.invalid(errors: [validationError]), nil, nil))
         mockService.resultToReturn = expectedResult
         
         let expectation = self.expectation(description: "PhoneMetadata")
@@ -61,7 +63,7 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
     func testGetPhoneMetadata_ServiceFailure() {
         let mockService = MockPhoneMetadataService()
         let underlyingError = NSError(domain: "com.test", code: 27, userInfo: nil)
-        let expectedResult = Result<(PrimerValidationStatus, String?, String?), PrimerError>.failure(.underlyingErrors(errors: [underlyingError], userInfo: [:], diagnosticsId: "1"))
+        let expectedResult = ValidationResult.failure(.underlyingErrors(errors: [underlyingError], userInfo: [:], diagnosticsId: "1"))
         mockService.resultToReturn = expectedResult
         
         let expectation = self.expectation(description: "PhoneMetadata")
@@ -77,8 +79,5 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
         
         waitForExpectations(timeout: 5, handler: nil)
     }
-
-
 }
-
 #endif

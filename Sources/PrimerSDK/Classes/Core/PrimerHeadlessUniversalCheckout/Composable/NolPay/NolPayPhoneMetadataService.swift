@@ -14,51 +14,55 @@ protocol NolPayPhoneMetadataProviding {
 }
 
 struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
+    var debouncer = Debouncer(delay: 0.5)
+    
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion) {
         
-        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
-        }
+        debouncer.debounce {
+            guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                    "class": "\(Self.self)",
+                                                                    "function": #function,
+                                                                    "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                completion(.failure(err))
+                return
+            }
 
-        let requestBody = Request.Body.PhoneMetadata.PhoneMetadataDataRequest(phoneNumber: mobileNumber)
-        let client = PrimerAPIClient()
-        client.getPhoneMetadata(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+            let requestBody = Request.Body.PhoneMetadata.PhoneMetadataDataRequest(phoneNumber: mobileNumber)
+            let client = PrimerAPIClient()
+            client.getPhoneMetadata(clientToken: clientToken, paymentRequestBody: requestBody) { result in
 
-            switch result {
-            case .success(let phoneMetadataResponse):
-                let countryCode = phoneMetadataResponse.countryCode
-                let mobileNumber = phoneMetadataResponse.nationalNumber
-                if phoneMetadataResponse.isValid {
-                    completion(.success((.valid, countryCode, mobileNumber)))
-                } else {
-                    let validationError = PrimerValidationError.invalidPhoneNumber(
-                        message: "Phone number is not valid.",
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                switch result {
+                case .success(let phoneMetadataResponse):
+                    let countryCode = phoneMetadataResponse.countryCode
+                    let mobileNumber = phoneMetadataResponse.nationalNumber
+                    if phoneMetadataResponse.isValid {
+                        completion(.success((.valid, countryCode, mobileNumber)))
+                    } else {
+                        let validationError = PrimerValidationError.invalidPhoneNumber(
+                            message: "Phone number is not valid.",
+                            userInfo: [
+                                "file": #file,
+                                "class": "\(Self.self)",
+                                "function": #function,
+                                "line": "\(#line)"
+                            ],
+                            diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: validationError)
+
+                        completion(.success((.invalid(errors: [validationError]), nil, nil)))
+                    }
+                case .failure(let error):
+                    let primerError = PrimerError.underlyingErrors(
+                        errors: [error],
+                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: validationError)
+                    ErrorHandler.handle(error: primerError)
 
-                    completion(.success((.invalid(errors: [validationError]), nil, nil)))
+                    completion(.failure(primerError))
                 }
-            case .failure(let error):
-                let primerError = PrimerError.underlyingErrors(
-                    errors: [error],
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: primerError)
-
-                completion(.failure(primerError))
             }
         }
     }

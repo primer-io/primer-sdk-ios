@@ -13,7 +13,7 @@ import IQKeyboardManagerSwift
 #if canImport(PrimerNolPaySDK)
 class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     
-    private var nolPayManager: PrimerSDK.PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager!
+    private var nolPayManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager!
     private var linkCardComponent: NolPayLinkCardComponent!
     private var unlinkCardComponent: NolPayUnlinkCardComponent!
     private var getLinkedCardsComponent: NolPayLinkedCardsComponent!
