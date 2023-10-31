@@ -11,7 +11,7 @@ on:
 
 jobs:
   spm-build:
-    name: "Build app with SPM Integration"
+    name: "SPM Build"
     runs-on: macos-13
     strategy:
       matrix:
@@ -52,9 +52,10 @@ jobs:
           FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          SOURCE_BRANCH: ${{ github.head_ref }}
   build-cocoapods:
     runs-on: macos-13
-    name: "Build and upload app to Appetize"
+    name: "Cocoapods Build"
     strategy:
       matrix:
         xcode: [14.3, 14.2, 14.1]
@@ -107,3 +108,4 @@ jobs:
           FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          SOURCE_BRANCH: ${{ github.head_ref }}
