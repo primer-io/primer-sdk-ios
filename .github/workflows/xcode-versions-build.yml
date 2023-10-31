@@ -10,12 +10,13 @@ on:
     - cron: '0 1 * * *'
 
 jobs:
-  build-spm:
+  build:
     name: "SPM Build"
     runs-on: macos-13
     strategy:
       max-parallel: 3
       matrix:
+        variant: [cocoapods, spm]
         xcode: [14.3, 14.2, 14.1]
     steps:
       - name: Cancel previous jobs
@@ -40,10 +41,24 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
       - uses: ruby/setup-ruby@v1
+        if: ${{ matrix.variant == 'cocoapods' }}
         with:
           ruby-version: "3.2"
           bundler-cache: true
+      - name: Build and archive app via cocoapods
+        if: ${{ matrix.variant == 'cocoapods' }}
+        run: |
+          bundle exec fastlane build_cocoapods tests:false skip_package_ipa:false
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
+          MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          SOURCE_BRANCH: ${{ github.head_ref }}
       - name: Build SPM App
+        if: ${{ matrix.variant == 'spm' }}
         run: |
           bundle exec fastlane build_spm
         env:
@@ -61,7 +76,7 @@ jobs:
           matrix-step-name: ${{ github.job }}
           matrix-key: ${{ matrix.xcode }}
           outputs: |-
-            :white_check_mark: ${{ matrix.xcode }}:${{ github.job }}
+            :white_check_mark: ${{ matrix.xcode }}:${{ matrix.variant }}
       - uses: cloudposse/github-action-matrix-outputs-write@main
         if: ${{ failure() }}
         id: outfailure
@@ -69,60 +84,10 @@ jobs:
           matrix-step-name: ${{ github.job }}
           matrix-key: ${{ matrix.xcode }}
           outputs: |-
-            :x: ${{ matrix.xcode }}:${{ github.job }} \n
-  # build-cocoapods:
-  #   runs-on: macos-13
-  #   name: "Cocoapods Build"
-  #   strategy:
-  #     max-parallel: 1
-  #     matrix:
-  #       xcode: [14.3, 14.2, 14.1]
-  #   steps:
-  #     - name: Cancel previous jobs
-  #       uses: styfle/cancel-workflow-action@0.11.0
-  #       with:
-  #         access_token: ${{ github.token }}
-
-  #     - name: Git - Checkout
-  #       uses: actions/checkout@v3
-  #       with:
-  #         ref: ${{ github.ref }}
-
-  #     - name: Select Xcode Version
-  #       uses: maxim-lobanov/setup-xcode@v1
-  #       with:
-  #         xcode-version: ${{ matrix.xcode }}
-
-  #     - name: Install SSH key
-  #       uses: shimataro/ssh-key-action@v2
-  #       with:
-  #         key: ${{ secrets.SSH_KEY }}
-  #         name: id_rsa_github_actions
-  #         known_hosts: ${{ secrets.KNOWN_HOSTS }}
-
-  #     - uses: webfactory/ssh-agent@v0.7.0
-  #       with:
-  #         ssh-private-key: ${{ secrets.SSH_KEY }}
-
-  #     - uses: ruby/setup-ruby@v1
-  #       with:
-  #         ruby-version: "3.2"
-  #         bundler-cache: true
-      
-  #     - name: Build and archive app via cocoapods
-  #       run: |
-  #         bundle exec fastlane build_cocoapods tests:false skip_package_ipa:false
-  #       env:
-  #         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-  #         MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-  #         FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-  #         FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
-  #         MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
-  #         MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-  #         SOURCE_BRANCH: ${{ github.head_ref }}
+            :x: ${{ matrix.xcode }}:${{ matrix.variant }} \n
   read:
     runs-on: ubuntu-latest
-    needs: [build-spm]
+    needs: [build]
     steps:
       - uses: cloudposse/github-action-matrix-outputs-read@main
         id: read
