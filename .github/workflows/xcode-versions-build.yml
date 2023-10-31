@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    name: "SPM Build"
+    name: "Build App"
     runs-on: macos-13
     strategy:
       max-parallel: 3
@@ -41,7 +41,6 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
       - uses: ruby/setup-ruby@v1
-        if: ${{ matrix.variant == 'cocoapods' }}
         with:
           ruby-version: "3.2"
           bundler-cache: true
