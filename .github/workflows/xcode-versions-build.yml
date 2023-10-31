@@ -19,10 +19,6 @@ jobs:
         variant: [cocoapods, spm]
         xcode: [14.3, 14.2, 14.1]
     steps:
-      - name: Cancel previous jobs
-        uses: styfle/cancel-workflow-action@0.11.0
-        with:
-          access_token: ${{ github.token }}
       - name: Git - Checkout
         uses: actions/checkout@v3
         with:
@@ -44,7 +40,7 @@ jobs:
         with:
           ruby-version: "3.2"
           bundler-cache: true
-      - name: Build and archive app via cocoapods
+      - name: Build and archive app via Cocoapods
         if: ${{ matrix.variant == 'cocoapods' }}
         run: |
           bundle exec fastlane build_cocoapods tests:false skip_package_ipa:false
@@ -56,7 +52,7 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
-      - name: Build SPM App
+      - name: Build and archive app via SPM
         if: ${{ matrix.variant == 'spm' }}
         run: |
           bundle exec fastlane build_spm
@@ -68,37 +64,11 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
-      - uses: cloudposse/github-action-matrix-outputs-write@main
-        if: ${{ success() }}
-        id: outsuccess
-        with:
-          matrix-step-name: ${{ github.job }}
-          matrix-key: ${{ matrix.xcode }}
-          outputs: |-
-            :white_check_mark: ${{ matrix.xcode }}:${{ matrix.variant }}
-      - uses: cloudposse/github-action-matrix-outputs-write@main
+      - name: Post to Slack in case of failure
         if: ${{ failure() }}
-        id: outfailure
-        with:
-          matrix-step-name: ${{ github.job }}
-          matrix-key: ${{ matrix.xcode }}
-          outputs: |-
-            :x: ${{ matrix.xcode }}:${{ matrix.variant }} \n
-  read:
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
-      - uses: cloudposse/github-action-matrix-outputs-read@main
-        id: read
-        with:
-          matrix-step-name: build
-      - name: Print Output
-        run: |
-          echo "${{ steps.read.outputs.result }}"
-      - name: Slack Notification
         uses: slackapi/slack-github-action@v1.23.0
         with:
-          channel-id: 'C05NXPD8FL0'
-          slack-message: "${{ steps.read.outputs.result }}"
+          channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+          slack-message: 'Xcode ${{ matrix.xcode }} build failed for ${{ matrix.variant }}'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
