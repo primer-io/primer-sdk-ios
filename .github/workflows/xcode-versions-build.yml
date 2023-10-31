@@ -10,10 +10,11 @@ on:
     - cron: '0 1 * * *'
 
 jobs:
-  spm-build:
+  build-spm:
     name: "SPM Build"
     runs-on: macos-13
     strategy:
+      max-parallel: 1
       matrix:
         xcode: [14.3, 14.2, 14.1]
     steps:
@@ -53,10 +54,27 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
+      - uses: cloudposse/github-action-matrix-outputs-write@main
+        if: ${{ success() }}
+        id: outsuccess
+        with:
+          matrix-step-name: ${{ github.job }}
+          matrix-key: ${{ matrix.xcode }}
+          outputs: |-
+            :white_check_mark: ${{ matrix.xcode }}:${{ github.job }}
+      - uses: cloudposse/github-action-matrix-outputs-write@main
+        if: ${{ failure() }}
+        id: outfailure
+        with:
+          matrix-step-name: ${{ github.job }}
+          matrix-key: ${{ matrix.xcode }}
+          outputs: |-
+            :x: ${{ matrix.xcode }}:${{ github.job }} \n
   build-cocoapods:
     runs-on: macos-13
     name: "Cocoapods Build"
     strategy:
+      max-parallel: 1
       matrix:
         xcode: [14.3, 14.2, 14.1]
     steps:
@@ -90,13 +108,6 @@ jobs:
         with:
           ruby-version: "3.2"
           bundler-cache: true
-          
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.3.0
-
-      - run: npm install --save slack-message-builder
       
       - name: Build and archive app via cocoapods
         run: |
@@ -109,3 +120,19 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
+  read:
+    runs-on: ubuntu-latest
+    needs: [build-cocoapods, build-spm]
+    steps:
+      - uses: cloudposse/github-action-matrix-outputs-read@main
+        id: read
+        with:
+          matrix-step-name: build
+      - name: Slack Notification
+        if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: 'C05NXPD8FL0'
+          slack-message: "${{ steps.read.outputs.result }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
