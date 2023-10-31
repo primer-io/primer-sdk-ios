@@ -413,7 +413,7 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                     // All good, url value is valid and https
                     threeDsAppRequestorUrl = url
                 } else {
-                    logger.warn(message: "Warning: threeDsAppRequestorUrl is not in a valid format (\"https://applink\"). In case you want to support redirecting back during the OOB flows please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK initialization.")
+                    logger.warn(message: "threeDsAppRequestorUrl is not in a valid format (\"https://applink\"). In case you want to support redirecting back during the OOB flows please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK initialization.")
                 }
             }
             
