@@ -14,7 +14,7 @@ protocol NolPayPhoneMetadataProviding {
 }
 
 struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
-    var debouncer = Debouncer(delay: 0.5)
+    var debouncer = Debouncer(delay: 0.275)
     
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion) {
         
@@ -30,8 +30,13 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
                 return
             }
 
+            let urlSessionConfiguration = URLSessionConfiguration.default
+            urlSessionConfiguration.requestCachePolicy = .returnCacheDataElseLoad
+            let urlSession = URLSession(configuration: urlSessionConfiguration)
+            let networkService = URLSessionStack(session: urlSession)
+            let client = PrimerAPIClient(networkService: networkService)
+            
             let requestBody = Request.Body.PhoneMetadata.PhoneMetadataDataRequest(phoneNumber: mobileNumber)
-            let client = PrimerAPIClient()
             client.getPhoneMetadata(clientToken: clientToken, paymentRequestBody: requestBody) { result in
 
                 switch result {
