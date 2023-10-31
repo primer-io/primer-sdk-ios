@@ -12,10 +12,10 @@ on:
 jobs:
   spm-build:
     name: "Build app with SPM Integration"
-    runs-on: macos-latest
+    runs-on: macos-13
     strategy:
       matrix:
-        xcode: [14.3.1, 14.3, 14.2, 14.1]
+        xcode: [14.3, 14.2, 14.1]
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@0.11.0
@@ -53,11 +53,11 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
   build-cocoapods:
-    runs-on: macos-latest
+    runs-on: macos-13
     name: "Build and upload app to Appetize"
     strategy:
       matrix:
-        xcode: [14.3.1, 14.3, 14.2, 14.1]
+        xcode: [14.3, 14.2, 14.1]
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@0.11.0
