@@ -74,7 +74,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
 #if canImport(Primer3DS)
         logger.info(message: "Can import Primer3DS")
 #else
-        logger.warn(message: "WARNING!\nFailed to import Primer3DS")
+        logger.warn(message: "Failed to import Primer3DS")
         let event = Analytics.Event(
             eventType: .message,
             properties: MessageEventProperties(
