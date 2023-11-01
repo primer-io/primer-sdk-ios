@@ -24,7 +24,8 @@ final class BINDataServiceTests: XCTestCase {
     var binDataService: BinDataService!
         
     override func setUpWithError() throws {  
-        setupMocks()
+        setupSDKMocks()
+        
         self.delegate = MockRawDataManagerDelegate()
         self.rawDataManager = try RawDataManager(paymentMethodType: Mocks.PaymentMethods.paymentCardPaymentMethod.type)
         self.apiClient = MockBINDataAPIClient()
@@ -171,7 +172,7 @@ final class BINDataServiceTests: XCTestCase {
     }
 }
 
-fileprivate func setupMocks() {
+fileprivate func setupSDKMocks() {
     let paymentMethods = [
         Mocks.PaymentMethods.paymentCardPaymentMethod
     ]
@@ -191,7 +192,7 @@ fileprivate func setupMocks() {
     PrimerAPIConfigurationModule.apiConfiguration = apiConfig
 }
 
-fileprivate func tearDownMocks() {
+fileprivate func tearDownSDKMocks() {
     PrimerAPIConfigurationModule.apiConfiguration = nil
     PrimerAPIConfigurationModule.clientToken = nil
 }
