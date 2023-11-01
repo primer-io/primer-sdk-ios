@@ -80,7 +80,9 @@ class DefaultCardValidationService: CardValidationService {
     func useLocalValidation(withCardState cardValidationState: PrimerCardValidationState) {
         let localValidationNetwork = CardNetwork(cardNumber: cardValidationState.cardNumber)
         // JN TODO: display name from where?
-        let cardNetwork = PrimerCardNetwork(displayName: localValidationNetwork.rawValue, networkIdentifier: localValidationNetwork.rawValue)
+        let displayName = localValidationNetwork.validation?.niceType ?? localValidationNetwork.rawValue.lowercased().capitalized
+        let cardNetwork = PrimerCardNetwork(displayName: displayName,
+                                            networkIdentifier: localValidationNetwork.rawValue)
         delegate?.primerRawDataManager?(rawDataManager,
                                         didReceiveCardMetadata: .init(availableCardNetworks: [cardNetwork]),
                                         forCardValidationState: cardValidationState)
