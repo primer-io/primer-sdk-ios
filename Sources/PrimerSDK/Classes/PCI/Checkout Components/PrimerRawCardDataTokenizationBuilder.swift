@@ -43,7 +43,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
 
 
-    var binDataService: CardValidationService?
+    var cardValidationService: CardValidationService?
 
     var isDataValid: Bool = false
     var paymentMethodType: String
@@ -83,7 +83,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     
     func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
-        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager)
+        self.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager)
     }
     
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
@@ -117,19 +117,6 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             seal.fulfill(requestBody)
         }
-    }
-    
-    func validateCardNetworks(_ cardNumber: String) {
-        // JN TODO: remove?
-//        if binDataService == nil {
-//            guard let delegate = rawDataManager?.delegate else {
-//                print("[PrimerRawCardDataTokenizationBuilder] Error: delegate was nil")
-//                return
-//            }
-//            binDataService = DefaultBinDataService(rawDataManager: rawDataManager!)
-//        }
-        
-        self.binDataService?.validateCardNetworks(withCardNumber: cardNumber)
     }
     
     func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
@@ -199,7 +186,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 // Local Validation
                 let cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
                 // Remote validation
-                self.binDataService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
+                self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
                 
                 if rawData.cvv.isEmpty {
                     let err = PrimerValidationError.invalidCvv(

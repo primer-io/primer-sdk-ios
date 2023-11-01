@@ -46,11 +46,11 @@ class DefaultCardValidationService: CardValidationService {
         }
         
         debouncer.debounce { [weak self] in
-            self?.callAPI(withValidationState: cardValidationState)
+            self?.useRemoteValidation(withValidationState: cardValidationState)
         }
     }
     
-    private func callAPI(withValidationState cardValidationState: PrimerCardValidationState) {
+    private func useRemoteValidation(withValidationState cardValidationState: PrimerCardValidationState) {
         delegate?.primerRawDataManager?(rawDataManager,
                                         willFetchCardMetadataForState: cardValidationState)
         
@@ -69,17 +69,17 @@ class DefaultCardValidationService: CardValidationService {
                                                   didReceiveCardMetadata: cardMetadata,
                                                   forCardValidationState: cardValidationState)
         }.catch { error in
-            // JN TODO: use new logger
             // JN TODO: send event
+
+            // JN TODO: use new logger
             print("[DefaultBinDataService] ERROR: \(error.localizedDescription)")
+
             self.useLocalValidation(withCardState: cardValidationState)
         }
-        // TODO: catch: send local validation instead
     }
     
     func useLocalValidation(withCardState cardValidationState: PrimerCardValidationState) {
         let localValidationNetwork = CardNetwork(cardNumber: cardValidationState.cardNumber)
-        // JN TODO: display name from where?
         let displayName = localValidationNetwork.validation?.niceType ?? localValidationNetwork.rawValue.lowercased().capitalized
         let cardNetwork = PrimerCardNetwork(displayName: displayName,
                                             networkIdentifier: localValidationNetwork.rawValue)
