@@ -21,7 +21,7 @@ final class BINDataServiceTests: XCTestCase {
 
     var debouncer: Debouncer!
     
-    var binDataService: BinDataService!
+    var binDataService: CardValidationService!
         
     override func setUpWithError() throws {  
         setupSDKMocks()
@@ -31,7 +31,7 @@ final class BINDataServiceTests: XCTestCase {
         self.apiClient = MockBINDataAPIClient()
         self.debouncer = Debouncer(delay: 0.5)
         self.rawDataManager.delegate = delegate
-        self.binDataService = DefaultBINDataService(rawDataManager: rawDataManager,
+        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
                                                     apiClient: apiClient)
     }
 

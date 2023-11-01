@@ -43,7 +43,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
 
 
-    var binDataService: BinDataService?
+    var binDataService: CardValidationService?
 
     var isDataValid: Bool = false
     var paymentMethodType: String
@@ -83,7 +83,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     
     func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
-        self.binDataService = DefaultBINDataService(rawDataManager: rawDataManager)
+        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager)
     }
     
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {

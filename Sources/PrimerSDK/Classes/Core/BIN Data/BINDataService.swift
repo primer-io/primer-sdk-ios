@@ -7,21 +7,20 @@
 
 import Foundation
 
-protocol BinDataService {
-    var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? { get }
+protocol CardValidationService {
     func validateCardNetworks(withCardNumber cardNumber: String)
 }
 
-class DefaultBINDataService: BinDataService {
+class DefaultCardValidationService: CardValidationService {
     
     let delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
-    
-    weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
-    
+        
     let apiClient: PrimerAPIClientBINDataProtocol
     
     let debouncer: Debouncer
     
+    let rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager
+
     var mostRecentCardNumber: String?
 
     init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
@@ -34,11 +33,6 @@ class DefaultBINDataService: BinDataService {
     }
         
     func validateCardNetworks(withCardNumber cardNumber: String) {
-        guard let rawDataManager = rawDataManager else {
-            print("[DefaultBinDataService] ERROR: rawDataManager was nil")
-            return
-        }
-        
         let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
         guard sanitizedCardNumber != mostRecentCardNumber else {
             return
@@ -46,26 +40,21 @@ class DefaultBINDataService: BinDataService {
         mostRecentCardNumber = sanitizedCardNumber
         
         let cardValidationState = PrimerCardValidationState(cardNumber: sanitizedCardNumber)
-        // JN TODO: full local fallback validation
         guard cardNumber.count >= 6 else {
             useLocalValidation(withCardState: cardValidationState)
             return
         }
         
-//        cardNumberPublisher.send(cardValidationState)
         debouncer.debounce { [weak self] in
             self?.callAPI(withValidationState: cardValidationState)
         }
     }
     
     private func callAPI(withValidationState cardValidationState: PrimerCardValidationState) {
-        guard let rawDataManager = rawDataManager else {
-            print("[DefaultBinDataService] ERROR: rawDataManager was nil")
-            return
-        }
-        
         delegate?.primerRawDataManager?(rawDataManager,
                                         willFetchCardMetadataForState: cardValidationState)
+        
+        let rawDataManager = rawDataManager
         
         _ = listCardNetworks(cardValidationState.cardNumber).done { [weak self] result in
             guard result.networks.count > 0 else {
@@ -80,18 +69,15 @@ class DefaultBINDataService: BinDataService {
                                                   didReceiveCardMetadata: cardMetadata,
                                                   forCardValidationState: cardValidationState)
         }.catch { error in
-            // TODO
+            // JN TODO: use new logger
+            // JN TODO: send event
             print("[DefaultBinDataService] ERROR: \(error.localizedDescription)")
+            self.useLocalValidation(withCardState: cardValidationState)
         }
         // TODO: catch: send local validation instead
     }
     
     func useLocalValidation(withCardState cardValidationState: PrimerCardValidationState) {
-        guard let rawDataManager = rawDataManager else {
-            print("[DefaultBinDataService] ERROR: rawDataManager was nil")
-            return
-        }
-
         let localValidationNetwork = CardNetwork(cardNumber: cardValidationState.cardNumber)
         // JN TODO: display name from where?
         let cardNetwork = PrimerCardNetwork(displayName: localValidationNetwork.rawValue, networkIdentifier: localValidationNetwork.rawValue)
