@@ -14,17 +14,24 @@ typealias RawDataManager = PrimerHeadlessUniversalCheckout.RawDataManager
 final class BINDataServiceTests: XCTestCase {
     
     var rawDataManager: RawDataManager!
+
+    var apiClient: MockBINDataAPIClient!
     
     var delegate: MockRawDataManagerDelegate!
 
+    var debouncer: Debouncer!
+    
     var binDataService: BinDataService!
         
     override func setUpWithError() throws {  
         setupMocks()
         self.delegate = MockRawDataManagerDelegate()
         self.rawDataManager = try RawDataManager(paymentMethodType: Mocks.PaymentMethods.paymentCardPaymentMethod.type)
+        self.apiClient = MockBINDataAPIClient()
+        self.debouncer = Debouncer(delay: 0.5)
         self.rawDataManager.delegate = delegate
-        self.binDataService = DefaultBINDataService(rawDataManager: rawDataManager)
+        self.binDataService = DefaultBINDataService(rawDataManager: rawDataManager,
+                                                    apiClient: apiClient)
     }
 
     override func tearDownWithError() throws {
@@ -50,6 +57,117 @@ final class BINDataServiceTests: XCTestCase {
 
         waitForExpectations(timeout: 2)
 
+    }
+    
+    func testSixDigitCardNumber_startRemoteValidation() throws {
+        
+        let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
+        
+        delegate.onWillFetchCardMetadataForState = { rawDataManager, cardState in
+            expectation.fulfill()
+        }
+        
+        binDataService.validateCardNetworks(withCardNumber: "555522")
+
+        waitForExpectations(timeout: 1)
+    }
+    
+    func testTwelveDigitCardNumber_fastEntry_successfulValidation() throws {
+        
+        apiClient.result = .init(networks: [
+            .init(displayName: "Network #1", value: "NETWORK_1"),
+            .init(displayName: "Network #2", value: "NETWORK_2")
+        ])
+        
+        let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
+        delegate.onWillFetchCardMetadataForState = { rawDataManager, cardState in
+            expectation.fulfill()
+        }
+        
+        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
+        delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
+            XCTAssertNotNil(rawDataManager)
+            if networks.availableCardNetworks.count > 1 {
+                expectation2.fulfill()
+            }
+        }
+        
+        let typer = StringTyper { string in
+            self.binDataService.validateCardNetworks(withCardNumber: string)
+        }
+        typer.type("552266117788")
+        
+        waitForExpectations(timeout: 5)
+    }
+    
+    func testTwelveDigitCardNumber_slowEntry_successfulValidation() throws {
+        
+        apiClient.result = .init(networks: [
+            .init(displayName: "Network #1", value: "NETWORK_1"),
+            .init(displayName: "Network #2", value: "NETWORK_2")
+        ])
+        
+        let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
+        delegate.onWillFetchCardMetadataForState = { rawDataManager, cardState in
+            expectation.fulfill()
+        }
+        
+        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
+        delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
+            XCTAssertNotNil(rawDataManager)
+            if networks.availableCardNetworks.count > 1 {
+                expectation2.fulfill()
+            }
+        }
+        
+        let typer = StringTyper { string in
+            self.binDataService.validateCardNetworks(withCardNumber: string)
+        }
+        typer.type("552266117788")
+        
+        waitForExpectations(timeout: 5)
+    }
+    
+    func testTwelveDigitCardNumber_mixedEntry_successfulValidation() throws {
+        apiClient.result = .init(networks: [
+            .init(displayName: "Network #1", value: "NETWORK_1"),
+            .init(displayName: "Network #2", value: "NETWORK_2")
+        ])
+        
+        let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
+        var onWillFetchCardMetadataForStateCount = 0
+        delegate.onWillFetchCardMetadataForState = { rawDataManager, cardState in
+            guard cardState.cardNumber.count >= 6 else { return }
+            onWillFetchCardMetadataForStateCount += 1
+            print("CALLED: onWillFetchCardMetadataForState -> \(onWillFetchCardMetadataForStateCount)")
+            if onWillFetchCardMetadataForStateCount == 2 {
+                expectation.fulfill()
+            }
+        }
+        
+        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
+        var onMetadataForCardValidationStateCount = 0
+        delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
+            guard cardState.cardNumber.count >= 6 else { return }
+            onMetadataForCardValidationStateCount += 1
+            print("CALLED: onMetadataForCardValidationState -> \(onMetadataForCardValidationStateCount)")
+            if onMetadataForCardValidationStateCount == 2, networks.availableCardNetworks.count > 1 {
+                expectation2.fulfill()
+            }
+        }
+        
+        let typer = StringTyper { string in
+            self.binDataService.validateCardNetworks(withCardNumber: string)
+        }
+        
+        let cardFragment = "552266117788"
+        // Type at fast speed
+        var delays = Array(repeating: Double(0.1), count: 12)
+        // Pause for request on the 7th character before resuming fast typing
+        delays[7] = 1.0
+        typer.type(cardFragment, delays: delays)
+        
+        waitForExpectations(timeout: 10)
     }
 }
 

@@ -26,7 +26,7 @@ class DefaultBINDataService: BinDataService {
 
     init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
          apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
-         debouncer: Debouncer = .init(delay: 0.35, labelIdentifier: "DefaultBinDataService")) {
+         debouncer: Debouncer = .init(delay: 0.35)) {
         self.rawDataManager = rawDataManager
         self.delegate = rawDataManager.delegate
         self.apiClient = apiClient
@@ -53,7 +53,7 @@ class DefaultBINDataService: BinDataService {
         }
         
 //        cardNumberPublisher.send(cardValidationState)
-        debouncer.call { [weak self] in
+        debouncer.debounce { [weak self] in
             self?.callAPI(withValidationState: cardValidationState)
         }
     }

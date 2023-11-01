@@ -9,7 +9,7 @@
 import Foundation
 @testable import PrimerSDK
 
-fileprivate class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
+class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
     
     class AnyCancellable: PrimerCancellable {
         let canceller: () -> Void

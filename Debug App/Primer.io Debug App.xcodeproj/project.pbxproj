@@ -13,6 +13,7 @@
 		042ED15D2AF010500027833F /* BINDataServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED15C2AF010500027833F /* BINDataServiceTests.swift */; };
 		042ED1622AF0F5600027833F /* MockBINDataAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED1612AF0F5600027833F /* MockBINDataAPIClient.swift */; };
 		042ED1652AF0F5FD0027833F /* MockRawDataManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */; };
+		0479FB192AF2599A00D0AFC9 /* StringTyper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0479FB172AF2599200D0AFC9 /* StringTyper.swift */; };
 		047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D8E882ADEA4C700A5E7BD /* NetworkService.swift */; };
 		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
 		04F6EF722AE69FC500115D05 /* AnalyticsTests+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */; };
@@ -145,6 +146,7 @@
 		042ED15C2AF010500027833F /* BINDataServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BINDataServiceTests.swift; sourceTree = "<group>"; };
 		042ED1612AF0F5600027833F /* MockBINDataAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBINDataAPIClient.swift; sourceTree = "<group>"; };
 		042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRawDataManagerDelegate.swift; sourceTree = "<group>"; };
+		0479FB172AF2599200D0AFC9 /* StringTyper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTyper.swift; sourceTree = "<group>"; };
 		047D8E882ADEA4C700A5E7BD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
 		04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsTests+Helpers.swift"; sourceTree = "<group>"; };
@@ -293,6 +295,14 @@
 				042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */,
 			);
 			path = Delegates;
+			sourceTree = "<group>";
+		};
+		0479FB162AF2598800D0AFC9 /* Test Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				0479FB172AF2599200D0AFC9 /* StringTyper.swift */,
+			);
+			path = "Test Utilities";
 			sourceTree = "<group>";
 		};
 		094077DEFDC2739B10CF4183 /* Resources */ = {
@@ -537,6 +547,7 @@
 		D99811C39E1808A948623732 /* Unit Tests */ = {
 			isa = PBXGroup;
 			children = (
+				0479FB162AF2598800D0AFC9 /* Test Utilities */,
 				E1A2F78003351E14426E0B36 /* Analytics */,
 				D83EED4C1249B62B908781B0 /* Data Models */,
 				626776D8EFEF24D5C5A36307 /* Extensions */,
@@ -858,6 +869,7 @@
 				04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */,
 				1589385B62C86DE7C735F3EC /* PrimerAPIConfigurationModuleTests.swift in Sources */,
 				A39750255D4C33527A3766A0 /* UserInterfaceModuleTests.swift in Sources */,
+				0479FB192AF2599A00D0AFC9 /* StringTyper.swift in Sources */,
 				3EE90DEB1DB7BE9270FB17BF /* URLSessionStackTests.swift in Sources */,
 				2C98B33ECA68109C7A6AA134 /* PrimerBancontactCardDataManagerTests.swift in Sources */,
 				05FAC0D894B841B52E9E0A9A /* PrimerRawCardDataManagerTests.swift in Sources */,
