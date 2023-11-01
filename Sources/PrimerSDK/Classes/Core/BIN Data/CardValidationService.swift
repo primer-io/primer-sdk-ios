@@ -8,12 +8,14 @@
 import Foundation
 
 protocol CardValidationService {
-    func validateCardNetworks(withCardNumber cardNumber: String)
+    func validateCardNetworks(withCardNumber card5Number: String)
 }
 
 class DefaultCardValidationService: CardValidationService {
     
-    let delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
+    var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? {
+        return self.rawDataManager.delegate
+    }
         
     let apiClient: PrimerAPIClientBINDataProtocol
     
@@ -27,20 +29,19 @@ class DefaultCardValidationService: CardValidationService {
          apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
          debouncer: Debouncer = .init(delay: 0.35)) {
         self.rawDataManager = rawDataManager
-        self.delegate = rawDataManager.delegate
         self.apiClient = apiClient
         self.debouncer = debouncer
     }
         
     func validateCardNetworks(withCardNumber cardNumber: String) {
         let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
-        guard sanitizedCardNumber != mostRecentCardNumber else {
+        guard !sanitizedCardNumber.isEmpty, sanitizedCardNumber != mostRecentCardNumber else {
             return
         }
         mostRecentCardNumber = sanitizedCardNumber
         
         let cardValidationState = PrimerCardValidationState(cardNumber: sanitizedCardNumber)
-        guard cardNumber.count >= 6 else {
+        guard sanitizedCardNumber.count >= 6 else {
             useLocalValidation(withCardState: cardValidationState)
             return
         }
