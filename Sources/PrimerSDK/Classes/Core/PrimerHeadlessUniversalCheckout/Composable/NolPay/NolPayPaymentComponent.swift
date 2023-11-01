@@ -55,7 +55,15 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     func validateData(for data: NolPayPaymentCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         var errors: [PrimerValidationError] = []
-        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: NolPayAnalyticsConstants.PAYMENT_UPDATE_COLLECTED_DATA_METHOD,
+                params: [
+                    "category": "NOL_PAY",
+                ]))
+        Analytics.Service.record(events: [sdkEvent])
+
         switch data {
             
         case .paymentData(cardNumber: let cardNumber,
@@ -102,6 +110,16 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     }
     
     public func submit() {
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: NolPayAnalyticsConstants.PAYMENT_SUBMIT_DATA_METHOD,
+                params: [
+                    "category": "NOL_PAY",
+                ]))
+        Analytics.Service.record(events: [sdkEvent])
+
         switch nextDataStep {
         case .collectCardAndPhoneData:
             guard let cardNumber = cardNumber
@@ -177,6 +195,15 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     }
     
     public func start() {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: NolPayAnalyticsConstants.PAYMENT_START_METHOD,
+                params: [
+                    "category": "NOL_PAY",
+                ]))
+        Analytics.Service.record(events: [sdkEvent])
+
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
