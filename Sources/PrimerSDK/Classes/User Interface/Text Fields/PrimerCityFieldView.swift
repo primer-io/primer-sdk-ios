@@ -25,7 +25,7 @@ public final class PrimerCityFieldView: PrimerSimpleCardFormTextFieldView {
             ],
             diagnosticsId: UUID().uuidString)
         isValid = { text in
-            return text.isTypingNonDecimalCharacters
+            return text.isValidNonDecimalString
         }
     }
 }
