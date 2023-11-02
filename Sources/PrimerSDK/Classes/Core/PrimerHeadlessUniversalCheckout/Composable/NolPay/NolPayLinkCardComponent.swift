@@ -23,9 +23,6 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     
     public typealias T = NolPayLinkCollectableData
     
-    init(isDebug: Bool) {
-        self.isDebug = isDebug
-    }
 #if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPayProtocol!
 #endif
@@ -33,7 +30,6 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     var phoneMetadataService = NolPayPhoneMetadataService()
-    private var isDebug: Bool
     
     public var mobileNumber: String?
     public var countryCode: String?
@@ -304,6 +300,11 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         }
         
         let isSandbox = clientToken.env != "PRODUCTION"
+        var isDebug = false
+#if DEBUG
+        isDebug =  PrimerLogging.shared.logger.logLevel == .debug
+#endif
+
 #if canImport(PrimerNolPaySDK)
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
             
