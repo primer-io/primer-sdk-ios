@@ -94,7 +94,7 @@ jobs:
       - name: Create Slack Success Summary Report
         if: ${{ success() }}
         run: |
-          node Report\ Scripts/multixcode-success-report.js createMultiXcodeSummaryReport ${{ github.head_ref || github.ref_name }} "['14.3', '14.2', '14.1']" "['cocoapods', 'spm']"
+          node Report\ Scripts/multixcode-success-report.js createMultiXcodeSuccessReport ${{ github.head_ref || github.ref_name }} "['14.3', '14.2', '14.1']" "['cocoapods', 'spm']"
       - name: Slack Notification
         if: ${{ success() }}
         uses: slackapi/slack-github-action@v1.23.0
