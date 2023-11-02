@@ -197,7 +197,6 @@ final class CardValidationServiceTests: XCTestCase {
     
     private func enterCardNumber(_ cardFragment: String, delayAtIndex delayIndex: Int? = nil) {
         let typer = StringTyper { string in
-            print("StringTyper typing: \(string)")
             self.binDataService.validateCardNetworks(withCardNumber: string)
         }
 

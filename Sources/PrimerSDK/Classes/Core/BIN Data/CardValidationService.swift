@@ -71,10 +71,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                                                   forCardValidationState: cardValidationState)
         }.catch { error in
             // JN TODO: CHKT-1772 - send event
-
-            // JN TODO: CHKT-1661 - use new logger
             self.logger.error(message: "Error occurred while remotely validation '\(cardValidationState.cardNumber)': \(error.localizedDescription)")
-
             self.useLocalValidation(withCardState: cardValidationState)
         }
     }

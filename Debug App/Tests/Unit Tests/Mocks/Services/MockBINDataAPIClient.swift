@@ -34,13 +34,12 @@ class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
     
     var error: Error?
     
+    typealias ResponseCompletion = (Result<PrimerSDK.Response.Body.Bin.Networks, Error>) -> Void
+    
     func listCardNetworks(clientToken: PrimerSDK.DecodedJWTToken,
                           bin: String,
-                          completion: @escaping (Result<PrimerSDK.Response.Body.Bin.Networks, Error>) -> Void) -> PrimerSDK.PrimerCancellable? {
-        let cancellable = AnyCancellable {}
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [self] in
-            guard !cancellable.isCancelled else { return }
+                          completion: @escaping ResponseCompletion) -> PrimerSDK.PrimerCancellable? {
+        let workItem = DispatchWorkItem { [self] in
             if let error = error {
                 completion(.failure(error))
             }
@@ -48,6 +47,12 @@ class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
                 completion(.success(result))
             }
         }
+
+        let cancellable = AnyCancellable {
+            workItem.cancel()
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: workItem)
         
         return cancellable
     }
