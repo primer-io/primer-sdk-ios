@@ -44,5 +44,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
         }
     }
-
 }
