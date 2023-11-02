@@ -446,7 +446,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 applePayOptions: PrimerApplePayOptions(
                     merchantIdentifier: "merchant.checkout.team",
                     merchantName: merchantNameTextField.text ?? "Primer Merchant",
-                    isCaptureBillingAddressEnabled: false)),
+                    isCaptureBillingAddressEnabled: false,
+                    showApplePayForUnsupportedDevice: false,
+                    checkProvidedNetworks: false)),
             uiOptions: uiOptions,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
@@ -552,7 +554,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 applePayOptions: PrimerApplePayOptions(
                     merchantIdentifier: "merchant.checkout.team",
                     merchantName: merchantNameTextField.text ?? "Primer Merchant",
-                    isCaptureBillingAddressEnabled: false)),
+                    isCaptureBillingAddressEnabled: false,
+                    showApplePayForUnsupportedDevice: false,
+                    checkProvidedNetworks: false)),
             uiOptions: nil,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
