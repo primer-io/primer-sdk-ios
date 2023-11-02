@@ -17,7 +17,7 @@ class NolPayPaymentComponentTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        sut = NolPayPaymentComponent(isDebug: true)
+        sut = NolPayPaymentComponent()
     }
     
     override func tearDown() {

@@ -16,13 +16,11 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
     
     public var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
-    private var isDebug: Bool
     var mobileNumber: String?
     var countryCode: String?
     var phoneMetadataService: NolPayPhoneMetadataProviding?
 
-    public init(isDebug: Bool) {
-        self.isDebug = isDebug
+    public init() {
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
@@ -52,7 +50,11 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
         
         
         let isSandbox = clientToken.env != "PRODUCTION"
-        
+        var isDebug = false
+#if DEBUG
+        isDebug =  PrimerLogging.shared.logger.logLevel == .debug
+#endif
+
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
             
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
