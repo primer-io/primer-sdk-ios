@@ -1,5 +1,5 @@
 //
-//  BINDataService.swift
+//  CardValidationService.swift
 //  PrimerSDK
 //
 //  Created by Jack Newcombe on 30/10/2023.
@@ -11,7 +11,7 @@ protocol CardValidationService {
     func validateCardNetworks(withCardNumber card5Number: String)
 }
 
-class DefaultCardValidationService: CardValidationService {
+class DefaultCardValidationService: CardValidationService, LogReporter {
     
     var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? {
         return self.rawDataManager.delegate
@@ -73,7 +73,7 @@ class DefaultCardValidationService: CardValidationService {
             // JN TODO: CHKT-1772 - send event
 
             // JN TODO: CHKT-1661 - use new logger
-            print("[DefaultBinDataService] ERROR: \(error.localizedDescription)")
+            self.logger.error(message: "Error occurred while remotely validation '\(cardValidationState.cardNumber)': \(error.localizedDescription)")
 
             self.useLocalValidation(withCardState: cardValidationState)
         }

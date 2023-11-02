@@ -62,106 +62,121 @@ final class CardValidationServiceTests: XCTestCase {
     
     func testSixDigitCardNumber_startRemoteValidation() throws {
         
+        let cardNumber = "555522"
+
         let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
         
         delegate.onWillFetchCardMetadataForState = { rawDataManager, cardState in
+            XCTAssertEqual(cardState.cardNumber, cardNumber)
             expectation.fulfill()
         }
         
-        binDataService.validateCardNetworks(withCardNumber: "555522")
+        binDataService.validateCardNetworks(withCardNumber: cardNumber)
 
         waitForExpectations(timeout: 1)
     }
     
     func testTwelveDigitCardNumber_fastEntry_successfulValidation() throws {
         
-        apiClient.result = .init(networks: [
+        let cardNumber = "552266117788"
+        
+        apiClient.results[String(cardNumber.prefix(8))] = .init(networks: [
             .init(displayName: "Network #1", value: "NETWORK_1"),
             .init(displayName: "Network #2", value: "NETWORK_2")
         ])
         
         let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
         delegate.onWillFetchCardMetadataForState = { rawDataManager, cardState in
+            XCTAssertEqual(cardState.cardNumber, cardNumber)
             expectation.fulfill()
         }
         
         let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
         delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
-            XCTAssertNotNil(rawDataManager)
             if networks.availableCardNetworks.count > 1 {
+                XCTAssertEqual(cardState.cardNumber, cardNumber)
+                XCTAssertEqual(networks.availableCardNetworks[0].displayName, "Network #1")
+                XCTAssertEqual(networks.availableCardNetworks[0].networkIdentifier, "NETWORK_1")
+                XCTAssertEqual(networks.availableCardNetworks[1].displayName, "Network #2")
+                XCTAssertEqual(networks.availableCardNetworks[1].networkIdentifier, "NETWORK_2")
                 expectation2.fulfill()
             }
         }
         
-        enterCardNumber("552266117788")
-        
-        waitForExpectations(timeout: 5)
-    }
-    
-    func testTwelveDigitCardNumber_slowEntry_successfulValidation() throws {
-        
-        apiClient.result = .init(networks: [
-            .init(displayName: "Network #1", value: "NETWORK_1"),
-            .init(displayName: "Network #2", value: "NETWORK_2")
-        ])
-        
-        let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
-        delegate.onWillFetchCardMetadataForState = { rawDataManager, cardState in
-            expectation.fulfill()
-        }
-        
-        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
-        delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
-            XCTAssertNotNil(rawDataManager)
-            if networks.availableCardNetworks.count > 1 {
-                expectation2.fulfill()
-            }
-        }
-        
-        enterCardNumber("552266117788")
+        enterCardNumber(cardNumber)
         
         waitForExpectations(timeout: 5)
     }
     
     func testTwelveDigitCardNumber_mixedEntry_successfulValidation() throws {
-        apiClient.result = .init(networks: [
+        
+        let cardNumber = "552266117788"
+        
+        apiClient.results[String(cardNumber.prefix(7))] = .init(networks: [
+            .init(displayName: "Network #1", value: "NETWORK_1")
+        ])
+        apiClient.results[String(cardNumber.prefix(8))] = .init(networks: [
             .init(displayName: "Network #1", value: "NETWORK_1"),
             .init(displayName: "Network #2", value: "NETWORK_2")
         ])
-        
+
         let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
+        let expectShortcardNumberOnWillFetch = self.expectation(description: "After first call to onWillFetchCardMetadata, 8 digit card number is given")
+        let expectLongCardNumberOnWillFetch = self.expectation(description: "After first call to onWillFetchCardMetadata, 12 digit card number is given")
+
         delegate.onWillFetchCardMetadataForState = { rawDataManager, cardState in
+            if self.delegate.onWillFetchCardMetadataForStateCount == 1 {
+                XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(7)))
+                expectShortcardNumberOnWillFetch.fulfill()
+            }
+            if self.delegate.onWillFetchCardMetadataForStateCount == 2 {
+                XCTAssertEqual(cardState.cardNumber, cardNumber)
+                expectLongCardNumberOnWillFetch.fulfill()
+            }
             guard cardState.cardNumber.count >= 6 else { return }
             if self.delegate.onWillFetchCardMetadataForStateCount == 2 {
                 expectation.fulfill()
             }
         }
         
-        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
+        let expectShortcardNumberOnMetadata = self.expectation(description: "After first call to onMetadataForCardValidationState, 8 digit card number is given")
+        let expectLongCardNumberOnMetadata = self.expectation(description: "After first call to onMetadataForCardValidationState, 12 digit card number is given")
         delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
             guard cardState.cardNumber.count >= 6 else { return }
-            if self.delegate.onMetadataForCardValidationStateCount == 6,
-                networks.availableCardNetworks.count > 1 {
-                expectation2.fulfill()
+            if self.delegate.onMetadataForCardValidationStateCount == 6 {
+                XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(7)))
+                XCTAssertEqual(networks.availableCardNetworks.count, 1)
+                XCTAssertEqual(networks.availableCardNetworks[0].displayName, "Network #1")
+                XCTAssertEqual(networks.availableCardNetworks[0].networkIdentifier, "NETWORK_1")
+                expectShortcardNumberOnMetadata.fulfill()
+            }
+            if self.delegate.onMetadataForCardValidationStateCount == 7 {
+                XCTAssertEqual(cardState.cardNumber, cardNumber)
+                XCTAssertEqual(networks.availableCardNetworks.count, 2)
+                XCTAssertEqual(networks.availableCardNetworks[0].displayName, "Network #1")
+                XCTAssertEqual(networks.availableCardNetworks[0].networkIdentifier, "NETWORK_1")
+                XCTAssertEqual(networks.availableCardNetworks[1].displayName, "Network #2")
+                XCTAssertEqual(networks.availableCardNetworks[1].networkIdentifier, "NETWORK_2")
+                expectLongCardNumberOnMetadata.fulfill()
             }
         }
         
-        let typer = StringTyper { string in
-            self.binDataService.validateCardNetworks(withCardNumber: string)
-        }
-        
-        enterCardNumber("552266117788", delayAtIndex: 7)
+        enterCardNumber(cardNumber, delayAtIndex: 6)
         
         waitForExpectations(timeout: 10)
     }
     
     func testReceiveError() throws {
+        
+        let cardNumber = "552266117788"
+        
         apiClient.error = PrimerError.generic(message: "Generic Error Message",
                                               userInfo: nil,
                                               diagnosticsId: "Diagnostics ID")
         
         let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
         delegate.onWillFetchCardMetadataForState = { rawDataManager, cardState in
+            XCTAssertEqual(cardState.cardNumber, cardNumber)
             expectation.fulfill()
         }
         
@@ -173,7 +188,7 @@ final class CardValidationServiceTests: XCTestCase {
             }
         }
         
-        enterCardNumber("552266117788")
+        enterCardNumber(cardNumber)
         
         waitForExpectations(timeout: 5)
     }
@@ -182,6 +197,7 @@ final class CardValidationServiceTests: XCTestCase {
     
     private func enterCardNumber(_ cardFragment: String, delayAtIndex delayIndex: Int? = nil) {
         let typer = StringTyper { string in
+            print("StringTyper typing: \(string)")
             self.binDataService.validateCardNetworks(withCardNumber: string)
         }
 
