@@ -14,7 +14,7 @@ function createMultiXcodeFailureSummary(branch, xcodeVersion, integrationType) {
       .attachment()
       .mrkdwnIn(["title"])
       .color("#ff0000")
-      .title(`Failed to build the app for branch ${branch} with Xcode version ${xcodeVersion} and integration type ${integrationType}.`)
+      .title(`Multi Xcode Build: Failed to build the app for branch ${branch} with Xcode version ${xcodeVersion} and integration type ${integrationType}.`)
       .authorName(process.env.GITHUB_ACTOR)
       .authorLink(`${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_ACTOR}`)
       .authorIcon(`${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_ACTOR}.png?size=32`)
