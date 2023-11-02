@@ -10,7 +10,7 @@
 		041295AA2AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		041295AD2AB9E2C100A4F243 /* PrimerHeadlessNolPayManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */; };
 		041F52092ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */; };
-		042ED15D2AF010500027833F /* BINDataServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED15C2AF010500027833F /* BINDataServiceTests.swift */; };
+		042ED15D2AF010500027833F /* CardValidationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED15C2AF010500027833F /* CardValidationServiceTests.swift */; };
 		042ED1622AF0F5600027833F /* MockBINDataAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED1612AF0F5600027833F /* MockBINDataAPIClient.swift */; };
 		042ED1652AF0F5FD0027833F /* MockRawDataManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */; };
 		0479FB192AF2599A00D0AFC9 /* StringTyper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0479FB172AF2599200D0AFC9 /* StringTyper.swift */; };
@@ -143,7 +143,7 @@
 		041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutNolPayViewController.swift; sourceTree = "<group>"; };
 		041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessNolPayManagerTests.swift; sourceTree = "<group>"; };
 		041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCardNetworksEndpointTests.swift; sourceTree = "<group>"; };
-		042ED15C2AF010500027833F /* BINDataServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BINDataServiceTests.swift; sourceTree = "<group>"; };
+		042ED15C2AF010500027833F /* CardValidationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardValidationServiceTests.swift; sourceTree = "<group>"; };
 		042ED1612AF0F5600027833F /* MockBINDataAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBINDataAPIClient.swift; sourceTree = "<group>"; };
 		042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRawDataManagerDelegate.swift; sourceTree = "<group>"; };
 		0479FB172AF2599200D0AFC9 /* StringTyper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTyper.swift; sourceTree = "<group>"; };
@@ -380,7 +380,7 @@
 				743F107C464526926A34A433 /* PaymentMethodConfigServiceTests.swift */,
 				5D7EC742DEB5BE12252E3E5B /* PayPalServiceTests.swift */,
 				952364FBFD6FA09653ECA37E /* TokenizationServiceTests.swift */,
-				042ED15C2AF010500027833F /* BINDataServiceTests.swift */,
+				042ED15C2AF010500027833F /* CardValidationServiceTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -886,7 +886,7 @@
 				C8A64A69AD55D9BF82F0D876 /* StringTests.swift in Sources */,
 				77A8EFBA78D6C6B95A400C74 /* WebViewUtilTests.swift in Sources */,
 				242EF5037D6FB396B7AE1CB5 /* HeadlessUniversalCheckoutTests.swift in Sources */,
-				042ED15D2AF010500027833F /* BINDataServiceTests.swift in Sources */,
+				042ED15D2AF010500027833F /* CardValidationServiceTests.swift in Sources */,
 				04F6EF722AE69FC500115D05 /* AnalyticsTests+Helpers.swift in Sources */,
 				2662EB3445AE8C7188953EFD /* HeadlessVaultManagerTests.swift in Sources */,
 				A1A3D0F52AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift in Sources */,

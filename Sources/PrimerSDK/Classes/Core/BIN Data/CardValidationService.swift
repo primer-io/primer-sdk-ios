@@ -70,9 +70,9 @@ class DefaultCardValidationService: CardValidationService {
                                                   didReceiveCardMetadata: cardMetadata,
                                                   forCardValidationState: cardValidationState)
         }.catch { error in
-            // JN TODO: send event
+            // JN TODO: CHKT-1772 - send event
 
-            // JN TODO: use new logger
+            // JN TODO: CHKT-1661 - use new logger
             print("[DefaultBinDataService] ERROR: \(error.localizedDescription)")
 
             self.useLocalValidation(withCardState: cardValidationState)
@@ -94,6 +94,9 @@ class DefaultCardValidationService: CardValidationService {
     var validateCardNetworksCancellable: PrimerCancellable?
     
     private func listCardNetworks(_ cardNumber: String) -> Promise<Response.Body.Bin.Networks> {
+        
+        // ⚠️ We must only ever send eight or less digits to the endpoint
+        let cardNumber = String(cardNumber.prefix(8))
 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             return rejectedPromise(withError: PrimerError.invalidClientToken(userInfo: nil, diagnosticsId: ""))

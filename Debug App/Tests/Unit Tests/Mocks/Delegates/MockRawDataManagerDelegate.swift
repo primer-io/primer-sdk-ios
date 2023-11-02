@@ -15,7 +15,8 @@ class MockRawDataManagerDelegate: RawDataManager.Delegate {
     
     var onMetadataDidChange: ((RawDataManager, [String: Any]?) -> Void)?
     
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String : Any]?) {
+    func primerRawDataManager(_ rawDataManager: RawDataManager,
+                              metadataDidChange metadata: [String : Any]?) {
         onMetadataDidChange?(rawDataManager, metadata)
     }
     
@@ -23,7 +24,8 @@ class MockRawDataManagerDelegate: RawDataManager.Delegate {
     
     var onDataIsValid: ((RawDataManager, Bool, [Error]?) -> Void)?
     
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
+    func primerRawDataManager(_ rawDataManager: RawDataManager,
+                              dataIsValid isValid: Bool, errors: [Error]?) {
         onDataIsValid?(rawDataManager, isValid, errors)
     }
     
@@ -31,7 +33,11 @@ class MockRawDataManagerDelegate: RawDataManager.Delegate {
     
     var onWillFetchCardMetadataForState: ((RawDataManager, PrimerCardValidationState) -> Void)?
     
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, willFetchCardMetadataForState cardState: PrimerCardValidationState) {
+    var onWillFetchCardMetadataForStateCount = 0
+
+    func primerRawDataManager(_ rawDataManager: RawDataManager,
+                              willFetchCardMetadataForState cardState: PrimerCardValidationState) {
+        onWillFetchCardMetadataForStateCount += 1
         onWillFetchCardMetadataForState?(rawDataManager, cardState)
     }
     
@@ -39,7 +45,12 @@ class MockRawDataManagerDelegate: RawDataManager.Delegate {
     
     var onMetadataForCardValidationState: ((RawDataManager, PrimerCardMetadata, PrimerCardValidationState) -> Void)?
     
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, didReceiveCardMetadata metadata: PrimerCardMetadata, forCardValidationState cardState: PrimerCardValidationState) {
+    var onMetadataForCardValidationStateCount = 0
+    
+    func primerRawDataManager(_ rawDataManager: RawDataManager,
+                              didReceiveCardMetadata metadata: PrimerCardMetadata,
+                              forCardValidationState cardState: PrimerCardValidationState) {
+        onMetadataForCardValidationStateCount += 1
         onMetadataForCardValidationState?(rawDataManager, metadata, cardState)
     }
 }

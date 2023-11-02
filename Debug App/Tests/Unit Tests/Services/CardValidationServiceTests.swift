@@ -11,7 +11,7 @@ import XCTest
 
 typealias RawDataManager = PrimerHeadlessUniversalCheckout.RawDataManager
 
-final class BINDataServiceTests: XCTestCase {
+final class CardValidationServiceTests: XCTestCase {
     
     var rawDataManager: RawDataManager!
 
@@ -93,10 +93,7 @@ final class BINDataServiceTests: XCTestCase {
             }
         }
         
-        let typer = StringTyper { string in
-            self.binDataService.validateCardNetworks(withCardNumber: string)
-        }
-        typer.type("552266117788")
+        enterCardNumber("552266117788")
         
         waitForExpectations(timeout: 5)
     }
@@ -121,10 +118,7 @@ final class BINDataServiceTests: XCTestCase {
             }
         }
         
-        let typer = StringTyper { string in
-            self.binDataService.validateCardNetworks(withCardNumber: string)
-        }
-        typer.type("552266117788")
+        enterCardNumber("552266117788")
         
         waitForExpectations(timeout: 5)
     }
@@ -136,23 +130,18 @@ final class BINDataServiceTests: XCTestCase {
         ])
         
         let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
-        var onWillFetchCardMetadataForStateCount = 0
         delegate.onWillFetchCardMetadataForState = { rawDataManager, cardState in
             guard cardState.cardNumber.count >= 6 else { return }
-            onWillFetchCardMetadataForStateCount += 1
-            print("CALLED: onWillFetchCardMetadataForState -> \(onWillFetchCardMetadataForStateCount)")
-            if onWillFetchCardMetadataForStateCount == 2 {
+            if self.delegate.onWillFetchCardMetadataForStateCount == 2 {
                 expectation.fulfill()
             }
         }
         
         let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
-        var onMetadataForCardValidationStateCount = 0
         delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
             guard cardState.cardNumber.count >= 6 else { return }
-            onMetadataForCardValidationStateCount += 1
-            print("CALLED: onMetadataForCardValidationState -> \(onMetadataForCardValidationStateCount)")
-            if onMetadataForCardValidationStateCount == 2, networks.availableCardNetworks.count > 1 {
+            if self.delegate.onMetadataForCardValidationStateCount == 6,
+                networks.availableCardNetworks.count > 1 {
                 expectation2.fulfill()
             }
         }
@@ -161,14 +150,50 @@ final class BINDataServiceTests: XCTestCase {
             self.binDataService.validateCardNetworks(withCardNumber: string)
         }
         
-        let cardFragment = "552266117788"
-        // Type at fast speed
-        var delays = Array(repeating: Double(0.1), count: 12)
-        // Pause for request on the 7th character before resuming fast typing
-        delays[7] = 1.0
-        typer.type(cardFragment, delays: delays)
+        enterCardNumber("552266117788", delayAtIndex: 7)
         
         waitForExpectations(timeout: 10)
+    }
+    
+    func testReceiveError() throws {
+        apiClient.error = PrimerError.generic(message: "Generic Error Message",
+                                              userInfo: nil,
+                                              diagnosticsId: "Diagnostics ID")
+        
+        let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
+        delegate.onWillFetchCardMetadataForState = { rawDataManager, cardState in
+            expectation.fulfill()
+        }
+        
+        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
+        delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
+            XCTAssertEqual(networks.availableCardNetworks.count, 1)
+            if self.delegate.onMetadataForCardValidationStateCount == 6 {
+                expectation2.fulfill()
+            }
+        }
+        
+        enterCardNumber("552266117788")
+        
+        waitForExpectations(timeout: 5)
+    }
+    
+    // MARK: Helpers
+    
+    private func enterCardNumber(_ cardFragment: String, delayAtIndex delayIndex: Int? = nil) {
+        let typer = StringTyper { string in
+            self.binDataService.validateCardNetworks(withCardNumber: string)
+        }
+
+        if let delayIndex = delayIndex {
+            // Type at fast speed
+            var delays = Array(repeating: Double(0.1), count: 12)
+            // Pause for request on the 7th character before resuming fast typing
+            delays[delayIndex] = 1.0
+            typer.type(cardFragment, delays: delays)
+        } else {
+            typer.type(cardFragment)
+        }
     }
 }
 
