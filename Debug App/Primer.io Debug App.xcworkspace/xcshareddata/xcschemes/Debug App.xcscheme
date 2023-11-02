@@ -61,16 +61,6 @@
             ReferencedContainer = "container:Primer.io Debug App.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "-PrimerDebugEnabled"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-PrimerAnalyticsDebugEnabled"
-            isEnabled = "NO">
-         </CommandLineArgument>
-      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

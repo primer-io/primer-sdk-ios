@@ -77,7 +77,7 @@ extension Request.URLParameters {
 
 extension Response.Body {
     
-    struct Configuration: Codable {
+    struct Configuration: Codable, LogReporter {
         
         static var current: PrimerAPIConfiguration? {
             return PrimerAPIConfigurationModule.apiConfiguration
@@ -118,7 +118,7 @@ extension Response.Body {
 #if !canImport(PrimerKlarnaSDK)
             if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
                 viewModels.remove(at: klarnaViewModelIndex)
-                print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
+                logger.warn(message: "Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.")
                 
                 let event = Analytics.Event(
                     eventType: .message,
@@ -133,7 +133,7 @@ extension Response.Body {
 #if !canImport(PrimerIPay88MYSDK)
             if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
                 viewModels.remove(at: iPay88ViewModelIndex)
-                print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.\n\n")
+                logger.warn(message: "iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.")
                 
                 let event = Analytics.Event(
                     eventType: .message,
@@ -152,7 +152,7 @@ extension Response.Body {
                     try viewModel.validate()
                     validViewModels.append(viewModel)
                 } catch {
-                    var warningStr = "\nWARNING!\n\(viewModel.config.type) configuration has been found, but it cannot be presented."
+                    var warningStr = "\(viewModel.config.type) configuration has been found, but it cannot be presented."
                     
                     if let primerErr = error as? PrimerError {
                         if case .underlyingErrors(let errors, _, _) = primerErr {
@@ -200,9 +200,7 @@ extension Response.Body {
                         warningStr += "\n-\(error.localizedDescription)"
                     }
                     
-                    warningStr += "\n\n"
-                    
-                    print(warningStr)
+                    logger.warn(message: warningStr)
                 }
             }
             

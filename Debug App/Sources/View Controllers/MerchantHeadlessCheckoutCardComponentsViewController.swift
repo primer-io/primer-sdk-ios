@@ -60,7 +60,7 @@ class MerchantHeadlessCheckoutCardComponentsViewController: UIViewController {
         self.stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         self.stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
                 
-        self.cardComponentsManager = try! PrimerHeadlessUniversalCheckout.CardComponentsManager()
+        self.cardComponentsManager = PrimerHeadlessUniversalCheckout.CardComponentsManager()
         self.cardComponentsManager!.delegate = self
         
         var tmpInputElements: [PrimerHeadlessUniversalCheckoutInputElement] = []
