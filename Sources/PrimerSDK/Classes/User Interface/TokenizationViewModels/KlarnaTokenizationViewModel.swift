@@ -362,7 +362,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 //                This is not being used?
 //                orderItems = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() })
 //
-                log(logLevel: .info, message: "Klarna amount: \(amount!) \(AppState.current.currency!.rawValue)")
+                self.logger.info(message: "Klarna amount: \(amount!) \(AppState.current.currency!.rawValue)")
                 
             } else if case .recurringPayment = klarnaSessionType {
                 // Do not send amount for recurring payments, even if it's set
@@ -388,13 +388,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     seal.reject(err)
                     
                 case .success(let res):
-                    log(
-                        logLevel: .info,
-                        message: "\(res)",
-                        className: "\(String(describing: self.self))",
-                        function: #function
-                    )
-                    
+                    self.logger.info(message: "\(res)")
                     seal.fulfill(res)
                 }
             }
@@ -473,7 +467,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
         
         let body = Request.Body.Klarna.FinalizePaymentSession(paymentMethodConfigId: configId, sessionId: sessionId)
-        log(logLevel: .info, message: "config ID: \(configId)", className: "KlarnaService", function: "finalizePaymentSession")
+        self.logger.info(message: "config ID: \(configId)")
         
         let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
         
@@ -482,7 +476,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             case .failure(let err):
                 completion(.failure(err))
             case .success(let response):
-                log(logLevel: .info, message: "\(response)", className: "KlarnaService", function: "createPaymentSession")
+                self.logger.info(message: "\(response)")
                 completion(.success(response))
             }
         }

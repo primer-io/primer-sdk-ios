@@ -185,14 +185,7 @@ extension AnalyticsTests {
             try eventsData.write(to: Analytics.Service.filepath)
             
         } catch {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: error.localizedDescription,
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
-                function: #function,
-                line: #line)
+            XCTFail("Failed to create analytics file for RC3 - error message: \(error.localizedDescription)")
         }
     }
     

@@ -127,6 +127,12 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientBINDataProtocol {
     func fetchNolSdkSecret(clientToken: DecodedJWTToken,
                            paymentRequestBody: Request.Body.NolPay.NolPaySecretDataRequest,
                            completion: @escaping (_ result: Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void)
+    
+    // Phone validation
+    func getPhoneMetadata(clientToken: DecodedJWTToken,
+                          paymentRequestBody: Request.Body.PhoneMetadata.PhoneMetadataDataRequest,
+                          completion: @escaping (Result<Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void)
+
 }
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
@@ -572,6 +578,21 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                 
             case .success(let nolSdkSecret):
                 completion(.success(nolSdkSecret))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+    
+    func getPhoneMetadata(clientToken: DecodedJWTToken,
+                          paymentRequestBody: Request.Body.PhoneMetadata.PhoneMetadataDataRequest,
+                          completion: @escaping (Result<Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void) {
+        let endpoint = PrimerAPI.getPhoneMetadata(clientToken: clientToken, request: paymentRequestBody)
+        networkService.request(endpoint) { (result: Result<Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) in
+            switch result {
+                
+            case .success(let phoneMetadataResponse):
+                completion(.success(phoneMetadataResponse))
             case .failure(let err):
                 completion(.failure(err))
             }

@@ -12,7 +12,6 @@
 import XCTest
 
 class MockPrimerAPIClient: PrimerAPIClientProtocol {
-    
     var mockedNetworkDelay: TimeInterval = 2
     var validateClientTokenResult: (SuccessResponse?, Error?)?
     var fetchConfigurationResult: (Response.Body.Configuration?, Error?)?
@@ -41,7 +40,8 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var listCardNetworksResult: (Response.Body.Bin.Networks?, Error?)?
     private var currentPollingIteration: Int = 0
     var testFetchNolSdkSecretResult: (Response.Body.NolPay.NolPaySecretDataResponse?, Error?)?
-
+    var phoneMetadataResult = Response.Body.PhoneMetadata.PhoneMetadataDataResponse(isValid: true, countryCode: "+111", nationalNumber: "12341234")
+    
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
         completion: @escaping (_ result: Result<SuccessResponse, Error>) -> Void
@@ -601,6 +601,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
+    
+    func getPhoneMetadata(clientToken: PrimerSDK.DecodedJWTToken, paymentRequestBody: PrimerSDK.Request.Body.PhoneMetadata.PhoneMetadataDataRequest, completion: @escaping (Result<PrimerSDK.Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void) {
+        completion(.success(phoneMetadataResult))
+    }
+
 
     func mockSuccessfulResponses() {
         self.validateClientTokenResult                  = (MockPrimerAPIClient.Samples.mockValidateClientToken, nil)

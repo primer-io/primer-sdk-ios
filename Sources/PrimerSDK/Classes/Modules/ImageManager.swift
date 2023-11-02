@@ -97,7 +97,7 @@ internal class ImageFile: File {
     }
 }
 
-internal class ImageManager {
+internal class ImageManager: LogReporter {
     
     func getImages(for imageFiles: [ImageFile]) -> Promise<[ImageFile]> {
         return Promise { seal in
@@ -203,10 +203,9 @@ internal class ImageManager {
                             severity: .info))
                     Analytics.Service.record(events: [bundledImageEvent])
                     
-                    log(logLevel: .warning,
-                        title: "\n\nFAILED TO DOWNLOAD LOGO BUT FOUND LOGO LOCALLY",
-                        message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")",
-                        prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
+                    self.logger.warn(message: "FAILED TO DOWNLOAD LOGO BUT FOUND LOGO LOCALLY")
+                    self.logger.warn(message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")")
+
                     seal.fulfill(file)
                     
                 } else {
@@ -218,10 +217,9 @@ internal class ImageManager {
                             severity: .warning))
                     Analytics.Service.record(events: [failedToLoadEvent])
                     
-                    log(logLevel: .warning,
-                        title: "\n\nFAILED TO DOWNLOAD LOGO",
-                        message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")",
-                        prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
+                    self.logger.warn(message: "FAILED TO DOWNLOAD LOGO")
+                    self.logger.warn(message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")")
+
                     seal.reject(err)
                 }
             }
@@ -243,7 +241,8 @@ internal class ImageManager {
             }
                         
         } catch {
-            log(logLevel: .error, title: "IMAGE MANAGER", message: "Clean failed with error: \(error)", prefix: nil, suffix: nil, bundle: Bundle.primerFrameworkIdentifier, file: #file, className: String(describing: self), function: #function, line: #line)
+            logger.error(message: "IMAGE MANAGER")
+            logger.error(message: "Clean failed with error: \(error)")
         }
     }
 }

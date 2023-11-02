@@ -15,7 +15,7 @@ internal protocol UniversalCheckoutViewModelProtocol {
     var amountStr: String? { get }
 }
 
-internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol {
+internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol, LogReporter {
 
     var amountStr: String? {
         if (PrimerInternal.shared.intent ?? .vault) == .vault { return nil }

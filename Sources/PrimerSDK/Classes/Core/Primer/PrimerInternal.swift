@@ -16,7 +16,7 @@ import Primer3DS
 private let _PrimerInternal = PrimerInternal()
 // swiftlint:enable identifier_name
 
-internal class PrimerInternal {
+internal class PrimerInternal: LogReporter {
     
     // MARK: - PROPERTIES
     
@@ -91,9 +91,9 @@ internal class PrimerInternal {
         var events: [Analytics.Event] = []
         
 #if canImport(Primer3DS)
-        print("Can import Primer3DS")
+        self.logger.info(message: "Can import Primer3DS")
 #else
-        print("WARNING!\nFailed to import Primer3DS")
+        self.logger.warn(message: "Failed to import Primer3DS")
         events.append(Analytics.Event(
             eventType: .message,
             properties: MessageEventProperties(

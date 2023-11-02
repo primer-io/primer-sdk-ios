@@ -9,7 +9,7 @@
 
 import Foundation
 
-internal class URLSessionStack: NetworkService {
+internal class URLSessionStack: NetworkService, LogReporter {
     
     private let session: URLSession
     private let parser: Parser
@@ -63,22 +63,12 @@ internal class URLSessionStack: NetworkService {
             request.allHTTPHeaderFields = headers
         }
         
-#if DEBUG
-        var msg = "\nHeaders: \(request.allHTTPHeaderFields ?? [:])"
-#endif
-        
         if let data = endpoint.body {
             request.httpBody = data
-            let jsonStr = data.prettyPrintedJSONString
-#if DEBUG
-            msg += "\nBody:\n\(jsonStr ?? "Empty body")"
-#endif
         }
         
 #if DEBUG
-        if let queryParams = endpoint.queryParameters {
-            msg += "\nQuery parameters: \(queryParams)"
-            
+        if let queryParams = endpoint.queryParameters {            
             var urlQueryItems: [URLQueryItem] = []
             
             for (key, val) in queryParams {
@@ -91,15 +81,15 @@ internal class URLSessionStack: NetworkService {
                 urlComponents.queryItems = urlQueryItems
             }
         }
-        
-        if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
-            primerLogAnalytics(title: "NETWORK REQUEST [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-        } else {
-            log(logLevel: .debug, title: "NETWORK REQUEST [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-        }
+ 
+        logger.debug(message: "🌎 Network request [\(request.httpMethod!)] \(request.url!)")
+        let headerDescriptions = request.allHTTPHeaderFields?.map { key, value in
+            return " - \(key) = \(value)"
+        } ?? []
+        logger.debug(message: "📃 Request Headers:\n\(headerDescriptions.joined(separator: "\n"))")
 #endif
         
-        let dataTask = session.dataTask(with: request) { data, response, error in
+        let dataTask = session.dataTask(with: request) { [logger] data, response, error in
             let httpResponse = response as? HTTPURLResponse
             
             var resEventProperties: NetworkCallEventProperties?
@@ -122,11 +112,7 @@ internal class URLSessionStack: NetworkService {
             }
             
 #if DEBUG
-            msg = ""
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                msg += "\nStatus: \(httpResponse.statusCode)\nHeaders: \(httpResponse.allHeaderFields as! [String: String])"
-            }
+
 #endif
                         
             if let error = error {
@@ -137,13 +123,7 @@ internal class URLSessionStack: NetworkService {
                 }
                 
 #if DEBUG
-                msg += "\nError: \(error)"
-                
-                if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
-                    primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                } else {
-                    log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                }
+                logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)", userInfo: ["ErrorMessage" : error.localizedDescription])
 #endif
                 
                 let err = InternalError.underlyingErrors(errors: [error], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -160,13 +140,8 @@ internal class URLSessionStack: NetworkService {
                 }
                 
 #if DEBUG
-                msg += "\nNo data received."
-                
-                if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
-                    primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                } else {
-                    log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                }
+                self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                self.logger.error(message: "No data received.")
 #endif
                 
                 let err = InternalError.noData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -184,18 +159,26 @@ internal class URLSessionStack: NetworkService {
 #if DEBUG
                 if endpoint.shouldParseResponseBody {
                     if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
-                        primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                    } else if !data.isEmpty  {
+                        logger.debug(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                        logger.debug(message: "Analytics event sent")
+                    } else {
                         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
                         let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
                         var jsonStr: String?
                         if jsonData != nil {
                             jsonStr = String(data: jsonData!, encoding: .utf8 )
                         }
-                        
-                        msg += "\nBody:\n\(jsonStr ?? "Empty body")"
-                        
-                        log(logLevel: .debug, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
+                        logger.debug(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                        if let httpResponse = response as? HTTPURLResponse {
+                            logger.debug(message: "✋ Status: \(httpResponse.statusCode)")
+                            let headerDescriptions = httpResponse.allHeaderFields.map { key, value in
+                                return " - \(key) = \(value)"
+                            }
+                            logger.debug(message: "📃 Response Headers:\n\(headerDescriptions.joined(separator: "\n"))")
+                            
+                        }
+                        let bodyDescription = jsonStr ?? "No body found"
+                        logger.debug(message: "Body:\n\(bodyDescription)")
                     }
                 }
 #endif
@@ -226,13 +209,8 @@ internal class URLSessionStack: NetworkService {
                         ErrorHandler.handle(error: err)
                         
 #if DEBUG
-                        msg += "\nError: Status code \(statusCode)\n\(err)"
-                        
-                        if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
-                            primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                        } else {
-                            log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                        }
+                        logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                        logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
 #endif
                         
                         DispatchQueue.main.async { completion(.failure(err)) }
@@ -242,13 +220,8 @@ internal class URLSessionStack: NetworkService {
                         ErrorHandler.handle(error: err)
                         
 #if DEBUG
-                        msg += "\nError: Status code \(statusCode)\n\(err)"
-                        
-                        if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
-                            primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                        } else {
-                            log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                        }
+                        self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                        logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
 #endif
                         
                         DispatchQueue.main.async { completion(.failure(err)) }
@@ -258,13 +231,8 @@ internal class URLSessionStack: NetworkService {
                         ErrorHandler.handle(error: err)
                         
 #if DEBUG
-                        msg += "\nError: Status code \(statusCode)\n\(err)"
-                        
-                        if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
-                            primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                        } else {
-                            log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                        }
+                        self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                        logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
 #endif
                         
                         DispatchQueue.main.async { completion(.failure(err)) }
@@ -278,15 +246,10 @@ internal class URLSessionStack: NetworkService {
                             resEvent!.properties = resEventProperties
                             Analytics.Service.record(event: resEvent!)
                         }
-                        
+
 #if DEBUG
-                        msg += "\nError: Status code \(statusCode)\n\(err.localizedDescription)"
-                        
-                        if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
-                            primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                        } else {
-                            log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                        }
+                        self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                        logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
 #endif
                         
                         DispatchQueue.main.async { completion(.failure(err)) }
@@ -303,13 +266,8 @@ internal class URLSessionStack: NetworkService {
                     }
                     
 #if DEBUG
-                    msg += "\nError: Failed to parse."
-                    
-                    if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
-                        primerLogAnalytics(title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                    } else {
-                        log(logLevel: .error, title: "NETWORK RESPONSE [\(request.httpMethod!)] \(request.url!)", message: msg, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
-                    }
+                    self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
+                    self.logger.error(message: "Error: Failed to parse")
 #endif
                     
                     DispatchQueue.main.async { completion(.failure(InternalError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))) }
