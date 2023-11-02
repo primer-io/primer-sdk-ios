@@ -14,7 +14,7 @@ function createMultiXcodeSummary(branch, xcodeVersions, integrationTypes) {
       .attachment()
       .mrkdwnIn(["title"])
       .color("#36a64f")
-      .title(`Successfully build on multiple Xcode Versions`)
+      .title(`Successfully built on multiple Xcode Versions.`)
       .authorName(process.env.GITHUB_ACTOR)
       .authorLink(`${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_ACTOR}`)
       .authorIcon(`${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_ACTOR}.png?size=32`)
