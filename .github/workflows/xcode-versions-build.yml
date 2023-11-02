@@ -40,6 +40,11 @@ jobs:
         with:
           ruby-version: "3.2"
           bundler-cache: true
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.3.0
+      - run: npm install --save slack-message-builder
       - name: Build and archive app via Cocoapods
         if: ${{ matrix.variant == 'cocoapods' }}
         run: |
@@ -64,11 +69,38 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
-      - name: Post to Slack in case of failure
+      - name: Create Slack Failure Summary Report
+        if: ${{ failure() }}
+        run: |
+          node Report\ Scripts/multixcode-failure-report.js createMultiXcodeFailureReport ${{ github.head_ref || github.ref_name }} ${{ matrix.xcode}} ${{ matrix.variant }}
+      - name: Slack Notification
         if: ${{ failure() }}
         uses: slackapi/slack-github-action@v1.23.0
         with:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
-          slack-message: 'Xcode ${{ matrix.xcode }} build failed for ${{ matrix.variant }}'
+          payload-file-path: '/var/tmp/multixcode-failure-report.json'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+  success:
+    name: Report Success
+    needs: build
+    runs-on: macos-latest
+    steps:
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.3.0
+      - run: npm install --save slack-message-builder
+      - name: Create Slack Success Summary Report
+        if: ${{ success() }}
+        run: |
+          node Report\ Scripts/multixcode-success-report.js createMultiXcodeSuccessReport ${{ github.head_ref || github.ref_name }} "['14.3', '14.2', '14.1']" "['cocoapods', 'spm']"
+      - name: Slack Notification
+        if: ${{ success() }}
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+          payload-file-path: '/var/tmp/multixcode-success-summary.json'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+
