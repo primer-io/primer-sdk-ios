@@ -9,8 +9,8 @@
 #if canImport(PrimerNolPaySDK)
 import XCTest
 @testable import PrimerSDK
-
 import PrimerNolPaySDK
+
 class PrimerHeadlessNolPayManagerTests: XCTestCase {
     
     var sut: PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager!

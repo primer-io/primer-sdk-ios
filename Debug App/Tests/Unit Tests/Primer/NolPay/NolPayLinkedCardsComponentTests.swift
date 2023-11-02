@@ -13,46 +13,50 @@ import PrimerNolPaySDK
 
 class NolPayLinkedCardsComponentTests: XCTestCase {
     
-    func testGetLinkedCardsFor_Success() {
-        let mockNolPay = MockPrimerNolPay(appId: "appId", isDebug: true, isSandbox: true) { sdkId, deviceId in
-            return try await withCheckedThrowingContinuation { continuation in
-                continuation.resume(returning: "appSecret")
-            }
-        }
-        let card = PrimerNolPayCard(cardNumber: "1234", expiredTime: "12/34")
-        mockNolPay.mockCards = [card]
-        
+    func testInitialization() {
         let component = NolPayLinkedCardsComponent(isDebug: true)
-        component.nolPay = mockNolPay // Inject mock object
+        XCTAssertNotNil(component)
+    }
+
+    func testGetLinkedCardsWithValidMobileNumber() {
+        let component = NolPayLinkedCardsComponent(isDebug: true)
+        let mockNolPay = MockPrimerNolPay(appId: "", isDebug: true, isSandbox: true, appSecretHandler: { sdkId, deviceId in
+            return "appSecret"
+        })
         
-        let expectation = self.expectation(description: "Get Linked Cards For Success")
+        let mockPhoneMetadataService = MockPhoneMetadataService()
+        mockPhoneMetadataService.resultToReturn = .success((.valid, "+123", "1234567890"))
+        component.phoneMetadataService = mockPhoneMetadataService
+        component.nolPay = mockNolPay
         
-        component.getLinkedCardsFor(phoneCountryDiallingCode: "+1", mobileNumber: "1234567890") { result in
+        let expectation = self.expectation(description: "Wait for getLinkedCards to return")
+        
+        component.getLinkedCardsFor(mobileNumber: "1234567890") { result in
             switch result {
             case .success(let cards):
-                XCTAssertEqual(cards.first?.cardNumber, "1234")
-                XCTAssertEqual(cards.first?.expiredTime, "12/34")
-            case .failure(_):
-                XCTFail("Expected success but got failure")
+                XCTAssertNotNil(cards)
+                XCTAssertEqual(cards.count, 1)
+                XCTAssertEqual(cards.first?.cardNumber, "1234567890123456")
+            case .failure(let error):
+                XCTFail("Expected success, but got error: \(error)")
             }
             expectation.fulfill()
         }
         
-        waitForExpectations(timeout: 5, handler: nil)
+        waitForExpectations(timeout: 1, handler: nil)
     }
-    
+
     func testGetLinkedCardsFor_WhenSDKNotAvailable() {
         let component = NolPayLinkedCardsComponent(isDebug: true)
         component.nolPay = nil // Setting nolPay to nil to simulate SDK unavailability
         
         let expectation = self.expectation(description: "Get Linked Cards For SDK Not Available")
         
-        component.getLinkedCardsFor(phoneCountryDiallingCode: "+1", mobileNumber: "1234567890") { result in
+        component.getLinkedCardsFor(mobileNumber: "+1234567890") { result in
             switch result {
             case .success(_):
                 XCTFail("Expected failure but got success")
             case .failure(let error):
-                // TODO: (NOL) update error
                 XCTAssertEqual(error.errorCode, 37)
             }
             expectation.fulfill()

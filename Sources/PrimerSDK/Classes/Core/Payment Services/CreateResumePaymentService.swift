@@ -55,8 +55,5 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                 completion(paymentResponse, nil)
             }
         }
-
     }
 }
-
-
