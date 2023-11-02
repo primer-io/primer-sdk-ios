@@ -17,7 +17,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        sut = NolPayLinkCardComponent(isDebug: true)
+        sut = NolPayLinkCardComponent()
     }
     
     override func tearDown() {

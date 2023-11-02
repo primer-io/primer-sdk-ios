@@ -14,12 +14,12 @@ import PrimerNolPaySDK
 class NolPayLinkedCardsComponentTests: XCTestCase {
     
     func testInitialization() {
-        let component = NolPayLinkedCardsComponent(isDebug: true)
+        let component = NolPayLinkedCardsComponent()
         XCTAssertNotNil(component)
     }
 
     func testGetLinkedCardsWithValidMobileNumber() {
-        let component = NolPayLinkedCardsComponent(isDebug: true)
+        let component = NolPayLinkedCardsComponent()
         let mockNolPay = MockPrimerNolPay(appId: "", isDebug: true, isSandbox: true, appSecretHandler: { sdkId, deviceId in
             return "appSecret"
         })
@@ -47,7 +47,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
     }
 
     func testGetLinkedCardsFor_WhenSDKNotAvailable() {
-        let component = NolPayLinkedCardsComponent(isDebug: true)
+        let component = NolPayLinkedCardsComponent()
         component.nolPay = nil // Setting nolPay to nil to simulate SDK unavailability
         
         let expectation = self.expectation(description: "Get Linked Cards For SDK Not Available")
