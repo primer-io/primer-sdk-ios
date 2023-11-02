@@ -872,8 +872,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/primer-io/primer-klarna-sdk-ios";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.4;
+				branch = feature/klarnamobilesdk_v2_pod_and_package;
+				kind = branch;
 			};
 		};
 		F04510E72ACD991200A0A48C /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */ = {
