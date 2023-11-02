@@ -17,7 +17,7 @@ public enum NolPayUnlinkDataStep: PrimerHeadlessStep {
 }
 
 public enum NolPayUnlinkCollectableData: PrimerCollectableData {
-    case cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard, mobileNumber: String, phoneCountryDiallingCode: String)
+    case cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard, mobileNumber: String)
     case otpData(otpCode: String)
 }
 
@@ -26,6 +26,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
 
     init(isDebug: Bool) {
         self.isDebug = isDebug
+        self.phoneMetadataService = NolPayPhoneMetadataService()
     }
 
 #if canImport(PrimerNolPaySDK)
@@ -34,10 +35,11 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
+    var phoneMetadataService: NolPayPhoneMetadataProviding?
     private var isDebug: Bool
 
     public var mobileNumber: String?
-    public var phoneCountryDiallingCode: String?
+    public var countryCode: String?
     public var otpCode: String?
     public var cardNumber: String?
     private var unlinkToken: String?
@@ -57,29 +59,25 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         switch collectableData {
         
         case .cardAndPhoneData(nolPaymentCard: let nolPaymentCard,
-                               mobileNumber: let mobileNumber,
-                               phoneCountryDiallingCode: let phoneCountryDiallingCode):
+                               mobileNumber: let mobileNumber):
             
             cardNumber = nolPaymentCard.cardNumber
             self.mobileNumber = mobileNumber
-            self.phoneCountryDiallingCode = phoneCountryDiallingCode
 
         case .otpData(otpCode: let otpCode):
             self.otpCode = otpCode
         }
         
-        // Notify validation delegate after updating data
-        let validations = validateData(for: collectableData)
-        validationDelegate?.didValidate(validations: validations, for: collectableData)
+        validateData(for: collectableData)
     }
     
-    public func validateData(for data: NolPayUnlinkCollectableData) -> [PrimerValidationError] {
+    public func validateData(for data: NolPayUnlinkCollectableData) {
+        validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         var errors: [PrimerValidationError] = []
         
         switch data {
             
-        case .cardAndPhoneData(nolPaymentCard: let card, mobileNumber: let mobileNumber,
-                        phoneCountryDiallingCode: let phoneCountryDiallingCode):
+        case .cardAndPhoneData(nolPaymentCard: let card, mobileNumber: let mobileNumber):
             
             if card.cardNumber.isEmpty || !card.cardNumber.isNumeric {
                 errors.append(PrimerValidationError.invalidCardnumber(
@@ -90,33 +88,32 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                         "function": #function,
                         "line": "\(#line)"
                     ], diagnosticsId: UUID().uuidString))
-            }
-            
-            if !mobileNumber.isValidMobilePhoneNumber {
-                errors.append(PrimerValidationError.invalidPhoneNumber(
-                    message: "Phone number is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
                 ErrorHandler.handle(error: errors.last!)
             }
             
-            if !phoneCountryDiallingCode.isValidCountryCode {
-                errors.append(PrimerValidationError.invalidPhoneNumberCountryCode(
-                    message: "Country code is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
-                ErrorHandler.handle(error: errors.last!)
-                
+            phoneMetadataService?.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
+                switch result {
+                    
+                case let .success((validationStatus, countryCode, mobileNumber)):
+                    switch validationStatus {
+                        
+                    case .valid:
+                        if errors.isEmpty {
+                            self?.countryCode = countryCode
+                            self?.mobileNumber = mobileNumber
+                            self?.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+                        } else {
+                            self?.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                        }
+
+                    case .invalid(errors: let validationErrors):
+                        errors += validationErrors
+                        self?.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                    default: break
+                    }
+                case .failure(let error):
+                    self?.validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
+                }
             }
         case .otpData(otpCode: let otpCode):
             if !otpCode.isValidOTP {
@@ -130,10 +127,12 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                     ],
                     diagnosticsId: UUID().uuidString))
                 ErrorHandler.handle(error: errors.last!)
+                self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+            } else {
+                self.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+
             }
         }
-        
-        return errors
     }
     
     public func submit() {
@@ -155,7 +154,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                 return
             }
             
-            guard let phoneCountryDiallingCode = phoneCountryDiallingCode
+            guard let countryCode = countryCode
             else {
                 makeAndHandleInvalidValueError(forKey: "phoneCountryDiallingCode")
                 return
@@ -169,7 +168,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             
 #if canImport(PrimerNolPaySDK)
             nolPay.sendUnlinkOTP(to: mobileNumber,
-                                 with: phoneCountryDiallingCode,
+                                 with: countryCode,
                                  and: cardNumber) { result in
                 switch result {
                     

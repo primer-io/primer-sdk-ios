@@ -16,7 +16,7 @@ extension PrimerTheme {
     }
 }
 
-class PrimerPaymentMethod: Codable {
+class PrimerPaymentMethod: Codable, LogReporter {
     
     static func getPaymentMethod(withType type: String) -> PrimerPaymentMethod? {
         return PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first
@@ -139,7 +139,8 @@ class PrimerPaymentMethod: Codable {
             }
         }
         
-        log(logLevel: .info, title: "UNHANDLED PAYMENT METHOD TYPE", message: type, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: #function, line: nil)
+        self.logger.info(message: "UNHANDLED PAYMENT METHOD TYPE")
+        self.logger.info(message: type)
         
         return nil
     }()

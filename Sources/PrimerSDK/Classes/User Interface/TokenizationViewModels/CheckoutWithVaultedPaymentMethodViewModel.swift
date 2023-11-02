@@ -9,7 +9,7 @@
 
 import Foundation
 
-class CheckoutWithVaultedPaymentMethodViewModel {
+class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
     
     static var apiClient: PrimerAPIClientProtocol?
     
@@ -196,9 +196,9 @@ class CheckoutWithVaultedPaymentMethodViewModel {
                         }
                     })
                 
-                Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
+                Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
                     if !decisionHandlerHasBeenCalled {
-                        print("PRIMER SDK\nWARNING!\nThe 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.")
+                        self?.logger.warn(message: "The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.")
                     }
                 }
             }

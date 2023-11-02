@@ -8,15 +8,26 @@
 
 
 import Foundation
+import PassKit
 
 extension PrimerHeadlessUniversalCheckout {
     
     public class PaymentMethod: NSObject {
         
         static var availablePaymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod] {
-            let availablePaymentMethods = PrimerAPIConfiguration.paymentMethodConfigs?
+            var availablePaymentMethods = PrimerAPIConfiguration.paymentMethodConfigs?
                 .compactMap({ $0.type })
                 .compactMap({ PrimerHeadlessUniversalCheckout.PaymentMethod(paymentMethodType: $0) })
+            
+            if PrimerSettings.current.paymentMethodOptions.applePayOptions?.showApplePayForUnsupportedDevice != true {
+                if !PKPaymentAuthorizationViewController.canMakePayments() {
+                    // Filter out Apple pay from payment methods
+                    availablePaymentMethods = availablePaymentMethods?.filter({ (method: PrimerHeadlessUniversalCheckout.PaymentMethod) in
+                        return method.paymentMethodType != "APPLE_PAY"
+                    })
+                }
+            }
+
             return availablePaymentMethods ?? []
         }
         

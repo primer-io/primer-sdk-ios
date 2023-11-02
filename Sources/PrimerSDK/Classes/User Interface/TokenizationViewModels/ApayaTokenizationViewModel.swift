@@ -168,12 +168,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 completion(.failure(err))
                 
             case .success(let res):
-                log(
-                    logLevel: .info,
-                    message: "\(res)",
-                    className: "\(String(describing: self.self))",
-                    function: #function
-                )
+                self.logger.info(message: "\(res)")
                 completion(.success(res.url))
             }
         }

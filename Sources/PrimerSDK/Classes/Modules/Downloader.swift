@@ -12,7 +12,7 @@ import Foundation
 internal typealias FileName = String
 internal typealias FileExtension = String
 
-internal class File {
+internal class File: LogReporter {
     
     var fileName: FileName
     var fileExtension: FileExtension?
@@ -61,7 +61,7 @@ internal class File {
                 try base64Data.write(to: fileLocalUrl)
                 
             } catch {
-                log(logLevel: .error, title: "Write failed", message: nil, prefix: nil, suffix: nil, bundle: nil, file: nil, className: nil, function: nil, line: nil)
+                logger.error(message: "Write failed")
             }
         }
     }

@@ -24,7 +24,7 @@ protocol ThreeDSServiceProtocol {
         completion: @escaping (_ result: Result<String, Error>) -> Void)
 }
 
-class ThreeDSService: ThreeDSServiceProtocol {
+class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     
     static var apiClient: PrimerAPIClientProtocol?
     
@@ -413,7 +413,7 @@ class ThreeDSService: ThreeDSServiceProtocol {
                     // All good, url value is valid and https
                     threeDsAppRequestorUrl = url
                 } else {
-                    print("PRIMER WARNING!\nthreeDsAppRequestorUrl is not in a valid format (\"https://applink\"). In case you want to support redirecting back during the OOB flows please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK initialization.")
+                    logger.warn(message: "threeDsAppRequestorUrl is not in a valid format (\"https://applink\"). In case you want to support redirecting back during the OOB flows please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK initialization.")
                 }
             }
             

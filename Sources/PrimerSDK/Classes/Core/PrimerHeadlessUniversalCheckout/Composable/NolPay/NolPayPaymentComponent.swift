@@ -11,7 +11,7 @@ import PrimerNolPaySDK
 #endif
 
 public enum NolPayPaymentCollectableData: PrimerCollectableData {
-    case paymentData(cardNumber: String, mobileNumber: String, phoneCountryDiallingCode: String)
+    case paymentData(cardNumber: String, mobileNumber: String)
 }
 
 public enum NolPayPaymentStep: PrimerHeadlessStep {
@@ -32,35 +32,43 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
+    var phoneMetadataService = NolPayPhoneMetadataService()
+    
     private var isDebug: Bool
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol!
     
     var mobileNumber: String?
-    var phoneCountryDiallingCode: String?
+    var countryCode: String?
     var cardNumber: String?
     var nextDataStep: NolPayPaymentStep = .collectCardAndPhoneData
 
     public func updateCollectedData(collectableData: NolPayPaymentCollectableData) {
         switch collectableData {
-        case let .paymentData(cardNumber, mobileNumber, phoneCountryDiallingCode):
+        case let .paymentData(cardNumber, mobileNumber):
             self.cardNumber = cardNumber
             self.mobileNumber = mobileNumber
-            self.phoneCountryDiallingCode = phoneCountryDiallingCode
         }
         
-        // Notify validation delegate after updating data
-        let validations = validateData(for: collectableData)
-        validationDelegate?.didValidate(validations: validations, for: collectableData)
+        validateData(for: collectableData)
     }
     
-    func validateData(for data: NolPayPaymentCollectableData) -> [PrimerValidationError] {
+    func validateData(for data: NolPayPaymentCollectableData) {
+        validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         var errors: [PrimerValidationError] = []
-        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: NolPayAnalyticsConstants.PAYMENT_UPDATE_COLLECTED_DATA_METHOD,
+                params: [
+                    "category": "NOL_PAY",
+                ]))
+        Analytics.Service.record(events: [sdkEvent])
+
         switch data {
             
         case .paymentData(cardNumber: let cardNumber,
-                          mobileNumber: let mobileNumber,
-                          phoneCountryDiallingCode: let phoneCountryDiallingCode):
+                          mobileNumber: let mobileNumber):
+            
             if cardNumber.isEmpty {
                 errors.append(PrimerValidationError.invalidCardnumber(
                     message: "Card number is not valid.",
@@ -74,37 +82,44 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                 ErrorHandler.handle(error: errors.last!)
             }
             
-            if !mobileNumber.isValidMobilePhoneNumber {
-                errors.append(PrimerValidationError.invalidPhoneNumber(
-                    message: "Mobile number is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
-                ErrorHandler.handle(error: errors.last!)
-            }
-            
-            if !phoneCountryDiallingCode.isValidCountryCode {
-                errors.append(PrimerValidationError.invalidPhoneNumberCountryCode(
-                    message: "Country code number is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
-                ErrorHandler.handle(error: errors.last!)
-            }
+            phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
+                switch result {
+                    
+                case let .success((validationStatus, countryCode, mobileNumber)):
+                    switch validationStatus {
+                        
+                    case .valid:
+                        if errors.isEmpty {
+                            self?.countryCode = countryCode
+                            self?.mobileNumber = mobileNumber
+                            self?.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+                        } else {
+                            self?.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                        }
 
+                    case .invalid(errors: let validationErrors):
+                        errors += validationErrors
+                        self?.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                    default: break
+                    }
+                case .failure(let error):
+                    self?.validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
+                }
+            }
         }
-        return errors
     }
     
     public func submit() {
+        
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: NolPayAnalyticsConstants.PAYMENT_SUBMIT_DATA_METHOD,
+                params: [
+                    "category": "NOL_PAY",
+                ]))
+        Analytics.Service.record(events: [sdkEvent])
+
         switch nextDataStep {
         case .collectCardAndPhoneData:
             guard let cardNumber = cardNumber
@@ -119,7 +134,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                 return
             }
             
-            guard let phoneCountryDiallingCode = phoneCountryDiallingCode
+            guard let countryCode = countryCode
             else {
                 makeAndHandleInvalidValueError(forKey: "phoneCountryDiallingCode")
                 return
@@ -131,7 +146,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
             self.tokenizationViewModel = paymentMethod
             paymentMethod.nolPayCardNumber = cardNumber
             paymentMethod.mobileNumber = mobileNumber
-            paymentMethod.mobileCountryCode = phoneCountryDiallingCode
+            paymentMethod.mobileCountryCode = countryCode
             
             paymentMethod.triggerAsyncAction = { (transactionNumber: String, completion: ((Result<Bool, Error>) -> Void)?)  in
     #if canImport(PrimerNolPaySDK)
@@ -180,6 +195,15 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     }
     
     public func start() {
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: NolPayAnalyticsConstants.PAYMENT_START_METHOD,
+                params: [
+                    "category": "NOL_PAY",
+                ]))
+        Analytics.Service.record(events: [sdkEvent])
+
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {

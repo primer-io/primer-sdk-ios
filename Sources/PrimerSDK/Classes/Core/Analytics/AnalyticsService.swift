@@ -11,17 +11,11 @@ import Foundation
 
 extension Analytics {
     
-    internal class Service {
+    internal class Service: LogReporter {
         
         static var filepath: URL = {
             let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
-            primerLogAnalytics(
-                title: "Analytics URL",
-                message: "Analytics URL:\n\(url)\n",
-                file: #file,
-                className: "Analytics.Service",
-                function: #function,
-                line: #line)
+            logger.debug(message: "Analytics URL: \(url)")
             return url
         }()
         
@@ -36,15 +30,7 @@ extension Analytics {
         internal static func record(events: [Analytics.Event]) -> Promise<Void> {
             return Promise { seal in
                 Analytics.queue.async {
-                    primerLogAnalytics(
-                        title: "ANALYTICS",
-                        message: "📚 Recording \(events.count) events",
-                        prefix: "📚",
-                        bundle: Bundle.primerFrameworkIdentifier,
-                        file: #file,
-                        className: "\(Self.self)",
-                        function: #function,
-                        line: #line)
+                    logger.debug(message: "📚 Analytics: Recording \(events.count) events")
                     
                     do {
                         let storedEvents: [Analytics.Event] = try Analytics.Service.loadEventsSynchronously()
@@ -74,14 +60,7 @@ extension Analytics {
         internal static func sync(batchSize: UInt = 300) -> Promise<Void> {
             return Promise { seal in
                 Analytics.queue.async {
-                    primerLogAnalytics(
-                        title: "ANALYTICS",
-                        message: "📚 Syncing...",
-                        prefix: "📚",
-                        bundle: Bundle.primerFrameworkIdentifier,
-                        file: #file, className: "\(Self.self)",
-                        function: #function,
-                        line: #line)
+                    logger.debug(message: "📚 Analytics: Syncing...")
                     
                     let promises: [Promise<Void>] = [
                         Analytics.Service.sendSkdLogEvents(batchSize: batchSize),
@@ -92,38 +71,16 @@ extension Analytics {
                         when(fulfilled: promises)
                     }
                     .done { responses in
-                        primerLogAnalytics(
-                            title: "ANALYTICS",
-                            message: "📚 All events synced",
-                            prefix: "📚",
-                            bundle: Bundle.primerFrameworkIdentifier,
-                            file: #file, className: "\(Self.self)",
-                            function: #function,
-                            line: #line)
+                        logger.debug(message: "📚 Analytics: All events synced...")
                     }
                     .ensure {
                         let remainingEvents = try? self.loadEventsSynchronously()
-                        primerLogAnalytics(
-                            title: "ANALYTICS",
-                            message: "📚 Deleted synced events. There're \((remainingEvents ?? []).count) events remaining in the queue.",
-                            prefix: "📚",
-                            bundle: Bundle.primerFrameworkIdentifier,
-                            file: #file, className: "\(Self.self)",
-                            function: #function,
-                            line: #line)
-                        
+                        logger.debug(message: "📚 Analytics: Deleted synced events. There're \((remainingEvents ?? []).count) events remaining in the queue.")
                         seal.fulfill()
                         
                     }
                     .catch { err in
-                        primerLogAnalytics(
-                            title: "ANALYTICS",
-                            message: "📚 Failed to sync events with error \(err.localizedDescription)",
-                            prefix: "📚",
-                            bundle: Bundle.primerFrameworkIdentifier,
-                            file: #file, className: "\(Self.self)",
-                            function: #function,
-                            line: #line)
+                        logger.error(message: "📚 Analytics: Failed to sync events with error \(err.localizedDescription)")
                         seal.reject(err)
                     }
                 }
@@ -239,29 +196,13 @@ extension Analytics {
             ) { result in
                 switch result {
                 case .success:
-                    primerLogAnalytics(
-                        title: "ANALYTICS",
-                        message: "📚 Finished syncing \(events.count) events on URL: \(url.absoluteString)",
-                        prefix: "📚",
-                        bundle: Bundle.primerFrameworkIdentifier,
-                        file: #file,
-                        className: "\(Self.self)",
-                        function: #function,
-                        line: #line)
-                    
+                    logger.debug(message: "📚 Analytics: Finished syncing \(events.count) events on URL: \(url.absoluteString)")
                     Analytics.Service.deleteEventsSynchronously(events)
                     
                     completion(nil)
                     
                 case .failure(let err):
-                    primerLogAnalytics(
-                        title: "ANALYTICS",
-                        message: "📚 Failed to sync \(events.count) events on URL \(url.absoluteString) with error \(err)",
-                        prefix: "📚",
-                        bundle: Bundle.primerFrameworkIdentifier,
-                        file: #file, className: "\(Self.self)",
-                        function: #function,
-                        line: #line)
+                    logger.error(message: "📚 Analytics: Failed to sync \(events.count) events on URL \(url.absoluteString) with error \(err)")
                     ErrorHandler.handle(error: err)
                     completion(err)
                 }
@@ -270,14 +211,7 @@ extension Analytics {
         
         internal static func loadEventsSynchronously() throws -> [Analytics.Event] {
             do {
-                primerLogAnalytics(
-                    title: "ANALYTICS",
-                    message: "📚 Loading events",
-                    prefix: "📚",
-                    bundle: Bundle.primerFrameworkIdentifier,
-                    file: #file, className: "\(Self.self)",
-                    function: #function,
-                    line: #line)
+                logger.debug(message: "📚 Loading events")
                 
                 if #available(iOS 16.0, *) {
                     if !FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
@@ -302,43 +236,21 @@ extension Analytics {
         
         private static func saveSynchronously(events: [Analytics.Event]) {
             DispatchQueue.global(qos: .utility).sync {
-                primerLogAnalytics(
-                    title: "ANALYTICS",
-                    message: "📚 Saving \(events.count) events",
-                    prefix: "📚",
-                    bundle: Bundle.primerFrameworkIdentifier,
-                    file: #file,
-                    className: "\(Self.self)",
-                    function: #function,
-                    line: #line)
+                logger.debug(message: "📚 Saving \(events.count) events")
                 
                 do {
                     let eventsData = try JSONEncoder().encode(events)
                     try eventsData.write(to: Analytics.Service.filepath)
                     
                 } catch {
-                    primerLogAnalytics(
-                        title: "ANALYTICS",
-                        message: error.localizedDescription,
-                        prefix: "📚",
-                        bundle: Bundle.primerFrameworkIdentifier,
-                        file: #file, className: "\(Self.self)",
-                        function: #function,
-                        line: #line)
+                    logger.error(message: "📚 \(error.localizedDescription)")
                 }
             }
         }
         
         internal static func deleteEventsSynchronously(_ events: [Analytics.Event]? = nil)  {
             Analytics.queue.sync {
-                primerLogAnalytics(
-                    title: "ANALYTICS",
-                    message: "📚 Deleting \(events == nil ? "all" : "\(events!.count)") events",
-                    prefix: "📚",
-                    bundle: Bundle.primerFrameworkIdentifier,
-                    file: #file, className: "\(Self.self)",
-                    function: #function,
-                    line: #line)
+                logger.debug(message: "📚 Deleting \(events == nil ? "all" : "\(events!.count)") events")
                 
                 do {
                     if let events = events {
@@ -346,25 +258,18 @@ extension Analytics {
                         let eventsLocalIds = events.compactMap({ $0.localId })
                         let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId )} )
                         Analytics.Service.saveSynchronously(events: remainingEvents)
-                                                
                     } else {
                         Analytics.Service.deleteAnalyticsFile()
                     }
                 } catch {
+                    logger.error(message: "📚 Analytics: Failed to save partial events before deleting file. Deleting file anyway.")
                     Analytics.Service.deleteAnalyticsFile()
                 }
             }
         }
         
         internal static func deleteAnalyticsFile() {
-            primerLogAnalytics(
-                title: "ANALYTICS",
-                message: "📚 Deleting analytics file at \(Analytics.Service.filepath.absoluteString)",
-                prefix: "📚",
-                bundle: Bundle.primerFrameworkIdentifier,
-                file: #file, className: "\(Self.self)",
-                function: #function,
-                line: #line)
+            logger.debug(message: "📚 Analytics: Deleting analytics file at \(Analytics.Service.filepath.absoluteString)")
             
             if #available(iOS 16.0, *) {
                 if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {

@@ -66,7 +66,7 @@ internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     func cancel()
 }
 
-class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
+class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol, LogReporter {
 
     var config: PrimerPaymentMethod!
     static var apiClient: PrimerAPIClientProtocol?
