@@ -41,7 +41,7 @@ public protocol PrimerDelegate {
     @objc optional func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)
 }
 
-internal class PrimerDelegateProxy {
+internal class PrimerDelegateProxy: LogReporter {
     
     static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecisionProtocol) -> Void) {
         DispatchQueue.main.async {
@@ -160,7 +160,7 @@ internal class PrimerDelegateProxy {
             
             if PrimerInternal.shared.sdkIntegrationType == .headless {
                 if PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail == nil {
-                    print("WARNING!\nDelegate function 'primerHeadlessUniversalCheckoutDidFail' hasn't been implemented.")
+                    logger.warn(message: "Delegate function 'primerHeadlessUniversalCheckoutDidFail' hasn't been implemented.")
                     decisionHandler(.fail(withErrorMessage: nil))
                     
                 } else {
@@ -185,7 +185,7 @@ internal class PrimerDelegateProxy {
                 
             } else if PrimerInternal.shared.sdkIntegrationType == .dropIn {
                 if Primer.shared.delegate?.primerDidFailWithError == nil {
-                    print("WARNING!\nDelegate function 'primerDidFailWithError' hasn't been implemented. No custom error message will be displayed on the error screen.")
+                    logger.warn(message: "Delegate function 'primerDidFailWithError' hasn't been implemented. No custom error message will be displayed on the error screen.")
                     decisionHandler(.fail(withErrorMessage: nil))
                     
                 } else {

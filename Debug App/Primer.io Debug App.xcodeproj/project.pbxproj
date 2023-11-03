@@ -63,7 +63,10 @@
 		961B5D18058EF4CFCD0185AE /* MockVaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3E75CD834937EF85DE1C14 /* MockVaultCheckoutViewModel.swift */; };
 		97F0B302DF965C1AD1EC6F4D /* PaymentMethodConfigServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743F107C464526926A34A433 /* PaymentMethodConfigServiceTests.swift */; };
 		9AB1ABF4E46A37766CDBF197 /* ApayaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F79B50111AC4161CFB1EFE8 /* ApayaTests.swift */; };
+		A1055D6F2AF125E90027B967 /* DebouncerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1055D6E2AF125E90027B967 /* DebouncerTests.swift */; };
 		A13392BC2AD459E90005A4D7 /* NolPayLinkCardComponentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13392BB2AD459E90005A4D7 /* NolPayLinkCardComponentTest.swift */; };
+		A1536BAD2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1536BAC2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift */; };
+		A1536BAF2AEC0A6D0087DDC0 /* NolTestsMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1536BAE2AEC0A6D0087DDC0 /* NolTestsMocks.swift */; };
 		A1585C752ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1585C742ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift */; };
 		A1A3D0F32AD5585A00F7D8C9 /* NolPayUnlinkCardComponentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A3D0F22AD5585A00F7D8C9 /* NolPayUnlinkCardComponentTest.swift */; };
 		A1A3D0F52AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A3D0F42AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift */; };
@@ -210,7 +213,10 @@
 		9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantDropInUIViewController.swift; sourceTree = "<group>"; };
 		994AE6760B506D02499AEC90 /* CardComponentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardComponentManagerTests.swift; sourceTree = "<group>"; };
 		9D122A0B71B707C2110AB7F5 /* PayPalConfirmBillingAgreementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPalConfirmBillingAgreementTests.swift; sourceTree = "<group>"; };
+		A1055D6E2AF125E90027B967 /* DebouncerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebouncerTests.swift; sourceTree = "<group>"; };
 		A13392BB2AD459E90005A4D7 /* NolPayLinkCardComponentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayLinkCardComponentTest.swift; sourceTree = "<group>"; };
+		A1536BAC2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayPhoneMetadataServiceTests.swift; sourceTree = "<group>"; };
+		A1536BAE2AEC0A6D0087DDC0 /* NolTestsMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolTestsMocks.swift; sourceTree = "<group>"; };
 		A1585C742ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayLinkedCardsComponentTests.swift; sourceTree = "<group>"; };
 		A1604A656AF654D7422A2A5E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
 		A1A3D0F22AD5585A00F7D8C9 /* NolPayUnlinkCardComponentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayUnlinkCardComponentTest.swift; sourceTree = "<group>"; };
@@ -445,10 +451,12 @@
 			isa = PBXGroup;
 			children = (
 				041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */,
+				A1536BAC2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift */,
 				A1585C742ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift */,
 				A13392BB2AD459E90005A4D7 /* NolPayLinkCardComponentTest.swift */,
 				A1A3D0F22AD5585A00F7D8C9 /* NolPayUnlinkCardComponentTest.swift */,
 				A1A3D0F42AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift */,
+				A1536BAE2AEC0A6D0087DDC0 /* NolTestsMocks.swift */,
 			);
 			path = NolPay;
 			sourceTree = "<group>";
@@ -486,6 +494,7 @@
 			isa = PBXGroup;
 			children = (
 				BA0B2BEE5C389FD13E210847 /* DateTests.swift */,
+				A1055D6E2AF125E90027B967 /* DebouncerTests.swift */,
 				9314E0A4E884A8228611A030 /* IntExtensionTests.swift */,
 				BD26E8C6074BB89ACBD5B8B9 /* MaskTests.swift */,
 				872A0647D4136E27365FB7F8 /* StringTests.swift */,
@@ -805,6 +814,7 @@
 				A13392BC2AD459E90005A4D7 /* NolPayLinkCardComponentTest.swift in Sources */,
 				3FD160A4D951EA772ADF4E25 /* DecodedClientToken.swift in Sources */,
 				3D112A8DE292D097E651FCDB /* IPay88Tests.swift in Sources */,
+				A1536BAF2AEC0A6D0087DDC0 /* NolTestsMocks.swift in Sources */,
 				A61B9E61EDCE18D34438352E /* PayPalConfirmBillingAgreementTests.swift in Sources */,
 				8064B65A8F83D5B004D081FD /* PaymentMethodConfigTests.swift in Sources */,
 				4BD7794627267B40E9E10686 /* PrimerCheckoutTheme.swift in Sources */,
@@ -836,6 +846,7 @@
 				2C98B33ECA68109C7A6AA134 /* PrimerBancontactCardDataManagerTests.swift in Sources */,
 				05FAC0D894B841B52E9E0A9A /* PrimerRawCardDataManagerTests.swift in Sources */,
 				D649870C2D022B4063BDC0B4 /* PrimerRawRetailerDataTests.swift in Sources */,
+				A1536BAD2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift in Sources */,
 				7F49B29FCC55CF3C5CB6C506 /* CardComponentManagerTests.swift in Sources */,
 				DB1A2989DDE0928C62B15303 /* PayPalServiceTests.swift in Sources */,
 				97F0B302DF965C1AD1EC6F4D /* PaymentMethodConfigServiceTests.swift in Sources */,
@@ -851,6 +862,7 @@
 				2662EB3445AE8C7188953EFD /* HeadlessVaultManagerTests.swift in Sources */,
 				A1A3D0F52AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift in Sources */,
 				9263BD762EC26F6AA986F0C9 /* MockAPIClient.swift in Sources */,
+				A1055D6F2AF125E90027B967 /* DebouncerTests.swift in Sources */,
 				8B5CB0C992DBAB293D378FAD /* MockModule.swift in Sources */,
 				E6F85ECD80B64754E7A6D35E /* RawDataManagerTests.swift in Sources */,
 			);
@@ -957,10 +969,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/ExampleApp.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = N8UN9TR5DY;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Primer Debug";
@@ -971,7 +981,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "";
 				PRODUCT_NAME = "Debug App";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.primerapi.PrimerSDKExample";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -992,10 +1001,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/ExampleApp.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = N8UN9TR5DY;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Primer Debug";
@@ -1006,7 +1013,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "";
 				PRODUCT_NAME = "Debug App";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.primerapi.PrimerSDKExample";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -1095,7 +1101,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
@@ -1183,7 +1189,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

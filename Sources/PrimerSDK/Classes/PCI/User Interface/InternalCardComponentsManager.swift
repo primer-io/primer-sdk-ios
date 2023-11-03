@@ -46,7 +46,7 @@ typealias BillingAddressField = (fieldView: PrimerTextFieldView,
                                  isFieldHidden: Bool)
 
 @objc
-internal class InternalCardComponentsManager: NSObject, InternalCardComponentsManagerProtocol {
+internal class InternalCardComponentsManager: NSObject, InternalCardComponentsManagerProtocol, LogReporter {
     
     var cardnumberField: PrimerCardNumberFieldView
     var expiryDateField: PrimerExpiryDateFieldView
@@ -107,7 +107,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
     private func fetchClientToken() -> Promise<DecodedJWTToken> {
         return Promise { seal in
             guard let delegate = delegate else {
-                print("WARNING!\nDelegate has not been set")
+                logger.warn(message: "Delegate has not been set for InternalCardComponentsManager")
                 let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)

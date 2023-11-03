@@ -15,10 +15,12 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
     var nolPay: PrimerNolPayProtocol?
     
     public var errorDelegate: PrimerHeadlessErrorableDelegate?
-    private var isDebug: Bool
+    public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
+    var mobileNumber: String?
+    var countryCode: String?
+    var phoneMetadataService: NolPayPhoneMetadataProviding?
 
-    public init(isDebug: Bool) {
-        self.isDebug = isDebug
+    public init() {
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
@@ -46,8 +48,13 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
             return
         }
         
-        let isSandbox = clientToken.env != "PRODUCTION"
         
+        let isSandbox = clientToken.env != "PRODUCTION"
+        var isDebug = false
+#if DEBUG
+        isDebug =  PrimerLogging.shared.logger.logLevel == .debug
+#endif
+
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
             
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
@@ -72,10 +79,11 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
                 return ""
             }
         }
+        phoneMetadataService = NolPayPhoneMetadataService()
+
     }
     
-    public func getLinkedCardsFor(phoneCountryDiallingCode: String,
-                                  mobileNumber: String,
+    public func getLinkedCardsFor(mobileNumber: String,
                                   completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
         
         let sdkEvent = Analytics.Event(
@@ -87,7 +95,6 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
                 ]))
         Analytics.Service.record(events: [sdkEvent])
         guard let nolPay = nolPay else {
-            // TODO: (NOL) Add new errors
             let error = PrimerError.nolError(code: "unknown",
                                              message: "error.description",
                                              userInfo: [
@@ -103,24 +110,67 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
             return
         }
         
-        nolPay.getAvailableCards(for: mobileNumber, with: phoneCountryDiallingCode) { result in
+            phoneMetadataService?.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
             switch result {
                 
-            case .success(let cards):
-                completion(.success(PrimerNolPaymentCard.makeFrom(arrayOf: cards)))
+            case let .success((validationStatus, countryCode, mobileNumber)):
+                switch validationStatus {
+                    
+                case .valid:
+                    
+                    guard let parsedMobileNumber = mobileNumber else {
+                        let error = PrimerError.invalidValue(key: "mobileNumber", value: nil, userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: error)
+                        self?.errorDelegate?.didReceiveError(error: error)
+                        return
+                    }
+                    
+                    guard let countryCode = countryCode else {
+                        let error = PrimerError.invalidValue(key: "countryCode", value: nil, userInfo: [
+                            "file": #file,
+                            "class": "\(Self.self)",
+                            "function": #function,
+                            "line": "\(#line)"
+                        ],
+                        diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: error)
+                        self?.errorDelegate?.didReceiveError(error: error)
+                        return
+                    }
+
+                    nolPay.getAvailableCards(for: parsedMobileNumber, with: countryCode) { result in
+                        switch result {
+                            
+                        case .success(let cards):
+                            completion(.success(PrimerNolPaymentCard.makeFrom(arrayOf: cards)))
+                        case .failure(let error):
+                            let error = PrimerError.nolError(code: error.errorCode,
+                                                             message: error.description,
+                                                             userInfo: [
+                                                                "file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"
+                                                             ],
+                                                             diagnosticsId: UUID().uuidString)
+                            self?.errorDelegate?.didReceiveError(error: error)
+                            ErrorHandler.handle(error: error)
+                            completion(.failure(error))
+                        }
+                    }
+
+                case .invalid(errors: let validationErrors):
+                    self?.validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: nil)
+                default: break
+                }
             case .failure(let error):
-                let error = PrimerError.nolError(code: error.errorCode,
-                                                 message: error.description,
-                                                 userInfo: [
-                                                    "file": #file,
-                                                    "class": "\(Self.self)",
-                                                    "function": #function,
-                                                    "line": "\(#line)"
-                                                 ],
-                                                 diagnosticsId: UUID().uuidString)
-                self.errorDelegate?.didReceiveError(error: error)
-                ErrorHandler.handle(error: error)
-                completion(.failure(error))
+                self?.errorDelegate?.didReceiveError(error: error)
             }
         }
     }

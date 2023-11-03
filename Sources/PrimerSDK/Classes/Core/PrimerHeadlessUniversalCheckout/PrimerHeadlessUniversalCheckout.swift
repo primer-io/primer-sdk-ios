@@ -9,7 +9,7 @@
 
 import UIKit
 
-public class PrimerHeadlessUniversalCheckout {
+public class PrimerHeadlessUniversalCheckout: LogReporter {
     
     public static let current = PrimerHeadlessUniversalCheckout()
     
@@ -63,7 +63,7 @@ public class PrimerHeadlessUniversalCheckout {
         }
         
         if PrimerHeadlessUniversalCheckout.current.delegate == nil {
-            print("WARNING!\nPrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
+            logger.warn(message: "PrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
         }
         
         PrimerInternal.shared.checkoutSessionId = UUID().uuidString
@@ -72,9 +72,9 @@ public class PrimerHeadlessUniversalCheckout {
         var events: [Analytics.Event] = []
         
 #if canImport(Primer3DS)
-        print("Can import Primer3DS")
+        logger.info(message: "Can import Primer3DS")
 #else
-        print("WARNING!\nFailed to import Primer3DS")
+        logger.warn(message: "Failed to import Primer3DS")
         let event = Analytics.Event(
             eventType: .message,
             properties: MessageEventProperties(
@@ -232,7 +232,7 @@ public class PrimerHeadlessUniversalCheckout {
 #if !canImport(PrimerKlarnaSDK)
         if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
             paymentMethods?.remove(at: klarnaIndex)
-            print("\nWARNING!\nKlarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.\n\n")
+            logger.warn(message: "Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.")
             
             let event = Analytics.Event(
                 eventType: .message,
@@ -248,7 +248,7 @@ public class PrimerHeadlessUniversalCheckout {
 #if !canImport(PrimerIPay88MYSDK)
         if let iPay88ViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
             paymentMethods?.remove(at: iPay88ViewModelIndex)
-            print("\nWARNING!\niPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.\n\n")
+            logger.warn(message: "iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.")
             
             let event = Analytics.Event(
                 eventType: .message,
@@ -263,7 +263,7 @@ public class PrimerHeadlessUniversalCheckout {
 #if !canImport(PrimerNolPaySDK)
         if let nolPayViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.nolPay.rawValue }) {
             paymentMethods?.remove(at: nolPayViewModelIndex)
-            print("\nWARNING!\nNolPay configuration has been found but module 'PrimerNolPaySDK' is missing. Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your podfile, so you can perform payments with NolPay.\n\n")
+            logger.warn(message: "NolPay configuration has been found but module 'PrimerNolPaySDK' is missing. Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your podfile, so you can perform payments with NolPay.")
             
             let event = Analytics.Event(
                 eventType: .message,

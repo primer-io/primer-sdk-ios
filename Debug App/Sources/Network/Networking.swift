@@ -35,6 +35,8 @@ enum NetworkError: Error {
     case serializationError
 }
 
+private let logger = PrimerLogging.shared.logger
+
 class Networking {
     
     var endpoint: String {
@@ -56,7 +58,6 @@ class Networking {
         body: Data?,
         completion: @escaping (_ result: Result<Data, Error>) -> Void)
     {
-        var msg = "REQUEST\n"
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         
         if let queryParameters = queryParameters {
@@ -66,7 +67,7 @@ class Networking {
         }
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         
-        msg += "URL: \(components.url!.absoluteString )\n"
+        logger.debug(message: "URL: \(components.url!.absoluteString )")
         
         var request = URLRequest(url: components.url!)
         request.httpMethod = method.rawValue
@@ -94,76 +95,69 @@ class Networking {
             request.addValue("IOS", forHTTPHeaderField: "Client")
         }
                         
-        msg += "Headers:\n\(request.allHTTPHeaderFields ?? [:])\n"
+        let headerDescriptions = request.allHTTPHeaderFields?.map { key, value in
+            return "\(key) = \(value)"
+        } ?? []
+        logger.debug(message: "Request Headers:\n\(headerDescriptions.joined(separator: "\n"))")
                 
         if let body = body {
             request.httpBody = body
-            
-            let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments)
-            msg += "Body:\n\(bodyJson ?? [:])\n"
+            if let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments) {
+                logger.debug(message: "Request Body (json):\n\(bodyJson)")
+            }
         }
-
-        print(msg)
-        msg = ""
         
         URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
             DispatchQueue.main.async {
-                msg += "RESPONSE\n"
-                msg += "URL: \(request.url?.absoluteString ?? "Invalid")\n"
-                
+                logger.debug(message: "Url: \(request.url?.absoluteString ?? "unknown")")
+
                 if err != nil {
-                    msg += "Error: \(err!)\n"
-                    print(msg)
+                    logger.debug(message: "Error: \(err!)")
                     completion(.failure(err!))
                     return
                 }
 
                 guard let httpResponse = response as? HTTPURLResponse else {
-                    msg += "Error: Invalid response\n"
-                    print(msg)
+                    logger.debug(message: "Error: Invalid response")
                     completion(.failure(NetworkError.invalidResponse))
                     return
                 }
 
                 if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
-                    msg += "Status code: \(httpResponse.statusCode)\n"
+                    logger.debug(message: "Status Code: \(httpResponse.statusCode)")
                     if let data = data, let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                        msg += "Body:\n\(resJson)\n"
+                        logger.debug(message: "Response Body (json):\n\(resJson)")
                     }
-                    print(msg)
-                    completion(.failure(NetworkError.invalidResponse))
                     
                     guard let data = data else {
-                        print("No data")
+                        logger.error(message: "No data")
                         completion(.failure(NetworkError.invalidResponse))
                         return
                     }
                     
                     do {
                         let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                        print("Response body: \(json)")
+                        logger.debug(message: "Response Body (json):\n\(json)")
                     } catch {
-                        print("Error: \(error)")
+                        logger.error(message: "Failed to parse response body: \(error)")
                     }
+                    completion(.failure(NetworkError.invalidResponse))
                     return
                 }
 
                 guard let data = data else {
-                    msg += "Status code: \(httpResponse.statusCode)\n"
-                    msg += "Body:\nNo data\n"
-                    print(msg)
+                    logger.debug(message: "Status Code: \(httpResponse.statusCode)")
+                    logger.debug(message: "Response Body: No data")
                     completion(.failure(NetworkError.invalidResponse))
                     return
                 }
                 
-                msg += "Status code: \(httpResponse.statusCode)\n"
+                logger.debug(message: "Status Code: \(httpResponse.statusCode)")
                 if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                    msg += "Body:\n\(resJson)\n"
+                    logger.debug(message: "Response Body (json):\n\(resJson)")
                 } else {
-                    msg += "Body (String): \(String(describing: String(data: data, encoding: .utf8)))"
+                    logger.debug(message: "Response Body (text):\n\(String(describing: String(data: data, encoding: .utf8)))")
                 }
-                
-                print(msg)
 
                 completion(.success(data))
             }
@@ -262,7 +256,6 @@ class Networking {
         let url = environment.baseUrl.appendingPathComponent("/api/client-session")
 
         var bodyData: Data!
-        var headers: [String: String]?
 
         do {
             if let requestBodyJson = requestBody.dictionaryValue {

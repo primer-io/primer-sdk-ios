@@ -354,7 +354,7 @@ extension FormPaymentMethodTokenizationViewModel {
         
         UIPasteboard.general.string = PrimerAPIConfigurationModule.decodedJWTToken?.accountNumber
         
-        log(logLevel: .debug, message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
+        self.logger.debug(message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
         
         DispatchQueue.main.async {
             sender.isSelected = true
