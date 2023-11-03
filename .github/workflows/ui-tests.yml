@@ -1,19 +1,18 @@
 name: UI Tests
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '0 1 * * 0-4'
   pull_request:
+    branches: [ master ]
     types:
       - opened
       - edited
       - synchronize
-    branches:
-      - 'release/next'
 
 jobs:
   build-and-upload-to-firebase-and-browserstack:
+    if: startsWith(github.head_ref, 'release/')
     runs-on: macos-13
     timeout-minutes: 20
     name: "Distribute app to Firebase and Browserstack"
@@ -83,6 +82,7 @@ jobs:
           if-no-files-found: error
 
   test-via-browserstack:
+      if: startsWith(github.head_ref, 'release/')
       runs-on: ubuntu-latest
       needs: build-and-upload-to-firebase-and-browserstack
       name: "Browserstack test"
