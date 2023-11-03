@@ -16,7 +16,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        sut = NolPayUnlinkCardComponent(isDebug: true)
+        sut = NolPayUnlinkCardComponent()
     }
     
     override func tearDown() {
@@ -25,7 +25,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     }
     
     func testValidationTriggeredWhenUpdatingData() {
-        let sut = NolPayUnlinkCardComponent(isDebug: true)
+        let sut = NolPayUnlinkCardComponent()
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
         
@@ -36,7 +36,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     }
     
     func testInvalidPhoneNumberValidationErrorReceived() {
-        let sut = NolPayUnlinkCardComponent(isDebug: true)
+        let sut = NolPayUnlinkCardComponent()
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
         let mockPhoneMetadataService = MockPhoneMetadataService()
@@ -56,7 +56,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     }
     
     func testValidDataDoesNotTriggerValidationErrors() {
-        let sut = NolPayUnlinkCardComponent(isDebug: true)
+        let sut = NolPayUnlinkCardComponent()
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
         let mockPhoneMetadataService = MockPhoneMetadataService()

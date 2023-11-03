@@ -24,8 +24,7 @@ public enum NolPayUnlinkCollectableData: PrimerCollectableData {
 public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public typealias T = NolPayUnlinkCollectableData
 
-    init(isDebug: Bool) {
-        self.isDebug = isDebug
+    init() {
         self.phoneMetadataService = NolPayPhoneMetadataService()
     }
 
@@ -36,7 +35,6 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     var phoneMetadataService: NolPayPhoneMetadataProviding?
-    private var isDebug: Bool
 
     public var mobileNumber: String?
     public var countryCode: String?
@@ -279,6 +277,11 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         }
         
         let isSandbox = clientToken.env != "PRODUCTION"
+        var isDebug = false
+#if DEBUG
+        isDebug =  PrimerLogging.shared.logger.logLevel == .debug
+#endif
+        
 #if canImport(PrimerNolPaySDK)
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
             

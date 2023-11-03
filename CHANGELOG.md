@@ -1,3 +1,15 @@
+## 2.18.0 (2023-11-02)
+
+### Feat
+
+- Logging interface for SDK (#694)
+- Implement Phone Validation for Nol (#720)
+
+### Fix
+
+- fixes ApplePay button rendering logic (#685)
+- revert min deployment version bump (#713)
+
 ## 2.18.0-b1 (2023-10-19)
 
 ### Feat
