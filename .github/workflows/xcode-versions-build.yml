@@ -5,15 +5,15 @@ on:
   schedule:
     - cron: '0 1 * * 0-4'
   pull_request:
+    branches: [ master ]
     types:
       - opened
       - edited
       - synchronize
-    branches:
-      - 'release/**'
 
 jobs:
   build:
+    if: startsWith(github.head_ref, 'release/')
     name: "Build App"
     runs-on: macos-13
     strategy:
