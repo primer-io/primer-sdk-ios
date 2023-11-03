@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    if: startsWith(github.head_ref, 'release/')
+    if: startsWith(github.head_ref, 'release/') || github.head_ref == 'master'
     name: "Build App"
     runs-on: macos-13
     strategy:
