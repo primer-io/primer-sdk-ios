@@ -4,16 +4,12 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 1 * * 0-4'
-  pull_request:
-    branches: [ master ]
-    types:
-      - opened
-      - edited
-      - synchronize
+  push:
+    branches:
+      - 'release/**'
 
 jobs:
   build:
-    if: startsWith(github.head_ref, 'release/') || github.ref_name == 'master'
     name: "Build App"
     runs-on: macos-13
     strategy:
