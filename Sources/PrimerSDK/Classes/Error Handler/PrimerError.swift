@@ -59,6 +59,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case failedToProcessPayment(paymentId: String, status: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case klarnaWrapperError(message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
     
     public var errorId: String {
@@ -141,6 +142,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "invalid-vaulted-payment-method-id"
         case .nolError:
             return "nol-pay-sdk-error"
+        case .klarnaWrapperError:
+            return "klarna-wrapper-sdk-error"
         case .unknown:
             return "unknown"
         }
@@ -235,6 +238,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .nolError(_, _, _, let diagnosticsId):
             return diagnosticsId
+        case .klarnaWrapperError(_, _, let diagnosticsId):
+            return diagnosticsId
         case .unknown(_, let diagnosticsId):
             return diagnosticsId
         }
@@ -327,6 +332,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
         case .nolError(let code, let message, _, _):
             return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
+        case .klarnaWrapperError(let message, _, _):
+            return "Klarna wrapper SDK encountered an error: \(String(describing: message))"
         case .unknown:
             return "Something went wrong"
         }
@@ -378,6 +385,7 @@ public enum PrimerError: PrimerErrorProtocol {
                 .failedToProcessPayment(_, _, let userInfo, _),
                 .invalidVaultedPaymentMethodId(_, let userInfo, _),
                 .nolError(_, _, let userInfo, _),
+                .klarnaWrapperError(_, let userInfo, _),
                 .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
             
@@ -485,6 +493,8 @@ public enum PrimerError: PrimerErrorProtocol {
         case .invalidVaultedPaymentMethodId:
             return "Please provide the id of one of the vaulted payment methods that have been returned by the 'fetchVaultedPaymentMethods' function."
         case .nolError:
+            return nil
+        case .klarnaWrapperError:
             return nil
         case .unknown:
             return "Contact Primer and provide them diagnostics id \(self.diagnosticsId)"
