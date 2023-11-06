@@ -92,13 +92,16 @@ internal extension PrimerAPI {
     // MARK: Headers
     
     static let headers: [String: String] = [
-        "Content-Type": "application/json",
         "Primer-SDK-Version": VersionUtils.releaseVersionNumber ?? "n/a",
         "Primer-SDK-Client": PrimerSource.sdkSourceType.sourceType
     ]
     
     var headers: [String: String]? {
         var tmpHeaders = PrimerAPI.headers
+        
+        if [.post, .put].contains(method) {
+            tmpHeaders["Content-Type"] = "application/json"
+        }
         
         if let checkoutSessionId = PrimerInternal.shared.checkoutSessionId {
             tmpHeaders["Primer-SDK-Checkout-Session-ID"] = checkoutSessionId
