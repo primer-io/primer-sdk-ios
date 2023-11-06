@@ -47,7 +47,7 @@ def fix_linking(installer)
   installer.generated_projects.each do |project|
     primer_target_names = project.targets.filter { |target|
       !target.name.start_with?("PrimerSDK") && target.name.start_with?("Primer")
-    }.map { |t| t.name }
+    }.map { |t| "\"#{t.name}\"" }
     project.targets.each do |target|
       if target.name == "PrimerSDK"
         target.build_configurations.each do |config|
