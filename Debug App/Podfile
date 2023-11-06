@@ -10,7 +10,7 @@ target 'Debug App' do
   pod 'PrimerSDK', :path => '../'
   pod 'Primer3DS', "~> 2.0.0"
   pod 'PrimerKlarnaSDK'
-  pod 'PrimerIPay88MYSDK', :git => 'https://github.com/primer-io/primer-ipay88-sdk-ios.git', :branch => 'master'
+  #pod 'PrimerIPay88MYSDK', :git => 'https://github.com/primer-io/primer-ipay88-sdk-ios.git', :branch => 'master'
   pod 'PrimerNolPaySDK'
   pod 'IQKeyboardManagerSwift'
   
@@ -45,10 +45,14 @@ end
 def fix_linking(installer)
   
   installer.generated_projects.each do |project|
+    primer_target_names = project.targets.filter { |target|
+      !target.name.start_with?("PrimerSDK") && target.name.start_with?("Primer")
+    }.map { |t| t.name }
     project.targets.each do |target|
       if target.name == "PrimerSDK"
         target.build_configurations.each do |config|
-          config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -framework "Primer3DS" -framework "PrimerKlarnaSDK"'
+          other_ldflags = "$(inherited) -framework #{primer_target_names.join(' -framework ')}"
+          config.build_settings['OTHER_LDFLAGS'] = other_ldflags
         end
       end
     end
