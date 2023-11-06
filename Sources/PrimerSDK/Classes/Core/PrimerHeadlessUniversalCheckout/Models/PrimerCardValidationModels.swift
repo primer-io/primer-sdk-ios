@@ -8,7 +8,7 @@
 import Foundation
 
 @objc
-public class PrimerCardValidationState: NSObject {
+public class PrimerCardState: NSObject {
     public let cardNumber: String
     
     init(cardNumber: String) {
