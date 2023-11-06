@@ -9,8 +9,12 @@ import Foundation
 import PrimerKlarnaSDK
 
 public enum KlarnaPaymentSessionAuthorization: PrimerHeadlessStep {
-    case paymentSessionAuthorized(approved: Bool, authToken: String?, finalizeRequired: Bool)
-    case paymentSessionReauthorized(approved: Bool, authToken: String?)
+    case paymentSessionAuthorized(authToken: String)
+    case paymentSessionAuthorizationFailed
+    case paymentSessionFinalizationRequired
+    
+    case paymentSessionReauthorized(authToken: String)
+    case paymentSessionReauthorizationFailed
 }
 
 public class KlarnaPaymentSessionAuthorizationComponent: PrimerHeadlessComponent {
@@ -48,19 +52,31 @@ extension KlarnaPaymentSessionAuthorizationComponent: PrimerKlarnaProviderAuthor
         authToken: String?,
         finalizeRequired: Bool
     ) {
-        let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorized(
-            approved: approved,
-            authToken: authToken,
-            finalizeRequired: finalizeRequired
-        )
-        self.stepDelegate?.didReceiveStep(step: step)
+        if approved == false {
+            let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorizationFailed
+            self.stepDelegate?.didReceiveStep(step: step)
+        }
+        
+        if let authToken = authToken, approved == true {
+            let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorized(authToken: authToken)
+            self.stepDelegate?.didReceiveStep(step: step)
+        }
+        
+        if finalizeRequired {
+            let step = KlarnaPaymentSessionAuthorization.paymentSessionFinalizationRequired
+            self.stepDelegate?.didReceiveStep(step: step)
+        }
     }
     
     public func primerKlarnaWrapperReauthorized(approved: Bool, authToken: String?) {
-        let step = KlarnaPaymentSessionAuthorization.paymentSessionReauthorized(
-            approved: approved,
-            authToken: authToken
-        )
-        self.stepDelegate?.didReceiveStep(step: step)
+        if approved == false {
+            let step = KlarnaPaymentSessionAuthorization.paymentSessionReauthorizationFailed
+            self.stepDelegate?.didReceiveStep(step: step)
+        }
+        
+        if let authToken = authToken, approved == true {
+            let step = KlarnaPaymentSessionAuthorization.paymentSessionReauthorized(authToken: authToken)
+            self.stepDelegate?.didReceiveStep(step: step)
+        }
     }
 }

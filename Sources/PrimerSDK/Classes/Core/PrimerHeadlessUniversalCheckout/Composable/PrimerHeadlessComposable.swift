@@ -7,7 +7,9 @@
 
 import Foundation
 
-public protocol PrimerHeadlessComponent { }
+public protocol PrimerHeadlessComponent {
+    var stepDelegate: PrimerHeadlessSteppableDelegate? { get set }
+}
 
 public protocol PrimerCollectableData { }
 
@@ -50,9 +52,10 @@ public protocol PrimerHeadlessSteppableDelegate: AnyObject {
 
 public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent {
     associatedtype T: PrimerCollectableData
-    var errorDelegate: PrimerHeadlessErrorableDelegate? { get set }
+    
     var validationDelegate: PrimerHeadlessValidatableDelegate? { get set }
-    var stepDelegate: PrimerHeadlessSteppableDelegate? { get set }
+    var errorDelegate: PrimerHeadlessErrorableDelegate? { get set }
+    
     func updateCollectedData(collectableData: T)
     func submit()
     func start()
