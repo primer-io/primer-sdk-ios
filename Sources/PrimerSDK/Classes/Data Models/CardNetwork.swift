@@ -24,7 +24,7 @@ struct CardNetworkCode {
     var length: Int
 }
 
-public enum CardNetwork: String, CaseIterable, LogReporter {
+public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     
     case amex
     case bancontact
