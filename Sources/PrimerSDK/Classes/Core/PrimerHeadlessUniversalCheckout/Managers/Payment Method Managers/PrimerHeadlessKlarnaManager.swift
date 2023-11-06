@@ -12,15 +12,24 @@ import PrimerKlarnaSDK
 extension PrimerHeadlessUniversalCheckout {
     
     public class PrimerHeadlessKlarnaManager: NSObject {
+        // MARK: - Properties
+        private var clientToken: String?
+        
         // MARK: - Provider
         
-        
         // MARK: - Components
-        
+        private let sessionCreationComponent: KlarnaPaymentSessionCreationComponent
         
         // MARK: - Init
         override init() {
+            self.sessionCreationComponent = KlarnaPaymentSessionCreationComponent()
+            
             super.init()
+        }
+        
+        // MARK: - Public
+        public func provideKlarnaPaymentSessionCreationComponent() -> KlarnaPaymentSessionCreationComponent {
+            return self.sessionCreationComponent
         }
     }
     
