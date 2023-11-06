@@ -3,7 +3,7 @@ PODS:
   - KlarnaMobileSDK (2.2.2):
     - KlarnaMobileSDK/full (= 2.2.2)
   - KlarnaMobileSDK/full (2.2.2)
-  - Primer3DS (2.0.0)
+  - Primer3DS (2.0.1)
   - PrimerIPay88MYSDK (0.1.6)
   - PrimerKlarnaSDK (1.0.4):
     - KlarnaMobileSDK (= 2.2.2)
@@ -43,7 +43,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   IQKeyboardManagerSwift: 12d89768845bb77b55cc092ecc2b1f9370f06b76
   KlarnaMobileSDK: 23b44390d06c6e3a90b5325bea6c10bf97ac6044
-  Primer3DS: 109e46ed31726039b9fb0ee6e1a0948fda345b24
+  Primer3DS: 16a0c0d48d83dcfe9fc5c213338bf5d48eeeb1de
   PrimerIPay88MYSDK: a3097799a9ced2db623b2d8a3fbc226be7051f20
   PrimerKlarnaSDK: de4b8b8fda075e3e4ebbd4ab80bd141c76a30d85
   PrimerNolPaySDK: fad754f5f70c9f2f84efce0e7a0efc34883b670a

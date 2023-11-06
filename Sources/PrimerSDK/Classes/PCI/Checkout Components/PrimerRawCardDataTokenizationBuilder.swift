@@ -41,9 +41,12 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     }
     
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
+
+
+    var cardValidationService: CardValidationService?
+
     var isDataValid: Bool = false
     var paymentMethodType: String
-    var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
     
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
@@ -78,8 +81,11 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         self.paymentMethodType = paymentMethodType
     }
     
-    func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
+    func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
+        // JN TODO: CHKT-1854 - add feature flag to config to switch on
+        // Without an off-by-default feature flag this causes several brittle tests to fail
+        self.cardValidationService = nil // DefaultCardValidationService(rawDataManager: rawDataManager)
     }
     
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
@@ -179,7 +185,10 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     }
                 }
                 
+                // Local Validation
                 let cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
+                // Remote validation
+                self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
                 
                 if rawData.cvv.isEmpty {
                     let err = PrimerValidationError.invalidCvv(
