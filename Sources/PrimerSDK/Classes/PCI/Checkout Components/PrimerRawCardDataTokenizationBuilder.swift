@@ -85,7 +85,9 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         self.rawDataManager = rawDataManager
         // JN TODO: CHKT-1854 - add feature flag to config to switch on
         // Without an off-by-default feature flag this causes several brittle tests to fail
-        self.cardValidationService = nil // DefaultCardValidationService(rawDataManager: rawDataManager)
+        if PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.isCoBadgedCardsEnabled {
+            self.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager)
+        }
     }
     
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {

@@ -330,6 +330,10 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         return false
     }
     
+    static var coBadgedNetworks: [CardNetwork] {
+        return [.cartesBancaires]
+    }
+    
     public init(cardNumber: String) {
         self = .unknown
         
