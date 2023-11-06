@@ -21,11 +21,13 @@ extension PrimerHeadlessUniversalCheckout {
         // MARK: - Components
         private let sessionCreationComponent: KlarnaPaymentSessionCreationComponent
         private let viewHandlingComponent: KlarnaPaymentViewHandlingComponent
+        private let sessionAuthorizationComponent: KlarnaPaymentSessionAuthorizationComponent
         
         // MARK: - Init
         override init() {
             self.sessionCreationComponent = KlarnaPaymentSessionCreationComponent()
             self.viewHandlingComponent = KlarnaPaymentViewHandlingComponent()
+            self.sessionAuthorizationComponent = KlarnaPaymentSessionAuthorizationComponent()
             
             super.init()
         }
@@ -49,6 +51,12 @@ extension PrimerHeadlessUniversalCheckout {
             self.viewHandlingComponent.setProvider(provider: self.klarnaProvider)
             
             return self.viewHandlingComponent
+        }
+        
+        public func provideKlarnaPaymentSessionAuthorizationComponent() -> KlarnaPaymentSessionAuthorizationComponent {
+            self.sessionAuthorizationComponent.setProvider(provider: self.klarnaProvider)
+            
+            return self.sessionAuthorizationComponent
         }
         
         // MARK: - PrimerKlarnaProviderErrorDelegate
