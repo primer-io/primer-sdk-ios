@@ -10,7 +10,7 @@ target 'Debug App' do
   pod 'PrimerSDK', :path => '../'
   pod 'Primer3DS', "~> 2.0.0"
   pod 'PrimerKlarnaSDK'
-  #pod 'PrimerIPay88MYSDK', :git => 'https://github.com/primer-io/primer-ipay88-sdk-ios.git', :branch => 'master'
+  pod 'PrimerIPay88MYSDK', :git => 'https://github.com/primer-io/primer-ipay88-sdk-ios.git', :branch => 'master'
   pod 'PrimerNolPaySDK'
   pod 'IQKeyboardManagerSwift'
   
@@ -32,7 +32,6 @@ def fix_code_signing(installer)
     project.targets.each do |target|
       if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
         puts "Fixing code signing for #{target.name}..."
-        
         target.build_configurations.each do |config|
           config.build_settings["DEVELOPMENT_TEAM"] = "N8UN9TR5DY"
         end
@@ -50,8 +49,10 @@ def fix_linking(installer)
     }.map { |t| "\"#{t.name}\"" }
     project.targets.each do |target|
       if target.name == "PrimerSDK"
+        framework_flags = primer_target_names.count > 0 ? "-framework #{primer_target_names.join(' -framework ')}" : ""
         target.build_configurations.each do |config|
-          other_ldflags = "$(inherited) -framework #{primer_target_names.join(' -framework ')}"
+          puts "Adding framework flags (#{config.name}): #{framework_flags}"
+          other_ldflags = "$(inherited) #{framework_flags}"
           config.build_settings['OTHER_LDFLAGS'] = other_ldflags
         end
       end
