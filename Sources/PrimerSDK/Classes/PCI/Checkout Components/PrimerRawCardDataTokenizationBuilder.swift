@@ -60,6 +60,11 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         }
     }
     
+    var isCoBadgedCardsEnabled: Bool {
+        let supportedCardNetworks = PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.supportedCardNetworks
+        return supportedCardNetworks.contains{ CardNetwork.coBadgedNetworks.contains($0) }
+    }
+    
     var requiredInputElementTypes: [PrimerInputElementType] {
         
         var mutableRequiredInputElementTypes: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
@@ -83,9 +88,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     
     func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
-        // JN TODO: CHKT-1854 - add feature flag to config to switch on
-        // Without an off-by-default feature flag this causes several brittle tests to fail
-        if PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.isCoBadgedCardsEnabled {
+        if isCoBadgedCardsEnabled {
             self.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager)
         }
     }

@@ -149,10 +149,6 @@ public class PrimerCardPaymentOptions: Codable {
         self.supportedCardNetworks = supportedCardNetworks
         self.is3DSOnVaultingEnabled = true
     }
-    
-    var isCoBadgedCardsEnabled: Bool {
-        return supportedCardNetworks.contains{ CardNetwork.coBadgedNetworks.contains($0) }
-    }
 }
 
 // MARK: - UI OPTIONS
