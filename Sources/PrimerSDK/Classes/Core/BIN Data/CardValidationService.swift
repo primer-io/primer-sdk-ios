@@ -8,7 +8,7 @@
 import Foundation
 
 protocol CardValidationService {
-    func validateCardNetworks(withCardNumber card5Number: String)
+    func validateCardNetworks(withCardNumber cardNumber: String)
 }
 
 class DefaultCardValidationService: CardValidationService, LogReporter {
@@ -40,26 +40,26 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         }
         mostRecentCardNumber = sanitizedCardNumber
         
-        let cardValidationState = PrimerCardValidationState(cardNumber: sanitizedCardNumber)
+        let cardState = PrimerCardNumberEntryState(cardNumber: sanitizedCardNumber)
         guard sanitizedCardNumber.count >= 6 else {
-            useLocalValidation(withCardState: cardValidationState)
+            useLocalValidation(withCardState: cardState)
             return
         }
         
         debouncer.debounce { [weak self] in
-            self?.useRemoteValidation(withValidationState: cardValidationState)
+            self?.useRemoteValidation(withCardState: cardState)
         }
     }
     
-    private func useRemoteValidation(withValidationState cardValidationState: PrimerCardValidationState) {
+    private func useRemoteValidation(withCardState cardState: PrimerCardNumberEntryState) {
         delegate?.primerRawDataManager?(rawDataManager,
-                                        willFetchCardMetadataForState: cardValidationState)
+                                        willFetchCardMetadataForState: cardState)
         
         let rawDataManager = rawDataManager
         
-        _ = listCardNetworks(cardValidationState.cardNumber).done { [weak self] result in
+        _ = listCardNetworks(cardState.cardNumber).done { [weak self] result in
             guard result.networks.count > 0 else {
-                self?.useLocalValidation(withCardState: cardValidationState)
+                self?.useLocalValidation(withCardState: cardState)
                 return
             }
             let cardMetadata = PrimerCardMetadata(availableCardNetworks: result.networks.map { network in
@@ -68,22 +68,22 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
             
             self?.delegate?.primerRawDataManager?(rawDataManager,
                                                   didReceiveCardMetadata: cardMetadata,
-                                                  forCardValidationState: cardValidationState)
+                                                  forCardState: cardState)
         }.catch { error in
             // JN TODO: CHKT-1772 - send event
-            self.logger.error(message: "Error occurred while remotely validation '\(cardValidationState.cardNumber)': \(error.localizedDescription)")
-            self.useLocalValidation(withCardState: cardValidationState)
+            self.logger.error(message: "Error occurred while remotely validation '\(cardState.cardNumber)': \(error.localizedDescription)")
+            self.useLocalValidation(withCardState: cardState)
         }
     }
     
-    func useLocalValidation(withCardState cardValidationState: PrimerCardValidationState) {
-        let localValidationNetwork = CardNetwork(cardNumber: cardValidationState.cardNumber)
+    func useLocalValidation(withCardState cardState: PrimerCardNumberEntryState) {
+        let localValidationNetwork = CardNetwork(cardNumber: cardState.cardNumber)
         let displayName = localValidationNetwork.validation?.niceType ?? localValidationNetwork.rawValue.lowercased().capitalized
         let cardNetwork = PrimerCardNetwork(displayName: displayName,
                                             networkIdentifier: localValidationNetwork.rawValue)
         delegate?.primerRawDataManager?(rawDataManager,
                                         didReceiveCardMetadata: .init(availableCardNetworks: [cardNetwork]),
-                                        forCardValidationState: cardValidationState)
+                                        forCardState: cardState)
     }
     
     // MARK: API Logic

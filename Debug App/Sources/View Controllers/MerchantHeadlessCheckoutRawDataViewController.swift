@@ -26,8 +26,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     var rawCardData = PrimerCardData(cardNumber: "", 
                                      expiryDate: "",
                                      cvv: "",
-                                     cardholderName: "",
-                                     cardNetworkIdentifier: nil)
+                                     cardholderName: "")
     
     var cardnumberTextField: UITextField?
     var expiryDateTextField: UITextField?
