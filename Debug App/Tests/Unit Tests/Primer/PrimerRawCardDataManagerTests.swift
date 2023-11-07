@@ -22,8 +22,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             cardNumber: Constants.testCardNumbers[.visa]!.first!,
             expiryDate: "02/2040",
             cvv: "123",
-            cardholderName: "John Smith", 
-            cardNetworkIdentifier: nil)
+            cardholderName: "John Smith")
         
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
         
@@ -94,8 +93,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             cardNumber: Constants.testCardNumbers[.visa]!.first!,
             expiryDate: "02/204",
             cvv: "123",
-            cardholderName: "John Smith",
-            cardNetworkIdentifier: nil)
+            cardholderName: "John Smith")
         
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
         
@@ -255,8 +253,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             cardNumber: Constants.testCardNumbers[.visa]!.first!,
             expiryDate: "99/2040",
             cvv: "12345",
-            cardholderName: "John Smith",
-            cardNetworkIdentifier: nil)
+            cardholderName: "John Smith")
 
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
 

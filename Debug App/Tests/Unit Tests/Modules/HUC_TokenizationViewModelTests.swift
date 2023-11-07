@@ -420,8 +420,7 @@ class HUC_TokenizationViewModelTests: XCTestCase {
                     cardNumber: "4111 1111 1111 1111",
                     expiryDate: "03/2030",
                     cvv: "123",
-                    cardholderName: "John Smith",
-                    cardNetworkIdentifier: nil)
+                    cardholderName: "John Smith")
                 
                 rawDataManager.rawData = rawCardData
                 
