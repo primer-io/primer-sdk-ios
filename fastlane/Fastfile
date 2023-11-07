@@ -116,9 +116,7 @@ platform :ios do
               )
   end
 
-  desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
-  lane :appetize_build_and_upload do
-
+  lane :build_cocoapods do |options|
     common_pre_build_action
 
     cocoapods(
@@ -128,7 +126,9 @@ platform :ios do
     )
 
     # Run Unit Tests
-    tests
+    if options[:tests]
+      tests
+    end
 
     # Build for appetize
 
@@ -143,9 +143,15 @@ platform :ios do
       export_method: "development",
       archive_path: app_output_archive_path,
       # Build speed optimisation
-      skip_package_ipa: true,
+      skip_package_ipa: options[:skip_package_ipa] || true,
       skip_package_pkg: true
     )
+  end
+
+  desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
+  lane :appetize_build_and_upload do
+
+    build_cocoapods tests:true
 
     # Appetize needs the .app to be zipped
 
