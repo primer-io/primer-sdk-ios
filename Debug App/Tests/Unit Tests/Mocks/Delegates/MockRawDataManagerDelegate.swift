@@ -31,25 +31,25 @@ class MockRawDataManagerDelegate: RawDataManager.Delegate {
     
     // MARK: willFetchCardMetadataForState
     
-    var onWillFetchCardMetadataForState: ((RawDataManager, PrimerCardState) -> Void)?
+    var onWillFetchCardMetadataForState: ((RawDataManager, PrimerCardNumberEntryState) -> Void)?
     
     var onWillFetchCardMetadataForStateCount = 0
 
     func primerRawDataManager(_ rawDataManager: RawDataManager,
-                              willFetchCardMetadataForState cardState: PrimerCardState) {
+                              willFetchCardMetadataForState cardState: PrimerCardNumberEntryState) {
         onWillFetchCardMetadataForStateCount += 1
         onWillFetchCardMetadataForState?(rawDataManager, cardState)
     }
     
     // MARK: metadata forCardValidationState
     
-    var onMetadataForCardValidationState: ((RawDataManager, PrimerCardMetadata, PrimerCardState) -> Void)?
+    var onMetadataForCardValidationState: ((RawDataManager, PrimerCardMetadata, PrimerCardNumberEntryState) -> Void)?
     
     var onMetadataForCardValidationStateCount = 0
     
     func primerRawDataManager(_ rawDataManager: RawDataManager,
                               didReceiveCardMetadata metadata: PrimerCardMetadata,
-                              forCardState cardState: PrimerCardState) {
+                              forCardState cardState: PrimerCardNumberEntryState) {
         onMetadataForCardValidationStateCount += 1
         onMetadataForCardValidationState?(rawDataManager, metadata, cardState)
     }

@@ -24,12 +24,12 @@ public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
     
     @objc optional 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              willFetchCardMetadataForState cardState: PrimerCardState)
+                              willFetchCardMetadataForState cardState: PrimerCardNumberEntryState)
     
     @objc optional 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               didReceiveCardMetadata metadata: PrimerCardMetadata,
-                              forCardState cardState: PrimerCardState)
+                              forCardState cardState: PrimerCardNumberEntryState)
 }
 
 protocol PrimerRawDataTokenizationBuilderProtocol {
