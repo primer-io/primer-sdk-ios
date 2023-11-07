@@ -357,28 +357,8 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     
 }
 
-public enum PaymentNetwork: String {
-    
-    case chinaUnionPay
-    case cartesBancaires
-    case discover
-    case eftpos
-    case electron
-    case elo
-    case idCredit
-    case interac
-    case jcb
-    case mada
-    case maestro
-    case masterCard
-    case privateLabel
-    case quicPay
-    case suica
-    case visa
-    case vPay
-    case barcode
-    case girocard
-    
+// JN TODO: CHKT-1854 Be removed and replaced with new utility
+public struct PaymentNetwork {
     static var iOSSupportedPKPaymentNetworks: [PKPaymentNetwork] {
         var supportedNetworks: [PKPaymentNetwork] = [
             .amex,

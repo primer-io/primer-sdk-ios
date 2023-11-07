@@ -40,7 +40,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         }
         mostRecentCardNumber = sanitizedCardNumber
         
-        let cardState = PrimerCardState(cardNumber: sanitizedCardNumber)
+        let cardState = PrimerCardNumberEntryState(cardNumber: sanitizedCardNumber)
         guard sanitizedCardNumber.count >= 6 else {
             useLocalValidation(withCardState: cardState)
             return
@@ -51,7 +51,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
     
-    private func useRemoteValidation(withCardState cardState: PrimerCardState) {
+    private func useRemoteValidation(withCardState cardState: PrimerCardNumberEntryState) {
         delegate?.primerRawDataManager?(rawDataManager,
                                         willFetchCardMetadataForState: cardState)
         
@@ -76,7 +76,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
     
-    func useLocalValidation(withCardState cardState: PrimerCardState) {
+    func useLocalValidation(withCardState cardState: PrimerCardNumberEntryState) {
         let localValidationNetwork = CardNetwork(cardNumber: cardState.cardNumber)
         let displayName = localValidationNetwork.validation?.niceType ?? localValidationNetwork.rawValue.lowercased().capitalized
         let cardNetwork = PrimerCardNetwork(displayName: displayName,

@@ -254,7 +254,6 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             expiryDate: "99/2040",
             cvv: "12345",
             cardholderName: "John Smith")
-        
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
         
         firstly {
