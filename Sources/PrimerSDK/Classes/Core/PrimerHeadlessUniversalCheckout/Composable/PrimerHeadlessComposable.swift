@@ -60,3 +60,24 @@ public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent {
     func submit()
     func start()
 }
+
+protocol PrimerHeadlessAnalyticsRecordable {
+    func recordEvent(type: Analytics.Event.EventType, name: String, params: [String: String])
+}
+
+extension PrimerHeadlessAnalyticsRecordable {
+    func recordEvent(
+        type: Analytics.Event.EventType,
+        name: String,
+        params: [String: String]
+    ) {
+        let event = Analytics.Event(
+            eventType: type,
+            properties: SDKEventProperties(
+                name: name,
+                params: params
+            )
+        )
+        Analytics.Service.record(events: [event])
+    }
+}
