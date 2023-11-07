@@ -8,7 +8,6 @@
 import Foundation
 
 struct NolPayAnalyticsConstants {
-    
     // link component
     static let LINK_CARD_START_METHOD = "NolPayLinkCardComponent.start()"
     static let LINK_CARD_UPDATE_COLLECTED_DATA_METHOD = "NolPayLinkCardComponent.updateCollectedData()"
@@ -27,6 +26,7 @@ struct NolPayAnalyticsConstants {
     static let PAYMENT_UPDATE_COLLECTED_DATA_METHOD = "NolPayStartPaymentComponent.updateCollectedData()"
     static let PAYMENT_SUBMIT_DATA_METHOD = "NolPayStartPaymentComponent.submit()"
     
-    // default params
-    static let CATEGORY = ["category": "NOL_PAY"]
+    // params
+    static let CATEGORY_KEY = "category"
+    static let CATEGORY_VALUE = "NOL_PAY"
 }

@@ -16,7 +16,7 @@ public enum KlarnaPaymentViewHandling: PrimerHeadlessStep {
     case reviewLoaded
 }
 
-public class KlarnaPaymentViewHandlingComponent: PrimerHeadlessComponent {
+public class KlarnaPaymentViewHandlingComponent: PrimerHeadlessComponent, PrimerHeadlessAnalyticsRecordable {
     // MARK: - Provider
     private weak var klarnaProvider: PrimerKlarnaProviding?
     
@@ -33,20 +33,53 @@ public class KlarnaPaymentViewHandlingComponent: PrimerHeadlessComponent {
 // MARK: - Payment view
 public extension KlarnaPaymentViewHandlingComponent {
     func createPaymentView() -> UIView? {
+        self.recordEvent(
+            type: .sdkEvent,
+            name: KlarnaAnalyticsEvents.CREATE_PAYMENT_VIEW_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE
+            ]
+        )
+        
         self.klarnaProvider?.createPaymentView()
         
         return self.klarnaProvider?.paymentView
     }
     
     func removePaymentView() {
+        self.recordEvent(
+            type: .sdkEvent,
+            name: KlarnaAnalyticsEvents.REMOVE_PAYMENT_VIEW_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE
+            ]
+        )
+        
         self.klarnaProvider?.removePaymentView()
     }
     
     func initPaymentView() {
+        self.recordEvent(
+            type: .sdkEvent,
+            name: KlarnaAnalyticsEvents.INIT_PAYMENT_VIEW_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE
+            ]
+        )
+        
         self.klarnaProvider?.initializePaymentView()
     }
     
     func loadPaymentView(jsonData: String? = nil) {
+        self.recordEvent(
+            type: .sdkEvent,
+            name: KlarnaAnalyticsEvents.LOAD_PAYMENT_VIEW_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
+                KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
+            ]
+        )
+        
         self.klarnaProvider?.loadPaymentView(jsonData: jsonData)
     }
 }
@@ -54,6 +87,14 @@ public extension KlarnaPaymentViewHandlingComponent {
 // MARK: - Payment review
 public extension KlarnaPaymentViewHandlingComponent {
     func loadPaymentReview() {
+        self.recordEvent(
+            type: .sdkEvent,
+            name: KlarnaAnalyticsEvents.LOAD_PAYMENT_VIEW_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE
+            ]
+        )
+        
         self.klarnaProvider?.loadPaymentReview()
     }
 }

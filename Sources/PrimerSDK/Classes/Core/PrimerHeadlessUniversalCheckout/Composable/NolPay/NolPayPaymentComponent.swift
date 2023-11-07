@@ -55,7 +55,9 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
         recordEvent(
             type: .sdkEvent,
             name: NolPayAnalyticsConstants.PAYMENT_UPDATE_COLLECTED_DATA_METHOD,
-            params: NolPayAnalyticsConstants.CATEGORY
+            params: [
+                NolPayAnalyticsConstants.CATEGORY_KEY: NolPayAnalyticsConstants.CATEGORY_VALUE
+            ]
         )
 
         switch data {
@@ -106,7 +108,9 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
         recordEvent(
             type: .sdkEvent,
             name: NolPayAnalyticsConstants.PAYMENT_SUBMIT_DATA_METHOD,
-            params: NolPayAnalyticsConstants.CATEGORY
+            params: [
+                NolPayAnalyticsConstants.CATEGORY_KEY: NolPayAnalyticsConstants.CATEGORY_VALUE
+            ]
         )
 
         switch nextDataStep {
@@ -187,7 +191,9 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
         recordEvent(
             type: .sdkEvent, 
             name: NolPayAnalyticsConstants.PAYMENT_START_METHOD,
-            params: NolPayAnalyticsConstants.CATEGORY
+            params: [
+                NolPayAnalyticsConstants.CATEGORY_KEY: NolPayAnalyticsConstants.CATEGORY_VALUE
+            ]
         )
 
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,

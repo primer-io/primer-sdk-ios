@@ -17,7 +17,7 @@ public enum KlarnaPaymentSessionAuthorization: PrimerHeadlessStep {
     case paymentSessionReauthorizationFailed
 }
 
-public class KlarnaPaymentSessionAuthorizationComponent: PrimerHeadlessComponent {
+public class KlarnaPaymentSessionAuthorizationComponent: PrimerHeadlessComponent, PrimerHeadlessAnalyticsRecordable {
     // MARK: - Provider
     private weak var klarnaProvider: PrimerKlarnaProviding?
     
@@ -37,11 +37,30 @@ public extension KlarnaPaymentSessionAuthorizationComponent {
         autoFinalize: Bool = true,
         jsonData: String? = nil
     ) {
-        klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: jsonData)
+        self.recordEvent(
+            type: .sdkEvent,
+            name: KlarnaAnalyticsEvents.AUTHORIZE_SESSION_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
+                KlarnaAnalyticsEvents.AUTO_FINALIZE_KEY: "\(autoFinalize)",
+                KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
+            ]
+        )
+        
+        self.klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: jsonData)
     }
     
     func reauthorizeSession(jsonData: String? = nil) {
-        klarnaProvider?.reauthorize(jsonData: jsonData)
+        self.recordEvent(
+            type: .sdkEvent,
+            name: KlarnaAnalyticsEvents.REAUTHORIZE_SESSION_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
+                KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
+            ]
+        )
+        
+        self.klarnaProvider?.reauthorize(jsonData: jsonData)
     }
 }
 

@@ -17,7 +17,7 @@ enum KlarnaPaymentSessionCreationComponentError {
     case createPaymentSessionFailed(error: Error)
 }
 
-public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessComponent {
+public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessComponent, PrimerHeadlessAnalyticsRecordable {
     // MARK: - API
     private let apiClient: PrimerAPIClientProtocol
     
@@ -34,6 +34,15 @@ public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessComponent {
 // MARK: - Create session
 public extension KlarnaPaymentSessionCreationComponent {
     func createSession(sessionType: KlarnaSessionType) {
+        self.recordEvent(
+            type: .sdkEvent,
+            name: KlarnaAnalyticsEvents.CREATE_SESSION_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
+                KlarnaAnalyticsEvents.CREATE_SESSION_METHOD: sessionType.rawValue
+            ]
+        )
+        
         guard
             let paymentMethodConfigId = PrimerAPIConfiguration.current?.paymentMethods?.first(where: {
                 $0.name == PrimerPaymentMethodType.klarna.rawValue

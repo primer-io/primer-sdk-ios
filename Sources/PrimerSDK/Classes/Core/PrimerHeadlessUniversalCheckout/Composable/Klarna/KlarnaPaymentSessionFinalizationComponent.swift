@@ -13,7 +13,7 @@ public enum KlarnaPaymentSessionFinalization: PrimerHeadlessStep {
     case paymentSessionFinalizationFailed
 }
 
-public class KlarnaPaymentSessionFinalizationComponent: PrimerHeadlessComponent {
+public class KlarnaPaymentSessionFinalizationComponent: PrimerHeadlessComponent, PrimerHeadlessAnalyticsRecordable {
     // MARK: - Provider
     private weak var klarnaProvider: PrimerKlarnaProviding?
     
@@ -30,7 +30,16 @@ public class KlarnaPaymentSessionFinalizationComponent: PrimerHeadlessComponent 
 // MARK: - Finalization
 public extension KlarnaPaymentSessionFinalizationComponent {
     func finalise(jsonData: String? = nil) {
-        klarnaProvider?.finalise(jsonData: jsonData)
+        self.recordEvent(
+            type: .sdkEvent,
+            name: KlarnaAnalyticsEvents.FINALIZE_SESSION_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
+                KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
+            ]
+        )
+        
+        self.klarnaProvider?.finalise(jsonData: jsonData)
     }
 }
 
