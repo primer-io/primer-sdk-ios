@@ -3,14 +3,10 @@ name: UI Tests
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 1 * * *'
-  pull_request:
-    types:
-      - opened
-      - edited
-      - synchronize
+    - cron: '0 1 * * 0-4'
+  push:
     branches:
-      - 'release/next'
+      - 'release/**'
 
 jobs:
   build-and-upload-to-firebase-and-browserstack:
