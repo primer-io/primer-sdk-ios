@@ -26,4 +26,7 @@ struct NolPayAnalyticsConstants {
     static let PAYMENT_START_METHOD = "NolPayStartPaymentComponent.start()"
     static let PAYMENT_UPDATE_COLLECTED_DATA_METHOD = "NolPayStartPaymentComponent.updateCollectedData()"
     static let PAYMENT_SUBMIT_DATA_METHOD = "NolPayStartPaymentComponent.submit()"
+    
+    // default params
+    static let CATEGORY = ["category": "NOL_PAY"]
 }

@@ -10,7 +10,7 @@ import Foundation
 import PrimerNolPaySDK
 
 
-public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
+public class NolPayLinkedCardsComponent: PrimerHeadlessComponent, PrimerHeadlessAnalyticsRecordable {
     
     var nolPay: PrimerNolPayProtocol?
     
@@ -85,15 +85,12 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
     
     public func getLinkedCardsFor(mobileNumber: String,
                                   completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
+        recordEvent(
+            type: .sdkEvent,
+            name: NolPayAnalyticsConstants.LINKED_CARDS_GET_CARDS_METHOD,
+            params: NolPayAnalyticsConstants.CATEGORY
+        )
         
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.LINKED_CARDS_GET_CARDS_METHOD,
-                params: [
-                    "category": "NOL_PAY",
-                ]))
-        Analytics.Service.record(events: [sdkEvent])
         guard let nolPay = nolPay else {
             let error = PrimerError.nolError(code: "unknown",
                                              message: "error.description",

@@ -19,7 +19,7 @@ public enum NolPayPaymentStep: PrimerHeadlessStep {
     case paymentRequested
 }
 
-public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
+public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerHeadlessAnalyticsRecordable {
     
     public typealias T = NolPayPaymentCollectableData
     
@@ -51,17 +51,14 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     func validateData(for data: NolPayPaymentCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         var errors: [PrimerValidationError] = []
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.PAYMENT_UPDATE_COLLECTED_DATA_METHOD,
-                params: [
-                    "category": "NOL_PAY",
-                ]))
-        Analytics.Service.record(events: [sdkEvent])
+        
+        recordEvent(
+            type: .sdkEvent,
+            name: NolPayAnalyticsConstants.PAYMENT_UPDATE_COLLECTED_DATA_METHOD,
+            params: NolPayAnalyticsConstants.CATEGORY
+        )
 
         switch data {
-            
         case .paymentData(cardNumber: let cardNumber,
                           mobileNumber: let mobileNumber):
             
@@ -106,15 +103,11 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     }
     
     public func submit() {
-        
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.PAYMENT_SUBMIT_DATA_METHOD,
-                params: [
-                    "category": "NOL_PAY",
-                ]))
-        Analytics.Service.record(events: [sdkEvent])
+        recordEvent(
+            type: .sdkEvent,
+            name: NolPayAnalyticsConstants.PAYMENT_SUBMIT_DATA_METHOD,
+            params: NolPayAnalyticsConstants.CATEGORY
+        )
 
         switch nextDataStep {
         case .collectCardAndPhoneData:
@@ -191,14 +184,11 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     }
     
     public func start() {
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.PAYMENT_START_METHOD,
-                params: [
-                    "category": "NOL_PAY",
-                ]))
-        Analytics.Service.record(events: [sdkEvent])
+        recordEvent(
+            type: .sdkEvent, 
+            name: NolPayAnalyticsConstants.PAYMENT_START_METHOD,
+            params: NolPayAnalyticsConstants.CATEGORY
+        )
 
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId

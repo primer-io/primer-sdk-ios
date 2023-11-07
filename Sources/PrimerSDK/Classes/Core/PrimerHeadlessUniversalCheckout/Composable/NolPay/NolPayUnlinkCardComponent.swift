@@ -21,7 +21,7 @@ public enum NolPayUnlinkCollectableData: PrimerCollectableData {
     case otpData(otpCode: String)
 }
 
-public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
+public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent, PrimerHeadlessAnalyticsRecordable {
     public typealias T = NolPayUnlinkCollectableData
 
     init() {
@@ -44,15 +44,11 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public var nextDataStep: NolPayUnlinkDataStep = .collectCardAndPhoneData
     
     public func updateCollectedData(collectableData: NolPayUnlinkCollectableData) {
-        
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.UNLINK_CARD_UPDATE_COLLECTED_DATA_METHOD,
-                params: [
-                    "category": "NOL_PAY",
-                ]))
-        Analytics.Service.record(events: [sdkEvent])
+        recordEvent(
+            type: .sdkEvent,
+            name: NolPayAnalyticsConstants.UNLINK_CARD_UPDATE_COLLECTED_DATA_METHOD,
+            params: NolPayAnalyticsConstants.CATEGORY
+        )
         
         switch collectableData {
         
@@ -134,14 +130,11 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     }
     
     public func submit() {
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.UNLINK_CARD_SUBMIT_DATA_METHOD,
-                params: [
-                    "category": "NOL_PAY",
-                ]))
-        Analytics.Service.record(events: [sdkEvent])
+        recordEvent(
+            type: .sdkEvent,
+            name: NolPayAnalyticsConstants.UNLINK_CARD_SUBMIT_DATA_METHOD,
+            params: NolPayAnalyticsConstants.CATEGORY
+        )
         
         switch nextDataStep {
             
@@ -250,14 +243,11 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     }
     
     public func start() {
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.UNLINK_CARD_START_METHOD,
-                params: [
-                    "category": "NOL_PAY",
-                ]))
-        Analytics.Service.record(events: [sdkEvent])
+        recordEvent(
+            type: .sdkEvent,
+            name: NolPayAnalyticsConstants.UNLINK_CARD_START_METHOD,
+            params: NolPayAnalyticsConstants.CATEGORY
+        )
         
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
