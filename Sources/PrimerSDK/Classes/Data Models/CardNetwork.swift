@@ -334,10 +334,6 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         return [.cartesBancaires]
     }
     
-    static var supportedNetworks: [CardNetwork] {
-        return PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.supportedCardNetworks
-    }
-    
     public init(cardNumber: String) {
         self = .unknown
         
@@ -359,4 +355,15 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         }
     }
     
+}
+
+extension Array<CardNetwork> {
+    
+    static var supportedNetworks: [CardNetwork] {
+        return PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.supportedCardNetworks
+    }
+    
+    static var allCardNetworks: [CardNetwork] {
+        return CardNetwork.allCases
+    }
 }

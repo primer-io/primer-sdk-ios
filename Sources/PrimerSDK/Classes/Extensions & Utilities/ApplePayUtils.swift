@@ -11,7 +11,7 @@ private let paymentOptionsSettings = PrimerSettings.current.paymentMethodOptions
 
 final class ApplePayUtils {
     
-    static func supportedPKCardNetworks(cardNetworks: [CardNetwork] = CardNetwork.supportedNetworks) -> [PKPaymentNetwork] {
+    static func supportedPKCardNetworks(cardNetworks: [CardNetwork] = .supportedNetworks) -> [PKPaymentNetwork] {
         return cardNetworks.compactMap { cardNetwork in
             switch cardNetwork {
             case .amex:
