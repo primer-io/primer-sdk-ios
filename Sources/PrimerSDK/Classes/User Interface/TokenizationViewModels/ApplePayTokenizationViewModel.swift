@@ -195,7 +195,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     items: orderItems
                 )
                 
-                let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
+                let supportedNetworks = ApplePayUtils.supportedPKCardNetworks()
                 var canMakePayment: Bool
                 if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
                     canMakePayment = PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks)
