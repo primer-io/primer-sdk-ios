@@ -24,7 +24,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
     // MARK: - Network Stack logic
     
     // swiftlint:disable function_body_length
-    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) {
+    @discardableResult
+    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) -> PrimerCancellable? {
         
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         let id = String.randomString(length: 32)
@@ -52,7 +53,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
             let err = InternalError.invalidUrl(url: "Base URL: \(endpoint.baseURL ?? "nil") | Endpoint: \(endpoint.path)", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
-            return
+            return nil
         }
         
         var request = URLRequest(url: url)
@@ -275,6 +276,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
             }
         }
         dataTask.resume()
+        return dataTask
     }
 }
 

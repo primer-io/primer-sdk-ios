@@ -8,8 +8,9 @@
 
 
 import Foundation
+import Combine
 
-protocol PrimerAPIClientProtocol {
+protocol PrimerAPIClientProtocol: PrimerAPIClientBINDataProtocol {
     
     func genericAPICall(clientToken: DecodedJWTToken,
                         url: URL,
@@ -121,12 +122,6 @@ protocol PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         testId: String,
         completion: @escaping (_ result: Result<Void, Error>) -> Void)
-    
-    // BIN Data
-    func listCardNetworks(
-        clientToken: DecodedJWTToken,
-        bin: String,
-        completion: @escaping (_ result: Result<Response.Body.Bin.Networks, Error>) -> Void)
 
     // NolPay
     func fetchNolSdkSecret(clientToken: DecodedJWTToken,
@@ -562,9 +557,11 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func listCardNetworks(clientToken: DecodedJWTToken, bin: String, completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) {
+    func listCardNetworks(clientToken: DecodedJWTToken,
+                          bin: String,
+                          completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable? {
         let endpoint = PrimerAPI.listCardNetworks(clientToken: clientToken, bin: bin)
-        networkService.request(endpoint) { (result: Result<Response.Body.Bin.Networks, Error>) in
+        return networkService.request(endpoint) { (result: Result<Response.Body.Bin.Networks, Error>) in
             switch result {
             case .success(let res):
                 completion(.success(res))

@@ -38,7 +38,7 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
         self.paymentMethodType = paymentMethodType
     }
     
-    func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
+    func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
     }
     
