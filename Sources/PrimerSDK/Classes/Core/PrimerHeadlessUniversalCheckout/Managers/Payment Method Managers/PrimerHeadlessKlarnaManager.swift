@@ -25,7 +25,7 @@ extension PrimerHeadlessUniversalCheckout {
         private let sessionFinalizationComponent: KlarnaPaymentSessionFinalizationComponent
         
         // MARK: - Init
-        override init() {
+        public override init() {
             self.sessionCreationComponent = KlarnaPaymentSessionCreationComponent()
             self.viewHandlingComponent = KlarnaPaymentViewHandlingComponent()
             self.sessionAuthorizationComponent = KlarnaPaymentSessionAuthorizationComponent()
