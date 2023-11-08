@@ -245,6 +245,7 @@ platform :ios do
 
     # Set build number
     set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: "#{github_run_id}.#{github_run_number}")
+    set_info_plist_value(path: info_plist_path, key: "CFBundleShortVersionString", value: "#{github_run_id}.#{github_run_number}")
   end
   
   def update_deployment_url(pub_url)
