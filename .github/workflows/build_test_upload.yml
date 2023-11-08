@@ -128,7 +128,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
 
       - name: Print LiveDemostore URL
-        run: echo $LIVEDEMOSTORE_APP_URL
+        run: echo $LIVEDEMOSTORE_URL
 
       - uses: peter-evans/find-comment@v2
         if: ${{ success() }}
