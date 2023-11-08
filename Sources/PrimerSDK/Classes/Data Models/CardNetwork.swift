@@ -360,7 +360,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
 extension Array<CardNetwork> {
     
     /// A list of card networks that the merchant supports
-    static var supportedNetworks: [Element] {
+    static var supportedCardNetworks: [Element] {
         return PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.supportedCardNetworks
     }
     
