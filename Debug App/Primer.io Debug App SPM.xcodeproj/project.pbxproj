@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		83F31F8C2AFB876A0090AE9E /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F31F8B2AFB876A0090AE9E /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
 		F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */; };
 		F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1594BC5C96ECC3F46C811B2F /* Data+Extensions.swift */; };
 		F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9128566126AA7F571FFECA3A /* Range+Extensions.swift */; };
@@ -109,6 +110,7 @@
 		7A3E75CD834937EF85DE1C14 /* MockVaultCheckoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockVaultCheckoutViewModel.swift; sourceTree = "<group>"; };
 		7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPay88Tests.swift; sourceTree = "<group>"; };
 		7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockModule.swift; sourceTree = "<group>"; };
+		83F31F8B2AFB876A0090AE9E /* MerchantHeadlessCheckoutKlarnaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutKlarnaViewController.swift; sourceTree = "<group>"; };
 		872A0647D4136E27365FB7F8 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
 		8A23886804B13FA754E775D0 /* MockPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		8A3FDC6FE0EB5AB5828D4D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -473,6 +475,7 @@
 			isa = PBXGroup;
 			children = (
 				0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */,
+				83F31F8B2AFB876A0090AE9E /* MerchantHeadlessCheckoutKlarnaViewController.swift */,
 			);
 			path = "New UI";
 			sourceTree = "<group>";
@@ -591,6 +594,7 @@
 				F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */,
 				F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */,
 				F00C65FB2ACC67FA00187028 /* String+Extensions.swift in Sources */,
+				83F31F8C2AFB876A0090AE9E /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */,
 				F00C65FC2ACC67FA00187028 /* UIStackViewExtensions.swift in Sources */,
 				F00C65FD2ACC67FA00187028 /* UIViewController+API.swift in Sources */,
 				F00C65FE2ACC67FA00187028 /* ViewController+Primer.swift in Sources */,

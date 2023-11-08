@@ -45,7 +45,7 @@ public extension KlarnaPaymentSessionCreationComponent {
         
         guard
             let paymentMethodConfigId = PrimerAPIConfiguration.current?.paymentMethods?.first(where: {
-                $0.name == PrimerPaymentMethodType.klarna.rawValue
+                $0.name == "Klarna"
             })?.id
         else {
             self.handleError(error: .missingConfiguration)
@@ -57,11 +57,10 @@ public extension KlarnaPaymentSessionCreationComponent {
             return
         }
         
-        let orderItems = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({
-            try? $0.toOrderItem()
-        })
-        
-        let totalAmount = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.totalOrderAmount
+        var totalAmount: Int? = nil
+        if sessionType == .hostedPaymentPage {
+            totalAmount = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.totalOrderAmount
+        }
         
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
@@ -69,10 +68,10 @@ public extension KlarnaPaymentSessionCreationComponent {
             paymentMethodConfigId: paymentMethodConfigId,
             sessionType: sessionType,
             localeData: settings.localeData,
-            description: nil,
+            description: settings.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
             redirectUrl: settings.paymentMethodOptions.urlScheme,
             totalAmount: totalAmount,
-            orderItems: orderItems
+            orderItems: nil
         )
         
         self.apiClient.createKlarnaPaymentSession(
