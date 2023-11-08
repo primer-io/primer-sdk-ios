@@ -6,8 +6,6 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 import UIKit
@@ -72,5 +70,3 @@ class PrimerCheckoutThemeTests: XCTestCase {
         XCTAssert(storedSettings.uiOptions.theme.mainButton.text.color == tropical4, "Main button's enabled color should be 'tropical8'")
     }
 }
-
-#endif
