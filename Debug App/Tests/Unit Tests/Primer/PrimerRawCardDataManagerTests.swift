@@ -335,15 +335,44 @@ class PrimerRawCardDataManagerTests: XCTestCase {
     }
     
     func testCoBadgingEnabled() {
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires])
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+
+        // Only co-badged
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires])
+        XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
+        
+        // Co-badged w/ provider (VISA)
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires, .visa])
+        XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
+
+        // Co-badged w/ provided (MC)
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires, .masterCard])
+        XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
+
+        // Co-badged with mixed
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires, .masterCard, .visa, .discover, .amex])
         XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
     }
     
     func testCoBadgingDisabled() {
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [])
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+
+        // No networks
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [])
         XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
+
+        // No co-badged w/ provider (VISA)
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.visa])
+        XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
+
+        // No co-badged w/ provider (MC)
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.masterCard])
+        XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
+
+        // No co-badged w/ mixed
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.masterCard, .visa, .discover, .amex])
+        XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
+
     }
 }
 
