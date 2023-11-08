@@ -164,7 +164,7 @@ platform :ios do
     )
 
     # Find public key of appetize
-    uri = URI('https://livedemostore.common.primer.io/appetize/ios/preview_' + "#{pr_number}_#{github_run_id}_#{github_run_number}")
+    uri = URI('https://livedemostore.common.primer.io/appetize/ios/' + "#{github_run_id}.#{github_run_number}")
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
 
