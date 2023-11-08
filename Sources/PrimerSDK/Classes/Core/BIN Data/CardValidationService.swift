@@ -62,7 +62,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                 self?.useLocalValidation(withCardState: cardState)
                 return
             }
-            let cardMetadata = PrimerCardMetadata(availableCardNetworks: result.networks.map { network in
+            let cardMetadata = PrimerCardNumberEntryMetadata(availableCardNetworks: result.networks.map { network in
                 PrimerCardNetwork(displayName: network.displayName, networkIdentifier: network.value)
             })
             
