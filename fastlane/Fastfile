@@ -178,7 +178,7 @@ platform :ios do
     )
     
     update_deployment_url(lane_context[SharedValues::APPETIZE_APP_URL])
-    update_livedemostore(uri.to_s)
+    update_livedemostore_url(uri.to_s)
 
   end
 
