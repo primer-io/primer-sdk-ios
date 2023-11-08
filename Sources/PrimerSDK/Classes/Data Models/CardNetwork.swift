@@ -359,11 +359,11 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
 
 extension Array<CardNetwork> {
     
-    static var supportedNetworks: [CardNetwork] {
+    static var supportedNetworks: [Element] {
         return PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.supportedCardNetworks
     }
     
-    static var allCardNetworks: [CardNetwork] {
+    static var allCardNetworks: [Element] {
         return CardNetwork.allCases
     }
 }
