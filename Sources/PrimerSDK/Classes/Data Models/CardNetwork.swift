@@ -364,6 +364,6 @@ extension Array<CardNetwork> {
     }
     
     static var allCardNetworks: [Element] {
-        return CardNetwork.allCases
+        return Element.allCases
     }
 }
