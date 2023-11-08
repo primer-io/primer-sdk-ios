@@ -12,6 +12,17 @@ import XCTest
 final class ApplePayUtilsTest: XCTestCase {
 
     func testApplePaySupportedPaymentNetworks() {
+        // w/ CB
+        XCTAssertEqual(ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: [.cartesBancaires]), [.cartesBancaires])
+        
+        // w/ mixed
+        XCTAssertEqual(ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: [.visa, .masterCard, .amex, .cartesBancaires]), [.visa, .masterCard, .amex, .cartesBancaires])
+        
+        // w/ none
+        XCTAssertEqual(ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: []), [])
+    }
+    
+    func testApplePaySupportedPaymentNetworksViaPrimerSettings() {
         
         // w/ CB
         PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [.cartesBancaires])
