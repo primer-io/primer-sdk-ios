@@ -334,7 +334,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         wait(for: [exp], timeout: Self.validationTimeout)
     }
     
-    func testCoBadgingEnabled() {
+    func testCoBadgedCardsEnabled() {
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
 
         // Only co-badged
@@ -354,7 +354,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
     }
     
-    func testCoBadgingDisabled() {
+    func testCoBadgedCardsDisabled() {
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
 
         // No networks

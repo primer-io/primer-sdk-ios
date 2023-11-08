@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0402B7B62AFBBA7200B02C75 /* CardNetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402B7B52AFBBA7200B02C75 /* CardNetworkTests.swift */; };
 		041295AA2AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		041295AD2AB9E2C100A4F243 /* PrimerHeadlessNolPayManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */; };
 		041F52092ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */; };
@@ -143,6 +144,7 @@
 		00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantResultViewController.swift; sourceTree = "<group>"; };
 		01C09DEAB07F42004B26A278 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeDSProtocolVersionTests.swift; sourceTree = "<group>"; };
+		0402B7B52AFBBA7200B02C75 /* CardNetworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardNetworkTests.swift; sourceTree = "<group>"; };
 		041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutNolPayViewController.swift; sourceTree = "<group>"; };
 		041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessNolPayManagerTests.swift; sourceTree = "<group>"; };
 		041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCardNetworksEndpointTests.swift; sourceTree = "<group>"; };
@@ -540,6 +542,7 @@
 			children = (
 				1F79B50111AC4161CFB1EFE8 /* ApayaTests.swift */,
 				31CFA93A373A7DB78DA77283 /* ApplePayTests.swift */,
+				0402B7B52AFBBA7200B02C75 /* CardNetworkTests.swift */,
 				5F8DC3341BDBB9AEDBE8D6DD /* DecodedClientToken.swift */,
 				7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */,
 				752785ACCF65527C239391A8 /* PaymentMethodConfigTests.swift */,
@@ -859,6 +862,7 @@
 				C29B625B5698094691227852 /* TokenizationResponseTests.swift in Sources */,
 				047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */,
 				041F52092ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift in Sources */,
+				0402B7B62AFBBA7200B02C75 /* CardNetworkTests.swift in Sources */,
 				A1585C752ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift in Sources */,
 				088961D00784BD296EA9745C /* EncodingDecodingContainerTests.swift in Sources */,
 				800B92A57CAAC6471D01A89D /* CardData.swift in Sources */,
