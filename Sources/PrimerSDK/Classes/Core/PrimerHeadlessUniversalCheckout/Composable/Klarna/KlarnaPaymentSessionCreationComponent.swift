@@ -21,6 +21,9 @@ public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessComponent, Pri
     // MARK: - API
     private let apiClient: PrimerAPIClientProtocol
     
+    // MARK: - Settings
+    private var settings: PrimerSettingsProtocol?
+    
     // MARK: - Delegates
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
@@ -28,6 +31,11 @@ public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessComponent, Pri
     // MARK: - Init
     init() {
         self.apiClient = PrimerAPIClient()
+    }
+    
+    // MARK: - Set
+    func setSettings(settings: PrimerSettingsProtocol) {
+        self.settings = settings
     }
 }
 
@@ -44,6 +52,7 @@ public extension KlarnaPaymentSessionCreationComponent {
         )
         
         guard
+            let settings = settings,
             let paymentMethodConfigId = PrimerAPIConfiguration.current?.paymentMethods?.first(where: {
                 $0.name == "Klarna"
             })?.id
@@ -61,8 +70,6 @@ public extension KlarnaPaymentSessionCreationComponent {
         if sessionType == .hostedPaymentPage {
             totalAmount = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.totalOrderAmount
         }
-        
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         let createPaymentSessionAPIRequest = Request.Body.Klarna.CreatePaymentSession(
             paymentMethodConfigId: paymentMethodConfigId,

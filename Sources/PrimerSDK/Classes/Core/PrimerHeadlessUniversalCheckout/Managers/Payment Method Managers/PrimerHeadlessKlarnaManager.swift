@@ -18,6 +18,9 @@ extension PrimerHeadlessUniversalCheckout {
         // MARK: - Delegate
         public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
         
+        // MARK: - Settings
+        private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
         // MARK: - Components
         private let sessionCreationComponent: KlarnaPaymentSessionCreationComponent
         private let viewHandlingComponent: KlarnaPaymentViewHandlingComponent
@@ -36,18 +39,19 @@ extension PrimerHeadlessUniversalCheckout {
         
         // MARK: - Public
         public func provideKlarnaPaymentSessionCreationComponent() -> KlarnaPaymentSessionCreationComponent {
+            self.sessionCreationComponent.setSettings(settings: self.settings)
+            
             return self.sessionCreationComponent
         }
         
         public func provideKlarnaPaymentViewHandlingComponent(
             clientToken: String,
-            paymentCategory: String,
-            urlScheme: String? = nil
+            paymentCategory: String
         ) -> KlarnaPaymentViewHandlingComponent {
             self.klarnaProvider = PrimerKlarnaProvider(
                 clientToken: clientToken,
                 paymentCategory: paymentCategory,
-                urlScheme: urlScheme
+                urlScheme: self.settings.paymentMethodOptions.urlScheme
             )
             
             self.viewHandlingComponent.setProvider(provider: self.klarnaProvider)
