@@ -178,6 +178,7 @@ platform :ios do
     )
     
     update_deployment_url(lane_context[SharedValues::APPETIZE_APP_URL])
+    update_livedemostore(uri.to_s)
 
   end
 
@@ -248,6 +249,10 @@ platform :ios do
   
   def update_deployment_url(pub_url)
     sh("echo APPETIZE_APP_URL=#{pub_url} >> $GITHUB_ENV")
+  end
+
+  def update_livedemostore_url(url)
+    sh("echo LIVEDEMOSTORE_URL=#{url} >> $GITHUB_ENV")
   end
 
   desc 'Store the Browserstack ID into a file'

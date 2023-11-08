@@ -127,6 +127,9 @@ jobs:
           SOURCE_BRANCH: ${{ github.head_ref }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
 
+      - name: Print LiveDemostore URL
+        run: echo $LIVEDEMOSTORE_APP_URL
+
       - uses: peter-evans/find-comment@v2
         if: ${{ success() }}
         id: find_comment
