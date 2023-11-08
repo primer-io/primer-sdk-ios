@@ -32,7 +32,5 @@ final class CardNetworkTests: XCTestCase {
         PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [])
         XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
         XCTAssertEqual(CardNetworks.supportedCardNetworks, [])
-        
-        
     }
 }
