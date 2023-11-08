@@ -8,11 +8,14 @@
 import Foundation
 
 protocol CardValidationService {
+    static var apiClient: PrimerAPIClientProtocol? { get set }
     func validateCardNetworks(withCardNumber cardNumber: String)
 }
 
 class DefaultCardValidationService: CardValidationService, LogReporter {
     
+    static var apiClient: PrimerAPIClientProtocol?
+
     var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? {
         return self.rawDataManager.delegate
     }
@@ -71,7 +74,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                                                   forCardState: cardState)
         }.catch { error in
             // JN TODO: CHKT-1772 - send event
-            self.logger.error(message: "Error occurred while remote card validation '\(cardState.cardNumber)': \(error.localizedDescription)")
+            self.logger.error(message: "Error occurred while remote card validation: \(error.localizedDescription)")
             self.useLocalValidation(withCardState: cardState)
         }
     }
@@ -104,7 +107,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                 cancellable.cancel()
             }
             
-            validateCardNetworksCancellable = apiClient.listCardNetworks(clientToken: decodedJWTToken, bin: cardNumber) { result in
+            validateCardNetworksCancellable = (Self.apiClient ?? apiClient).listCardNetworks(clientToken: decodedJWTToken, bin: cardNumber) { result in
                 switch result {
                 case .success(let networks):
                     resolver.fulfill(networks)

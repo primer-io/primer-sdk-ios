@@ -15,6 +15,11 @@ class PrimerRawCardDataManagerTests: XCTestCase {
     
     static let validationTimeout = 1.0
     
+    override func tearDown() {
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init()
+        super.tearDown()
+    }
+    
     func test_invalid_cardnumber_in_raw_card_data() throws {
         var exp = expectation(description: "Await validation")
         

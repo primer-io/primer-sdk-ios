@@ -13,8 +13,14 @@ final class CardNetworkTests: XCTestCase {
 
     typealias CardNetworks = Array<CardNetwork>
     
+    override func tearDown() {
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init()
+        super.tearDown()
+    }
+    
     func testCardNetworksAvailable() throws {
         // Default value
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init()
         XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
         XCTAssertEqual(CardNetworks.supportedCardNetworks, CardNetwork.allCases)
         
