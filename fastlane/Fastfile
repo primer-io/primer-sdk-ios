@@ -256,7 +256,7 @@ platform :ios do
     when "release"
       return "release_#{get_sdk_version}"
     else
-      return "preview#{get_appetize_public_key}"
+      return "preview_#{pr_number}_#{github_run_id}_#{github_run_number}"
     end
   end
   

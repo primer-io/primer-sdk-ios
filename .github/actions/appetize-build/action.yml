@@ -46,6 +46,9 @@ inputs:
   slack-reporter-token:
     description: Slack reporter token
     required: true
+  base-ref:
+    description: Base ref
+    required: true
   
 runs:
   using: "composite"
