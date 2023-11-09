@@ -7,8 +7,6 @@
 //
 
 
-#if canImport(UIKit)
-
 import PassKit
 import XCTest
 @testable import PrimerSDK
@@ -321,5 +319,3 @@ class ApplePayTests: XCTestCase {
         }
     }
 }
-
-#endif

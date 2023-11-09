@@ -1,5 +1,3 @@
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
@@ -101,5 +99,3 @@ class PollingModuleTests: XCTestCase {
     }
 }
 
-
-#endif
