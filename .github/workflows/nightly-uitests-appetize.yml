@@ -24,7 +24,7 @@ jobs:
           ref: ${{ github.ref }}
       - name: Upload preview to Appetize
         id: appetize-upload
-        uses: ./.github/actions/appetize-upload
+        uses: ./.github/actions/appetize-build
         with:
           build_type: 'nightly'
   build-and-upload-to-firebase-and-browserstack:
