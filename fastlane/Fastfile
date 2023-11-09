@@ -42,15 +42,7 @@ platform :ios do
 
 ###################### PUBLIC LANES #######################
 
-  lane :unit_tests do
-    common_pre_build_action
-
-    cocoapods(
-      clean_install: true,
-      use_bundle_exec: true,
-      podfile: podfile_path
-    )
-
+  lane :tests do
     run_tests(workspace: app_workspace, 
               scheme: "Debug App Tests",
               destination: "platform=iOS Simulator,name=iPhone 14 Pro",
@@ -134,7 +126,13 @@ platform :ios do
       podfile: podfile_path
     )
 
+    # Run Unit Tests
+    if options[:tests]
+      tests
+    end
+
     # Build for appetize
+
     build_app(
       scheme: app_scheme,
       sdk: "iphonesimulator", # Appetize needs a simulator app
@@ -239,7 +237,7 @@ platform :ios do
     # The version number is important only for Appetize
     # The build is identified by the contents of CFBundleVersion in Info.plist
 
-    version_name = get_appetize_public_key(build_type, pr_number)
+    version_name = get_appetize_public_key(build_type, github_run_id)
     
     set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: version_name)
     set_info_plist_value(path: info_plist_path, key: "CFBundleShortVersionString", value: "#{version_name}")
