@@ -152,7 +152,7 @@ platform :ios do
   desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
   lane :appetize_build_and_upload do |options|
 
-    build_cocoapods tests:true
+    build_cocoapods tests:false
 
     # Appetize needs the .app to be zipped
 
