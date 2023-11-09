@@ -49,7 +49,10 @@ inputs:
   base-ref:
     description: Base ref
     required: true
-  
+  github-run-id:
+    description: GitHub run ID
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -92,6 +95,7 @@ runs:
         SOURCE_BRANCH: ${{ inputs.source-branch }}
         PR_NUMBER: ${{ inputs.pr-number }}
         BUILD_TYPE: ${{ inputs.build_type }}
+        GITHUB_RUN_ID: ${{ inputs.github-run-id }}
     - uses: peter-evans/find-comment@v2
       if: ${{ success() }}
       id: find_comment
