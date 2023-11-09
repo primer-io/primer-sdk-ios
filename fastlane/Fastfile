@@ -237,7 +237,7 @@ platform :ios do
     # The version number is important only for Appetize
     # The build is identified by the contents of CFBundleVersion in Info.plist
 
-    version_name = get_appetize_public_key(build_type, github_run_id)
+    version_name = get_appetize_public_key(build_type, pr_number)
     
     set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: version_name)
     set_info_plist_value(path: info_plist_path, key: "CFBundleShortVersionString", value: "#{version_name}")
