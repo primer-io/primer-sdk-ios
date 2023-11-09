@@ -24,7 +24,7 @@ struct CardNetworkCode {
     var length: Int
 }
 
-public enum CardNetwork: String, CaseIterable, LogReporter {
+public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     
     case amex
     case bancontact
@@ -330,6 +330,10 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
         return false
     }
     
+    static var coBadgedNetworks: [CardNetwork] {
+        return [.cartesBancaires]
+    }
+    
     public init(cardNumber: String) {
         self = .unknown
         
@@ -353,69 +357,16 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
     
 }
 
-// JN TODO: CHKT-1854 Be removed and replaced with new utility
-public struct PaymentNetwork {
-    static var iOSSupportedPKPaymentNetworks: [PKPaymentNetwork] {
-        var supportedNetworks: [PKPaymentNetwork] = [
-            .amex,
-            .chinaUnionPay,
-            .discover,
-            .interac,
-            .masterCard,
-            .privateLabel,
-            .visa
-        ]
-        
-        if #available(iOS 11.2, *) {
-//            @available(iOS 11.2, *)
-            supportedNetworks.append(.cartesBancaires)
-        } else if #available(iOS 11.0, *) {
-//            @available(iOS, introduced: 11.0, deprecated: 11.2, message: "Use PKPaymentNetworkCartesBancaires instead.")
-            supportedNetworks.append(.carteBancaires)
-        } else if #available(iOS 10.3, *) {
-//            @available(iOS, introduced: 10.3, deprecated: 11.0, message: "Use PKPaymentNetworkCartesBancaires instead.")
-            supportedNetworks.append(.carteBancaire)
-        }
-
-        if #available(iOS 12.0, *) {
-//            @available(iOS 12.0, *)
-            supportedNetworks.append(.eftpos)
-            supportedNetworks.append(.electron)
-            supportedNetworks.append(.maestro)
-            supportedNetworks.append(.vPay)
-        }
-
-        if #available(iOS 12.1.1, *) {
-//            @available(iOS 12.1.1, *)
-            supportedNetworks.append(.elo)
-            supportedNetworks.append(.mada)
-        }
-        
-        if #available(iOS 10.3.1, *) {
-//            @available(iOS 10.3, *)
-            supportedNetworks.append(.idCredit)
-        }
-        
-        if #available(iOS 10.1, *) {
-//            @available(iOS 10.1, *)
-            supportedNetworks.append(.JCB)
-            supportedNetworks.append(.suica)
-        }
-        
-        if #available(iOS 10.3, *) {
-//            @available(iOS 10.3, *)
-            supportedNetworks.append(.quicPay)
-        }
-        
-        if #available(iOS 14.0, *) {
-//            @available(iOS 14.0, *)
-//            supportedNetworks.append(.barcode)
-            supportedNetworks.append(.girocard)
-        }
-        
-        return supportedNetworks
+extension Set<CardNetwork> {
+    
+    /// A list of card networks that the merchant supports
+    static var supportedCardNetworks: Self {
+        return PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.supportedCardNetworks
     }
     
+    /// A list of all card networks, used by default when a merchant does not specify the networks they support
+    /// Also used to configure suppoted networks for Apple Pay
+    static var allCardNetworks: Self {
+        return Set(Element.allCases)
+    }
 }
-
-

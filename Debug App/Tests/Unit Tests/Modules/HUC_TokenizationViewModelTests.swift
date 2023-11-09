@@ -274,12 +274,14 @@ class HUC_TokenizationViewModelTests: XCTestCase {
         mockApiClient.paymentResult = (Mocks.payment, nil)
         mockApiClient.fetchConfigurationResult = (apiConfiguration, nil)
         mockApiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
+        mockApiClient.listCardNetworksResult = (Mocks.listCardNetworksData, nil)
         
         PrimerAPIConfigurationModule.apiClient = mockApiClient
         PaymentMethodTokenizationViewModel.apiClient = mockApiClient
         TokenizationService.apiClient = mockApiClient
         PollingModule.apiClient = mockApiClient
         CreateResumePaymentService.apiClient = mockApiClient
+        DefaultCardValidationService.apiClient = mockApiClient
         
         
         PrimerHeadlessUniversalCheckout.current.delegate = self

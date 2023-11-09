@@ -28,7 +28,7 @@ public class PrimerCardNetwork: NSObject {
 }
 
 @objc
-public class PrimerCardMetadata: NSObject {
+public class PrimerCardNumberEntryMetadata: NSObject {
     public var preferredCardNetwork: PrimerCardNetwork? {
         return availableCardNetworks.first
     }

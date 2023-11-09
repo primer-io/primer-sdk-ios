@@ -100,7 +100,7 @@ extension Response.Body {
                 .compactMap({ $0.tokenizationViewModel })
             ?? []
             
-            let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
+            let supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks()
             var canMakePayment: Bool
             if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
                 canMakePayment = PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks)

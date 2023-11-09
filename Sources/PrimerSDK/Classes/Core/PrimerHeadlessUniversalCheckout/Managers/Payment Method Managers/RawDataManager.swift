@@ -28,7 +28,7 @@ public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
     
     @objc optional 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              didReceiveCardMetadata metadata: PrimerCardMetadata,
+                              didReceiveCardMetadata metadata: PrimerCardNumberEntryMetadata,
                               forCardState cardState: PrimerCardNumberEntryState)
 }
 

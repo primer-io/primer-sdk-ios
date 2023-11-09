@@ -13,6 +13,11 @@ class PrimerRawCardDataManagerTests: XCTestCase {
     
     static let validationTimeout = 1.0
     
+    override func tearDown() {
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init()
+        super.tearDown()
+    }
+    
     func test_invalid_cardnumber_in_raw_card_data() throws {
         var exp = expectation(description: "Await validation")
         
@@ -138,7 +143,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = ""
             return tokenizationBuilder.validateRawData(rawCardData)
@@ -153,7 +158,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "13"
             return tokenizationBuilder.validateRawData(rawCardData)
@@ -168,7 +173,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "019"
             return tokenizationBuilder.validateRawData(rawCardData)
@@ -183,7 +188,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "02/"
             return tokenizationBuilder.validateRawData(rawCardData)
@@ -213,7 +218,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate  = "02/2a5"
             return tokenizationBuilder.validateRawData(rawCardData)
@@ -228,7 +233,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate  = "02/2019"
             return tokenizationBuilder.validateRawData(rawCardData)
@@ -252,9 +257,8 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             expiryDate: "99/2040",
             cvv: "12345",
             cardholderName: "John Smith")
-
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
-
+        
         firstly {
             return tokenizationBuilder.validateRawData(rawCardData)
         }
@@ -281,10 +285,10 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in
             exp.fulfill()
         }
-
+        
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.cardNumber = Constants.testCardNumbers[.visa]!.first!
             rawCardData.cvv = "1234"
@@ -297,7 +301,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in
             exp.fulfill()
         }
-
+        
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
         
@@ -313,7 +317,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in
             exp.fulfill()
         }
-
+        
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
         
@@ -331,5 +335,46 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         }
         
         wait(for: [exp], timeout: Self.validationTimeout)
+    }
+    
+    func testCoBadgedCardsEnabled() {
+        let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+
+        // Only co-badged
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires])
+        XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
+        
+        // Co-badged w/ provider (VISA)
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires, .visa])
+        XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
+
+        // Co-badged w/ provided (MC)
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires, .masterCard])
+        XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
+
+        // Co-badged with mixed
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires, .masterCard, .visa, .discover, .amex])
+        XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
+    }
+    
+    func testCoBadgedCardsDisabled() {
+        let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
+
+        // No networks
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [])
+        XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
+
+        // No co-badged w/ provider (VISA)
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.visa])
+        XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
+
+        // No co-badged w/ provider (MC)
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.masterCard])
+        XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
+
+        // No co-badged w/ mixed
+        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.masterCard, .visa, .discover, .amex])
+        XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
+
     }
 }

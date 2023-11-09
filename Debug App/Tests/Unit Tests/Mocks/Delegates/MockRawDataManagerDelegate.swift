@@ -43,12 +43,12 @@ class MockRawDataManagerDelegate: RawDataManager.Delegate {
     
     // MARK: metadata forCardValidationState
     
-    var onMetadataForCardValidationState: ((RawDataManager, PrimerCardMetadata, PrimerCardNumberEntryState) -> Void)?
+    var onMetadataForCardValidationState: ((RawDataManager, PrimerCardNumberEntryMetadata, PrimerCardNumberEntryState) -> Void)?
     
     var onMetadataForCardValidationStateCount = 0
     
     func primerRawDataManager(_ rawDataManager: RawDataManager,
-                              didReceiveCardMetadata metadata: PrimerCardMetadata,
+                              didReceiveCardMetadata metadata: PrimerCardNumberEntryMetadata,
                               forCardState cardState: PrimerCardNumberEntryState) {
         onMetadataForCardValidationStateCount += 1
         onMetadataForCardValidationState?(rawDataManager, metadata, cardState)

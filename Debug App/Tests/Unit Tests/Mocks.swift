@@ -90,6 +90,8 @@ class Mocks {
         keys: nil,
         checkoutModules: nil)
     
+    static var listCardNetworksData = Response.Body.Bin.Networks(networks: [])
+    
     class Static {
         
         class Strings {

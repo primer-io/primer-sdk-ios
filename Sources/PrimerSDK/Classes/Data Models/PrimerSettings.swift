@@ -128,18 +128,25 @@ public class PrimerKlarnaOptions: Codable {
 
 // MARK: Card Payment
 
-@available(*, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
 public class PrimerCardPaymentOptions: Codable {
     
-    @available(*, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
+    let supportedCardNetworks: Set<CardNetwork>
+    
     let is3DSOnVaultingEnabled: Bool
     
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     public init(is3DSOnVaultingEnabled: Bool?) {
         self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled != nil ? is3DSOnVaultingEnabled! : true
+        self.supportedCardNetworks = .allCardNetworks
     }
     
     public init() {
+        self.is3DSOnVaultingEnabled = true
+        self.supportedCardNetworks = .allCardNetworks
+    }
+    
+    public init(supportedCardNetworks: Set<CardNetwork>) {
+        self.supportedCardNetworks = supportedCardNetworks
         self.is3DSOnVaultingEnabled = true
     }
 }
