@@ -80,6 +80,10 @@ class Networking {
         if let customDefinedApiKey = customDefinedApiKey {
             request.addValue(customDefinedApiKey, forHTTPHeaderField: "x-api-key")
         }
+
+        if useNewWorkflows, let urlAbsoluteString = request.url?.absoluteString, urlAbsoluteString.hasSuffix("client-session") {
+            request.addValue("false", forHTTPHeaderField: "Legacy-Workflows")
+        }
         
         if let headers = headers {
             // We have a dedicated argument that takes x-api-key into account

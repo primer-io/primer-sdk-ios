@@ -12,6 +12,7 @@ import UIKit
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
+var useNewWorkflows = false
 
 class MerchantSessionAndSettingsViewController: UIViewController {
     
