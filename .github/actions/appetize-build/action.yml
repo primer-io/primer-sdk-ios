@@ -49,6 +49,9 @@ inputs:
   run-tests:
     description: Run tests
     required: true
+  pr-number:
+    description: PR number
+    required: true
 runs:
   using: "composite"
   steps:
@@ -91,6 +94,7 @@ runs:
         SOURCE_BRANCH: ${{ inputs.source-branch }}
         BUILD_TYPE: ${{ inputs.build_type }}
         GITHUB_RUN_ID: ${{ inputs.github-run-id }}
+        PR_NUMBER: ${{ inputs.pr-number}}
     - uses: peter-evans/find-comment@v2
       if: ${{ success() }}
       id: find_comment
