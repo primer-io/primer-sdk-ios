@@ -165,7 +165,7 @@ platform :ios do
     )
 
     # Find public key of appetize
-    uri = URI('https://livedemostore.common.primer.io/ios/' + "#{get_appetize_public_key}")
+    uri = URI('https://livedemostore.common.primer.io/ios/' + "#{get_appetize_public_key(build_type, pr_number, github_run_id, github_run_number)}")
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
 
@@ -235,7 +235,7 @@ platform :ios do
     # The version number is important only for Appetize
     # The build is identified by the contents of CFBundleVersion in Info.plist
 
-    version_name = get_appetize_public_key(build_type)
+    version_name = get_appetize_public_key(build_type, pr_number, github_run_id, github_run_number)
     
     set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: current_build)
     set_info_plist_value(path: info_plist_path, key: "CFBundleShortVersionString", value: "#{current_build}")
@@ -249,7 +249,7 @@ platform :ios do
     spec.version.to_s
   end
 
-  def get_appetize_public_key(build_type)
+  def get_appetize_public_key(build_type, pr_number, github_run_id, github_run_number)
     case build_type
     when "nightly"
       return "nightly_#{Time.now.strftime("%d.%m.%Y")}"
