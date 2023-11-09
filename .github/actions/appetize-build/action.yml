@@ -1,0 +1,92 @@
+name: 'Build and upload to Appetize'
+description: 'Build and upload to Appetize'
+inputs:
+  build_type:
+    description: nightly, release, or preview
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Select Xcode Version
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_KEY }}
+        name: id_rsa_github_actions
+        known_hosts: ${{ secrets.KNOWN_HOSTS }}
+    - uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_KEY }}
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "3.2"
+        bundler-cache: true
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.3.0
+    - name: Install SMB
+      shell: bash
+      run: npm install --save slack-message-builder
+    - name: Test, Build, and Distribute app to Appetize 🚀
+      shell: bash
+      run: |
+        bundle exec fastlane appetize_build_and_upload
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+        FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+        FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
+        MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+        MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+        APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
+        SOURCE_BRANCH: ${{ github.head_ref }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        BUILD_TYPE: ${{ inputs.build_type }}
+    - uses: peter-evans/find-comment@v2
+      if: ${{ success() }}
+      id: find_comment
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body-includes: Appetize link
+
+    - uses: peter-evans/create-or-update-comment@v2
+      if: ${{ success() }}
+      with:
+        body: |
+          Appetize link: ${{ env.APPETIZE_APP_URL }}
+        edit-mode: replace
+        comment-id: ${{ steps.find_comment.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Create Slack Success Summary Report
+      if: ${{ success() && github.event.pull_request.base.ref == 'master'  }}
+      shell: bash
+      run: |
+        node Report\ Scripts/appetize-success-report-script.js createAppetizeSummaryReport ${{ github.head_ref || github.ref_name }} ${{ inputs.build_type }}
+    - name: Slack Success Notification
+      if: ${{ success() && github.event.pull_request.base.ref == 'master' }}
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+        payload-file-path: '/var/tmp/appetize-success-link-summary.json'
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+
+    - name: Create Slack Failure Summary Report
+      if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
+      shell: bash
+      run: |
+        node Report\ Scripts/appetize-failure-report-script.js createAppetizeSummaryReport ${{ github.head_ref || github.ref_name }}
+    - name: Slack Notification
+      if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+        payload-file-path: '/var/tmp/appetize-failure-link-summary.json'
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}

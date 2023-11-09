@@ -28,6 +28,7 @@ app_output_archive_path = "/var/tmp/Primer.io_Debug_App.xcarchive"
 sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
 source_branch_trimmed = ENV['SOURCE_BRANCH'].gsub("refs/heads/", "")
 pr_number = ENV['PR_NUMBER']
+build_type = ENV['BUILD_TYPE'] || "preview"
 
 podfile_path = "Debug App/Podfile"
 
@@ -147,9 +148,9 @@ platform :ios do
       skip_package_pkg: true
     )
   end
-
+  
   desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
-  lane :appetize_build_and_upload do
+  private_lane :appetize_build_and_upload do |options|
 
     build_cocoapods tests:true
 
@@ -164,7 +165,7 @@ platform :ios do
     )
 
     # Find public key of appetize
-    uri = URI('https://livedemostore.common.primer.io/appetize/ios/' + "#{github_run_id}.#{github_run_number}")
+    uri = URI('https://livedemostore.common.primer.io/ios/' + "#{get_appetize_public_key}")
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
 
@@ -230,22 +231,33 @@ platform :ios do
   end
 
   desc 'This action sets the version and build number'
-  private_lane :set_version_and_build_number do
+  lane :set_version_and_build_number do |options|
+    # The version number is important only for Appetize
+    # The build is identified by the contents of CFBundleVersion in Info.plist
 
-    # We don't really need the version number
-    # at this moment.
-    # The Build number is the unique identifier of the package
-    # matching the Github Workflow run ID and number
+    version_name = get_appetize_public_key
+    
+    set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: current_build)
+    set_info_plist_value(path: info_plist_path, key: "CFBundleShortVersionString", value: "#{current_build}")
+  end
 
-    # Set version number
-    # increment_version_number(
-    #   version_number: sdk_version_name_source_branch,
-    #   xcodeproj: app_xcode_proj
-    # )
+  require 'cocoapods-core'
 
-    # Set build number
-    set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: "#{github_run_id}.#{github_run_number}")
-    set_info_plist_value(path: info_plist_path, key: "CFBundleShortVersionString", value: "#{github_run_id}.#{github_run_number}")
+  private_lane :get_sdk_version do
+    file_path = "PrimerSDK.podspec"
+    spec = Pod::Specification.from_file(file_path)
+    spec.version.to_s
+  end
+
+  private_lane :get_appetize_public_key do
+    case build_type
+    when "nightly"
+      return "nightly_#{Time.now.strftime("%d.%m.%Y")}"
+    when "release"
+      return "release_#{get_sdk_version}"
+    else
+      return "preview#{get_appetize_public_key}"
+    end
   end
   
   def update_deployment_url(pub_url)

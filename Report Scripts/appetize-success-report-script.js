@@ -3,18 +3,18 @@ const smb = require('slack-message-builder')
 
 const SUCCESS_SUMMARY_FILE_PATH = '/var/tmp/appetize-success-link-summary.json'
 
-createAppetizeSummaryReport(process.argv[3])
+createAppetizeSummaryReport(process.argv[3], process.argv[4])
 
-async function createAppetizeSummaryReport(branch) {
-    fs.writeFileSync(SUCCESS_SUMMARY_FILE_PATH, JSON.stringify(createAppetizeSummary(branch)));
+async function createAppetizeSummaryReport(branch, buildType) {
+    fs.writeFileSync(SUCCESS_SUMMARY_FILE_PATH, JSON.stringify(createAppetizeSummary(branch, buildType)));
 }
 
-function createAppetizeSummary(branch) {
+function createAppetizeSummary(branch, buildType) {
     return smb()
         .attachment()
         .mrkdwnIn(["title"])
         .color("#36a64f")
-        .title(`Successfully generated Appetize link for branch ${branch}.`)
+        .title(`Successfully generated ${buildType} Appetize link for branch ${branch}.`)
         .authorName(process.env.GITHUB_ACTOR)
         .authorLink(`${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_ACTOR}`)
         .authorIcon(`${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_ACTOR}.png?size=32`)

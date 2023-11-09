@@ -1,4 +1,4 @@
-name: UI Tests
+name: Run UI Tests and publish nightly build
 
 on:
   workflow_dispatch:
@@ -9,6 +9,24 @@ on:
       - 'release/**'
 
 jobs:
+  build-and-upload-to-appetize:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    name: "Build and upload app to Appetize"
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@0.12.0
+        with:
+          access_token: ${{ github.token }}
+      - name: Git - Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+      - name: Upload preview to Appetize
+        id: appetize-upload
+        uses: ./.github/actions/appetize-upload
+        with:
+          build_type: 'nightly'
   build-and-upload-to-firebase-and-browserstack:
     runs-on: macos-13
     timeout-minutes: 20
