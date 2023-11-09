@@ -27,7 +27,6 @@ app_output_archive_path = "/var/tmp/Primer.io_Debug_App.xcarchive"
 # Utils
 sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
 source_branch_trimmed = ENV['SOURCE_BRANCH'].gsub("refs/heads/", "")
-pr_number = ENV['PR_NUMBER']
 build_type = ENV['BUILD_TYPE'] || "preview"
 
 podfile_path = "Debug App/Podfile"
@@ -152,7 +151,7 @@ platform :ios do
   desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
   lane :appetize_build_and_upload do |options|
 
-    build_cocoapods tests:false
+    build_cocoapods tests: options[:tests] || false
 
     # Appetize needs the .app to be zipped
 
@@ -165,7 +164,8 @@ platform :ios do
     )
 
     # Find public key of appetize
-    url_end = get_appetize_public_key(build_type, pr_number, github_run_id)
+    # If a build exists with this name, we will overwrite it
+    url_end = get_appetize_public_key(build_type, github_run_id)
     uri = URI('https://livedemostore.common.primer.io/appetize/ios/' + "#{url_end}")
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
@@ -236,7 +236,7 @@ platform :ios do
     # The version number is important only for Appetize
     # The build is identified by the contents of CFBundleVersion in Info.plist
 
-    version_name = get_appetize_public_key(build_type, pr_number, github_run_id)
+    version_name = get_appetize_public_key(build_type, github_run_id)
     
     set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: version_name)
     set_info_plist_value(path: info_plist_path, key: "CFBundleShortVersionString", value: "#{version_name}")
@@ -250,14 +250,14 @@ platform :ios do
     spec.version.to_s
   end
 
-  def get_appetize_public_key(build_type, pr_number, github_run_id)
+  def get_appetize_public_key(build_type, github_run_id)
     case build_type
     when "nightly"
       return "nightly_#{Time.now.strftime("%d.%m.%Y")}"
     when "release"
       return "release_#{get_sdk_version}"
     else
-      return "preview_#{pr_number}.#{github_run_id}"
+      return "preview_.#{github_run_id}"
     end
   end
   

@@ -66,7 +66,6 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
   build-and-upload-to-appetize:
     needs: danger
     runs-on: macos-latest
@@ -97,8 +96,8 @@ jobs:
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           appetize-api-token: ${{ secrets.APPETIZE_API_TOKEN }}
           source-branch: ${{ github.head_ref || github.ref_name }}
-          base-ref: ${{ github.event.pull_request.base.ref }}
           pr-number: ${{ github.event.pull_request.number }}
           slack-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           github-run-id: ${{ github.run_id }}
+          run-tests: true

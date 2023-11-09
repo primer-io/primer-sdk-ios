@@ -34,9 +34,6 @@ inputs:
   source-branch:
     description: Source branch
     required: true
-  pr-number:
-    description: PR number
-    required: true
   github-token:
     description: GitHub token
     required: true
@@ -46,13 +43,12 @@ inputs:
   slack-reporter-token:
     description: Slack reporter token
     required: true
-  base-ref:
-    description: Base ref
-    required: true
   github-run-id:
     description: GitHub run ID
     required: true
-
+  run-tests:
+    description: Run tests
+    required: true
 runs:
   using: "composite"
   steps:
@@ -83,7 +79,7 @@ runs:
     - name: Test, Build, and Distribute app to Appetize 🚀
       shell: bash
       run: |
-        bundle exec fastlane appetize_build_and_upload
+        bundle exec fastlane appetize_build_and_upload tests:${{ inputs.run-tests }}
       env:
         MATCH_PASSWORD: ${{ inputs.match-password }}
         MATCH_GIT_PRIVATE_KEY: ${{ inputs.ssh-private-key }}
@@ -93,7 +89,6 @@ runs:
         MATCH_KEYCHAIN_PASSWORD: ${{ inputs.match-password }}
         APPETIZE_API_TOKEN: ${{ inputs.appetize-api-token }}
         SOURCE_BRANCH: ${{ inputs.source-branch }}
-        PR_NUMBER: ${{ inputs.pr-number }}
         BUILD_TYPE: ${{ inputs.build_type }}
         GITHUB_RUN_ID: ${{ inputs.github-run-id }}
     - uses: peter-evans/find-comment@v2
@@ -102,7 +97,6 @@ runs:
       with:
         issue-number: ${{ inputs.pr-number }}
         body-includes: Appetize link
-
     - uses: peter-evans/create-or-update-comment@v2
       if: ${{ success() }}
       with:
@@ -112,28 +106,26 @@ runs:
         comment-id: ${{ steps.find_comment.outputs.comment-id }}
         issue-number: ${{ inputs.pr-number }}
         token: ${{ inputs.github-token }}
-        
     - name: Create Slack Success Summary Report
-      if: ${{ success() && inputs.base-ref == 'master'  }}
+      if: ${{ success()  }}
       shell: bash
       run: |
         node Report\ Scripts/appetize-success-report-script.js createAppetizeSummaryReport ${{ inputs.source-branch }} ${{ inputs.build_type }}
     - name: Slack Success Notification
-      if: ${{ success() && inputs.base-ref == 'master' }}
+      if: ${{ success() }}
       uses: slackapi/slack-github-action@v1.23.0
       with:
         channel-id: ${{ inputs.slack-channel }}
         payload-file-path: '/var/tmp/appetize-success-link-summary.json'
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack-reporter-token }}
-
     # - name: Create Slack Failure Summary Report
-    #   if: ${{ failure() && inputs.base-ref == 'master' }}
+    #   if: ${{ failure() }}
     #   shell: bash
     #   run: |
     #     node Report\ Scripts/appetize-failure-report-script.js createAppetizeSummaryReport ${{ inputs.source-branch }}
     # - name: Slack Notification
-    #   if: ${{ failure() && inputs.base-ref == 'master' }}
+    #   if: ${{ failure() }}
     #   uses: slackapi/slack-github-action@v1.23.0
     #   with:
     #     channel-id: ${{ inputs.slack-channel }}
