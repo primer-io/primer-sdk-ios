@@ -165,7 +165,8 @@ platform :ios do
     )
 
     # Find public key of appetize
-    uri = URI('https://livedemostore.common.primer.io/ios/' + "#{get_appetize_public_key(build_type, pr_number, github_run_id)}")
+    url_end = get_appetize_public_key(build_type, pr_number, github_run_id)
+    uri = URI('https://livedemostore.common.primer.io/appetize/ios/' + "#{url_end}")
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
 
@@ -179,7 +180,7 @@ platform :ios do
     )
     
     update_deployment_url(lane_context[SharedValues::APPETIZE_APP_URL])
-    update_livedemostore_url(uri.to_s)
+    update_livedemostore_url("https://livedemostore.common.primer.io/ios/#{url_end}")
 
   end
 
