@@ -150,7 +150,7 @@ platform :ios do
   end
   
   desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
-  private_lane :appetize_build_and_upload do |options|
+  lane :appetize_build_and_upload do |options|
 
     build_cocoapods tests:true
 
