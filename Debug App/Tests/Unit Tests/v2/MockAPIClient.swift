@@ -6,8 +6,6 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 @testable import PrimerSDK
 import XCTest
 
@@ -907,5 +905,3 @@ extension MockPrimerAPIClient {
 
     }
 }
-
-#endif

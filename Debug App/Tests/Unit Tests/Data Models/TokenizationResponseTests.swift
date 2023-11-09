@@ -6,8 +6,6 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
@@ -136,5 +134,3 @@ class TokenizationResponseTests: XCTestCase {
         XCTAssert(primerPaymentMethodToken.threeDSecureAuthentication?.reasonText == threeDSecureAuthentication?["reasonText"] as? String, "threeDSecureAuthentication?.protocolVersion is \(primerPaymentMethodToken.threeDSecureAuthentication?.protocolVersion) when it should be \(threeDSecureAuthentication?["protocolVersion"] as? String ?? "n/a")")
     }
 }
-
-#endif

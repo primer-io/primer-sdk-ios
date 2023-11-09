@@ -6,8 +6,6 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 @testable import Primer3DS
@@ -158,5 +156,3 @@ class ThreeDSErrorTests: XCTestCase {
                 threeDsErrorDetail: primer3DSError.threeDsErrorDetail))
     }
 }
-
-#endif

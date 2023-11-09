@@ -5,8 +5,6 @@
 //  Created by Carl Eriksson on 16/01/2021.
 //
 
-#if canImport(UIKit)
-
 @testable import PrimerSDK
 import XCTest
 
@@ -18,5 +16,3 @@ class MockVaultCheckoutViewModel: UniversalCheckoutViewModelProtocol {
         return nil
     }
 }
-
-#endif

@@ -6,8 +6,6 @@
 //  Copyright © 2022 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
@@ -546,5 +544,3 @@ extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutRawData
         
     }
 }
-
-#endif
