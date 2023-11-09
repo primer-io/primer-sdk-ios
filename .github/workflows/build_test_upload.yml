@@ -86,3 +86,5 @@ jobs:
         uses: ./.github/actions/appetize-build
         with:
           build_type: 'preview'
+          secrets: secrets
+          github: github

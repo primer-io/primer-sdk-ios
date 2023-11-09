@@ -27,6 +27,8 @@ jobs:
         uses: ./.github/actions/appetize-build
         with:
           build_type: 'nightly'
+          secrets: secrets
+          github: github
   build-and-upload-to-firebase-and-browserstack:
     runs-on: macos-13
     timeout-minutes: 20

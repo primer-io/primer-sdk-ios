@@ -4,6 +4,12 @@ inputs:
   build_type:
     description: nightly, release, or preview
     required: true
+  secrets:
+    description: Secrets
+    required: true
+  github:
+    description: Github
+    required: true
 runs:
   using: "composite"
   steps:

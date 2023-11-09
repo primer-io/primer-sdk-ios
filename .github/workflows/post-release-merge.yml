@@ -51,3 +51,5 @@ jobs:
         uses: ./.github/actions/appetize-build
         with:
           build_type: 'release'
+          secrets: secrets
+          github: github
