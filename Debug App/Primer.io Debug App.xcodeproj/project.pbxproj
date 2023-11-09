@@ -87,6 +87,8 @@
 		DB1A2989DDE0928C62B15303 /* PayPalServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7EC742DEB5BE12252E3E5B /* PayPalServiceTests.swift */; };
 		DC98712939835FB79A20BD63 /* IntExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9314E0A4E884A8228611A030 /* IntExtensionTests.swift */; };
 		DE53DA2D0AD108306C92E198 /* UIViewController+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */; };
+		E130C3D72AFD19EA00AC3E7C /* URL+NetworkHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = E130C3D62AFD19EA00AC3E7C /* URL+NetworkHeaders.swift */; };
+		E130C3D92AFD19FF00AC3E7C /* NetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */; };
 		E4DF956CABAE0633980D5B89 /* AnalyticsTests+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90441E821B5FE76643B62A6 /* AnalyticsTests+Constants.swift */; };
 		E52B5646C4E1E712FEDE06CB /* AnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF07D2421252EA2AE5C2FC4F /* AnalyticsTests.swift */; };
 		E6F85ECD80B64754E7A6D35E /* RawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */; };
@@ -247,6 +249,8 @@
 		DBC8EA85D1CBC1EC4AB3EB8C /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		DD2EC8A195C6BB1D85F1D805 /* Pods_Debug_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DECCDC4079DC6471CEDDEA84 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		E130C3D62AFD19EA00AC3E7C /* URL+NetworkHeaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+NetworkHeaders.swift"; sourceTree = "<group>"; };
+		E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkTests.swift; sourceTree = "<group>"; };
 		E1C3EF0BA039C0A50EDE13A5 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Main.strings; sourceTree = "<group>"; };
 		E63F5C5C1FD2F3E6CB02EC5A /* HeadlessUniversalCheckoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlessUniversalCheckoutTests.swift; sourceTree = "<group>"; };
 		E7640DB186F9638C2F556F77 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Main.strings; sourceTree = "<group>"; };
@@ -340,6 +344,7 @@
 		2F23D3C9CC9CBC1B95329B1C /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */,
 				1F4E35F809D3FAF4354D5B05 /* URLSessionStackTests.swift */,
 			);
 			path = Network;
@@ -431,6 +436,7 @@
 			children = (
 				E8DE1E4FB055B60582977315 /* Networking.swift */,
 				77E08473D1DF8C47A6EB61B2 /* Networking+Models.swift */,
+				E130C3D62AFD19EA00AC3E7C /* URL+NetworkHeaders.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -841,6 +847,7 @@
 				213196DEDF2A3A84037ED884 /* PollingModuleTests.swift in Sources */,
 				04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */,
 				1589385B62C86DE7C735F3EC /* PrimerAPIConfigurationModuleTests.swift in Sources */,
+				E130C3D92AFD19FF00AC3E7C /* NetworkTests.swift in Sources */,
 				A39750255D4C33527A3766A0 /* UserInterfaceModuleTests.swift in Sources */,
 				3EE90DEB1DB7BE9270FB17BF /* URLSessionStackTests.swift in Sources */,
 				2C98B33ECA68109C7A6AA134 /* PrimerBancontactCardDataManagerTests.swift in Sources */,
@@ -883,6 +890,7 @@
 				5E24CD5B3084FE3E8A3E85EC /* CheckoutTheme.swift in Sources */,
 				AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */,
 				C75A11E6AEEFC2B7A29BBC04 /* TestScenario.swift in Sources */,
+				E130C3D72AFD19EA00AC3E7C /* URL+NetworkHeaders.swift in Sources */,
 				FD5ADBCFA70DB606339F3AF2 /* TransactionResponse.swift in Sources */,
 				8B51ABC1C475342A047D5FA6 /* Networking+Models.swift in Sources */,
 				53E3182FFC4E5F05D866CFAE /* Networking.swift in Sources */,
