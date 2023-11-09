@@ -237,8 +237,8 @@ platform :ios do
 
     version_name = get_appetize_public_key(build_type, pr_number, github_run_id, github_run_number)
     
-    set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: current_build)
-    set_info_plist_value(path: info_plist_path, key: "CFBundleShortVersionString", value: "#{current_build}")
+    set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: version_name)
+    set_info_plist_value(path: info_plist_path, key: "CFBundleShortVersionString", value: "#{version_name}")
   end
 
   require 'cocoapods-core'
