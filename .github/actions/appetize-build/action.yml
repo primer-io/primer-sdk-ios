@@ -4,12 +4,49 @@ inputs:
   build_type:
     description: nightly, release, or preview
     required: true
-  secrets:
-    description: Secrets
+  ssh-private-key:
+    description: SSH private key
     required: true
-  github:
-    description: Github
+  known-hosts:
+    description: Known Hosts
     required: true
+  match-password:
+    description: Match password
+    required: true
+  match-git-private-key:
+    description: Match git private key
+    required: true
+  fastlane-password:
+    description: Fastlane password
+    required: true
+  fastlane-session:
+    description: Fastlane session
+    required: true
+  match-keychain-name:
+    description: Match keychain name
+    required: true
+  match-keychain-password:
+    description: Match keychain password
+    required: true
+  appetize-api-token:
+    description: Appetize API token
+    required: true
+  source-branch:
+    description: Source branch
+    required: true
+  pr-number:
+    description: PR number
+    required: true
+  github-token:
+    description: GitHub token
+    required: true
+  slack-channel:
+    description: Slack channel
+    required: true
+  slack-reporter-token:
+    description: Slack reporter token
+    required: true
+  
 runs:
   using: "composite"
   steps:
@@ -20,12 +57,12 @@ runs:
     - name: Install SSH key
       uses: shimataro/ssh-key-action@v2
       with:
-        key: ${{ secrets.SSH_KEY }}
+        key: ${{ inputs.ssh-private-key }}
         name: id_rsa_github_actions
-        known_hosts: ${{ secrets.KNOWN_HOSTS }}
+        known_hosts: ${{ inputs.known-hosts }}
     - uses: webfactory/ssh-agent@v0.7.0
       with:
-        ssh-private-key: ${{ secrets.SSH_KEY }}
+        ssh-private-key: ${{ inputs.ssh-private-key }}
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: "3.2"
@@ -42,21 +79,21 @@ runs:
       run: |
         bundle exec fastlane appetize_build_and_upload
       env:
-        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-        MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-        FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-        FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
-        MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
-        MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-        APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
-        SOURCE_BRANCH: ${{ github.head_ref }}
-        PR_NUMBER: ${{ github.event.pull_request.number }}
+        MATCH_PASSWORD: ${{ inputs.match-password }}
+        MATCH_GIT_PRIVATE_KEY: ${{ inputs.ssh-private-key }}
+        FASTLANE_PASSWORD: ${{ inputs.fastlane-password }}
+        FASTLANE_SESSION: ${{ inputs.fastlane-session }}
+        MATCH_KEYCHAIN_NAME: ${{ inputs.match-keychain-name }}
+        MATCH_KEYCHAIN_PASSWORD: ${{ inputs.match-password }}
+        APPETIZE_API_TOKEN: ${{ inputs.appetize-api-token }}
+        SOURCE_BRANCH: ${{ inputs.source-branch }}
+        PR_NUMBER: ${{ inputs.pr-number }}
         BUILD_TYPE: ${{ inputs.build_type }}
     - uses: peter-evans/find-comment@v2
       if: ${{ success() }}
       id: find_comment
       with:
-        issue-number: ${{ github.event.pull_request.number }}
+        issue-number: ${{ inputs.pr-number }}
         body-includes: Appetize link
 
     - uses: peter-evans/create-or-update-comment@v2
@@ -66,33 +103,33 @@ runs:
           Appetize link: ${{ env.APPETIZE_APP_URL }}
         edit-mode: replace
         comment-id: ${{ steps.find_comment.outputs.comment-id }}
-        issue-number: ${{ github.event.pull_request.number }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+        issue-number: ${{ inputs.pr-number }}
+        token: ${{ inputs.github-token }}
         
     - name: Create Slack Success Summary Report
-      if: ${{ success() && github.event.pull_request.base.ref == 'master'  }}
+      if: ${{ success() && inputs.base-ref == 'master'  }}
       shell: bash
       run: |
-        node Report\ Scripts/appetize-success-report-script.js createAppetizeSummaryReport ${{ github.head_ref || github.ref_name }} ${{ inputs.build_type }}
+        node Report\ Scripts/appetize-success-report-script.js createAppetizeSummaryReport ${{ inputs.source-branch }} ${{ inputs.build_type }}
     - name: Slack Success Notification
-      if: ${{ success() && github.event.pull_request.base.ref == 'master' }}
+      if: ${{ success() && inputs.base-ref == 'master' }}
       uses: slackapi/slack-github-action@v1.23.0
       with:
-        channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+        channel-id: ${{ inputs.slack-channel }}
         payload-file-path: '/var/tmp/appetize-success-link-summary.json'
       env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+        SLACK_BOT_TOKEN: ${{ inputs.slack-reporter-token }}
 
     - name: Create Slack Failure Summary Report
-      if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
+      if: ${{ failure() && inputs.base-ref == 'master' }}
       shell: bash
       run: |
-        node Report\ Scripts/appetize-failure-report-script.js createAppetizeSummaryReport ${{ github.head_ref || github.ref_name }}
+        node Report\ Scripts/appetize-failure-report-script.js createAppetizeSummaryReport ${{ inputs.source-branch }}
     - name: Slack Notification
-      if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
+      if: ${{ failure() && inputs.base-ref == 'master' }}
       uses: slackapi/slack-github-action@v1.23.0
       with:
-        channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+        channel-id: ${{ inputs.slack-channel }}
         payload-file-path: '/var/tmp/appetize-failure-link-summary.json'
       env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+        SLACK_BOT_TOKEN: ${{ inputs.slack-reporter-token }}

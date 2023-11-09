@@ -27,8 +27,21 @@ jobs:
         uses: ./.github/actions/appetize-build
         with:
           build_type: 'nightly'
-          secrets: secrets
-          github: github
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          known-hosts: ${{ secrets.KNOWN_HOSTS }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
+          fastlane-session: ${{ secrets.FASTLANE_SESSION }}
+          fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
+          match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          appetize-api-token: ${{ secrets.APPETIZE_API_TOKEN }}
+          source-branch: ${{ github.head_ref || github.ref_name }}
+          base-ref: ""
+          pr-number: ""
+          slack-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+          slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
   build-and-upload-to-firebase-and-browserstack:
     runs-on: macos-13
     timeout-minutes: 20
