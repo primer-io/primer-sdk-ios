@@ -357,16 +357,16 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     
 }
 
-extension Array<CardNetwork> {
+extension Set<CardNetwork> {
     
     /// A list of card networks that the merchant supports
-    static var supportedCardNetworks: [Element] {
+    static var supportedCardNetworks: Self {
         return PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.supportedCardNetworks
     }
     
     /// A list of all card networks, used by default when a merchant does not specify the networks they support
     /// Also used to configure suppoted networks for Apple Pay
-    static var allCardNetworks: [Element] {
-        return Element.allCases
+    static var allCardNetworks: Self {
+        return Set(Element.allCases)
     }
 }

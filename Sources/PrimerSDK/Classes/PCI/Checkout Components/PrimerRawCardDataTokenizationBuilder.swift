@@ -64,8 +64,8 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     /// Indicates whether or not one of the co-badged networks is present in the merchant config
     /// If it is present, the remote card validation service will be called during card validation
     var isCoBadgedCardsEnabled: Bool {
-        let supportedCardNetworks: [CardNetwork] = .supportedCardNetworks
-        return supportedCardNetworks.contains{ CardNetwork.coBadgedNetworks.contains($0) }
+        let supportedCardNetworks: Set<CardNetwork> = .supportedCardNetworks
+        return !supportedCardNetworks.isDisjoint(with: CardNetwork.coBadgedNetworks)
     }
     
     var requiredInputElementTypes: [PrimerInputElementType] {

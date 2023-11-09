@@ -11,7 +11,7 @@ import XCTest
 
 final class CardNetworkTests: XCTestCase {
 
-    typealias CardNetworks = Array<CardNetwork>
+    typealias CardNetworks = Set<CardNetwork>
     
     override func tearDown() {
         PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init()
@@ -21,22 +21,22 @@ final class CardNetworkTests: XCTestCase {
     func testCardNetworksAvailable() throws {
         // Default value
         PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init()
-        XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
-        XCTAssertEqual(CardNetworks.supportedCardNetworks, CardNetwork.allCases)
+        XCTAssertEqual(CardNetworks.allCardNetworks, Set(CardNetwork.allCases))
+        XCTAssertEqual(CardNetworks.supportedCardNetworks, Set(CardNetwork.allCases))
         
         // w/ CB
         PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [.cartesBancaires])
-        XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
+        XCTAssertEqual(CardNetworks.allCardNetworks, Set(CardNetwork.allCases))
         XCTAssertEqual(CardNetworks.supportedCardNetworks, [.cartesBancaires])
         
         // w/ mixed
         PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [.visa, .masterCard, .amex])
-        XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
+        XCTAssertEqual(CardNetworks.allCardNetworks, Set(CardNetwork.allCases))
         XCTAssertEqual(CardNetworks.supportedCardNetworks, [.visa, .masterCard, .amex])
         
         // w/ none
         PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [])
-        XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
+        XCTAssertEqual(CardNetworks.allCardNetworks, Set(CardNetwork.allCases))
         XCTAssertEqual(CardNetworks.supportedCardNetworks, [])
     }
 }
