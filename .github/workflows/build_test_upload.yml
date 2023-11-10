@@ -125,7 +125,7 @@ jobs:
         if: ${{ success() }}
         with:
           body: |
-            Appetize link: ${{ env.APPETIZE_APP_URL }}
+            Appetize link: ${{ steps.appetize-upload.outputs.appetize-url }}
           edit-mode: replace
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
