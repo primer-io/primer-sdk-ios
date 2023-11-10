@@ -240,6 +240,10 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
         case .nolPay:
             categories.append(PrimerPaymentMethodManagerCategory.nolPay)
+
+        case .adyenIDeal:
+            categories.append(PrimerPaymentMethodManagerCategory.formWithRedirect)
+
         default:
             break
         }
