@@ -52,6 +52,10 @@ inputs:
   pr-number:
     description: PR number
     required: true
+outputs:
+  appetize-url:
+    description: Appetize URL
+    value: ${{ env.APPETIZE_APP_URL }}
 runs:
   using: "composite"
   steps:
@@ -95,21 +99,6 @@ runs:
         BUILD_TYPE: ${{ inputs.build_type }}
         GITHUB_RUN_ID: ${{ inputs.github-run-id }}
         PR_NUMBER: ${{ inputs.pr-number}}
-    - uses: peter-evans/find-comment@v2
-      if: ${{ success() }}
-      id: find_comment
-      with:
-        issue-number: ${{ inputs.pr-number }}
-        body-includes: Appetize link
-    - uses: peter-evans/create-or-update-comment@v2
-      if: ${{ success() }}
-      with:
-        body: |
-          Appetize link: ${{ env.APPETIZE_APP_URL }}
-        edit-mode: replace
-        comment-id: ${{ steps.find_comment.outputs.comment-id }}
-        issue-number: ${{ inputs.pr-number }}
-        token: ${{ inputs.github-token }}
     - name: Create Slack Success Summary Report
       if: ${{ success()  }}
       shell: bash

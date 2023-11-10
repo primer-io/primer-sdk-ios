@@ -145,7 +145,8 @@ platform :ios do
       archive_path: app_output_archive_path,
       # Build speed optimisation
       skip_package_ipa: options[:skip_package_ipa] || true,
-      skip_package_pkg: true
+      skip_package_pkg: true,
+      skip_package_dependencies_resolution: true
     )
   end
   

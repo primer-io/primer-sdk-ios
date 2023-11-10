@@ -101,3 +101,18 @@ jobs:
           slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           github-run-id: ${{ github.run_id }}
           run-tests: true
+      - uses: peter-evans/find-comment@v2
+        if: ${{ success()  }}
+        id: find_comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: Appetize link
+      - uses: peter-evans/create-or-update-comment@v2
+        if: ${{ success() }}
+        with:
+          body: |
+            Appetize link: ${{ steps.appetize-upload.outputs.appetize-url }}
+          edit-mode: replace
+          comment-id: ${{ steps.find_comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          token: ${{ secrets.GITHUB_TOKEN }}
