@@ -246,7 +246,7 @@ platform :ios do
   require 'cocoapods-core'
 
   private_lane :get_sdk_version do
-    file_path = "PrimerSDK.podspec"
+    file_path = "../PrimerSDK.podspec"
     spec = Pod::Specification.from_file(file_path)
     spec.version.to_s
   end
