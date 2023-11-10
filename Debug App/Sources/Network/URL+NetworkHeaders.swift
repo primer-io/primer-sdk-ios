@@ -9,6 +9,6 @@
 import Foundation
 extension URL {
     static func requestSessionHTTPHeaders(useNewWorkflows: Bool) -> [String: String]? {
-        useNewWorkflows ? ["Legacy-Wrkflows": "false"] : nil
+        useNewWorkflows ? ["Legacy-Workflows": "false"] : nil
     }
 }
