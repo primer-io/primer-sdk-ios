@@ -69,7 +69,6 @@ jobs:
   build-and-upload-to-appetize:
     needs: danger
     runs-on: macos-13
-    timeout-minutes: 20
     name: "Build and upload app to Appetize"
     steps:
       - name: Cancel previous jobs
