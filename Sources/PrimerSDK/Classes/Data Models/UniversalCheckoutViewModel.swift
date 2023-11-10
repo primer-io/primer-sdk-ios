@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 6/8/21.
 //
 
-
-
 import Foundation
 
 internal protocol UniversalCheckoutViewModelProtocol {
@@ -36,5 +34,3 @@ internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol, L
         return AppState.current.selectedPaymentMethod
     }
 }
-
-

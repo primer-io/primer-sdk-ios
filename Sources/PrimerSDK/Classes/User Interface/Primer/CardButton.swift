@@ -5,8 +5,6 @@
 //  Created by Carl Eriksson on 26/01/2021.
 //
 
-
-
 import UIKit
 
 internal class CardButton: PrimerButton {
@@ -29,7 +27,7 @@ internal class CardButton: PrimerButton {
     func render(model: CardButtonViewModel?, showIcon: Bool = true) {
         guard let model = model else { return }
         accessibilityIdentifier = "saved_payment_method_button"
-        
+
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         backgroundColor = theme.paymentMethodButton.color(for: .enabled)
 
@@ -67,11 +65,11 @@ internal class CardButton: PrimerButton {
 
     func toggleBorder(isSelected: Bool, isError: Bool = false) {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        if (isError) {
+        if isError {
             border.layer.borderColor = theme.colors.error.cgColor
             return
         }
-        if (isSelected) {
+        if isSelected {
             border.layer.borderWidth = theme.paymentMethodButton.border.width
             border.layer.borderColor = theme.paymentMethodButton.color(for: .selected).cgColor
         } else {
@@ -84,7 +82,7 @@ internal class CardButton: PrimerButton {
         iconView = UIImageView(image: image)
         iconView.clipsToBounds = true
         iconView.contentMode = .scaleAspectFit
-        
+
         addSubview(iconView)
         iconView.translatesAutoresizingMaskIntoConstraints = false
         iconView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
@@ -177,7 +175,7 @@ internal class CardButton: PrimerButton {
 
     private func addBorder() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
+
         border = PrimerView()
         border.layer.borderColor = theme.paymentMethodButton.border.color(for: .enabled).cgColor
         border.layer.borderWidth = theme.paymentMethodButton.border.width
@@ -228,7 +226,7 @@ internal class CardButton: PrimerButton {
 
     func addSeparatorLine() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
+
         let line = UIView()
         line.backgroundColor = theme.paymentMethodButton.border.color(for: .disabled)
         line.translatesAutoresizingMaskIntoConstraints = false
@@ -239,5 +237,3 @@ internal class CardButton: PrimerButton {
         line.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     }
 }
-
-

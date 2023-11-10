@@ -5,27 +5,25 @@
 //  Created by Evangelos on 13/12/21.
 //
 
-
-
 import Foundation
 
 class Keychain {
-    
+
     enum KeychainError: Error {
         // Attempted read for an item that does not exist.
         case itemNotFound
-        
+
         // Attempted save to override an existing item.
         // Use update instead of save to update existing items
         case duplicateItem
-        
+
         // A read of an item in any format other than Data
         case invalidItemFormat
-        
+
         // Any operation result status than errSecSuccess
         case unexpectedStatus(OSStatus)
     }
-    
+
     static func save(password: Data, service: String, account: String) throws {
         let query: [String: AnyObject] = [
             // kSecAttrService,  kSecAttrAccount, and kSecClass
@@ -33,11 +31,11 @@ class Keychain {
             kSecAttrService as String: service as AnyObject,
             kSecAttrAccount as String: account as AnyObject,
             kSecClass as String: kSecClassGenericPassword,
-            
+
             // kSecValueData is the item value to save
             kSecValueData as String: password as AnyObject
         ]
-        
+
         // SecItemAdd attempts to add the item identified by
         // the query to keychain
         let status = SecItemAdd(
@@ -59,7 +57,7 @@ class Keychain {
             throw KeychainError.unexpectedStatus(status)
         }
     }
-    
+
     static func readPassword(service: String, account: String) throws -> Data {
         let query: [String: AnyObject] = [
             // kSecAttrService,  kSecAttrAccount, and kSecClass
@@ -67,7 +65,7 @@ class Keychain {
             kSecAttrService as String: service as AnyObject,
             kSecAttrAccount as String: account as AnyObject,
             kSecClass as String: kSecClassGenericPassword,
-            
+
             // kSecMatchLimitOne indicates keychain should read
             // only the most recent item matching this query
             kSecMatchLimit as String: kSecMatchLimitOne,
@@ -92,7 +90,7 @@ class Keychain {
         guard status != errSecItemNotFound else {
             throw KeychainError.itemNotFound
         }
-        
+
         // Any status other than errSecSuccess indicates the
         // read operation failed.
         guard status == errSecSuccess else {
@@ -108,7 +106,7 @@ class Keychain {
 
         return password
     }
-    
+
     static func deletePassword(service: String, account: String) throws {
         let query: [String: AnyObject] = [
             // kSecAttrService,  kSecAttrAccount, and kSecClass
@@ -130,5 +128,3 @@ class Keychain {
         }
     }
 }
-
-

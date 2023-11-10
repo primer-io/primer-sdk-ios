@@ -1,7 +1,6 @@
 import struct Foundation.TimeInterval
 import Dispatch
 
-
 /// Extend DispatchWorkItem to be cancellable
 extension DispatchWorkItem: Cancellable { }
 

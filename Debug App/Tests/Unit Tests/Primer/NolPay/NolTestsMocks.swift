@@ -11,7 +11,6 @@ import XCTest
 @testable import PrimerSDK
 import PrimerNolPaySDK
 
-
 class MockPrimerNolPay: PrimerNolPayProtocol {
 
     // Mock responses for the mock methods
@@ -80,7 +79,6 @@ class MockValidationDelegate: PrimerHeadlessValidatableDelegate {
     var wasValidatedCalled = false
     var validationErrorsReceived: [PrimerValidationError] = []
 }
-
 
 class MockStepDelegate: PrimerHeadlessSteppableDelegate {
     var stepReceived: PrimerHeadlessStep?

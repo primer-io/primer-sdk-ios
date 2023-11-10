@@ -1,4 +1,3 @@
-
 extension Promise: CustomStringConvertible {
     /// - Returns: A description of the state of this promise.
     internal var description: String {

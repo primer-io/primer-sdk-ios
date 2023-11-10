@@ -5,8 +5,6 @@
 //  Created by Evangelos on 13/1/22.
 //
 
-
-
 import Foundation
 
 typealias DummySuccess = SuccessResponse
@@ -14,5 +12,3 @@ typealias DummySuccess = SuccessResponse
 internal struct SuccessResponse: Codable {
     let success: Bool
 }
-
-

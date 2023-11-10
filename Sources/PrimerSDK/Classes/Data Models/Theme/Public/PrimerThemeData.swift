@@ -1,5 +1,3 @@
-
-
 import UIKit
 
 public class PrimerThemeData {
@@ -10,7 +8,7 @@ public class PrimerThemeData {
     public var text: TextStyle
     public var buttons: ButtonStyle
     public var input: Input
-    
+
     public init(
         colors: ColorSwatch = ColorSwatch(),
         dimensions: Dimensions = Dimensions(),
@@ -28,11 +26,11 @@ public class PrimerThemeData {
         self.buttons = buttons
         self.input = input
     }
-    
+
     public class ButtonStyle {
         public var main: Button
         public var paymentMethod: Button
-        
+
         public init(
             main: Button = Button(),
             paymentMethod: Button = Button()
@@ -40,7 +38,7 @@ public class PrimerThemeData {
             self.main = main
             self.paymentMethod = paymentMethod
         }
-        
+
         internal func theme(for type: ButtonType, with data: PrimerThemeData) -> ButtonTheme {
             switch type {
             case .main:
@@ -90,7 +88,7 @@ public class PrimerThemeData {
             }
         }
     }
-    
+
     public class Button {
         public var defaultColor: UIColor?
         public var disabledColor: UIColor?
@@ -121,12 +119,12 @@ public class PrimerThemeData {
             self.iconColor = iconColor
         }
     }
-    
+
     public class View {
         public var backgroundColor: UIColor?
         public var cornerRadius: CGFloat?
         public var safeMargin: CGFloat?
-        
+
         public init(
             backgroundColor: UIColor? = nil,
             cornerRadius: CGFloat? = nil,
@@ -136,7 +134,7 @@ public class PrimerThemeData {
             self.cornerRadius = cornerRadius
             self.safeMargin = safeMargin
         }
-        
+
         internal func theme(for viewType: ViewType, with data: PrimerThemeData) -> ViewTheme {
             switch viewType {
             case .blurredBackground:
@@ -154,7 +152,7 @@ public class PrimerThemeData {
             }
         }
     }
-    
+
     public class TextStyle {
         public var body: Text
         public var title: Text
@@ -178,7 +176,7 @@ public class PrimerThemeData {
             self.system = system
             self.error = error
         }
-        
+
         internal func theme(for type: TextType, with data: PrimerThemeData) -> TextTheme {
             switch type {
             case .body:
@@ -214,7 +212,7 @@ public class PrimerThemeData {
             }
         }
     }
-    
+
     public class Text {
         public var defaultColor: UIColor?
         public var fontSize: Int?
@@ -224,7 +222,7 @@ public class PrimerThemeData {
             self.fontSize = fontsize
         }
     }
-    
+
     public class Border {
         public var defaultColor: UIColor?
         public var selectedColor: UIColor?
@@ -243,7 +241,7 @@ public class PrimerThemeData {
             self.width = width
         }
     }
-    
+
     public class Input {
         public var backgroundColor: UIColor?
         public var text: Text
@@ -261,7 +259,7 @@ public class PrimerThemeData {
             self.border = border
             self.cornerRadius = cornerRadius
         }
-        
+
         internal func theme(with data: PrimerThemeData) -> InputTheme {
             InputTheme(
                 color: backgroundColor ?? data.colors.light,
@@ -290,7 +288,7 @@ public class PrimerThemeData {
             )
         }
     }
-    
+
     public class ColorSwatch {
         public var primary: UIColor
         public var error: UIColor
@@ -298,7 +296,7 @@ public class PrimerThemeData {
         public var light: UIColor
         public var gray: UIColor
         public var lightGray: UIColor
-        
+
         public init(
             primary: UIColor = PrimerColors.blue,
             error: UIColor = PrimerColors.red,
@@ -315,11 +313,11 @@ public class PrimerThemeData {
             self.lightGray = lightGray
         }
     }
-    
+
     public class Dimensions {
         public var cornerRadius: CGFloat
         public var safeArea: CGFloat
-        
+
         public init(
             cornerRadius: CGFloat = PrimerDimensions.cornerRadius,
             safeArea: CGFloat = PrimerDimensions.safeArea
@@ -329,5 +327,3 @@ public class PrimerThemeData {
         }
     }
 }
-
-

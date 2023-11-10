@@ -8,7 +8,7 @@
 import Foundation
 
 struct VersionUtils {
-    
+
     /**
      Returns the version string in the format `"major.minor.patch"`
      
@@ -19,7 +19,7 @@ struct VersionUtils {
         if let reactNativeVersion = Primer.shared.integrationOptions?.reactNativeVersion {
             return reactNativeVersion
         }
-    
+
         return PrimerSDKVersion
     }
 }

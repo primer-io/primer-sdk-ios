@@ -1,9 +1,7 @@
-
-
 import Foundation
 
 struct CardButtonViewModel {
-    
+
     let network, cardholder, last4, expiry: String
     let imageName: ImageName
     let paymentMethodType: PaymentInstrumentType
@@ -15,5 +13,3 @@ struct CardButtonViewModel {
         return tmpNetwork["surcharge"] as? Int
     }
 }
-
-

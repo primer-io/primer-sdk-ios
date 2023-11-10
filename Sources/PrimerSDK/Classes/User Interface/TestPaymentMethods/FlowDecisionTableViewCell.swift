@@ -5,23 +5,21 @@
 //  Created by Dario Carlomagno on 29/05/22.
 //
 
-
-
 import UIKit
 
 class FlowDecisionTableViewCell: UITableViewCell {
-    
+
     static var identifier: String = "FlowDecisionTableViewCell"
-        
+
     internal private(set) var decision: PrimerTestPaymentMethodSessionInfo.FlowDecision!
     private let cellInternalPadding: CGFloat = 4
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+
         self.preservesSuperviewLayoutMargins = false
         self.contentView.preservesSuperviewLayoutMargins = false
         self.selectionStyle = .none
-        
+
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         backgroundColor = theme.view.backgroundColor
         layer.cornerRadius = 8
@@ -29,11 +27,11 @@ class FlowDecisionTableViewCell: UITableViewCell {
         clipsToBounds = true
         textLabel?.font = .systemFont(ofSize: 16)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override var frame: CGRect {
         get {
             return super.frame
@@ -45,7 +43,7 @@ class FlowDecisionTableViewCell: UITableViewCell {
             super.frame = frame
         }
     }
-    
+
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         if selected {
@@ -59,12 +57,10 @@ class FlowDecisionTableViewCell: UITableViewCell {
 }
 
 extension FlowDecisionTableViewCell {
-    
+
     func configure(decision: PrimerTestPaymentMethodSessionInfo.FlowDecision) {
         self.decision = decision
         textLabel?.text = decision.displayFlowTitle
         accessibilityIdentifier = "decision_\(decision)"
     }
 }
-
-

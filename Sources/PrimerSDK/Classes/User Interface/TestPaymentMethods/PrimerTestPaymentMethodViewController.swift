@@ -5,32 +5,31 @@
 //  Created by Dario Carlomagno on 24/05/22.
 //
 
-
 import UIKit
 
 class PrimerTestPaymentMethodViewController: PrimerFormViewController {
-    
+
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private var viewModel: PrimerTestPaymentMethodTokenizationViewModel!
-    
+
     deinit {
         viewModel.cancel()
         viewModel = nil
     }
-    
+
     init(viewModel: PrimerTestPaymentMethodTokenizationViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         self.titleImage = viewModel.uiModule.invertedLogo
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         let viewEvent = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -51,7 +50,7 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
 }
 
 extension PrimerTestPaymentMethodViewController {
-    
+
     private func setupView() {
         view.backgroundColor = theme.view.backgroundColor
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -63,5 +62,3 @@ extension PrimerTestPaymentMethodViewController {
         viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
     }
 }
-
-

@@ -121,4 +121,3 @@ private extension RangeReplaceableCollection where Self: StringProtocol {
         return repeatElement(element, count: Swift.max(0, length-count)) + suffix(Swift.max(count, count-length))
     }
 }
-

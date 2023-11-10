@@ -4,12 +4,12 @@ import Foundation
 /// executions at once.
 
 internal final class ConcurrencyLimitedDispatcher: Dispatcher {
-    
+
     let queue: Dispatcher
     let serializer: DispatchQueue = DispatchQueue(label: "CLD serializer")
-    
+
     let semaphore: DispatchSemaphore
-    
+
     /// A `PromiseKit` `Dispatcher` that allows no more than X simultaneous
     /// executions at once.
     ///
@@ -36,6 +36,5 @@ internal final class ConcurrencyLimitedDispatcher: Dispatcher {
             }
         }
     }
-    
-}
 
+}

@@ -1,5 +1,3 @@
-
-
 import UIKit
 
 class HeaderFooterLabelView: UITableViewHeaderFooterView {
@@ -23,7 +21,7 @@ class HeaderFooterLabelView: UITableViewHeaderFooterView {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = labelNumberOfLines
         label.font = .systemFont(ofSize: systemFontSize)
-        
+
         label.pin(view: containerView, leading: 0, top: 0, trailing: 0, bottom: -padding)
         containerView.pin(view: contentView)
     }
@@ -34,10 +32,8 @@ class HeaderFooterLabelView: UITableViewHeaderFooterView {
 }
 
 extension HeaderFooterLabelView {
-    
+
     func configure(text: String) {
         label.text = text
     }
 }
-
-

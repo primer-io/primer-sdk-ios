@@ -5,21 +5,19 @@
 //  Created by Evangelos on 13/12/21.
 //
 
-
-
 import Foundation
 
 class Analytics {
-    
+
     static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics", qos: .utility)
     static var apiClient: PrimerAPIClientProtocol?
-    
+
     struct Event: Codable, Equatable {
-        
+
         static func == (lhs: Analytics.Event, rhs: Analytics.Event) -> Bool {
             return lhs.localId == rhs.localId
         }
-                
+
         let analyticsUrl: String?
         let localId: String
         let appIdentifier: String?
@@ -38,11 +36,11 @@ class Analytics {
         let sdkPaymentHandling: PrimerPaymentHandling?
         let integrationType: String
         let minDeploymentTarget: String
-        
+
         init(eventType: Analytics.Event.EventType, properties: AnalyticsEventProperties?) {
             self.analyticsUrl = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2
             self.localId = String.randomString(length: 32)
-            
+
             self.appIdentifier = Bundle.main.bundleIdentifier
             self.checkoutSessionId = PrimerInternal.shared.checkoutSessionId
             self.clientSessionId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId
@@ -58,14 +56,14 @@ class Analytics {
             self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
             self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
             self.minDeploymentTarget = Bundle.main.minimumOSVersion ?? "Unknown"
-            
+
 #if COCOAPODS
             self.integrationType = "COCOAPODS"
 #else
             self.integrationType = "SPM"
 #endif
         }
-        
+
         private enum CodingKeys: String, CodingKey {
             case analyticsUrl,
                  localId,
@@ -86,7 +84,7 @@ class Analytics {
                  integrationType,
                  minDeploymentTarget
         }
-        
+
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try? container.encode(analyticsUrl, forKey: .analyticsUrl)
@@ -105,13 +103,13 @@ class Analytics {
             try? container.encode(sdkIntegrationType?.rawValue, forKey: .sdkIntegrationType)
             try? container.encode(integrationType, forKey: .integrationType)
             try? container.encode(minDeploymentTarget, forKey: .minDeploymentTarget)
-            
+
             if sdkPaymentHandling == .auto {
                 try? container.encode("AUTO", forKey: .sdkPaymentHandling)
             } else if sdkPaymentHandling == .manual {
                 try? container.encode("MANUAL", forKey: .sdkPaymentHandling)
             }
-            
+
             if let crashEventProperties = properties as? CrashEventProperties {
                 try? container.encode(crashEventProperties, forKey: .properties)
             } else if let messageEventProperties = properties as? MessageEventProperties {
@@ -128,7 +126,7 @@ class Analytics {
                 try? container.encode(uiEventProperties, forKey: .properties)
             }
         }
-        
+
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.analyticsUrl = try container.decodeIfPresent(String.self, forKey: .analyticsUrl)
@@ -146,13 +144,13 @@ class Analytics {
             self.sdkVersion = try container.decode(String.self, forKey: .sdkVersion)
             self.integrationType = try container.decode(String.self, forKey: .integrationType)
             self.minDeploymentTarget = try container.decode(String.self, forKey: .minDeploymentTarget)
-            
+
             if let sdkIntegrationTypeStr = try? container.decode(String.self, forKey: .sdkIntegrationType) {
                 self.sdkIntegrationType = PrimerSDKIntegrationType(rawValue: sdkIntegrationTypeStr)
             } else {
                 self.sdkIntegrationType = nil
             }
-            
+
             if let sdkPaymentHandlingStr = try? container.decode(String.self, forKey: .sdkPaymentHandling) {
                 if sdkPaymentHandlingStr == "AUTO" {
                     self.sdkPaymentHandling = .auto
@@ -164,7 +162,7 @@ class Analytics {
             } else {
                 self.sdkPaymentHandling = nil
             }
-            
+
             if let crashEventProperties = (try? container.decode(CrashEventProperties?.self, forKey: .properties)) {
                 self.properties = crashEventProperties
             } else if let messageEventProperties = (try? container.decode(MessageEventProperties?.self, forKey: .properties)) {
@@ -185,5 +183,3 @@ class Analytics {
         }
     }
 }
-
-
