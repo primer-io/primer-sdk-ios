@@ -12,6 +12,7 @@ import UIKit
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
+var useNewWorkflows = true
 
 class MerchantSessionAndSettingsViewController: UIViewController {
     
@@ -26,6 +27,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var environmentStackView: UIStackView!
     @IBOutlet weak var testParamsGroupStackView: UIStackView!
     @IBOutlet weak var apiKeyStackView: UIStackView!
+    @IBOutlet weak var useNewWorkflowsStackView: UIStackView!
     @IBOutlet weak var clientTokenStackView: UIStackView!
     @IBOutlet weak var sdkSettingsStackView: UIStackView!
     @IBOutlet weak var orderStackView: UIStackView!
@@ -63,7 +65,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var disableSuccessScreenSwitch: UISwitch!
     @IBOutlet weak var disableErrorScreenSwitch: UISwitch!
     @IBOutlet weak var disableInitScreenSwitch: UISwitch!
-    
+
     
     // MARK: Order Inputs
     
@@ -278,6 +280,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             orderStackView.isHidden = false
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
+            useNewWorkflowsStackView.isHidden = false
             
         case .clientToken:
             environmentStackView.isHidden = false
@@ -288,6 +291,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             orderStackView.isHidden = true
             customerStackView.isHidden = true
             surchargeGroupStackView.isHidden = true
+            useNewWorkflowsStackView.isHidden = true
             
         case .testScenario:
             environmentStackView.isHidden = true
@@ -298,6 +302,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             orderStackView.isHidden = false
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
+            useNewWorkflowsStackView.isHidden = true
             
             
             testParamsStackView.isHidden = (selectedTestScenario == nil)
@@ -428,6 +433,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     
     @IBAction func surchargeSwitchValueChanged(_ sender: UISwitch) {
         surchargeStackView.isHidden = !sender.isOn
+    }
+
+    @IBAction func useNewWorkflowsSwitchValueChanged(_ sender: UISwitch) {
+        useNewWorkflows = sender.isOn
     }
     
     @IBAction func primerSDKButtonTapped(_ sender: Any) {

@@ -80,7 +80,7 @@ class Networking {
         if let customDefinedApiKey = customDefinedApiKey {
             request.addValue(customDefinedApiKey, forHTTPHeaderField: "x-api-key")
         }
-        
+
         if let headers = headers {
             // We have a dedicated argument that takes x-api-key into account
             // in case a custom one gets defined before SDK initialization
@@ -274,7 +274,7 @@ class Networking {
             apiVersion: .v2_2,
             url: url,
             method: .post,
-            headers: nil,
+            headers: URL.requestSessionHTTPHeaders(useNewWorkflows: useNewWorkflows),
             queryParameters: nil,
             body: bodyData
         ) { result in
