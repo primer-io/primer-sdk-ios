@@ -112,16 +112,16 @@ runs:
         payload-file-path: '/var/tmp/appetize-success-link-summary.json'
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack-reporter-token }}
-    # - name: Create Slack Failure Summary Report
-    #   if: ${{ failure() }}
-    #   shell: bash
-    #   run: |
-    #     node Report\ Scripts/appetize-failure-report-script.js createAppetizeSummaryReport ${{ inputs.source-branch }}
-    # - name: Slack Notification
-    #   if: ${{ failure() }}
-    #   uses: slackapi/slack-github-action@v1.23.0
-    #   with:
-    #     channel-id: ${{ inputs.slack-channel }}
-    #     payload-file-path: '/var/tmp/appetize-failure-link-summary.json'
-    #   env:
-    #     SLACK_BOT_TOKEN: ${{ inputs.slack-reporter-token }}
+    - name: Create Slack Failure Summary Report
+      if: ${{ failure() }}
+      shell: bash
+      run: |
+        node Report\ Scripts/appetize-failure-report-script.js createAppetizeSummaryReport ${{ inputs.source-branch }}
+    - name: Slack Notification
+      if: ${{ failure() }}
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        channel-id: ${{ inputs.slack-channel }}
+        payload-file-path: '/var/tmp/appetize-failure-link-summary.json'
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-reporter-token }}
