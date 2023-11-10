@@ -6,7 +6,6 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
 #if canImport(PrimerIPay88MYSDK)
 import XCTest
 @testable import PrimerIPay88MYSDK
@@ -245,5 +244,4 @@ class IPay88Tests: XCTestCase {
 #endif
 }
 
-#endif
 #endif

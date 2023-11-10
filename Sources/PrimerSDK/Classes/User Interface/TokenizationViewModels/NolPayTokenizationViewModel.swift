@@ -4,8 +4,6 @@
 //
 //  Created by Boris on 28.8.23..
 //
-#if canImport(UIKit)
-
 import Foundation
 import SafariServices
 import UIKit
@@ -269,4 +267,3 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         // no-op
     }
 }
-#endif
