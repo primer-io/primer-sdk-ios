@@ -3,7 +3,7 @@ name: Run UI Tests and publish nightly build
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 1 * * 0-4'
+    - cron: '0 1 * * 1-5'
   push:
     branches:
       - 'release/**'
