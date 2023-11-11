@@ -62,7 +62,7 @@ runs:
     - name: Select Xcode Version
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '15.0'
+        xcode-version: latest-stable
     - name: Install SSH key
       uses: shimataro/ssh-key-action@v2
       with:
