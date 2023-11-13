@@ -1,3 +1,9 @@
+## 2.18.1 (2023-11-13)
+
+### Fix
+
+- Fix state machine to allow going back in steps (#736)
+
 ## 2.18.0 (2023-11-02)
 
 ### Feat
