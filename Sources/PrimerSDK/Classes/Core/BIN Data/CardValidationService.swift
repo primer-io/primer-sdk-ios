@@ -38,19 +38,29 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         
     func validateCardNetworks(withCardNumber cardNumber: String) {
         let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
-        guard !sanitizedCardNumber.isEmpty, sanitizedCardNumber != mostRecentCardNumber else {
+        // Don't validate empty string
+        guard !sanitizedCardNumber.isEmpty else {
             return
         }
+        // Don't validate if the BIN (first eight digits) hasn't changed
+        if let mostRecentCardNumber = mostRecentCardNumber, mostRecentCardNumber.prefix(8) == cardNumber.prefix(8) {
+            return
+        }
+        let isFirstTimeRemoteValidation = mostRecentCardNumber == nil
         mostRecentCardNumber = sanitizedCardNumber
         
         let cardState = PrimerCardNumberEntryState(cardNumber: sanitizedCardNumber)
-        guard sanitizedCardNumber.count >= 6 else {
+        guard sanitizedCardNumber.count >= 8 else {
             useLocalValidation(withCardState: cardState)
             return
         }
         
-        debouncer.debounce { [weak self] in
-            self?.useRemoteValidation(withCardState: cardState)
+        if isFirstTimeRemoteValidation {
+            useRemoteValidation(withCardState: cardState)
+        } else {
+            debouncer.debounce { [weak self] in
+                self?.useRemoteValidation(withCardState: cardState)
+            }
         }
     }
     
