@@ -2,7 +2,7 @@
 
 ### Fix
 
-- Fix state machine to allow going back in steps (#736)
+- Fix Nol Pay state machine to allow going back in steps (#736)
 
 ## 2.18.0 (2023-11-02)
 
