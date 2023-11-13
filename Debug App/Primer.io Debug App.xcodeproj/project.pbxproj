@@ -89,7 +89,7 @@
 		DE53DA2D0AD108306C92E198 /* UIViewController+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */; };
 		E130C3D92AFD19FF00AC3E7C /* NetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */; };
 		E13E72452AFE653000911866 /* IdealPaymentMethodTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13E72442AFE653000911866 /* IdealPaymentMethodTests.swift */; };
-		E1AB44D22AFE13AF00639DC5 /* URL+NetworkHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB44D12AFE13AF00639DC5 /* URL+NetworkHeaders.swift */; };
+		E1A2971F2B021ABA005ADA51 /* URL+NetworkHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB44D12AFE13AF00639DC5 /* URL+NetworkHeaders.swift */; };
 		E1E502B12AFE9ECF00CD7F0A /* XCTestCase+Tokenization.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E502B02AFE9ECF00CD7F0A /* XCTestCase+Tokenization.swift */; };
 		E4DF956CABAE0633980D5B89 /* AnalyticsTests+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90441E821B5FE76643B62A6 /* AnalyticsTests+Constants.swift */; };
 		E52B5646C4E1E712FEDE06CB /* AnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF07D2421252EA2AE5C2FC4F /* AnalyticsTests.swift */; };
@@ -906,7 +906,7 @@
 				5E24CD5B3084FE3E8A3E85EC /* CheckoutTheme.swift in Sources */,
 				AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */,
 				C75A11E6AEEFC2B7A29BBC04 /* TestScenario.swift in Sources */,
-				E1AB44D22AFE13AF00639DC5 /* URL+NetworkHeaders.swift in Sources */,
+				E1A2971F2B021ABA005ADA51 /* URL+NetworkHeaders.swift in Sources */,
 				FD5ADBCFA70DB606339F3AF2 /* TransactionResponse.swift in Sources */,
 				8B51ABC1C475342A047D5FA6 /* Networking+Models.swift in Sources */,
 				53E3182FFC4E5F05D866CFAE /* Networking.swift in Sources */,
