@@ -125,5 +125,17 @@ class NolPayPaymentComponentTests: XCTestCase {
         XCTAssertTrue(mockErrorDelegate.errorReceived is PrimerError, "Expected error type to be PrimerError.")
     }
     
+    func testUpdateCollectedDataWithPaymentData() {
+        // Given
+        let paymentData = NolPayPaymentCollectableData.paymentData(cardNumber: "1234567890123456", mobileNumber: "1234567890")
+        
+        // When
+        sut.updateCollectedData(collectableData: paymentData)
+        
+        // Then
+        let expectedStep = String(describing: NolPayPaymentStep.collectCardAndPhoneData)
+        let actualStep = String(describing: sut.nextDataStep)
+        XCTAssertEqual(actualStep, expectedStep, "The nextDataStep should be .collectCardAndPhoneData after updating with paymentData")
+    }
 }
 #endif

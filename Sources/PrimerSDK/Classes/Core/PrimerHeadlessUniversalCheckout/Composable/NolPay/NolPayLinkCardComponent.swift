@@ -51,8 +51,10 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
 
         switch collectableData {
         case .phoneData(let mobileNumber):
+            nextDataStep = .collectPhoneData(cardNumber: self.cardNumber ?? "")
             self.mobileNumber = mobileNumber
         case .otpData(let otpCode):
+            nextDataStep = .collectOtpData(phoneNumber: self.mobileNumber ?? "")
             self.otpCode = otpCode
         }
         
