@@ -191,5 +191,33 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         
         XCTAssertNotNil(mockErrorDelegate.errorReceived, "Expected an error when there's no card number.")
     }
+    
+    func testUpdateCollectedDataWithCardAndPhoneData() {
+        // Given
+        let mockCard = PrimerNolPaymentCard(cardNumber: "1234567890123456", expiredTime: "") // Replace with the correct initializer
+        let cardAndPhoneData = NolPayUnlinkCollectableData.cardAndPhoneData(nolPaymentCard: mockCard, mobileNumber: "+1234567890")
+
+        // When
+        sut.updateCollectedData(collectableData: cardAndPhoneData)
+
+        // Then
+        let expectedStep = String(describing: NolPayUnlinkDataStep.collectCardAndPhoneData)
+        let actualStep = String(describing: sut.nextDataStep)
+        XCTAssertEqual(actualStep, expectedStep, "The nextDataStep should be .collectCardAndPhoneData after updating with cardAndPhoneData")
+    }
+    
+    func testUpdateCollectedDataWithOtpData() {
+        // Given
+        let otpData = NolPayUnlinkCollectableData.otpData(otpCode: "123456")
+        
+        // When
+        sut.updateCollectedData(collectableData: otpData)
+        
+        // Then
+        let expectedStep = String(describing: NolPayUnlinkDataStep.collectOtpData)
+        let actualStep = String(describing: sut.nextDataStep)
+        XCTAssertEqual(actualStep, expectedStep, "The nextDataStep should be .collectOtpData after updating with otpData")
+    }
+
 }
 #endif

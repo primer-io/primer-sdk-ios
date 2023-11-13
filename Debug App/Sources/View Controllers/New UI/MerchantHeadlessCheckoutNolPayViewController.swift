@@ -245,7 +245,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     @objc func submitPhoneNumberTapped() {
         guard let mobileNumber = linkMobileNumberTextField.text, !mobileNumber.isEmpty
         else {
-            showAlert(title: "Error", message: "Please enter both country code and phone number.")
+            showAlert(title: "Error", message: "Please enter phone number.")
             return
         }
         
@@ -274,7 +274,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         guard let mobileNumber = unlinkPhoneNumberTextField.text, !mobileNumber.isEmpty,
               let card = selectedCardForUnlinking
         else {
-            showAlert(title: "Error", message: "Please enter both country code and phone number.")
+            showAlert(title: "Error", message: "Please enter phone number.")
             return
         }
         
@@ -329,7 +329,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     @objc func submitPaymentPhoneNumberButtonTapped() {
         guard let phoneNumber = startPaymentPhoneNumberTextField.text, !phoneNumber.isEmpty
         else {
-            showAlert(title: "Error", message: "Please enter both country code and phone number.")
+            showAlert(title: "Error", message: "Please enter phone number.")
             return
         }
         
