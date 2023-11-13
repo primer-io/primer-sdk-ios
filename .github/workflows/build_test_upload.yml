@@ -69,6 +69,7 @@ jobs:
   build-and-upload-to-appetize:
     needs: danger
     runs-on: macos-latest
+    timeout-minutes: 45
     name: "Build and upload app to Appetize"
     steps:
       - name: Cancel previous jobs
@@ -101,7 +102,7 @@ jobs:
           github-run-id: ${{ github.run_id }}
           run-tests: true
       - uses: peter-evans/find-comment@v2
-        if: ${{ success()  }}
+        if: ${{ success() }}
         id: find_comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
