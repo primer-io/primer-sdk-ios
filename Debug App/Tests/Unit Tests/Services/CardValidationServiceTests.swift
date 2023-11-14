@@ -28,7 +28,7 @@ final class CardValidationServiceTests: XCTestCase {
     }
         
     override func setUpWithError() throws {  
-        setupSDKMocks()
+        SDKSessionHelper.setUp()
         
         self.delegate = MockRawDataManagerDelegate()
         self.rawDataManager = try RawDataManager(paymentMethodType: Mocks.PaymentMethods.paymentCardPaymentMethod.type)
@@ -44,6 +44,8 @@ final class CardValidationServiceTests: XCTestCase {
         self.binDataService = nil
         self.rawDataManager = nil
         self.delegate = nil
+        
+        SDKSessionHelper.tearDown()
     }
 
     func testFourDigitCardNumber_noRemoteValidation() throws {
@@ -200,29 +202,4 @@ final class CardValidationServiceTests: XCTestCase {
             typer.type(cardFragment)
         }
     }
-}
-
-fileprivate func setupSDKMocks() {
-    let paymentMethods = [
-        Mocks.PaymentMethods.paymentCardPaymentMethod
-    ]
-    let session = ClientSession.APIResponse(clientSessionId: "client_session_id",
-                                            paymentMethod: nil,
-                                            order: nil,
-                                            customer: nil,
-                                            testId: nil)
-    let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
-                                           pciUrl: "pci_url",
-                                           clientSession: session,
-                                           paymentMethods: paymentMethods,
-                                           primerAccountId: "account_id",
-                                           keys: nil,
-                                           checkoutModules: nil)
-    PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
-    PrimerAPIConfigurationModule.apiConfiguration = apiConfig
-}
-
-fileprivate func tearDownSDKMocks() {
-    PrimerAPIConfigurationModule.apiConfiguration = nil
-    PrimerAPIConfigurationModule.clientToken = nil
 }

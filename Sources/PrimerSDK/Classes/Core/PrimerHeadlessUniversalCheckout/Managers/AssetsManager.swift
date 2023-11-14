@@ -32,9 +32,9 @@ extension PrimerHeadlessUniversalCheckout {
             
             let prefix = "\(cardNetwork.rawValue.lowercased())-card-icon-"
             guard let asset = PrimerInternalAsset(
-                colored: UIImage(named: "\(prefix)-colored", in: Bundle.primerResources, compatibleWith: nil),
-                light: UIImage(named: "\(prefix)-colored", in: Bundle.primerResources, compatibleWith: nil),
-                dark: UIImage(named: "\(prefix)-colored", in: Bundle.primerResources, compatibleWith: nil)
+                colored: UIImage(named: "\(prefix)colored", in: Bundle.primerResources, compatibleWith: nil),
+                light: UIImage(named: "\(prefix)light", in: Bundle.primerResources, compatibleWith: nil),
+                dark: UIImage(named: "\(prefix)dark", in: Bundle.primerResources, compatibleWith: nil)
             ) else {
                 return nil
             }
