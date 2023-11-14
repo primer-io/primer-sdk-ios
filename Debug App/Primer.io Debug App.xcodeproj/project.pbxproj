@@ -90,6 +90,7 @@
 		E130C3D92AFD19FF00AC3E7C /* NetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */; };
 		E13E72452AFE653000911866 /* IdealPaymentMethodTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13E72442AFE653000911866 /* IdealPaymentMethodTests.swift */; };
 		E1A2971F2B021ABA005ADA51 /* URL+NetworkHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB44D12AFE13AF00639DC5 /* URL+NetworkHeaders.swift */; };
+		E1A297262B036AB1005ADA51 /* BankComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A297252B036AB1005ADA51 /* BankComponentTests.swift */; };
 		E1E502B12AFE9ECF00CD7F0A /* XCTestCase+Tokenization.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E502B02AFE9ECF00CD7F0A /* XCTestCase+Tokenization.swift */; };
 		E4DF956CABAE0633980D5B89 /* AnalyticsTests+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90441E821B5FE76643B62A6 /* AnalyticsTests+Constants.swift */; };
 		E52B5646C4E1E712FEDE06CB /* AnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF07D2421252EA2AE5C2FC4F /* AnalyticsTests.swift */; };
@@ -253,6 +254,7 @@
 		DECCDC4079DC6471CEDDEA84 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkTests.swift; sourceTree = "<group>"; };
 		E13E72442AFE653000911866 /* IdealPaymentMethodTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdealPaymentMethodTests.swift; sourceTree = "<group>"; };
+		E1A297252B036AB1005ADA51 /* BankComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankComponentTests.swift; sourceTree = "<group>"; };
 		E1AB44D12AFE13AF00639DC5 /* URL+NetworkHeaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+NetworkHeaders.swift"; sourceTree = "<group>"; };
 		E1C3EF0BA039C0A50EDE13A5 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Main.strings; sourceTree = "<group>"; };
 		E1E502B02AFE9ECF00CD7F0A /* XCTestCase+Tokenization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Tokenization.swift"; sourceTree = "<group>"; };
@@ -593,6 +595,7 @@
 			isa = PBXGroup;
 			children = (
 				E13E72442AFE653000911866 /* IdealPaymentMethodTests.swift */,
+				E1A297252B036AB1005ADA51 /* BankComponentTests.swift */,
 			);
 			path = Ideal;
 			sourceTree = "<group>";
@@ -874,6 +877,7 @@
 				DB1A2989DDE0928C62B15303 /* PayPalServiceTests.swift in Sources */,
 				97F0B302DF965C1AD1EC6F4D /* PaymentMethodConfigServiceTests.swift in Sources */,
 				33EA4F728A7984997A0EF515 /* TokenizationServiceTests.swift in Sources */,
+				E1A297262B036AB1005ADA51 /* BankComponentTests.swift in Sources */,
 				91FAC91E687B6981268E677E /* DateTests.swift in Sources */,
 				041295AD2AB9E2C100A4F243 /* PrimerHeadlessNolPayManagerTests.swift in Sources */,
 				DC98712939835FB79A20BD63 /* IntExtensionTests.swift in Sources */,
