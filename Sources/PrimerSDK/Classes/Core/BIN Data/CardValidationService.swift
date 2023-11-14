@@ -14,6 +14,8 @@ protocol CardValidationService {
 
 class DefaultCardValidationService: CardValidationService, LogReporter {
     
+    static let maximumBinLength = 9
+    
     static var apiClient: PrimerAPIClientProtocol?
 
     var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? {
@@ -38,19 +40,34 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         
     func validateCardNetworks(withCardNumber cardNumber: String) {
         let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
-        guard !sanitizedCardNumber.isEmpty, sanitizedCardNumber != mostRecentCardNumber else {
+        let cardState = PrimerCardNumberEntryState(cardNumber: sanitizedCardNumber)
+
+        // Don't validate empty string
+        guard !sanitizedCardNumber.isEmpty else {
             return
         }
+        // Don't validate if the BIN (first eight digits) hasn't changed
+        if let mostRecentCardNumber = mostRecentCardNumber, 
+            mostRecentCardNumber.prefix(Self.maximumBinLength) == sanitizedCardNumber.prefix(Self.maximumBinLength) {
+            return
+        }
+        
         mostRecentCardNumber = sanitizedCardNumber
         
-        let cardState = PrimerCardNumberEntryState(cardNumber: sanitizedCardNumber)
-        guard sanitizedCardNumber.count >= 6 else {
+        // Don't validate if incomplete BIN (less than eight digits)
+        if sanitizedCardNumber.count < Self.maximumBinLength {
             useLocalValidation(withCardState: cardState)
             return
         }
         
-        debouncer.debounce { [weak self] in
-            self?.useRemoteValidation(withCardState: cardState)
+        let isFirstTimeRemoteValidation = mostRecentCardNumber == nil
+                
+        if isFirstTimeRemoteValidation {
+            useRemoteValidation(withCardState: cardState)
+        } else {
+            debouncer.debounce { [weak self] in
+                self?.useRemoteValidation(withCardState: cardState)
+            }
         }
     }
     
@@ -96,7 +113,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     private func listCardNetworks(_ cardNumber: String) -> Promise<Response.Body.Bin.Networks> {
         
         // ⚠️ We must only ever send eight or less digits to the endpoint
-        let cardNumber = String(cardNumber.prefix(8))
+        let cardNumber = String(cardNumber.prefix(Self.maximumBinLength))
 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             return rejectedPromise(withError: PrimerError.invalidClientToken(userInfo: nil, diagnosticsId: ""))

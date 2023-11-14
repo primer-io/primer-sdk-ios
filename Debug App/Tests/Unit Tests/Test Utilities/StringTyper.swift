@@ -31,35 +31,35 @@ class StringTyper {
     ///   - string: The string that should be types
     ///   - result: The string that is being written to (do not provide this by default, used for recursion)
     ///   - delay: The interval between appending characters to the result string
-    func type(_ string: String, _ result: String = "", delay: Double = 0.1) {
+    func type(_ string: String, _ result: String = "", delay: Double = 0.1, completion: @escaping () -> Void = {}) {
         var string = string
         let result = "\(result)\(string.removeFirst())"
+        print(">> TYPE: \(result)")
         receiver(result)
-        guard !string.isEmpty else { return }
+        guard !string.isEmpty else {
+            queue.asyncAfter(deadline: .now() + 1) {
+                completion()
+            }
+            return
+        }
         queue.asyncAfter(deadline: .now() + delay) {
-            self.type(string, result, delay: delay)
+            self.type(string, result, delay: delay, completion: completion)
         }
     }
     
-    
-    /// As per `type(string:result:delay:) but with individual delay intervals for each character`
-    /// - Parameters:
-    ///   - string:
-    ///   - result: The string that is being written to (do not provide this by default, used for recursion)
-    ///   - delays: an array of delay times, must be equal to one less than the length of `string`
-    func type(_ string: String, _ result: String = "", delays: [Double]) {
-        assert(delays.count == string.count)
+    func delete(_ string: String, delay: Double = 0.1, completion: @escaping () -> Void = {}) {
         var string = string
-        let result = "\(result)\(string.removeFirst())"
-        
-        var delays = delays
-        let delay = delays.removeFirst()
-        
-        receiver(result)
-
-        guard !string.isEmpty else { return }
+        _ = string.removeFirst()
+        print(">> DELETE: \(string)")
+        receiver(string)
+        guard !string.isEmpty else {
+            queue.asyncAfter(deadline: .now() + 1) {
+                completion()
+            }
+            return
+        }
         queue.asyncAfter(deadline: .now() + delay) {
-            self.type(string, result, delays: delays)
+            self.type(string, string, delay: delay, completion: completion)
         }
     }
     
