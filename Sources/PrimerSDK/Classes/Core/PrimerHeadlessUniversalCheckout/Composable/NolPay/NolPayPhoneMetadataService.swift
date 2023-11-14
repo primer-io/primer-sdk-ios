@@ -29,6 +29,22 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
                 completion(.failure(err))
                 return
             }
+            
+            guard !mobileNumber.isEmpty else {
+                let validationError = PrimerValidationError.invalidPhoneNumber(
+                    message: "Phone number cannot be blank.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: validationError)
+
+                completion(.success((.invalid(errors: [validationError]), nil, nil)))
+                return
+            }
 
             let urlSessionConfiguration = URLSessionConfiguration.default
             urlSessionConfiguration.requestCachePolicy = .returnCacheDataElseLoad
