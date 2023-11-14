@@ -24,12 +24,36 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     private var paymentCategories: [PrimerKlarnaPaymentCategory] = [] {
         didSet {
             categoriesTableView.reloadData()
+            
             categoriesContainerView.isHidden = false
+            
+            view.bringSubviewToFront(categoriesTableView)
+        }
+    }
+    
+    private var registrationFieldActive: Bool = false
+    private var accountRegistrationDate: Date = Date() {
+        didSet {
+            customerAccountRegistrationTextField.text = getDateString(date: accountRegistrationDate)
+        }
+    }
+    private var accountLastModifiedDate: Date = Date() {
+        didSet {
+            customerAccountLastModifiedTextField.text = getDateString(date: accountLastModifiedDate)
         }
     }
     
     // MARK: - Subviews
     private let activityIndicator = UIActivityIndicatorView(style: .large)
+    private let checkoutTypeContainerView = UIView()
+    private let checkoutTypeTitleLabel = UILabel()
+    private let guestCheckoutButton = UIButton()
+    private let customerInfoContainerView = UIView()
+    private let customerInfoTitleLabel = UILabel()
+    private let customerAccountIdTextField = UITextField()
+    private let customerAccountRegistrationTextField = UITextField()
+    private let customerAccountLastModifiedTextField = UITextField()
+    private let customerCheckoutButton = UIButton()
     private let categoriesContainerView = UIView()
     private let categoriesTitleLabel = UILabel()
     private let categoriesTableView = UITableView()
@@ -57,12 +81,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        showLoader()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        createSession()
+        view.bringSubviewToFront(checkoutTypeContainerView)
     }
 }
 
@@ -73,6 +92,51 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
         
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        
+        checkoutTypeContainerView.backgroundColor = .white
+        checkoutTypeContainerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        checkoutTypeTitleLabel.textAlignment = .center
+        checkoutTypeTitleLabel.text = "Select checkout type"
+        checkoutTypeTitleLabel.font = .systemFont(ofSize: 20.0, weight: .medium)
+        checkoutTypeTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        guestCheckoutButton.setTitle("Guest checkout", for: .normal)
+        guestCheckoutButton.backgroundColor = .black
+        guestCheckoutButton.addTarget(self, action: #selector(guestCheckoutButtonTapped(_:)), for: .touchUpInside)
+        guestCheckoutButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        customerInfoContainerView.backgroundColor = .white
+        customerInfoContainerView.clipsToBounds = true
+        customerInfoContainerView.layer.cornerRadius = 10.0
+        customerInfoContainerView.layer.borderWidth = 1.0
+        customerInfoContainerView.layer.borderColor = UIColor.black.cgColor
+        customerInfoContainerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        customerInfoTitleLabel.textAlignment = .center
+        customerInfoTitleLabel.text = "Customer account info"
+        customerInfoTitleLabel.font = .systemFont(ofSize: 16.0, weight: .medium)
+        customerInfoTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        customerAccountIdTextField.placeholder = "Unique account id"
+        customerAccountIdTextField.borderStyle = .roundedRect
+        customerAccountIdTextField.delegate = self
+        customerAccountIdTextField.translatesAutoresizingMaskIntoConstraints = false
+        
+        customerAccountRegistrationTextField.placeholder = "Registration date"
+        customerAccountRegistrationTextField.borderStyle = .roundedRect
+        customerAccountRegistrationTextField.delegate = self
+        customerAccountRegistrationTextField.translatesAutoresizingMaskIntoConstraints = false
+        
+        customerAccountLastModifiedTextField.placeholder = "Last modified date"
+        customerAccountLastModifiedTextField.borderStyle = .roundedRect
+        customerAccountLastModifiedTextField.delegate = self
+        customerAccountLastModifiedTextField.translatesAutoresizingMaskIntoConstraints = false
+        
+        customerCheckoutButton.setTitle("Customer checkout", for: .normal)
+        customerCheckoutButton.backgroundColor = .black
+        customerCheckoutButton.addTarget(self, action: #selector(customerCheckoutButtonTapped(_:)), for: .touchUpInside)
+        customerCheckoutButton.translatesAutoresizingMaskIntoConstraints = false
         
         categoriesContainerView.backgroundColor = .white
         categoriesContainerView.translatesAutoresizingMaskIntoConstraints = false
@@ -99,6 +163,11 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
         paymentContinueButton.backgroundColor = .black
         paymentContinueButton.addTarget(self, action: #selector(continueButtonTapped(_:)), for: .touchUpInside)
         paymentContinueButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        let toolBar = getToolbar()
+        customerAccountIdTextField.inputAccessoryView = toolBar
+        customerAccountRegistrationTextField.inputAccessoryView = toolBar
+        customerAccountLastModifiedTextField.inputAccessoryView = toolBar
     }
     
     func setupLayout() {
@@ -106,6 +175,74 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
         NSLayoutConstraint.activate([
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        view.addSubview(checkoutTypeContainerView)
+        NSLayoutConstraint.activate([
+            checkoutTypeContainerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            checkoutTypeContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            checkoutTypeContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            checkoutTypeContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+        
+        checkoutTypeContainerView.addSubview(checkoutTypeTitleLabel)
+        NSLayoutConstraint.activate([
+            checkoutTypeTitleLabel.centerXAnchor.constraint(equalTo: checkoutTypeContainerView.centerXAnchor),
+            checkoutTypeTitleLabel.topAnchor.constraint(equalTo: checkoutTypeContainerView.topAnchor, constant: 15.0)
+        ])
+        
+        checkoutTypeContainerView.addSubview(guestCheckoutButton)
+        NSLayoutConstraint.activate([
+            guestCheckoutButton.topAnchor.constraint(equalTo: checkoutTypeTitleLabel.bottomAnchor, constant: 20.0),
+            guestCheckoutButton.leadingAnchor.constraint(equalTo: checkoutTypeContainerView.leadingAnchor, constant: 10.0),
+            guestCheckoutButton.trailingAnchor.constraint(equalTo: checkoutTypeContainerView.trailingAnchor, constant: -10.0),
+            guestCheckoutButton.heightAnchor.constraint(equalToConstant: 45.0)
+        ])
+        
+        checkoutTypeContainerView.addSubview(customerInfoContainerView)
+        NSLayoutConstraint.activate([
+            customerInfoContainerView.topAnchor.constraint(equalTo: guestCheckoutButton.bottomAnchor, constant: 20.0),
+            customerInfoContainerView.leadingAnchor.constraint(equalTo: checkoutTypeContainerView.leadingAnchor, constant: 10.0),
+            customerInfoContainerView.trailingAnchor.constraint(equalTo: checkoutTypeContainerView.trailingAnchor, constant: -10.0)
+        ])
+        
+        customerInfoContainerView.addSubview(customerInfoTitleLabel)
+        NSLayoutConstraint.activate([
+            customerInfoTitleLabel.centerXAnchor.constraint(equalTo: customerInfoContainerView.centerXAnchor),
+            customerInfoTitleLabel.topAnchor.constraint(equalTo: customerInfoContainerView.topAnchor, constant: 5.0)
+        ])
+        
+        customerInfoContainerView.addSubview(customerAccountIdTextField)
+        NSLayoutConstraint.activate([
+            customerAccountIdTextField.topAnchor.constraint(equalTo: customerInfoTitleLabel.bottomAnchor, constant: 10.0),
+            customerAccountIdTextField.leadingAnchor.constraint(equalTo: customerInfoContainerView.leadingAnchor, constant: 10.0),
+            customerAccountIdTextField.trailingAnchor.constraint(equalTo: customerInfoContainerView.trailingAnchor, constant: -10.0),
+            customerAccountIdTextField.heightAnchor.constraint(equalToConstant: 35.0)
+        ])
+        
+        customerInfoContainerView.addSubview(customerAccountRegistrationTextField)
+        NSLayoutConstraint.activate([
+            customerAccountRegistrationTextField.topAnchor.constraint(equalTo: customerAccountIdTextField.bottomAnchor, constant: 5.0),
+            customerAccountRegistrationTextField.leadingAnchor.constraint(equalTo: customerInfoContainerView.leadingAnchor, constant: 10.0),
+            customerAccountRegistrationTextField.trailingAnchor.constraint(equalTo: customerInfoContainerView.trailingAnchor, constant: -10.0),
+            customerAccountRegistrationTextField.heightAnchor.constraint(equalToConstant: 35.0)
+        ])
+        
+        customerInfoContainerView.addSubview(customerAccountLastModifiedTextField)
+        NSLayoutConstraint.activate([
+            customerAccountLastModifiedTextField.topAnchor.constraint(equalTo: customerAccountRegistrationTextField.bottomAnchor, constant: 5.0),
+            customerAccountLastModifiedTextField.leadingAnchor.constraint(equalTo: customerInfoContainerView.leadingAnchor, constant: 10.0),
+            customerAccountLastModifiedTextField.trailingAnchor.constraint(equalTo: customerInfoContainerView.trailingAnchor, constant: -10.0),
+            customerAccountLastModifiedTextField.heightAnchor.constraint(equalToConstant: 35.0)
+        ])
+        
+        customerInfoContainerView.addSubview(customerCheckoutButton)
+        NSLayoutConstraint.activate([
+            customerCheckoutButton.topAnchor.constraint(equalTo: customerAccountLastModifiedTextField.bottomAnchor, constant: 5.0),
+            customerCheckoutButton.leadingAnchor.constraint(equalTo: customerInfoContainerView.leadingAnchor, constant: 10.0),
+            customerCheckoutButton.trailingAnchor.constraint(equalTo: customerInfoContainerView.trailingAnchor, constant: -10.0),
+            customerCheckoutButton.bottomAnchor.constraint(equalTo: customerInfoContainerView.bottomAnchor, constant: -5.0),
+            customerCheckoutButton.heightAnchor.constraint(equalToConstant: 45.0)
         ])
         
         view.addSubview(paymentContainerView)
@@ -158,8 +295,54 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
 
 // MARK: - Actions
 private extension MerchantHeadlessCheckoutKlarnaViewController {
+    @objc func guestCheckoutButtonTapped(_ sender: UIButton) {
+        showLoader()
+        
+        checkoutTypeContainerView.isHidden = true
+        
+        createSession(accountInfo: nil)
+    }
+    
+    @objc func customerCheckoutButtonTapped(_ sender: UIButton) {
+        guard
+            let accountId = customerAccountIdTextField.text,
+            accountId.count > 0,
+            let registrationDate = customerAccountRegistrationTextField.text,
+            registrationDate.count > 0,
+            let lastModifiedDate = customerAccountLastModifiedTextField.text,
+            lastModifiedDate.count > 0
+        else {
+            showAlert(title: "Error", message: "Customer account info not valid")
+            return
+        }
+        
+        let accountInfo = PrimerKlarnaCustomerAccountInfo(
+            accountUniqueId: accountId,
+            accountRegistrationDate: accountRegistrationDate,
+            accountLastModified: accountLastModifiedDate
+        )
+        
+        showLoader()
+        
+        checkoutTypeContainerView.isHidden = true
+        
+        createSession(accountInfo: accountInfo)
+    }
+    
     @objc func continueButtonTapped(_ sender: UIButton) {
         authorizeSession()
+    }
+    
+    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
+        if registrationFieldActive {
+            accountRegistrationDate = sender.date
+        } else {
+            accountLastModifiedDate = sender.date
+        }
+    }
+    
+    @objc func doneToolBarButtonPressed(_ sender: UIBarButtonItem) {
+        view.endEditing(true)
     }
 }
 
@@ -188,14 +371,37 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
     func hideLoader() {
         activityIndicator.stopAnimating()
     }
+    
+    func getToolbar() -> UIToolbar {
+        let doneButton = UIBarButtonItem(title: "Done", style:.done, target: self, action: #selector(doneToolBarButtonPressed(_:)))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        
+        let toolBar = UIToolbar()
+        toolBar.barStyle = .default
+        toolBar.tintColor = .black
+        toolBar.sizeToFit()
+        toolBar.setItems([spaceButton, doneButton], animated: true)
+        
+        return toolBar
+    }
+    
+    func getDateString(
+        date: Date,
+        withFormat format: String = "yyyy-MM-dd HH:mm:ss"
+    ) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        return dateFormatter.string(from: date)
+    }
 }
 
 // MARK: - Payment
 private extension MerchantHeadlessCheckoutKlarnaViewController {
-    func createSession() {
+    func createSession(accountInfo: PrimerKlarnaCustomerAccountInfo?) {
         klarnaSessionCreationComponent.createSession(
             sessionType: .recurringPayment,
-            customerAccountInfo: nil
+            customerAccountInfo: accountInfo
         )
     }
     
@@ -253,6 +459,33 @@ extension MerchantHeadlessCheckoutKlarnaViewController: UITableViewDelegate {
         showLoader()
         
         createPaymentView(category: paymentCategories[indexPath.row])
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension MerchantHeadlessCheckoutKlarnaViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        let datePicker = UIDatePicker()
+        datePicker.sizeToFit()
+        datePicker.datePickerMode = .dateAndTime
+        datePicker.preferredDatePickerStyle = .automatic
+        datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
+        
+        if textField == customerAccountRegistrationTextField {
+            registrationFieldActive = true
+            
+            textField.inputView = datePicker
+            textField.inputView?.frame.size = CGSize(width: view.frame.width, height: 200.0)
+        } else if textField == customerAccountLastModifiedTextField {
+            registrationFieldActive = false
+            
+            textField.inputView = datePicker
+            textField.inputView?.frame.size = CGSize(width: view.frame.width, height: 200.0)
+        }
     }
 }
 
