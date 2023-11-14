@@ -41,7 +41,10 @@ public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessComponent, Pri
 
 // MARK: - Create session
 public extension KlarnaPaymentSessionCreationComponent {
-    func createSession(sessionType: KlarnaSessionType) {
+    func createSession(
+        sessionType: KlarnaSessionType,
+        customerAccountInfo: PrimerKlarnaCustomerAccountInfo?
+    ) {
         self.recordEvent(
             type: .sdkEvent,
             name: KlarnaAnalyticsEvents.CREATE_SESSION_METHOD,
@@ -53,9 +56,10 @@ public extension KlarnaPaymentSessionCreationComponent {
         
         guard
             let settings = settings,
-            let paymentMethodConfigId = PrimerAPIConfiguration.current?.paymentMethods?.first(where: {
+            let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: {
                 $0.name == "Klarna"
-            })?.id
+            }),
+            let paymentMethodConfigId = paymentMethod.id
         else {
             self.handleError(error: .missingConfiguration)
             return
@@ -71,6 +75,18 @@ public extension KlarnaPaymentSessionCreationComponent {
             totalAmount = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.totalOrderAmount
         }
         
+        var attachment: Request.Body.Klarna.CreatePaymentSession.Attachment?
+        if let customerAccountInfo = customerAccountInfo {
+            attachment = .init(body: .init(customerAccountInfo: [
+                .init(
+                    uniqueAccountIdenitfier: customerAccountInfo.accountUniqueId,
+                    acountRegistrationDate: customerAccountInfo.accountRegistrationDate.toString(),
+                    accountLastModified: customerAccountInfo.accountLastModified.toString(),
+                    appId: (paymentMethod.options as? MerchantOptions)?.appId
+                )
+            ]))
+        }
+        
         let createPaymentSessionAPIRequest = Request.Body.Klarna.CreatePaymentSession(
             paymentMethodConfigId: paymentMethodConfigId,
             sessionType: sessionType,
@@ -78,7 +94,8 @@ public extension KlarnaPaymentSessionCreationComponent {
             description: settings.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
             redirectUrl: settings.paymentMethodOptions.urlScheme,
             totalAmount: totalAmount,
-            orderItems: nil
+            orderItems: nil, 
+            attachment: attachment
         )
         
         self.apiClient.createKlarnaPaymentSession(

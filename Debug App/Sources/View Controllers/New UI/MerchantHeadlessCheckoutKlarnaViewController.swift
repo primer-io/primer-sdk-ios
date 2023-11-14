@@ -193,7 +193,10 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
 // MARK: - Payment
 private extension MerchantHeadlessCheckoutKlarnaViewController {
     func createSession() {
-        klarnaSessionCreationComponent.createSession(sessionType: .recurringPayment)
+        klarnaSessionCreationComponent.createSession(
+            sessionType: .recurringPayment,
+            customerAccountInfo: nil
+        )
     }
     
     func createPaymentView(category: PrimerKlarnaPaymentCategory) {

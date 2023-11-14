@@ -37,13 +37,50 @@ extension Request.Body.Klarna {
     
     struct CreatePaymentSession: Codable {
         
+        struct Attachment: Codable {
+            let body: AttachmentBody
+            let contentType: String
+            
+            init(body: AttachmentBody) {
+                self.body = body
+                self.contentType = "application/vnd.klarna.internal.emd-v2+json"
+            }
+            
+            func encode(to encoder: Encoder) throws {
+                guard let body = try self.body.toString() else {
+                    return
+                }
+                var container = encoder.container(keyedBy: Request.Body.Klarna.CreatePaymentSession.Attachment.CodingKeys.self)
+                try container.encode(body, forKey: Request.Body.Klarna.CreatePaymentSession.Attachment.CodingKeys.body)
+                try container.encode(self.contentType, forKey: Request.Body.Klarna.CreatePaymentSession.Attachment.CodingKeys.contentType)
+            }
+        }
+        
+        struct AttachmentBody: Codable {
+            let customerAccountInfo: [CustomerAccountInfo]
+            
+            func toString() throws -> String? {
+                let jsonData = try JSONEncoder().encode(self)
+                let jsonString = String(data: jsonData, encoding: .utf8)
+                return jsonString
+            }
+        }
+        
+        struct CustomerAccountInfo: Codable {
+            let uniqueAccountIdenitfier: String
+            let acountRegistrationDate: String
+            let accountLastModified: String
+            let appId: String?
+        }
+        
         let paymentMethodConfigId: String
         let sessionType: KlarnaSessionType
-        var localeData: PrimerLocaleData?
+        let localeData: PrimerLocaleData?
         let description: String?
         let redirectUrl: String?
         let totalAmount: Int?
         let orderItems: [OrderItem]?
+        let attachment: Attachment?
     }
     
     struct FinalizePaymentSession: Codable {

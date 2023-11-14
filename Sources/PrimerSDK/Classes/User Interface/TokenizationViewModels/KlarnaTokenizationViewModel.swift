@@ -378,7 +378,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 description: PrimerSettings.current.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
                 redirectUrl: settings.paymentMethodOptions.urlScheme,
                 totalAmount: nil,
-                orderItems: nil)
+                orderItems: nil, 
+                attachment: nil
+            )
             
             let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
             
