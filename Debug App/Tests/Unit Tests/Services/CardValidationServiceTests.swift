@@ -112,6 +112,8 @@ final class CardValidationServiceTests: XCTestCase {
         waitForExpectations(timeout: 5)
     }
     
+    
+    
     func testReceiveError() throws {
         
         let cardNumber = "552266117788"
@@ -128,8 +130,9 @@ final class CardValidationServiceTests: XCTestCase {
         
         let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
         delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
+            print(">> COUNT: \(self.delegate.onMetadataForCardValidationStateCount)")
             XCTAssertEqual(networks.availableCardNetworks.count, 1)
-            if self.delegate.onMetadataForCardValidationStateCount == 6 {
+            if self.delegate.onMetadataForCardValidationStateCount == self.maxBinLength {
                 expectation2.fulfill()
             }
         }
