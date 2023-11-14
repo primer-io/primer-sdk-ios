@@ -239,7 +239,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         case .bancontact:
             return UIImage(named: "bancontact-icon", in: Bundle.primerResources, compatibleWith: nil)
         case .cartesBancaires:
-            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "cartesbancaires-card-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
         case .diners:
             return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
         case .discover:
