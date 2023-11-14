@@ -14,6 +14,8 @@ protocol CardValidationService {
 
 class DefaultCardValidationService: CardValidationService, LogReporter {
     
+    static let maximumBinLength = 9
+    
     static var apiClient: PrimerAPIClientProtocol?
 
     var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? {
@@ -44,19 +46,21 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         guard !sanitizedCardNumber.isEmpty else {
             return
         }
-        // Don't validate if incomplete BIN (less than eight digits)
-        if sanitizedCardNumber.count < 8 {
-            useLocalValidation(withCardState: cardState)
+        // Don't validate if the BIN (first eight digits) hasn't changed
+        if let mostRecentCardNumber = mostRecentCardNumber, 
+            mostRecentCardNumber.prefix(Self.maximumBinLength) == sanitizedCardNumber.prefix(Self.maximumBinLength) {
             return
         }
-        // Don't validate if the BIN (first eight digits) hasn't changed
-        if let mostRecentCardNumber = mostRecentCardNumber, mostRecentCardNumber.prefix(8) == cardNumber.prefix(8) {
+        
+        mostRecentCardNumber = sanitizedCardNumber
+        
+        // Don't validate if incomplete BIN (less than eight digits)
+        if sanitizedCardNumber.count < Self.maximumBinLength {
             useLocalValidation(withCardState: cardState)
             return
         }
         
         let isFirstTimeRemoteValidation = mostRecentCardNumber == nil
-        mostRecentCardNumber = sanitizedCardNumber
                 
         if isFirstTimeRemoteValidation {
             useRemoteValidation(withCardState: cardState)
@@ -109,7 +113,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     private func listCardNetworks(_ cardNumber: String) -> Promise<Response.Body.Bin.Networks> {
         
         // ⚠️ We must only ever send eight or less digits to the endpoint
-        let cardNumber = String(cardNumber.prefix(8))
+        let cardNumber = String(cardNumber.prefix(Self.maximumBinLength))
 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             return rejectedPromise(withError: PrimerError.invalidClientToken(userInfo: nil, diagnosticsId: ""))
