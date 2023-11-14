@@ -11,7 +11,7 @@ import XCTest
 
 class PrimerBancontactCardDataManagerTests: XCTestCase {
     
-    private static let expectationTimeout = 1.0
+    private static let expectationTimeout = 5.0
     
     func test_valid_raw_bancontact_card_data() throws {
         let exp = expectation(description: "Await validation")

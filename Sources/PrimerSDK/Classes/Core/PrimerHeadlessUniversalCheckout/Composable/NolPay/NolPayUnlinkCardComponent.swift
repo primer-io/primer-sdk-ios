@@ -58,11 +58,11 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         
         case .cardAndPhoneData(nolPaymentCard: let nolPaymentCard,
                                mobileNumber: let mobileNumber):
-            
+            nextDataStep = .collectCardAndPhoneData
             cardNumber = nolPaymentCard.cardNumber
             self.mobileNumber = mobileNumber
-
         case .otpData(otpCode: let otpCode):
+            nextDataStep = .collectOtpData
             self.otpCode = otpCode
         }
         

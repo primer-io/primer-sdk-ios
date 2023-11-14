@@ -119,5 +119,31 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         sut.start()
         XCTAssertTrue(mockErrorDelegate.errorReceived is PrimerError)
     }
+    
+    func testUpdateCollectedDataWithPhoneData() {
+        // Given
+        let phoneData = NolPayLinkCollectableData.phoneData(mobileNumber: "1234567890")
+        
+        // When
+        sut.updateCollectedData(collectableData: phoneData)
+        
+        // Then
+        let expectedStep = String(describing: NolPayLinkCardStep.collectPhoneData(cardNumber: ""))
+        let actualStep = String(describing: sut.nextDataStep)
+        XCTAssertEqual(actualStep, expectedStep, "The nextDataStep should be .collectPhoneData after updating with phoneData")
+    }
+
+    func testUpdateCollectedDataWithOtpData() {
+        // Given
+        let otpData = NolPayLinkCollectableData.otpData(otpCode: "123456")
+        
+        // When
+        sut.updateCollectedData(collectableData: otpData)
+        
+        // Then
+        let expectedStep = String(describing: NolPayLinkCardStep.collectOtpData(phoneNumber: ""))
+        let actualStep = String(describing: sut.nextDataStep)
+        XCTAssertEqual(actualStep, expectedStep, "The nextDataStep should be .collectOtpData after updating with otpData")
+    }
 }
 #endif
