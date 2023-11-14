@@ -140,7 +140,7 @@ final class CardValidationServiceTests: XCTestCase {
                 expectation2.fulfill()
             }
             if self.delegate.onMetadataForCardValidationStateCount == (self.maxBinLength * 2) {
-                XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
+                XCTAssertEqual(cardState.cardNumber, String(altCardNumber.prefix(self.maxBinLength)))
                 XCTAssertEqual(networks.availableCardNetworks[0].displayName, "Network #3")
                 XCTAssertEqual(networks.availableCardNetworks[0].networkIdentifier, "NETWORK_3")
                 XCTAssertEqual(networks.availableCardNetworks[1].displayName, "Network #4")
