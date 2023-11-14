@@ -143,8 +143,8 @@ final class CardValidationServiceTests: XCTestCase {
                 XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
                 XCTAssertEqual(networks.availableCardNetworks[0].displayName, "Network #3")
                 XCTAssertEqual(networks.availableCardNetworks[0].networkIdentifier, "NETWORK_3")
-                XCTAssertEqual(networks.availableCardNetworks[1].displayName, "Network #3")
-                XCTAssertEqual(networks.availableCardNetworks[1].networkIdentifier, "NETWORK_3")
+                XCTAssertEqual(networks.availableCardNetworks[1].displayName, "Network #4")
+                XCTAssertEqual(networks.availableCardNetworks[1].networkIdentifier, "NETWORK_4")
                 expectation3.fulfill()
             }
         }
