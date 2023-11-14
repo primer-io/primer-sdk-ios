@@ -112,6 +112,48 @@ final class CardValidationServiceTests: XCTestCase {
         waitForExpectations(timeout: 5)
     }
     
+    func testTwelveDigitCardNumber_replaceNumber_successfulValidation() throws {
+        
+        let cardNumber = "552266117788"
+        let altCardNumber = "552366117788"
+
+        apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
+            .init(displayName: "Network #1", value: "NETWORK_1"),
+            .init(displayName: "Network #2", value: "NETWORK_2")
+        ])
+        
+        apiClient.results[String(altCardNumber.prefix(self.maxBinLength))] = .init(networks: [
+            .init(displayName: "Network #3", value: "NETWORK_3"),
+            .init(displayName: "Network #4", value: "NETWORK_4")
+        ])
+        
+        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called with networks for '\(cardNumber)'")
+        let expectation3 = self.expectation(description: "onMetadataForCardValidationState is called with networks for '\(altCardNumber)'")
+        delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
+            print(">> onMetadataForCardValidationStateCount: \(self.delegate.onMetadataForCardValidationStateCount), networks: \(networks.availableCardNetworks.count)")
+            if self.delegate.onMetadataForCardValidationStateCount == self.maxBinLength {
+                XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
+                XCTAssertEqual(networks.availableCardNetworks[0].displayName, "Network #1")
+                XCTAssertEqual(networks.availableCardNetworks[0].networkIdentifier, "NETWORK_1")
+                XCTAssertEqual(networks.availableCardNetworks[1].displayName, "Network #2")
+                XCTAssertEqual(networks.availableCardNetworks[1].networkIdentifier, "NETWORK_2")
+                expectation2.fulfill()
+            }
+            if self.delegate.onMetadataForCardValidationStateCount == (self.maxBinLength * 2) {
+                XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
+                XCTAssertEqual(networks.availableCardNetworks[0].displayName, "Network #3")
+                XCTAssertEqual(networks.availableCardNetworks[0].networkIdentifier, "NETWORK_3")
+                XCTAssertEqual(networks.availableCardNetworks[1].displayName, "Network #3")
+                XCTAssertEqual(networks.availableCardNetworks[1].networkIdentifier, "NETWORK_3")
+                expectation3.fulfill()
+            }
+        }
+        
+        enterCardNumber(cardNumber, altCardNumber)
+        
+        waitForExpectations(timeout: 10)
+    }
+    
     
     
     func testReceiveError() throws {
@@ -143,17 +185,17 @@ final class CardValidationServiceTests: XCTestCase {
     
     // MARK: Helpers
     
-    private func enterCardNumber(_ cardFragment: String, delayAtIndex delayIndex: Int? = nil) {
+    private func enterCardNumber(_ cardFragment: String, _ altCardFragment: String? = nil) {
         let typer = StringTyper { string in
             self.binDataService.validateCardNetworks(withCardNumber: string)
         }
 
-        if let delayIndex = delayIndex {
-            // Type at fast speed
-            var delays = Array(repeating: Double(0.1), count: 12)
-            // Pause for request on the 7th character before resuming fast typing
-            delays[delayIndex] = 1.0
-            typer.type(cardFragment, delays: delays)
+        if let altCardFragment = altCardFragment {
+            typer.type(cardFragment) {
+                typer.delete(cardFragment) {
+                    typer.type(altCardFragment)
+                }
+            }
         } else {
             typer.type(cardFragment)
         }
