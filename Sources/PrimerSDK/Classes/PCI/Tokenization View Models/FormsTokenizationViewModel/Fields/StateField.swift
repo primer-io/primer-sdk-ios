@@ -5,14 +5,12 @@
 //  Created by Dario Carlomagno on 08/06/22.
 //
 
-
-
 import UIKit
 
 class PrimerStateField: PrimerCardFormFieldProtocol {
-    
+
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
+
     static func stateFieldContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let stateFieldContainerView = PrimerCustomFieldView()
         stateFieldContainerView.fieldView = primerTextFieldView
@@ -21,7 +19,7 @@ class PrimerStateField: PrimerCardFormFieldProtocol {
         stateFieldContainerView.tintColor = theme.input.border.color(for: .selected)
         return stateFieldContainerView
     }
-    
+
     static func stateFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerStateFieldView {
         let stateFieldView = PrimerStateFieldView()
         stateFieldView.placeholder = Strings.CardFormView.State.placeholder
@@ -31,5 +29,3 @@ class PrimerStateField: PrimerCardFormFieldProtocol {
         return stateFieldView
     }
 }
-
-

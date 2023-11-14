@@ -5,8 +5,6 @@
 //  Created by Evangelos on 29/8/22.
 //
 
-
-
 import Foundation
 
 // MARK: OFF-SESSION PAYMENT INFO
@@ -44,7 +42,7 @@ struct PrimerTestPaymentMethodSessionInfo: OffSessionPaymentSessionInfo {
     var locale: String = PrimerSettings.current.localeData.localeCode
     var platform: String = "IOS"
     var flowDecision: FlowDecision
-    
+
     enum FlowDecision: String, Codable, CaseIterable {
         case success = "SUCCESS"
         case decline = "DECLINE"

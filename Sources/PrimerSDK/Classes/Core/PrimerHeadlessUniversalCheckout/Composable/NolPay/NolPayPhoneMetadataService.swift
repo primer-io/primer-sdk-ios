@@ -15,9 +15,9 @@ protocol NolPayPhoneMetadataProviding {
 
 struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
     var debouncer = Debouncer(delay: 0.275)
-    
+
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion) {
-        
+
         debouncer.debounce {
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
@@ -35,7 +35,7 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
             let urlSession = URLSession(configuration: urlSessionConfiguration)
             let networkService = URLSessionStack(session: urlSession)
             let client = PrimerAPIClient(networkService: networkService)
-            
+
             let requestBody = Request.Body.PhoneMetadata.PhoneMetadataDataRequest(phoneNumber: mobileNumber)
             client.getPhoneMetadata(clientToken: clientToken, paymentRequestBody: requestBody) { result in
 

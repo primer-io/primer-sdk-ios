@@ -77,7 +77,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
                 firstly {
                     self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
                 }
-                .done { checkoutData in
+                .done { _ in
                     self.didFinishPayment?(nil)
                     self.nullifyEventCallbacks()
                     self.handleSuccessfulFlow()
@@ -267,4 +267,3 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         self.didFinishPayment = nil
     }
 }
-

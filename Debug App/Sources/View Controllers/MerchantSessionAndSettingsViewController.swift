@@ -64,7 +64,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var disableErrorScreenSwitch: UISwitch!
     @IBOutlet weak var disableInitScreenSwitch: UISwitch!
     
-    
     // MARK: Order Inputs
     
     @IBOutlet weak var currencyTextField: UITextField!
@@ -168,7 +167,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     amount: 600,
                     quantity: 1,
                     discountAmount: nil,
-                    taxAmount: nil),
+                    taxAmount: nil)
             ]),
         paymentMethod: ClientSessionRequestBody.PaymentMethod(
             vaultOnSuccess: false,
@@ -184,13 +183,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var applyTheme: Bool = false
     var payAfterVaultSuccess: Bool = false
     
-    
     func setAccessibilityIds() {
         self.view.accessibilityIdentifier = "Background View"
         self.testingModeSegmentedControl.accessibilityIdentifier = "Testing Mode Segmented Control"
         self.clientTokenTextField.accessibilityIdentifier = "Client Token Text Field"
     }
-    
     
     // MARK: - VIEW LIFE-CYCLE
     
@@ -299,7 +296,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
             
-            
             testParamsStackView.isHidden = (selectedTestScenario == nil)
             
             if testResultSegmentedControl.selectedSegmentIndex == 0 {
@@ -367,7 +363,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             self.lineItems[index] = lineItem
             self.render()
         }
-        vc.onLineItemDeleted = { lineItem in
+        vc.onLineItemDeleted = { _ in
             self.lineItems.remove(at: index)
             self.render()
         }

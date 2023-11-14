@@ -182,11 +182,9 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         startPaymentPhoneNumberTextField.borderStyle = .roundedRect
         startPaymentPhoneNumberTextField.keyboardType = .phonePad
         
-        
         startPaymentSubmitPhoneNumberButton = UIButton(type: .roundedRect)
         startPaymentSubmitPhoneNumberButton.setTitle("3. Submit phone", for: .normal)
         startPaymentSubmitPhoneNumberButton.addTarget(self, action: #selector(submitPaymentPhoneNumberButtonTapped), for: .touchUpInside)
-        
         
         func makeSpacerLabel() -> UILabel {
             let spacerLabel = UILabel()
@@ -317,7 +315,6 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     }
     
     // MARK: - Payment flow
-    
     
     @objc func startPaymentFlowButtonTapped() {
         paymentComponent.start()

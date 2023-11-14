@@ -5,8 +5,6 @@
 //  Created by Carl Eriksson on 24/01/2021.
 //
 
-
-
 import Foundation
 
 public enum PrimerFormType: String, CaseIterable {
@@ -17,5 +15,3 @@ public enum PrimerFormType: String, CaseIterable {
     case address
     case cardForm
 }
-
-

@@ -79,7 +79,7 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
         
         var availablePaymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]?
         
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { paymentMethods, err in
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { paymentMethods, _ in
             availablePaymentMethods = paymentMethods
             exp.fulfill()
         }
@@ -183,7 +183,7 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
         
         var availablePaymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]?
         
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { paymentMethods, err in
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { paymentMethods, _ in
             availablePaymentMethods = paymentMethods
             exp.fulfill()
         }

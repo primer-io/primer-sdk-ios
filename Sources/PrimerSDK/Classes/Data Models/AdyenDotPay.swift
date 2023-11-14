@@ -5,8 +5,6 @@
 //  Created by Admin on 8/11/21.
 //
 
-
-
 import Foundation
 
 typealias AdyenBank = Response.Body.Adyen.Bank
@@ -20,9 +18,9 @@ extension Response.Body {
 }
 
 extension Request.Body.Adyen {
-    
+
     struct BanksList: Encodable {
-        
+
         let paymentMethodConfigId: String
         let command: String = "FETCH_BANK_ISSUERS"
         let parameters: BankTokenizationSessionRequestParameters
@@ -34,9 +32,9 @@ internal struct BankTokenizationSessionRequestParameters: Encodable {
 }
 
 extension Response.Body.Adyen {
-    
+
     struct Bank: Decodable {
-        
+
         let id: String
         let name: String
         let iconUrlStr: String?
@@ -45,7 +43,7 @@ extension Response.Body.Adyen {
             return URL(string: iconUrlStr)
         }()
         let disabled: Bool
-        
+
         private enum CodingKeys: String, CodingKey {
             case id
             case name
@@ -58,5 +56,3 @@ extension Response.Body.Adyen {
 internal struct BanksListSessionResponse: Decodable {
     let result: [Response.Body.Adyen.Bank]
 }
-
-

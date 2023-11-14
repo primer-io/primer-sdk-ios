@@ -5,38 +5,36 @@
 //  Created by Evangelos Pittas on 24/3/21.
 //
 
-
-
 import Foundation
 import PassKit
 
 @available(*, deprecated, message: "Set the order items in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
 internal struct OrderItem: Codable {
-    
+
     public let name: String
     public let unitAmount: Int?
     public let quantity: Int
     public let discountAmount: Int?
     public let taxAmount: Int?
     public var isPending: Bool = false
-    
+
     public var applePayItem: PKPaymentSummaryItem {
-        
+
         var applePayItemAmount: NSDecimalNumber!
-        
+
         let tmpUnitAmount = unitAmount ?? 0
         let tmpQuantity = quantity
         let tmpAmount = tmpUnitAmount * tmpQuantity
         let tmpDiscountAmount = discountAmount ?? 0
         let tmpTaxAmount = taxAmount ?? 0
         let tmpTotalOrderItemAmount = tmpAmount - tmpDiscountAmount + tmpTaxAmount
-        
+
         if AppState.current.currency?.isZeroDecimal == true {
             applePayItemAmount = NSDecimalNumber(value: tmpTotalOrderItemAmount)
         } else {
             applePayItemAmount = NSDecimalNumber(value: tmpTotalOrderItemAmount).dividing(by: 100)
         }
-        
+
         let item = PKPaymentSummaryItem(label: name, amount: applePayItemAmount)
         item.type = isPending ? .pending : .final
         return item
@@ -55,13 +53,13 @@ internal struct OrderItem: Codable {
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         if !isPending && unitAmount == nil {
             let err = PrimerError.generic(message: "amount cannot be null for non-pending items", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         self.name = name
         self.unitAmount = unitAmount
         self.quantity = quantity
@@ -69,7 +67,5 @@ internal struct OrderItem: Codable {
         self.discountAmount = discountAmount
         self.taxAmount = taxAmount
     }
-    
+
 }
-
-

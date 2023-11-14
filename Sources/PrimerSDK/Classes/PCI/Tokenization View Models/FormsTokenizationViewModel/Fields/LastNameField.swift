@@ -5,14 +5,12 @@
 //  Created by Dario Carlomagno on 08/06/22.
 //
 
-
-
 import UIKit
 
 class PrimerLastNameField: PrimerCardFormFieldProtocol {
-    
+
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
+
     static func lastNameFieldContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let lastNameFieldContainerView = PrimerCustomFieldView()
         lastNameFieldContainerView.fieldView = primerTextFieldView
@@ -21,7 +19,7 @@ class PrimerLastNameField: PrimerCardFormFieldProtocol {
         lastNameFieldContainerView.tintColor = theme.input.border.color(for: .selected)
         return lastNameFieldContainerView
     }
-    
+
     static func lastNameFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerLastNameFieldView {
         let lastNameFieldView = PrimerLastNameFieldView()
         lastNameFieldView.placeholder = Strings.CardFormView.LastName.placeholder
@@ -31,5 +29,3 @@ class PrimerLastNameField: PrimerCardFormFieldProtocol {
         return lastNameFieldView
     }
 }
-
-

@@ -1,5 +1,3 @@
-
-
 import UIKit
 
 internal enum TextType {
@@ -8,7 +6,7 @@ internal enum TextType {
 
 internal class TextStyle {
     let body, title, subtitle, amountLabel, system, error: TextTheme
-    
+
     internal init(
         body: TextTheme,
         title: TextTheme,
@@ -29,11 +27,9 @@ internal class TextStyle {
 internal class TextTheme {
     let color: UIColor
     let fontSize: Int
-    
+
     internal init(color: UIColor, fontSize: Int) {
         self.color = color
         self.fontSize = fontSize
     }
 }
-
-

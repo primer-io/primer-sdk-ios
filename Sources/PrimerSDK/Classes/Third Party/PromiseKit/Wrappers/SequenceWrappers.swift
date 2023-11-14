@@ -16,7 +16,7 @@ internal extension Thenable where T: Sequence {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return mapValues(on: dispatcher, transform)
     }
-    
+
     /**
      `Promise<[T]>` => `T` -> `[U]` => `Promise<[U]>`
      
@@ -32,7 +32,7 @@ internal extension Thenable where T: Sequence {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return flatMapValues(on: dispatcher, transform)
     }
-    
+
     /**
      `Promise<[T]>` => `T` -> `U?` => `Promise<[U]>`
      
@@ -48,7 +48,7 @@ internal extension Thenable where T: Sequence {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return compactMapValues(on: dispatcher, transform)
     }
-    
+
     /**
      `Promise<[T]>` => `T` -> `Promise<U>` => `Promise<[U]>`
      
@@ -80,7 +80,7 @@ internal extension Thenable where T: Sequence {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return thenFlatMap(on: dispatcher, transform)
     }
-    
+
     /**
      `Promise<[T]>` => `T` -> Bool => `Promise<[U]>`
      
@@ -257,5 +257,3 @@ internal extension CancellableThenable where U.T: Sequence, U.T.Iterator.Element
         return sortedValues(on: dispatcher)
     }
 }
-
-

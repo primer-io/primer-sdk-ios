@@ -23,7 +23,6 @@ class PayPalServiceTests: XCTestCase {
         
         MockLocator.registerDependencies()
 
-
         let service = MockPayPalService()
         service.startOrderSession({ result in
             switch result {

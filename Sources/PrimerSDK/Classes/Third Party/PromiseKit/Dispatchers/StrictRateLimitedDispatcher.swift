@@ -20,11 +20,11 @@ import Foundation
 /// 100% thread safe.
 
 internal final class StrictRateLimitedDispatcher: RateLimitedDispatcherBase {
-    
+
     internal var startTimeHistory: Queue<DispatchTime>
     private var immediateDispatchesAvailable: Int
     private var latestDeadline = DispatchTime(uptimeNanoseconds: 0)
-    
+
     /// A `PromiseKit` `Dispatcher` that dispatches no more than X executions every Y
     /// seconds. This is a sliding window, so executions occur as rapidly as
     /// possible without exceeding X in any Y-second period. O(X) in space.
@@ -36,24 +36,24 @@ internal final class StrictRateLimitedDispatcher: RateLimitedDispatcherBase {
     ///   - maxDispatches: The number of executions that may be dispatched within a given interval.
     ///   - perInterval: The length of the reference interval, in seconds.
     ///   - queue: The DispatchQueue or Dispatcher on which to perform executions. May be serial or concurrent.
-    
+
     override internal init(maxDispatches: Int, perInterval interval: TimeInterval, queue: Dispatcher = DispatchQueue.global()) {
         startTimeHistory = Queue<DispatchTime>(maxDepth: maxDispatches)
         immediateDispatchesAvailable = maxDispatches
         super.init(maxDispatches: maxDispatches, perInterval: interval, queue: queue)
     }
-    
+
     internal convenience init(maxDispatches: Int, perInterval interval: TimeInterval, queue: DispatchQueue) {
         self.init(maxDispatches: maxDispatches, perInterval: interval, queue: queue as Dispatcher)
     }
 
     override func dispatchFromQueue() {
-        
+
         cleanupNonce += 1
-        
+
         guard nDispatched < maxDispatches else { return }
         guard !undispatched.isEmpty else { return }
-        
+
         let accountedFor = nDispatched + startTimeHistory.count + immediateDispatchesAvailable
         assert(accountedFor == maxDispatches, "Dispatcher bookkeeping problem")
 
@@ -73,7 +73,7 @@ internal final class StrictRateLimitedDispatcher: RateLimitedDispatcherBase {
         if deadline <= latestDeadline {
             deadline = DispatchTime(uptimeNanoseconds: latestDeadline.uptimeNanoseconds + 1)
         }
-        
+
         let body = undispatched.dequeue()
         // A Dispatcher has no asyncAfter; use the serializer queue for timing
         serializer.asyncAfter(deadline: deadline) {
@@ -85,22 +85,22 @@ internal final class StrictRateLimitedDispatcher: RateLimitedDispatcherBase {
                 body()
             }
         }
-        
+
         latestDeadline = deadline
         nDispatched += 1
-        
+
     }
-    
+
     private func recordActualStartTime(_ time: DispatchTime) {
         startTimeHistory.enqueue(time)
         super.recordActualStart()
     }
-    
+
     override func cleanup(_ nonce: Int64) {
         super.cleanup(nonce)
         guard nonce == cleanupNonce else { return }
         startTimeHistory.purge() // We're at least an interval past last start
         immediateDispatchesAvailable = maxDispatches
     }
-    
+
 }

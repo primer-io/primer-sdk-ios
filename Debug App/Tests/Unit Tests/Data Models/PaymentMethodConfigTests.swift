@@ -155,7 +155,6 @@ class PaymentMethodConfigTests: XCTestCase {
             processorConfigId: String.randomString(length: 8),
             options: nil)
         
-        
         paymentMethodsArr = [
             applePayStr,
             apayaStr,
@@ -270,4 +269,3 @@ class PaymentMethodConfigTests: XCTestCase {
     }
     
 }
-

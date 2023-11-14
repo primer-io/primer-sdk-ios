@@ -14,18 +14,17 @@ internal extension NSManagedObjectContext {
 /// handled using promises.
 
 internal struct CoreDataDispatcher: Dispatcher {
-    
+
     let context: NSManagedObjectContext
-    
+
     internal init(_ context: NSManagedObjectContext) {
         self.context = context
     }
-    
+
     internal func dispatch(_ body: @escaping () -> Void) {
         context.perform(body)
     }
-    
+
 }
 
 #endif
-

@@ -1,13 +1,11 @@
-
-
 import Foundation
 
 internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, Hashable {
-    
+
     static var allProviders: [String] {
         return PrimerPaymentMethodType.allCases.compactMap({ $0.provider }).unique
     }
-    
+
     case adyenAlipay            = "ADYEN_ALIPAY"
     case adyenBlik              = "ADYEN_BLIK"
     case adyenBancontactCard    = "ADYEN_BANCONTACT_CARD"
@@ -61,7 +59,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case xenditRetailOutlets    = "XENDIT_RETAIL_OUTLETS"
     case xfersPayNow            = "XFERS_PAYNOW"
     case nolPay                 = "NOL_PAY"
-    
+
     var isEnabled: Bool {
         switch self {
         case .goCardless,
@@ -71,7 +69,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
             return true
         }
     }
-    
+
     var provider: String {
         switch self {
         case .adyenAlipay,
@@ -91,7 +89,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
                 .adyenTwint,
                 .adyenVipps:
             return "ADYEN"
-            
+
         case .apaya,
                 .applePay,
                 .atome,
@@ -105,56 +103,54 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
                 .payPal,
                 .twoCtwoP:
             return rawValue
-            
+
         case .buckarooBancontact,
                 .buckarooEps,
                 .buckarooGiropay,
                 .buckarooIdeal,
                 .buckarooSofort:
             return "BUCKAROO"
-            
+
         case .iPay88Card:
             return "IPAY88"
-            
+
         case .mollieBankcontact,
                 .mollieIdeal:
             return "MOLLIE"
-            
+
         case .payNLBancontact,
                 .payNLGiropay,
                 .payNLIdeal,
                 .payNLPayconiq:
             return "PAY_NL"
-            
+
         case .primerTestKlarna,
                 .primerTestPayPal,
                 .primerTestSofort:
             return "PRIMER_TEST"
-            
+
         case .rapydFast,
                 .rapydGCash,
                 .rapydGrabPay,
                 .rapydPoli,
                 .rapydPromptPay:
             return "RAPYD"
-            
+
         case .omisePromptPay:
             return "OMISE"
-            
+
         case .xenditOvo,
                 .xenditRetailOutlets:
             return "XENDIT"
-            
+
         case .xfersPayNow:
             return "XFERS"
         case .nolPay:
             return "NOL_PAY"
         }
     }
-    
+
     var paymentMethodIdentifier: String {
         return self.rawValue.replacingOccurrences(of: "\(self.provider)_", with: "")
     }
 }
-
-

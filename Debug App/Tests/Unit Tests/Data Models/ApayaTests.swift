@@ -38,8 +38,7 @@ class ApayaDataModelTests: XCTestCase {
         do {
             _ = try Apaya.WebViewResponse(url: url!)
             XCTFail()
-        }
-        catch {
+        } catch {
             XCTAssertNotNil(error)
         }
     }
@@ -49,8 +48,7 @@ class ApayaDataModelTests: XCTestCase {
         do {
             _ = try Apaya.WebViewResponse(url: url!)
             XCTFail()
-        }
-        catch {
+        } catch {
             XCTAssertNotNil(error)
         }
     }
@@ -60,8 +58,7 @@ class ApayaDataModelTests: XCTestCase {
         do {
             _ = try Apaya.WebViewResponse(url: url!)
             XCTFail()
-        }
-        catch {
+        } catch {
             if let err = error as? PrimerError {
                 switch err {
                 case .failedOnWebViewFlow:
@@ -106,4 +103,3 @@ class ApayaDataModelTests: XCTestCase {
     }
     
 }
-

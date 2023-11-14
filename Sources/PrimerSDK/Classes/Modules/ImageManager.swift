@@ -5,12 +5,10 @@
 //  Created by Evangelos on 15/7/22.
 //
 
-
-
 import UIKit
 
 internal class ImageFile: File {
-    
+
     static func getPaymentMethodType(fromFileName fileName: String) -> String? {
         var tmpFileName = fileName.replacingOccurrences(of: "-logo", with: "")
         tmpFileName = tmpFileName.replacingOccurrences(of: "-icon", with: "")
@@ -18,10 +16,10 @@ internal class ImageFile: File {
         tmpFileName = tmpFileName.replacingOccurrences(of: "-dark", with: "")
         tmpFileName = tmpFileName.replacingOccurrences(of: "-light", with: "")
         tmpFileName = tmpFileName.uppercased().replacingOccurrences(of: "-", with: "_")
-        
+
         let paymentMethodTypeRawValues = PrimerPaymentMethodType.allCases.compactMap({ $0.rawValue })
         let results = paymentMethodTypeRawValues.filter({ $0 == tmpFileName })
-        
+
         if results.isEmpty {
             return nil
         } else {
@@ -34,10 +32,10 @@ internal class ImageFile: File {
         themeMode: PrimerTheme.Mode,
         assetType: PrimerPaymentMethodAsset.ImageType
     ) -> String? {
-        
+
         var tmpPaymentMethodFileNameFirstComponent: String?
         guard let supportedPaymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) else { return nil }
-        
+
         if supportedPaymentMethodType == .xfersPayNow {
             tmpPaymentMethodFileNameFirstComponent = supportedPaymentMethodType.provider
         } else if supportedPaymentMethodType.provider == paymentMethodType {
@@ -47,9 +45,9 @@ internal class ImageFile: File {
         } else {
             return nil
         }
-        
+
         tmpPaymentMethodFileNameFirstComponent = tmpPaymentMethodFileNameFirstComponent!.lowercased().replacingOccurrences(of: "_", with: "-")
-        
+
         switch assetType {
         case .logo:
             return "\(tmpPaymentMethodFileNameFirstComponent!)-logo-\(themeMode.rawValue)"
@@ -57,15 +55,15 @@ internal class ImageFile: File {
             return "\(tmpPaymentMethodFileNameFirstComponent!)-icon-\(themeMode.rawValue)"
         }
     }
-    
+
     var cachedImage: UIImage? {
         guard let data = self.data, let image = UIImage(data: data, scale: 2.0) else { return nil }
         return image
     }
-    
+
     var bundledImage: UIImage? {
         let paymentMethodType = ImageFile.getPaymentMethodType(fromFileName: self.fileName) ?? self.fileName
-        
+
         if self.fileName.contains("dark") == true {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType, themeMode: .dark, assetType: .logo),
                let image = UIImage(named: paymentMethodLogoFileName, in: Bundle.primerResources, compatibleWith: nil) {
@@ -88,40 +86,40 @@ internal class ImageFile: File {
                 return image
             }
         }
-        
+
         return nil
     }
-    
+
     var image: UIImage? {
         return cachedImage ?? bundledImage
     }
 }
 
 internal class ImageManager: LogReporter {
-    
+
     func getImages(for imageFiles: [ImageFile]) -> Promise<[ImageFile]> {
         return Promise { seal in
             guard !imageFiles.isEmpty else {
                 seal.fulfill([])
                 return
             }
-            
+
             let timingEventId = UUID().uuidString
             let timingEventStart = Analytics.Event(
                 eventType: .paymentMethodAllImagesLoading,
                 properties: TimerEventProperties(
                     momentType: .start,
                     id: timingEventId))
-                        
+
             let promises = imageFiles.compactMap({ self.getImage(file: $0) })
-            
+
             firstly {
                 when(resolved: promises)
             }
             .done { responses in
                 var imageFiles: [ImageFile] = []
                 var errors: [Error] = []
-                
+
                 for response in responses {
                     switch response {
                     case .success(let imageFile):
@@ -130,7 +128,7 @@ internal class ImageManager: LogReporter {
                         errors.append(err)
                     }
                 }
-                
+
                 if !errors.isEmpty, errors.count == responses.count {
                     let err = InternalError.underlyingErrors(errors: errors, userInfo: nil, diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
@@ -145,7 +143,7 @@ internal class ImageManager: LogReporter {
                     properties: TimerEventProperties(
                         momentType: .end,
                         id: timingEventId))
-                
+
                 Analytics.Service.record(events: [timingEventStart, timingEventEnd])
             }
             .catch { err in
@@ -153,32 +151,31 @@ internal class ImageManager: LogReporter {
             }
         }
     }
-    
+
     func getImage(file: ImageFile) -> Promise<ImageFile> {
         return Promise { seal in
             let downloader = Downloader()
-            
+
             let timingEventId = UUID().uuidString
             let timingEventStart = Analytics.Event(
                 eventType: .paymentMethodImageLoading,
                 properties: TimerEventProperties(
                     momentType: .start,
                     id: timingEventId))
-            
+
             /// First try to download the image with the relevant caching policy.
             /// Therefore, if the image is cached, it will be returned.
             /// If the image download fails, check for a bundled image with the filename,
             /// if it exists continue.
-            
+
             firstly {
                 downloader.download(file: file)
             }
             .done { file in
                 if let imageFile = file as? ImageFile,
-                   imageFile.cachedImage != nil
-                {
+                   imageFile.cachedImage != nil {
                     seal.fulfill(imageFile)
-                    
+
                 } else {
                     let err = InternalError.failedToDecode(message: "image", userInfo: nil, diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
@@ -202,12 +199,12 @@ internal class ImageManager: LogReporter {
                             messageType: .paymentMethodImageLoadingFailed,
                             severity: .info))
                     Analytics.Service.record(events: [bundledImageEvent])
-                    
+
                     self.logger.warn(message: "FAILED TO DOWNLOAD LOGO BUT FOUND LOGO LOCALLY")
                     self.logger.warn(message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")")
 
                     seal.fulfill(file)
-                    
+
                 } else {
                     let failedToLoadEvent = Analytics.Event(
                         eventType: .paymentMethodImageLoading,
@@ -216,7 +213,7 @@ internal class ImageManager: LogReporter {
                             messageType: .paymentMethodImageLoadingFailed,
                             severity: .warning))
                     Analytics.Service.record(events: [failedToLoadEvent])
-                    
+
                     self.logger.warn(message: "FAILED TO DOWNLOAD LOGO")
                     self.logger.warn(message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")")
 
@@ -225,27 +222,24 @@ internal class ImageManager: LogReporter {
             }
         }
     }
-    
+
     static func clean() {
         guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
         let documentsPath = documentDirectoryUrl.path
-        
+
         do {
             let fileNames = try FileManager.default.contentsOfDirectory(atPath: "\(documentsPath)")
 
             for fileName in fileNames {
-                if (fileName.hasSuffix(".png")) {
+                if fileName.hasSuffix(".png") {
                     let filePathName = "\(documentsPath)/\(fileName)"
                     try FileManager.default.removeItem(atPath: filePathName)
                 }
             }
-                        
+
         } catch {
             logger.error(message: "IMAGE MANAGER")
             logger.error(message: "Clean failed with error: \(error)")
         }
     }
 }
-
-
-

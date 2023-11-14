@@ -119,7 +119,6 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertTrue("12345 AB".isValidPostalCode)
         XCTAssertTrue("AB-123-45".isValidPostalCode)
         XCTAssertTrue("AB-123-45".isValidPostalCode)
-
     
         XCTAssertFalse("".isValidPostalCode)
         XCTAssertFalse("¡€#¢∞§¶•".isValidPostalCode)

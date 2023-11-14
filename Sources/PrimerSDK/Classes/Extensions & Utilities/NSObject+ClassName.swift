@@ -5,11 +5,10 @@
 //  Created by Dario Carlomagno on 07/06/22.
 //
 
-
 import Foundation
 
 extension NSObject {
-    
+
     // MARK: - Class Names
 
     @objc static var className: String {
@@ -22,7 +21,7 @@ extension NSObject {
 }
 
 extension NSObject {
-    
+
     private static func classNameFromString(_ name: String) -> String {
         var _name = name
         let components = _name.components(separatedBy: ".")
@@ -45,5 +44,3 @@ extension NSObject {
         return obj as? T
     }
 }
-
-
