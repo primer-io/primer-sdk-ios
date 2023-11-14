@@ -41,6 +41,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     public func updateCollectedData(collectableData: NolPayPaymentCollectableData) {
         switch collectableData {
         case let .paymentData(cardNumber, mobileNumber):
+            nextDataStep = .collectCardAndPhoneData
             self.cardNumber = cardNumber
             self.mobileNumber = mobileNumber
         }

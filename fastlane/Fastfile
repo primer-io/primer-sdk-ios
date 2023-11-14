@@ -27,9 +27,10 @@ app_output_archive_path = "/var/tmp/Primer.io_Debug_App.xcarchive"
 # Utils
 sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
 source_branch_trimmed = ENV['SOURCE_BRANCH'].gsub("refs/heads/", "")
-pr_number = ENV['PR_NUMBER']
+build_type = ENV['BUILD_TYPE'] || "preview"
 
 podfile_path = "Debug App/Podfile"
+pr_number = ENV['PR_NUMBER']
 
 ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
 
@@ -144,14 +145,15 @@ platform :ios do
       archive_path: app_output_archive_path,
       # Build speed optimisation
       skip_package_ipa: options[:skip_package_ipa] || true,
-      skip_package_pkg: true
+      skip_package_pkg: true,
+      skip_package_dependencies_resolution: true
     )
   end
-
+  
   desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
-  lane :appetize_build_and_upload do
+  lane :appetize_build_and_upload do |options|
 
-    build_cocoapods tests:true
+    build_cocoapods tests: options[:tests] || false
 
     # Appetize needs the .app to be zipped
 
@@ -164,7 +166,9 @@ platform :ios do
     )
 
     # Find public key of appetize
-    uri = URI('https://livedemostore.common.primer.io/appetize/ios/preview_' + "#{pr_number}_#{github_run_id}_#{github_run_number}")
+    # If a build exists with this name, we will overwrite it
+    url_end = get_appetize_version_name(build_type, pr_number)
+    uri = URI('https://livedemostore.common.primer.io/appetize/ios/' + "#{url_end}")
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
 
@@ -178,6 +182,7 @@ platform :ios do
     )
     
     update_deployment_url(lane_context[SharedValues::APPETIZE_APP_URL])
+    update_livedemostore_url("https://livedemostore.common.primer.io/ios/#{url_end}")
 
   end
 
@@ -229,25 +234,41 @@ platform :ios do
   end
 
   desc 'This action sets the version and build number'
-  private_lane :set_version_and_build_number do
+  lane :set_version_and_build_number do |options|
+    # The version number is important only for Appetize
+    # The build is identified by the contents of CFBundleVersion in Info.plist
 
-    # We don't really need the version number
-    # at this moment.
-    # The Build number is the unique identifier of the package
-    # matching the Github Workflow run ID and number
+    version_name = get_appetize_version_name(build_type, pr_number)
+    
+    set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: version_name)
+    set_info_plist_value(path: info_plist_path, key: "CFBundleShortVersionString", value: "#{version_name}")
+  end
 
-    # Set version number
-    # increment_version_number(
-    #   version_number: sdk_version_name_source_branch,
-    #   xcodeproj: app_xcode_proj
-    # )
+  require 'cocoapods-core'
 
-    # Set build number
-    set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: "#{github_run_id}.#{github_run_number}")
+  private_lane :get_sdk_version do
+    file_path = "../PrimerSDK.podspec"
+    spec = Pod::Specification.from_file(file_path)
+    spec.version.to_s
+  end
+
+  def get_appetize_version_name(build_type, pr_number)
+    case build_type
+    when "nightly"
+      return "nightly_#{Time.now.strftime("%d.%m.%Y")}"
+    when "release"
+      return "release_#{get_sdk_version}"
+    else
+      return "preview_#{pr_number}"
+    end
   end
   
   def update_deployment_url(pub_url)
     sh("echo APPETIZE_APP_URL=#{pub_url} >> $GITHUB_ENV")
+  end
+
+  def update_livedemostore_url(url)
+    sh("echo LIVEDEMOSTORE_URL=#{url} >> $GITHUB_ENV")
   end
 
   desc 'Store the Browserstack ID into a file'
