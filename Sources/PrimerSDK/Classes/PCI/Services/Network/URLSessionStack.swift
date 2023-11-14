@@ -5,30 +5,28 @@
 //  Created by Evangelos Pittas on 26/2/21.
 //
 
-
-
 import Foundation
 
 internal class URLSessionStack: NetworkService, LogReporter {
-    
+
     private let session: URLSession
     private let parser: Parser
-    
+
     // MARK: - Object lifecycle
-    
+
     init(session: URLSession = .shared, parser: Parser = JSONParser()) {
         self.session = session
         self.parser = parser
     }
-    
+
     // MARK: - Network Stack logic
-    
+
     // swiftlint:disable function_body_length
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) {
-        
+
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         let id = String.randomString(length: 32)
-        
+
         if let primerAPI = endpoint as? PrimerAPI, shouldReportNetworkEvents(for: primerAPI) {
             let reqEvent = Analytics.Event(
                 eventType: .networkCall,
@@ -40,57 +38,57 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     errorBody: nil,
                     responseCode: nil))
             Analytics.Service.record(event: reqEvent)
-            
+
             let connectivityEvent = Analytics.Event(
                 eventType: .networkConnectivity,
                 properties: NetworkConnectivityEventProperties(
                     networkType: Connectivity.networkType))
             Analytics.Service.record(event: connectivityEvent)
         }
-        
+
         guard let url = url(for: endpoint) else {
             let err = InternalError.invalidUrl(url: "Base URL: \(endpoint.baseURL ?? "nil") | Endpoint: \(endpoint.path)", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
-        
+
         if let headers = endpoint.headers {
             request.allHTTPHeaderFields = headers
         }
-        
+
         if let data = endpoint.body {
             request.httpBody = data
         }
-        
+
 #if DEBUG
-        if let queryParams = endpoint.queryParameters {            
+        if let queryParams = endpoint.queryParameters {
             var urlQueryItems: [URLQueryItem] = []
-            
+
             for (key, val) in queryParams {
                 let urlQueryItem = URLQueryItem(name: key, value: val)
                 urlQueryItems.append(urlQueryItem)
             }
-            
+
             if !urlQueryItems.isEmpty {
                 var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
                 urlComponents.queryItems = urlQueryItems
             }
         }
- 
+
         logger.debug(message: "🌎 Network request [\(request.httpMethod!)] \(request.url!)")
         let headerDescriptions = request.allHTTPHeaderFields?.map { key, value in
             return " - \(key) = \(value)"
         } ?? []
         logger.debug(message: "📃 Request Headers:\n\(headerDescriptions.joined(separator: "\n"))")
 #endif
-        
+
         let dataTask = session.dataTask(with: request) { [logger] data, response, error in
             let httpResponse = response as? HTTPURLResponse
-            
+
             var resEventProperties: NetworkCallEventProperties?
             var resEvent: Analytics.Event?
             if !endpoint.path.isEmpty {
@@ -102,59 +100,59 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     errorBody: nil,
                     responseCode: (response as? HTTPURLResponse)?.statusCode
                 )
-                
+
                 resEvent = Analytics.Event(
                     eventType: .networkCall,
                     properties: resEventProperties)
-                
+
                 resEvent!.properties = resEventProperties
             }
-            
+
 #if DEBUG
 
 #endif
-                        
+
             if let error = error {
                 if resEvent != nil {
                     resEventProperties!.errorBody = "\(error)"
                     resEvent!.properties = resEventProperties
                     Analytics.Service.record(event: resEvent!)
                 }
-                
+
 #if DEBUG
-                logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)", userInfo: ["ErrorMessage" : error.localizedDescription])
+                logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)", userInfo: ["ErrorMessage": error.localizedDescription])
 #endif
-                
+
                 let err = InternalError.underlyingErrors(errors: [error], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 DispatchQueue.main.async { completion(.failure(err)) }
                 return
             }
-            
+
             guard let data = data else {
                 if resEvent != nil {
                     resEventProperties?.errorBody = "No data received"
                     resEvent!.properties = resEventProperties
                     Analytics.Service.record(event: resEvent!)
                 }
-                
+
 #if DEBUG
                 self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                 self.logger.error(message: "No data received.")
 #endif
-                
+
                 let err = InternalError.noData(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 DispatchQueue.main.async { completion(.failure(err)) }
                 return
             }
-            
+
             do {
                 if resEvent != nil {
                     resEvent?.properties = resEventProperties
                     Analytics.Service.record(event: resEvent!)
                 }
-                
+
 #if DEBUG
                 if endpoint.shouldParseResponseBody {
                     if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
@@ -174,14 +172,14 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                 return " - \(key) = \(value)"
                             }
                             logger.debug(message: "📃 Response Headers:\n\(headerDescriptions.joined(separator: "\n"))")
-                            
+
                         }
                         let bodyDescription = jsonStr ?? "No body found"
                         logger.debug(message: "Body:\n\(bodyDescription)")
                     }
                 }
 #endif
-                
+
                 if endpoint.shouldParseResponseBody == false, httpResponse?.statusCode == 200 {
                     let dummyRes: T = DummySuccess(success: true) as! T
                     DispatchQueue.main.async { completion(.success(dummyRes)) }
@@ -194,52 +192,52 @@ internal class URLSessionStack: NetworkService, LogReporter {
                    let primerErrorJSON = jsonDic["error"] as? [String: Any],
                    let primerErrorObject = try? JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed),
                    let statusCode = (response as? HTTPURLResponse)?.statusCode {
-                    
+
                     let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: primerErrorObject)
-                    
+
                     if resEvent != nil {
                         resEventProperties?.errorBody = "\(primerErrorJSON)"
                         resEvent!.properties = resEventProperties
                         Analytics.Service.record(event: resEvent!)
                     }
-                    
+
                     if statusCode == 401 {
                         let err = InternalError.unauthorized(url: urlStr, method: endpoint.method, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
-                        
+
 #if DEBUG
                         logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
 #endif
-                        
+
                         DispatchQueue.main.async { completion(.failure(err)) }
-                        
+
                     } else if (400...499).contains(statusCode) {
                         let err = InternalError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
-                        
+
 #if DEBUG
                         self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
 #endif
-                        
+
                         DispatchQueue.main.async { completion(.failure(err)) }
-                        
+
                     } else if (500...599).contains(statusCode) {
                         let err = InternalError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
-                        
+
 #if DEBUG
                         self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
 #endif
-                        
+
                         DispatchQueue.main.async { completion(.failure(err)) }
-                        
+
                     } else {
                         let err = InternalError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
-                        
+
                         if resEvent != nil {
                             resEventProperties?.errorBody = err.localizedDescription
                             resEvent!.properties = resEventProperties
@@ -250,28 +248,28 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
 #endif
-                        
+
                         DispatchQueue.main.async { completion(.failure(err)) }
                     }
-                    
+
                 } else {
                     let err = InternalError.failedToDecode(message: "Failed to decode response from URL: \(urlStr)", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
-                    
+
                     if resEvent != nil {
                         resEventProperties?.errorBody = err.localizedDescription
                         resEvent!.properties = resEventProperties
                         Analytics.Service.record(event: resEvent!)
                     }
-                    
+
 #if DEBUG
                     self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                     self.logger.error(message: "Error: Failed to parse")
 #endif
-                    
+
                     DispatchQueue.main.async { completion(.failure(InternalError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))) }
                 }
-                
+
             }
         }
         dataTask.resume()
@@ -279,36 +277,36 @@ internal class URLSessionStack: NetworkService, LogReporter {
 }
 
 internal extension URLSessionStack {
-    
+
     func url(for endpoint: Endpoint) -> URL? {
         guard let urlStr = endpoint.baseURL else { return nil }
         guard let baseUrl = URL(string: urlStr) else { return nil }
         var url = baseUrl
-        
+
         if endpoint.path != "" {
             url = baseUrl.appendingPathComponent(endpoint.path)
         }
-        
+
         if let queryParameters = endpoint.queryParameters, !queryParameters.keys.isEmpty {
             var urlComponents = URLComponents(string: url.absoluteString)!
             var urlQueryItems: [URLQueryItem] = []
-            
+
             for (key, val) in queryParameters {
                 let urlQueryItem = URLQueryItem(name: key, value: val)
                 urlQueryItems.append(urlQueryItem)
             }
-            
+
             if !urlQueryItems.isEmpty {
                 urlComponents.queryItems = urlQueryItems
             }
-            
+
             let tmpUrl = urlComponents.url ?? url
             return tmpUrl
         }
-        
+
         return url
     }
-    
+
     func shouldReportNetworkEvents(for primerAPI: PrimerAPI) -> Bool {
         // Don't report events for polling requests
         guard primerAPI != PrimerAPI.poll(clientToken: nil, url: "") else {
@@ -321,15 +319,12 @@ internal extension URLSessionStack {
     }
 }
 
-
-
-
 let mockedConfigResponse = """
 {
   "pciUrl" : "https://sdk.api.sandbox.primer.io",
   "paymentMethods2" : [
 {
-            
+
     ],
   "paymentMethods" : [
     {

@@ -56,8 +56,7 @@ class Networking {
         headers: [String: String]?,
         queryParameters: [String: String]?,
         body: Data?,
-        completion: @escaping (_ result: Result<Data, Error>) -> Void)
-    {
+        completion: @escaping (_ result: Result<Data, Error>) -> Void) {
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         
         if let queryParameters = queryParameters {
@@ -123,7 +122,7 @@ class Networking {
                     return
                 }
 
-                if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
+                if httpResponse.statusCode < 200 || httpResponse.statusCode > 399 {
                     logger.debug(message: "Status Code: \(httpResponse.statusCode)")
                     if let data = data, let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
                         logger.debug(message: "Response Body (json):\n\(resJson)")

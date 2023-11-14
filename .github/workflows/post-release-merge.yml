@@ -1,16 +1,12 @@
 name: Post Release PR Merge
 
-on: 
-  workflow_dispatch:
+on:
   pull_request:
-    # Patterns matched against refs/heads
-    branches:
-      - release/next
     types: [ closed ]
 
 jobs:
   release_merge:
-    if: github.event.pull_request.merged == true
+    if: github.head_ref == 'release/next' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Git - Checkout
@@ -28,6 +24,7 @@ jobs:
           git tag $RELEASE_VERSION
           git push origin $RELEASE_VERSION
   build-and-upload-to-appetize:
+    if: github.head_ref == 'release/next' && github.event.pull_request.merged == true
     runs-on: macos-latest
     timeout-minutes: 20
     name: "Build and upload app to Appetize"

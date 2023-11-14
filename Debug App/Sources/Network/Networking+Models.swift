@@ -56,7 +56,7 @@ extension Networking {
                         itemId: "shoes-382190",
                         description: "Fancy Shoes",
                         amount: amount,
-                        quantity: 1),
+                        quantity: 1)
                     //                    ClientSessionRequestBody.Order.LineItem(
                     //                        itemId: "hats-321441",
                     //                        description: "Cool Hat",

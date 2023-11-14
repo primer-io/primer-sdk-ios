@@ -1,11 +1,9 @@
 // MARK: Light
 
-
-
 import UIKit
 
 public struct PrimerColors {
-    
+
     private static let lightModeBlack = PrimerColor.rgb(red: 0, green: 0, blue: 0)
     private static let lightModeWhite = PrimerColor.rgb(red: 255, green: 255, blue: 255)
     private static let lightModeGray = PrimerColor.rgb(red: 142, green: 142, blue: 147)
@@ -23,7 +21,7 @@ public struct PrimerColors {
     private static let darkModeBlue = PrimerColor.rgb(red: 10, green: 132, blue: 255)
     private static let darkModeYellow = PrimerColor.rgb(red: 255, green: 214, blue: 10)
     private static let darkModeGreen = PrimerColor.rgb(red: 50, green: 215, blue: 75)
-    
+
     // MARK: defaults
     public static let black: UIColor = PrimerColor.dynamic(lightMode: lightModeBlack, darkMode: darkModeBlack)
     public static let white: UIColor = PrimerColor.dynamic(lightMode: lightModeWhite, darkMode: darkModeWhite)
@@ -33,10 +31,8 @@ public struct PrimerColors {
     public static let blue: UIColor = PrimerColor.dynamic(lightMode: lightModeBlue, darkMode: darkModeBlue)
     public static let yellow: UIColor = PrimerColor.dynamic(lightMode: lightModeYellow, darkMode: darkModeYellow)
     public static let green: UIColor = PrimerColor.dynamic(lightMode: lightModeGreen, darkMode: darkModeGreen)
-    
+
     // MARK: special cases
     static let klarnaPink = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
     static let blurredBackground = UIColor.black.withAlphaComponent(0.4)
 }
-
-

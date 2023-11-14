@@ -95,5 +95,3 @@ class PrimerThemeTests: XCTestCase {
         XCTAssert(theme.fontSize == Int(PrimerDimensions.Font.error))
     }
 }
-
-

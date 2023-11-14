@@ -11,12 +11,12 @@ import XCTest
 
 private struct DummyEndpoint: Endpoint {
     var baseURL: String?
-    var port: Int? = nil
+    var port: Int?
     var path: String = ""
     var method: PrimerSDK.HTTPMethod = .get
-    var headers: [String : String]? = nil
-    var queryParameters: [String : String]? = nil
-    var body: Data? = nil
+    var headers: [String: String]?
+    var queryParameters: [String: String]?
+    var body: Data?
     var shouldParseResponseBody: Bool = false
     
     init(baseURL: String?, path: String = "", queryParameters: [String: String]? = nil) {

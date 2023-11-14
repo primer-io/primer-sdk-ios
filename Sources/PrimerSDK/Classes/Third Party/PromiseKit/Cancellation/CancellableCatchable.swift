@@ -70,11 +70,11 @@ internal extension CancellableCatchMixin {
 internal class CancelContextFinalizer {
     /// The CancelContext associated with this finalizer
     internal let cancelContext: CancelContext
-    
+
     init(cancel: CancelContext) {
         self.cancelContext = cancel
     }
-    
+
     /**
      Cancel all members of the promise chain and their associated asynchronous operations.
 
@@ -83,21 +83,21 @@ internal class CancelContextFinalizer {
     internal func cancel(with error: Error = PMKError.cancelled) {
         cancelContext.cancel(with: error)
     }
-    
+
     /**
      True if all members of the promise chain have been successfully cancelled, false otherwise.
      */
     internal var isCancelled: Bool {
         return cancelContext.isCancelled
     }
-    
+
     /**
      True if `cancel` has been called on the CancelContext associated with this promise, false otherwise.  `cancelAttempted` will be true if `cancel` is called on any promise in the chain.
      */
     internal var cancelAttempted: Bool {
         return cancelContext.cancelAttempted
     }
-    
+
     /**
      The cancellation error generated when the promise is cancelled, or `nil` if not cancelled.
      */
@@ -116,7 +116,7 @@ internal class CancellableFinalizer: CancelContextFinalizer {
         self.pmkFinalizer = pmkFinalizer
         super.init(cancel: cancel)
     }
-    
+
     /// `finally` is the same as `ensure`, but it is not chainable
     @discardableResult
     internal func finally(on: Dispatcher = conf.D.return, _ body: @escaping () -> Void) -> CancelContext {
@@ -132,7 +132,7 @@ internal class CancellableCascadingFinalizer: CancelContextFinalizer {
         self.pmkCascadingFinalizer = pmkCascadingFinalizer
         super.init(cancel: cancel)
     }
-    
+
     /**
      The provided closure executes when this promise rejects.
 
@@ -186,7 +186,7 @@ internal class CancellableCascadingFinalizer: CancelContextFinalizer {
     internal func `catch`<E: Swift.Error>(only: E.Type, on: Dispatcher = conf.D.return, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) -> Void) -> CancellableCascadingFinalizer {
         return CancellableCascadingFinalizer(pmkCascadingFinalizer.catch(only: only, on: on, policy: policy, body), cancel: cancelContext)
     }
-    
+
     /**
      Consumes the Swift unused-result warning.
      - Note: You should `catch`, but in situations where you know you don’t need a `catch`, `cauterize` makes your intentions clear.
@@ -233,14 +233,14 @@ internal extension CancellableCatchMixin {
             self.cancelContext.append(context: rval.cancelContext, thenableCancelItemList: cancelItemList)
             return rval.thenable
         }
-        
+
         let promise = self.catchable.recover(on: on, policy: policy, cancelBody)
         if thenable.result != nil && policy == .allErrors {
             self.cancelContext.recover()
         }
         return CancellablePromise(promise: promise, context: self.cancelContext, cancelItemList: cancelItemList)
     }
-    
+
     /**
      The provided closure executes when this cancellable promise rejects.
      
@@ -272,7 +272,7 @@ internal extension CancellableCatchMixin {
             }
             return rval
         }
-        
+
         let promise = self.catchable.recover(on: on, policy: policy, cancelBody)
         if thenable.result != nil && policy == .allErrors {
             self.cancelContext.recover()
@@ -314,7 +314,7 @@ internal extension CancellableCatchMixin {
             self.cancelContext.append(context: rval.cancelContext, thenableCancelItemList: cancelItemList)
             return rval.thenable
         }
-        
+
         let promise = self.catchable.recover(only: only, on: on, cancelBody)
         if thenable.result != nil && only.isCancelled {
             self.cancelContext.recover()
@@ -349,7 +349,7 @@ internal extension CancellableCatchMixin {
             }
             return rval
         }
-        
+
         let promise = self.catchable.recover(only: only, on: on, cancelBody)
         let cancellablePromise = CancellablePromise(promise: promise, context: self.cancelContext)
         if let cancellable = promise.cancellable {
@@ -390,7 +390,7 @@ internal extension CancellableCatchMixin {
             self.cancelContext.append(context: rval.cancelContext, thenableCancelItemList: cancelItemList)
             return rval.thenable
         }
-        
+
         let promise = self.catchable.recover(only: only, on: on, policy: policy, cancelBody)
         if thenable.result != nil && policy == .allErrors {
             self.cancelContext.recover()
@@ -426,7 +426,7 @@ internal extension CancellableCatchMixin {
             }
             return rval
         }
-        
+
         let promise = self.catchable.recover(only: only, on: on, policy: policy, cancelBody)
         if thenable.result != nil && policy == .allErrors {
             self.cancelContext.recover()
@@ -480,7 +480,7 @@ internal extension CancellableCatchMixin {
         }
         return rp.promise
     }
-    
+
     /**
      The provided closure executes when this cancellable promise resolves, whether it rejects or not.
      The chain waits on the returned `CancellablePromise<Void>`.
@@ -510,7 +510,7 @@ internal extension CancellableCatchMixin {
             on.dispatch {
                 let rv = body()
                 rp.promise.appendCancelContext(from: rv)
-                
+
                 rv.done {
                     switch result {
                     case .success(let value):
@@ -529,7 +529,7 @@ internal extension CancellableCatchMixin {
         }
         return rp.promise
     }
-    
+
     /**
      Consumes the Swift unused-result warning.
      - Note: You should `catch`, but in situations where you know you don’t need a `catch`, `cauterize` makes your intentions clear.
@@ -560,14 +560,13 @@ internal extension CancellableCatchMixin where C.T == Void {
                 self.cancelContext.recover()
             }
         }
-        
+
         let promise = self.catchable.recover(on: on, policy: policy, cancelBody)
         if thenable.result != nil && policy == .allErrors {
             self.cancelContext.recover()
         }
         return CancellablePromise(promise: promise, context: self.cancelContext)
     }
-
 
     /**
      The provided closure executes when this cancellable promise rejects with the specific error passed in.
@@ -582,8 +581,7 @@ internal extension CancellableCatchMixin where C.T == Void {
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
      */
     func recover<E: Swift.Error>(only: E, on: Dispatcher = conf.D.map, _ body: @escaping(E) throws -> Void)
-        -> CancellablePromise<Void> where E: Equatable
-    {
+        -> CancellablePromise<Void> where E: Equatable {
         let cancelBody = { (error: E) throws -> Void in
             _ = self.cancelContext.removeItems(self.cancelItemList, clearList: true)
             try body(error)
@@ -591,7 +589,7 @@ internal extension CancellableCatchMixin where C.T == Void {
                 self.cancelContext.recover()
             }
         }
-        
+
         let promise = self.catchable.recover(only: only, on: on, cancelBody)
         if thenable.result != nil && only.isCancelled {
             self.cancelContext.recover()
@@ -618,7 +616,7 @@ internal extension CancellableCatchMixin where C.T == Void {
                 self.cancelContext.recover()
             }
         }
-        
+
         let promise = self.catchable.recover(only: only, on: on, policy: policy, cancelBody)
         if thenable.result != nil && policy == .allErrors {
             self.cancelContext.recover()

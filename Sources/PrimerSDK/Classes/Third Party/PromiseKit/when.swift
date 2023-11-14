@@ -69,7 +69,7 @@ private func _when<U: Thenable>(_ thenables: [U]) -> Promise<Void> {
  - SeeAlso: `when(resolved:)`
 */
 internal func when<U: Thenable>(fulfilled thenables: [U]) -> Promise<[U.T]> {
-    return _when(thenables).map(on: nil) { thenables.map{ $0.value! } }
+    return _when(thenables).map(on: nil) { thenables.map { $0.value! } }
 }
 
 /// Wait for all promises in a set to fulfill.
@@ -168,7 +168,7 @@ internal func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurre
         func testDone() {
             barrier.sync {
                 if pendingPromises == 0 {
-                    root.resolver.fulfill(promises.compactMap{ $0.value })
+                    root.resolver.fulfill(promises.compactMap { $0.value })
                 }
             }
         }
@@ -193,7 +193,7 @@ internal func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurre
 
         dequeue()
     }
-        
+
     dequeue()
 
     return root.promise
@@ -231,13 +231,13 @@ internal func when<T>(resolved promises: [Promise<T>]) -> Guarantee<[Result<T, E
 
     let rg = Guarantee<[Result<T, Error>]>(.pending)
     for promise in promises {
-        promise.pipe { result in
+        promise.pipe { _ in
             barrier.sync(flags: .barrier) {
                 countdown -= 1
             }
             barrier.sync {
                 if countdown == 0 {
-                    rg.box.seal(promises.map{ $0.result! })
+                    rg.box.seal(promises.map { $0.result! })
                 }
             }
         }
@@ -355,7 +355,7 @@ internal func when(_ guarantees: Guarantee<Void>...) -> Guarantee<Void> {
 
 // Waits on all provided Guarantees.
 internal func when(guarantees: [Guarantee<Void>]) -> Guarantee<Void> {
-    return when(fulfilled: guarantees).recover{ _ in }.asVoid()
+    return when(fulfilled: guarantees).recover { _ in }.asVoid()
 }
 
 //////////////////////////////////////////////////////////// Cancellation
@@ -507,11 +507,11 @@ internal func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurre
     guard concurrently > 0 else {
         return CancellablePromise(error: PMKError.badInput)
     }
-    
+
     var pi = promiseIterator
     var generatedPromises: [CancellablePromise<It.Element.U.T>] = []
     var rootPromise: CancellablePromise<[It.Element.U.T]>!
-    
+
     let generator = AnyIterator<Promise<It.Element.U.T>> {
         guard let promise = pi.next() as? CancellablePromise<It.Element.U.T> else {
             return nil
@@ -523,7 +523,7 @@ internal func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurre
         }
         return promise.promise
     }
-    
+
     rootPromise = CancellablePromise(when(fulfilled: generator, concurrently: concurrently))
     for p in generatedPromises {
         rootPromise.appendCancelContext(from: p)

@@ -21,12 +21,12 @@ internal protocol Dispatcher {
 /// with the supplied components.
 
 internal struct DispatchQueueDispatcher: Dispatcher {
-    
+
     let queue: DispatchQueue
     let group: DispatchGroup?
     let qos: DispatchQoS?
     let flags: DispatchWorkItemFlags?
-    
+
     internal init(queue: DispatchQueue, group: DispatchGroup? = nil, qos: DispatchQoS? = nil, flags: DispatchWorkItemFlags? = nil) {
         self.queue = queue
         self.group = group

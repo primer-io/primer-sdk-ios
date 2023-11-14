@@ -5,22 +5,20 @@
 //  Created by Evangelos on 9/5/22.
 //
 
-
-
 import Foundation
 
 class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
-    
+
     static var apiClient: PrimerAPIClientProtocol?
-    
+
     var config: PrimerPaymentMethod
     var selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
     var paymentMethodTokenData: PrimerPaymentMethodTokenData!
     var paymentCheckoutData: PrimerCheckoutData?
     var successMessage: String?
-    
+
     var resumePaymentId: String?
-    
+
     // Events
     var didStartTokenization: (() -> Void)?
     var didFinishTokenization: ((Error?) -> Void)?
@@ -30,38 +28,38 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
     var didPresentPaymentMethodUI: (() -> Void)?
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
-    
+
     init(configuration: PrimerPaymentMethod, selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData) {
         self.config = configuration
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
     }
-    
+
     func start() -> Promise<Void> {
         return Promise { seal in
             firstly {
                 self.startTokenizationFlow()
             }
-            .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
+            .then { _ -> Promise<PrimerCheckoutData?> in
                 return self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData)
             }
             .done { checkoutData in
                 if let checkoutData = checkoutData {
                     PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
-                
+
                 self.handleSuccessfulFlow()
                 seal.fulfill()
             }
             .catch { err in
                 self.didFinishPayment?(err)
-                
+
                 var primerErr: PrimerError!
                 if let error = err as? PrimerError {
                     primerErr = error
                 } else {
                     primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
                 }
-                
+
                 firstly {
                     PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                 }
@@ -73,7 +71,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     func performPreTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             firstly {
@@ -90,7 +88,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
@@ -106,7 +104,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                     ErrorHandler.handle(error: err)
                     throw err
                 }
-                
+
                 let tokenizationService = TokenizationService()
                 return tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData: nil)
             }
@@ -122,13 +120,13 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
     }
-    
+
     func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             firstly {
@@ -148,7 +146,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     private func dispatchActions(config: PrimerPaymentMethod, selectedPaymentMethod: PrimerPaymentMethodTokenData) -> Promise<Void> {
         return Promise { seal in
             var network: String?
@@ -158,9 +156,9 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                     network = "OTHER"
                 }
             }
-            
+
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-            
+
             firstly {
                 clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: network)
             }.done {
@@ -171,7 +169,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
             if PrimerInternal.shared.intent == .vault {
@@ -179,14 +177,14 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             } else {
                 let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
                 let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
-                
+
                 var decisionHandlerHasBeenCalled = false
-                
+
                 PrimerDelegateProxy.primerWillCreatePaymentWithData(
                     checkoutPaymentMethodData,
                     decisionHandler: { paymentCreationDecision in
                         decisionHandlerHasBeenCalled = true
-                        
+
                         switch paymentCreationDecision.type {
                         case .abort(let errorMessage):
                             let error = PrimerError.generic(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -195,7 +193,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                             seal.fulfill()
                         }
                     })
-                
+
                 Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
                     if !decisionHandlerHasBeenCalled {
                         self?.logger.warn(message: "The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.")
@@ -204,7 +202,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
             firstly {
@@ -242,7 +240,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
@@ -258,14 +256,14 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                                 merchantErr = NSError.emptyDescriptionError
                             }
                             seal.reject(merchantErr)
-                            
+
                         case .succeed:
                             seal.fulfill(nil)
-                            
+
                         case .continueWithNewClientToken:
                             seal.fulfill(nil)
                         }
-                        
+
                     } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                         switch resumeDecisionType {
                         case .continueWithNewClientToken:
@@ -273,12 +271,12 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                         case .complete:
                             seal.fulfill(nil)
                         }
-                        
+
                     } else {
                         precondition(false)
                     }
                 }
-                
+
             } else {
                 guard let resumePaymentId = self.resumePaymentId else {
                     let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -286,7 +284,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                     seal.reject(resumePaymentIdError)
                     return
                 }
-                
+
                 firstly {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
@@ -296,7 +294,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                         ErrorHandler.handle(error: err)
                         throw err
                     }
-                    
+
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
@@ -306,21 +304,21 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     // Resume payment with Resume payment ID
-    
+
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
-                
+
                 if let error = error {
                     if let paymentResponse {
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     }
-                    
+
                     seal.reject(error)
-                    
+
                 } else if let paymentResponse = paymentResponse {
                     if paymentResponse.id == nil {
                         let err = PrimerError.paymentFailed(
@@ -334,7 +332,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
-                        
+
                     } else if paymentResponse.status == .failed {
                         let err = PrimerError.failedToProcessPayment(
                             paymentId: paymentResponse.id ?? "nil",
@@ -348,11 +346,11 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
-                        
+
                     } else {
                         seal.fulfill(paymentResponse)
                     }
-                    
+
                 } else {
                     let err = PrimerError.paymentFailed(
                         description: "Failed to resume payment",
@@ -369,7 +367,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
@@ -378,10 +376,10 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                         switch resumeDecisionType {
                         case .succeed:
                             seal.fulfill(nil)
-                            
+
                         case .continueWithNewClientToken(let newClientToken):
                             let apiConfigurationModule = PrimerAPIConfigurationModule()
-                        
+
                             firstly {
                                 apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
                             }
@@ -391,13 +389,13 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
-                            
+
                                 seal.fulfill(decodedJWTToken)
                             }
                             .catch { err in
                                 seal.reject(err)
                             }
-                            
+
                         case .fail(let message):
                             var merchantErr: Error!
                             if let message = message {
@@ -408,12 +406,12 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                             }
                             seal.reject(merchantErr)
                         }
-                        
+
                     } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                         switch resumeDecisionType {
                         case .continueWithNewClientToken(let newClientToken):
                             let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
-                            
+
                             firstly {
                                 apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
                             }
@@ -423,22 +421,22 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
-                                
+
                                 seal.fulfill(decodedJWTToken)
                             }
                             .catch { err in
                                 seal.reject(err)
                             }
-                            
+
                         case .complete:
                             seal.fulfill(nil)
                         }
-                        
+
                     } else {
                         precondition(false)
                     }
                 }
-                
+
             } else {
                 guard let token = paymentMethodTokenData.token else {
                     let err = PrimerError.invalidClientToken(
@@ -448,7 +446,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                     seal.reject(err)
                     return
                 }
-                
+
                 firstly {
                     self.handleCreatePaymentEvent(token)
                 }
@@ -457,13 +455,13 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                         let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         throw err
                     }
-                    
+
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse!))
                     self.resumePaymentId = paymentResponse!.id
-                    
+
                     if let requiredAction = paymentResponse!.requiredAction {
                         let apiConfigurationModule = PrimerAPIConfigurationModule()
-                        
+
                         firstly {
                             apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
                         }
@@ -473,13 +471,13 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
-                            
+
                             seal.fulfill(decodedJWTToken)
                         }
                         .catch { err in
                             seal.reject(err)
                         }
-                        
+
                     } else {
                         seal.fulfill(nil)
                     }
@@ -490,7 +488,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
@@ -501,7 +499,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                     seal.reject(containerErr)
                     return
                 }
-                
+
                 let threeDSService = ThreeDSService()
                 threeDSService.perform3DS(
                     paymentMethodTokenData: paymentMethodTokenData,
@@ -510,13 +508,13 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                             switch result {
                             case .success(let resumeToken):
                                 seal.fulfill(resumeToken)
-                                
+
                             case .failure(let err):
                                 seal.reject(err)
                             }
                         }
                     }
-                
+
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
@@ -524,19 +522,19 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
-                
+
                 if let error = error {
                     if let paymentResponse {
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     }
-                    
+
                     seal.reject(error)
-                    
+
                 } else if let paymentResponse = paymentResponse {
                     if paymentResponse.id == nil {
                         let err = PrimerError.paymentFailed(
@@ -550,7 +548,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
-                        
+
                     } else if paymentResponse.status == .failed {
                         let err = PrimerError.failedToProcessPayment(
                             paymentId: paymentResponse.id ?? "nil",
@@ -564,11 +562,11 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
-                        
+
                     } else {
                         seal.fulfill(paymentResponse)
                     }
-                    
+
                 } else {
                     let err = PrimerError.paymentFailed(
                         description: "Failed to create payment",
@@ -585,14 +583,12 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
         }
     }
-    
+
     func handleSuccessfulFlow() {
         PrimerUIManager.dismissOrShowResultScreen(type: .success)
     }
-    
+
     func handleFailureFlow(errorMessage: String?) {
         PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
     }
 }
-
-

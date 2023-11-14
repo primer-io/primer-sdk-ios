@@ -5,12 +5,10 @@
 //  Created by Evangelos Pittas on 2/8/21.
 //
 
-
-
 import UIKit
 
 internal class PrimerColor: UIColor {
-    
+
     static func dynamic(lightMode: PrimerColor, darkMode: PrimerColor) -> PrimerColor {
         guard #available(iOS 13.0, *) else { return lightMode }
 
@@ -21,7 +19,7 @@ internal class PrimerColor: UIColor {
 }
 
 internal extension PrimerColor {
-    
+
     convenience init(red: Int, green: Int, blue: Int) {
         assert(red >= 0 && red <= 255, "Invalid red component")
         assert(green >= 0 && green <= 255, "Invalid green component")
@@ -52,14 +50,14 @@ internal extension PrimerColor {
             alpha: CGFloat(alpha) / 255
         )
     }
-    
+
     convenience init?(hex: String) {
         let red, green, blue, alpha: CGFloat
 
         if hex.hasPrefix("#") {
             let start = hex.index(hex.startIndex, offsetBy: 1)
             var hexColor = String(hex[start...])
-            
+
             if hexColor.count == 6 {
                 hexColor += "ff"
             }
@@ -86,23 +84,21 @@ internal extension PrimerColor {
     static var random: PrimerColor {
         return PrimerColor(red: Int.random(in: 0...255), green: Int.random(in: 0...255), blue: Int.random(in: 0...255))
     }
-    
+
     var hexString: String {
-        var r:CGFloat = 0
-        var g:CGFloat = 0
-        var b:CGFloat = 0
-        var a:CGFloat = 0
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
         getRed(&r, green: &g, blue: &b, alpha: &a)
-        let rgb:Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
-        return String(format:"#%06x", rgb)
+        let rgb: Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
+        return String(format: "#%06x", rgb)
     }
 }
 
-import UIKit
-
 public extension UIColor {
 
-    //MARK: - Gray
+    // MARK: - Gray
 
     static let gray100  = #colorLiteral(red: 0.9606924653, green: 0.9608384967, blue: 0.9606702924, alpha: 1)
     static let gray200  = #colorLiteral(red: 0.9214878678, green: 0.9216204286, blue: 0.9214589, alpha: 1)
@@ -112,5 +108,3 @@ public extension UIColor {
     static let gray600  = #colorLiteral(red: 0.4117260277, green: 0.4117894769, blue: 0.4117121696, alpha: 1)
     static let gray700  = #colorLiteral(red: 0.2666399777, green: 0.2666836977, blue: 0.2666304708, alpha: 1)
 }
-
-

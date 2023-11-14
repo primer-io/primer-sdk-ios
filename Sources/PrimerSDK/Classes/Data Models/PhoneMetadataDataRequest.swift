@@ -12,9 +12,9 @@ extension Request.Body {
 }
 
 extension Request.Body.PhoneMetadata {
-    
+
     struct PhoneMetadataDataRequest: Codable {
-        
+
         let phoneNumber: String
     }
 }
@@ -26,7 +26,7 @@ extension Response.Body {
 
 extension Response.Body.PhoneMetadata {
     struct PhoneMetadataDataResponse: Codable {
-        
+
         let isValid: Bool
         let countryCode: String?
         let nationalNumber: String?

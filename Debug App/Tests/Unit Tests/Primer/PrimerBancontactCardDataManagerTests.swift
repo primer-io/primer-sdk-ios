@@ -367,4 +367,3 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         wait(for: [exp], timeout: Self.expectationTimeout)
     }
 }
-

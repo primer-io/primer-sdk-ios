@@ -5,8 +5,6 @@
 //  Created by Evangelos on 22/11/21.
 //
 
-
-
 import Foundation
 
 enum Throwable<T: Decodable>: Decodable {
@@ -21,15 +19,13 @@ enum Throwable<T: Decodable>: Decodable {
             self = .failure(error)
         }
     }
-    
+
     var value: T? {
             switch self {
-            case .failure(_):
+            case .failure:
                 return nil
             case .success(let value):
                 return value
             }
         }
 }
-
-

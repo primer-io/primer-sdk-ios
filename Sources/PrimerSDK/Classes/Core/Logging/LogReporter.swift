@@ -11,14 +11,12 @@ private let silentLogger = DefaultLogger(logLevel: .none)
 
 protocol LogReporter {}
 extension LogReporter {
-    
+
     var logger: PrimerLogger {
         return PrimerLogging.shared.logger
     }
-    
+
     static var logger: PrimerLogger {
         return PrimerLogging.shared.logger
     }
 }
-
-

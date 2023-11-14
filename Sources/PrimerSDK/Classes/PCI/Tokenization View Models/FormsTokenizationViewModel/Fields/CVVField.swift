@@ -5,14 +5,12 @@
 //  Created by Dario Carlomagno on 08/06/22.
 //
 
-
-
 import UIKit
 
 class PrimerCVVField: PrimerCardFormFieldProtocol {
-    
+
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
+
     static func cvvContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let cvvContainerView = PrimerCustomFieldView()
         cvvContainerView.fieldView = primerTextFieldView
@@ -21,7 +19,7 @@ class PrimerCVVField: PrimerCardFormFieldProtocol {
         cvvContainerView.tintColor = theme.input.border.color(for: .selected)
         return cvvContainerView
     }
-    
+
     static func cvvFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerCVVFieldView {
         let cvvField = PrimerCVVFieldView()
         cvvField.placeholder = Strings.CardFormView.CVV.placeholder
@@ -31,5 +29,3 @@ class PrimerCVVField: PrimerCardFormFieldProtocol {
         return cvvField
     }
 }
-
-

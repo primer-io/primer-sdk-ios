@@ -5,8 +5,6 @@
 //  Created by Carl Eriksson on 14/09/2021.
 //
 
-
-
 import Foundation
 
 internal extension Int {
@@ -17,10 +15,10 @@ internal extension Int {
         nf.groupingSize = 3
         nf.decimalSeparator = Locale.current.decimalSeparator
         nf.locale = Locale.current
-        
+
         let amountAsNumber = NSDecimalNumber(value: self)
         var formattedAmountAsNumber = amountAsNumber
-        
+
         if !currency.isZeroDecimal {
             formattedAmountAsNumber = amountAsNumber.dividing(by: 100)
             nf.maximumFractionDigits = 2
@@ -29,9 +27,9 @@ internal extension Int {
             nf.maximumFractionDigits = 0
             nf.minimumFractionDigits = 0
         }
-        
+
         let formattedValue = nf.string(from: formattedAmountAsNumber)!
-        
+
         if let symbol = currency.symbol {
             return "\(symbol)\(formattedValue)"
         } else {
@@ -39,5 +37,3 @@ internal extension Int {
         }
     }
 }
-
-

@@ -1,5 +1,3 @@
-
-
 import UIKit
 
 internal enum ButtonType {
@@ -12,7 +10,7 @@ internal class ButtonTheme {
     let border: BorderTheme
     let text: TextTheme
     let iconColor: UIColor
-    
+
     internal init(
         colorStates: StatefulColor,
         cornerRadius: CGFloat,
@@ -31,5 +29,3 @@ internal class ButtonTheme {
         colorStates.color(for: state)
     }
 }
-
-

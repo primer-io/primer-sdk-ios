@@ -5,12 +5,10 @@
 //  Created by Dario Carlomagno on 07/06/22.
 //
 
-
-
 import UIKit
 
 extension PrimerTextFieldView {
-    
+
     internal func cardFormFieldDidBeginEditingEventWithObjectId(_ objectId: Analytics.Event.Property.ObjectId) -> Analytics.Event {
         Analytics.Event(
             eventType: .ui,
@@ -28,7 +26,7 @@ extension PrimerTextFieldView {
     }
 
     internal func cardFormFieldDidEndEditingEventWithObjectId(_ objectId: Analytics.Event.Property.ObjectId) -> Analytics.Event {
-        
+
         Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -44,5 +42,3 @@ extension PrimerTextFieldView {
                 place: .cardForm))
     }
 }
-
-

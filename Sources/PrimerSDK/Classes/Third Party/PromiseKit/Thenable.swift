@@ -285,7 +285,6 @@ internal extension Thenable {
      }
 }
 
-
 internal extension Thenable where T: Sequence {
     /**
      `Promise<[T]>` => `T` -> `U` => `Promise<[U]>`
@@ -314,8 +313,8 @@ internal extension Thenable where T: Sequence {
          }
      */
     func flatMapValues<U: Sequence>(on: Dispatcher = conf.D.map, _ transform: @escaping(T.Iterator.Element) throws -> U) -> Promise<[U.Iterator.Element]> {
-        return map(on: on){ (foo: T) in
-            try foo.flatMap{ try transform($0) }
+        return map(on: on) { (foo: T) in
+            try foo.flatMap { try transform($0) }
         }
     }
 
@@ -369,7 +368,7 @@ internal extension Thenable where T: Sequence {
         return then(on: on) {
             when(fulfilled: try $0.map(transform))
         }.map(on: nil) {
-            $0.flatMap{ $0 }
+            $0.flatMap { $0 }
         }
     }
 
@@ -428,6 +427,6 @@ internal extension Thenable where T: Collection {
 internal extension Thenable where T: Sequence, T.Iterator.Element: Comparable {
     /// - Returns: a promise fulfilled with the sorted values of this `Sequence`.
     func sortedValues(on: Dispatcher = conf.D.map) -> Promise<[T.Iterator.Element]> {
-        return map(on: on){ $0.sorted() }
+        return map(on: on) { $0.sorted() }
     }
 }

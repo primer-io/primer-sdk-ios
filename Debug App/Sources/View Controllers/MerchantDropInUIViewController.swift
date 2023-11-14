@@ -115,7 +115,6 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
         }
     }
     
-    
     @IBAction func paymentMethodSessionIntentChanged(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
@@ -132,7 +131,6 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
             showPaymentMethodButton.isHidden = text.isEmpty
         }
     }
-    
     
 }
 
@@ -159,7 +157,7 @@ extension MerchantDropInUIViewController {
 
         if paymentMethodTokenData.paymentInstrumentType == .paymentCard,
            let threeDSecureAuthentication = paymentMethodTokenData.threeDSecureAuthentication,
-           (threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess) {
+           threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.notPerformed && threeDSecureAuthentication.responseCode != ThreeDS.ResponseCode.authSuccess {
             var message: String = ""
 
             if let reasonCode = threeDSecureAuthentication.reasonCode {

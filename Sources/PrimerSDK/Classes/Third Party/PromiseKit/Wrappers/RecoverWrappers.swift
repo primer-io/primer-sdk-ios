@@ -1,7 +1,7 @@
 import Dispatch
 
 internal extension _PMKSharedWrappers {
-    
+
     /**
      The provided closure executes when this promise rejects.
      
@@ -22,8 +22,7 @@ internal extension _PMKSharedWrappers {
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documents/CommonPatterns.md#cancellation)
      */
     func recover<U: Thenable>(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, policy: CatchPolicy = conf.catchPolicy,
-        _ body: @escaping(Error) throws -> U) -> BaseOfT where U.T == T
-    {
+        _ body: @escaping(Error) throws -> U) -> BaseOfT where U.T == T {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(on: dispatcher, policy: policy, body)
     }
@@ -48,8 +47,7 @@ internal extension _PMKSharedWrappers {
      - SeeAlso: [Cancellation](http://promisekit.org/docs/)
      */
     func recover<U: Thenable, E: Swift.Error>(only: E, on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil,
-        _ body: @escaping(E) throws -> U) -> BaseOfT where U.T == T, E: Equatable
-    {
+        _ body: @escaping(E) throws -> U) -> BaseOfT where U.T == T, E: Equatable {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(only: only, on: dispatcher, body)
     }
@@ -76,15 +74,14 @@ internal extension _PMKSharedWrappers {
      - SeeAlso: [Cancellation](http://promisekit.org/docs/)
      */
     func recover<U: Thenable, E: Swift.Error>(only: E.Type, on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil,
-        policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) throws -> U) -> BaseOfT where U.T == T
-    {
+        policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) throws -> U) -> BaseOfT where U.T == T {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(only: only, on: dispatcher, policy: policy, body)
     }
 }
 
 internal extension _PMKSharedVoidWrappers {
-    
+
     /**
      The provided closure executes when this promise rejects.
      
@@ -98,12 +95,11 @@ internal extension _PMKSharedVoidWrappers {
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documents/CommonPatterns.md#cancellation)
      */
     func recover(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, policy: CatchPolicy = conf.catchPolicy,
-                 _ body: @escaping(Error) throws -> Void) -> BaseOfT
-    {
+                 _ body: @escaping(Error) throws -> Void) -> BaseOfT {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(on: dispatcher, policy: policy, body)
     }
-    
+
     /**
      The provided closure executes when this promise rejects with the specific error passed in.
      
@@ -118,12 +114,11 @@ internal extension _PMKSharedVoidWrappers {
      - SeeAlso: [Cancellation](http://promisekit.org/docs/)
      */
     func recover<E: Swift.Error>(only: E, on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil,
-                                 _ body: @escaping(E) throws -> Void) -> BaseOfT where E: Equatable
-    {
+                                 _ body: @escaping(E) throws -> Void) -> BaseOfT where E: Equatable {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(only: only, on: dispatcher, body)
     }
-    
+
     /**
      The provided closure executes when this promise rejects with an error of the type passed in.
      
@@ -138,15 +133,14 @@ internal extension _PMKSharedVoidWrappers {
      - SeeAlso: [Cancellation](http://promisekit.org/docs/)
      */
     func recover<E: Swift.Error>(only: E.Type, on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil,
-                                 policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) throws -> Void) -> BaseOfT
-    {
+                                 policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) throws -> Void) -> BaseOfT {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(only: only, on: dispatcher, policy: policy, body)
     }
 }
 
 internal extension CatchMixin {
-    
+
     /**
      The provided closure executes when this promise rejects.
      This variant of `recover` requires the handler to return a Guarantee; your closure cannot `throw`.
@@ -163,11 +157,11 @@ internal extension CatchMixin {
     func recover(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, _ body: @escaping(Error) -> Guarantee<T>) -> Guarantee<T> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(on: dispatcher, body)
-    }    
+    }
 }
 
 internal extension CatchMixin where T == Void {
-    
+
     /**
      The provided closure executes when this promise rejects.
      
@@ -188,7 +182,7 @@ internal extension CatchMixin where T == Void {
 }
 
 internal extension CancellableCatchMixin {
-    
+
     /**
      The provided closure executes when this cancellable promise rejects.
      
@@ -213,12 +207,11 @@ internal extension CancellableCatchMixin {
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
      */
     func recover<V: CancellableThenable>(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil,
-        policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(Error) throws -> V) -> CancellablePromise<C.T> where V.U.T == C.T
-    {
+        policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(Error) throws -> V) -> CancellablePromise<C.T> where V.U.T == C.T {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(on: dispatcher, policy: policy, body)
     }
-    
+
     /**
      The provided closure executes when this cancellable promise rejects with the specific error passed in.
      
@@ -239,8 +232,7 @@ internal extension CancellableCatchMixin {
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
      */
     func recover<V: CancellableThenable, E: Swift.Error>(only: E, on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil,
-        _ body: @escaping(E) throws -> V) -> CancellablePromise<C.T> where V.U.T == C.T, E: Equatable
-    {
+        _ body: @escaping(E) throws -> V) -> CancellablePromise<C.T> where V.U.T == C.T, E: Equatable {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(only: only, on: dispatcher, body)
     }
@@ -267,8 +259,7 @@ internal extension CancellableCatchMixin {
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
      */
     func recover<V: CancellableThenable, E: Swift.Error>(only: E.Type, on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil,
-        policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) throws -> V) -> CancellablePromise<C.T> where V.U.T == C.T
-    {
+        policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) throws -> V) -> CancellablePromise<C.T> where V.U.T == C.T {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(only: only, on: dispatcher, policy: policy, body)
     }

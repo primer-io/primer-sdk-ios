@@ -5,24 +5,22 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-
-
 import SafariServices
 import UIKit
 
 class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
-    
+
     private var tokenizationService: TokenizationServiceProtocol?
     private var statusUrl: URL!
     internal var qrCode: String?
     private var resumeToken: String!
     private var didCancelPolling: (() -> Void)?
-    
+
     deinit {
         tokenizationService = nil
         qrCode = nil
     }
-    
+
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -30,7 +28,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             throw err
         }
     }
-    
+
     override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
@@ -46,7 +44,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                 objectClass: "\(Self.self)",
                 place: .bankSelectionList))
         Analytics.Service.record(event: event)
-        
+
         return Promise { seal in
             firstly {
                 self.validateReturningPromise()
@@ -62,11 +60,11 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             }
         }
     }
-    
+
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
-            
+
             firstly {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
@@ -85,13 +83,13 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             }
         }
     }
-    
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
     }
-    
+
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
@@ -103,7 +101,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             }
         }
     }
-    
+
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             let pollingModule = PollingModule(url: statusUrl)
@@ -116,7 +114,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                 pollingModule.cancel(withError: err)
                 return
             }
-            
+
             firstly {
                 pollingModule.start()
             }
@@ -132,7 +130,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             }
         }
     }
-    
+
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let configId = config.id else {
@@ -141,22 +139,21 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                 seal.reject(err)
                 return
             }
-            
+
             let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
-            
+
             let paymentInstrument = OffSessionPaymentInstrument(
                 paymentMethodConfigId: configId,
                 paymentMethodType: config.type,
                 sessionInfo: sessionInfo)
-            
-            
+
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-            
+
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {
                 tokenizationService.tokenize(requestBody: requestBody)
             }
-            .done{ paymentMethod in
+            .done { paymentMethod in
                 seal.fulfill(paymentMethod)
             }
             .catch { err in
@@ -164,16 +161,16 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             }
         }
     }
-    
+
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
             if let statusUrlStr = decodedJWTToken.statusUrl,
                let statusUrl = URL(string: statusUrlStr),
                decodedJWTToken.intent != nil {
-                
+
                 self.statusUrl = statusUrl
                 self.qrCode = decodedJWTToken.qrCode
-                
+
                 firstly {
                     self.evaluateFireDidReceiveAdditionalInfoEvent()
                 }
@@ -195,7 +192,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             }
         }
     }
-    
+
     override func cancel() {
         self.didCancelPolling?()
         self.didCancelPolling = nil
@@ -204,21 +201,21 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
 }
 
 extension QRCodeTokenizationViewModel {
-    
+
     private func evaluatePresentUserInterface() -> Promise<Void> {
         return Promise { seal in
-            
+
             let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
-            
+
             /// There is no need to check whether the Headless is implemented as the unsupported payment methods will be listed into
             /// PrimerHeadlessUniversalCheckout's private constant `unsupportedPaymentMethodTypes`
             /// Xfers is among them so it won't be loaded
-            
+
             guard isHeadlessCheckoutDelegateImplemented == false else {
                 seal.fulfill()
                 return
             }
-            
+
             firstly {
                 self.presentPaymentMethodUserInterface()
             }
@@ -228,29 +225,29 @@ extension QRCodeTokenizationViewModel {
             .catch { error in
                 seal.reject(error)
             }
-            
+
             return
         }
     }
-    
+
     private func evaluateFireDidReceiveAdditionalInfoEvent() -> Promise<Void> {
         return Promise { seal in
-            
+
             /// There is no need to check whether the Headless is implemented as the unsupported payment methods will be listed into
             /// PrimerHeadlessUniversalCheckout's private constant `unsupportedPaymentMethodTypes`
             /// Xfers is among them so it won't be loaded
             ///
             ///
             /// This Promise only fires event in case of Headless support ad its been designed ad-hoc for this purpose
-            
+
             let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
-            
+
             guard isHeadlessCheckoutDelegateImplemented else {
                 // We are not in Headless, so no need to go through this logic
                 seal.fulfill()
                 return
             }
-            
+
             let isHeadlessDidReceiveAdditionalInfoImplemented = PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
 
             guard isHeadlessDidReceiveAdditionalInfoImplemented else {
@@ -259,47 +256,46 @@ extension QRCodeTokenizationViewModel {
                 seal.reject(err)
                 return
             }
-            
+
             /// We don't want to put a lot of conditions for already unhandled payment methods
             /// So we'll fulFill the promise directly, leaving the rest of the logic as clean as possible to proceed with almost
             /// only happy path
-            
+
             guard self.config.type != PrimerPaymentMethodType.xfersPayNow.rawValue else {
                 seal.fulfill()
                 return
             }
 
-            
             var additionalInfo: PrimerCheckoutAdditionalInfo?
-            
+
             switch self.config.type {
             case PrimerPaymentMethodType.rapydPromptPay.rawValue,
                 PrimerPaymentMethodType.omisePromptPay.rawValue:
-                
+
                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
-                
+
                 guard let expiresAt = decodedJWTToken.expDate else {
                     let err = PrimerError.invalidValue(key: "decodedClientToken.expiresAt", value: decodedJWTToken.expiresAt, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
-                
+
                 guard let qrCodeString = decodedJWTToken.qrCode else {
                     let err = PrimerError.invalidValue(key: "decodedClientToken.qrCode", value: decodedJWTToken.qrCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
-                
+
                 let formatter = DateFormatter().withExpirationDisplayDateFormat()
                 let expiresAtDateString = formatter.string(from: expiresAt)
-                
+
                 if qrCodeString.isHttpOrHttpsURL, URL(string: qrCodeString) != nil {
 
                     additionalInfo = PromptPayCheckoutAdditionalInfo(expiresAt: expiresAtDateString,
@@ -310,13 +306,13 @@ extension QRCodeTokenizationViewModel {
                                                                      qrCodeUrl: nil,
                                                                      qrCodeBase64: qrCodeString)
                 }
-                
+
             default:
                 self.logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")
                 self.logger.info(message: self.config.type)
                 break
             }
-                        
+
             if let additionalInfo = additionalInfo {
                 PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
                 seal.fulfill()
@@ -328,6 +324,3 @@ extension QRCodeTokenizationViewModel {
         }
     }
 }
-
-
-

@@ -8,10 +8,10 @@
 import Foundation
 
 extension Array where Element == Error {
-    
+
     var combinedDescription: String {
         var message: String = ""
-        
+
         self.forEach { err in
             if let primerError = err as? PrimerErrorProtocol {
                 message += "\(primerError.localizedDescription) | "
@@ -20,17 +20,17 @@ extension Array where Element == Error {
                 message += "Domain: \(nsErr.domain), Code: \(nsErr.code), Description: \(nsErr.localizedDescription)  | "
             }
         }
-        
+
         if message.hasSuffix(" | ") {
             message = String(message.dropLast(3))
         }
-        
+
         return "[\(message)]"
     }
 }
 
 extension Error {
-    
+
     var primerError: Error {
         if let internalErr = self as? InternalError {
             return internalErr.exposedError

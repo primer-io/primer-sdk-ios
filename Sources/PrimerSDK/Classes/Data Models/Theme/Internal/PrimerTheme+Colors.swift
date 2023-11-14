@@ -1,5 +1,3 @@
-
-
 import UIKit
 
 internal enum ColorState {
@@ -36,11 +34,9 @@ internal struct StatefulColor {
 internal class ColorSwatch {
     let primary: UIColor
     let error: UIColor
-    
+
     internal init(primary: UIColor, error: UIColor) {
         self.primary = primary
         self.error = error
     }
 }
-
-

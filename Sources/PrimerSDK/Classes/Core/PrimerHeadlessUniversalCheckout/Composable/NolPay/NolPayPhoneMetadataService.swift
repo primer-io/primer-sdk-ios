@@ -15,9 +15,9 @@ protocol NolPayPhoneMetadataProviding {
 
 struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
     var debouncer = Debouncer(delay: 0.275)
-    
+
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion) {
-        
+
         debouncer.debounce {
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
@@ -29,13 +29,29 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
                 completion(.failure(err))
                 return
             }
+            
+            guard !mobileNumber.isEmpty else {
+                let validationError = PrimerValidationError.invalidPhoneNumber(
+                    message: "Phone number cannot be blank.",
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: validationError)
+
+                completion(.success((.invalid(errors: [validationError]), nil, nil)))
+                return
+            }
 
             let urlSessionConfiguration = URLSessionConfiguration.default
             urlSessionConfiguration.requestCachePolicy = .returnCacheDataElseLoad
             let urlSession = URLSession(configuration: urlSessionConfiguration)
             let networkService = URLSessionStack(session: urlSession)
             let client = PrimerAPIClient(networkService: networkService)
-            
+
             let requestBody = Request.Body.PhoneMetadata.PhoneMetadataDataRequest(phoneNumber: mobileNumber)
             client.getPhoneMetadata(clientToken: clientToken, paymentRequestBody: requestBody) { result in
 
