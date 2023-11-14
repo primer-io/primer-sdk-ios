@@ -130,7 +130,6 @@ final class CardValidationServiceTests: XCTestCase {
         
         let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
         delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
-            print(">> COUNT: \(self.delegate.onMetadataForCardValidationStateCount)")
             XCTAssertEqual(networks.availableCardNetworks.count, 1)
             if self.delegate.onMetadataForCardValidationStateCount == self.maxBinLength {
                 expectation2.fulfill()
