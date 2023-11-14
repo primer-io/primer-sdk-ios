@@ -1,3 +1,9 @@
+## 2.18.2 (2023-11-14)
+
+### Fix
+
+- Add local empty phone validation (#740)
+
 ## 2.18.1 (2023-11-13)
 
 ### Fix
