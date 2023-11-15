@@ -13,6 +13,7 @@ extension PrimerHeadlessUniversalCheckout {
     
     public class AssetsManager {
         
+        @available(*, deprecated, message: "Use getCardNetworkAssets(for:) instead")
         public static func getCardNetworkImage(for cardNetwork: CardNetwork) throws -> UIImage? {
             if AppState.current.apiConfiguration == nil {
                 let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
@@ -21,6 +22,25 @@ extension PrimerHeadlessUniversalCheckout {
             }
             
             return UIImage(named: "\(cardNetwork.rawValue)-logo-colored", in: Bundle.primerResources, compatibleWith: nil)
+        }
+        
+        public static func getCardNetworkAsset(for cardNetwork: CardNetwork) throws -> PrimerCardNetworkAsset? {
+            if AppState.current.apiConfiguration == nil {
+                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+            
+            let prefix = "\(cardNetwork.rawValue.lowercased())-card-icon-"
+            guard let asset = PrimerInternalAsset(
+                colored: UIImage(named: "\(prefix)colored", in: Bundle.primerResources, compatibleWith: nil),
+                light: UIImage(named: "\(prefix)light", in: Bundle.primerResources, compatibleWith: nil),
+                dark: UIImage(named: "\(prefix)dark", in: Bundle.primerResources, compatibleWith: nil)
+            ) else {
+                return nil
+            }
+            
+            return PrimerCardNetworkAsset(cardNetwork: cardNetwork, cardNetworkIcon: asset)
         }
         
         public static func getPaymentMethodAsset(for paymentMethodType: String) throws -> PrimerPaymentMethodAsset? {
@@ -111,17 +131,27 @@ extension PrimerHeadlessUniversalCheckout {
     }
 }
 
+public class PrimerCardNetworkAsset {
+    public let cardNetwork: CardNetwork
+    public let cardNetworkIcon: PrimerAsset
+    
+    init(cardNetwork: CardNetwork, cardNetworkIcon: PrimerAsset) {
+        self.cardNetwork = cardNetwork
+        self.cardNetworkIcon = cardNetworkIcon
+    }
+}
+
 public class PrimerPaymentMethodAsset {
     
     public let paymentMethodType: String
     public let paymentMethodName: String
-    public let paymentMethodLogo: PrimerPaymentMethodLogo
+    public let paymentMethodLogo: PrimerAsset
     public let paymentMethodBackgroundColor: PrimerPaymentMethodBackgroundColor
     
     init(
         paymentMethodType: String,
         paymentMethodName: String,
-        paymentMethodLogo: PrimerPaymentMethodLogo,
+        paymentMethodLogo: PrimerAsset,
         paymentMethodBackgroundColor: PrimerPaymentMethodBackgroundColor
     ) {
         self.paymentMethodType = paymentMethodType
@@ -135,7 +165,31 @@ public class PrimerPaymentMethodAsset {
     }
 }
 
-public class PrimerPaymentMethodLogo {
+public protocol PrimerAsset {
+    var colored: UIImage? { get }
+    var light: UIImage? { get }
+    var dark: UIImage? { get }
+}
+
+class PrimerInternalAsset: PrimerAsset {
+    
+    public private(set) var colored: UIImage?
+    public private(set) var light: UIImage?
+    public private(set) var dark: UIImage?
+    
+    init?(colored: UIImage?, light: UIImage?, dark: UIImage?) {
+        if colored == nil, light == nil, dark == nil {
+            return nil
+        }
+        
+        self.colored = colored
+        self.light = light
+        self.dark = dark
+    }
+}
+
+@available(*, deprecated, message: "Use PrimerAsset instead")
+public class PrimerPaymentMethodLogo: PrimerAsset {
     
     public private(set) var colored: UIImage?
     public private(set) var light: UIImage?

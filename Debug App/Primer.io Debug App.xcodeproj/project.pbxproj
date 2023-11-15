@@ -17,6 +17,8 @@
 		042ED1652AF0F5FD0027833F /* MockRawDataManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */; };
 		0479FB192AF2599A00D0AFC9 /* StringTyper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0479FB172AF2599200D0AFC9 /* StringTyper.swift */; };
 		047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D8E882ADEA4C700A5E7BD /* NetworkService.swift */; };
+		04DAAED42B03EED1002E2614 /* AssetsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */; };
+		04DAAED62B03EF0B002E2614 /* SDKSessionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */; };
 		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
 		04F6EF722AE69FC500115D05 /* AnalyticsTests+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */; };
 		04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */; };
@@ -155,6 +157,8 @@
 		042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRawDataManagerDelegate.swift; sourceTree = "<group>"; };
 		0479FB172AF2599200D0AFC9 /* StringTyper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTyper.swift; sourceTree = "<group>"; };
 		047D8E882ADEA4C700A5E7BD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsManagerTests.swift; sourceTree = "<group>"; };
+		04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKSessionHelper.swift; sourceTree = "<group>"; };
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
 		04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsTests+Helpers.swift"; sourceTree = "<group>"; };
 		04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventsTests.swift; sourceTree = "<group>"; };
@@ -311,8 +315,17 @@
 			isa = PBXGroup;
 			children = (
 				0479FB172AF2599200D0AFC9 /* StringTyper.swift */,
+				04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */,
 			);
 			path = "Test Utilities";
+			sourceTree = "<group>";
+		};
+		04DAAED22B03EEBE002E2614 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 		094077DEFDC2739B10CF4183 /* Resources */ = {
@@ -562,6 +575,7 @@
 		D99811C39E1808A948623732 /* Unit Tests */ = {
 			isa = PBXGroup;
 			children = (
+				04DAAED22B03EEBE002E2614 /* Assets */,
 				0479FB162AF2598800D0AFC9 /* Test Utilities */,
 				E1A2F78003351E14426E0B36 /* Analytics */,
 				D83EED4C1249B62B908781B0 /* Data Models */,
@@ -854,9 +868,11 @@
 				A13392BC2AD459E90005A4D7 /* NolPayLinkCardComponentTest.swift in Sources */,
 				3FD160A4D951EA772ADF4E25 /* DecodedClientToken.swift in Sources */,
 				3D112A8DE292D097E651FCDB /* IPay88Tests.swift in Sources */,
+				04DAAED42B03EED1002E2614 /* AssetsManagerTests.swift in Sources */,
 				A1536BAF2AEC0A6D0087DDC0 /* NolTestsMocks.swift in Sources */,
 				A61B9E61EDCE18D34438352E /* PayPalConfirmBillingAgreementTests.swift in Sources */,
 				8064B65A8F83D5B004D081FD /* PaymentMethodConfigTests.swift in Sources */,
+				04DAAED62B03EF0B002E2614 /* SDKSessionHelper.swift in Sources */,
 				4BD7794627267B40E9E10686 /* PrimerCheckoutTheme.swift in Sources */,
 				F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */,
 				24C060A48D4A2670FFC3426F /* ThreeDSErrorTests.swift in Sources */,
