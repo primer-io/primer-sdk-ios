@@ -219,11 +219,14 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     
                     paymentController.present { success in
                         if success == false {
-                            let err = PrimerError.unableToPresentPaymentMethod(
-                                paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
-                                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                                diagnosticsId: UUID().uuidString)
+                            let err = PrimerError.unableToPresentApplePay(userInfo: ["file": #file,
+                                                                                     "class": "\(Self.self)",
+                                                                                     "function": #function,
+                                                                                     "line": "\(#line)"],
+                                                                          diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
+                            self.logger.error(message: "APPLE PAY")
+                            self.logger.error(message: err.recoverySuggestion ?? "")
                             seal.reject(err)
                             return
                         } else {
