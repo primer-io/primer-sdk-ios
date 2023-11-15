@@ -13,6 +13,7 @@ extension PrimerHeadlessUniversalCheckout {
     
     public class AssetsManager {
         
+        @available(*, deprecated, message: "Use getCardNetworkAssets(for:) instead")
         public static func getCardNetworkImage(for cardNetwork: CardNetwork) throws -> UIImage? {
             if AppState.current.apiConfiguration == nil {
                 let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
