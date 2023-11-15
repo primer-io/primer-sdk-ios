@@ -24,7 +24,7 @@ extension PrimerHeadlessUniversalCheckout {
             return UIImage(named: "\(cardNetwork.rawValue)-logo-colored", in: Bundle.primerResources, compatibleWith: nil)
         }
         
-        public static func getCardNetworkAssets(for cardNetwork: CardNetwork) throws -> PrimerCardNetworkAsset? {
+        public static func getCardNetworkAsset(for cardNetwork: CardNetwork) throws -> PrimerCardNetworkAsset? {
             if AppState.current.apiConfiguration == nil {
                 let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)

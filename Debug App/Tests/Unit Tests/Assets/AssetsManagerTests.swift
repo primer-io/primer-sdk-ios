@@ -22,13 +22,13 @@ final class AssetsManagerTests: XCTestCase {
     }
 
     func testCardAssets() throws {
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAssets(for: .cartesBancaires))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAssets(for: .discover))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAssets(for: .masterCard))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAssets(for: .visa))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAssets(for: .amex))
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .cartesBancaires))
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .discover))
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .masterCard))
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .visa))
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .amex))
 
-        XCTAssertNil(try AssetsManager.getCardNetworkAssets(for: .elo))
+        XCTAssertNil(try AssetsManager.getCardNetworkAsset(for: .elo))
     }
 
 }
