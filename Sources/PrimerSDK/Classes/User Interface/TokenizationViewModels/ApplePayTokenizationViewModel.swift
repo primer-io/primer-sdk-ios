@@ -25,7 +25,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var applePayPaymentResponse: ApplePayPaymentResponse!
     // This is the completion handler that notifies that the necessary data were received.
     private var applePayReceiveDataCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?
-    // This is the PKPaymentAuthorizationViewController's completion, call it when tokenization has finished.
+    // This is the PKPaymentAuthorizationController's completion, call it when tokenization has finished.
     private var applePayControllerCompletion: ((PKPaymentAuthorizationResult) -> Void)?
     private var didTimeout: Bool = false
 
@@ -195,9 +195,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
                 var canMakePayment: Bool
                 if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
-                    canMakePayment = PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: supportedNetworks)
+                    canMakePayment = PKPaymentAuthorizationController.canMakePayments(usingNetworks: supportedNetworks)
                 } else {
-                    canMakePayment = PKPaymentAuthorizationViewController.canMakePayments()
+                    canMakePayment = PKPaymentAuthorizationController.canMakePayments()
                 }
 
                 if canMakePayment {
@@ -211,30 +211,28 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     request.supportedNetworks = supportedNetworks
                     request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
 
-                    guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
-                        let err = PrimerError.unableToPresentPaymentMethod(
-                            paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
-                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                        return
+                    let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
+                    paymentController.delegate = self
+                    
+                    self.willPresentPaymentMethodUI?()
+                    self.isCancelled = true
+                    
+                    paymentController.present { success in
+                        if success == false {
+                            //We should get an error from the delegate also here
+                            let err = PrimerError.unableToPresentPaymentMethod(
+                                paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
+                                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                diagnosticsId: UUID().uuidString)
+                            ErrorHandler.handle(error: err)
+                            seal.reject(err)
+                            return
+                        } else {
+                            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
+                            self.didPresentPaymentMethodUI?()
+                            seal.fulfill()
+                        }
                     }
-
-                    paymentVC.delegate = self
-
-                    DispatchQueue.main.async {
-                        self.willPresentPaymentMethodUI?()
-                        self.isCancelled = true
-                        PrimerUIManager.primerRootViewController?.present(paymentVC, animated: true, completion: {
-                            DispatchQueue.main.async {
-                                PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
-                                self.didPresentPaymentMethodUI?()
-                                seal.fulfill()
-                            }
-                        })
-                    }
-
                 } else {
                     if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
                         self.logger.error(message: "APPLE PAY")
@@ -427,12 +425,12 @@ extension ApplePayTokenizationViewModel {
     }
 }
 
+// MARK:- PKPaymentAuthorizationControllerDelegate
 @available(iOS 11.0, *)
-extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDelegate {
-
-    func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
+extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegate {
+    func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
         if self.isCancelled {
-            controller.dismiss(animated: true, completion: nil)
+            controller.dismiss(completion: nil)
             let err = PrimerError.cancelled(
                 paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
@@ -442,7 +440,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
             applePayReceiveDataCompletion = nil
 
         } else if self.didTimeout {
-            controller.dismiss(animated: true, completion: nil)
+            controller.dismiss(completion: nil)
             let err = PrimerError.applePayTimedOut(
                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                 diagnosticsId: UUID().uuidString)
@@ -451,14 +449,10 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
             applePayReceiveDataCompletion = nil
         }
     }
-
-    @available(iOS 11.0, *)
-    func paymentAuthorizationViewController(
-        _ controller: PKPaymentAuthorizationViewController,
-        didAuthorizePayment payment: PKPayment,
-        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
-    ) {
-
+    
+    func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController, 
+                                        didAuthorizePayment payment: PKPayment,
+                                        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
         var isMockedBE: Bool = false
 #if DEBUG
         if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
@@ -476,7 +470,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
             ErrorHandler.handle(error: err)
             completion(PKPaymentAuthorizationResult(status: .failure, errors: [err]))
             Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-                controller.dismiss(animated: true, completion: nil)
+                controller.dismiss(completion: nil)
             }
             applePayReceiveDataCompletion?(.failure(err))
             applePayReceiveDataCompletion = nil
@@ -521,13 +515,13 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationViewControllerDel
                 ), billingAddress: billingAddress)
 
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
-            controller.dismiss(animated: true, completion: nil)
+            controller.dismiss(completion: nil)
             applePayReceiveDataCompletion?(.success(applePayPaymentResponse))
             applePayReceiveDataCompletion = nil
 
         } catch {
             completion(PKPaymentAuthorizationResult(status: .failure, errors: [error]))
-            controller.dismiss(animated: true, completion: nil)
+            controller.dismiss(completion: nil)
             applePayReceiveDataCompletion?(.failure(error))
             applePayReceiveDataCompletion = nil
         }
