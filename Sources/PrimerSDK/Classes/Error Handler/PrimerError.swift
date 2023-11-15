@@ -43,7 +43,6 @@ public enum PrimerError: PrimerErrorProtocol {
     case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String)
     case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String)
     case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
-    case unableToPresentApplePay(userInfo: [String: String]?, diagnosticsId: String)
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String)
     case unsupportedPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
@@ -58,6 +57,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case failedToProcessPayment(paymentId: String, status: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case unableToPresentApplePay(userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
 
     public var errorId: String {
@@ -114,8 +114,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "unable-to-make-payments-on-provided-networks"
         case .unableToPresentPaymentMethod:
             return "unable-to-present-payment-method"
-        case .unableToPresentApplePay:
-            return "unable-to-present-apple-pay"
         case .unsupportedIntent:
             return "unsupported-session-intent"
         case .unsupportedPaymentMethod:
@@ -142,6 +140,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "invalid-vaulted-payment-method-id"
         case .nolError:
             return "nol-pay-sdk-error"
+        case .unableToPresentApplePay:
+            return "unable-to-present-apple-pay"
         case .unknown:
             return "unknown"
         }
@@ -306,8 +306,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Unable to make payments on provided networks"
         case .unableToPresentPaymentMethod(let paymentMethodType, _, _):
             return "Unable to present payment method \(paymentMethodType)"
-        case .unableToPresentApplePay( _, _):
-            return "Unable to present Apple Pay"
         case .unsupportedIntent(let intent, _, _):
             return "Unsupported session intent \(intent.rawValue)"
         case .underlyingErrors(let errors, _, _):
@@ -332,6 +330,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
         case .nolError(let code, let message, _, _):
             return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
+        case .unableToPresentApplePay( _, _):
+            return "Unable to present Apple Pay"
         case .unknown:
             return "Something went wrong"
         }
@@ -370,7 +370,6 @@ public enum PrimerError: PrimerErrorProtocol {
                 .invalidValue(_, _, let userInfo, _),
                 .unableToMakePaymentsOnProvidedNetworks(let userInfo, _),
                 .unableToPresentPaymentMethod(_, let userInfo, _),
-                .unableToPresentApplePay(let userInfo, _),
                 .unsupportedIntent(_, let userInfo, _),
                 .unsupportedPaymentMethod(_, let userInfo, _),
                 .underlyingErrors(_, let userInfo, _),
@@ -384,6 +383,7 @@ public enum PrimerError: PrimerErrorProtocol {
                 .failedToProcessPayment(_, _, let userInfo, _),
                 .invalidVaultedPaymentMethodId(_, let userInfo, _),
                 .nolError(_, _, let userInfo, _),
+                .unableToPresentApplePay(let userInfo, _),
                 .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
 
@@ -462,8 +462,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return nil
         case .unableToPresentPaymentMethod:
             return "Check if all necessary values have been provided on your client session. You can find the necessary values on our documentation (website)."
-        case .unableToPresentApplePay:
-            return "PassKit was unable to present the Apple Pay UI. Check merchantIdentifier and other parameters are set correctly for the current environment."
         case .unsupportedIntent(let intent, _, _):
             if intent == .checkout {
                 return "Change the intent to .vault"
@@ -494,6 +492,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Please provide the id of one of the vaulted payment methods that have been returned by the 'fetchVaultedPaymentMethods' function."
         case .nolError:
             return nil
+        case .unableToPresentApplePay:
+            return "PassKit was unable to present the Apple Pay UI. Check merchantIdentifier and other parameters are set correctly for the current environment."
         case .unknown:
             return "Contact Primer and provide them diagnostics id \(self.diagnosticsId)"
         }
