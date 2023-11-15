@@ -320,17 +320,4 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         errorDelegate?.didReceiveError(error: error)
 #endif
     }
-    
-    // Helper method
-    private func makeAndHandleInvalidValueError(forKey key: String) {
-        let error = PrimerError.invalidValue(key: key, value: nil, userInfo: [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ],
-        diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        self.errorDelegate?.didReceiveError(error: error)
-    }
 }

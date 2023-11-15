@@ -9,3 +9,4 @@ import Foundation
 protocol FormCollectableData: PrimerCollectableData {}
 
 public protocol PrimerHeadlessFormComponent: PrimerHeadlessCollectDataComponent {}
+

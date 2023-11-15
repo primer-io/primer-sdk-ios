@@ -35,14 +35,7 @@ public class BanksComponent: PrimerHeadlessFormComponent {
     public func updateCollectedData(collectableData: BanksCollectableData) {
 
         //TODO: need new analytical events, refactor to move outside of NolPay
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.LINK_CARD_UPDATE_COLLECTED_DATA_METHOD,
-                params: [
-                    "category": paymentMethodType.rawValue,
-                ]))
-        Analytics.Service.record(events: [sdkEvent])
+
 
         switch collectableData {
         case .bankId(bankId: let bankId):
@@ -69,15 +62,7 @@ public class BanksComponent: PrimerHeadlessFormComponent {
     }
     
     public func submit() {
-        
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.LINK_CARD_SUBMIT_DATA_METHOD,
-                params: [
-                    "category": paymentMethodType.rawValue,
-                ]))
-        Analytics.Service.record(events: [sdkEvent])
+        trackSubmit()
 
         switch nextDataStep {
         default: break
@@ -91,32 +76,36 @@ public class BanksComponent: PrimerHeadlessFormComponent {
     }
     
     public func start() {
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.LINK_CARD_START_METHOD,
-                params: [
-                    "category": paymentMethodType.rawValue,
-                ]))
-        Analytics.Service.record(events: [sdkEvent])
+        trackStart()
         guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == PrimerPaymentMethodManagerCategory.formWithRedirect.rawValue }).first as? BankSelectorTokenizationViewModel else {
             return
         }
         self.tokenizationViewModel = paymentMethod
 //        let result = paymentMethod.performTokenizationStep().result
     }
-    
-    // Helper method
-    private func makeAndHandleInvalidValueError(forKey key: String) {
-        let error = PrimerError.invalidValue(key: key, value: nil, userInfo: [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ],
-        diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        self.errorDelegate?.didReceiveError(error: error)
+}
+
+private extension BanksComponent {
+    func trackSubmit() {
+        trackEvent(BanksAnalyticsEvent.submit)
+    }
+    func trackStart() {
+        trackEvent(BanksAnalyticsEvent.start)
+    }
+    func trackCollectableData() {
+        trackEvent(BanksAnalyticsEvent.updateCollectedData)
+    }
+    func trackEvent(_ event: BanksAnalyticsEvent, additionalParams: [String: String]? = nil) {
+        var params: [String: String] = ["category": paymentMethodType.rawValue]
+        if let additionalParams {
+            params.merge(additionalParams) { (_, new) in new }
+        }
+        let sdkEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: event.rawValue,
+                params: params))
+        Analytics.Service.record(events: [sdkEvent])
     }
 }
 
