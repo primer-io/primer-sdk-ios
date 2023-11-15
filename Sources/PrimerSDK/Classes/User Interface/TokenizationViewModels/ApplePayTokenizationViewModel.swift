@@ -219,7 +219,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     
                     paymentController.present { success in
                         if success == false {
-                            //We should get an error from the delegate also here
                             let err = PrimerError.unableToPresentPaymentMethod(
                                 paymentMethodType: PrimerPaymentMethodType.applePay.rawValue,
                                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
