@@ -89,6 +89,7 @@
 		DE53DA2D0AD108306C92E198 /* UIViewController+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */; };
 		E11F47302B06726F0091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F472F2B06726F0091C31F /* BanksListView.swift */; };
 		E11F47352B067A3F0091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47342B067A3F0091C31F /* BanksListModel.swift */; };
+		E11F473D2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F473C2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift */; };
 		E130C3D92AFD19FF00AC3E7C /* NetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */; };
 		E13E72452AFE653000911866 /* IdealPaymentMethodTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13E72442AFE653000911866 /* IdealPaymentMethodTests.swift */; };
 		E1A2971F2B021ABA005ADA51 /* URL+NetworkHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB44D12AFE13AF00639DC5 /* URL+NetworkHeaders.swift */; };
@@ -257,6 +258,7 @@
 		DECCDC4079DC6471CEDDEA84 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		E11F472F2B06726F0091C31F /* BanksListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BanksListView.swift; sourceTree = "<group>"; };
 		E11F47342B067A3F0091C31F /* BanksListModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BanksListModel.swift; sourceTree = "<group>"; };
+		E11F473C2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessFormWithRedirectManagerTests.swift; sourceTree = "<group>"; };
 		E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkTests.swift; sourceTree = "<group>"; };
 		E13E72442AFE653000911866 /* IdealPaymentMethodTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdealPaymentMethodTests.swift; sourceTree = "<group>"; };
 		E1A297252B036AB1005ADA51 /* BankComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankComponentTests.swift; sourceTree = "<group>"; };
@@ -602,6 +604,7 @@
 			children = (
 				E13E72442AFE653000911866 /* IdealPaymentMethodTests.swift */,
 				E1A297252B036AB1005ADA51 /* BankComponentTests.swift */,
+				E11F473C2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift */,
 			);
 			path = Ideal;
 			sourceTree = "<group>";
@@ -864,6 +867,7 @@
 				3BB02CA24B6B3EF458326B7D /* Networking.swift in Sources */,
 				25FA73D4BBA89962663B5378 /* Mocks.swift in Sources */,
 				2E0D85B7343377F1319902AD /* MockPaymentMethodTokenizationViewModel.swift in Sources */,
+				E11F473D2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift in Sources */,
 				161D4BE3FFD5E4A60F4461F0 /* CreateResumePaymentService.swift in Sources */,
 				C6D7F7ECFD35B3DC3AFD6CB2 /* PayPalService.swift in Sources */,
 				5976CCA261F0811F5D7707DA /* TokenizationService.swift in Sources */,
