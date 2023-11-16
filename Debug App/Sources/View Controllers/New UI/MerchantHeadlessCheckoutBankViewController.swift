@@ -14,6 +14,8 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
     private lazy var idealManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager()
     private let paymentMethodType: String = "ADYEN_IDEAL"
 
+    private(set) var activityIndicator: UIActivityIndicatorView?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -26,7 +28,9 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
         bankComponent.start()
     }
 
-    private func setupUI() {}
+    private func setupUI() {
+        self.view.backgroundColor = .white
+    }
 }
 
 // MARK: - PrimerHeadlessErrorableDelegate, PrimerHeadlessValidatableDelegate, PrimerHeadlessStepableDelegate
@@ -46,7 +50,7 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
             return
         }
         switch step {
-        case .loading: showLoadingIndicator()
+        case .loading: showLoadingOverlay()
         case .banksRetrieved(banks: let banks): renderBanks(banks)
         case .webRedirect(component: let redirectComponent): handleRedirectComponent(redirectComponent)
         }
@@ -55,10 +59,27 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
 
 
 private extension MerchantHeadlessCheckoutBankViewController {
-    private func showLoadingIndicator() {
+    private func showLoadingOverlay() {
+        DispatchQueue.main.async {
+            if self.activityIndicator != nil { return }
+            self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
+            self.view.addSubview(self.activityIndicator!)
+            self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
+            self.activityIndicator?.color = .black
+            self.activityIndicator?.startAnimating()
+        }
+    }
+
+    private func hideLoadingOverlay() {
+        DispatchQueue.main.async {
+            self.activityIndicator?.stopAnimating()
+            self.activityIndicator?.removeFromSuperview()
+            self.activityIndicator = nil
+        }
     }
 
     private func renderBanks(_ banks: [BanksComponent.IssuingBank]) {
+        hideLoadingOverlay()
     }
 
     private func handleRedirectComponent(_ redirectComponent: WebRedirectComponent) {
