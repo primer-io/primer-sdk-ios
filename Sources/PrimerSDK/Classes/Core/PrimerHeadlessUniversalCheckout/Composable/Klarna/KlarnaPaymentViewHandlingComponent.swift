@@ -5,6 +5,7 @@
 //  Created by Illia Khrypunov on 06.11.2023.
 //
 
+#if canImport(PrimerKlarnaSDK)
 import UIKit
 import Foundation
 import PrimerKlarnaSDK
@@ -117,3 +118,4 @@ extension KlarnaPaymentViewHandlingComponent: PrimerKlarnaProviderPaymentViewDel
         self.stepDelegate?.didReceiveStep(step: KlarnaPaymentViewHandling.reviewLoaded)
     }
 }
+#endif

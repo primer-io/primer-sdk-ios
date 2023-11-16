@@ -5,6 +5,7 @@
 //  Created by Illia Khrypunov on 06.11.2023.
 //
 
+#if canImport(PrimerKlarnaSDK)
 import Foundation
 import PrimerKlarnaSDK
 
@@ -99,3 +100,4 @@ extension KlarnaPaymentSessionAuthorizationComponent: PrimerKlarnaProviderAuthor
         }
     }
 }
+#endif

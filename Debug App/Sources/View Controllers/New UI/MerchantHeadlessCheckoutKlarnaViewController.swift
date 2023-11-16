@@ -458,7 +458,9 @@ extension MerchantHeadlessCheckoutKlarnaViewController: UITextFieldDelegate {
         let datePicker = UIDatePicker()
         datePicker.sizeToFit()
         datePicker.datePickerMode = .dateAndTime
-        datePicker.preferredDatePickerStyle = .automatic
+        if #available(iOS 13.4, *) {
+            datePicker.preferredDatePickerStyle = .automatic
+        }
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
         
         if textField == customerAccountRegistrationTextField {

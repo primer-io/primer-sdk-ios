@@ -11,11 +11,11 @@ import PrimerNolPaySDK
 
 
 public class NolPayLinkedCardsComponent: PrimerHeadlessComponent, PrimerHeadlessAnalyticsRecordable {
-    
     var nolPay: PrimerNolPayProtocol?
     
     public var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
+    public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     var mobileNumber: String?
     var countryCode: String?
     var phoneMetadataService: NolPayPhoneMetadataProviding?
@@ -88,7 +88,9 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent, PrimerHeadless
         recordEvent(
             type: .sdkEvent,
             name: NolPayAnalyticsConstants.LINKED_CARDS_GET_CARDS_METHOD,
-            params: NolPayAnalyticsConstants.CATEGORY
+            params: [
+                NolPayAnalyticsConstants.CATEGORY_KEY: NolPayAnalyticsConstants.CATEGORY_VALUE
+            ]
         )
         
         guard let nolPay = nolPay else {
