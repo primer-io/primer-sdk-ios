@@ -62,7 +62,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }()
     
     private var selectedBank: AdyenBank?
-    
+
     override func cancel() {
         self.webViewController = nil
         self.webViewCompletion = nil
@@ -70,8 +70,10 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {
-        DispatchQueue.main.async {
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+        if !PrimerInternal.isInHeadlessMode {
+            DispatchQueue.main.async {
+                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+            }
         }
         
         let event = Analytics.Event(
