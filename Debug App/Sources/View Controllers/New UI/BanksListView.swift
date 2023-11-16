@@ -8,23 +8,35 @@
 
 import SwiftUI
 
+struct PaymentMethodModel {
+    let name: String
+    let logo: UIImage?
+}
+
 struct BanksListView: View {
-    let paymentMethodName: String
+    let paymentMethodModel: PaymentMethodModel
     @ObservedObject var banksModel: BanksListModel
     private var didSelectBank: ((String) -> Void)
     private var didFilterByText: ((String) -> Void)
 
     @State private var filterText = ""
 
-    init(paymentMethodName: String, banksModel: BanksListModel, didSelectBank: @escaping ((String) -> Void), didFilterByText: @escaping ((String) -> Void)) {
-        self.paymentMethodName = paymentMethodName
+    init(paymentMethodModel: PaymentMethodModel, banksModel: BanksListModel, didSelectBank: @escaping ((String) -> Void), didFilterByText: @escaping ((String) -> Void)) {
+        self.paymentMethodModel = paymentMethodModel
         self.banksModel = banksModel
         self.didSelectBank = didSelectBank
         self.didFilterByText = didFilterByText
     }
     var body: some View {
+        Spacer()
         HStack {
-            Text("\(paymentMethodName)")
+            Text("\(paymentMethodModel.name)")
+            if let image = paymentMethodModel.logo {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 30, height: 30)
+            }
         }
         Divider()
         Text("Choose your bank")
@@ -112,7 +124,7 @@ struct SearchBar: View {
 
 struct BanksListView_Previews: PreviewProvider {
     static var previews: some View {
-        BanksListView(paymentMethodName: "Ideal", banksModel: BanksListModel(), didSelectBank: { _ in }, didFilterByText: { _ in })
+        BanksListView(paymentMethodModel: PaymentMethodModel(name: "ideal", logo: nil), banksModel: BanksListModel(), didSelectBank: { _ in }, didFilterByText: { _ in })
     }
 }
 

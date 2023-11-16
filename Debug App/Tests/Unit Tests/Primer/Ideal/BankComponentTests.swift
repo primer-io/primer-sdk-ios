@@ -15,6 +15,7 @@ final class BankComponentTests: XCTestCase {
     var steps: [BanksStep] = []
     var validationErrors: [String] = []
     var validationStatuses: [String] = []
+    var webRedirectComponent: WebRedirectComponent?
 
     override func setUp() {
         super.setUp()
@@ -75,6 +76,7 @@ final class BankComponentTests: XCTestCase {
             XCTAssertEqual(bankComponent.bankId, bankId)
         }
         waitForExpectations(timeout: 10)
+        XCTAssertNotNil(webRedirectComponent)
     }
 
     func testStart() {
@@ -185,11 +187,11 @@ extension BankComponentTests: PrimerHeadlessSteppableDelegate {
         }
         steps.append(step)
         switch step {
-        case .loading:
-            break
+        case .loading: break
         case .banksRetrieved(banks: let banks):
             self.banks = banks
-        default: break
+        case .webRedirect(component: let webRedirectComponent):
+            self.webRedirectComponent = webRedirectComponent
         }
     }
 }

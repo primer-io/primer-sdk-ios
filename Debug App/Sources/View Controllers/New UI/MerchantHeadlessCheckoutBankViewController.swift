@@ -33,7 +33,7 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
     }
 
     private func addBanksListViewController() {
-        let headerView = BanksListView(paymentMethodName: paymentMethodType, banksModel: banksModel, didSelectBank: { [weak self] bankId in
+        let headerView = BanksListView(paymentMethodModel: PaymentMethodModel(name: paymentMethodType, logo: nil), banksModel: banksModel, didSelectBank: { [weak self] bankId in
             guard let self = self else { return }
             self.bankComponent?.updateCollectedData(collectableData: .bankId(bankId: bankId))
         }, didFilterByText: { [weak self] filterText in
