@@ -26,11 +26,12 @@ struct BanksListView: View {
         HStack {
             Text("\(paymentMethodName)")
         }
-        Spacer()
+        Divider()
         Text("Choose your bank")
         SearchBar(text: $filterText.didSet { text in
             didFilterByText(text)
         })
+        Divider()
         List(banksModel.banks, id: \.id) { bank in
             Button {
                 didSelectBank(bank.id)
@@ -64,6 +65,7 @@ struct BanksListView: View {
                 .padding(.trailing, 0)
             }
         }
+        .padding(.top, 0)
     }
 }
 
