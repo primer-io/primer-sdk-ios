@@ -25,7 +25,7 @@ function createAppetizeSummary(branch, buildType) {
         .end()
         .field()
         .title("Livedemostore URL")
-        .value(`<${process.env.LIVEDEMOSTORE_URL}>`)
+        .value(`<${process.env.LIVEDEMOSTORE_URL}|${process.env.LIVEDEMOSTORE_URL.substring(process.env.LIVEDEMOSTORE_URL.lastIndexOf('/') + 1)}>`)
         .short(true)
         .end()
         .field()
