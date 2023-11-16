@@ -334,6 +334,7 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationDelegate {
                 self.fetchBanks()
             }
             .done { banks in
+                self.banks = banks
                 seal.fulfill(banks)
             }
             .catch { err in
@@ -342,6 +343,9 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationDelegate {
         }
     }
     func filterBanks(query: String) -> [AdyenBank]  {
+        guard !query.isEmpty else {
+            return banks
+        }
         var bankResults: [AdyenBank]  = []
         for bank in banks {
             if bank.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
@@ -349,5 +353,9 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationDelegate {
             }
         }
         return bankResults
+    }
+    func tokenize(bankId: String) -> Promise<Void> {
+        self.selectedBank = banks.first(where: { $0.id == bankId })
+        return performTokenizationStep()
     }
 }

@@ -9,5 +9,6 @@ import Foundation
 protocol BankSelectorTokenizationDelegate {
     func validateReturningPromise() -> Promise<Void>
     func retrieveListOfBanks() -> Promise<[AdyenBank]>
-    func filterBanks(query: String) -> [AdyenBank] 
+    func filterBanks(query: String) -> [AdyenBank]
+    func tokenize(bankId: String) -> Promise<Void>
 }

@@ -38,18 +38,25 @@ public class BanksComponent: PrimerHeadlessFormComponent {
         switch collectableData {
         case .bankId(bankId: let bankId):
             self.bankId = bankId
-            let redirectComponent = createWebRedirectComponent()
+            if isBankIdValid(bankId: bankId) {
+                tokenizationViewModel.tokenize(bankId: bankId)
+                let redirectComponent = createWebRedirectComponent()
+            }
         case .bankFilterText(text: let text):
             let filteredBanks = tokenizationViewModel.filterBanks(query: text)
             stepDelegate?.didReceiveStep(step: BanksStep.banksRetrieved(banks: filteredBanks.map { IssuingBank(bank: $0) }))
         }
+    }
+
+    func isBankIdValid(bankId: String) -> Bool {
+        banks.compactMap({ $0.id }).contains(bankId)
     }
     
     func validateData(for data: BanksCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         switch data {
         case .bankId(bankId: let bankId):
-            if !banks.compactMap({ $0.id }).contains(bankId) {
+            if !isBankIdValid(bankId: bankId) {
                 let userInfo = [
                     "file": #file,
                     "class": "\(Self.self)",

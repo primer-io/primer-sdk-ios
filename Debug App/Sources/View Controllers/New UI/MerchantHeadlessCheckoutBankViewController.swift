@@ -11,23 +11,49 @@ import UIKit
 import SwiftUI
 import PrimerSDK
 
-final class MerchantHeadlessCheckoutBankViewController: UIHostingController<BanksListView> {
+final class MerchantHeadlessCheckoutBankViewController: UIViewController {
     private lazy var idealManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager()
     private let paymentMethodType: String = "ADYEN_IDEAL"
 
     private(set) var activityIndicator: UIActivityIndicatorView?
     private(set) var bankComponent: BanksComponent?
-
+    private let banksModel: BanksListModel = BanksListModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         guard let bankComponent = idealManager.provideBanksComponent(paymentMethodType: paymentMethodType) else {
             return
         }
+        addBanksListViewController()
         bankComponent.stepDelegate = self
         bankComponent.validationDelegate = self
         bankComponent.errorDelegate = self
         bankComponent.start()
+        self.bankComponent = bankComponent
+    }
+
+    private func addBanksListViewController() {
+        let headerView = BanksListView(paymentMethodName: paymentMethodType, banksModel: banksModel, didSelectBank: { [weak self] bankId in
+            guard let self = self else { return }
+            self.bankComponent?.updateCollectedData(collectableData: .bankId(bankId: bankId))
+        }, didFilterByText: { [weak self] filterText in
+            guard let self = self else { return }
+            self.bankComponent?.updateCollectedData(collectableData: .bankFilterText(text: filterText))
+        })
+        let listViewController = UIHostingController(rootView: headerView)
+        listViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        addChild(listViewController)
+        view.addSubview(listViewController.view)
+        listViewController.didMove(toParent: self)
+        NSLayoutConstraint.activate([
+            listViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            listViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            listViewController.view.widthAnchor.constraint(equalTo: view.widthAnchor),
+            listViewController.view.heightAnchor.constraint(
+                equalTo: view.heightAnchor,
+                multiplier: 1
+            )
+        ])
     }
 }
 
@@ -96,7 +122,7 @@ private extension MerchantHeadlessCheckoutBankViewController {
 
     private func renderBanks(_ banks: [BanksComponent.IssuingBank]) {
         hideLoadingOverlay()
-        rootView.banks.updateBanks(banks)
+        banksModel.updateBanks(banks)
     }
 
     private func handleRedirectComponent(_ redirectComponent: WebRedirectComponent) {
