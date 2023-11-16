@@ -15,10 +15,12 @@ struct PaymentMethodModel {
 
 struct BanksListView: View {
     let paymentMethodModel: PaymentMethodModel
+    private let metrics = Metrics()
+
     @ObservedObject var banksModel: BanksListModel
+
     private var didSelectBank: ((String) -> Void)
     private var didFilterByText: ((String) -> Void)
-
     @State private var filterText = ""
 
     init(paymentMethodModel: PaymentMethodModel, banksModel: BanksListModel, didSelectBank: @escaping ((String) -> Void), didFilterByText: @escaping ((String) -> Void)) {
@@ -27,6 +29,7 @@ struct BanksListView: View {
         self.didSelectBank = didSelectBank
         self.didFilterByText = didFilterByText
     }
+
     var body: some View {
         Spacer()
         HStack {
@@ -35,49 +38,66 @@ struct BanksListView: View {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: 30, height: 30)
+                    .frame(width: metrics.imageSize.width, height: metrics.imageSize.height)
             }
         }
         Divider()
+
         Text("Choose your bank")
+            .multilineTextAlignment(.leading)
+
         SearchBar(text: $filterText.didSet { text in
             didFilterByText(text)
         })
+
         Divider()
+
         List(banksModel.banks, id: \.id) { bank in
             Button {
                 didSelectBank(bank.id)
             } label: {
-                HStack(spacing: 5) {
+                HStack(spacing: metrics.hStackSpacing) {
                     HStack {
-                        if #available(iOS 14.0, *) {
                             if let imageUrlString = bank.iconUrlStr,
                                let imageUrl = URL(string: imageUrlString) {
-                                ImageViewWithUrl(
-                                    url: imageUrl,
-                                    placeholder: {
-                                      Image("placeholder")
-                                            .frame(width: 40)
-                                    },
-                                    image: {
-                                        $0.resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(width: 30, height: 30)
-                                    }
-                                  )
+                                image(url: imageUrl)
                             }
-                        }
                         Text(bank.name)
                     }
-                    .frame(height: 40)
+                    .frame(height: metrics.cellHeight)
                     Spacer()
                     Image(systemName: "arrow.right")
                 }
-                .padding(.leading, 10)
-                .padding(.trailing, 0)
+                .padding(.leading, metrics.hStackLeading)
+                .padding(.trailing, metrics.hStackTrailing)
             }
         }
         .padding(.top, 0)
+    }
+
+    private func image(url: URL) -> some View {
+        ImageViewWithUrl(
+            url: url,
+            placeholder: {
+              Image("questionmark.circle")
+                    .frame(width: metrics.imageSize.width, height: metrics.imageSize.height)
+            },
+            image: {
+                $0.resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: metrics.imageSize.width, height: metrics.imageSize.height)
+            }
+          )
+    }
+}
+
+extension BanksListView {
+    private struct Metrics {
+        let imageSize: CGSize = CGSize(width: 30, height: 30)
+        let hStackSpacing: CGFloat = 5
+        let cellHeight: CGFloat = 40
+        let hStackLeading: CGFloat = 10
+        let hStackTrailing: CGFloat = 0
     }
 }
 
@@ -93,30 +113,32 @@ extension Binding {
     }
 }
 
-struct SearchBar: View {
-    @Binding var text: String
-    @State private var isEditing = false
+extension BanksListView {
+    struct SearchBar: View {
+        @Binding var text: String
+        @State private var isEditing = false
 
-    var body: some View {
-        HStack {
+        var body: some View {
+            HStack {
 
-            TextField("Search bank", text: $text)
-                .padding(7)
-                .padding(.horizontal, 25)
-                .padding(.horizontal, 10)
-                .onTapGesture {
-                    self.isEditing = true
+                TextField("Search bank", text: $text)
+                    .padding(7)
+                    .padding(.horizontal, 25)
+                    .padding(.horizontal, 10)
+                    .onTapGesture {
+                        self.isEditing = true
+                    }
+                if isEditing {
+                    Button(action: {
+                        self.isEditing = false
+                        self.text = ""
+                    }) {
+                        Text("Cancel")
+                    }
+                    .padding(.trailing, 10)
+                    .transition(.move(edge: .trailing))
+                    .animation(.default)
                 }
-            if isEditing {
-                Button(action: {
-                    self.isEditing = false
-                    self.text = ""
-                }) {
-                    Text("Cancel")
-                }
-                .padding(.trailing, 10)
-                .transition(.move(edge: .trailing))
-                .animation(.default)
             }
         }
     }

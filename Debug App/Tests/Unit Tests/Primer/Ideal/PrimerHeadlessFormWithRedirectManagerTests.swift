@@ -11,7 +11,12 @@ import XCTest
 
 final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
     var availablePaymentMethodsLoadedCompletion: (([PrimerHeadlessUniversalCheckout.PaymentMethod]?, Error?) -> Void)?
-    
+
+    override func tearDown() {
+        super.tearDown()
+        self.resetTestingEnvironment()
+    }
+
     func testInit() {
         let manager = PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager()
         XCTAssertNotNil(manager)
