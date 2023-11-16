@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47582B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift */; };
+		E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47592B06C5A40091C31F /* BanksListView.swift */; };
+		E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475A2B06C5A40091C31F /* BanksListModel.swift */; };
+		E11F475F2B06C5A40091C31F /* ImageViewWithUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475B2B06C5A40091C31F /* ImageViewWithUrl.swift */; };
 		E1AB44D02AFE139600639DC5 /* URL+NetworkHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB44CF2AFE139600639DC5 /* URL+NetworkHeaders.swift */; };
 		F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */; };
 		F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1594BC5C96ECC3F46C811B2F /* Data+Extensions.swift */; };
@@ -151,6 +155,10 @@
 		DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBC8EA85D1CBC1EC4AB3EB8C /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		DECCDC4079DC6471CEDDEA84 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		E11F47582B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutBankViewController.swift; sourceTree = "<group>"; };
+		E11F47592B06C5A40091C31F /* BanksListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BanksListView.swift; sourceTree = "<group>"; };
+		E11F475A2B06C5A40091C31F /* BanksListModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BanksListModel.swift; sourceTree = "<group>"; };
+		E11F475B2B06C5A40091C31F /* ImageViewWithUrl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewWithUrl.swift; sourceTree = "<group>"; };
 		E1AB44CF2AFE139600639DC5 /* URL+NetworkHeaders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+NetworkHeaders.swift"; sourceTree = "<group>"; };
 		E1C3EF0BA039C0A50EDE13A5 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Main.strings; sourceTree = "<group>"; };
 		E63F5C5C1FD2F3E6CB02EC5A /* HeadlessUniversalCheckoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlessUniversalCheckoutTests.swift; sourceTree = "<group>"; };
@@ -453,6 +461,17 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		E11F47572B06C5A40091C31F /* FormWithRedirect */ = {
+			isa = PBXGroup;
+			children = (
+				E11F47582B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift */,
+				E11F47592B06C5A40091C31F /* BanksListView.swift */,
+				E11F475A2B06C5A40091C31F /* BanksListModel.swift */,
+				E11F475B2B06C5A40091C31F /* ImageViewWithUrl.swift */,
+			);
+			path = FormWithRedirect;
+			sourceTree = "<group>";
+		};
 		E1A2F78003351E14426E0B36 /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
@@ -475,6 +494,7 @@
 		EF5FBE3673FBCB40F55F4DC0 /* New UI */ = {
 			isa = PBXGroup;
 			children = (
+				E11F47572B06C5A40091C31F /* FormWithRedirect */,
 				0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */,
 			);
 			path = "New UI";
@@ -604,13 +624,17 @@
 				F00C66032ACC67FA00187028 /* TransactionResponse.swift in Sources */,
 				E1AB44D02AFE139600639DC5 /* URL+NetworkHeaders.swift in Sources */,
 				F00C66042ACC67FA00187028 /* Networking+Models.swift in Sources */,
+				E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */,
 				F00C66052ACC67FA00187028 /* Networking.swift in Sources */,
 				F00C66062ACC67FA00187028 /* MerchantDropInUIViewController.swift in Sources */,
 				F00C66072ACC67FA00187028 /* MerchantHeadlesVaultManagerViewController.swift in Sources */,
 				F00C66082ACC67FA00187028 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
 				F00C66092ACC67FA00187028 /* MerchantHeadlessCheckoutCardComponentsViewController.swift in Sources */,
+				E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */,
+				E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */,
 				F00C660A2ACC67FA00187028 /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,
 				F00C660B2ACC67FA00187028 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */,
+				E11F475F2B06C5A40091C31F /* ImageViewWithUrl.swift in Sources */,
 				F00C660C2ACC67FA00187028 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */,
 				F00C660D2ACC67FA00187028 /* MerchantResultViewController.swift in Sources */,
 				F00C660E2ACC67FA00187028 /* MerchantSessionAndSettingsViewController.swift in Sources */,
