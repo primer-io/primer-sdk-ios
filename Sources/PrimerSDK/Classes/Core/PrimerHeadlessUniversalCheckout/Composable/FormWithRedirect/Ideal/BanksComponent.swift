@@ -24,25 +24,23 @@ public class BanksComponent: PrimerHeadlessFormComponent {
 
     public private(set) var nextDataStep: BanksStep = .loading
     private(set) var banks: [IssuingBank]?
-    private(set) var selectedBankId: String?
-    private let onBankSelection: (String) -> Void
+    private(set) var bankId: String?
+    private let createWebRedirectComponent: () -> WebRedirectComponent
 
-    init(paymentMethodType: PrimerPaymentMethodType, onBankSelection: @escaping (String) -> Void) {
+    init(paymentMethodType: PrimerPaymentMethodType, createWebRedirectComponent: @escaping () -> WebRedirectComponent) {
         self.paymentMethodType = paymentMethodType
-        self.onBankSelection = onBankSelection
+        self.createWebRedirectComponent = createWebRedirectComponent
     }
     
     public func updateCollectedData(collectableData: BanksCollectableData) {
-
-        //TODO: need new analytical events, refactor to move outside of NolPay
-
-
         switch collectableData {
         case .bankId(bankId: let bankId):
-            self.selectedBankId = bankId
+            self.bankId = bankId
+//            self.tokenizationViewModel?.tokenize()
+            let redirectComponent = createWebRedirectComponent()
         default: break
         }
-        
+
         validateData(for: collectableData)
     }
     
@@ -62,6 +60,7 @@ public class BanksComponent: PrimerHeadlessFormComponent {
     }
     
     public func submit() {
+        guard let bankId else { return }
         trackSubmit()
 
         switch nextDataStep {
@@ -73,6 +72,7 @@ public class BanksComponent: PrimerHeadlessFormComponent {
             return
         }
         self.tokenizationViewModel = paymentMethod
+//        self.tokenizationViewModel?.tokenize()
     }
     
     public func start() {

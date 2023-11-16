@@ -8,6 +8,16 @@
 import Foundation
 extension PrimerHeadlessUniversalCheckout {
     public class PrimerHeadlessFormWithRedirectManager: NSObject {
-        private var banksComponent: BanksComponent?
+        public func provideBanksComponent(paymentMethodType: String) -> BanksComponent? {
+            guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) else {
+                return nil
+            }
+            guard paymentMethodType == .adyenIDeal else {
+                return nil
+            }
+            return BanksComponent.init(paymentMethodType: paymentMethodType) {
+                return WebRedirectComponent()
+            }
+        }
     }
 }

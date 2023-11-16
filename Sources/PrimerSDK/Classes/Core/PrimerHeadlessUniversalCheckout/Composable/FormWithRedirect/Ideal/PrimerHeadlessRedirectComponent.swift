@@ -6,5 +6,5 @@
 //
 
 import Foundation
-public class PrimerHeadlessRedirectComponent {
-}
+protocol PrimerHeadlessRedirectComponent {}
+public class WebRedirectComponent: PrimerHeadlessRedirectComponent {}

@@ -9,7 +9,5 @@ import Foundation
 public enum BanksStep: PrimerHeadlessStep {
     case loading
     case banksRetrieved(banks: [BanksComponent.IssuingBank])
-    case bankSelected(bankId: String)
+    case webRedirect(component: WebRedirectComponent)
 }
-
-extension BanksStep: Equatable {}
