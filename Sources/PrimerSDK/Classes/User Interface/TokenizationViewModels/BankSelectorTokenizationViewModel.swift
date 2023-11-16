@@ -130,23 +130,6 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             }
         }
     }
-
-    func fetchBanksHeadless() -> Promise<[AdyenBank]> {
-        return Promise { seal in
-            firstly {
-                self.validateReturningPromise()
-            }
-            .then {
-                self.fetchBanks()
-            }
-            .done { banks in
-                seal.fulfill(banks)
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
     
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
@@ -333,7 +316,31 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
         
         return true
     }
+    
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        dataSource = banks
+        return true
+    }
+}
 
+
+extension BankSelectorTokenizationViewModel: BankSelectorTokenizationDelegate {
+    func retrieveListOfBanks() -> Promise<[AdyenBank]> {
+        return Promise { seal in
+            firstly {
+                self.validateReturningPromise()
+            }
+            .then {
+                self.fetchBanks()
+            }
+            .done { banks in
+                seal.fulfill(banks)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
     func filterBanks(query: String) -> [AdyenBank]  {
         var bankResults: [AdyenBank]  = []
         for bank in banks {
@@ -343,11 +350,4 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
         }
         return bankResults
     }
-    
-    func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        dataSource = banks
-        return true
-    }
 }
-
-

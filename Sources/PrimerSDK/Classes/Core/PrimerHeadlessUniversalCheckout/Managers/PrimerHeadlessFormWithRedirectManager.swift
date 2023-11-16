@@ -15,7 +15,10 @@ extension PrimerHeadlessUniversalCheckout {
             guard paymentMethodType == .adyenIDeal else {
                 return nil
             }
-            return BanksComponent.init(paymentMethodType: paymentMethodType) {
+            guard let tokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0 is BankSelectorTokenizationViewModel }) as? BankSelectorTokenizationViewModel  else {
+                return nil
+            }
+            return BanksComponent.init(paymentMethodType: paymentMethodType, tokenizationViewModel: tokenizationViewModel) {
                 return WebRedirectComponent()
             }
         }

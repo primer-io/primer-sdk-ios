@@ -8,17 +8,19 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 import PrimerSDK
 
-final class MerchantHeadlessCheckoutBankViewController: UIViewController {
+final class MerchantHeadlessCheckoutBankViewController: UIHostingController<BanksListView> {
     private lazy var idealManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager()
     private let paymentMethodType: String = "ADYEN_IDEAL"
 
     private(set) var activityIndicator: UIActivityIndicatorView?
+    private(set) var bankComponent: BanksComponent?
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
         guard let bankComponent = idealManager.provideBanksComponent(paymentMethodType: paymentMethodType) else {
             return
         }
@@ -26,10 +28,6 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
         bankComponent.validationDelegate = self
         bankComponent.errorDelegate = self
         bankComponent.start()
-    }
-
-    private func setupUI() {
-        self.view.backgroundColor = .white
     }
 }
 
@@ -39,6 +37,23 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
                                                         PrimerHeadlessSteppableDelegate {
 
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
+        switch validationStatus {
+
+        case .validating:
+            print("Forms with redirect validation in progress")
+        case .valid:
+            if data is BanksCollectableData {
+                bankComponent?.submit()
+            }
+        case .invalid(errors: let errors):
+            var message = ""
+            for error in errors {
+                message += (error.errorDescription ?? error.localizedDescription) + "\n"
+            }
+            self.showAlert(title: "Validation Error", message: "\(message)")
+        case .error(error: let error):
+            self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+        }
     }
 
     func didReceiveError(error: PrimerError) {
@@ -47,6 +62,7 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
 
     func didReceiveStep(step: PrimerHeadlessStep) {
         guard let step = step as? BanksStep else {
+            self.showAlert(title: "Error", message: "Received wrong step of \(step)")
             return
         }
         switch step {
@@ -80,11 +96,13 @@ private extension MerchantHeadlessCheckoutBankViewController {
 
     private func renderBanks(_ banks: [BanksComponent.IssuingBank]) {
         hideLoadingOverlay()
+        rootView.banks.updateBanks(banks)
     }
 
     private func handleRedirectComponent(_ redirectComponent: WebRedirectComponent) {
     }
-    func showAlert(title: String, message: String) {
+
+    private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)

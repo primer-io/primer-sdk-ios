@@ -20,15 +20,16 @@ public class BanksComponent: PrimerHeadlessFormComponent {
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
-    var tokenizationViewModel: BankSelectorTokenizationViewModel?
 
     public private(set) var nextDataStep: BanksStep = .loading
     private(set) var banks: [IssuingBank] = []
     private(set) var bankId: String?
     private let createWebRedirectComponent: () -> WebRedirectComponent
+    private let tokenizationViewModel: BankSelectorTokenizationDelegate
 
-    init(paymentMethodType: PrimerPaymentMethodType, createWebRedirectComponent: @escaping () -> WebRedirectComponent) {
+    init(paymentMethodType: PrimerPaymentMethodType, tokenizationViewModel: BankSelectorTokenizationDelegate, createWebRedirectComponent: @escaping () -> WebRedirectComponent) {
         self.paymentMethodType = paymentMethodType
+        self.tokenizationViewModel = tokenizationViewModel
         self.createWebRedirectComponent = createWebRedirectComponent
     }
     
@@ -36,42 +37,56 @@ public class BanksComponent: PrimerHeadlessFormComponent {
         switch collectableData {
         case .bankId(bankId: let bankId):
             self.bankId = bankId
-//            let redirectComponent = createWebRedirectComponent()
+            let redirectComponent = createWebRedirectComponent()
         case .bankFilterText(text: let text):
-            let filteredBanks = self.tokenizationViewModel?.filterBanks(query: text) ?? []
+            let filteredBanks = tokenizationViewModel.filterBanks(query: text)
             stepDelegate?.didReceiveStep(step: BanksStep.banksRetrieved(banks: filteredBanks.map { IssuingBank(bank: $0) }))
-        default: break
         }
 
         validateData(for: collectableData)
     }
     
     func validateData(for data: BanksCollectableData) {
-        // TODO: error handler
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         switch data {
         case .bankId(bankId: let bankId):
-            if bankId.isEmpty || !banks.compactMap { $0.id }.contains(bankId) {
-//                ErrorHandler.handle(error: errors.last!)
-//                validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+            if !banks.compactMap({ $0.id }).contains(bankId) {
+                let error = PrimerValidationError.invalidBankId(
+                    bankId: bankId,
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: error)
+                validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
             } else {
-//                validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+                validationDelegate?.didUpdate(validationStatus: .valid, for: data)
             }
-        default: break
+        case .bankFilterText(text: _):
+            if banks.isEmpty {
+                let error = PrimerValidationError.banksNotLoaded(
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: error)
+                validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
+            } else {
+                validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+            }
         }
     }
-    
-    public func submit() {
-        guard let bankId else { return }
-        trackSubmit()
-        // todo: refactor this
-    }
-    
+
     public func start() {
         trackStart()
         stepDelegate?.didReceiveStep(step: BanksStep.loading)
-        retrieveViewModel()
-        tokenizationViewModel?.fetchBanksHeadless()
+        tokenizationViewModel.retrieveListOfBanks()
             .done { banks -> Void in
                 self.banks = banks.map { IssuingBank(bank: $0) }
                 self.stepDelegate?.didReceiveStep(step: BanksStep.banksRetrieved(banks: self.banks))
@@ -79,14 +94,14 @@ public class BanksComponent: PrimerHeadlessFormComponent {
                 print("Error")
             }
     }
-}
-
-private extension BanksComponent {
-    func retrieveViewModel() {
-        guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0 is BankSelectorTokenizationViewModel }) as? BankSelectorTokenizationViewModel  else {
-            return
+    
+    public func submit() {
+        trackSubmit()
+        switch nextDataStep {
+        case .loading: break
+        case .banksRetrieved(banks: _): break
+        case .webRedirect(component: _): break
         }
-        self.tokenizationViewModel = paymentMethod
     }
 }
 
@@ -116,10 +131,10 @@ private extension BanksComponent {
 
 public extension BanksComponent {
     @objc final class IssuingBank: NSObject {
-        let id: String
-        let name: String
-        let iconUrlStr: String?
-        let isDisabled: Bool
+        public let id: String
+        public let name: String
+        public let iconUrlStr: String?
+        public let isDisabled: Bool
         init(bank: AdyenBank) {
             self.id = bank.id
             self.name = bank.name

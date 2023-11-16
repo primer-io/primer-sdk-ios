@@ -59,8 +59,6 @@ public enum PrimerError: PrimerErrorProtocol {
     case failedToProcessPayment(paymentId: String, status: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case banksNotLoaded(userInfo: [String: String]?)
-    case invalidBankId(bankId: String?, userInfo: [String: String]?)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
     
     public var errorId: String {
@@ -143,10 +141,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "invalid-vaulted-payment-method-id"
         case .nolError:
             return "nol-pay-sdk-error"
-        case .invalidBankId:
-            return "invalid-bank-id"
-        case .banksNotLoaded:
-            return "banks-not-loaded"
         case .unknown:
             return "unknown"
         }
@@ -241,10 +235,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .nolError(_, _, _, let diagnosticsId):
             return diagnosticsId
-        case .invalidBankId(bankId: let bankId):
-            return diagnosticsId
-        case .banksNotLoaded:
-            return diagnosticsId
         case .unknown(_, let diagnosticsId):
             return diagnosticsId
         }
@@ -337,10 +327,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
         case .nolError(let code, let message, _, _):
             return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
-        case .invalidBankId(bankId: let bankId):
-            return "Bank id doesn't belong to any of the supported banks: \(String(describing: bankId))"
-        case .banksNotLoaded:
-            return "Banks need to be loaded before bank id can be collected."
         case .unknown:
             return "Something went wrong"
         }
@@ -392,8 +378,6 @@ public enum PrimerError: PrimerErrorProtocol {
                 .failedToProcessPayment(_, _, let userInfo, _),
                 .invalidVaultedPaymentMethodId(_, let userInfo, _),
                 .nolError(_, _, let userInfo, _),
-                .invalidBankId(_, let userInfo),
-                .banksNotLoaded(let userInfo),
                 .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
             
@@ -500,10 +484,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return nil
         case .invalidVaultedPaymentMethodId:
             return "Please provide the id of one of the vaulted payment methods that have been returned by the 'fetchVaultedPaymentMethods' function."
-        case .invalidBankId(bankId: _):
-            return "Please provide a valid bank id"
-        case .banksNotLoaded:
-            return "Banks need to be loaded before bank id can be collected."
         case .nolError:
             return nil
         case .unknown:

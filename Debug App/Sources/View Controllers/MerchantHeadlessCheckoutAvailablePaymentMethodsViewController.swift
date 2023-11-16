@@ -206,7 +206,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             break
 #endif
         case "ADYEN_IDEAL":
-            let vc = MerchantHeadlessCheckoutBankViewController()
+            let vc = MerchantHeadlessCheckoutBankViewController(rootView: BanksListView(paymentMethodName: paymentMethodType))
             self.navigationController?.pushViewController(vc, animated: true)
         default:
             redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
