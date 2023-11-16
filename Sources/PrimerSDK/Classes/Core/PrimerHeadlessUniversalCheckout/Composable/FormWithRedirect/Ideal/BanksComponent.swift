@@ -34,6 +34,7 @@ public class BanksComponent: PrimerHeadlessFormComponent {
     }
     
     public func updateCollectedData(collectableData: BanksCollectableData) {
+        validateData(for: collectableData)
         switch collectableData {
         case .bankId(bankId: let bankId):
             self.bankId = bankId
@@ -42,8 +43,6 @@ public class BanksComponent: PrimerHeadlessFormComponent {
             let filteredBanks = tokenizationViewModel.filterBanks(query: text)
             stepDelegate?.didReceiveStep(step: BanksStep.banksRetrieved(banks: filteredBanks.map { IssuingBank(bank: $0) }))
         }
-
-        validateData(for: collectableData)
     }
     
     func validateData(for data: BanksCollectableData) {
@@ -51,14 +50,18 @@ public class BanksComponent: PrimerHeadlessFormComponent {
         switch data {
         case .bankId(bankId: let bankId):
             if !banks.compactMap({ $0.id }).contains(bankId) {
-                let error = PrimerValidationError.invalidBankId(
+                let userInfo = [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ]
+                let error = banks.isEmpty ? PrimerValidationError.banksNotLoaded(
+                    userInfo: userInfo,
+                    diagnosticsId: UUID().uuidString) :
+                    PrimerValidationError.invalidBankId(
                     bankId: bankId,
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: userInfo,
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)

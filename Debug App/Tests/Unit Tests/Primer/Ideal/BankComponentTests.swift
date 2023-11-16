@@ -13,6 +13,8 @@ final class BankComponentTests: XCTestCase {
 
     var banks: [BanksComponent.IssuingBank] = []
     var steps: [BanksStep] = []
+    var validationErrors: [String] = []
+    var validationStatuses: [String] = []
 
     override func setUp() {
         super.setUp()
@@ -27,6 +29,8 @@ final class BankComponentTests: XCTestCase {
     func cleanup() {
         banks.removeAll()
         steps.removeAll()
+        validationErrors.removeAll()
+        validationStatuses.removeAll()
     }
 
     func testIssuingBanksModel() {
@@ -100,6 +104,70 @@ final class BankComponentTests: XCTestCase {
         }
         waitForExpectations(timeout: 10)
     }
+
+    func testValidationNoBanksAtSelection() {
+        let mockModel = MockBankSelectorTokenizationModel()
+        let bankComponent = BanksComponent(paymentMethodType: .adyenIDeal, tokenizationViewModel: mockModel) {
+            WebRedirectComponent()
+        }
+        bankComponent.stepDelegate = self
+        bankComponent.validationDelegate = self
+        bankComponent.updateCollectedData(collectableData: .bankId(bankId: "mock_id"))
+        XCTAssertEqual(validationStatuses, ["validating", "invalid"])
+        XCTAssertEqual(validationErrors, ["Banks need to be loaded before bank id can be collected."])
+    }
+
+    func testValidationNoBanksAtFilter() {
+        let mockModel = MockBankSelectorTokenizationModel()
+        let bankComponent = BanksComponent(paymentMethodType: .adyenIDeal, tokenizationViewModel: mockModel) {
+            WebRedirectComponent()
+        }
+        bankComponent.stepDelegate = self
+        bankComponent.validationDelegate = self
+        bankComponent.updateCollectedData(collectableData: .bankFilterText(text: "mock_query"))
+        XCTAssertEqual(validationStatuses, ["validating", "invalid"])
+        XCTAssertEqual(validationErrors, ["Banks need to be loaded before bank id can be collected."])
+    }
+
+    func testValidationForValidBankId() {
+        let mockModel = MockBankSelectorTokenizationModel()
+        let bankComponent = BanksComponent(paymentMethodType: .adyenIDeal, tokenizationViewModel: mockModel) {
+            WebRedirectComponent()
+        }
+        bankComponent.stepDelegate = self
+        bankComponent.validationDelegate = self
+        bankComponent.stepDelegate = self
+        bankComponent.start()
+        let expectation = expectation(description: "banks_retrieved")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            bankComponent.updateCollectedData(collectableData: .bankId(bankId: "0"))
+            XCTAssertEqual(self.validationStatuses, ["validating", "valid"])
+            XCTAssertTrue(self.validationErrors.isEmpty)
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 10)
+
+    }
+
+    func testValidationForInvalidBankId() {
+        let mockModel = MockBankSelectorTokenizationModel()
+        let bankComponent = BanksComponent(paymentMethodType: .adyenIDeal, tokenizationViewModel: mockModel) {
+            WebRedirectComponent()
+        }
+        bankComponent.stepDelegate = self
+        bankComponent.validationDelegate = self
+        bankComponent.stepDelegate = self
+        bankComponent.start()
+        let expectation = expectation(description: "banks_retrieved")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            bankComponent.updateCollectedData(collectableData: .bankId(bankId: "mock_bank_id"))
+            XCTAssertEqual(self.validationStatuses, ["validating", "invalid"])
+            XCTAssertEqual(self.validationErrors, ["Please provide a valid bank id"])
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 10)
+
+    }
 }
 
 extension BankComponentTests: PrimerHeadlessSteppableDelegate {
@@ -114,6 +182,22 @@ extension BankComponentTests: PrimerHeadlessSteppableDelegate {
         case .banksRetrieved(banks: let banks):
             self.banks = banks
         default: break
+        }
+    }
+}
+
+extension BankComponentTests: PrimerHeadlessValidatableDelegate {
+    func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
+        switch validationStatus {
+        case .validating: validationStatuses.append("validating")
+        case .invalid(errors: let errors):
+            validationStatuses.append("invalid")
+            errors.forEach { validationErrors.append($0.errorDescription ?? "") }
+        case .error(error: let error):
+            validationStatuses.append("error")
+            validationErrors.append(error.errorDescription ?? "")
+        case .valid:
+            validationStatuses.append("valid")
         }
     }
 }
