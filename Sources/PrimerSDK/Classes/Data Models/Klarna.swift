@@ -45,25 +45,10 @@ extension Request.Body.Klarna {
                 self.body = body
                 self.contentType = "application/vnd.klarna.internal.emd-v2+json"
             }
-            
-            func encode(to encoder: Encoder) throws {
-                guard let body = try self.body.toString() else {
-                    return
-                }
-                var container = encoder.container(keyedBy: Request.Body.Klarna.CreatePaymentSession.Attachment.CodingKeys.self)
-                try container.encode(body, forKey: Request.Body.Klarna.CreatePaymentSession.Attachment.CodingKeys.body)
-                try container.encode(self.contentType, forKey: Request.Body.Klarna.CreatePaymentSession.Attachment.CodingKeys.contentType)
-            }
         }
         
         struct AttachmentBody: Codable {
             let customerAccountInfo: [CustomerAccountInfo]
-            
-            func toString() throws -> String? {
-                let jsonData = try JSONEncoder().encode(self)
-                let jsonString = String(data: jsonData, encoding: .utf8)
-                return jsonString
-            }
         }
         
         struct CustomerAccountInfo: Codable {

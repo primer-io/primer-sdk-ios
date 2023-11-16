@@ -61,6 +61,12 @@ public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent {
     func start()
 }
 
+extension PrimerHeadlessCollectDataComponent {
+    public func submit() {
+        debugPrint("Override functionality if required")
+    }
+}
+
 protocol PrimerHeadlessAnalyticsRecordable {
     func recordEvent(type: Analytics.Event.EventType, name: String, params: [String: String])
 }

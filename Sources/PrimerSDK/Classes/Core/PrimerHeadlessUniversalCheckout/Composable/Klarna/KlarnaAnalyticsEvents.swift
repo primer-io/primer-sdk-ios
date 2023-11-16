@@ -9,7 +9,8 @@ import Foundation
 
 struct KlarnaAnalyticsEvents {
     // session creation component
-    static let CREATE_SESSION_METHOD = "KlarnaPaymentSessionCreationComponent.createSession(sessionType: SessionType)"
+    static let CREATE_SESSION_UPDATE_COLLECTED_DATA_METHOD = "KlarnaPaymentSessionCreationComponent.updateCollectedData()"
+    static let CREATE_SESSION_START_METHOD = "KlarnaPaymentSessionCreationComponent.start()"
     
     // view handling component
     static let CREATE_PAYMENT_VIEW_METHOD = "KlarnaPaymentViewHandlingComponent.createPaymentView()"

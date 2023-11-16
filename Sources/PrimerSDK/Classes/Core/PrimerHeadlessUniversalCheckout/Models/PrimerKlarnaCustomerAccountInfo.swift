@@ -7,12 +7,12 @@
 
 import Foundation
 
-public struct PrimerKlarnaCustomerAccountInfo {
+struct PrimerKlarnaCustomerAccountInfo {
     let accountUniqueId: String
     let accountRegistrationDate: Date
     let accountLastModified: Date
     
-    public init(
+    init(
         accountUniqueId: String,
         accountRegistrationDate: Date,
         accountLastModified: Date

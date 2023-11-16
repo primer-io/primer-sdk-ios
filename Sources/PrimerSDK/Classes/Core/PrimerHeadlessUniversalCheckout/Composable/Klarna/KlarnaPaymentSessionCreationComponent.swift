@@ -7,6 +7,13 @@
 
 import Foundation
 
+public enum KlarnaPaymentSessionCollectableData: PrimerCollectableData {
+    case sessionType(type: KlarnaSessionType)
+    case customerAccountInfo(accountUniqueId: String,
+                             accountRegistrationDate: Date,
+                             accountLastModified: Date)
+}
+
 public enum KlarnaPaymentSessionCreation: PrimerHeadlessStep {
     case paymentSessionCreated(clientToken: String, paymentCategories: [PrimerKlarnaPaymentCategory])
 }
@@ -17,16 +24,24 @@ enum KlarnaPaymentSessionCreationComponentError {
     case createPaymentSessionFailed(error: Error)
 }
 
-public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessComponent, PrimerHeadlessAnalyticsRecordable {
+public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessCollectDataComponent, PrimerHeadlessAnalyticsRecordable {
     // MARK: - API
     private let apiClient: PrimerAPIClientProtocol
     
     // MARK: - Settings
     private var settings: PrimerSettingsProtocol?
     
+    // MARK: - Properties
+    private var sessionType: KlarnaSessionType?
+    private var customerAccountInfo: PrimerKlarnaCustomerAccountInfo?
+    
     // MARK: - Delegates
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
+    public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
+    
+    // MARK: - CollectableData
+    public typealias T = KlarnaPaymentSessionCollectableData
     
     // MARK: - Init
     init() {
@@ -39,23 +54,20 @@ public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessComponent, Pri
     }
 }
 
-// MARK: - Create session
+// MARK: - Start
 public extension KlarnaPaymentSessionCreationComponent {
-    func createSession(
-        sessionType: KlarnaSessionType,
-        customerAccountInfo: PrimerKlarnaCustomerAccountInfo?
-    ) {
+    func start() {
         self.recordEvent(
             type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.CREATE_SESSION_METHOD,
+            name: KlarnaAnalyticsEvents.CREATE_SESSION_START_METHOD,
             params: [
                 KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
-                KlarnaAnalyticsEvents.CREATE_SESSION_METHOD: sessionType.rawValue
             ]
         )
         
         guard
             let settings = settings,
+            let sessionType = sessionType,
             let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: {
                 $0.name == "Klarna"
             }),
@@ -94,7 +106,7 @@ public extension KlarnaPaymentSessionCreationComponent {
             description: settings.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
             redirectUrl: settings.paymentMethodOptions.urlScheme,
             totalAmount: totalAmount,
-            orderItems: nil, 
+            orderItems: nil,
             attachment: attachment
         )
         
@@ -110,6 +122,33 @@ public extension KlarnaPaymentSessionCreationComponent {
                 self?.handleError(error: .createPaymentSessionFailed(error: failure.primerError))
             }
         }
+    }
+}
+
+// MARK: - Update
+public extension KlarnaPaymentSessionCreationComponent {
+    func updateCollectedData(collectableData: KlarnaPaymentSessionCollectableData) {
+        recordEvent(
+            type: .sdkEvent, 
+            name: KlarnaAnalyticsEvents.CREATE_SESSION_UPDATE_COLLECTED_DATA_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE
+            ]
+        )
+        
+        switch collectableData {
+        case .sessionType(let type):
+            self.sessionType = type
+            
+        case .customerAccountInfo(let accountUniqueId, let accountRegistrationDate, let accountLastModified):
+            self.customerAccountInfo = .init(
+                accountUniqueId: accountUniqueId, 
+                accountRegistrationDate: accountRegistrationDate,
+                accountLastModified: accountLastModified
+            )
+        }
+        
+        self.handleDataUpdates(data: collectableData)
     }
 }
 
@@ -155,5 +194,59 @@ private extension KlarnaPaymentSessionCreationComponent {
         }
         
         self.errorDelegate?.didReceiveError(error: primerError)
+    }
+    
+    func handleDataUpdates(data: KlarnaPaymentSessionCollectableData) {
+        self.validationDelegate?.didUpdate(validationStatus: .validating, for: data)
+        
+        var errors: [PrimerValidationError] = []
+        
+        switch data {
+        case .customerAccountInfo(let accountUniqueId, let accountRegistrationDate, let accountLastModified):
+            if accountUniqueId.count == 0 || accountUniqueId.count > 24 {
+                errors.append(.invalidAccountUniqueId(
+                    message: "Invalid customer account unique id",
+                    userInfo: self.getValidationErrorUserInfo(line: "\(#line)"),
+                    diagnosticsId: UUID().uuidString)
+                )
+            }
+            
+            if accountRegistrationDate > Date() {
+                errors.append(.invalidAccountRegistrationDate(
+                    message: "Invalid customer account registration date",
+                    userInfo: self.getValidationErrorUserInfo(line: "\(#line)"),
+                    diagnosticsId: UUID().uuidString)
+                )
+            }
+            
+            if accountLastModified > Date() || accountLastModified < accountRegistrationDate {
+                errors.append(.invalidAccountLastModified(
+                    message: "Invalid customer account last modified date",
+                    userInfo: self.getValidationErrorUserInfo(line: "\(#line)"),
+                    diagnosticsId: UUID().uuidString)
+                )
+            }
+            
+        default:
+            break
+        }
+        
+        if errors.count > 0 {
+            self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+        } else {
+            self.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+        }
+    }
+}
+
+// MARK: - Helpers
+private extension KlarnaPaymentSessionCreationComponent {
+    func getValidationErrorUserInfo(line: String) -> [String: String] {
+        return [
+            "file": #file,
+            "class": "\(Self.self)",
+            "function": #function,
+            "line": line
+        ]
     }
 }

@@ -27,6 +27,9 @@ public enum PrimerValidationError: PrimerErrorProtocol {
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
     case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String, validVaultedPaymentMethodAdditionalDataType: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidOTPCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidAccountUniqueId(message: String, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidAccountRegistrationDate(message: String, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidAccountLastModified(message: String, userInfo: [String: String]?, diagnosticsId: String)
     
     public var diagnosticsId: String {
         switch self {
@@ -65,6 +68,12 @@ public enum PrimerValidationError: PrimerErrorProtocol {
         case .invalidPhoneNumberCountryCode(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidOTPCode(_, _, let diagnosticsId):
+            return diagnosticsId
+        case .invalidAccountUniqueId(_, _, let diagnosticsId):
+            return diagnosticsId
+        case .invalidAccountRegistrationDate(_, _, let diagnosticsId):
+            return diagnosticsId
+        case .invalidAccountLastModified(_, _, let diagnosticsId):
             return diagnosticsId
         }
     }
@@ -107,6 +116,12 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "invalid-phone-number-country-code"
         case .invalidOTPCode:
             return "invalid-otp-code"
+        case .invalidAccountUniqueId:
+            return "invalid-account-unique-id"
+        case .invalidAccountRegistrationDate:
+            return "invalid-account-registration-date"
+        case .invalidAccountLastModified:
+            return "invalid-account-last-modified-date"
         }
     }
     
@@ -148,6 +163,12 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "[\(errorId)] \(message)"
         case .invalidOTPCode(message: let message, _, _):
             return "[\(errorId)] \(message)"
+        case .invalidAccountUniqueId(message: let message, _, _):
+            return "[\(errorId)] \(message)"
+        case .invalidAccountRegistrationDate(message: let message, _, _):
+            return "[\(errorId)] \(message)"
+        case .invalidAccountLastModified(message: let message, _, _):
+            return "[\(errorId)] \(message)"
         }
     }
     
@@ -172,7 +193,10 @@ public enum PrimerValidationError: PrimerErrorProtocol {
                 .invalidRetailer(_, let userInfo, _),
                 .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _),
                 .invalidPhoneNumberCountryCode(_, let userInfo, _),
-                .invalidOTPCode(_, let userInfo, _):
+                .invalidOTPCode(_, let userInfo, _),
+                .invalidAccountUniqueId(_, let userInfo, _),
+                .invalidAccountRegistrationDate(message: _, let userInfo, _),
+                .invalidAccountLastModified(message: _, let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
         
@@ -238,6 +262,12 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "PHONE_NUMBER_COUNTRY_CODE"
         case .invalidOTPCode:
             return "OTP"
+        case .invalidAccountUniqueId:
+            return nil
+        case .invalidAccountRegistrationDate:
+            return nil
+        case .invalidAccountLastModified:
+            return nil
         }
     }
 }
@@ -260,7 +290,10 @@ extension PrimerValidationError: Equatable {
              (.invalidPhoneNumber(let message1, let userInfo1, let id1), .invalidPhoneNumber(let message2, let userInfo2, let id2)),
              (.invalidPhoneNumberCountryCode(let message1, let userInfo1, let id1), .invalidPhoneNumberCountryCode(let message2, let userInfo2, let id2)),
              (.invalidRetailer(let message1, let userInfo1, let id1), .invalidRetailer(let message2, let userInfo2, let id2)),
-             (.invalidOTPCode(let message1, let userInfo1, let id1), .invalidOTPCode(let message2, let userInfo2, let id2)):
+             (.invalidOTPCode(let message1, let userInfo1, let id1), .invalidOTPCode(let message2, let userInfo2, let id2)),
+             (.invalidAccountUniqueId(let message1, let userInfo1, let id1), .invalidAccountUniqueId(let message2, let userInfo2, let id2)),
+             (.invalidAccountRegistrationDate(let message1, let userInfo1, let id1), .invalidAccountRegistrationDate(let message2, let userInfo2, let id2)),
+             (.invalidAccountLastModified(let message1, let userInfo1, let id1), .invalidAccountLastModified(let message2, let userInfo2, let id2)):
             return message1 == message2 && userInfo1 == userInfo2 && id1 == id2
         case (.invalidRawData(let userInfo1, let id1), .invalidRawData(let userInfo2, let id2)):
             return userInfo1 == userInfo2 && id1 == id2

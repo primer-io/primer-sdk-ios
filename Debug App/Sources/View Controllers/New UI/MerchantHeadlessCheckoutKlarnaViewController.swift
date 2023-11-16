@@ -300,7 +300,7 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
         
         checkoutTypeContainerView.isHidden = true
         
-        createSession(accountInfo: nil)
+        //createSession(accountInfo: nil)
     }
     
     @objc func customerCheckoutButtonTapped(_ sender: UIButton) {
@@ -316,17 +316,17 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
             return
         }
         
-        let accountInfo = PrimerKlarnaCustomerAccountInfo(
-            accountUniqueId: accountId,
-            accountRegistrationDate: accountRegistrationDate,
-            accountLastModified: accountLastModifiedDate
-        )
+//        let accountInfo = PrimerKlarnaCustomerAccountInfo(
+//            accountUniqueId: accountId,
+//            accountRegistrationDate: accountRegistrationDate,
+//            accountLastModified: accountLastModifiedDate
+//        )
         
         showLoader()
         
         checkoutTypeContainerView.isHidden = true
         
-        createSession(accountInfo: accountInfo)
+//        createSession(accountInfo: accountInfo)
     }
     
     @objc func continueButtonTapped(_ sender: UIButton) {
@@ -398,11 +398,11 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
 
 // MARK: - Payment
 private extension MerchantHeadlessCheckoutKlarnaViewController {
-    func createSession(accountInfo: PrimerKlarnaCustomerAccountInfo?) {
-        klarnaSessionCreationComponent.createSession(
-            sessionType: .recurringPayment,
-            customerAccountInfo: accountInfo
-        )
+    func createSession() {
+//        klarnaSessionCreationComponent.createSession(
+//            sessionType: .recurringPayment,
+//            customerAccountInfo: accountInfo
+//        )
     }
     
     func createPaymentView(category: PrimerKlarnaPaymentCategory) {
