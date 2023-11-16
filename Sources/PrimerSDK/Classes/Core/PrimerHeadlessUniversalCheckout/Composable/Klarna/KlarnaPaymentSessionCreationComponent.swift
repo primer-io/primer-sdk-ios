@@ -8,10 +8,9 @@
 import Foundation
 
 public enum KlarnaPaymentSessionCollectableData: PrimerCollectableData {
-    case sessionType(type: KlarnaSessionType)
     case customerAccountInfo(accountUniqueId: String,
-                             accountRegistrationDate: Date,
-                             accountLastModified: Date)
+                             accountRegistrationDate: String,
+                             accountLastModified: String)
 }
 
 public enum KlarnaPaymentSessionCreation: PrimerHeadlessStep {
@@ -51,6 +50,10 @@ public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessCollectDataCom
     // MARK: - Set
     func setSettings(settings: PrimerSettingsProtocol) {
         self.settings = settings
+    }
+    
+    func setSessionType(type: KlarnaSessionType) {
+        self.sessionType = type
     }
 }
 
@@ -137,14 +140,11 @@ public extension KlarnaPaymentSessionCreationComponent {
         )
         
         switch collectableData {
-        case .sessionType(let type):
-            self.sessionType = type
-            
         case .customerAccountInfo(let accountUniqueId, let accountRegistrationDate, let accountLastModified):
             self.customerAccountInfo = .init(
                 accountUniqueId: accountUniqueId, 
-                accountRegistrationDate: accountRegistrationDate,
-                accountLastModified: accountLastModified
+                accountRegistrationDate: accountRegistrationDate.toDate(),
+                accountLastModified: accountLastModified.toDate()
             )
         }
         
@@ -202,8 +202,9 @@ private extension KlarnaPaymentSessionCreationComponent {
         var errors: [PrimerValidationError] = []
         
         switch data {
-        case .customerAccountInfo(let accountUniqueId, let accountRegistrationDate, let accountLastModified):
-            if accountUniqueId.count == 0 || accountUniqueId.count > 24 {
+        case .customerAccountInfo(let accountUniqueId, let accountRegistrationDateString, let accountLastModifiedString):
+            let trimmedAccountUniqueId = accountUniqueId.trimmingCharacters(in: .whitespacesAndNewlines)
+            if accountUniqueId.count == 0 || accountUniqueId.count > 24 || trimmedAccountUniqueId.count == 0 {
                 errors.append(.invalidAccountUniqueId(
                     message: "Invalid customer account unique id",
                     userInfo: self.getValidationErrorUserInfo(line: "\(#line)"),
@@ -211,24 +212,39 @@ private extension KlarnaPaymentSessionCreationComponent {
                 )
             }
             
-            if accountRegistrationDate > Date() {
+            if let accountRegistrationDate = accountRegistrationDateString.toDate() {
+                if accountRegistrationDate > Date() {
+                    errors.append(.invalidAccountRegistrationDate(
+                        message: "Invalid customer account registration date",
+                        userInfo: self.getValidationErrorUserInfo(line: "\(#line)"),
+                        diagnosticsId: UUID().uuidString)
+                    )
+                    
+                    break
+                }
+                
+                if let accountLastModified = accountLastModifiedString.toDate() {
+                    if accountLastModified > Date() || accountLastModified < accountRegistrationDate {
+                        errors.append(.invalidAccountLastModified(
+                            message: "Invalid customer account last modified date",
+                            userInfo: self.getValidationErrorUserInfo(line: "\(#line)"),
+                            diagnosticsId: UUID().uuidString)
+                        )
+                    }
+                } else {
+                    errors.append(.invalidAccountLastModified(
+                        message: "Customer account last modified date not available",
+                        userInfo: self.getValidationErrorUserInfo(line: "\(#line)"),
+                        diagnosticsId: UUID().uuidString)
+                    )
+                }
+            } else {
                 errors.append(.invalidAccountRegistrationDate(
-                    message: "Invalid customer account registration date",
+                    message: "Customer account registration date is not available",
                     userInfo: self.getValidationErrorUserInfo(line: "\(#line)"),
                     diagnosticsId: UUID().uuidString)
                 )
             }
-            
-            if accountLastModified > Date() || accountLastModified < accountRegistrationDate {
-                errors.append(.invalidAccountLastModified(
-                    message: "Invalid customer account last modified date",
-                    userInfo: self.getValidationErrorUserInfo(line: "\(#line)"),
-                    diagnosticsId: UUID().uuidString)
-                )
-            }
-            
-        default:
-            break
         }
         
         if errors.count > 0 {

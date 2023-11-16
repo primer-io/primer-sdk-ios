@@ -38,7 +38,8 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         // MARK: - Public
-        public func provideKlarnaPaymentSessionCreationComponent() -> KlarnaPaymentSessionCreationComponent {
+        public func provideKlarnaPaymentSessionCreationComponent(type: KlarnaSessionType) -> KlarnaPaymentSessionCreationComponent {
+            self.sessionCreationComponent.setSessionType(type: type)
             self.sessionCreationComponent.setSettings(settings: self.settings)
             
             return self.sessionCreationComponent

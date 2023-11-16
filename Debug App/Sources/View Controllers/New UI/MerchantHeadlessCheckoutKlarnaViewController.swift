@@ -74,9 +74,10 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         klarnaManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessKlarnaManager()
         klarnaManager.errorDelegate = self
         
-        klarnaSessionCreationComponent = klarnaManager.provideKlarnaPaymentSessionCreationComponent()
+        klarnaSessionCreationComponent = klarnaManager.provideKlarnaPaymentSessionCreationComponent(type: .recurringPayment)
         klarnaSessionCreationComponent.errorDelegate = self
         klarnaSessionCreationComponent.stepDelegate = self
+        klarnaSessionCreationComponent.validationDelegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -296,37 +297,21 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
 // MARK: - Actions
 private extension MerchantHeadlessCheckoutKlarnaViewController {
     @objc func guestCheckoutButtonTapped(_ sender: UIButton) {
-        showLoader()
-        
-        checkoutTypeContainerView.isHidden = true
-        
-        //createSession(accountInfo: nil)
+        self.startPaymentSession()
     }
     
     @objc func customerCheckoutButtonTapped(_ sender: UIButton) {
-        guard
-            let accountId = customerAccountIdTextField.text,
-            accountId.count > 0,
-            let registrationDate = customerAccountRegistrationTextField.text,
-            registrationDate.count > 0,
-            let lastModifiedDate = customerAccountLastModifiedTextField.text,
-            lastModifiedDate.count > 0
-        else {
-            showAlert(title: "Error", message: "Customer account info not valid")
-            return
-        }
+        let accountId = customerAccountIdTextField.text ?? ""
+        let registrationDate = customerAccountRegistrationTextField.text ?? ""
+        let lastModifiedDate = customerAccountLastModifiedTextField.text ?? ""
         
-//        let accountInfo = PrimerKlarnaCustomerAccountInfo(
-//            accountUniqueId: accountId,
-//            accountRegistrationDate: accountRegistrationDate,
-//            accountLastModified: accountLastModifiedDate
-//        )
-        
-        showLoader()
-        
-        checkoutTypeContainerView.isHidden = true
-        
-//        createSession(accountInfo: accountInfo)
+        self.klarnaSessionCreationComponent.updateCollectedData(
+            collectableData: .customerAccountInfo(
+                accountUniqueId: accountId,
+                accountRegistrationDate: registrationDate,
+                accountLastModified: lastModifiedDate
+            )
+        )
     }
     
     @objc func continueButtonTapped(_ sender: UIButton) {
@@ -398,11 +383,12 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
 
 // MARK: - Payment
 private extension MerchantHeadlessCheckoutKlarnaViewController {
-    func createSession() {
-//        klarnaSessionCreationComponent.createSession(
-//            sessionType: .recurringPayment,
-//            customerAccountInfo: accountInfo
-//        )
+    func startPaymentSession() {
+        showLoader()
+        
+        checkoutTypeContainerView.isHidden = true
+        
+        klarnaSessionCreationComponent.start()
     }
     
     func createPaymentView(category: PrimerKlarnaPaymentCategory) {
@@ -513,6 +499,28 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
             title: "Error",
             message: error.errorDescription ?? error.localizedDescription
         )
+    }
+}
+
+// MARK: - PrimerHeadlessValidatableDelegate
+extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessValidatableDelegate {
+    func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
+        switch validationStatus {
+        case .invalid(let errors):
+            var message = ""
+            for error in errors {
+                message += (error.errorDescription ?? error.localizedDescription) + "\n"
+            }
+            self.showAlert(title: "Validation Error", message: "\(message)")
+            
+        case .valid:
+            if let _ = data as? KlarnaPaymentSessionCollectableData {
+                self.startPaymentSession()
+            }
+            
+        default:
+            break
+        }
     }
 }
 
