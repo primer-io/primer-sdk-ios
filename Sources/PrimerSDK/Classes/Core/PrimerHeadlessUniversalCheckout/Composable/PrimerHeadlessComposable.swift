@@ -48,7 +48,15 @@ public protocol PrimerHeadlessSteppableDelegate: AnyObject {
     func didReceiveStep(step: PrimerHeadlessStep)
 }
 
-public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent {
+public protocol PrimerHeadlessStartable: AnyObject {
+    func start()
+}
+
+public protocol PrimerHeadlessSubmitable: AnyObject {
+    func submit()
+}
+
+public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent, PrimerHeadlessStartable, PrimerHeadlessSubmitable {
     associatedtype T: PrimerCollectableData
     var errorDelegate: PrimerHeadlessErrorableDelegate? { get set }
     var validationDelegate: PrimerHeadlessValidatableDelegate? { get set }
