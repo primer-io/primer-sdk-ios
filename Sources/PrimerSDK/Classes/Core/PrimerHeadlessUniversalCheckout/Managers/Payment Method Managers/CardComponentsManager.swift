@@ -10,12 +10,15 @@ import SafariServices
 
 public protocol PrimerHeadlessUniversalCheckoutInputData {}
 
+@available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
 public protocol PrimerHeadlessUniversalCheckoutCardComponentsManagerDelegate: AnyObject {
     func cardComponentsManager(_ cardComponentsManager: PrimerHeadlessUniversalCheckout.CardComponentsManager, isCardFormValid: Bool)
 }
 
 extension PrimerHeadlessUniversalCheckout {
 
+    
+    @available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
     public final class CardComponentsManager: NSObject, PrimerInputElementDelegate, LogReporter {
 
         private(set) public var paymentMethodType: String
@@ -88,6 +91,7 @@ extension PrimerHeadlessUniversalCheckout {
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
 
+        @available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
         public init(paymentMethodType: String) throws {
             let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
@@ -969,6 +973,7 @@ extension PrimerHeadlessUniversalCheckout {
     }
 }
 
+@available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
 extension PrimerHeadlessUniversalCheckout.CardComponentsManager: ResumeHandlerProtocol {
 
     // MARK: - RESUME HANDLER
@@ -982,6 +987,7 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager: ResumeHandlerPr
     public func handleSuccess() {}
 }
 
+@available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
 extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
 
     private func handle(_ clientToken: String) {
@@ -1071,6 +1077,7 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
     }
 }
 
+@available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
 extension PrimerHeadlessUniversalCheckout.CardComponentsManager: SFSafariViewControllerDelegate {
 
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
