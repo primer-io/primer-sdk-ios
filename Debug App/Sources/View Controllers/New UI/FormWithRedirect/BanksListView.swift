@@ -43,12 +43,15 @@ struct BanksListView: View {
         }
         Divider()
 
-        Text("Choose your bank")
-            .multilineTextAlignment(.leading)
+        VStack(alignment: .leading) {
+            Text("Choose your bank")
+                .multilineTextAlignment(.leading)
+                .padding(.leading, metrics.textLeftPadding)
 
-        SearchBar(text: $filterText.didSet { text in
-            didFilterByText(text)
-        })
+            SearchBar(text: $filterText.didSet { text in
+                didFilterByText(text)
+            })
+        }
 
         Divider()
 
@@ -64,15 +67,17 @@ struct BanksListView: View {
                             }
                         Text(bank.name)
                     }
-                    .frame(height: metrics.cellHeight)
                     Spacer()
                     Image(systemName: "arrow.right")
                 }
+                .frame(height: metrics.cellHeight)
                 .padding(.leading, metrics.hStackLeading)
                 .padding(.trailing, metrics.hStackTrailing)
             }
+            .buttonStyle(.plain)
         }
         .padding(.top, 0)
+        .padding(.leading, 0)
     }
 
     private func image(url: URL) -> some View {
@@ -93,11 +98,12 @@ struct BanksListView: View {
 
 extension BanksListView {
     private struct Metrics {
-        let imageSize: CGSize = CGSize(width: 30, height: 30)
+        let imageSize: CGSize = CGSize(width: 25, height: 25)
         let hStackSpacing: CGFloat = 5
-        let cellHeight: CGFloat = 40
+        let cellHeight: CGFloat = 30
         let hStackLeading: CGFloat = 10
         let hStackTrailing: CGFloat = 0
+        let textLeftPadding: CGFloat = 25
     }
 }
 
@@ -115,6 +121,7 @@ extension Binding {
 
 extension BanksListView {
     struct SearchBar: View {
+        private let metrics = SearchBar.Metrics()
         @Binding var text: String
         @State private var isEditing = false
 
@@ -122,9 +129,8 @@ extension BanksListView {
             HStack {
 
                 TextField("Search bank", text: $text)
-                    .padding(7)
-                    .padding(.horizontal, 25)
-                    .padding(.horizontal, 10)
+                    .padding(.horizontal, metrics.textLeftPadding)
+                    .padding(.horizontal, metrics.hPadding)
                     .onTapGesture {
                         self.isEditing = true
                     }
@@ -135,12 +141,19 @@ extension BanksListView {
                     }) {
                         Text("Cancel")
                     }
-                    .padding(.trailing, 10)
+                    .padding(.trailing, metrics.hPadding)
                     .transition(.move(edge: .trailing))
                     .animation(.default)
                 }
             }
         }
+    }
+}
+
+extension BanksListView.SearchBar {
+    private struct Metrics {
+        let textLeftPadding: CGFloat = 0
+        let hPadding: CGFloat = 25
     }
 }
 
