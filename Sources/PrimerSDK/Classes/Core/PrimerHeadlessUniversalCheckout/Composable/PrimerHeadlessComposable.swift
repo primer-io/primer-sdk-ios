@@ -56,6 +56,10 @@ public protocol PrimerHeadlessSubmitable: AnyObject {
     func submit()
 }
 
+public protocol PrimerHeadlessCancellable: AnyObject {
+    func cancel()
+}
+
 public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent, PrimerHeadlessStartable, PrimerHeadlessSubmitable {
     associatedtype T: PrimerCollectableData
     var errorDelegate: PrimerHeadlessErrorableDelegate? { get set }

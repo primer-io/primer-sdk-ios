@@ -114,6 +114,10 @@ public class BanksComponent: PrimerHeadlessFormComponent {
         case .webRedirect(component: _): break
         }
     }
+
+    public func cancel() {
+        tokenizationModelDelegate.cancel()
+    }
 }
 
 private extension BanksComponent {
