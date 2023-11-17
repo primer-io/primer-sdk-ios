@@ -214,6 +214,7 @@ extension BankComponentTests: PrimerHeadlessValidatableDelegate {
 
 private class MockBankSelectorTokenizationModel: BankSelectorTokenizationDelegate {
     var didCallFilter: Bool = false
+    var didCallCancel: Bool = false
     var useSuccess: Bool = false
     static let bankNameToBeFiltered = "Bank filtered"
     let mockBanks: [AdyenBank] = [AdyenBank(id: "0", name: "Bank_0", iconUrlStr: nil, disabled: false),
@@ -251,8 +252,10 @@ private class MockBankSelectorTokenizationModel: BankSelectorTokenizationDelegat
     }
     func tokenize(bankId: String) -> Promise<Void> {
         return Promise { seal in
-//            useSuccess ?? seal.fulfill() : seal.reject(Error()
-            seal.fulfill()
+            useSuccess ? seal.fulfill() : seal.reject(PrimerError.paymentFailed(description: "payment_failed", userInfo: nil, diagnosticsId: UUID().uuidString))
         }
+    }
+    func cancel() {
+        didCallCancel = true
     }
 }

@@ -11,4 +11,5 @@ protocol BankSelectorTokenizationDelegate {
     func retrieveListOfBanks() -> Promise<[AdyenBank]>
     func filterBanks(query: String) -> [AdyenBank]
     func tokenize(bankId: String) -> Promise<Void>
+    func cancel()
 }
