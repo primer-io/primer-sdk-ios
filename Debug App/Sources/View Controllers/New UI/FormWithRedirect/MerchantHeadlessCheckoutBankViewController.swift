@@ -12,8 +12,8 @@ import SwiftUI
 import PrimerSDK
 
 final class MerchantHeadlessCheckoutBankViewController: UIViewController {
-    private lazy var idealManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager()
-    private let paymentMethodType: String = "ADYEN_IDEAL"
+    private lazy var idealManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager(paymentMethodType: paymentMethodType)!
+    let paymentMethodType: String = "ADYEN_IDEAL"
 
     private(set) var activityIndicator: UIActivityIndicatorView?
     private(set) var bankComponent: BanksComponent?
@@ -21,7 +21,7 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let bankComponent = idealManager.provideBanksComponent(paymentMethodType: paymentMethodType) else {
+        guard let bankComponent = idealManager.provideBanksComponent() else {
             return
         }
         addBanksListViewController()

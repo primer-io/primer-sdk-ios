@@ -10,6 +10,7 @@ import XCTest
 @testable import PrimerSDK
 
 final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
+    let methodTypeString = "ADYEN_IDEAL"
     var availablePaymentMethodsLoadedCompletion: (([PrimerHeadlessUniversalCheckout.PaymentMethod]?, Error?) -> Void)?
 
     override func tearDown() {
@@ -18,9 +19,6 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
     }
 
     func testInit() {
-        let manager = PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager()
-        XCTAssertNotNil(manager)
-
         let subject = PrimerHeadlessUniversalCheckout.current
         PrimerInternal.shared.sdkIntegrationType = .headless
         self.resetTestingEnvironment()
@@ -53,11 +51,13 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
         self.availablePaymentMethodsLoadedCompletion = { availablePaymentMethods, err in
             XCTAssertTrue(subject.listAvailablePaymentMethodsTypes()?.contains(PrimerPaymentMethodType.adyenIDeal.rawValue) ?? false)
             PrimerPaymentMethodType.allCases.forEach {
-                let banksComponents = manager.provideBanksComponent(paymentMethodType: $0.rawValue)
+                let manager = PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager(paymentMethodType: $0.rawValue)
                 if $0 == .adyenIDeal {
-                    XCTAssertNotNil(banksComponents)
+                    XCTAssertNotNil(manager)
+                    let banksComponent = manager?.provideBanksComponent()
+                    XCTAssertNotNil(banksComponent)
                 } else {
-                    XCTAssertNil(banksComponents)
+                    XCTAssertNil(manager)
                 }
             }
         }
@@ -70,8 +70,8 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
     }
 
     func testProvideInvalidMethod() {
-        let manager = PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager()
-        XCTAssertNil(manager.provideBanksComponent(paymentMethodType: "mock_method_type"))
+        let manager = PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager(paymentMethodType: "mock_method_type")
+        XCTAssertNil(manager)
     }
 }
 
