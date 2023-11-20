@@ -7,4 +7,6 @@
 
 import Foundation
 protocol PrimerHeadlessRedirectComponent {}
-public class WebRedirectComponent: PrimerHeadlessRedirectComponent {}
+class WebRedirectComponent: PrimerHeadlessRedirectComponent {
+    
+}

@@ -39,6 +39,7 @@ public class BanksComponent: PrimerHeadlessFormComponent {
         case .bankId(bankId: let bankId):
             self.bankId = bankId
             if isBankIdValid(bankId: bankId) {
+                // todo: here need to figure the tokenization workflow and more refactoring
                 tokenizationModelDelegate.tokenize(bankId: bankId)
                 let redirectComponent = createWebRedirectComponent()
                 stepDelegate?.didReceiveStep(step: BanksStep.webRedirect(component: redirectComponent))
