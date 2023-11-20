@@ -60,7 +60,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
                     processorConfigId: "mock-processor-config-id-1",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil),
+                    displayMetadata: nil)
             ],
             primerAccountId: "mock-primer-account-id",
             keys: nil,
@@ -77,10 +77,10 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         firstly {
             self.startHeadlessUniversalCheckout(clientToken: MockAppState.mockClientToken)
         }
-        .done { availablePaymentMethods in
+        .done { _ in
             startHeadlessExpectation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true, "Raw Data Manager should had been initialized")
             startHeadlessExpectation.fulfill()
         }
@@ -106,7 +106,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 4, "Should have thrown 4 errors")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -131,7 +131,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors == nil, "Should not have thrown errors")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -156,7 +156,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -181,7 +181,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -206,7 +206,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -231,7 +231,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -256,7 +256,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -281,7 +281,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -306,7 +306,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -331,7 +331,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -356,7 +356,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -381,7 +381,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -406,7 +406,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -431,7 +431,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -456,7 +456,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -481,7 +481,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -506,7 +506,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -531,7 +531,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -556,7 +556,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -581,7 +581,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -606,7 +606,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -631,7 +631,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(errors?.count == 1, "Should have thrown 1 error")
             validation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(true)
             validation.fulfill()
         }
@@ -649,12 +649,12 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         self.onRawDataManagerValidation?(isValid, errors)
     }
     
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String : Any]?) {
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?) {
         self.onRawDataManagerMetadataChange?(metadata)
     }
     
     var onRawDataManagerValidation: ((_ isValid: Bool, _ errors: [Error]?) -> Void)?
-    var onRawDataManagerMetadataChange: ((_ metadata: [String : Any]?) -> Void)?
+    var onRawDataManagerMetadataChange: ((_ metadata: [String: Any]?) -> Void)?
     
     func validateWithRawDataManager() -> Promise<(isValid: Bool, errors: [Error]?)> {
         return Promise { seal in
@@ -679,4 +679,3 @@ extension RawDataManagerTests {
         }
     }
 }
-

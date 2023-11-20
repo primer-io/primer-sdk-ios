@@ -105,7 +105,6 @@ extension AnyCodable: ExpressibleByStringLiteral {}
 extension AnyCodable: ExpressibleByArrayLiteral {}
 extension AnyCodable: ExpressibleByDictionaryLiteral {}
 
-
 extension AnyCodable: Hashable {
     public func hash(into hasher: inout Hasher) {
         switch value {

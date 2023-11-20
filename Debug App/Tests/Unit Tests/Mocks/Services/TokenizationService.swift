@@ -5,11 +5,11 @@
 ////  Created by Carl Eriksson on 16/01/2021.
 ////
 //
-//#if canImport(UIKit)
+// #if canImport(UIKit)
 //
-//@testable import PrimerSDK
+// @testable import PrimerSDK
 //
-//class MockTokenizationService: TokenizationServiceProtocol {
+// class MockTokenizationService: TokenizationServiceProtocol {
 //    
 //    var paymentMethodTokenData: PrimerPaymentMethodTokenData?
 //    
@@ -52,6 +52,6 @@
 //            }
 //        }
 //    }
-//}
+// }
 //
-//#endif
+// #endif

@@ -5,10 +5,8 @@
 //  Created by Carl Eriksson on 16/01/2021.
 //
 
-
-
 internal protocol AppStateProtocol: AnyObject {
-    
+
     static var current: AppStateProtocol { get }
     var amount: Int? { get }
     var currency: Currency? { get }
@@ -20,20 +18,20 @@ internal protocol AppStateProtocol: AnyObject {
 }
 
 internal class AppState: AppStateProtocol {
-    
+
     static var current: AppStateProtocol {
         let appState: AppStateProtocol = DependencyContainer.resolve()
         return appState
     }
-    
+
     var amount: Int? {
         return PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount ?? PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.totalOrderAmount
     }
-    
+
     var currency: Currency? {
         return PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.currencyCode
     }
-    
+
     var clientToken: String?
     var apiConfiguration: PrimerAPIConfiguration?
     var paymentMethods: [PrimerPaymentMethodTokenData] = []
@@ -43,5 +41,3 @@ internal class AppState: AppStateProtocol {
         return paymentMethods.first(where: { $0.id == selectedPaymentMethodToken })
     }
 }
-
-

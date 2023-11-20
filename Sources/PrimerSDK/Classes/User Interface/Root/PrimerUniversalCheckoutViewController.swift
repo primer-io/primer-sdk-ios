@@ -5,12 +5,10 @@
 //  Created by Evangelos Pittas on 31/7/21.
 //
 
-
-
 import UIKit
 
 internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
-    
+
     var savedCardView: CardButton!
     private var titleLabel: UILabel!
     private var savedPaymentMethodStackView: UIStackView!
@@ -21,10 +19,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     private var singleUsePaymentMethod: PrimerPaymentMethodTokenData?
     private var resumePaymentId: String?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         let viewEvent = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -36,18 +34,18 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 objectClass: "\(Self.self)",
                 place: .universalCheckout))
         Analytics.Service.record(event: viewEvent)
-        
+
         title = Strings.CheckoutView.navBarTitle
         view.backgroundColor = theme.view.backgroundColor
-        
+
         verticalStackView.spacing = 14.0
-        
+
         renderAmount()
         renderSelectedPaymentInstrument()
         renderAvailablePaymentMethods()
-        
+
         guard PrimerAPIConfigurationModule.decodedJWTToken.exists else { return }
-        
+
         let vaultService: VaultServiceProtocol = VaultService()
         firstly {
             vaultService.fetchVaultedPaymentMethods()
@@ -62,7 +60,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             } else {
                 primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
             }
-            
+
             PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
                 switch errorDecision.type {
                 case .fail(let message):
@@ -73,10 +71,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             }
         }
     }
-    
+
     private func renderAmount() {
         let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
-        
+
         if let amountStr = universalCheckoutViewModel.amountStr {
             titleLabel = UILabel()
             titleLabel.accessibilityIdentifier = "Amount Label"
@@ -88,27 +86,26 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(titleLabel)
         }
     }
-    
+
     private func renderSelectedPaymentInstrument(insertAt index: Int? = nil) {
         if savedCardView != nil {
             verticalStackView.removeArrangedSubview(savedCardView)
             savedCardView.removeFromSuperview()
             savedCardView = nil
         }
-        
+
         if savedPaymentMethodStackView != nil {
             verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
             savedPaymentMethodStackView.removeFromSuperview()
             savedPaymentMethodStackView = nil
         }
-        
+
         let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
-        
+
         if let selectedPaymentMethod = universalCheckoutViewModel.selectedPaymentMethod,
-            let cardButtonViewModel = selectedPaymentMethod.cardButtonViewModel
-        {
+            let cardButtonViewModel = selectedPaymentMethod.cardButtonViewModel {
             self.selectedPaymentMethod = selectedPaymentMethod
-            
+
             if savedPaymentMethodStackView == nil {
                 savedPaymentMethodStackView = UIStackView()
                 savedPaymentMethodStackView.axis = .vertical
@@ -116,14 +113,14 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 savedPaymentMethodStackView.distribution = .fill
                 savedPaymentMethodStackView.spacing = 5.0
             }
-            
+
             let titleHorizontalStackView = UIStackView()
             titleHorizontalStackView.translatesAutoresizingMaskIntoConstraints = false
             titleHorizontalStackView.axis = .horizontal
             titleHorizontalStackView.alignment = .fill
             titleHorizontalStackView.distribution = .fill
             titleHorizontalStackView.spacing = 8.0
-            
+
             let savedPaymentMethodLabel = UILabel()
             savedPaymentMethodLabel.translatesAutoresizingMaskIntoConstraints = false
             savedPaymentMethodLabel.text = Strings.VaultPaymentMethodViewContent.savedPaymentMethodsTitle.localizedUppercase
@@ -132,7 +129,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             savedPaymentMethodLabel.textColor = theme.text.subtitle.color
             savedPaymentMethodLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
             titleHorizontalStackView.addArrangedSubview(savedPaymentMethodLabel)
-            
+
             let seeAllButton = UIButton()
             seeAllButton.translatesAutoresizingMaskIntoConstraints = false
             seeAllButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
@@ -142,9 +139,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             seeAllButton.setTitleColor(theme.text.system.color, for: .normal)
             seeAllButton.addTarget(self, action: #selector(seeAllButtonTapped), for: .touchUpInside)
             titleHorizontalStackView.addArrangedSubview(seeAllButton)
-            
+
             savedPaymentMethodStackView.addArrangedSubview(titleHorizontalStackView)
-            
+
             let paymentMethodStackView = UIStackView()
             paymentMethodStackView.translatesAutoresizingMaskIntoConstraints = false
             paymentMethodStackView.layer.cornerRadius = 4.0
@@ -158,7 +155,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             if #available(iOS 11.0, *) {
                 paymentMethodStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
             }
-            
+
             guard var amount = AppState.current.amount,
                   let currency = AppState.current.currency
             else {
@@ -172,18 +169,17 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 .catch { _ in }
                 return
             }
-            
-            
-            if let surCharge = cardButtonViewModel.surCharge {                
+
+            if let surCharge = cardButtonViewModel.surCharge {
                 let surChargeLabel = UILabel()
                 surChargeLabel.text = "+" + Int(surCharge).toCurrencyString(currency: currency)
                 surChargeLabel.textColor = theme.text.body.color
                 surChargeLabel.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                 paymentMethodStackView.addArrangedSubview(surChargeLabel)
-                
+
                 amount += surCharge
             }
-            
+
             if savedCardView == nil {
                 savedCardView = CardButton()
                 savedCardView.backgroundColor = .white
@@ -192,17 +188,17 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 savedCardView.render(model: cardButtonViewModel, showIcon: false)
                 paymentMethodStackView.addArrangedSubview(savedCardView)
             }
-            
+
             if payButton == nil {
                 payButton = PrimerButton()
             }
-            
+
             var title = Strings.PaymentButton.pay
-            
+
             if amount != 0, let currency = AppState.current.currency {
                 title += " \(amount.toCurrencyString(currency: currency))"
             }
-            
+
             payButton.layer.cornerRadius = 4
             payButton.setTitle(title, for: .normal)
             payButton.setTitleColor(theme.mainButton.text.color, for: .normal)
@@ -211,11 +207,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
             payButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
             paymentMethodStackView.addArrangedSubview(payButton)
-            
+
             if !paymentMethodStackView.arrangedSubviews.isEmpty {
                 savedPaymentMethodStackView.addArrangedSubview(paymentMethodStackView)
             }
-            
+
             if let index = index {
                 verticalStackView.insertArrangedSubview(savedPaymentMethodStackView, at: index)
             } else {
@@ -227,25 +223,25 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 savedCardView.removeFromSuperview()
                 savedCardView = nil
             }
-            
+
             if savedPaymentMethodStackView != nil {
                 verticalStackView.removeArrangedSubview(savedPaymentMethodStackView)
                 savedPaymentMethodStackView.removeFromSuperview()
                 savedPaymentMethodStackView = nil
             }
         }
-        
+
         (self.parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
             self.verticalStackView.layoutIfNeeded()
         }
-        
+
         PrimerUIManager.primerRootViewController?.layoutIfNeeded()
     }
-    
+
     private func renderAvailablePaymentMethods() {
         PrimerFormViewController.renderPaymentMethods(paymentMethodConfigViewModels, on: verticalStackView)
     }
-    
+
     @objc
     func seeAllButtonTapped(_ sender: Any) {
         let uiEvent = Analytics.Event(
@@ -259,14 +255,14 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 objectClass: "\(Self.self)",
                 place: .universalCheckout))
         Analytics.Service.record(event: uiEvent)
-        
+
         let vpivc = VaultedPaymentInstrumentsViewController()
         vpivc.delegate = self
         vpivc.view.translatesAutoresizingMaskIntoConstraints = false
         vpivc.view.heightAnchor.constraint(equalToConstant: self.parent!.view.bounds.height).isActive = true
         PrimerUIManager.primerRootViewController?.show(viewController: vpivc)
     }
-    
+
     @objc
     func payButtonTapped() {
         guard let selectedPaymentMethod = selectedPaymentMethod else { return }
@@ -274,7 +270,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         guard let config = PrimerAPIConfiguration.paymentMethodConfigs?.filter({ $0.type == selectedPaymentMethodType }).first else {
             return
         }
-        
+
         let viewEvent = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -289,10 +285,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 objectClass: "\(Self.self)",
                 place: .universalCheckout))
         Analytics.Service.record(event: viewEvent)
-        
+
         enableView(false)
         payButton.startAnimating()
-        
+
         let checkoutWithVaultedPaymentMethodViewModel = CheckoutWithVaultedPaymentMethodViewModel(configuration: config, selectedPaymentMethodTokenData: selectedPaymentMethod)
         firstly {
             checkoutWithVaultedPaymentMethodViewModel.start()
@@ -302,21 +298,21 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         }
         .catch { _ in }
     }
-    
+
 }
 
 extension PrimerUniversalCheckoutViewController {
-    
+
     private func enableView(_ isEnabled: Bool) {
         DispatchQueue.main.async { [weak self] in
             self?.view?.isUserInteractionEnabled = isEnabled
             (self?.parent as? PrimerContainerViewController)?.scrollView.isScrollEnabled = isEnabled
             PrimerUIManager.primerRootViewController?.enableUserInteraction(isEnabled)
-            
+
             for sv in (self?.verticalStackView.arrangedSubviews ?? []) {
                 sv.alpha = sv == self?.savedPaymentMethodStackView ? 1.0 : (isEnabled ? 1.0 : 0.5)
             }
-            
+
             for sv in (self?.savedPaymentMethodStackView.arrangedSubviews ?? []) {
                 if let stackView = sv as? UIStackView, !stackView.arrangedSubviews.filter({ $0 is PrimerButton }).isEmpty {
                     for ssv in stackView.arrangedSubviews {
@@ -339,5 +335,3 @@ extension PrimerUniversalCheckoutViewController: ReloadDelegate {
         renderSelectedPaymentInstrument(insertAt: 1)
     }
 }
-
-

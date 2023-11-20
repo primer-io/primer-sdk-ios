@@ -6,13 +6,13 @@ import Dispatch
 internal protocol CancellableThenable: AnyObject {
     /// Type of the delegate `thenable`
     associatedtype U: Thenable
-    
+
     /// Delegate `thenable` for this `CancellableThenable`
     var thenable: U { get }
 
     /// The `CancelContext` associated with this `CancellableThenable`
     var cancelContext: CancelContext { get }
-    
+
     /// Tracks the cancel items for this `CancellableThenable`.  These items are removed from the associated `CancelContext` when the thenable resolves.
     var cancelItemList: CancelItemList { get }
 }
@@ -22,12 +22,12 @@ internal extension CancellableThenable {
     func appendCancellable(_ cancellable: Cancellable?, reject: ((Error) -> Void)?) {
         self.cancelContext.append(cancellable: cancellable, reject: reject, thenable: self)
     }
-    
+
     /// Append the cancel context associated with `from` to our cancel context.  Typically `from` is a branch of our chain.
     func appendCancelContext<Z: CancellableThenable>(from: Z) {
         self.cancelContext.append(context: from.cancelContext, thenable: self)
     }
-    
+
     /**
      Cancel all members of the promise chain and their associated asynchronous operations.
 
@@ -36,28 +36,28 @@ internal extension CancellableThenable {
     func cancel(with error: Error = PMKError.cancelled) {
         self.cancelContext.cancel(with: error)
     }
-    
+
     /**
      True if all members of the promise chain have been successfully cancelled, false otherwise.
      */
     var isCancelled: Bool {
         return self.cancelContext.isCancelled
     }
-    
+
     /**
      True if `cancel` has been called on the CancelContext associated with this promise, false otherwise.  `cancelAttempted` will be true if `cancel` is called on any promise in the chain.
      */
     var cancelAttempted: Bool {
         return self.cancelContext.cancelAttempted
     }
-    
+
     /**
      The cancellation error generated when the promise is cancelled, or `nil` if not cancelled.
      */
     var cancelledError: Error? {
         return self.cancelContext.cancelledError
     }
-    
+
     /**
      The provided closure executes when this cancellable promise resolves.
      
@@ -82,7 +82,7 @@ internal extension CancellableThenable {
     func then<V: CancellableThenable>(on: Dispatcher = conf.D.map, _ body: @escaping (U.T) throws -> V) -> CancellablePromise<V.U.T> {
 
         let cancelItemList = CancelItemList()
-        
+
         let cancelBody = { (value: U.T) throws -> V.U in
             if let error = self.cancelContext.removeItems(self.cancelItemList, clearList: true) {
                 throw error
@@ -92,11 +92,11 @@ internal extension CancellableThenable {
                 return rv.thenable
             }
         }
-        
+
         let promise = self.thenable.then(on: on, cancelBody)
         return CancellablePromise(promise: promise, context: self.cancelContext, cancelItemList: cancelItemList)
     }
-    
+
     /**
      The provided closure executes when this cancellable promise resolves.
      
@@ -126,11 +126,11 @@ internal extension CancellableThenable {
                 return try body(value)
             }
         }
-        
+
         let promise = self.thenable.then(on: on, cancelBody)
         return CancellablePromise(promise, cancelContext: self.cancelContext)
     }
-    
+
     /**
      The provided closure is executed when this cancellable promise is resolved.
      
@@ -160,11 +160,11 @@ internal extension CancellableThenable {
                 return try transform(value)
             }
         }
-        
+
         let promise = self.thenable.map(on: on, cancelTransform)
         return CancellablePromise(promise: promise, context: self.cancelContext)
     }
-    
+
     /**
       The provided closure is executed when this cancellable promise is resolved.
 
@@ -192,11 +192,11 @@ internal extension CancellableThenable {
                 return try transform(value)
             }
         }
-        
+
         let promise = self.thenable.compactMap(on: on, cancelTransform)
         return CancellablePromise(promise: promise, context: self.cancelContext)
     }
-    
+
     /**
      The provided closure is executed when this cancellable promise is resolved.
      
@@ -225,11 +225,11 @@ internal extension CancellableThenable {
                 try body(value)
             }
         }
-        
+
         let promise = self.thenable.done(on: on, cancelBody)
         return CancellablePromise(promise: promise, context: self.cancelContext)
     }
-    
+
     /**
      The provided closure is executed when this cancellable promise is resolved.
      
@@ -421,7 +421,7 @@ internal extension CancellableThenable where U.T: Sequence {
             when(fulfilled: try $0.map(transform))
         }
     }
-    
+
     /**
      `CancellablePromise<[T]>` => `T` -> `CancellablePromise<[U]>` => `CancellablePromise<[U]>`
 
@@ -459,7 +459,7 @@ internal extension CancellableThenable where U.T: Sequence {
             $0.flatMap { $0 }
         }
     }
-    
+
     /**
      `CancellablePromise<[T]>` => `T` -> Bool => `CancellablePromise<[U]>`
 

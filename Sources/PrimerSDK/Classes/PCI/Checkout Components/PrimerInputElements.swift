@@ -5,15 +5,13 @@
 //  Created by Evangelos on 28/1/22.
 //
 
-
-
 import UIKit
 
 public class PrimerInputElementDelegateContainer {
-    
+
     var element: PrimerHeadlessUniversalCheckoutInputElement
     var delegate: PrimerInputElementDelegate
-    
+
     init(element: PrimerHeadlessUniversalCheckoutInputElement, delegate: PrimerInputElementDelegate) {
         self.element = element
         self.delegate = delegate
@@ -51,7 +49,7 @@ public class PrimerInputTextField: UITextField, PrimerHeadlessUniversalCheckoutI
             self._text = newValue
         }
     }
-    
+
     private var checkoutModulesTextFieldDelegate: PrimerHeadlessUniversalCheckout.Delegate?
     internal var _text: String?
     private lazy var _keyboardType: UIKeyboardType = {
@@ -61,11 +59,11 @@ public class PrimerInputTextField: UITextField, PrimerHeadlessUniversalCheckoutI
         get { return _keyboardType }
         set { self._keyboardType = newValue }
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     public init(type: PrimerInputElementType, frame: CGRect) {
         self.type = type
         super.init(frame: frame)
@@ -78,7 +76,7 @@ public class PrimerCardNumberInputElement: PrimerInputTextField {
         super.init(coder: aDecoder)
         self.type = .cardNumber
     }
-    
+
     override public init(type: PrimerInputElementType, frame: CGRect) {
         super.init(type: .cardNumber, frame: frame)
     }
@@ -90,7 +88,7 @@ public class PrimerExpiryDateInputElement: PrimerInputTextField {
         super.init(coder: aDecoder)
         self.type = .expiryDate
     }
-    
+
     override public init(type: PrimerInputElementType, frame: CGRect) {
         super.init(type: .expiryDate, frame: frame)
     }
@@ -102,7 +100,7 @@ public class PrimerCVVInputElement: PrimerInputTextField {
         super.init(coder: aDecoder)
         self.type = .cvv
     }
-    
+
     override public init(type: PrimerInputElementType, frame: CGRect) {
         super.init(type: .cvv, frame: frame)
     }
@@ -114,7 +112,7 @@ public class PrimerCardholderNameInputElement: PrimerInputTextField {
         super.init(coder: aDecoder)
         self.type = .cardholderName
     }
-    
+
     override public init(type: PrimerInputElementType, frame: CGRect) {
         super.init(type: .cardholderName, frame: frame)
     }
@@ -126,10 +124,8 @@ public class PrimerPostalCodeInputElement: PrimerInputTextField {
         super.init(coder: aDecoder)
         self.type = .postalCode
     }
-    
+
     override public init(type: PrimerInputElementType, frame: CGRect) {
         super.init(type: .postalCode, frame: frame)
     }
 }
-
-

@@ -25,7 +25,6 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         super.tearDown()
     }
     
-    
     func testUpdateCollectedData_PhoneData_Success() {
         sut.updateCollectedData(collectableData: .phoneData(mobileNumber: "+111123123123123"))
         XCTAssertEqual(sut.mobileNumber, "+111123123123123")

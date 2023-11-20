@@ -9,11 +9,10 @@ import Foundation
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
 
-
 public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
-    
+
     var nolPay: PrimerNolPayProtocol?
-    
+
     public var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     var mobileNumber: String?
@@ -37,9 +36,9 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
             self.errorDelegate?.didReceiveError(error: error)
             return
         }
-        
+
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, 
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
                                                                 "line": "\(#line)"],
@@ -47,8 +46,7 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
             ErrorHandler.handle(error: err)
             return
         }
-        
-        
+
         let isSandbox = clientToken.env != "PRODUCTION"
         var isDebug = false
 #if DEBUG
@@ -56,13 +54,13 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
 #endif
 
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
-            
+
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
                                                                                 nolAppId: sdkId,
                                                                                 phoneVendor: "Apple",
                                                                                 phoneModel: UIDevice.modelIdentifier!)
             let client = PrimerAPIClient()
-            
+
             if #available(iOS 13, *) {
                 return try await withCheckedThrowingContinuation { continuation in
                     client.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
@@ -82,16 +80,16 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
         phoneMetadataService = NolPayPhoneMetadataService()
 
     }
-    
+
     public func getLinkedCardsFor(mobileNumber: String,
                                   completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
-        
+
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: NolPayAnalyticsConstants.LINKED_CARDS_GET_CARDS_METHOD,
                 params: [
-                    "category": "NOL_PAY",
+                    "category": "NOL_PAY"
                 ]))
         Analytics.Service.record(events: [sdkEvent])
         guard let nolPay = nolPay else {
@@ -109,15 +107,15 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
             completion(.failure(error))
             return
         }
-        
+
             phoneMetadataService?.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
             switch result {
-                
+
             case let .success((validationStatus, countryCode, mobileNumber)):
                 switch validationStatus {
-                    
+
                 case .valid:
-                    
+
                     guard let parsedMobileNumber = mobileNumber else {
                         let error = PrimerError.invalidValue(key: "mobileNumber", value: nil, userInfo: [
                             "file": #file,
@@ -130,7 +128,7 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
                         self?.errorDelegate?.didReceiveError(error: error)
                         return
                     }
-                    
+
                     guard let countryCode = countryCode else {
                         let error = PrimerError.invalidValue(key: "countryCode", value: nil, userInfo: [
                             "file": #file,
@@ -146,7 +144,7 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
 
                     nolPay.getAvailableCards(for: parsedMobileNumber, with: countryCode) { result in
                         switch result {
-                            
+
                         case .success(let cards):
                             completion(.success(PrimerNolPaymentCard.makeFrom(arrayOf: cards)))
                         case .failure(let error):

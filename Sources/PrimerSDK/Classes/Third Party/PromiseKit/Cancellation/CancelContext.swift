@@ -8,7 +8,7 @@ internal class CancelContext: Hashable {
     internal static func == (lhs: CancelContext, rhs: CancelContext) -> Bool {
         return lhs === rhs
     }
-    
+
     internal func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(self))
     }
@@ -17,10 +17,10 @@ internal class CancelContext: Hashable {
     //   For reads:  barrier.sync { }
     //   For writes: barrier.sync(flags: .barrier) { }
     private let barrier = DispatchQueue(label: "org.promisekit.barrier.cancel", attributes: .concurrent)
-    
+
     private var cancelItems = [CancelItem]()
     private var cancelItemSet = Set<CancelItem>()
-    
+
     /**
      Cancel all members of the promise chain and their associated asynchronous operations.
      
@@ -29,19 +29,19 @@ internal class CancelContext: Hashable {
     internal func cancel(with error: Error = PMKError.cancelled) {
         self.cancel(with: error, visited: Set<CancelContext>())
     }
-    
+
     func cancel(with error: Error = PMKError.cancelled, visited: Set<CancelContext>) {
         var items: [CancelItem]!
         barrier.sync(flags: .barrier) {
             internalCancelledError = error
             items = cancelItems
         }
-        
+
         for item in items {
             item.cancel(with: error, visited: visited)
         }
     }
-    
+
     /**
      True if all members of the promise chain have been successfully cancelled, false otherwise.
      */
@@ -50,22 +50,22 @@ internal class CancelContext: Hashable {
         barrier.sync {
             items = cancelItems
         }
-        
+
         for item in items where !item.isCancelled {
             return false
         }
         return true
     }
-    
+
     /**
      True if `cancel` has been called on the CancelContext associated with this promise, false otherwise.  `cancelAttempted` will be true if `cancel` is called on any promise in the chain.
      */
     internal var cancelAttempted: Bool {
         return cancelledError != nil
     }
-    
+
     private var internalCancelledError: Error?
-    
+
     /**
      The cancellation error initialized when the promise is cancelled, or `nil` if not cancelled.
      */
@@ -77,14 +77,14 @@ internal class CancelContext: Hashable {
             }
             return err
         }
-        
+
         set {
             barrier.sync(flags: .barrier) {
                 internalCancelledError = newValue
             }
         }
     }
-    
+
     func append<Z: CancellableThenable>(cancellable: Cancellable?, reject: ((Error) -> Void)?, thenable: Z) {
         if cancellable == nil && reject == nil {
             return
@@ -103,7 +103,7 @@ internal class CancelContext: Hashable {
             item.cancel(with: error!)
         }
     }
-    
+
     func append<Z: CancellableThenable>(context childContext: CancelContext, thenable: Z) {
         guard childContext !== self else {
             return
@@ -120,7 +120,7 @@ internal class CancelContext: Hashable {
 
         crossCancel(childContext: childContext, parentCancelledError: error)
     }
-    
+
     func append(context childContext: CancelContext, thenableCancelItemList: CancelItemList) {
         guard childContext !== self else {
             return
@@ -137,11 +137,11 @@ internal class CancelContext: Hashable {
 
         crossCancel(childContext: childContext, parentCancelledError: error)
     }
-    
+
     private func crossCancel(childContext: CancelContext, parentCancelledError: Error?) {
         let parentError = parentCancelledError
         let childError =  childContext.cancelledError
-        
+
         if parentError != nil {
             if childError == nil {
                 childContext.cancel(with: parentError!)
@@ -152,11 +152,11 @@ internal class CancelContext: Hashable {
             }
         }
     }
-    
+
     func recover() {
         cancelledError = nil
     }
-    
+
     func removeItems(_ list: CancelItemList, clearList: Bool) -> Error? {
         var error: Error?
         barrier.sync(flags: .barrier) {
@@ -178,7 +178,7 @@ internal class CancelContext: Hashable {
                     }
                     cancelItems.removeSubrange(removeIndex..<(removeIndex+currentIndex))
                 }
-                
+
                 // Remove whatever falls outside of the block
                 while currentIndex < list.items.count {
                     let item = list.items[currentIndex]
@@ -187,7 +187,7 @@ internal class CancelContext: Hashable {
                     }
                     currentIndex += 1
                 }
-                
+
                 if clearList {
                     list.removeAll()
                 }
@@ -200,44 +200,44 @@ internal class CancelContext: Hashable {
 /// Tracks the cancel items for a CancellablePromise.  These items are removed from the associated CancelContext when the promise resolves.
 internal class CancelItemList {
     fileprivate var items: [CancelItem]
-    
+
     init() {
         self.items = []
     }
-    
+
     fileprivate func append(_ item: CancelItem) {
         items.append(item)
     }
-    
+
     fileprivate func removeAll() {
         items.removeAll()
     }
 }
 
-fileprivate class CancelItem: Hashable {
+private class CancelItem: Hashable {
     static func == (lhs: CancelItem, rhs: CancelItem) -> Bool {
         return lhs === rhs
     }
-    
+
     internal func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(self))
     }
-    
+
     let cancellable: Cancellable?
     var reject: ((Error) -> Void)?
     weak var context: CancelContext?
     var cancelAttempted = false
-    
+
     init(cancellable: Cancellable?, reject: ((Error) -> Void)?) {
         self.cancellable = cancellable
         self.reject = reject
     }
-    
+
     init(context: CancelContext) {
         self.cancellable = nil
         self.context = context
     }
-    
+
     func cancel(with error: Error, visited: Set<CancelContext>? = nil) {
         cancelAttempted = true
 
@@ -251,7 +251,7 @@ fileprivate class CancelItem: Hashable {
             }
         }
     }
-    
+
     var isCancelled: Bool {
         return cancellable?.isCancelled ?? cancelAttempted
     }

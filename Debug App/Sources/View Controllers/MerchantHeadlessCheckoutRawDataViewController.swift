@@ -51,8 +51,6 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
         self.renderInputs()
     }
     
-    
-    
     func renderInputs() {
         do {
             self.primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType, delegate: self)
@@ -240,8 +238,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         self.payButton.isEnabled = isValid
     }
     
-    
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String : Any]?) {
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?) {
         print("\n\nMERCHANT APP\n\(#function)\nmetadataDidChange: \(String(describing: metadata))")
         self.logs.append(#function)
     }

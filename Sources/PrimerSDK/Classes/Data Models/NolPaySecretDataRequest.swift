@@ -13,9 +13,9 @@ extension Request.Body {
 }
 
 extension Request.Body.NolPay {
-    
+
     struct NolPaySecretDataRequest: Codable {
-        
+
         let nolSdkId: String
         let nolAppId: String
         let phoneVendor: String
@@ -30,7 +30,7 @@ extension Response.Body {
 
 extension Response.Body.NolPay {
     struct NolPaySecretDataResponse: Codable {
-        
+
         let sdkSecret: String
     }
 }

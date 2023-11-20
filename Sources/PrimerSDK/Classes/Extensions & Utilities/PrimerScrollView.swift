@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 18/3/21.
 //
 
-
-
 import UIKit
 
 internal class PrimerScrollView: UIScrollView {
@@ -22,5 +20,3 @@ internal class PrimerScrollView: UIScrollView {
     }
 
 }
-
-

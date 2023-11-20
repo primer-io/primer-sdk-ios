@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 18/3/21.
 //
 
-
-
 import Foundation
 
 internal extension Bundle {
@@ -27,10 +25,8 @@ internal extension Bundle {
     static var primerFrameworkIdentifier: String {
         return Bundle.primerFramework.bundleIdentifier ?? "org.cocoapods.PrimerSDK"
     }
-    
+
     var minimumOSVersion: String? {
         return infoDictionary?["MinimumOSVersion"] as? String
     }
 }
-
-

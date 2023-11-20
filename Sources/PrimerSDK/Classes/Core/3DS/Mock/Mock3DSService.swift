@@ -11,7 +11,7 @@ import UIKit
 class Mock3DSService: ThreeDSServiceProtocol {
     static var apiClient: PrimerAPIClientProtocol?
     private var demo3DSWindow: UIWindow?
-    
+
     func perform3DS(
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
         sdkDismissed: (() -> Void)?,
@@ -27,15 +27,15 @@ class Mock3DSService: ThreeDSServiceProtocol {
                 // Fallback on earlier versions
                 demo3DSWindow = UIWindow(frame: UIScreen.main.bounds)
             }
-            
+
             demo3DSWindow!.rootViewController = ClearViewController()
             demo3DSWindow!.backgroundColor = UIColor.clear
             demo3DSWindow!.windowLevel = UIWindow.Level.alert
             demo3DSWindow!.makeKeyAndVisible()
-            
+
             let vc = PrimerDemo3DSViewController()
             demo3DSWindow!.rootViewController?.present(vc, animated: true)
-            
+
             vc.onSendCredentialsButtonTapped = {
                 self.demo3DSWindow?.rootViewController = nil
                 self.demo3DSWindow = nil

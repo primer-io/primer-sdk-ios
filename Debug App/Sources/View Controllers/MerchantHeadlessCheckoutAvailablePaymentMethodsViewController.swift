@@ -51,7 +51,7 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
         self.showLoadingOverlay()
         
         if let clientToken = clientToken {
-            PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (pms, err) in
+            PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (pms, _) in
                 self.hideLoadingOverlay()
                 
                 DispatchQueue.main.async {
@@ -95,7 +95,7 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
 //
 //                    Networking.patchClientSession(clientToken: clientToken, requestBody: newClientSession) { newClientToken, err in
 
-                    PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (pms, err) in
+                    PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (pms, _) in
                         DispatchQueue.main.async {
                             self.availablePaymentMethods = pms ?? []
                             self.tableView.reloadData()
@@ -170,26 +170,18 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
         let paymentMethod = self.availablePaymentMethods[indexPath.row]
         let paymentMethodType = paymentMethod.paymentMethodType
         if paymentMethodType == "PAYMENT_CARD" ||
-            paymentMethodType == "ADYEN_BANCONTACT_CARD"
-        {
+            paymentMethodType == "ADYEN_BANCONTACT_CARD" {
             let alert = UIAlertController(title: "", message: "Select Implementation", preferredStyle: .actionSheet)
             
-            let rawDataAlertAction = UIAlertAction(title: "Raw Data", style: .default , handler:{ (UIAlertAction)in
+            let rawDataAlertAction = UIAlertAction(title: "Raw Data", style: .default, handler: { (_)in
                 let vc = MerchantHeadlessCheckoutRawDataViewController.instantiate(paymentMethodType: paymentMethodType)
                 self.navigationController?.pushViewController(vc, animated: true)
             })
             rawDataAlertAction.accessibilityIdentifier = "raw_data_huc_alert_action"
             
-            let cardComponentsAlertAction = UIAlertAction(title: "Card Components", style: .default , handler:{ (UIAlertAction)in
-                let vc = MerchantHeadlessCheckoutCardComponentsViewController.instantiate(paymentMethodType: paymentMethodType)
-                self.navigationController?.pushViewController(vc, animated: true)
-            })
-            cardComponentsAlertAction.accessibilityIdentifier = "card_components_huc_data_alert_action"
-            
             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
             cancelAction.accessibilityIdentifier = "cancel_huc_alert_action"
             
-            alert.addAction(cardComponentsAlertAction)
             alert.addAction(rawDataAlertAction)
             alert.addAction(cancelAction)
             self.present(alert, animated: true, completion: nil)
@@ -265,7 +257,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
         print("\n\nMERCHANT APP\n\(#function)\nresumeToken: \(resumeToken)")
         self.logs.append(#function)
         
-        Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
+        Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, _) in
             DispatchQueue.main.async {
                 self.hideLoadingOverlay()
             }

@@ -5,8 +5,6 @@
 //  Created by Evangelos on 29/4/22.
 //
 
-
-
 import UIKit
 
 extension UINavigationController {
@@ -33,7 +31,7 @@ extension UINavigationController {
             completion?()
         }
     }
-    
+
     func popToViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
         popToViewController(viewController, animated: animated)
 
@@ -46,5 +44,3 @@ extension UINavigationController {
         }
     }
 }
-
-

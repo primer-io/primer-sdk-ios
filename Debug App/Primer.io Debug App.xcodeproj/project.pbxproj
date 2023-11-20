@@ -47,7 +47,6 @@
 		3FD160A4D951EA772ADF4E25 /* DecodedClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DC3341BDBB9AEDBE8D6DD /* DecodedClientToken.swift */; };
 		4BD7794627267B40E9E10686 /* PrimerCheckoutTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9813BD518AC7C3F442B5075 /* PrimerCheckoutTheme.swift */; };
 		53E3182FFC4E5F05D866CFAE /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DE1E4FB055B60582977315 /* Networking.swift */; };
-		55B913E0B3159BBBE8C9D189 /* MerchantHeadlessCheckoutCardComponentsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6F4C147EC39B2735117041 /* MerchantHeadlessCheckoutCardComponentsViewController.swift */; };
 		583EBAA90902121CEA479416 /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8D7F3C53F8CCE4A03C975E /* VaultService.swift */; };
 		592E00D98C8835CBCDAA26D9 /* MerchantDropInUIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */; };
 		5976CCA261F0811F5D7707DA /* TokenizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8F69253D85350BB7A1A761 /* TokenizationService.swift */; };
@@ -59,7 +58,7 @@
 		70EAA3B33425CC9D16239BB0 /* ApplePayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CFA93A373A7DB78DA77283 /* ApplePayTests.swift */; };
 		72F8D6065334FCD5B726A52C /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */; };
 		77A8EFBA78D6C6B95A400C74 /* WebViewUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA30891B2D5F9B6B97E56B99 /* WebViewUtilTests.swift */; };
-		7F49B29FCC55CF3C5CB6C506 /* CardComponentManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 994AE6760B506D02499AEC90 /* CardComponentManagerTests.swift */; };
+		7F49B29FCC55CF3C5CB6C506 /* InternalCardComponentManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 994AE6760B506D02499AEC90 /* InternalCardComponentManagerTests.swift */; };
 		800B92A57CAAC6471D01A89D /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3D9154BF1E011FED6799CD5 /* CardData.swift */; };
 		8064B65A8F83D5B004D081FD /* PaymentMethodConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752785ACCF65527C239391A8 /* PaymentMethodConfigTests.swift */; };
 		85605C241F1CD45BA676D4A7 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9023841AFCE8E3205CB713A /* String+Extensions.swift */; };
@@ -231,7 +230,7 @@
 		95E4B74F7EEA3D2D19E08FDA /* Apaya.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Apaya.swift; sourceTree = "<group>"; };
 		98079137F3DE1FE6221DA7EC /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Main.strings; sourceTree = "<group>"; };
 		9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantDropInUIViewController.swift; sourceTree = "<group>"; };
-		994AE6760B506D02499AEC90 /* CardComponentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardComponentManagerTests.swift; sourceTree = "<group>"; };
+		994AE6760B506D02499AEC90 /* InternalCardComponentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalCardComponentManagerTests.swift; sourceTree = "<group>"; };
 		9D122A0B71B707C2110AB7F5 /* PayPalConfirmBillingAgreementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPalConfirmBillingAgreementTests.swift; sourceTree = "<group>"; };
 		A1055D6E2AF125E90027B967 /* DebouncerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebouncerTests.swift; sourceTree = "<group>"; };
 		A13392BB2AD459E90005A4D7 /* NolPayLinkCardComponentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayLinkCardComponentTest.swift; sourceTree = "<group>"; };
@@ -250,7 +249,6 @@
 		B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawDataViewController.swift; sourceTree = "<group>"; };
 		B9813BD518AC7C3F442B5075 /* PrimerCheckoutTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerCheckoutTheme.swift; sourceTree = "<group>"; };
 		BA0B2BEE5C389FD13E210847 /* DateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTests.swift; sourceTree = "<group>"; };
-		BA6F4C147EC39B2735117041 /* MerchantHeadlessCheckoutCardComponentsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutCardComponentsViewController.swift; sourceTree = "<group>"; };
 		BD26E8C6074BB89ACBD5B8B9 /* MaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskTests.swift; sourceTree = "<group>"; };
 		BF8639891B79E2FCCE10A510 /* ThreeDSErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeDSErrorTests.swift; sourceTree = "<group>"; };
 		C18C9664115CFDEB59FED19A /* MerchantSessionAndSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantSessionAndSettingsViewController.swift; sourceTree = "<group>"; };
@@ -343,7 +341,6 @@
 				EF5FBE3673FBCB40F55F4DC0 /* New UI */,
 				9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */,
 				72E691B9A6A8EBB9F6A6B266 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift */,
-				BA6F4C147EC39B2735117041 /* MerchantHeadlessCheckoutCardComponentsViewController.swift */,
 				B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */,
 				404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */,
 				4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */,
@@ -399,7 +396,7 @@
 		5836043C1C4E5A1CF7B81CDD /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				994AE6760B506D02499AEC90 /* CardComponentManagerTests.swift */,
+				994AE6760B506D02499AEC90 /* InternalCardComponentManagerTests.swift */,
 				743F107C464526926A34A433 /* PaymentMethodConfigServiceTests.swift */,
 				5D7EC742DEB5BE12252E3E5B /* PayPalServiceTests.swift */,
 				952364FBFD6FA09653ECA37E /* TokenizationServiceTests.swift */,
@@ -713,7 +710,8 @@
 				10FBAAC827CE0E3983CD7597 /* Resources */,
 				73B416AD9A0CB3B0EA16AF79 /* Embed Frameworks */,
 				CB612F7DF16CD3190025327F /* Frameworks */,
-				F3F62BEF53E04346DBB5FE4B /* [CP] Embed Pods Frameworks */,
+				D158702D902B8C93D2526CAF /* [CP] Embed Pods Frameworks */,
+				A18BD8BD2AFE4B0900923C87 /* SwiftLint */,
 			);
 			buildRules = (
 			);
@@ -815,7 +813,25 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		9012087804C9E25239598A04 /* [CP] Check Pods Manifest.lock */ = {
+		A18BD8BD2AFE4B0900923C87 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#if [[ \"$(uname -m)\" == arm64 ]]; then\n#    export PATH=\"/opt/homebrew/bin:$PATH\"\n#fi\n#\n#if which swiftlint > /dev/null; then\n#  swiftlint\n#else\n#  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n#fi\n";
+		};
+		A787C35FC61395E3E2B8DDAC /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -908,7 +924,7 @@
 				05FAC0D894B841B52E9E0A9A /* PrimerRawCardDataManagerTests.swift in Sources */,
 				D649870C2D022B4063BDC0B4 /* PrimerRawRetailerDataTests.swift in Sources */,
 				A1536BAD2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift in Sources */,
-				7F49B29FCC55CF3C5CB6C506 /* CardComponentManagerTests.swift in Sources */,
+				7F49B29FCC55CF3C5CB6C506 /* InternalCardComponentManagerTests.swift in Sources */,
 				DB1A2989DDE0928C62B15303 /* PayPalServiceTests.swift in Sources */,
 				97F0B302DF965C1AD1EC6F4D /* PaymentMethodConfigServiceTests.swift in Sources */,
 				33EA4F728A7984997A0EF515 /* TokenizationServiceTests.swift in Sources */,
@@ -954,7 +970,6 @@
 				F3B88F24999785898FE54C53 /* MerchantHeadlesVaultManagerViewController.swift in Sources */,
 				041295AA2AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */,
 				135E5BFD51371FABB5FF35D3 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
-				55B913E0B3159BBBE8C9D189 /* MerchantHeadlessCheckoutCardComponentsViewController.swift in Sources */,
 				AD9CF1073EE0676E6640481A /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,
 				72F8D6065334FCD5B726A52C /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */,
 				14EE32F4821BD1F19F75227F /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */,

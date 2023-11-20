@@ -8,29 +8,29 @@
 import Foundation
 
 internal class ErrorHandler: LogReporter {
-    
+
     // Call this function to log any error to Analytics
     static func handle(error: Error) {
         _ = ErrorHandler.shared.handle(error: error)
     }
-    
+
     static var shared = ErrorHandler()
-    
+
     @discardableResult
     func handle(error: Error) -> Bool {
         self.logger.error(message: error.localizedDescription)
 
         var event: Analytics.Event!
-        
+
         if let threeDsError = error as? Primer3DSErrorContainer {
             var context: [String: Any] = [:]
-            
+
             let continueInfo = threeDsError.continueInfo
             context["initProtocolVersion"] = continueInfo.initProtocolVersion
             context["threeDsSdkVersion"] = continueInfo.threeDsSdkVersion
             context["threeDsSdkProvider"] = continueInfo.threeDsSdkProvider
             context["threeDsWrapperSdkVersion"] = continueInfo.threeDsWrapperSdkVersion
-            
+
             switch threeDsError {
             case .primer3DSSdkError(_, _, _, let errorInfo):
                 context["reasonCode"] = errorInfo.errorId
@@ -44,7 +44,7 @@ internal class ErrorHandler: LogReporter {
             default:
                 break
             }
-            
+
             event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
@@ -53,11 +53,11 @@ internal class ErrorHandler: LogReporter {
                     severity: .error,
                     diagnosticsId: threeDsError.diagnosticsId,
                     context: context.isEmpty ? nil : context))
-            
+
             if let createdAt = (threeDsError.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
             }
-            
+
         } else if let primerError = error as? PrimerErrorProtocol {
             event = Analytics.Event(
                 eventType: .message,
@@ -66,20 +66,20 @@ internal class ErrorHandler: LogReporter {
                     messageType: .error,
                     severity: .error,
                     diagnosticsId: primerError.diagnosticsId))
-            
+
             if let createdAt = (primerError.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
             }
-            
+
         } else {
             let nsError = error as NSError
             var userInfo = nsError.userInfo
             userInfo["description"] = nsError.description
-            
+
             if let _ = userInfo[NSLocalizedDescriptionKey] {
                 userInfo[NSLocalizedDescriptionKey] = nil
             }
-            
+
             event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
@@ -89,9 +89,9 @@ internal class ErrorHandler: LogReporter {
                     diagnosticsId: nil,
                     context: userInfo))
         }
-        
+
         Analytics.Service.record(event: event)
-        
+
         return false
     }
 }

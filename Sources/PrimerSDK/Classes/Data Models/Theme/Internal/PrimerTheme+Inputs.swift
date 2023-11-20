@@ -1,5 +1,3 @@
-
-
 import UIKit
 
 internal enum InputType {
@@ -14,7 +12,7 @@ internal class InputTheme {
     let hintText: TextTheme
     let errortext: TextTheme
     let inputType: InputType
-    
+
     internal init(
         color: UIColor,
         cornerRadius: CGFloat,
@@ -33,5 +31,3 @@ internal class InputTheme {
         self.inputType = inputType
     }
 }
-
-

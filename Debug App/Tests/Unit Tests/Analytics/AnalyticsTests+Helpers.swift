@@ -173,7 +173,7 @@ extension AnalyticsTests {
             .ensure {
                 completion()
             }
-            .catch { err in
+            .catch { _ in
                 
             }
         }

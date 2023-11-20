@@ -31,7 +31,7 @@ internal final class Guarantee<T>: Thenable {
 
     /// - See: `Thenable.pipe`
     internal func pipe(to: @escaping(Result<T, Error>) -> Void) {
-        pipe{ to(.success($0)) }
+        pipe { to(.success($0)) }
     }
 
     func pipe(to: @escaping(T) -> Void) {

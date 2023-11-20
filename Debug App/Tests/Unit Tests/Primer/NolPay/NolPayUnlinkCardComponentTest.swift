@@ -42,7 +42,6 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         let mockPhoneMetadataService = MockPhoneMetadataService()
         mockPhoneMetadataService.resultToReturn = .success((.invalid(errors: [PrimerValidationError.invalidPhoneNumber(message: "", userInfo: nil, diagnosticsId: "")]), nil, nil))
         sut.phoneMetadataService = mockPhoneMetadataService
-
         
         // Provide data with invalid phone number to component
         sut.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard(cardNumber: "", expiredTime: ""), mobileNumber: "invalidNumber"))

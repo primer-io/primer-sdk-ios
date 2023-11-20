@@ -5,8 +5,6 @@
 //  Created by Evangelos on 28/12/21.
 //
 
-
-
 import Foundation
 
 protocol PaymentMethodOptions: Codable { }
@@ -32,7 +30,7 @@ struct MerchantOptions: PaymentMethodOptions {
 }
 
 extension PrimerTestPaymentMethodSessionInfo.FlowDecision {
-    
+
     var displayFlowTitle: String {
         switch self {
         case .success:
@@ -43,8 +41,5 @@ extension PrimerTestPaymentMethodSessionInfo.FlowDecision {
             return Strings.PrimerTestFlowDecision.failTitle
         }
     }
-    
+
 }
-
-
-
