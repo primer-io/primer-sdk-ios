@@ -33,18 +33,24 @@ final class PrimerHeadlessKlarnaManagerTests: XCTestCase {
     }
     
     func testKlarnaPaymentViewHandlingComponent_Initialized() {
-        XCTAssertNotNil(sut.provideKlarnaPaymentViewHandlingComponent(
+        let component = sut.provideKlarnaPaymentViewHandlingComponent(
             clientToken: KlarnaTestsMocks.clientToken,
             paymentCategory: KlarnaTestsMocks.paymentMethod
-        ))
+        )
+        XCTAssertNotNil(component)
+        XCTAssertNotNil(component.klarnaProvider)
     }
     
     func testPaymentSessionAuthorizationComponent_Initialized() {
-        XCTAssertNotNil(sut.provideKlarnaPaymentSessionAuthorizationComponent())
+        let component = sut.provideKlarnaPaymentSessionAuthorizationComponent()
+        XCTAssertNotNil(component)
+        XCTAssertNotNil(component.klarnaProvider)
     }
     
     func testPaymentSessionFinalizationComponent_Initialized() {
-        XCTAssertNotNil(sut.provideKlarnaPaymentSessionFinalizationComponent())
+        let component = sut.provideKlarnaPaymentSessionFinalizationComponent()
+        XCTAssertNotNil(component)
+        XCTAssertNotNil(component.klarnaProvider)
     }
     
     func testPaymentSessionCreationComponent_ReturnsStoredInstance() {

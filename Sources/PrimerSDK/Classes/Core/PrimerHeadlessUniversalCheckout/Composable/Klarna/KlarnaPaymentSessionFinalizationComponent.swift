@@ -16,7 +16,7 @@ public enum KlarnaPaymentSessionFinalization: PrimerHeadlessStep {
 
 public class KlarnaPaymentSessionFinalizationComponent: PrimerHeadlessComponent, PrimerHeadlessAnalyticsRecordable {
     // MARK: - Provider
-    private weak var klarnaProvider: PrimerKlarnaProviding?
+    private(set) weak var klarnaProvider: PrimerKlarnaProviding?
     
     // MARK: - Delegates
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
