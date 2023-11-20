@@ -28,3 +28,12 @@ struct PrimerKlarnaCustomerAccountInfo {
         self.accountLastModified = accountLastModified
     }
 }
+
+// MARK: - Equatable
+extension PrimerKlarnaCustomerAccountInfo: Equatable {
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.accountUniqueId == rhs.accountUniqueId &&
+               lhs.accountLastModified == rhs.accountLastModified &&
+               lhs.accountRegistrationDate == rhs.accountRegistrationDate
+    }
+}

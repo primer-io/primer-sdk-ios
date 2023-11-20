@@ -25,14 +25,14 @@ enum KlarnaPaymentSessionCreationComponentError {
 
 public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessCollectDataComponent, PrimerHeadlessAnalyticsRecordable {
     // MARK: - API
-    private let apiClient: PrimerAPIClientProtocol
+    let apiClient: PrimerAPIClientProtocol
     
     // MARK: - Settings
-    private var settings: PrimerSettingsProtocol?
+    private(set) var settings: PrimerSettingsProtocol?
     
     // MARK: - Properties
-    private var sessionType: KlarnaSessionType?
-    private var customerAccountInfo: PrimerKlarnaCustomerAccountInfo?
+    private(set) var sessionType: KlarnaSessionType?
+    private(set) var customerAccountInfo: PrimerKlarnaCustomerAccountInfo?
     
     // MARK: - Delegates
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
