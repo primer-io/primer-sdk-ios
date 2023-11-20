@@ -112,6 +112,21 @@ internal class PrimerInternal: LogReporter {
                 )
             )
         )
+        
+        if let settings = settings {
+            let supportedCardNetworks = settings.paymentMethodOptions.cardPaymentOptions.supportedCardNetworks
+            let networksDescription = supportedCardNetworks.map { $0.rawValue }.joined(separator: ", ")
+            events.append(
+                Analytics.Event(
+                    eventType: .message,
+                    properties: MessageEventProperties(
+                        message: "Merchant supported networks: \(networksDescription)",
+                        messageType: .other,
+                        severity: .info
+                    )
+                )
+            )
+        }
 
         Analytics.Service.record(events: events)
 
