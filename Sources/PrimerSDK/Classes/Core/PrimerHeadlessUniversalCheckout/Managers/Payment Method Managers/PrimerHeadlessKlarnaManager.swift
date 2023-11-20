@@ -22,10 +22,10 @@ extension PrimerHeadlessUniversalCheckout {
         private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         // MARK: - Components
-        private let sessionCreationComponent: KlarnaPaymentSessionCreationComponent
-        private let viewHandlingComponent: KlarnaPaymentViewHandlingComponent
-        private let sessionAuthorizationComponent: KlarnaPaymentSessionAuthorizationComponent
-        private let sessionFinalizationComponent: KlarnaPaymentSessionFinalizationComponent
+        let sessionCreationComponent: KlarnaPaymentSessionCreationComponent
+        let viewHandlingComponent: KlarnaPaymentViewHandlingComponent
+        let sessionAuthorizationComponent: KlarnaPaymentSessionAuthorizationComponent
+        let sessionFinalizationComponent: KlarnaPaymentSessionFinalizationComponent
         
         // MARK: - Init
         public override init() {
