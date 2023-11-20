@@ -1,11 +1,9 @@
-
-
 import UIKit
 
 internal class BorderTheme {
     let colorStates: StatefulColor
     let width: CGFloat
-    
+
     init(colorStates: StatefulColor, width: CGFloat) {
         self.colorStates = colorStates
         self.width = width
@@ -15,5 +13,3 @@ internal class BorderTheme {
         return colorStates.color(for: state)
     }
 }
-
-

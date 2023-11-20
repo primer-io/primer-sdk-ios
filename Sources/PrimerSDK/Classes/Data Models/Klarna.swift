@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 24/3/21.
 //
 
-
-
 import Foundation
 
 extension Request.Body {
@@ -25,16 +23,16 @@ public enum KlarnaSessionType: String, Codable {
 // MARK: KLARNA API DATA MODELS
 
 extension Request.Body.Klarna {
-    
+
     struct CreateCustomerToken: Codable {
-        
+
         let paymentMethodConfigId: String
         let sessionId: String
         let authorizationToken: String
         let description: String?
         let localeData: PrimerLocaleData
     }
-    
+
     struct CreatePaymentSession: Codable {
         
         struct Attachment: Codable {
@@ -67,18 +65,18 @@ extension Request.Body.Klarna {
         let orderItems: [OrderItem]?
         let attachment: Attachment?
     }
-    
+
     struct FinalizePaymentSession: Codable {
-        
+
         let paymentMethodConfigId: String
         let sessionId: String
     }
 }
 
 extension Response.Body.Klarna {
-    
+
     public struct BillingAddress: Codable {
-        
+
         public let addressLine1: String?
         public let addressLine2: String?
         public let addressLine3: String?
@@ -92,9 +90,9 @@ extension Response.Body.Klarna {
         public let state: String?
         public let title: String?
     }
-    
+
     struct CreatePaymentSession: Codable {
-        
+
         var sessionType: KlarnaSessionType {
             return hppSessionId == nil ? .recurringPayment : .hostedPaymentPage
         }
@@ -104,23 +102,23 @@ extension Response.Body.Klarna {
         let hppSessionId: String?
         let hppRedirectUrl: String?
     }
-    
+
     struct CustomerToken: Codable {
-        
+
         let customerTokenId: String?
         let sessionData: Response.Body.Klarna.SessionData
     }
-    
+
     struct SessionCategory: Codable {
-        
+
         let identifier: String
         let name: String
         let descriptiveAssetUrl: String
         let standardAssetUrl: String
     }
-    
+
     public struct SessionData: Codable {
-        
+
         public let recurringDescription: String?
         public let purchaseCountry: String?
         public let purchaseCurrency: String?
@@ -130,9 +128,9 @@ extension Response.Body.Klarna {
         public let billingAddress: Response.Body.Klarna.BillingAddress?
         public let tokenDetails: Response.Body.Klarna.TokenDetails?
     }
-    
+
     public struct SessionOrderLines: Codable {
-        
+
         public let type: String?
         public let name: String?
         public let quantity: Int?
@@ -149,14 +147,14 @@ extension Response.Body.Klarna {
             case totalDiscountAmount = "total_discount_amount"
         }
     }
-    
+
     public struct TokenDetails: Codable {
-        
+
         public let brand: String?
         public let maskedNumber: String?
         public let type: String
         public let expiryDate: String?
-        
+
         enum CodingKeys: String, CodingKey {
             case brand = "brand"
             case maskedNumber = "masked_number"
@@ -165,5 +163,3 @@ extension Response.Body.Klarna {
         }
     }
 }
-
-

@@ -1,5 +1,3 @@
-
-
 import UIKit
 
 public enum PrimerTextFieldTheme {
@@ -221,5 +219,3 @@ public struct PrimerDarkTheme: ColorTheme {
         self.success1 = success1
     }
 }
-
-

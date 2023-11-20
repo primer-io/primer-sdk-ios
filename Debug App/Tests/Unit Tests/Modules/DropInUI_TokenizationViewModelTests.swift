@@ -6,12 +6,12 @@
 ////  Copyright © 2022 Primer API Ltd. All rights reserved.
 ////
 //
-//#if canImport(UIKit)
+// #if canImport(UIKit)
 //
-//import XCTest
-//@testable import PrimerSDK
+// import XCTest
+// @testable import PrimerSDK
 //
-//class DropInUI_TokenizationViewModelTests: XCTestCase {
+// class DropInUI_TokenizationViewModelTests: XCTestCase {
 //    
 //    private var paymentCompletion: ((PrimerCheckoutData?, Error?) -> Void)?
 //    private var tokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
@@ -339,9 +339,9 @@
 //        self.dismissalCompletion = nil
 //        self.eventsCalled = []
 //    }
-//}
+// }
 //
-//extension DropInUI_TokenizationViewModelTests: PrimerDelegate {
+// extension DropInUI_TokenizationViewModelTests: PrimerDelegate {
 //    
 //    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
 //        self.eventsCalled.append("primerDidCompleteCheckoutWithData")
@@ -388,6 +388,6 @@
 //        self.eventsCalled.append("primerDidDismiss")
 //        self.dismissalCompletion?()
 //    }
-//}
+// }
 //
-//#endif
+// #endif

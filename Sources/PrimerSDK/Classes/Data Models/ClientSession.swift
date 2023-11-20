@@ -5,20 +5,18 @@
 //  Created by Evangelos on 22/11/21.
 //
 
-
-
 import Foundation
 
 internal class ClientSession {
-    
+
     // MARK: - ClientSession.Action
-    
+
     internal class Action: NSObject, Encodable {
-        
+
         static func makeBillingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
             return ["billingAddress": parameters]
         }
-            
+
         static func selectPaymentMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
             ClientSession.Action(type: .selectPaymentMethod, params: parameters)
         }
@@ -26,42 +24,42 @@ internal class ClientSession {
         static func unselectPaymentMethodAction() -> ClientSession.Action {
             ClientSession.Action(type: .unselectPaymentMethod, params: nil)
         }
-        
+
         static func setBillingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
             ClientSession.Action(type: .setBillingAddress, params: makeBillingAddressDictionaryRequestFromParameters(parameters))
         }
-        
+
         internal enum ActionType: String {
             case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
             case unselectPaymentMethod = "UNSELECT_PAYMENT_METHOD"
             case setBillingAddress = "SET_BILLING_ADDRESS"
             case setSurchargeFee = "SET_SURCHARGE_FEE"
         }
-                
+
         internal var type: ActionType
         internal var params: [String: Any]?
-        
-        private enum CodingKeys : String, CodingKey {
+
+        private enum CodingKeys: String, CodingKey {
             case type, params
         }
-        
+
         internal init(type: ActionType, params: [String: Any]? = nil) {
             self.type = type
             self.params = params
             super.init()
         }
-        
+
         internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(type.rawValue, forKey: .type)
-            
+
             if let params = params,
                let paramsData = try? JSONSerialization.data(withJSONObject: params, options: .fragmentsAllowed),
                let paramsCodable = try? JSONDecoder().decode([String: AnyCodable]?.self, from: paramsData) {
                 try container.encode(paramsCodable, forKey: .params)
             }
         }
-        
+
         internal func toDictionary() -> [String: Any]? {
             do {
                 return try self.asDictionary()
@@ -70,9 +68,9 @@ internal class ClientSession {
             }
         }
     }
-    
+
     // MARK: ClientSession.Address
-    
+
     internal struct Address: Codable {
         let firstName: String?
         let lastName: String?
@@ -82,18 +80,18 @@ internal class ClientSession {
         let postalCode: String?
         let state: String?
         let countryCode: CountryCode?
-        
+
         internal func toString() -> String {
             return [firstName, lastName, addressLine1, addressLine2, city, postalCode, state, countryCode?.rawValue]
                 .compactMap({ $0 })
                 .joined(separator: ", ")
         }
     }
-    
+
     // MARK: ClientSession.Customer
-    
+
     internal struct Customer: Codable {
-        
+
         let id: String?
         let firstName: String?
         let lastName: String?
@@ -102,11 +100,11 @@ internal class ClientSession {
         let billingAddress: ClientSession.Address?
         let shippingAddress: ClientSession.Address?
         let taxId: String?
-        
+
         enum CodingKeys: String, CodingKey {
             case id = "customerId", firstName, lastName, emailAddress, mobileNumber, billingAddress, shippingAddress, taxId
         }
-        
+
         internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.id = (try? container.decode(String?.self, forKey: .id)) ?? nil
@@ -118,7 +116,7 @@ internal class ClientSession {
             self.shippingAddress = (try? container.decode(ClientSession.Address?.self, forKey: .shippingAddress)) ?? nil
             self.taxId = (try? container.decode(String?.self, forKey: .taxId)) ?? nil
         }
-        
+
         internal init(
             id: String? = nil,
             firstName: String? = nil,
@@ -139,11 +137,11 @@ internal class ClientSession {
             self.taxId = taxId
         }
     }
-    
+
     // MARK: - ClientSession.Order
-    
+
     internal struct Order: Codable {
-        
+
         let id: String?
         let merchantAmount: Int?
         let totalOrderAmount: Int?
@@ -153,11 +151,11 @@ internal class ClientSession {
         let fees: [ClientSession.Order.Fee]?
         let lineItems: [ClientSession.Order.LineItem]?
         let shippingAmount: Int?
-        
+
         enum CodingKeys: String, CodingKey {
             case id = "orderId", merchantAmount, totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, lineItems, shippingAmount
         }
-        
+
         internal init(
             id: String?,
             merchantAmount: Int?,
@@ -179,7 +177,7 @@ internal class ClientSession {
             self.lineItems = lineItems
             self.shippingAmount = shippingAmount
         }
-        
+
         internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             id = (try? container.decode(String?.self, forKey: .id)) ?? nil
@@ -192,7 +190,7 @@ internal class ClientSession {
             lineItems = (try? container.decode([ClientSession.Order.LineItem]?.self, forKey: .lineItems)) ?? nil
             shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
         }
-        
+
         internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try? container.encode(merchantAmount, forKey: .merchantAmount)
@@ -204,9 +202,9 @@ internal class ClientSession {
             try? container.encode(lineItems, forKey: .lineItems)
             try? container.encode(shippingAmount, forKey: .shippingAmount)
         }
-        
+
         // MARK: ClientSession.Order.LineItem
-        
+
         internal struct LineItem: Codable {
 
             let itemId: String?
@@ -217,27 +215,7 @@ internal class ClientSession {
             let description: String?
             let taxAmount: Int?
             let taxCode: String?
-            
-            init(
-                itemId: String?,
-                quantity: Int,
-                amount: Int?,
-                discountAmount: Int?,
-                name: String?,
-                description: String?,
-                taxAmount: Int?,
-                taxCode: String?
-            ) {
-                self.itemId = itemId
-                self.quantity = quantity
-                self.amount = amount
-                self.discountAmount = discountAmount
-                self.name = name
-                self.description = description
-                self.taxAmount = taxAmount
-                self.taxCode = taxCode
-            }
-            
+
             func toOrderItem() throws -> OrderItem {
                 return try OrderItem(
                     name: (self.description ?? PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName) ?? "Item",
@@ -248,66 +226,57 @@ internal class ClientSession {
                     isPending: false)
             }
         }
-        
+
         // MARK: ClientSession.Order.Fee
-        
+
         internal struct Fee: Codable {
-            
+
             let type: FeeType
             let amount: Int
-            
+
             enum CodingKeys: String, CodingKey {
                 case type, amount
             }
-            
-            init(
-                type: FeeType,
-                amount: Int
-            ) {
-                self.type = type
-                self.amount = amount
-            }
-            
+
             enum FeeType: String, Codable {
                 case surcharge = "SURCHARGE"
             }
         }
     }
-    
+
     // MARK: - ClientSession.PaymentMethod
-    
+
     internal class PaymentMethod: Codable {
-        
+
         let vaultOnSuccess: Bool
         let options: [[String: Any]]?
-        
+
         enum CodingKeys: String, CodingKey {
             case vaultOnSuccess, options
         }
-        
+
         init(vaultOnSuccess: Bool, options: [[String: Any]]?) {
             self.vaultOnSuccess = vaultOnSuccess
             self.options = options
         }
-        
+
         required internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.vaultOnSuccess = (try? container.decode(Bool.self, forKey: .vaultOnSuccess)) ?? false
-            
+
             if let tmpOptions = (try? container.decode([[String: AnyCodable]]?.self, forKey: .options)),
                let optionsData = try? JSONEncoder().encode(tmpOptions),
-               let optionsJson = (try? JSONSerialization.jsonObject(with: optionsData, options: .allowFragments)) as? [[String: Any]]
-            {
+               let optionsJson = (try? JSONSerialization.jsonObject(with: optionsData, options: .allowFragments)) as? [[String: Any]] {
                 self.options = optionsJson
             } else {
                 self.options = nil
             }
         }
-        
+
         internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(vaultOnSuccess, forKey: .vaultOnSuccess)
-            
+
             if let options = options,
                let optionsData = try? JSONSerialization.data(withJSONObject: options, options: .fragmentsAllowed),
                let optionsCodable = try? JSONDecoder().decode([String: AnyCodable]?.self, from: optionsData) {
@@ -315,19 +284,19 @@ internal class ClientSession {
             }
         }
     }
-    
+
     internal class APIResponse: Codable {
-        
+
         let clientSessionId: String?
         let paymentMethod: ClientSession.PaymentMethod?
         let order: ClientSession.Order?
         let customer: ClientSession.Customer?
         let testId: String?
-        
+
         enum CodingKeys: String, CodingKey {
             case clientSessionId, paymentMethod, order, customer, testId // metadata
         }
-        
+
         init(
             clientSessionId: String?,
             paymentMethod: ClientSession.PaymentMethod?,
@@ -341,7 +310,7 @@ internal class ClientSession {
             self.customer = customer
             self.testId = testId
         }
-        
+
         required internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.clientSessionId = (try? container.decode(String?.self, forKey: .clientSessionId)) ?? nil
@@ -350,7 +319,7 @@ internal class ClientSession {
             self.customer = (try? container.decode(ClientSession.Customer?.self, forKey: .customer)) ?? nil
             self.testId = (try? container.decode(String?.self, forKey: .testId)) ?? nil
         }
-        
+
         internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(paymentMethod, forKey: .paymentMethod)
@@ -370,5 +339,3 @@ internal extension Encodable {
         return dictionary
     }
 }
-
-

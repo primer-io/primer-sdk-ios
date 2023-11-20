@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 18/3/21.
 //
 
-
-
 import Foundation
 
 internal extension URL {
@@ -14,7 +12,7 @@ internal extension URL {
     func parseURLQueryParameters() -> [String: String?]? {
         guard let urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: false),
               let queryItems = urlComponents.queryItems else { return nil }
-        
+
         var result: [String: String?] = [:]
 
         for item in queryItems {
@@ -31,5 +29,3 @@ internal extension URL {
     }
 
 }
-
-

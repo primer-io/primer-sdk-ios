@@ -5,8 +5,6 @@
 //  Created by Carl Eriksson on 04/01/2021.
 //
 
-
-
 import UIKit
 
 protocol PrimerThemeProtocol {
@@ -46,17 +44,17 @@ protocol PrimerThemeProtocol {
  1.2.2
  */
 public class PrimerTheme: PrimerThemeProtocol {
-    
+
     private let data: PrimerThemeData
-    
+
     internal lazy var colors: ColorSwatch = ColorSwatch(
         primary: data.colors.primary,
         error: data.colors.error
     )
-    
+
     internal lazy var blurView = data.blurView.theme(for: .blurredBackground, with: data)
     internal lazy var view = data.view.theme(for: .main, with: data)
-    
+
     internal lazy var text = TextStyle(
         body: data.text.theme(for: .body, with: data),
         title: data.text.theme(for: .title, with: data),
@@ -65,18 +63,16 @@ public class PrimerTheme: PrimerThemeProtocol {
         system: data.text.theme(for: .system, with: data),
         error: data.text.theme(for: .error, with: data)
     )
-                      
+
     internal lazy var paymentMethodButton = data.buttons.theme(for: .paymentMethod, with: data)
-    
+
     internal lazy var mainButton = data.buttons.theme(for: .main, with: data)
-    
+
     internal lazy var input = data.input.theme(with: data)
-    
+
     internal var types = (amount: 1, label: 2, foo: "hello")
 
     public init(with data: PrimerThemeData = PrimerThemeData()) {
         self.data = data
     }
 }
-
-

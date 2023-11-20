@@ -5,14 +5,12 @@
 //  Created by Dario Carlomagno on 08/06/22.
 //
 
-
-
 import UIKit
 
 class PrimerEpiryDateField: PrimerCardFormFieldProtocol {
-    
+
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
+
     static func expiryDateContainerViewWithFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let expiryDateContainerView = PrimerCustomFieldView()
         expiryDateContainerView.fieldView = primerTextFieldView
@@ -31,5 +29,3 @@ class PrimerEpiryDateField: PrimerCardFormFieldProtocol {
         return expiryDateField
     }
 }
-
-

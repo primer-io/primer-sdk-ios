@@ -1,5 +1,3 @@
-
-
 import UIKit
 
 internal class PresentationController: UIPresentationController {
@@ -50,7 +48,7 @@ internal class PresentationController: UIPresentationController {
 }
 
 internal extension UIView {
-    
+
     func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
         let path = UIBezierPath(roundedRect: bounds, byRoundingCorners: corners,
                                 cornerRadii: CGSize(width: radius, height: radius))
@@ -58,7 +56,7 @@ internal extension UIView {
         mask.path = path.cgPath
         layer.mask = mask
     }
-    
+
     func roundCorners(corners: UIRectCorner, radius: CGFloat) {
         let path = UIBezierPath(
             roundedRect: self.bounds,
@@ -69,7 +67,5 @@ internal extension UIView {
         mask.path = path.cgPath
         self.layer.mask = mask
     }
-    
+
 }
-
-

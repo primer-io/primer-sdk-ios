@@ -169,8 +169,7 @@ extension MerchantHeadlessCheckoutRawRetailDataViewController: PrimerHeadlessUni
         self.logs.append(#function)
     }
     
-    
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String : Any]?) {
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?) {
         print("\n\nMERCHANT APP\n\(#function)\nmetadataDidChange: \(String(describing: metadata))")
         self.logs.append(#function)
     }

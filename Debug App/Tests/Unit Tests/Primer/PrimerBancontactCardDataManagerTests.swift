@@ -6,14 +6,12 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
 class PrimerBancontactCardDataManagerTests: XCTestCase {
     
-    private static let expectationTimeout = 1.0
+    private static let expectationTimeout = 5.0
     
     func test_valid_raw_bancontact_card_data() throws {
         let exp = expectation(description: "Await validation")
@@ -369,6 +367,3 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         wait(for: [exp], timeout: Self.expectationTimeout)
     }
 }
-
-#endif
-

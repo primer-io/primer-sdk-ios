@@ -16,7 +16,7 @@ import Dispatch
 // should never appear in Xcode or in the documentation.
 
 internal protocol _PMKSharedWrappers {
-    
+
     associatedtype T
     associatedtype BaseOfT
     associatedtype BaseOfVoid
@@ -45,9 +45,9 @@ extension CancellablePromise: _PMKSharedWrappers {
 }
 
 internal protocol _PMKSharedVoidWrappers {
-    
+
     associatedtype BaseOfT
-    
+
     func recover(on: Dispatcher, policy: CatchPolicy, _ body: @escaping(Error) throws -> Void) -> BaseOfT
     func recover<E: Swift.Error>(only: E, on: Dispatcher, _ body: @escaping(E) throws -> Void) -> BaseOfT where E: Equatable
     func recover<E: Swift.Error>(only: E.Type, on: Dispatcher, policy: CatchPolicy, _ body: @escaping(E) throws -> Void) -> BaseOfT
@@ -57,10 +57,10 @@ extension Promise: _PMKSharedVoidWrappers where T == Void {}
 extension CancellablePromise: _PMKSharedVoidWrappers where C.T == Void {}
 
 internal protocol _PMKCatchWrappers {
-    
+
     associatedtype Finalizer
     associatedtype CascadingFinalizer
-    
+
     func `catch`(on: Dispatcher, policy: CatchPolicy, _ body: @escaping(Error) -> Void) -> Finalizer
     func `catch`<E: Swift.Error>(only: E, on: Dispatcher, _ body: @escaping(E) -> Void) -> CascadingFinalizer where E: Equatable
     func `catch`<E: Swift.Error>(only: E.Type, on: Dispatcher, policy: CatchPolicy, _ body: @escaping(E) -> Void) -> CascadingFinalizer
@@ -72,9 +72,9 @@ extension CancellablePromise: _PMKCatchWrappers {}
 extension CancellableCascadingFinalizer: _PMKCatchWrappers {}
 
 internal protocol _PMKFinallyWrappers {
-    
+
     associatedtype FinallyReturn
-    
+
     func finally(on: Dispatcher, _ body: @escaping () -> Void) -> FinallyReturn
 }
 

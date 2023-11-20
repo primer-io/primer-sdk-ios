@@ -1,18 +1,48 @@
-name: UI Tests
+name: Run UI Tests and publish nightly build
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 1 * * *'
-  pull_request:
-    types:
-      - opened
-      - edited
-      - synchronize
+    - cron: '0 1 * * 1-5'
+  push:
     branches:
-      - 'release/next'
+      - 'release/**'
 
 jobs:
+  build-and-upload-to-appetize:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    name: "Build and upload app to Appetize"
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@0.12.0
+        with:
+          access_token: ${{ github.token }}
+      - name: Git - Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+      - name: Upload preview to Appetize
+        id: appetize-upload
+        uses: ./.github/actions/appetize-build
+        with:
+          build_type: 'nightly'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          known-hosts: ${{ secrets.KNOWN_HOSTS }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
+          fastlane-session: ${{ secrets.FASTLANE_SESSION }}
+          fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
+          match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          appetize-api-token: ${{ secrets.APPETIZE_API_TOKEN }}
+          source-branch: ${{ github.head_ref || github.ref_name }}
+          pr-number: ""
+          slack-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+          slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+          github-run-id: ${{ github.run_id }}
+          run-tests: true
   build-and-upload-to-firebase-and-browserstack:
     runs-on: macos-13
     timeout-minutes: 20
@@ -72,8 +102,6 @@ jobs:
           BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.ref }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-
       - name: Save Browserstack ID
         uses: actions/upload-artifact@v3
         id: save_browserstack_id_step

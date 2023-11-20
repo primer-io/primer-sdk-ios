@@ -6,8 +6,6 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 import UIKit
@@ -56,21 +54,19 @@ class PrimerCheckoutThemeTests: XCTestCase {
         Primer.shared.configure(settings: settings)
         
         let storedSettings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        XCTAssert(storedSettings.uiOptions.theme.colors.primary             == tropical7,           "Primary color should be 'tropical7'")
-        XCTAssert(storedSettings.uiOptions.theme.colors.error               == tropical3,           "Error color should be 'tropical3'")
-        XCTAssert(storedSettings.uiOptions.theme.text.title.color           == tropical10,          "Text title color should be 'tropical10'")
-        XCTAssert(storedSettings.uiOptions.theme.view.backgroundColor       == tropical1,           "View background color should be 'tropical1'")
-        XCTAssert(storedSettings.uiOptions.theme.blurView.backgroundColor   == UIColor.darkGray,    "Blur view background color should be 'darkGray'")
-        XCTAssert(storedSettings.uiOptions.theme.text.title.color           == tropical10,          "Title color should be 'tropical10'")
-        XCTAssert(storedSettings.uiOptions.theme.text.amountLabel.color     == tropical10,          "Amount label color should be 'tropical10'")
-        XCTAssert(storedSettings.uiOptions.theme.text.subtitle.color        == tropical3,           "Subtitle color should be 'tropical3'")
-        XCTAssert(storedSettings.uiOptions.theme.text.body.color            == UIColor.white,       "Body color should be 'white'")
-        XCTAssert(storedSettings.uiOptions.theme.text.system.color          == tropical4,           "System color should be 'tropical4'")
+        XCTAssert(storedSettings.uiOptions.theme.colors.primary             == tropical7, "Primary color should be 'tropical7'")
+        XCTAssert(storedSettings.uiOptions.theme.colors.error               == tropical3, "Error color should be 'tropical3'")
+        XCTAssert(storedSettings.uiOptions.theme.text.title.color           == tropical10, "Text title color should be 'tropical10'")
+        XCTAssert(storedSettings.uiOptions.theme.view.backgroundColor       == tropical1, "View background color should be 'tropical1'")
+        XCTAssert(storedSettings.uiOptions.theme.blurView.backgroundColor   == UIColor.darkGray, "Blur view background color should be 'darkGray'")
+        XCTAssert(storedSettings.uiOptions.theme.text.title.color           == tropical10, "Title color should be 'tropical10'")
+        XCTAssert(storedSettings.uiOptions.theme.text.amountLabel.color     == tropical10, "Amount label color should be 'tropical10'")
+        XCTAssert(storedSettings.uiOptions.theme.text.subtitle.color        == tropical3, "Subtitle color should be 'tropical3'")
+        XCTAssert(storedSettings.uiOptions.theme.text.body.color            == UIColor.white, "Body color should be 'white'")
+        XCTAssert(storedSettings.uiOptions.theme.text.system.color          == tropical4, "System color should be 'tropical4'")
         
         XCTAssert(storedSettings.uiOptions.theme.mainButton.colorStates.color(for: .enabled) == tropical8, "Main button's enabled color should be 'tropical8'")
         XCTAssert(storedSettings.uiOptions.theme.mainButton.colorStates.color(for: .selected) == tropical8, "Main button's selected color should be 'tropical8'")
         XCTAssert(storedSettings.uiOptions.theme.mainButton.text.color == tropical4, "Main button's enabled color should be 'tropical8'")
     }
 }
-
-#endif

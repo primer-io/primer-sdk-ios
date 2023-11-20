@@ -5,12 +5,10 @@
 //  Created by Evangelos Pittas on 26/2/21.
 //
 
-
-
 import Foundation
 
 enum PrimerAPI: Endpoint, Equatable {
-    
+
     static func == (lhs: PrimerAPI, rhs: PrimerAPI) -> Bool {
         switch (lhs, rhs) {
         case (.exchangePaymentMethodToken, .exchangePaymentMethodToken),
@@ -40,7 +38,6 @@ enum PrimerAPI: Endpoint, Equatable {
             return false
         }
     }
-    
 
     case redirect(clientToken: DecodedJWTToken, url: URL)
     case exchangePaymentMethodToken(clientToken: DecodedJWTToken, vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?)
@@ -59,25 +56,25 @@ enum PrimerAPI: Endpoint, Equatable {
     case listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String)
 
     case requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken, request: ClientSessionUpdateRequest)
-    
+
     // 3DS
     case begin3DSRemoteAuth(clientToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest)
     case continue3DSRemoteAuth(clientToken: DecodedJWTToken, threeDSTokenId: String, continueInfo: ThreeDS.ContinueInfo)
-    
+
     // Generic
     case poll(clientToken: DecodedJWTToken?, url: String)
-    
+
     case sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?)
-    
+
     case fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo)
 
     case validateClientToken(request: Request.Body.ClientTokenValidation)
-    
+
     // Create - Resume Payment
-    
+
     case createPayment(clientToken: DecodedJWTToken, paymentRequest: Request.Body.Payment.Create)
     case resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume)
-    
+
     case testFinalizePolling(clientToken: DecodedJWTToken, testId: String)
     case getNolSdkSecret(clientToken: DecodedJWTToken, request: Request.Body.NolPay.NolPaySecretDataRequest)
     case getPhoneMetadata(clientToken: DecodedJWTToken, request: Request.Body.PhoneMetadata.PhoneMetadataDataRequest)
@@ -85,22 +82,22 @@ enum PrimerAPI: Endpoint, Equatable {
 }
 
 internal extension PrimerAPI {
-    
+
     // MARK: Headers
-    
+
     static let headers: [String: String] = [
         "Content-Type": "application/json",
         "Primer-SDK-Version": VersionUtils.releaseVersionNumber ?? "n/a",
         "Primer-SDK-Client": PrimerSource.sdkSourceType.sourceType
     ]
-    
+
     var headers: [String: String]? {
         var tmpHeaders = PrimerAPI.headers
-        
+
         if let checkoutSessionId = PrimerInternal.shared.checkoutSessionId {
             tmpHeaders["Primer-SDK-Checkout-Session-ID"] = checkoutSessionId
         }
-        
+
         switch self {
         case .redirect(let clientToken, _),
                 .deleteVaultedPaymentMethod(let clientToken, _),
@@ -127,7 +124,7 @@ internal extension PrimerAPI {
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
-        
+
         case .validateClientToken(let request):
             if let token = request.clientToken.decodedJWTToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
@@ -137,12 +134,12 @@ internal extension PrimerAPI {
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
-            
+
         case .poll(let clientToken, _):
             if let token = clientToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
-            
+
         case .sendAnalyticsEvents(let clientToken, _, _):
             if let token = clientToken?.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
@@ -150,7 +147,7 @@ internal extension PrimerAPI {
         case .getNolSdkSecret(clientToken: let clientToken, _):
             tmpHeaders["Primer-Client-Token"] = clientToken.accessToken
         }
-        
+
         switch self {
         case .exchangePaymentMethodToken:
             tmpHeaders["X-Api-Version"] = "2.2"
@@ -207,10 +204,10 @@ internal extension PrimerAPI {
         case .getPhoneMetadata:
             break
         }
-        
+
         return tmpHeaders
     }
-    
+
     // MARK: Base URL
     var baseURL: String? {
         switch self {
@@ -254,7 +251,7 @@ internal extension PrimerAPI {
         }
     }
     // MARK: Path
-    
+
     var path: String {
         switch self {
         case .deleteVaultedPaymentMethod(_, let id):
@@ -303,7 +300,7 @@ internal extension PrimerAPI {
             return "/payments"
         case .resumePayment(_, let paymentId, _):
             return "/payments/\(paymentId)/resume"
-        case .testFinalizePolling(_, _):
+        case .testFinalizePolling:
             return "/finalize-polling"
         case .getNolSdkSecret:
             return "/nol-pay/sdk-secrets"
@@ -313,16 +310,16 @@ internal extension PrimerAPI {
             return "phone-number-lookups/\(request.phoneNumber)"
         }
     }
-    
+
     // MARK: Port
     // (not needed atm since port is included in the base URL provided by the access token)
-    
+
     var port: Int? {
         return nil
     }
-    
+
     // MARK: HTTP Method
-    
+
     var method: HTTPMethod {
         switch self {
         case .deleteVaultedPaymentMethod:
@@ -358,9 +355,9 @@ internal extension PrimerAPI {
             return .get
         }
     }
-    
+
     // MARK: Query Parameters
-    
+
     var queryParameters: [String: String]? {
         switch self {
         case .fetchConfiguration(_, let requestParameters):
@@ -369,9 +366,9 @@ internal extension PrimerAPI {
             return nil
         }
     }
-    
+
     // MARK: HTTP Body
-    
+
     var body: Data? {
         switch self {
         case .createPayPalOrderSession(_, let payPalCreateOrderRequest):
@@ -430,13 +427,13 @@ internal extension PrimerAPI {
             return nil
         }
     }
-    
+
     // MARK: Should Return Response Body
-    
+
     var shouldParseResponseBody: Bool {
         switch self {
-        case .redirect(_, _),
-                .deleteVaultedPaymentMethod(_, _):
+        case .redirect,
+                .deleteVaultedPaymentMethod:
             return false
         default:
             return true
@@ -444,5 +441,3 @@ internal extension PrimerAPI {
     }
 
 }
-
-

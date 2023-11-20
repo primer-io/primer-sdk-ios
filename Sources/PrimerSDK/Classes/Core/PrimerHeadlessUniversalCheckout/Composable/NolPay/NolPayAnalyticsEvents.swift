@@ -20,7 +20,7 @@ struct NolPayAnalyticsConstants {
 
     // list cards component
     static let LINKED_CARDS_GET_CARDS_METHOD = "NolPayLinkedCardsComponent.getLinkedCards()"
-    
+
     // payment component
     static let PAYMENT_START_METHOD = "NolPayStartPaymentComponent.start()"
     static let PAYMENT_UPDATE_COLLECTED_DATA_METHOD = "NolPayStartPaymentComponent.updateCollectedData()"

@@ -6,8 +6,6 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
@@ -116,7 +114,7 @@ class AnalyticsTests: XCTestCase {
             storedEvents = events
             exp.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             exp.fulfill()
         }
 
@@ -163,7 +161,7 @@ class AnalyticsTests: XCTestCase {
             storedEvents = events
             exp.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             exp.fulfill()
         }
 
@@ -187,7 +185,7 @@ class AnalyticsTests: XCTestCase {
         firstly {
             self.createDemoClientSessionAndSetAppState()
         }
-        .done { clientToken in
+        .done { _ in
             
         }
         .ensure {
@@ -251,7 +249,7 @@ class AnalyticsTests: XCTestCase {
         .then { () -> Promise<String> in
             self.createDemoClientSessionAndSetAppState()
         }
-        .then { clientToken -> Promise<[Analytics.Event]> in
+        .then { _ -> Promise<[Analytics.Event]> in
             return self.createEvents()
         }
         .then { events -> Promise<Void> in
@@ -270,7 +268,7 @@ class AnalyticsTests: XCTestCase {
                 }
             }
         }
-        .then { events -> Promise<Void> in
+        .then { _ -> Promise<Void> in
             return Analytics.Service.sync(batchSize: batchSize)
         }
         .then { () -> Promise<[Analytics.Event]> in
@@ -290,7 +288,7 @@ class AnalyticsTests: XCTestCase {
             storedEvents = events
             exp.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             exp.fulfill()
         }
         
@@ -308,11 +306,11 @@ class AnalyticsTests: XCTestCase {
         firstly {
             self.createAnalyticsEvents(deletePreviousEvents: true)
         }
-        .done { events in
+        .done { _ in
             self.deleteAnalyticsFileSynchonously()
             exp.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             exp.fulfill()
         }
 
@@ -532,7 +530,7 @@ class AnalyticsTests: XCTestCase {
         firstly {
             self.createDemoClientSessionAndSetAppState()
         }
-        .done { clientToken in
+        .done { _ in
             createClientSessionExpectation.fulfill()
         }
         .catch { err in
@@ -679,11 +677,11 @@ class AnalyticsTests: XCTestCase {
         storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
         let storedEventsIds = storedEvents.compactMap({ $0.localId })
         
-        XCTAssert(storedEventsIds.contains(e1_1.localId),   "Analytics file should contain event \(e1_1.localId)")
-        XCTAssert(storedEventsIds.contains(e1_2.localId),   "Analytics file should contain event \(e1_2.localId)")
-        XCTAssert(storedEventsIds.contains(e2_2.localId),   "Analytics file should contain event \(e2_2.localId)")
-        XCTAssert(storedEventsIds.contains(e3.localId),     "Analytics file should contain event \(e3.localId)")
-        XCTAssert(storedEvents.count == eventsIds.count,    "Analytics file should contain \(eventsIds.count) events")
+        XCTAssert(storedEventsIds.contains(e1_1.localId), "Analytics file should contain event \(e1_1.localId)")
+        XCTAssert(storedEventsIds.contains(e1_2.localId), "Analytics file should contain event \(e1_2.localId)")
+        XCTAssert(storedEventsIds.contains(e2_2.localId), "Analytics file should contain event \(e2_2.localId)")
+        XCTAssert(storedEventsIds.contains(e3.localId), "Analytics file should contain event \(e3.localId)")
+        XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events")
 
         // Delete events from different queues
 
@@ -828,7 +826,6 @@ class AnalyticsTests: XCTestCase {
         deleteEvent3OnMainQueueExpectation2.fulfill()
         eventsIds = eventsIds.filter({ $0 != e3.localId })
         
-        
         wait(for: [
             deleteEvent1OnSerialQueueExpectation2,
             deleteEvent1OnConcurrentQueueExpectation2,
@@ -842,7 +839,6 @@ class AnalyticsTests: XCTestCase {
         
         XCTAssert(deletedEvent1_1 == nil && deletedEvent2_1 == nil && deletedEvent3 == nil, "Stored events should not contain events \(deletedEvent1_1?.localId ?? "n/a") and \(deletedEvent2_1?.localId ?? "n/a")")
         XCTAssert(storedEvents.count == eventsIds.count, "Stored events should be empty")
-        
         
         // At this point e1_2 and e2_2 are still in the stored events.
         // Test recording a new event (e3), while deleting the other 2
@@ -982,7 +978,7 @@ class AnalyticsTests: XCTestCase {
         firstly {
             self.createDemoClientSessionAndSetAppState()
         }
-        .done { clientToken in
+        .done { _ in
             
         }
         .ensure {
@@ -1007,7 +1003,6 @@ class AnalyticsTests: XCTestCase {
             syncOnConcurrentQueueExpectation1,
             syncOnConcurrentQueueExpectation2
         ]
-        
         
         self.syncAnalyticsFile(fromQueue: DispatchQueue.main) {
             syncOnMainQueueExpectation.fulfill()
@@ -1241,7 +1236,6 @@ class AnalyticsTests: XCTestCase {
         storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events")
         
-        
         // TEST
         // - Write events from concurrent queue
         // - Delete analytics file from serial queue
@@ -1269,6 +1263,3 @@ class AnalyticsTests: XCTestCase {
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events")
     }    
 }
-
-
-#endif

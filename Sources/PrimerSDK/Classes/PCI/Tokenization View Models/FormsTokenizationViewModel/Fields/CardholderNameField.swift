@@ -5,14 +5,12 @@
 //  Created by Dario Carlomagno on 08/06/22.
 //
 
-
-
 import UIKit
 
 class PrimerCardholderNameField: PrimerCardFormFieldProtocol {
-    
+
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
+
     static func cardholderNameContainerViewFieldView(_ view: PrimerTextFieldView?) -> PrimerCustomFieldView? {
         guard let view = view else {
             return nil
@@ -24,7 +22,7 @@ class PrimerCardholderNameField: PrimerCardFormFieldProtocol {
         cardholderNameContainerView.tintColor = theme.input.border.color(for: .selected)
         return cardholderNameContainerView
     }
-    
+
     static func cardholderNameFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerCardholderNameFieldView {
         let cardholderNameField = PrimerCardholderNameFieldView()
         cardholderNameField.placeholder = Strings.CardFormView.Cardholder.placeholder
@@ -36,7 +34,7 @@ class PrimerCardholderNameField: PrimerCardFormFieldProtocol {
 }
 
 extension PrimerCardholderNameField {
-    
+
     internal static var isCardholderNameFieldEnabled: Bool {
         let cardInfoOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
         if let isCardHolderNameCheckoutModuleOptionEnabled = cardInfoOptions?.cardHolderName {
@@ -45,5 +43,3 @@ extension PrimerCardholderNameField {
         return true
     }
 }
-
-

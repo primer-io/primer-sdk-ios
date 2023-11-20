@@ -5,12 +5,10 @@
 //  Created by Dario Carlomagno on 28/08/22.
 //
 
-
-
 import Foundation
 
 internal extension DateFormatter {
-    
+
     /**
      The provided function sets the `dateFormat` property of DateFormatter.
      
@@ -25,7 +23,7 @@ internal extension DateFormatter {
 }
 
 internal extension DateFormatter {
-    
+
     /**
      The provided function sets the `style` of `date` and `time` property of DateFormatter.
      
@@ -38,7 +36,5 @@ internal extension DateFormatter {
         self.timeStyle = .short
         return self
     }
-    
+
 }
-
-

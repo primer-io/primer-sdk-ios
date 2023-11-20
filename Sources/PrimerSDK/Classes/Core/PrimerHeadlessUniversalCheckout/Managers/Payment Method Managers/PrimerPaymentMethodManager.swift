@@ -5,8 +5,6 @@
 //  Created by Evangelos on 26/9/22.
 //
 
-
-
 import Foundation
 
 public enum PrimerPaymentMethodManagerCategory: String {
@@ -17,11 +15,9 @@ public enum PrimerPaymentMethodManagerCategory: String {
 }
 
 internal protocol PrimerPaymentMethodManager {
-    
+
     var paymentMethodType: String { get }
-    
+
     init(paymentMethodType: String) throws
     func showPaymentMethod(intent: PrimerSessionIntent) throws
 }
-
-

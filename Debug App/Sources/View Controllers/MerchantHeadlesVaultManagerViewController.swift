@@ -73,7 +73,7 @@ class MerchantHeadlesVaultManagerViewController: UIViewController, PrimerHeadles
     }
     
     private func startPrimerHeadlessUniversalCheckout(with clientToken: String) {
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (availablePaymentMethods, err) in
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (_, _) in
             self.vaultedManager = PrimerHeadlessUniversalCheckout.VaultManager()
             
             do {
@@ -210,7 +210,7 @@ extension MerchantHeadlesVaultManagerViewController {
         print("\n\nMERCHANT APP\n\(#function)\nresumeToken: \(resumeToken)")
         self.logs.append(#function)
 
-        Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, err) in
+        Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, _) in
             DispatchQueue.main.async {
                 self.hideLoadingOverlay()
             }

@@ -115,10 +115,10 @@ final class HeadlessVaultManagerTests: XCTestCase {
         VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
         
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { pm, err in
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { _, _ in
             let vaultManager = PrimerHeadlessUniversalCheckout.VaultManager()
             try! vaultManager.configure()
-            vaultManager.fetchVaultedPaymentMethods { vpm, err in
+            vaultManager.fetchVaultedPaymentMethods { vpm, _ in
                 if let unwrappedVaultedPaymentMethods = vpm {
                     availableVaultedPaymentMethods = unwrappedVaultedPaymentMethods
                 }
@@ -190,7 +190,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
         VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
         
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { pm, err in
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { _, _ in
             let vaultManager = PrimerHeadlessUniversalCheckout.VaultManager()
             do {
                 try vaultManager.configure()
@@ -310,7 +310,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
         VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
         
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { availablePaymentMethods, err in
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { _, err in
             let vaultManager = PrimerHeadlessUniversalCheckout.VaultManager()
             try! vaultManager.configure()
             vaultManager.fetchVaultedPaymentMethods { vaultedPaymentMethods, err in

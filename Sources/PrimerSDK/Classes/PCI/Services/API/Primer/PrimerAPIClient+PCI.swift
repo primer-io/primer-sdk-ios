@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 26/2/21.
 //
 
-
-
 import Foundation
 
 extension PrimerAPIClient {
@@ -23,5 +21,3 @@ extension PrimerAPIClient {
         }
     }
 }
-
-

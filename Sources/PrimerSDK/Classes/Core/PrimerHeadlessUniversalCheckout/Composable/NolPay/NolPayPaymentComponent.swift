@@ -20,9 +20,8 @@ public enum NolPayPaymentStep: PrimerHeadlessStep {
 }
 
 public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerHeadlessAnalyticsRecordable {
-    
     public typealias T = NolPayPaymentCollectableData
-    
+
 #if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPay!
 #endif
@@ -30,9 +29,9 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     var phoneMetadataService = NolPayPhoneMetadataService()
-    
+
     var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol!
-    
+
     var mobileNumber: String?
     var countryCode: String?
     var cardNumber: String?
@@ -41,13 +40,14 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
     public func updateCollectedData(collectableData: NolPayPaymentCollectableData) {
         switch collectableData {
         case let .paymentData(cardNumber, mobileNumber):
+            nextDataStep = .collectCardAndPhoneData
             self.cardNumber = cardNumber
             self.mobileNumber = mobileNumber
         }
-        
+
         validateData(for: collectableData)
     }
-    
+
     func validateData(for data: NolPayPaymentCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         var errors: [PrimerValidationError] = []
@@ -59,11 +59,11 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
                 NolPayAnalyticsConstants.CATEGORY_KEY: NolPayAnalyticsConstants.CATEGORY_VALUE
             ]
         )
-
+        
         switch data {
         case .paymentData(cardNumber: let cardNumber,
                           mobileNumber: let mobileNumber):
-            
+
             if cardNumber.isEmpty {
                 errors.append(PrimerValidationError.invalidCardnumber(
                     message: "Card number is not valid.",
@@ -76,13 +76,13 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
                     diagnosticsId: UUID().uuidString))
                 ErrorHandler.handle(error: errors.last!)
             }
-            
+
             phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
                 switch result {
-                    
+
                 case let .success((validationStatus, countryCode, mobileNumber)):
                     switch validationStatus {
-                        
+
                     case .valid:
                         if errors.isEmpty {
                             self?.countryCode = countryCode
@@ -103,7 +103,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
             }
         }
     }
-    
+
     public func submit() {
         recordEvent(
             type: .sdkEvent,
@@ -120,13 +120,13 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
                 makeAndHandleInvalidValueError(forKey: "cardNumber")
                 return
             }
-            
+
             guard  let mobileNumber = mobileNumber
             else {
                 makeAndHandleInvalidValueError(forKey: "mobileNumber")
                 return
             }
-            
+
             guard let countryCode = countryCode
             else {
                 makeAndHandleInvalidValueError(forKey: "phoneCountryDiallingCode")
@@ -140,12 +140,12 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
             paymentMethod.nolPayCardNumber = cardNumber
             paymentMethod.mobileNumber = mobileNumber
             paymentMethod.mobileCountryCode = countryCode
-            
+
             paymentMethod.triggerAsyncAction = { (transactionNumber: String, completion: ((Result<Bool, Error>) -> Void)?)  in
     #if canImport(PrimerNolPaySDK)
                 self.nolPay.requestPayment(for: cardNumber, and: transactionNumber) { result in
                     switch result {
-    
+
                     case .success(let success):
                         if success {
                             self.nextDataStep = .paymentRequested
@@ -181,15 +181,15 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
     #endif
             }
             paymentMethod.start()
-            
+
         default:
             break
         }
     }
-    
+
     public func start() {
         recordEvent(
-            type: .sdkEvent, 
+            type: .sdkEvent,
             name: NolPayAnalyticsConstants.PAYMENT_START_METHOD,
             params: [
                 NolPayAnalyticsConstants.CATEGORY_KEY: NolPayAnalyticsConstants.CATEGORY_VALUE
@@ -202,13 +202,13 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
             makeAndHandleInvalidValueError(forKey: "Nol AppID")
             return
         }
-        
+
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             return
         }
-        
+
         let isSandbox = clientToken.env != "PRODUCTION"
         var isDebug = false
 #if DEBUG
@@ -217,13 +217,13 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
 
 #if canImport(PrimerNolPaySDK)
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
-            
+
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
                                                                                 nolAppId: sdkId,
                                                                                 phoneVendor: "Apple",
                                                                                 phoneModel: UIDevice.modelIdentifier!)
             let client = PrimerAPIClient()
-            
+
             if #available(iOS 13, *) {
                 return try await withCheckedThrowingContinuation { continuation in
                     client.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
@@ -254,7 +254,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
         errorDelegate?.didReceiveError(error: error)
 #endif
     }
-    
+
     // Helper method
     private func makeAndHandleInvalidValueError(forKey key: String) {
         let error = PrimerError.invalidValue(key: key, value: nil, userInfo: [

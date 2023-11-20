@@ -13,7 +13,7 @@ import PrimerNolPaySDK
 public class PrimerNolPaymentCard {
     public var cardNumber: String
     public var expiredTime: String
-    
+
     // Initializer that accepts a PrimerNolPayCard
 #if canImport(PrimerNolPaySDK)
     public init(from nolPayCard: PrimerNolPayCard) {
@@ -26,7 +26,7 @@ public class PrimerNolPaymentCard {
         self.cardNumber = cardNumber
         self.expiredTime = expiredTime
     }
-    
+
     // Function to create PrimerNolPaymentCard array from PrimerNolPayCard array
 #if canImport(PrimerNolPaySDK)
     static func makeFrom(arrayOf primerNolPayCards: [PrimerNolPayCard]) -> [PrimerNolPaymentCard] {

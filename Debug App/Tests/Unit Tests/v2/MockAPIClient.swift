@@ -6,8 +6,6 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 @testable import PrimerSDK
 import XCTest
 
@@ -46,7 +44,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<SuccessResponse, Error>) -> Void
     ) {
         guard let result = validateClientTokenResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'validateClientTokenResult' on your MockPrimerAPIClient")
             return
@@ -67,7 +65,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<Response.Body.Configuration, Error>) -> Void
     ) {
         guard let result = fetchConfigurationResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'fetchConfigurationResult' on your MockPrimerAPIClient")
             return
@@ -87,7 +85,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<Response.Body.VaultedPaymentMethods, Error>) -> Void
     ) {
         guard let result = fetchVaultedPaymentMethodsResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'fetchVaultedPaymentMethodsResult' on your MockPrimerAPIClient")
             return
@@ -141,7 +139,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<Response.Body.PayPal.CreateOrder, Error>) -> Void
     ) {
         guard let result = createPayPalOrderSessionResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'createPayPalOrderSessionResult' on your MockPrimerAPIClient")
             return
@@ -162,7 +160,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<Response.Body.PayPal.CreateBillingAgreement, Error>) -> Void
     ) {
         guard let result = createPayPalBillingAgreementSessionResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'createPayPalBillingAgreementSessionResult' on your MockPrimerAPIClient")
             return
@@ -183,7 +181,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void
     ) {
         guard let result = confirmPayPalBillingAgreementResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'confirmPayPalBillingAgreementResult' on your MockPrimerAPIClient")
             return
@@ -205,7 +203,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void
     ) {
         guard let result = createKlarnaPaymentSessionResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'createKlarnaPaymentSessionResult' on your MockPrimerAPIClient")
             return
@@ -226,7 +224,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<Response.Body.Klarna.CustomerToken, Error>) -> Void
     ) {
         guard let result = createKlarnaCustomerTokenResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'createKlarnaCustomerTokenResult' on your MockPrimerAPIClient")
             return
@@ -247,7 +245,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<Response.Body.Klarna.CustomerToken, Error>) -> Void
     ) {
         guard let result = finalizeKlarnaPaymentSessionResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'finalizeKlarnaPaymentSessionResult' on your MockPrimerAPIClient")
             return
@@ -269,7 +267,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void
     ) {
         guard let result = tokenizePaymentMethodResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'tokenizePaymentMethodResult' on your MockPrimerAPIClient")
             return
@@ -291,7 +289,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (Result<PrimerSDK.PrimerPaymentMethodTokenData, Error>) -> Void
     ) {
         guard let result = exchangePaymentMethodTokenResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'tokenizePaymentMethodResult' on your MockPrimerAPIClient")
             return
@@ -310,7 +308,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func begin3DSAuth(clientToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void
     ) {
         guard let result = begin3DSAuthResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'begin3DSAuthResult' on your MockPrimerAPIClient")
             return
@@ -327,7 +325,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
     func continue3DSAuth(clientToken: PrimerSDK.DecodedJWTToken, threeDSTokenId: String, continueInfo: PrimerSDK.ThreeDS.ContinueInfo, completion: @escaping (Result<PrimerSDK.ThreeDS.PostAuthResponse, Error>) -> Void) {
         guard let result = continue3DSAuthResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'continue3DSAuthResult' on your MockPrimerAPIClient")
             return
@@ -351,7 +349,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<Response.Body.Apaya.CreateSession, Error>) -> Void
     ) {
         guard let result = createApayaSessionResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'createApayaSessionResult' on your MockPrimerAPIClient")
             return
@@ -374,7 +372,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<[Response.Body.Adyen.Bank], Error>) -> Void
     ) {
         guard let result = listAdyenBanksResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'listAdyenBanksResult' on your MockPrimerAPIClient")
             return
@@ -394,10 +392,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func listRetailOutlets(
         clientToken: PrimerSDK.DecodedJWTToken,
         paymentMethodId: String,
-        completion: @escaping (Result<PrimerSDK.RetailOutletsList, Error>) -> Void)
-    {
+        completion: @escaping (Result<PrimerSDK.RetailOutletsList, Error>) -> Void) {
         guard let result = listRetailOutletsResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'listRetailOutletsResult' on your MockPrimerAPIClient")
             return
@@ -417,8 +414,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func poll(
         clientToken: DecodedJWTToken?,
         url: String,
-        completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void)
-    {
+        completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void) {
         guard let pollingResults = pollingResults,
               !pollingResults.isEmpty
         else {
@@ -455,10 +451,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func requestPrimerConfigurationWithActions(
         clientToken: DecodedJWTToken,
         request: ClientSessionUpdateRequest,
-        completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
-    {
+        completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
         guard let result = fetchConfigurationWithActionsResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'fetchConfigurationWithActionsResult' on your MockPrimerAPIClient")
             return
@@ -477,7 +472,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
     func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?, completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void) {
         guard let result = sendAnalyticsEventsResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'sendAnalyticsResult' on your MockPrimerAPIClient")
             return
@@ -495,10 +490,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func fetchPayPalExternalPayerInfo(
         clientToken: DecodedJWTToken,
         payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo,
-        completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void)
-    {
+        completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void) {
         guard let result = fetchPayPalExternalPayerInfoResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'fetchPayPalExternalPayerInfoResult' on your MockPrimerAPIClient")
             return
@@ -514,7 +508,6 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-
     
     // Payment
     func createPayment(
@@ -523,7 +516,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         completion: @escaping (_ result: Result<Response.Body.Payment, Error>) -> Void
     ) {
         guard let result = paymentResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'paymentResult' on your MockPrimerAPIClient")
             return
@@ -542,7 +535,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     
     func resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Result<Response.Body.Payment, Error>) -> Void) {
         guard let result = resumePaymentResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'resumePaymentResult' on your MockPrimerAPIClient")
             return
@@ -561,7 +554,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         
     func testFinalizePolling(clientToken: PrimerSDK.DecodedJWTToken, testId: String, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let result = testFinalizePollingResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'testFinalizePollingResult' on your MockPrimerAPIClient")
             return
@@ -581,7 +574,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func fetchNolSdkSecret(clientToken: PrimerSDK.DecodedJWTToken, paymentRequestBody: PrimerSDK.Request.Body.NolPay.NolPaySecretDataRequest, completion: @escaping (Result<PrimerSDK.Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void) {
         
         guard let result = testFetchNolSdkSecretResult,
-              (result.0 != nil || result.1 != nil)
+              result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'testFetchNolSdkSecretResult' on your MockPrimerAPIClient")
             return
@@ -607,7 +600,6 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func getPhoneMetadata(clientToken: PrimerSDK.DecodedJWTToken, paymentRequestBody: PrimerSDK.Request.Body.PhoneMetadata.PhoneMetadataDataRequest, completion: @escaping (Result<PrimerSDK.Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void) {
         completion(.success(phoneMetadataResult))
     }
-
 
     func mockSuccessfulResponses() {
         self.validateClientTokenResult                  = (MockPrimerAPIClient.Samples.mockValidateClientToken, nil)
@@ -909,5 +901,3 @@ extension MockPrimerAPIClient {
 
     }
 }
-
-#endif

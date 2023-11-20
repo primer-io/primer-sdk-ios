@@ -1,5 +1,3 @@
-
-
 import UIKit
 
 internal protocol VaultPaymentMethodViewDelegate: UITableViewDelegate, UITableViewDataSource {
@@ -42,7 +40,7 @@ internal extension VaultPaymentMethodView {
 
     private func configureTableView() {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
+
         tableView.delegate = delegate
         tableView.dataSource = delegate
         tableView.layer.cornerRadius = 8.0
@@ -66,5 +64,3 @@ internal extension VaultPaymentMethodView {
         tableView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12).isActive = true
     }
 }
-
-

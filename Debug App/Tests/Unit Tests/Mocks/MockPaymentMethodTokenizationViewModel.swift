@@ -6,8 +6,6 @@
 //  Copyright © 2022 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
@@ -79,7 +77,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
                 firstly {
                     self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
                 }
-                .done { checkoutData in
+                .done { _ in
                     self.didFinishPayment?(nil)
                     self.nullifyEventCallbacks()
                     self.handleSuccessfulFlow()
@@ -269,6 +267,3 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         self.didFinishPayment = nil
     }
 }
-
-#endif
-

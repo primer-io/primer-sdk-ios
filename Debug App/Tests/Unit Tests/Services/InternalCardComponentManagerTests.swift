@@ -9,7 +9,7 @@
 import XCTest
 @testable import PrimerSDK
 
-class CardComponentManagerTests: XCTestCase {
+class InternalCardComponentManagerTests: XCTestCase {
         
     let testCardNumbers: [CardNetwork: [String]] = [
         .amex: [

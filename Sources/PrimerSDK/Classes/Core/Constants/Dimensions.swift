@@ -1,21 +1,19 @@
-
-
 import UIKit
 
 public struct PrimerDimensions {
-    
+
     public static let cornerRadius: CGFloat = 8.0
     public static let safeArea: CGFloat = 10.0
     public static let zero: CGFloat = CGFloat.zero
-    
+
     public struct NavigationBar {
         public static let `default`: CGFloat = 44.0
     }
-    
+
     public struct StackViewSpacing {
         public static let `default`: CGFloat = 16.0
     }
-    
+
     public struct Component {
         public static let cornerRadius: CGFloat = 4.0
         public static let borderWidth: CGFloat = 1.6
@@ -32,5 +30,3 @@ public struct PrimerDimensions {
         public static let buttonLabel: CGFloat = 14
     }
 }
-
-

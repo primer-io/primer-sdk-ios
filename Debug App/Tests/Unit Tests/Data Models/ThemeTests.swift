@@ -6,8 +6,6 @@
 //  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
@@ -97,7 +95,3 @@ class PrimerThemeTests: XCTestCase {
         XCTAssert(theme.fontSize == Int(PrimerDimensions.Font.error))
     }
 }
-
-
-#endif
-

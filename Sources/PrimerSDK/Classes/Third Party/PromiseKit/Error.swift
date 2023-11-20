@@ -18,10 +18,10 @@ internal enum PMKError: Error {
 
     /// The operation was cancelled
     case cancelled
-    
+
     /// The operation timed out and was cancelled
     case timedOut
-    
+
     /// `nil` was returned from `flatMap`
     @available(*, deprecated, message: "See: `compactMap`")
     case flatMap(Any, Any.Type)
@@ -70,7 +70,6 @@ extension PMKError: LocalizedError {
         return debugDescription
     }
 }
-
 
 //////////////////////////////////////////////////////////// Cancellation
 

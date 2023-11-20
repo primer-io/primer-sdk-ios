@@ -6,8 +6,6 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
@@ -123,6 +121,3 @@ private extension RangeReplaceableCollection where Self: StringProtocol {
         return repeatElement(element, count: Swift.max(0, length-count)) + suffix(Swift.max(count, count-length))
     }
 }
-
-#endif
-

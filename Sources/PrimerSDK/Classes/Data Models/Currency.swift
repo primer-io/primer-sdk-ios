@@ -1,5 +1,3 @@
-
-
 internal struct CurrencyElement: Codable {
     let name: String
     let symbol: String
@@ -190,18 +188,16 @@ public enum Currency: String, Codable, CaseIterable {
     case ZMK
     case ZMW
     case ZWL
-    
+
     var currencyElement: CurrencyElement? {
-        loadedCurrencies?.first{ $0.code == self }
+        loadedCurrencies?.first { $0.code == self }
     }
 
     var symbol: String? {
         return currencyElement?.symbolNative
     }
-    
+
     var isZeroDecimal: Bool {
         return currencyElement?.decimalDigits == 0
     }
 }
-
-

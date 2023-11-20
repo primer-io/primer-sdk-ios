@@ -1,13 +1,11 @@
-
-
 import UIKit
 
 public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
-    
+
     internal var firstName: String? {
         return textField._text
     }
-    
+
     override func xibSetup() {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
@@ -28,11 +26,9 @@ public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
             return text.isValidNonDecimalString
         }
     }
-    
+
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard string.isValidNonDecimalString == true || string.isEmpty else { return false }
         return super.textField(textField, shouldChangeCharactersIn: range, replacementString: string)
     }
 }
-
-

@@ -5,45 +5,43 @@
 //  Created by Evangelos Pittas on 13/6/23.
 //
 
-
-
 import SafariServices
 import UIKit
 
 extension PrimerHeadlessUniversalCheckout {
-    
+
     public class VaultManager: NSObject {
-        
+
         var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?
         private(set) var paymentMethodTokenData: PrimerPaymentMethodTokenData?
         private(set) var paymentCheckoutData: PrimerCheckoutData?
         private(set) var resumePaymentId: String?
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
-        
+
         // MARK: Public functions
-        
+
         public override init() {
             PrimerInternal.shared.sdkIntegrationType = .headless
             PrimerInternal.shared.intent = .checkout
-            
+
             let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
                 properties: SDKEventProperties(
                     name: "\(Self.self).\(#function)",
                     params: nil))
             Analytics.Service.record(events: [sdkEvent])
-            
+
             super.init()
         }
-        
+
         public func configure() throws {
             try self.validate()
         }
-        
+
         internal func validateAdditionalDataSynchronously(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData) -> [Error]? {
             var errors: [Error] = []
-            
+
             guard let vaultedPaymentMethod = self.vaultedPaymentMethods?.first(where: { $0.id == vaultedPaymentMethodId }) else {
                 let err = PrimerError.invalidVaultedPaymentMethodId(
                     vaultedPaymentMethodId: vaultedPaymentMethodId,
@@ -53,10 +51,10 @@ extension PrimerHeadlessUniversalCheckout {
                 errors.append(err)
                 return errors
             }
-            
+
             if vaultedPaymentMethod.paymentMethodType == "PAYMENT_CARD" {
                 let cardNetwork = CardNetwork(cardNetworkStr: vaultedPaymentMethod.paymentInstrumentData.binData?.network ?? "")
-                
+
                 if let vaultedCardAdditionalData = vaultedPaymentMethodAdditionalData as? PrimerVaultedCardAdditionalData {
                     if vaultedCardAdditionalData.cvv.isEmpty {
                         let err = PrimerValidationError.invalidCvv(
@@ -69,7 +67,7 @@ extension PrimerHeadlessUniversalCheckout {
                             ],
                             diagnosticsId: UUID().uuidString)
                         errors.append(err)
-    
+
                     } else if !vaultedCardAdditionalData.cvv.isValidCVV(cardNetwork: cardNetwork) {
                         let err = PrimerValidationError.invalidCvv(
                             message: "CVV is not valid.",
@@ -81,11 +79,11 @@ extension PrimerHeadlessUniversalCheckout {
                             ],
                             diagnosticsId: UUID().uuidString)
                         errors.append(err)
-                        
+
                     }
-                    
+
                     return errors.isEmpty ? nil : errors
-                    
+
                 } else {
                     let err = PrimerValidationError.vaultedPaymentMethodAdditionalDataMismatch(
                         paymentMethodType: vaultedPaymentMethod.paymentMethodType,
@@ -106,7 +104,7 @@ extension PrimerHeadlessUniversalCheckout {
                 return nil
             }
         }
-        
+
         public func validate(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData, completion: @escaping (_ errors: [Error]?) -> Void) {
             DispatchQueue.global(qos: .userInteractive).async {
                 let errors = self.validateAdditionalDataSynchronously(vaultedPaymentMethodId: vaultedPaymentMethodId, vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
@@ -115,10 +113,10 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         public func fetchVaultedPaymentMethods(completion: @escaping (_ vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?, _ error: Error?) -> Void) {
             let vaultService = VaultService()
-            
+
             firstly {
                 vaultService.fetchVaultedPaymentMethods()
             }
@@ -134,7 +132,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         public func deleteVaultedPaymentMethod(id: String, completion: @escaping (_ error: Error?) -> Void) {
             guard let vaultedPaymentMethods = self.vaultedPaymentMethods,
                vaultedPaymentMethods.contains(where: { $0.id == id }) else {
@@ -143,15 +141,15 @@ extension PrimerHeadlessUniversalCheckout {
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
-                
+
                 DispatchQueue.main.async {
                     completion(err)
                 }
                 return
             }
-            
+
             let vaultService = VaultService()
-            
+
             firstly {
                 vaultService.deleteVaultedPaymentMethod(with: id)
             }
@@ -166,7 +164,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         public func startPaymentFlow(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData? = nil) {
             guard let vaultedPaymentMethod = self.vaultedPaymentMethods?.first(where: { $0.id == vaultedPaymentMethodId }) else {
                 let err = PrimerError.invalidVaultedPaymentMethodId(
@@ -174,20 +172,20 @@ extension PrimerHeadlessUniversalCheckout {
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
-                
+
                 DispatchQueue.main.async {
-                    PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
+                    PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { _ in
                         // No need to do anything
                     }
                 }
                 return
             }
-            
+
             if let vaultedPaymentMethodAdditionalData = vaultedPaymentMethodAdditionalData {
                 if let errors = self.validateAdditionalDataSynchronously(vaultedPaymentMethodId: vaultedPaymentMethodId, vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData) {
                     DispatchQueue.main.async {
                         var primerError: PrimerErrorProtocol?
-                        
+
                         if errors.count == 1 {
                             if let primerErr = errors.first as? PrimerValidationError {
                                 primerError = primerErr
@@ -195,7 +193,7 @@ extension PrimerHeadlessUniversalCheckout {
                                 primerError = primerErr
                             }
                         }
-                        
+
                         if primerError == nil {
                             let primerErr = PrimerError.underlyingErrors(
                                 errors: errors,
@@ -203,17 +201,17 @@ extension PrimerHeadlessUniversalCheckout {
                                 diagnosticsId: UUID().uuidString)
                             primerError = primerErr
                         }
-                        
-                        PrimerDelegateProxy.primerDidFailWithError(primerError!, data: self.paymentCheckoutData) { decision in
+
+                        PrimerDelegateProxy.primerDidFailWithError(primerError!, data: self.paymentCheckoutData) { _ in
                             // No need to do anything
                         }
                     }
                     return
                 }
             }
-            
+
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: vaultedPaymentMethod.paymentMethodType)
-            
+
             let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {
                 tokenizationService.exchangePaymentMethodToken(vaultedPaymentMethod.id, vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
@@ -234,7 +232,7 @@ extension PrimerHeadlessUniversalCheckout {
                             }
                             .done { checkoutData in
                                 self.paymentCheckoutData = checkoutData
-                                
+
                                 DispatchQueue.main.async {
                                     if PrimerSettings.current.paymentHandling == .auto {
                                         guard let checkoutData = self.paymentCheckoutData, PrimerSettings.current.paymentHandling == .auto else {
@@ -243,12 +241,12 @@ extension PrimerHeadlessUniversalCheckout {
                                                 userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                                                 diagnosticsId: UUID().uuidString)
                                             ErrorHandler.handle(error: err)
-                                            PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
+                                            PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { _ in
                                                 // No need to pass anything
                                             }
                                             return
                                         }
-                                        
+
                                         PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                                     }
                                 }
@@ -256,7 +254,7 @@ extension PrimerHeadlessUniversalCheckout {
                             .catch { err in
                                 DispatchQueue.main.async {
                                     var primerError: PrimerErrorProtocol
-                                    
+
                                     if let primerErr = err as? PrimerErrorProtocol {
                                         primerError = primerErr
                                     } else {
@@ -265,8 +263,8 @@ extension PrimerHeadlessUniversalCheckout {
                                             userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                                             diagnosticsId: UUID().uuidString)
                                     }
-                                    
-                                    PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { decision in
+
+                                    PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { _ in
                                         // No need to pass anything
                                     }
                                 }
@@ -279,12 +277,12 @@ extension PrimerHeadlessUniversalCheckout {
                                         userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                                         diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
-                                    PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
+                                    PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { _ in
                                         // No need to pass anything
                                     }
                                     return
                                 }
-                                
+
                                 PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                             }
                         }
@@ -292,7 +290,7 @@ extension PrimerHeadlessUniversalCheckout {
                     .catch { err in
                         DispatchQueue.main.async {
                             var primerError: PrimerErrorProtocol
-                            
+
                             if let primerErr = err as? PrimerErrorProtocol {
                                 primerError = primerErr
                             } else {
@@ -301,8 +299,8 @@ extension PrimerHeadlessUniversalCheckout {
                                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                                     diagnosticsId: UUID().uuidString)
                             }
-                            
-                            PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { decision in
+
+                            PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { _ in
                                 // No need to pass anything
                             }
                         }
@@ -316,12 +314,12 @@ extension PrimerHeadlessUniversalCheckout {
                                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                                     diagnosticsId: UUID().uuidString)
                                 ErrorHandler.handle(error: err)
-                                PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { decision in
+                                PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { _ in
                                     // No need to pass anything
                                 }
                                 return
                             }
-                            
+
                             PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                         }
                     }
@@ -330,7 +328,7 @@ extension PrimerHeadlessUniversalCheckout {
             .catch { err in
                 DispatchQueue.main.async {
                     var primerError: PrimerErrorProtocol
-                    
+
                     if let primerErr = err as? PrimerErrorProtocol {
                         primerError = primerErr
                     } else {
@@ -339,8 +337,8 @@ extension PrimerHeadlessUniversalCheckout {
                             userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                             diagnosticsId: UUID().uuidString)
                     }
-                    
-                    PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { decision in
+
+                    PrimerDelegateProxy.primerDidFailWithError(primerError, data: self.paymentCheckoutData) { _ in
                         // No need to pass anything
                     }
                 }
@@ -348,7 +346,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         // MARK: Private functions
-        
+
         private func validate() throws {
             guard PrimerAPIConfigurationModule.decodedJWTToken != nil,
                   PrimerAPIConfigurationModule.apiConfiguration != nil
@@ -357,7 +355,7 @@ extension PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 throw err
             }
-            
+
             guard let _ = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id else {
                 let err = PrimerError.invalidClientSessionValue(
                     name: "customer.id",
@@ -369,7 +367,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw err
             }
         }
-        
+
         private func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
             return Promise { seal in
                 if PrimerSettings.current.paymentHandling == .manual {
@@ -378,10 +376,10 @@ extension PrimerHeadlessUniversalCheckout {
                             switch resumeType {
                             case .succeed:
                                 seal.fulfill(nil)
-                                
+
                             case .continueWithNewClientToken(let newClientToken):
                                 let apiConfigurationModule = PrimerAPIConfigurationModule()
-                                
+
                                 firstly {
                                     apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
                                 }
@@ -391,13 +389,13 @@ extension PrimerHeadlessUniversalCheckout {
                                         ErrorHandler.handle(error: err)
                                         throw err
                                     }
-                                    
+
                                     seal.fulfill(decodedJWTToken)
                                 }
                                 .catch { err in
                                     seal.reject(err)
                                 }
-                                
+
                             case .fail(let message):
                                 var merchantErr: Error!
                                 if let message = message {
@@ -408,12 +406,12 @@ extension PrimerHeadlessUniversalCheckout {
                                 }
                                 seal.reject(merchantErr)
                             }
-                            
+
                         } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                             switch resumeDecisionType {
                             case .continueWithNewClientToken(let newClientToken):
                                 let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
-                                
+
                                 firstly {
                                     apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
                                 }
@@ -423,22 +421,22 @@ extension PrimerHeadlessUniversalCheckout {
                                         ErrorHandler.handle(error: err)
                                         throw err
                                     }
-                                    
+
                                     seal.fulfill(decodedJWTToken)
                                 }
                                 .catch { err in
                                     seal.reject(err)
                                 }
-                                
+
                             case .complete:
                                 seal.fulfill(nil)
                             }
-                            
+
                         } else {
                             precondition(false)
                         }
                     }
-                    
+
                 } else {
                     guard let token = paymentMethodTokenData.token else {
                         let err = PrimerError.invalidClientToken(
@@ -448,7 +446,7 @@ extension PrimerHeadlessUniversalCheckout {
                         seal.reject(err)
                         return
                     }
-                    
+
                     firstly {
                         self.handleCreatePaymentEvent(token)
                     }
@@ -457,13 +455,13 @@ extension PrimerHeadlessUniversalCheckout {
                             let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                             throw err
                         }
-                        
+
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse!))
                         self.resumePaymentId = paymentResponse!.id
-                        
+
                         if let requiredAction = paymentResponse!.requiredAction {
                             let apiConfigurationModule = PrimerAPIConfigurationModule()
-                            
+
                             firstly {
                                 apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
                             }
@@ -473,13 +471,13 @@ extension PrimerHeadlessUniversalCheckout {
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
-                                
+
                                 seal.fulfill(decodedJWTToken)
                             }
                             .catch { err in
                                 seal.reject(err)
                             }
-                            
+
                         } else {
                             seal.fulfill(nil)
                         }
@@ -490,7 +488,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
             return Promise { seal in
                 if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
@@ -501,7 +499,7 @@ extension PrimerHeadlessUniversalCheckout {
                         seal.reject(containerErr)
                         return
                     }
-                    
+
                     let threeDSService = ThreeDSService()
                     threeDSService.perform3DS(
                         paymentMethodTokenData: paymentMethodTokenData,
@@ -510,31 +508,31 @@ extension PrimerHeadlessUniversalCheckout {
                                 switch result {
                                 case .success(let resumeToken):
                                     seal.fulfill(resumeToken)
-                                    
+
                                 case .failure(let err):
                                     seal.reject(err)
                                 }
                             }
                         }
-                    
+
                 } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
                     if let redirectUrlStr = decodedJWTToken.redirectUrl,
                        let redirectUrl = URL(string: redirectUrlStr),
                        let statusUrlStr = decodedJWTToken.statusUrl,
                        let statusUrl = URL(string: statusUrlStr),
                        decodedJWTToken.intent != nil {
-                        
+
                         DispatchQueue.main.async {
                             PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                         }
-                        
+
                         var pollingModule: PollingModule? = PollingModule(url: statusUrl)
-                        
+
                         firstly {
                             self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                         }
                         .then { () -> Promise<String> in
-                            self.webViewCompletion = { (id, err) in
+                            self.webViewCompletion = { (_, err) in
                                 if let err = err {
                                     pollingModule?.cancel(withError: err)
                                     pollingModule = nil
@@ -548,7 +546,7 @@ extension PrimerHeadlessUniversalCheckout {
                         .ensure {
                             DispatchQueue.main.async { [weak self] in
                                 PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
-                                
+
                                 self?.webViewCompletion = nil
                                 self?.webViewController?.dismiss(animated: true, completion: { [weak self] in
                                     guard let strongSelf = self else { return }
@@ -564,36 +562,36 @@ extension PrimerHeadlessUniversalCheckout {
                                 ErrorHandler.handle(error: err)
                                 pollingModule?.cancel(withError: err)
                             }
-                            
+
                             pollingModule = nil
                             seal.reject(err)
                             PrimerInternal.shared.dismiss()
                         }
-                        
+
                     } else {
                         let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
                     }
-                    
+
                 } else if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
                     if let statusUrlStr = decodedJWTToken.statusUrl,
                        let statusUrl = URL(string: statusUrlStr),
                        decodedJWTToken.intent != nil {
-                        
+
                         if let redirectUrlStr = decodedJWTToken.redirectUrl,
                            let redirectUrl = URL(string: redirectUrlStr) {
                             DispatchQueue.main.async {
                                 PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                             }
-                            
+
                             var pollingModule: PollingModule? = PollingModule(url: statusUrl)
-                            
+
                             firstly {
                                 self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                             }
                             .then { () -> Promise<String> in
-                                self.webViewCompletion = { (id, err) in
+                                self.webViewCompletion = { (_, err) in
                                     if let err = err {
                                         pollingModule?.cancel(withError: err)
                                         pollingModule = nil
@@ -612,15 +610,15 @@ extension PrimerHeadlessUniversalCheckout {
                                     ErrorHandler.handle(error: err)
                                     pollingModule?.cancel(withError: err)
                                 }
-                                
+
                                 pollingModule = nil
                                 seal.reject(err)
                                 PrimerInternal.shared.dismiss()
                             }
-                            
+
                         } else {
                             let pollingModule: PollingModule? = PollingModule(url: statusUrl)
-                            
+
                             firstly {
                                 pollingModule!.start()
                             }
@@ -632,7 +630,7 @@ extension PrimerHeadlessUniversalCheckout {
                                 PrimerInternal.shared.dismiss()
                             }
                         }
-                        
+
                     } else {
                         let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         seal.reject(error)
@@ -645,7 +643,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?> {
             return Promise { seal in
                 if PrimerSettings.current.paymentHandling == .manual {
@@ -661,28 +659,28 @@ extension PrimerHeadlessUniversalCheckout {
                                     merchantErr = NSError.emptyDescriptionError
                                 }
                                 seal.reject(merchantErr)
-                                
+
                             case .succeed:
                                 seal.fulfill(nil)
-                                
+
                             case .continueWithNewClientToken:
                                 seal.fulfill(nil)
                             }
-                            
+
                         } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                             switch resumeDecisionType {
-                            case .continueWithNewClientToken(_):
+                            case .continueWithNewClientToken:
                                 seal.fulfill(self.paymentCheckoutData)
-                                
+
                             case .complete:
                                 seal.fulfill(self.paymentCheckoutData)
                             }
-                            
+
                         } else {
                             precondition(false)
                         }
                     }
-                    
+
                 } else {
                     guard let resumePaymentId = self.resumePaymentId else {
                         let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -690,7 +688,7 @@ extension PrimerHeadlessUniversalCheckout {
                         seal.reject(resumePaymentIdError)
                         return
                     }
-                    
+
                     firstly {
                         self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                     }
@@ -700,7 +698,7 @@ extension PrimerHeadlessUniversalCheckout {
                             ErrorHandler.handle(error: err)
                             throw err
                         }
-                        
+
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                         seal.fulfill(self.paymentCheckoutData)
                     }
@@ -710,19 +708,19 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
             return Promise { seal in
                 let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
                 createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
-                    
+
                     if let error = error {
                         if let paymentResponse {
                             self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                         }
-                        
+
                         seal.reject(error)
-                        
+
                     } else if let paymentResponse = paymentResponse {
                         if paymentResponse.id == nil {
                             let err = PrimerError.paymentFailed(
@@ -736,7 +734,7 @@ extension PrimerHeadlessUniversalCheckout {
                                 diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
-                            
+
                         } else if paymentResponse.status == .failed {
                             let err = PrimerError.failedToProcessPayment(
                                 paymentId: paymentResponse.id ?? "nil",
@@ -750,11 +748,11 @@ extension PrimerHeadlessUniversalCheckout {
                                 diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
-                            
+
                         } else {
                             seal.fulfill(paymentResponse)
                         }
-                        
+
                     } else {
                         let err = PrimerError.paymentFailed(
                             description: "Failed to create payment",
@@ -771,19 +769,19 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
             return Promise { seal in
                 let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
                 createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
-                    
+
                     if let error = error {
                         if let paymentResponse {
                             self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                         }
-                        
+
                         seal.reject(error)
-                        
+
                     } else if let paymentResponse = paymentResponse {
                         if paymentResponse.id == nil {
                             let err = PrimerError.paymentFailed(
@@ -797,7 +795,7 @@ extension PrimerHeadlessUniversalCheckout {
                                 diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
-                            
+
                         } else if paymentResponse.status == .failed {
                             let err = PrimerError.failedToProcessPayment(
                                 paymentId: paymentResponse.id ?? "nil",
@@ -811,11 +809,11 @@ extension PrimerHeadlessUniversalCheckout {
                                 diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
-                            
+
                         } else {
                             seal.fulfill(paymentResponse)
                         }
-                        
+
                     } else {
                         let err = PrimerError.paymentFailed(
                             description: "Failed to resume payment",
@@ -832,18 +830,18 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
             return Promise { seal in
                 self.webViewController = SFSafariViewController(url: redirectUrl)
                 self.webViewController!.delegate = self
-                
-                self.webViewCompletion = { (id, err) in
+
+                self.webViewCompletion = { (_, err) in
                     if let err = err {
                         seal.reject(err)
                     }
                 }
-                
+
                 DispatchQueue.main.async {
                     if PrimerUIManager.primerRootViewController == nil {
                         firstly {
@@ -864,7 +862,7 @@ extension PrimerHeadlessUniversalCheckout {
                             }
                         })
                     }
-                    
+
                 }
             }
         }
@@ -872,7 +870,7 @@ extension PrimerHeadlessUniversalCheckout {
 }
 
 extension PrimerHeadlessUniversalCheckout.VaultManager: SFSafariViewControllerDelegate {
-    
+
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion = webViewCompletion {
             // Cancelled
@@ -883,7 +881,7 @@ extension PrimerHeadlessUniversalCheckout.VaultManager: SFSafariViewControllerDe
 
         self.webViewCompletion = nil
     }
-    
+
     public func safariViewController(_ controller: SFSafariViewController, initialLoadDidRedirectTo URL: URL) {
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
             PrimerUIManager.dismissPrimerUI(animated: true)
@@ -892,15 +890,15 @@ extension PrimerHeadlessUniversalCheckout.VaultManager: SFSafariViewControllerDe
 }
 
 extension PrimerHeadlessUniversalCheckout {
-    
+
     public class VaultedPaymentMethod: Codable {
-        
+
         public let id: String
         public let paymentMethodType: String
         public let paymentInstrumentType: PaymentInstrumentType
         public let paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData
         public let analyticsId: String
-        
+
         init(
             id: String,
             paymentMethodType: String,
@@ -918,7 +916,7 @@ extension PrimerHeadlessUniversalCheckout {
 }
 
 extension PrimerPaymentMethodTokenData {
-    
+
     var vaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? {
         guard let id = self.id,
               let paymentMethodType = self.paymentMethodType,
@@ -927,7 +925,7 @@ extension PrimerPaymentMethodTokenData {
         else {
             return nil
         }
-            
+
         return PrimerHeadlessUniversalCheckout.VaultedPaymentMethod(
             id: id,
             paymentMethodType: paymentMethodType,
@@ -937,5 +935,3 @@ extension PrimerPaymentMethodTokenData {
         )
     }
 }
-
-

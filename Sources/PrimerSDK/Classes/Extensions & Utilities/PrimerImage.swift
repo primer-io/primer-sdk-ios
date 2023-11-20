@@ -5,18 +5,16 @@
 //  Created by Evangelos Pittas on 20/10/21.
 //
 
-
-
 import UIKit
 
 internal enum PrimerImage {
-    
+
     case amexCardIcon, appleIcon, backIcon, bankcontactCardIcon, bankIcon, backIconRTL, cameraIcon,
          checkmarkIcon, creditCardIcon, deleteIcon, discoverCardIcon, errorIcon,
          forwardArrowIcon, genericCardIcon, jcbCardIcon, klarnaLogo, lockIcon,
          masterCardIcon, mobileIcon, payPalLogoCopy, payPalLogo, rightArrowIcon,
          successIcon, visaIcon
-    
+
     var image: UIImage? {
         switch self {
         case .amexCardIcon:
@@ -70,5 +68,3 @@ internal enum PrimerImage {
         }
     }
 }
-
-

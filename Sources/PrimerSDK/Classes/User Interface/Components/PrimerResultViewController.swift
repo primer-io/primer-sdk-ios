@@ -5,12 +5,10 @@
 //  Created by Evangelos on 3/2/22.
 //
 
-
-
 import UIKit
 
 internal class PrimerResultViewController: PrimerViewController {
-    
+
     internal enum ScreenType {
         case success, failure
     }
@@ -29,7 +27,7 @@ internal class PrimerResultViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         let viewEvent = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -46,10 +44,10 @@ internal class PrimerResultViewController: PrimerViewController {
 
         let successImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)
         successImage?.accessibilityIdentifier = "check-circle"
-        
+
         let failureImage = UIImage(named: "x-circle", in: Bundle.primerResources, compatibleWith: nil)
         failureImage?.accessibilityIdentifier = "x-circle"
-        
+
         let img = (screenType == .success) ? successImage : failureImage
         let imgView = UIImageView(image: img)
         imgView.contentMode = .scaleAspectFit
@@ -58,7 +56,7 @@ internal class PrimerResultViewController: PrimerViewController {
         imgView.heightAnchor.constraint(equalToConstant: 20.0).isActive = true
         imgView.widthAnchor.constraint(equalToConstant: 20.0).isActive = true
         imgView.accessibilityIdentifier = img?.accessibilityIdentifier
-                
+
         resultView = PrimerResultComponentView(frame: .zero, imageView: imgView, message: message, loadingIndicator: nil)
         view.addSubview(resultView)
         resultView.translatesAutoresizingMaskIntoConstraints = false
@@ -79,5 +77,3 @@ internal class PrimerResultViewController: PrimerViewController {
     }
 
 }
-
-

@@ -5,14 +5,12 @@
 //  Created by Dario Carlomagno on 08/06/22.
 //
 
-
-
 import UIKit
 
 class PrimerCountryField: PrimerCardFormFieldProtocol {
-    
+
     internal static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
+
     static func countryContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView, openCountriesListPressed: @escaping PrimerAction) -> PrimerCustomFieldView {
         let countryFieldContainerView = PrimerCustomFieldView()
         countryFieldContainerView.fieldView = primerTextFieldView
@@ -24,7 +22,7 @@ class PrimerCountryField: PrimerCardFormFieldProtocol {
         }
         return countryFieldContainerView
     }
-    
+
     static func countryFieldViewWithDelegate(_ delegate: PrimerTextFieldViewDelegate?) -> PrimerCountryFieldView {
         let countryFieldView = PrimerCountryFieldView()
         countryFieldView.placeholder = Strings.CardFormView.CountryCode.placeholder
@@ -34,6 +32,3 @@ class PrimerCountryField: PrimerCardFormFieldProtocol {
         return countryFieldView
     }
 }
-
-
-

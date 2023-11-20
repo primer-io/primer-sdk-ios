@@ -5,12 +5,10 @@
 //  Created by Evangelos Pittas on 2/4/21.
 //
 
-
-
 import Foundation
 
 extension PrimerAPIClient {
-    
+
     func begin3DSAuth(clientToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void) {
         let endpoint = PrimerAPI.begin3DSRemoteAuth(clientToken: clientToken, paymentMethodTokenData: paymentMethodTokenData, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
         networkService.request(endpoint) { (result: Result<ThreeDS.BeginAuthResponse, Error>) in
@@ -22,7 +20,7 @@ extension PrimerAPIClient {
             }
         }
     }
-    
+
     func continue3DSAuth(
         clientToken: DecodedJWTToken,
         threeDSTokenId: String,
@@ -34,12 +32,10 @@ extension PrimerAPIClient {
             switch result {
             case .success(let postAuthResponse):
                 completion(.success(postAuthResponse))
-                
+
             case .failure(let err):
                 completion(.failure(err))
             }
         }
     }
 }
-
-

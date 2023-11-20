@@ -6,8 +6,6 @@
 //  Copyright © 2022 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
@@ -50,6 +48,3 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         wait(for: [expectation], timeout: 30.0)
     }
 }
-
-
-#endif
