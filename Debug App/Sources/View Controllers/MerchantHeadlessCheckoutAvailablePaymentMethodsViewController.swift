@@ -198,8 +198,10 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             self.navigationController?.pushViewController(vc, animated: true)
             #endif
         } else if paymentMethodType == "KLARNA" {
+            #if canImport(PrimerKlarnaSDK)
             let vc = MerchantHeadlessCheckoutKlarnaViewController()
             self.navigationController?.pushViewController(vc, animated: true)
+            #endif
         } else {
             redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
             try? redirectManager?.showPaymentMethod(intent: sessionIntent)

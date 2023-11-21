@@ -9,10 +9,10 @@ target 'Debug App' do
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../'
   pod 'Primer3DS'
-  pod 'PrimerKlarnaSDK'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerNolPaySDK'
   pod 'IQKeyboardManagerSwift'
+  pod 'PrimerKlarnaSDK', :path=>'../../Klarna_SDK'
   
   target 'Debug App Tests' do
     inherit! :search_paths

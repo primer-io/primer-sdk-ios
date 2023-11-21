@@ -52,6 +52,7 @@
 		7F49B29FCC55CF3C5CB6C506 /* InternalCardComponentManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 994AE6760B506D02499AEC90 /* InternalCardComponentManagerTests.swift */; };
 		800B92A57CAAC6471D01A89D /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3D9154BF1E011FED6799CD5 /* CardData.swift */; };
 		8064B65A8F83D5B004D081FD /* PaymentMethodConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752785ACCF65527C239391A8 /* PaymentMethodConfigTests.swift */; };
+		83C188EE2B0CAD340012E4D2 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C188ED2B0CAD340012E4D2 /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
 		85605C241F1CD45BA676D4A7 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9023841AFCE8E3205CB713A /* String+Extensions.swift */; };
 		85EDC3F175D699BFF6BD48EF /* ViewController+Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CCCB917D1881082ED75975 /* ViewController+Primer.swift */; };
 		8B51ABC1C475342A047D5FA6 /* Networking+Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E08473D1DF8C47A6EB61B2 /* Networking+Models.swift */; };
@@ -197,6 +198,7 @@
 		7A3E75CD834937EF85DE1C14 /* MockVaultCheckoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockVaultCheckoutViewModel.swift; sourceTree = "<group>"; };
 		7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPay88Tests.swift; sourceTree = "<group>"; };
 		7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockModule.swift; sourceTree = "<group>"; };
+		83C188ED2B0CAD340012E4D2 /* MerchantHeadlessCheckoutKlarnaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutKlarnaViewController.swift; sourceTree = "<group>"; };
 		872A0647D4136E27365FB7F8 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
 		8A23886804B13FA754E775D0 /* MockPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		8A3FDC6FE0EB5AB5828D4D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -598,6 +600,7 @@
 		EF5FBE3673FBCB40F55F4DC0 /* New UI */ = {
 			isa = PBXGroup;
 			children = (
+				83C188ED2B0CAD340012E4D2 /* MerchantHeadlessCheckoutKlarnaViewController.swift */,
 				041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */,
 				0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */,
 			);
@@ -892,6 +895,7 @@
 				60F7E716B34BE721651566DA /* Data+Extensions.swift in Sources */,
 				CE5E673A96BB5B96AE5EFC56 /* Range+Extensions.swift in Sources */,
 				85605C241F1CD45BA676D4A7 /* String+Extensions.swift in Sources */,
+				83C188EE2B0CAD340012E4D2 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */,
 				0BB8BB3F9A6AC28A0C107DC8 /* UIStackViewExtensions.swift in Sources */,
 				DE53DA2D0AD108306C92E198 /* UIViewController+API.swift in Sources */,
 				85EDC3F175D699BFF6BD48EF /* ViewController+Primer.swift in Sources */,
