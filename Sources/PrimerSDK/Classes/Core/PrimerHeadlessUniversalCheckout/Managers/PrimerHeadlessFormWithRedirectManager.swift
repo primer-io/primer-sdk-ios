@@ -22,8 +22,10 @@ extension PrimerHeadlessUniversalCheckout {
             guard let tokenizationModelDelegate = PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0 is BankSelectorTokenizationDelegate }) as? BankSelectorTokenizationDelegate  else {
                 return nil
             }
-            return BanksComponent(paymentMethodType: paymentMethodType, tokenizationModelDelegate: tokenizationModelDelegate) {
-                return WebRedirectComponent(paymentMethodType: self.paymentMethodType, tokenizationModelDelegate: tokenizationModelDelegate)
+            return BanksComponent(paymentMethodType: paymentMethodType, tokenizationModelDelegate: tokenizationModelDelegate, createWebRedirectComponent: {
+                WebRedirectComponent(paymentMethodType: self.paymentMethodType, tokenizationModelDelegate: tokenizationModelDelegate)
+            }) { result in
+                print("Did finish with result")
             }
         }
     }

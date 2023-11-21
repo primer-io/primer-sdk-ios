@@ -25,12 +25,14 @@ public class BanksComponent: PrimerHeadlessFormComponent {
     private(set) var banks: [IssuingBank] = []
     private(set) var bankId: String?
     private let createWebRedirectComponent: () -> WebRedirectComponent
+    private let onFinished: (Bool) -> (Void)
     private let tokenizationModelDelegate: BankSelectorTokenizationDelegate
 
-    init(paymentMethodType: PrimerPaymentMethodType, tokenizationModelDelegate: BankSelectorTokenizationDelegate, createWebRedirectComponent: @escaping () -> WebRedirectComponent) {
+    init(paymentMethodType: PrimerPaymentMethodType, tokenizationModelDelegate: BankSelectorTokenizationDelegate, createWebRedirectComponent: @escaping () -> WebRedirectComponent, onFinished: @escaping (Bool) -> (Void)) {
         self.paymentMethodType = paymentMethodType
         self.tokenizationModelDelegate = tokenizationModelDelegate
         self.createWebRedirectComponent = createWebRedirectComponent
+        self.onFinished = onFinished
     }
     
     public func updateCollectedData(collectableData: BanksCollectableData) {
