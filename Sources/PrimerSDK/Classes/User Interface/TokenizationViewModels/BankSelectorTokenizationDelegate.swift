@@ -6,19 +6,26 @@
 //
 
 import Foundation
-protocol BankSelectorTokenizationDelegate {
+
+protocol TokenizationDelegate {
+    func setup()
+    func cleanup()
+    func cancel()
+}
+
+protocol BankSelectorTokenizationDelegate: TokenizationDelegate {
     var paymentMethodType: PrimerPaymentMethodType { get set }
-    var didFinishPayment: ((Error?) -> Void)? { get set }
-    var willPresentPaymentMethodUI: (() -> Void)? { get set }
-    var didPresentPaymentMethodUI: (() -> Void)? { get set }
-    var didDismissPaymentMethodUI: (() -> Void)? { get set }
-    var didCancel: (() -> Void)? { get set }
     func validateReturningPromise() -> Promise<Void>
     func retrieveListOfBanks() -> Promise<[AdyenBank]>
     func filterBanks(query: String) -> [AdyenBank]
     func tokenize(bankId: String) -> Promise<Void>
+
+}
+
+protocol WebRedirectTokenizationDelegate: TokenizationDelegate {
+    var didFinishPayment: ((Error?) -> Void)? { get set }
+    var didPresentPaymentMethodUI: (() -> Void)? { get set }
+    var didDismissPaymentMethodUI: (() -> Void)? { get set }
+    var didCancel: (() -> Void)? { get set }
     func handlePaymentMethodTokenData() -> Promise<Void>
-    func cancel()
-    func cleanup()
-    func subscribeToNotifications()
 }

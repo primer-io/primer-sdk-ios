@@ -48,8 +48,9 @@ final class BankComponentTests: XCTestCase {
     }
 
     private func webRedirectComponent(tokenizationModelDelegate: BankSelectorTokenizationDelegate) -> WebRedirectComponent {
-        self.webRedirectComponent = WebRedirectComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: tokenizationModelDelegate)
-        return self.webRedirectComponent!
+        let webRedirectComponent = WebRedirectComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: MockWebRedirectTokenizationModel())
+        self.webRedirectComponent = webRedirectComponent
+        return webRedirectComponent
     }
 
     func testInit() {
@@ -227,6 +228,11 @@ extension BankComponentTests: PrimerHeadlessValidatableDelegate {
 }
 
 private class MockBankSelectorTokenizationModel: BankSelectorTokenizationDelegate {
+    var didFinishPayment: ((Error?) -> Void)?
+    var didPresentPaymentMethodUI: (() -> Void)?
+    var didDismissPaymentMethodUI: (() -> Void)?
+    var didCancel: (() -> Void)?
+
     var paymentMethodType: PrimerPaymentMethodType
     var didCallFilter: Bool = false
     var didCallCancel: Bool = false
@@ -273,7 +279,9 @@ private class MockBankSelectorTokenizationModel: BankSelectorTokenizationDelegat
             useSuccess ? seal.fulfill() : seal.reject(PrimerError.paymentFailed(description: "payment_failed", userInfo: nil, diagnosticsId: UUID().uuidString))
         }
     }
+    func setup() {}
     func cancel() {
         didCallCancel = true
     }
+    func cleanup() {}
 }

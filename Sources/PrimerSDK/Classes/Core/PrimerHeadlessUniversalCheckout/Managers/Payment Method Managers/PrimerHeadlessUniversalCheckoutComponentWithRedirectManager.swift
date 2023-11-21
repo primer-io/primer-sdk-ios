@@ -13,12 +13,15 @@ extension PrimerHeadlessUniversalCheckout {
                   paymentMethodType == .adyenIDeal else {
                 return nil
             }
-            // guard unsupportedPaymentMethod
             guard let tokenizationModelDelegate = PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0 is BankSelectorTokenizationDelegate }) as? BankSelectorTokenizationDelegate  else {
                 return nil
             }
+            guard let webDelegate = PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0 is WebRedirectTokenizationDelegate }) as? WebRedirectTokenizationDelegate  else {
+                return nil
+            }
             return DefaultBanksComponent(paymentMethodType: paymentMethodType, tokenizationModelDelegate: tokenizationModelDelegate) {
-                WebRedirectComponent(paymentMethodType: paymentMethodType, tokenizationModelDelegate: tokenizationModelDelegate)
+                webDelegate.setup()
+                return WebRedirectComponent(paymentMethodType: paymentMethodType, tokenizationModelDelegate: webDelegate)
             } as? PrimerHeadlessMainComponent
         }
     }

@@ -11,5 +11,5 @@ enum WebStep: PrimerHeadlessStep {
     case loaded
     case dismissed
     case success
-    case error
+    case failure
 }

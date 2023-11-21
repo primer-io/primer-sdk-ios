@@ -12,19 +12,18 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
     
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
-    private var tokenizationModelDelegate: BankSelectorTokenizationDelegate
+    private var tokenizationModelDelegate: WebRedirectTokenizationDelegate
     private(set) var step: WebStep = .loading {
         didSet {
             logStep()
         }
     }
 
-    init(paymentMethodType: PrimerPaymentMethodType, tokenizationModelDelegate: BankSelectorTokenizationDelegate) {
+    init(paymentMethodType: PrimerPaymentMethodType, tokenizationModelDelegate: WebRedirectTokenizationDelegate) {
         self.paymentMethodType = paymentMethodType
         self.tokenizationModelDelegate = tokenizationModelDelegate
         self.stepDelegate = self
         self.errorDelegate = self
-        self.tokenizationModelDelegate.subscribeToNotifications()
         self.tokenizationModelDelegate.didPresentPaymentMethodUI = { [weak self] in
             guard let self else { return }
             self.step = .loaded
@@ -35,7 +34,7 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
         }
         self.tokenizationModelDelegate.didFinishPayment = { [weak self] error in
             guard let self else { return }
-            self.step = error != nil ? .success : .error
+            self.step = error == nil ? .success : .failure
         }
     }
 
@@ -83,7 +82,7 @@ extension WebStep {
         case .loaded: return "Web redirect has loaded"
         case .dismissed: return "Payment dismissed by user"
         case .success: return "Payment was successfull"
-        case .error: return "Payment was not successfull"
+        case .failure: return "Payment was not successfull"
         }
     }
 }

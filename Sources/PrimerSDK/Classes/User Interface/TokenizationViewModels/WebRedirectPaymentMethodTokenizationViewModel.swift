@@ -57,12 +57,12 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             self.cleanup()
         }
         
-        subscribeToNotifications()
+        setup()
         
         super.start()
     }
 
-    func subscribeToNotifications() {
+    func setup() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeRedirect, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
     }

@@ -367,3 +367,5 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationDelegate {
             }
     }
 }
+
+extension BankSelectorTokenizationViewModel: WebRedirectTokenizationDelegate {}
