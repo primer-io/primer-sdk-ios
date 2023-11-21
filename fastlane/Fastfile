@@ -26,7 +26,7 @@ app_output_archive_path = "/var/tmp/Primer.io_Debug_App.xcarchive"
 
 # Utils
 sdk_version_name_source_branch = ENV['SOURCE_BRANCH']
-source_branch_trimmed = ENV['SOURCE_BRANCH'].gsub("refs/heads/", "")
+source_branch_trimmed = ENV['SOURCE_BRANCH']&.gsub("refs/heads/", "")
 build_type = ENV['BUILD_TYPE'] || "preview"
 
 podfile_path = "Debug App/Podfile"
@@ -190,6 +190,7 @@ platform :ios do
 
   desc 'Common build pre-action'
   private_lane :common_pre_build_action do
+    next unless ENV["CI"]
 
     set_version_and_build_number
 
