@@ -37,6 +37,10 @@ internal class PrimerInternal: LogReporter {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+
+    static var isInHeadlessMode: Bool {
+        PrimerInternal.shared.sdkIntegrationType == .headless
+    }
     
     fileprivate init() {
         NotificationCenter.default.removeObserver(self)

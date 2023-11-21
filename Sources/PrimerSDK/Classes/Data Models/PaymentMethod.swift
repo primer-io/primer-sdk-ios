@@ -332,7 +332,8 @@ extension PrimerPaymentMethod {
         case nativeSdk      = "NATIVE_SDK"
         case webRedirect    = "WEB_REDIRECT"
         case iPay88Sdk      = "IPAY88_SDK"
-        
+        case formWithRedirect = "FORM_WITH_REDIRECT"
+
         var isEnabled: Bool {
             return true
         }

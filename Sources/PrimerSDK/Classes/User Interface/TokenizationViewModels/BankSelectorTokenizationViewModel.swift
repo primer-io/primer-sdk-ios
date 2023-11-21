@@ -62,7 +62,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }()
     
     private var selectedBank: AdyenBank?
-    
+
     override func cancel() {
         self.webViewController = nil
         self.webViewCompletion = nil
@@ -70,8 +70,10 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {
-        DispatchQueue.main.async {
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+        if !PrimerInternal.isInHeadlessMode {
+            DispatchQueue.main.async {
+                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+            }
         }
         
         let event = Analytics.Event(
@@ -310,16 +312,7 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
             dataSource = banks
             return true
         }
-        
-        var bankResults: [AdyenBank] = []
-        
-        for bank in banks {
-            if bank.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
-                bankResults.append(bank)
-            }
-        }
-        
-        dataSource = bankResults
+        dataSource = filterBanks(query: query)
         
         return true
     }
@@ -331,3 +324,39 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
 }
 
 
+extension BankSelectorTokenizationViewModel: BankSelectorTokenizationDelegate {
+    func retrieveListOfBanks() -> Promise<[AdyenBank]> {
+        return Promise { seal in
+            firstly {
+                self.validateReturningPromise()
+            }
+            .then {
+                self.fetchBanks()
+            }
+            .done { banks in
+                self.banks = banks
+                seal.fulfill(banks)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    func filterBanks(query: String) -> [AdyenBank]  {
+        guard !query.isEmpty else {
+            return banks
+        }
+        var bankResults: [AdyenBank]  = []
+        for bank in banks {
+            if bank.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
+                bankResults.append(bank)
+            }
+        }
+        return bankResults
+    }
+    func tokenize(bankId: String) -> Promise<Void> {
+        self.selectedBank = banks.first(where: { $0.id == bankId })
+        // temporary to handover the WebComponent, will be worked in a separate ticket ...
+        return self.performTokenizationStep()
+    }
+}

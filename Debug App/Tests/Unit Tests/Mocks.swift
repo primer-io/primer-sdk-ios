@@ -159,7 +159,7 @@ class Mocks {
 
         static var idealFormWithRedirectPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.idealPaymentMethodId,
-            implementationType: .nativeSdk,
+            implementationType: .formWithRedirect,
             type: Mocks.Static.Strings.idealPaymentMethodId,
             name: Mocks.Static.Strings.idealPaymentMethodName,
             processorConfigId: Mocks.Static.Strings.processorConfigId,

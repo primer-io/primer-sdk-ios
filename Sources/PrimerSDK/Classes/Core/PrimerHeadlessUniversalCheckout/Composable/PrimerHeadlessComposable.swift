@@ -48,7 +48,19 @@ public protocol PrimerHeadlessSteppableDelegate: AnyObject {
     func didReceiveStep(step: PrimerHeadlessStep)
 }
 
-public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent {
+public protocol PrimerHeadlessStartable: AnyObject {
+    func start()
+}
+
+public protocol PrimerHeadlessSubmitable: AnyObject {
+    func submit()
+}
+
+public protocol PrimerHeadlessCancellable: AnyObject {
+    func cancel()
+}
+
+public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent, PrimerHeadlessStartable, PrimerHeadlessSubmitable {
     associatedtype T: PrimerCollectableData
     var errorDelegate: PrimerHeadlessErrorableDelegate? { get set }
     var validationDelegate: PrimerHeadlessValidatableDelegate? { get set }
@@ -56,4 +68,20 @@ public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent {
     func updateCollectedData(collectableData: T)
     func submit()
     func start()
+    func makeAndHandleInvalidValueError(forKey key: String)
+}
+
+// TODO: Ask if we want to keep this private from the sdk, even if it means code duplication
+extension PrimerHeadlessCollectDataComponent {
+    public func makeAndHandleInvalidValueError(forKey key: String) {
+        let error = PrimerError.invalidValue(key: key, value: nil, userInfo: [
+            "file": #file,
+            "class": "\(Self.self)",
+            "function": #function,
+            "line": "\(#line)"
+        ],
+        diagnosticsId: UUID().uuidString)
+        ErrorHandler.handle(error: error)
+        self.errorDelegate?.didReceiveError(error: error)
+    }
 }

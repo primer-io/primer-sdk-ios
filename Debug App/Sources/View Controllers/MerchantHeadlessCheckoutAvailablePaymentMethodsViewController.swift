@@ -206,7 +206,8 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             break
 #endif
         case "ADYEN_IDEAL":
-            assertionFailure("Adyen Ideal via headless not yet implemented")
+            let vc = MerchantHeadlessCheckoutBankViewController()
+            self.navigationController?.pushViewController(vc, animated: true)
         default:
             redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
             try? redirectManager?.showPaymentMethod(intent: sessionIntent)
