@@ -240,6 +240,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 pollingModule.cancel(withError: err)
+                self.didDismissPaymentMethodUI?()
             }
             
             firstly { () -> Promise<String> in

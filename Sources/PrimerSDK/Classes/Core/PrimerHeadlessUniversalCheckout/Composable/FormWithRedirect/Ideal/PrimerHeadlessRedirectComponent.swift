@@ -13,34 +13,31 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     private var tokenizationModelDelegate: WebRedirectTokenizationDelegate
-    private(set) var step: WebStep = .loading {
-        didSet {
-            logStep()
-        }
-    }
+    private(set) var step: WebStep = .loading
 
     init(paymentMethodType: PrimerPaymentMethodType, tokenizationModelDelegate: WebRedirectTokenizationDelegate) {
         self.paymentMethodType = paymentMethodType
         self.tokenizationModelDelegate = tokenizationModelDelegate
         self.stepDelegate = self
         self.errorDelegate = self
-        self.tokenizationModelDelegate.didPresentPaymentMethodUI = { [weak self] in
-            guard let self else { return }
+        self.tokenizationModelDelegate.didPresentPaymentMethodUI = {
             self.step = .loaded
+            self.stepDelegate?.didReceiveStep(step: self.step)
         }
-        self.tokenizationModelDelegate.didDismissPaymentMethodUI = { [weak self] in
-            guard let self else { return }
+        self.tokenizationModelDelegate.didDismissPaymentMethodUI = {
             self.step = .dismissed
+            self.stepDelegate?.didReceiveStep(step: self.step)
         }
-        self.tokenizationModelDelegate.didFinishPayment = { [weak self] error in
-            guard let self else { return }
+        self.tokenizationModelDelegate.didFinishPayment = { error in
             self.step = error == nil ? .success : .failure
+            self.stepDelegate?.didReceiveStep(step: self.step)
             self.tokenizationModelDelegate.cleanup()
         }
     }
 
     func start() {
         step = .loading
+        self.stepDelegate?.didReceiveStep(step: self.step)
     }
 }
 
