@@ -12,7 +12,7 @@ import SwiftUI
 import PrimerSDK
 
 final class MerchantHeadlessCheckoutBankViewController: UIViewController {
-    private lazy var idealManager: PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
+    private lazy var manager: PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
     let paymentMethodType: String = "ADYEN_IDEAL"
 
     private(set) var activityIndicator: UIActivityIndicatorView?
@@ -21,7 +21,7 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let bankComponent = idealManager.provide(paymentMethodType: paymentMethodType) else {
+        guard let bankComponent: any BanksComponent = manager.provide(paymentMethodType: paymentMethodType) else {
             return
         }
         addBanksListViewController()
