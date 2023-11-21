@@ -42,7 +42,7 @@ public class BanksComponent: PrimerHeadlessFormComponent {
                 // todo: here need to figure the tokenization workflow and more refactoring
                 tokenizationModelDelegate.tokenize(bankId: bankId)
                 let redirectComponent = createWebRedirectComponent()
-                stepDelegate?.didReceiveStep(step: BanksStep.webRedirect(component: redirectComponent))
+               // notify
             }
         case .bankFilterText(text: let text):
             let filteredBanks = tokenizationModelDelegate.filterBanks(query: text)
@@ -112,7 +112,6 @@ public class BanksComponent: PrimerHeadlessFormComponent {
         switch nextDataStep {
         case .loading: break
         case .banksRetrieved(banks: _): break
-        case .webRedirect(component: _): break
         }
     }
 

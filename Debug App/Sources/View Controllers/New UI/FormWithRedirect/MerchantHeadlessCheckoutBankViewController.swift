@@ -94,7 +94,6 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
         switch step {
         case .loading: showLoadingOverlay()
         case .banksRetrieved(banks: let banks): renderBanks(banks)
-        case .webRedirect(component: let redirectComponent): handleRedirectComponent(redirectComponent)
         }
     }
 }
@@ -123,9 +122,6 @@ private extension MerchantHeadlessCheckoutBankViewController {
     private func renderBanks(_ banks: [BanksComponent.IssuingBank]) {
         hideLoadingOverlay()
         banksModel.updateBanks(banks)
-    }
-
-    private func handleRedirectComponent(_ redirectComponent: WebRedirectComponent) {
     }
 
     private func showAlert(title: String, message: String) {
