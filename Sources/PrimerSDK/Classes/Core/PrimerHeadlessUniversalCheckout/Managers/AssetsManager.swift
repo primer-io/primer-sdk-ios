@@ -30,6 +30,20 @@ extension PrimerHeadlessUniversalCheckout {
                     result[cardNetwork] = asset
                 }
             }
+            
+            let cardNetworksDescription = supportedCardNetworks.map { $0.rawValue }.joined(separator: ", ")
+            let assetNetworksDescription = result.keys.map { $0.rawValue }.joined(separator: ", ")
+            
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Providing assets for card networks: \(assetNetworksDescription), (requested: \(cardNetworksDescription)",
+                    messageType: .other,
+                    severity: .info
+                )
+            )
+            Analytics.Service.record(event: event)
+            
             return result
         }
         
@@ -44,6 +58,16 @@ extension PrimerHeadlessUniversalCheckout {
             ) else {
                 return nil
             }
+            
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: "Providing single asset for card network: \(cardNetwork.rawValue)",
+                    messageType: .other,
+                    severity: .info
+                )
+            )
+            Analytics.Service.record(event: event)
             
             return PrimerCardNetworkAsset(cardNetwork: cardNetwork, cardNetworkIcon: asset)
         }
