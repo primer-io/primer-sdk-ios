@@ -11,23 +11,30 @@ extension PrimerHeadlessUniversalCheckout {
 
     public class AssetsManager {
         
-        @available(*, deprecated, message: "Use getCardNetworkAssets(for:) instead")
+        @available(*, deprecated, message: "Use getSupportCardNetworkAssets() or getCardNetworkAssets(for:) instead")
         public static func getCardNetworkImage(for cardNetwork: CardNetwork) throws -> UIImage? {
-            if AppState.current.apiConfiguration == nil {
-                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
+            try verifyAPIConfig()
 
             return UIImage(named: "\(cardNetwork.rawValue)-logo-colored", in: Bundle.primerResources, compatibleWith: nil)
         }
         
-        public static func getCardNetworkAsset(for cardNetwork: CardNetwork) throws -> PrimerCardNetworkAsset? {
-            if AppState.current.apiConfiguration == nil {
-                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+        public static func getSupportedCardNetworkAssets() throws -> [CardNetwork: PrimerCardNetworkAsset] {
+            try verifyAPIConfig()
+
+            let supportedCardNetworks = PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.supportedCardNetworks
+            
+            var result: [CardNetwork: PrimerCardNetworkAsset] = [:]
+            
+            try supportedCardNetworks.forEach { cardNetwork in
+                if let asset = try getCardNetworkAsset(for: cardNetwork) {
+                    result[cardNetwork] = asset
+                }
             }
+            return result
+        }
+        
+        public static func getCardNetworkAsset(for cardNetwork: CardNetwork) throws -> PrimerCardNetworkAsset? {
+            try verifyAPIConfig()
             
             let prefix = "\(cardNetwork.rawValue.lowercased())-card-icon-"
             guard let asset = PrimerInternalAsset(
@@ -42,11 +49,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         public static func getPaymentMethodAsset(for paymentMethodType: String) throws -> PrimerPaymentMethodAsset? {
-            if AppState.current.apiConfiguration == nil {
-                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
+            try verifyAPIConfig()
 
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?.first(where: { $0.type == paymentMethodType }) else {
                 return nil
@@ -80,11 +83,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public static func getPaymentMethodAssets() throws -> [PrimerPaymentMethodAsset] {
-            if AppState.current.apiConfiguration == nil {
-                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
+            try verifyAPIConfig()
 
             let hucAvailablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods.compactMap({ $0.paymentMethodType })
 
@@ -125,6 +124,14 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             return paymentMethodAssets
+        }
+        
+        private static func verifyAPIConfig() throws {
+            if AppState.current.apiConfiguration == nil {
+                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
         }
     }
 }
