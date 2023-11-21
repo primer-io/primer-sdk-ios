@@ -52,17 +52,26 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
     
     override func start() {
-        self.didFinishPayment = { err in
-            self.willDismissPaymentMethodUI?()
-            self.webViewController?.dismiss(animated: true, completion: {
-                self.didDismissPaymentMethodUI?()
-            })
+        self.didFinishPayment = { [weak self] err in
+            guard let self = self else { return }
+            self.cleanup()
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeRedirect, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
+        subscribeToNotifications()
         
         super.start()
+    }
+
+    func subscribeToNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeRedirect, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
+    }
+
+    func cleanup() {
+        self.willDismissPaymentMethodUI?()
+        self.webViewController?.dismiss(animated: true, completion: {
+            self.didDismissPaymentMethodUI?()
+        })
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {
@@ -174,29 +183,50 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                         responseCode: nil))
                 
                 Analytics.Service.record(events: [presentEvent, networkEvent])
-                
-                PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
-                    DispatchQueue.main.async {
-                        let viewEvent = Analytics.Event(
-                            eventType: .ui,
-                            properties: UIEventProperties(
-                                action: .view,
-                                context: Analytics.Event.Property.Context(
-                                    paymentMethodType: self.config.type,
-                                    url: self.redirectUrlComponents?.url?.absoluteString ?? ""),
-                                extra: nil,
-                                objectType: .button,
-                                objectId: nil,
-                                objectClass: "\(Self.self)",
-                                place: .webview))
-                        Analytics.Service.record(events: [viewEvent])
-                        
-                        PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
-                        self.didPresentPaymentMethodUI?()
-                        seal.fulfill(())
+
+                if PrimerUIManager.primerRootViewController == nil {
+                    firstly {
+                        PrimerUIManager.prepareRootViewController()
                     }
-                })
+                    .done {
+                        PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                            DispatchQueue.main.async {
+                                self.handleWebViewControlllerPresentedCompletion()
+                                seal.fulfill()
+                            }
+                        })
+                    }
+                    .catch { _ in }
+                } else {
+                    PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                        DispatchQueue.main.async {
+                            self.handleWebViewControlllerPresentedCompletion()
+                            seal.fulfill()
+                        }
+                    })
+                }
             }
+        }
+    }
+
+    private func handleWebViewControlllerPresentedCompletion() {
+        DispatchQueue.main.async {
+            let viewEvent = Analytics.Event(
+                eventType: .ui,
+                properties: UIEventProperties(
+                    action: .view,
+                    context: Analytics.Event.Property.Context(
+                        paymentMethodType: self.config.type,
+                        url: self.redirectUrlComponents?.url?.absoluteString ?? ""),
+                    extra: nil,
+                    objectType: .button,
+                    objectId: nil,
+                    objectClass: "\(Self.self)",
+                    place: .webview))
+            Analytics.Service.record(events: [viewEvent])
+
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
+            self.didPresentPaymentMethodUI?()
         }
     }
     

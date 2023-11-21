@@ -6,9 +6,10 @@
 //
 
 import Foundation
-public enum WebStep: PrimerHeadlessStep {
+enum WebStep: PrimerHeadlessStep {
     case loading
     case loaded
     case dismissed
     case success
+    case error
 }

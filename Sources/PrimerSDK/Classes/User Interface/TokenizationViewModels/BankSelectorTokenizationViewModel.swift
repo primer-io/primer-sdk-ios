@@ -331,7 +331,7 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
 
 
 extension BankSelectorTokenizationViewModel: BankSelectorTokenizationDelegate {
-     func retrieveListOfBanks() -> Promise<[AdyenBank]> {
+    func retrieveListOfBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
             firstly {
                 self.validateReturningPromise()
@@ -352,33 +352,18 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationDelegate {
         guard !query.isEmpty else {
             return banks
         }
-        var bankResults: [AdyenBank]  = []
-        for bank in banks {
-            if bank.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
-                bankResults.append(bank)
-            }
+        return banks.filter {
+            $0.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil))
         }
-        return bankResults
     }
     func tokenize(bankId: String) -> Promise<Void> {
         self.selectedBank = banks.first(where: { $0.id == bankId })
-        return Promise { seal in
-            firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+        return performTokenizationStep()
+            .then { () -> Promise<Void> in
+                return self.performPostTokenizationSteps()
             }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.tokenize()
+            .then { () -> Promise<Void> in
+                return self.handlePaymentMethodTokenData()
             }
-            .then { paymentMethodTokenData -> Promise<Void> in
-                self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
     }
 }

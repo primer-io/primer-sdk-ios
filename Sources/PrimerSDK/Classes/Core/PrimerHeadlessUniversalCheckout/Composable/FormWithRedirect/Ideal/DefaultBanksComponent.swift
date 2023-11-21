@@ -36,7 +36,7 @@ final class DefaultBanksComponent: BanksComponent {
                 let redirectComponent = onFinished()
                 redirectComponent.start()
                 tokenizationModelDelegate.tokenize(bankId: bankId)
-                    .done { _ in
+                    .done { model in
                         redirectComponent.didReceiveStep(step: WebStep.loaded)
                 }.catch { errror in
                     print("Error")
