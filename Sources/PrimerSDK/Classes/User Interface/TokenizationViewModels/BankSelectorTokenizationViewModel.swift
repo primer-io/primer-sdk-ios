@@ -20,6 +20,12 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }
     private var bankSelectionCompletion: ((AdyenBank) -> Void)?
     private var tokenizationService: TokenizationServiceProtocol?
+    var paymentMethodType: PrimerPaymentMethodType
+
+    required init(config: PrimerPaymentMethod) {
+        self.paymentMethodType = config.internalPaymentMethodType!
+        super.init(config: config)
+    }
     
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
@@ -325,7 +331,7 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
 
 
 extension BankSelectorTokenizationViewModel: BankSelectorTokenizationDelegate {
-    func retrieveListOfBanks() -> Promise<[AdyenBank]> {
+     func retrieveListOfBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
             firstly {
                 self.validateReturningPromise()

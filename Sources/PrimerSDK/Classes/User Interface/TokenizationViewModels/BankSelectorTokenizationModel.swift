@@ -7,6 +7,7 @@
 
 import Foundation
 protocol BankSelectorTokenizationDelegate {
+    var paymentMethodType: PrimerPaymentMethodType { get set }
     func validateReturningPromise() -> Promise<Void>
     func retrieveListOfBanks() -> Promise<[AdyenBank]>
     func filterBanks(query: String) -> [AdyenBank]

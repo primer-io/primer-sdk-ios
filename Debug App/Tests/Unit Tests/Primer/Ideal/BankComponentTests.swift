@@ -54,7 +54,7 @@ final class BankComponentTests: XCTestCase {
 
     func testInit() {
         PrimerPaymentMethodType.allCases.forEach {
-            let mockModel = MockBankSelectorTokenizationModel()
+            let mockModel = MockBankSelectorTokenizationModel(paymentMethodType: $0)
             let banksComponent = DefaultBanksComponent(paymentMethodType: $0, tokenizationModelDelegate: mockModel) { self.webRedirectComponent(tokenizationModelDelegate: mockModel) }
             XCTAssertEqual(banksComponent.paymentMethodType, $0)
             XCTAssertTrue(banksComponent.banks.isEmpty)
@@ -65,7 +65,7 @@ final class BankComponentTests: XCTestCase {
 
     func testUpdateCollectableBankId() {
         let redirectExpectation = expectation(description: "create_web_redirect_component")
-        let mockModel = MockBankSelectorTokenizationModel()
+        let mockModel = MockBankSelectorTokenizationModel(paymentMethodType: .adyenIDeal)
         let bankId = "0"
         let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             redirectExpectation.fulfill()
@@ -86,7 +86,7 @@ final class BankComponentTests: XCTestCase {
     }
 
     func testStart() {
-        let mockModel = MockBankSelectorTokenizationModel()
+        let mockModel = MockBankSelectorTokenizationModel(paymentMethodType: .adyenIDeal)
         let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
@@ -103,7 +103,7 @@ final class BankComponentTests: XCTestCase {
     }
 
     func testFilterBanks() {
-        let mockModel = MockBankSelectorTokenizationModel()
+        let mockModel = MockBankSelectorTokenizationModel(paymentMethodType: .adyenIDeal)
         let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
@@ -122,7 +122,7 @@ final class BankComponentTests: XCTestCase {
     }
 
     func testValidationNoBanksAtSelection() {
-        let mockModel = MockBankSelectorTokenizationModel()
+        let mockModel = MockBankSelectorTokenizationModel(paymentMethodType: .adyenIDeal)
         let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
@@ -134,7 +134,7 @@ final class BankComponentTests: XCTestCase {
     }
 
     func testValidationNoBanksAtFilter() {
-        let mockModel = MockBankSelectorTokenizationModel()
+        let mockModel = MockBankSelectorTokenizationModel(paymentMethodType: .adyenIDeal)
         let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
@@ -146,7 +146,7 @@ final class BankComponentTests: XCTestCase {
     }
 
     func testValidationForValidBankId() {
-        let mockModel = MockBankSelectorTokenizationModel()
+        let mockModel = MockBankSelectorTokenizationModel(paymentMethodType: .adyenIDeal)
         let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
@@ -166,7 +166,7 @@ final class BankComponentTests: XCTestCase {
     }
 
     func testValidationForInvalidBankId() {
-        let mockModel = MockBankSelectorTokenizationModel()
+        let mockModel = MockBankSelectorTokenizationModel(paymentMethodType: .adyenIDeal)
         let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
@@ -186,7 +186,7 @@ final class BankComponentTests: XCTestCase {
     }
 
     func testCancel() {
-        let mockModel = MockBankSelectorTokenizationModel()
+        let mockModel = MockBankSelectorTokenizationModel(paymentMethodType: .adyenIDeal)
         let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
@@ -227,10 +227,14 @@ extension BankComponentTests: PrimerHeadlessValidatableDelegate {
 }
 
 private class MockBankSelectorTokenizationModel: BankSelectorTokenizationDelegate {
+    var paymentMethodType: PrimerPaymentMethodType
     var didCallFilter: Bool = false
     var didCallCancel: Bool = false
     var useSuccess: Bool = false
     static let bankNameToBeFiltered = "Bank filtered"
+    init(paymentMethodType: PrimerPaymentMethodType) {
+        self.paymentMethodType = paymentMethodType
+    }
     let mockBanks: [AdyenBank] = [AdyenBank(id: "0", name: "Bank_0", iconUrlStr: nil, disabled: false),
                                   AdyenBank(id: "1", name: "Bank_1", iconUrlStr: nil, disabled: false),
                                   AdyenBank(id: "2", name: MockBankSelectorTokenizationModel.bankNameToBeFiltered, iconUrlStr: nil, disabled: false)]
