@@ -40,9 +40,6 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public var nextDataStep: NolPayLinkCardStep = .collectTagData
 
     public func updateCollectedData(collectableData: T) {
-        guard let collectableData = collectableData as? NolPayLinkCollectableData else {
-            return
-        }
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(

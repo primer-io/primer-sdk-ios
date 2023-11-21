@@ -14,7 +14,7 @@ public enum PrimerPaymentMethodManagerCategory: String {
     case rawData         = "RAW_DATA"
     case cardComponents  = "CARD_COMPONENTS"
     case nolPay          = "NOL_PAY"
-    case formWithRedirect = "FORM_WITH_REDIRECT"
+    case componentWithRedirect = "COMPONENT_WITH_REDIRECT"
 }
 
 internal protocol PrimerPaymentMethodManager {

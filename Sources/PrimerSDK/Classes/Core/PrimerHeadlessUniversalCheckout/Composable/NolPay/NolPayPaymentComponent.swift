@@ -40,9 +40,6 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     var nextDataStep: NolPayPaymentStep = .collectCardAndPhoneData
 
     public func updateCollectedData(collectableData: T) {
-        guard let collectableData = collectableData as? NolPayPaymentCollectableData else {
-            return
-        }
        switch collectableData {
         case let .paymentData(cardNumber, mobileNumber):
             self.cardNumber = cardNumber
