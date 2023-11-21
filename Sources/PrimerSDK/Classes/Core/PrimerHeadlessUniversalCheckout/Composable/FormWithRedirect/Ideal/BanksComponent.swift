@@ -6,4 +6,4 @@
 //
 
 import Foundation
-public protocol BanksComponent: PrimerHeadlessFormComponent where T == BanksCollectableData, P == BanksStep { }
+public protocol BanksComponent: PrimerHeadlessMainComponent where T == BanksCollectableData, P == BanksStep { }

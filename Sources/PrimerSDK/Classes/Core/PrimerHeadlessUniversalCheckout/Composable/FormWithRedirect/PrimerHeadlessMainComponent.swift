@@ -8,4 +8,4 @@
 import Foundation
 protocol FormCollectableData: PrimerCollectableData {}
 
-public protocol PrimerHeadlessFormComponent: PrimerHeadlessCollectDataComponent, PrimerHeadlessCancellable {}
+public protocol PrimerHeadlessMainComponent: PrimerHeadlessCollectDataComponent, PrimerHeadlessCancellable {}
