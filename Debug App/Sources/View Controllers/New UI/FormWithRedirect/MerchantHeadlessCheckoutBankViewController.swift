@@ -21,7 +21,7 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let bankComponent: any BanksComponent = manager.provide(paymentMethodType: paymentMethodType) else {
+        guard let bankComponent: any BanksComponent = try? manager.provide(paymentMethodType: paymentMethodType) else {
             return
         }
         addBanksListViewController()
