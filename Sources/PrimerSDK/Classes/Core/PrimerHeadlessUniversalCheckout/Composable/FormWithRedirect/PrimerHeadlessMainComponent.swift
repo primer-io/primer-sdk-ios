@@ -6,6 +6,4 @@
 //
 
 import Foundation
-protocol MainCollectableData: PrimerCollectableData {}
-
 public protocol PrimerHeadlessMainComponent: PrimerHeadlessCollectDataComponent, PrimerHeadlessCancellable {}

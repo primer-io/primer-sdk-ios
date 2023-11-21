@@ -6,7 +6,7 @@
 //
 
 import Foundation
-public enum BanksCollectableData: MainCollectableData {
+public enum BanksCollectableData: PrimerCollectableData {
     case bankId(bankId: String)
     case bankFilterText(text: String)
 }
