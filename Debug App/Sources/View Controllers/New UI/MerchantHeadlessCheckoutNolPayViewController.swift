@@ -259,7 +259,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
             return
         }
         
-        linkCardComponent.updateCollectedData(collectableData: .otpData(otpCode: otp))
+        linkCardComponent.updateCollectedData(collectableData: NolPayLinkCollectableData.otpData(otpCode: otp))
     }
     
     // MARK: - Unlink
@@ -279,7 +279,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         }
         
         unlinkCardComponent.updateCollectedData(
-            collectableData: .cardAndPhoneData(nolPaymentCard: card,
+            collectableData: NolPayUnlinkCollectableData.cardAndPhoneData(nolPaymentCard: card,
                                                mobileNumber: mobileNumber)
         )
     }
@@ -291,7 +291,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
             return
         }
         
-        unlinkCardComponent.updateCollectedData(collectableData: .otpData(otpCode: otp))
+        unlinkCardComponent.updateCollectedData(collectableData: NolPayUnlinkCollectableData.otpData(otpCode: otp))
     }
     
     // MARK: - Listing of the linked cards

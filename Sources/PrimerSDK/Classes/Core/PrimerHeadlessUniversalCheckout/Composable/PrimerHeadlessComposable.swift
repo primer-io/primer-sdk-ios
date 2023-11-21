@@ -60,8 +60,9 @@ public protocol PrimerHeadlessCancellable: AnyObject {
     func cancel()
 }
 
-public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent, PrimerHeadlessStartable, PrimerHeadlessSubmitable {
+public protocol PrimerHeadlessCollectDataComponent<T, P>: PrimerHeadlessComponent, PrimerHeadlessStartable, PrimerHeadlessSubmitable {
     associatedtype T: PrimerCollectableData
+    associatedtype P: PrimerHeadlessStep
     var errorDelegate: PrimerHeadlessErrorableDelegate? { get set }
     var validationDelegate: PrimerHeadlessValidatableDelegate? { get set }
     var stepDelegate: PrimerHeadlessSteppableDelegate? { get set }
@@ -71,7 +72,6 @@ public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent, Pri
     func makeAndHandleInvalidValueError(forKey key: String)
 }
 
-// TODO: Ask if we want to keep this private from the sdk, even if it means code duplication
 extension PrimerHeadlessCollectDataComponent {
     public func makeAndHandleInvalidValueError(forKey key: String) {
         let error = PrimerError.invalidValue(key: key, value: nil, userInfo: [

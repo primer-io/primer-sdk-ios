@@ -12,16 +12,16 @@ import SwiftUI
 import PrimerSDK
 
 final class MerchantHeadlessCheckoutBankViewController: UIViewController {
-    private lazy var idealManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager(paymentMethodType: paymentMethodType)!
+    private lazy var idealManager: PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
     let paymentMethodType: String = "ADYEN_IDEAL"
 
     private(set) var activityIndicator: UIActivityIndicatorView?
-    private(set) var bankComponent: BanksComponent?
+    private(set) var bankComponent: (any BanksComponent)?
     private let banksModel: BanksListModel = BanksListModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let bankComponent = idealManager.provideBanksComponent() else {
+        guard let bankComponent = idealManager.provide(paymentMethodType: paymentMethodType) else {
             return
         }
         addBanksListViewController()
@@ -35,10 +35,10 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
     private func addBanksListViewController() {
         let headerView = BanksListView(paymentMethodModel: PaymentMethodModel(name: paymentMethodType, logo: nil), banksModel: banksModel, didSelectBank: { [weak self] bankId in
             guard let self = self else { return }
-            self.bankComponent?.updateCollectedData(collectableData: .bankId(bankId: bankId))
+            self.bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: bankId))
         }, didFilterByText: { [weak self] filterText in
             guard let self = self else { return }
-            self.bankComponent?.updateCollectedData(collectableData: .bankFilterText(text: filterText))
+            self.bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: filterText))
         })
         let listViewController = UIHostingController(rootView: headerView)
         listViewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -119,7 +119,7 @@ private extension MerchantHeadlessCheckoutBankViewController {
         }
     }
 
-    private func renderBanks(_ banks: [BanksComponent.IssuingBank]) {
+    private func renderBanks(_ banks: [IssuingBank]) {
         hideLoadingOverlay()
         banksModel.updateBanks(banks)
     }

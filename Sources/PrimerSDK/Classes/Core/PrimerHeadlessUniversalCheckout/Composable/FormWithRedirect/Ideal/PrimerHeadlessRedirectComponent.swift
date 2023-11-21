@@ -6,14 +6,18 @@
 //
 
 import Foundation
-protocol PrimerHeadlessRedirectComponent: PrimerHeadlessStartable {}
-class WebRedirectComponent: PrimerHeadlessRedirectComponent {
+protocol PrimerHeadlessRedirectComponent: PrimerHeadlessStartable, PrimerHeadlessSubmitable {}
+final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
     let paymentMethodType: PrimerPaymentMethodType
     
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     private let tokenizationModelDelegate: BankSelectorTokenizationDelegate
-    private(set) var step: WebStep = .loading
+    private(set) var step: WebStep = .loading {
+        didSet {
+            logStep()
+        }
+    }
 
     init(paymentMethodType: PrimerPaymentMethodType, tokenizationModelDelegate: BankSelectorTokenizationDelegate) {
         self.paymentMethodType = paymentMethodType
@@ -23,6 +27,9 @@ class WebRedirectComponent: PrimerHeadlessRedirectComponent {
     }
 
     func start() {
+        step = .loading
+    }
+    func submit() {
 
     }
 }
@@ -51,8 +58,16 @@ extension WebRedirectComponent: PrimerHeadlessErrorableDelegate {
 
 extension WebRedirectComponent: LogReporter {
     func logStep() {
-        logger.info(message: step.logMessage)
-        logger.info(message: self.paymentMethodType.rawValue)
+        let logMessage = step.logMessage
+        logger.info(message: logMessage)
+        logger.info(message: paymentMethodType.rawValue)
+        let stepEvent = Analytics.Event(
+            eventType: .sdkEvent,
+            properties: MessageEventProperties(
+                message: logMessage,
+                messageType: .info,
+                severity: .info))
+        Analytics.Service.record(events: [stepEvent])
     }
 }
 

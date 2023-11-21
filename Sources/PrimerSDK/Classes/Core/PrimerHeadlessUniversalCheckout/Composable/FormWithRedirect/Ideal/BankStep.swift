@@ -8,7 +8,7 @@
 import Foundation
 public enum BanksStep: PrimerHeadlessStep {
     case loading
-    case banksRetrieved(banks: [BanksComponent.IssuingBank])
+    case banksRetrieved(banks: [IssuingBank])
 }
 
 extension BanksStep: Equatable {

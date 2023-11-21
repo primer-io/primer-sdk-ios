@@ -23,6 +23,7 @@ public enum NolPayUnlinkCollectableData: PrimerCollectableData {
 
 public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public typealias T = NolPayUnlinkCollectableData
+    public typealias P = NolPayUnlinkDataStep
 
     init() {
         self.phoneMetadataService = NolPayPhoneMetadataService()
@@ -42,9 +43,8 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public var cardNumber: String?
     private var unlinkToken: String?
     public var nextDataStep: NolPayUnlinkDataStep = .collectCardAndPhoneData
-    
-    public func updateCollectedData(collectableData: NolPayUnlinkCollectableData) {
-        
+
+    public func updateCollectedData(collectableData: T) {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(

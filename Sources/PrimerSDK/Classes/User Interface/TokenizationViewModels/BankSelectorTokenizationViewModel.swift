@@ -356,7 +356,23 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationDelegate {
     }
     func tokenize(bankId: String) -> Promise<Void> {
         self.selectedBank = banks.first(where: { $0.id == bankId })
-        // temporary to handover the WebComponent, will be worked in a separate ticket ...
-        return self.performTokenizationStep()
+        return Promise { seal in
+            firstly {
+                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+            }
+            .then { () -> Promise<PrimerPaymentMethodTokenData> in
+                return self.tokenize()
+            }
+            .then { paymentMethodTokenData -> Promise<Void> in
+                self.paymentMethodTokenData = paymentMethodTokenData
+                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+            }
+            .done {
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
     }
 }

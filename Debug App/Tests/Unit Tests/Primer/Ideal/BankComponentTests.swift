@@ -11,7 +11,7 @@ import XCTest
 
 final class BankComponentTests: XCTestCase {
 
-    var banks: [BanksComponent.IssuingBank] = []
+    var banks: [IssuingBank] = []
     var steps: [BanksStep] = []
     var validationErrors: [String] = []
     var validationStatuses: [String] = []
@@ -28,6 +28,7 @@ final class BankComponentTests: XCTestCase {
     }
 
     func cleanup() {
+        webRedirectComponent = nil
         banks.removeAll()
         steps.removeAll()
         validationErrors.removeAll()
@@ -39,7 +40,7 @@ final class BankComponentTests: XCTestCase {
                                   name: "bank_name_0",
                                   iconUrlStr: "https://bank_url_string",
                                   disabled: false)
-        let issuingBank = BanksComponent.IssuingBank(bank: adyenBank)
+        let issuingBank = IssuingBank(bank: adyenBank)
         XCTAssertEqual(issuingBank.id, adyenBank.id)
         XCTAssertEqual(issuingBank.name, adyenBank.name)
         XCTAssertEqual(issuingBank.iconUrlStr, adyenBank.iconUrlStr)
@@ -47,13 +48,14 @@ final class BankComponentTests: XCTestCase {
     }
 
     private func webRedirectComponent(tokenizationModelDelegate: BankSelectorTokenizationDelegate) -> WebRedirectComponent {
-        WebRedirectComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: tokenizationModelDelegate)
+        self.webRedirectComponent = WebRedirectComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: tokenizationModelDelegate)
+        return self.webRedirectComponent!
     }
 
     func testInit() {
         PrimerPaymentMethodType.allCases.forEach {
             let mockModel = MockBankSelectorTokenizationModel()
-            let banksComponent = BanksComponent(paymentMethodType: $0, tokenizationModelDelegate: mockModel) { self.webRedirectComponent(tokenizationModelDelegate: mockModel) }
+            let banksComponent = DefaultBanksComponent(paymentMethodType: $0, tokenizationModelDelegate: mockModel) { self.webRedirectComponent(tokenizationModelDelegate: mockModel) }
             XCTAssertEqual(banksComponent.paymentMethodType, $0)
             XCTAssertTrue(banksComponent.banks.isEmpty)
             XCTAssertNil(banksComponent.bankId)
@@ -65,7 +67,7 @@ final class BankComponentTests: XCTestCase {
         let redirectExpectation = expectation(description: "create_web_redirect_component")
         let mockModel = MockBankSelectorTokenizationModel()
         let bankId = "0"
-        let bankComponent = BanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
+        let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             redirectExpectation.fulfill()
             return self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
@@ -75,7 +77,7 @@ final class BankComponentTests: XCTestCase {
         let banksRetrievedExpectation = expectation(description: "banks_retrieved")
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             XCTAssertEqual(self.banks.map { $0.name }, mockModel.mockBanks.map { $0.name })
-            bankComponent.updateCollectedData(collectableData: .bankId(bankId: bankId))
+            bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: bankId))
             banksRetrievedExpectation.fulfill()
             XCTAssertEqual(bankComponent.bankId, bankId)
         }
@@ -85,7 +87,7 @@ final class BankComponentTests: XCTestCase {
 
     func testStart() {
         let mockModel = MockBankSelectorTokenizationModel()
-        let bankComponent = BanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
+        let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
         bankComponent.stepDelegate = self
@@ -94,7 +96,7 @@ final class BankComponentTests: XCTestCase {
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             XCTAssertEqual(self.banks.map { $0.name }, mockModel.mockBanks.map { $0.name })
             XCTAssertEqual(self.banks.map { $0.id }, mockModel.mockBanks.map { $0.id })
-            XCTAssertEqual(self.steps, [.loading, .banksRetrieved(banks: mockModel.mockBanks.map { BanksComponent.IssuingBank(bank: $0) })])
+            XCTAssertEqual(self.steps, [.loading, .banksRetrieved(banks: mockModel.mockBanks.map { IssuingBank(bank: $0) })])
             expectation.fulfill()
         }
         waitForExpectations(timeout: 10)
@@ -102,7 +104,7 @@ final class BankComponentTests: XCTestCase {
 
     func testFilterBanks() {
         let mockModel = MockBankSelectorTokenizationModel()
-        let bankComponent = BanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
+        let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
         bankComponent.stepDelegate = self
@@ -110,42 +112,42 @@ final class BankComponentTests: XCTestCase {
         let expectation = expectation(description: "banks_filtered")
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             XCTAssertEqual(self.banks.map { $0.name }, mockModel.mockBanks.map { $0.name })
-            bankComponent.updateCollectedData(collectableData: .bankFilterText(text: "filter_query"))
+            bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: "filter_query"))
             XCTAssertTrue(mockModel.didCallFilter)
             XCTAssertEqual(self.banks.map { $0.name }, [MockBankSelectorTokenizationModel.bankNameToBeFiltered])
             expectation.fulfill()
-            XCTAssertEqual(self.steps, [.loading, .banksRetrieved(banks: mockModel.mockBanks.map { BanksComponent.IssuingBank(bank: $0) }), .banksRetrieved(banks: mockModel.mockBanks.filter { $0.name == MockBankSelectorTokenizationModel.bankNameToBeFiltered }.map { BanksComponent.IssuingBank(bank: $0) })])
+            XCTAssertEqual(self.steps, [.loading, .banksRetrieved(banks: mockModel.mockBanks.map { IssuingBank(bank: $0) }), .banksRetrieved(banks: mockModel.mockBanks.filter { $0.name == MockBankSelectorTokenizationModel.bankNameToBeFiltered }.map { IssuingBank(bank: $0) })])
         }
         waitForExpectations(timeout: 10)
     }
 
     func testValidationNoBanksAtSelection() {
         let mockModel = MockBankSelectorTokenizationModel()
-        let bankComponent = BanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
+        let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
         bankComponent.stepDelegate = self
         bankComponent.validationDelegate = self
-        bankComponent.updateCollectedData(collectableData: .bankId(bankId: "mock_id"))
+        bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: "mock_id"))
         XCTAssertEqual(validationStatuses, ["validating", "invalid"])
         XCTAssertEqual(validationErrors, ["Banks need to be loaded before bank id can be collected."])
     }
 
     func testValidationNoBanksAtFilter() {
         let mockModel = MockBankSelectorTokenizationModel()
-        let bankComponent = BanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
+        let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
         bankComponent.stepDelegate = self
         bankComponent.validationDelegate = self
-        bankComponent.updateCollectedData(collectableData: .bankFilterText(text: "mock_query"))
+        bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: "mock_query"))
         XCTAssertEqual(validationStatuses, ["validating", "invalid"])
         XCTAssertEqual(validationErrors, ["Banks need to be loaded before bank id can be collected."])
     }
 
     func testValidationForValidBankId() {
         let mockModel = MockBankSelectorTokenizationModel()
-        let bankComponent = BanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
+        let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
         bankComponent.stepDelegate = self
@@ -154,7 +156,7 @@ final class BankComponentTests: XCTestCase {
         bankComponent.start()
         let expectation = expectation(description: "banks_retrieved")
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            bankComponent.updateCollectedData(collectableData: .bankId(bankId: "0"))
+            bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: "0"))
             XCTAssertEqual(self.validationStatuses, ["validating", "valid"])
             XCTAssertTrue(self.validationErrors.isEmpty)
             expectation.fulfill()
@@ -165,7 +167,7 @@ final class BankComponentTests: XCTestCase {
 
     func testValidationForInvalidBankId() {
         let mockModel = MockBankSelectorTokenizationModel()
-        let bankComponent = BanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
+        let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
         bankComponent.stepDelegate = self
@@ -174,7 +176,7 @@ final class BankComponentTests: XCTestCase {
         bankComponent.start()
         let expectation = expectation(description: "banks_retrieved")
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            bankComponent.updateCollectedData(collectableData: .bankId(bankId: "mock_bank_id"))
+            bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: "mock_bank_id"))
             XCTAssertEqual(self.validationStatuses, ["validating", "invalid"])
             XCTAssertEqual(self.validationErrors, ["Please provide a valid bank id"])
             expectation.fulfill()
@@ -185,7 +187,7 @@ final class BankComponentTests: XCTestCase {
 
     func testCancel() {
         let mockModel = MockBankSelectorTokenizationModel()
-        let bankComponent = BanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
+        let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationModelDelegate: mockModel) {
             self.webRedirectComponent(tokenizationModelDelegate: mockModel)
         }
         XCTAssertFalse(mockModel.didCallCancel)

@@ -9,8 +9,8 @@
 import Foundation
 import PrimerSDK
 final class BanksListModel: ObservableObject {
-    @Published var banks: [BanksComponent.IssuingBank] = []
-    func updateBanks(_ banks: [BanksComponent.IssuingBank]) {
+    @Published var banks: [IssuingBank] = []
+    func updateBanks(_ banks: [IssuingBank]) {
         self.banks = banks
     }
 }
