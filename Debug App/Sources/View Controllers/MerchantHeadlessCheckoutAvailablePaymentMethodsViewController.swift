@@ -361,7 +361,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: PrimerH
     func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)")
         self.logs.append(#function)
-        self.navigationController?.dismiss(animated: false)
+        self.showLoadingOverlay()
     }
     
     func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String) {
