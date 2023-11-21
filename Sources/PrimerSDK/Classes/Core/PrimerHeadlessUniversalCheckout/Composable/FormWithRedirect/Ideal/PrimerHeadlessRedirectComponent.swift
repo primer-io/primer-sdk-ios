@@ -35,6 +35,7 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
         self.tokenizationModelDelegate.didFinishPayment = { [weak self] error in
             guard let self else { return }
             self.step = error == nil ? .success : .failure
+            self.tokenizationModelDelegate.cleanup()
         }
     }
 

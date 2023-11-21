@@ -32,12 +32,19 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
         self.bankComponent = bankComponent
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        hideLoadingOverlay()
+    }
+
     private func addBanksListViewController() {
         let headerView = BanksListView(paymentMethodModel: PaymentMethodModel(name: paymentMethodType, logo: nil), banksModel: banksModel, didSelectBank: { [weak self] bankId in
             guard let self = self else { return }
+            self.showLoadingOverlay()
             self.bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: bankId))
         }, didFilterByText: { [weak self] filterText in
             guard let self = self else { return }
+            self.showLoadingOverlay()
             self.bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: filterText))
         })
         let listViewController = UIHostingController(rootView: headerView)
@@ -64,7 +71,6 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
 
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         switch validationStatus {
-
         case .validating:
             print("Forms with redirect validation in progress")
         case .valid:
@@ -76,9 +82,11 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
             for error in errors {
                 message += (error.errorDescription ?? error.localizedDescription) + "\n"
             }
+            hideLoadingOverlay()
             self.showAlert(title: "Validation Error", message: "\(message)")
         case .error(error: let error):
             self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+            hideLoadingOverlay()
         }
     }
 
