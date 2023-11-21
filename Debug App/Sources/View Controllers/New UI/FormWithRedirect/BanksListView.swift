@@ -84,7 +84,7 @@ struct BanksListView: View {
         ImageViewWithUrl(
             url: url,
             placeholder: {
-              Image("questionmark.circle")
+              Image("questionmark.app")
                     .frame(width: metrics.imageSize.width, height: metrics.imageSize.height)
             },
             image: {

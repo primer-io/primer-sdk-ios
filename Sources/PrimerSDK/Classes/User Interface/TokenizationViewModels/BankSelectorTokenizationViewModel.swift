@@ -366,6 +366,12 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationDelegate {
                 return self.handlePaymentMethodTokenData()
             }
     }
+
+    func handlePaymentMethodTokenData() -> Promise<Void> {
+        return Promise { seal in
+            processPaymentMethodTokenData()
+        }
+    }
 }
 
 extension BankSelectorTokenizationViewModel: WebRedirectTokenizationDelegate {}
