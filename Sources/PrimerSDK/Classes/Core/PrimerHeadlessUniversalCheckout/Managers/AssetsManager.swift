@@ -61,7 +61,7 @@ extension PrimerHeadlessUniversalCheckout {
                 return nil
             }
 
-            guard let paymentMethodLogo = PrimerPaymentMethodLogo(
+            guard let paymentMethodLogo = PrimerInternalAsset(
                 colored: baseLogoImage.colored,
                 light: baseLogoImage.light,
                 dark: baseLogoImage.dark) else {
@@ -98,7 +98,7 @@ extension PrimerHeadlessUniversalCheckout {
                     continue
                 }
 
-                guard let paymentMethodLogo = PrimerPaymentMethodLogo(
+                guard let paymentMethodLogo = PrimerInternalAsset(
                     colored: baseLogoImage.colored,
                     light: baseLogoImage.light,
                     dark: baseLogoImage.dark)

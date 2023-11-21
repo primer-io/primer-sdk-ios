@@ -59,9 +59,6 @@ internal class ErrorHandler: LogReporter {
             }
 
         } else if let primerError = error as? PrimerErrorProtocol {
-            guard shouldReport(error: primerError) else {
-                return
-            }
             event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
@@ -94,12 +91,5 @@ internal class ErrorHandler: LogReporter {
         }
 
         Analytics.Service.record(event: event)
-    }
-    
-    private func shouldReport(error: PrimerErrorProtocol) -> Bool {
-        guard let error = error as? PrimerError, case .underlyingErrors(let errors, _, _) = error else {
-            return true
-        }
-        return !errors.allSatisfy { $0 is PrimerValidationError }
     }
 }
