@@ -37,7 +37,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public var otpCode: String?
     public var cardNumber: String?
     public var linkToken: String?
-    public var nextDataStep: NolPayLinkCardStep = .collectTagData
+    public internal(set) var nextDataStep: NolPayLinkCardStep = .collectTagData
 
     public func updateCollectedData(collectableData: T) {
         let sdkEvent = Analytics.Event(

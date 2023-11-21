@@ -37,7 +37,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     var mobileNumber: String?
     var countryCode: String?
     var cardNumber: String?
-    var nextDataStep: NolPayPaymentStep = .collectCardAndPhoneData
+    public var nextDataStep: NolPayPaymentStep = .collectCardAndPhoneData
 
     public func updateCollectedData(collectableData: T) {
        switch collectableData {

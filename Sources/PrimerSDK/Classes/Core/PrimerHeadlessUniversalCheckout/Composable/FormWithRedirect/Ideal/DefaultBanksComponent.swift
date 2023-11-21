@@ -15,7 +15,7 @@ final class DefaultBanksComponent: BanksComponent {
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
 
-    public private(set) var nextDataStep: BanksStep = .loading
+    public internal(set) var nextDataStep: BanksStep = .loading
     private(set) var banks: [IssuingBank] = []
     private(set) var bankId: String?
     private let onFinished: () -> WebRedirectComponent

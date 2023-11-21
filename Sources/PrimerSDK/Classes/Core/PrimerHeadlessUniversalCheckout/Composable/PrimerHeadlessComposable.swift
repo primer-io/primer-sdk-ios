@@ -66,6 +66,7 @@ public protocol PrimerHeadlessCollectDataComponent<T, P>: PrimerHeadlessComponen
     var errorDelegate: PrimerHeadlessErrorableDelegate? { get set }
     var validationDelegate: PrimerHeadlessValidatableDelegate? { get set }
     var stepDelegate: PrimerHeadlessSteppableDelegate? { get set }
+    var nextDataStep: P { get }
     func updateCollectedData(collectableData: T)
     func submit()
     func start()
