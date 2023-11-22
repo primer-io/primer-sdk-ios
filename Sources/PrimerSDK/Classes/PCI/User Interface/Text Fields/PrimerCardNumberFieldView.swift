@@ -58,7 +58,6 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
                         "line": "\(#line)"
                     ],
                     diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
                 self.validation = PrimerTextField.Validation.invalid(err)
 
             } else {
@@ -71,7 +70,6 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
                         "line": "\(#line)"
                     ],
                     diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
                 self.validation = PrimerTextField.Validation.invalid(err)
             }
 

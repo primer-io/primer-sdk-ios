@@ -179,8 +179,11 @@ extension PrimerHeadlessUniversalCheckout {
                     params: [
                         "category": "RAW_DATA",
                         "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
-                        "paymentMethodType": paymentMethodType
-                    ]))
+                        "paymentMethodType": paymentMethodType,
+                        "selectedNetwork": (rawData as? PrimerCardData)?.cardNetworkIdentifier ?? ""
+                    ]
+                )
+            )
             Analytics.Service.record(events: [sdkEvent])
 
             guard let rawData = rawData else {

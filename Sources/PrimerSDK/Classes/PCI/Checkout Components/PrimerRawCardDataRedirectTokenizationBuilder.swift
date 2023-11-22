@@ -224,7 +224,6 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                         errors: errors,
                         userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
 
                     self.isDataValid = false
 

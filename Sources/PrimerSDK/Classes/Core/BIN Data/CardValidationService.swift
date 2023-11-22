@@ -89,8 +89,10 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
             self?.delegate?.primerRawDataManager?(rawDataManager,
                                                   didReceiveCardMetadata: cardMetadata,
                                                   forCardState: cardState)
+            self?.sendEvent(forNetworks: cardMetadata.availableCardNetworks)
         }.catch { error in
             // JN TODO: CHKT-1772 - send event
+            self.sendEvent(forError: error)
             self.logger.warn(message: "Remote card validation failed: \(error.localizedDescription)")
             self.useLocalValidation(withCardState: cardState)
         }
@@ -101,9 +103,40 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         let displayName = localValidationNetwork.validation?.niceType ?? localValidationNetwork.rawValue.lowercased().capitalized
         let cardNetwork = PrimerCardNetwork(displayName: displayName,
                                             networkIdentifier: localValidationNetwork.rawValue)
+        
         delegate?.primerRawDataManager?(rawDataManager,
                                         didReceiveCardMetadata: .init(availableCardNetworks: [cardNetwork]),
                                         forCardState: cardState)
+    }
+    
+    // MARK: Analytics
+    
+    private func sendEvent(forNetworks networks: [PrimerCardNetwork]) {
+        let event = Analytics.Event(
+            eventType: .ui, 
+            properties: UIEventProperties(
+                action: .view,
+                context: nil,
+                extra: nil,
+                objectType: .list,
+                objectId: .cardNetwork,
+                objectClass: String(describing: CardNetwork.self),
+                place: .cardForm
+            )
+        )
+        Analytics.Service.record(event: event)
+    }
+    
+    private func sendEvent(forError error: Error) {
+        let event = Analytics.Event(
+            eventType: .message,
+            properties: MessageEventProperties(
+                message: "Failed to remotely validate card network: \(error.localizedDescription)",
+                messageType: .error,
+                severity: .error
+            )
+        )
+        Analytics.Service.record(event: event)
     }
     
     // MARK: API Logic
