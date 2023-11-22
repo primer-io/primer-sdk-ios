@@ -48,26 +48,26 @@ public protocol PrimerHeadlessSteppableDelegate: AnyObject {
     func didReceiveStep(step: PrimerHeadlessStep)
 }
 
-public protocol PrimerHeadlessStartable: AnyObject {
+@objc public protocol PrimerHeadlessStartable: AnyObject {
     func start()
 }
 
-public protocol PrimerHeadlessSubmitable: AnyObject {
+@objc public protocol PrimerHeadlessSubmitable: AnyObject {
     func submit()
 }
 
-public protocol PrimerHeadlessCancellable: AnyObject {
+@objc public protocol PrimerHeadlessCancellable: AnyObject {
     func cancel()
 }
 
-public protocol PrimerHeadlessCollectDataComponent<T, P>: PrimerHeadlessComponent, PrimerHeadlessStartable, PrimerHeadlessSubmitable {
-    associatedtype T: PrimerCollectableData
-    associatedtype P: PrimerHeadlessStep
+public protocol PrimerHeadlessCollectDataComponent<Data, Step>: PrimerHeadlessComponent, PrimerHeadlessStartable, PrimerHeadlessSubmitable {
+    associatedtype Data: PrimerCollectableData
+    associatedtype Step: PrimerHeadlessStep
     var errorDelegate: PrimerHeadlessErrorableDelegate? { get set }
     var validationDelegate: PrimerHeadlessValidatableDelegate? { get set }
     var stepDelegate: PrimerHeadlessSteppableDelegate? { get set }
-    var nextDataStep: P { get }
-    func updateCollectedData(collectableData: T)
+    var nextDataStep: Step { get }
+    func updateCollectedData(collectableData: Data)
     func submit()
     func start()
     func makeAndHandleInvalidValueError(forKey key: String)

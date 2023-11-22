@@ -53,9 +53,9 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
             PrimerPaymentMethodType.allCases.forEach {
                 let manager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
                 if $0 == .adyenIDeal {
-                    XCTAssertNotNil(manager.provide(paymentMethodType: $0.rawValue))
+                    XCTAssertNotNil(try? manager.provideBanksComponent(paymentMethodType: $0.rawValue))
                 } else {
-                    XCTAssertNil(manager.provide(paymentMethodType: $0.rawValue))
+                    XCTAssertNil(try? manager.provideBanksComponent(paymentMethodType: $0.rawValue))
                 }
             }
         }
@@ -69,7 +69,7 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
 
     func testProvideInvalidMethod() {
         let manager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
-        XCTAssertNil(manager.provide(paymentMethodType: "mock_method_type"))
+        XCTAssertNil(try manager.provide(paymentMethodType: "invalid_payment_method"))
     }
 }
 
