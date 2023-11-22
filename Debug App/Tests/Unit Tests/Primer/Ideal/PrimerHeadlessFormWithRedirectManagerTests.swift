@@ -54,6 +54,12 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
                 let manager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
                 if $0 == .adyenIDeal {
                     XCTAssertNotNil(try? manager.provideBanksComponent(paymentMethodType: $0.rawValue))
+                    let wrapper = PrimerHeadlessMainComponentWrapper(manager: PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager(), paymentMethodType: $0.rawValue)
+                    XCTAssertNotNil(wrapper.banksComponent)
+                    wrapper.start()
+                    XCTAssertEqual(wrapper.banksComponent?.nextDataStep, BanksStep.loading)
+                    wrapper.selectBankById("bankId")
+                    XCTAssertEqual((wrapper.banksComponent as? DefaultBanksComponent)?.bankId, "bankId")
                 } else {
                     XCTAssertNil(try? manager.provideBanksComponent(paymentMethodType: $0.rawValue))
                 }
@@ -69,8 +75,9 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
 
     func testProvideInvalidMethod() {
         let manager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
-        XCTAssertNil(try manager.provide(paymentMethodType: "invalid_payment_method"))
+        XCTAssertNil(try? manager.provide(paymentMethodType: "invalid_payment_method"))
     }
+
 }
 
 extension PrimerHeadlessFormWithRedirectManagerTests: TokenizationTestDelegate {
