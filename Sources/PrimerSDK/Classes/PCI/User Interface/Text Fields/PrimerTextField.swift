@@ -12,7 +12,7 @@ internal class PrimerTextField: UITextField {
     internal enum Validation: Equatable {
         case valid, invalid(_ error: Error?), notAvailable
 
-        static func ==(lhs: Validation, rhs: Validation) -> Bool {
+        static func == (lhs: Validation, rhs: Validation) -> Bool {
                 switch (lhs, rhs) {
                 case (.valid, .valid):
                     return lhs == rhs
