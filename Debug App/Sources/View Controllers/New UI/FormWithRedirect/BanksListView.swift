@@ -47,6 +47,7 @@ struct BanksListView: View {
             Text("Choose your bank")
                 .multilineTextAlignment(.leading)
                 .padding(.leading, metrics.textLeftPadding)
+                .addAccessibilityIdentifier(identifier: "choose_bank_title")
 
             SearchBar(text: $filterText.didSet { text in
                 didFilterByText(text)
@@ -78,6 +79,7 @@ struct BanksListView: View {
         }
         .padding(.top, 0)
         .padding(.leading, 0)
+        .addAccessibilityIdentifier(identifier: "bank_list")
     }
 
     private func image(url: URL) -> some View {
@@ -131,6 +133,7 @@ extension BanksListView {
                 TextField("Search bank", text: $text)
                     .padding(.horizontal, metrics.textLeftPadding)
                     .padding(.horizontal, metrics.hPadding)
+                    .addAccessibilityIdentifier(identifier: "search_bar")
                     .onTapGesture {
                         self.isEditing = true
                     }
@@ -163,3 +166,14 @@ struct BanksListView_Previews: PreviewProvider {
     }
 }
 
+
+extension View {
+   @ViewBuilder func addAccessibilityIdentifier(identifier: String) -> some View {
+        if #available(iOS 14.0, *) {
+            accessibilityIdentifier(identifier)
+        }
+        else {
+            accessibility(identifier: identifier)
+        }
+    }
+}
