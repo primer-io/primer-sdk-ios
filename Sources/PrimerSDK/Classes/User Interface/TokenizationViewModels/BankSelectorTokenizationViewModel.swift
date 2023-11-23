@@ -9,6 +9,7 @@
 
 import SafariServices
 import UIKit
+import PrimerSDK
 
 class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
     
@@ -51,6 +52,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         tableView.register(BankTableViewCell.self, forCellReuseIdentifier: BankTableViewCell.identifier)
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.accessibilityIdentifier = AccessibilityIdentifier.BanksComponent.banksList.rawValue
         return tableView
     }()
     
@@ -64,6 +66,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         textField.font = UIFont.systemFont(ofSize: 16.0)
         textField.placeholder = Strings.BankSelector.searchBankTitle
         textField.rightViewMode = .always
+        textField.accessibilityIdentifier = AccessibilityIdentifier.BanksComponent.searchBar.rawValue
         return textField
     }()
     

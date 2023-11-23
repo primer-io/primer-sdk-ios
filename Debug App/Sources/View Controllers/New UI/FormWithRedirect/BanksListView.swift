@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import PrimerSDK
 
 struct PaymentMethodModel {
     let name: String
@@ -47,7 +48,7 @@ struct BanksListView: View {
             Text("Choose your bank")
                 .multilineTextAlignment(.leading)
                 .padding(.leading, metrics.textLeftPadding)
-                .addAccessibilityIdentifier(identifier: "choose_bank_title")
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.title.rawValue)
 
             SearchBar(text: $filterText.didSet { text in
                 didFilterByText(text)
@@ -79,7 +80,7 @@ struct BanksListView: View {
         }
         .padding(.top, 0)
         .padding(.leading, 0)
-        .addAccessibilityIdentifier(identifier: "bank_list")
+        .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.banksList.rawValue)
     }
 
     private func image(url: URL) -> some View {
@@ -133,7 +134,7 @@ extension BanksListView {
                 TextField("Search bank", text: $text)
                     .padding(.horizontal, metrics.textLeftPadding)
                     .padding(.horizontal, metrics.hPadding)
-                    .addAccessibilityIdentifier(identifier: "search_bar")
+                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.searchBar.rawValue)
                     .onTapGesture {
                         self.isEditing = true
                     }
@@ -171,8 +172,7 @@ extension View {
    @ViewBuilder func addAccessibilityIdentifier(identifier: String) -> some View {
         if #available(iOS 14.0, *) {
             accessibilityIdentifier(identifier)
-        }
-        else {
+        } else {
             accessibility(identifier: identifier)
         }
     }
