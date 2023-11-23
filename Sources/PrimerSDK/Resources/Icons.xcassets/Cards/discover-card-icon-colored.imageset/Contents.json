@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "Discovery.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "Discovery-1.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "Discovery-2.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "discover.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {

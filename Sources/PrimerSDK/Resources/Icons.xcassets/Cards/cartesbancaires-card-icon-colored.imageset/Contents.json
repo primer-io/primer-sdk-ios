@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "cartes-bancaires 2.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "cartes-bancaires 1.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "cartes-bancaires.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "cartes-bancaires.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {

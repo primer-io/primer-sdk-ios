@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "Visa.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "Visa@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "Visa@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "visa.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {
