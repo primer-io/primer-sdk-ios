@@ -10,7 +10,6 @@ protocol PrimerHeadlessRedirectComponent: PrimerHeadlessStartable {}
 final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
     let paymentMethodType: PrimerPaymentMethodType
     
-    public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     private var tokenizationModelDelegate: WebRedirectTokenizationDelegate
     private(set) var step: WebStep = .loading
@@ -19,7 +18,6 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
         self.paymentMethodType = paymentMethodType
         self.tokenizationModelDelegate = tokenizationModelDelegate
         self.stepDelegate = self
-        self.errorDelegate = self
         self.tokenizationModelDelegate.didPresentPaymentMethodUI = {
             self.step = .loaded
             self.stepDelegate?.didReceiveStep(step: self.step)
@@ -52,15 +50,9 @@ extension WebRedirectComponent: PrimerHeadlessSteppableDelegate {
     }
 }
 
-extension WebRedirectComponent: PrimerHeadlessErrorableDelegate {
-    func didReceiveError(error: PrimerError) {
-        print("Did receive error \(error)")
-    }
-}
-
 extension WebRedirectComponent: LogReporter {
     func logStep() {
-        let logMessage = step.logMessage
+        let logMessage = "\(step.logMessage) (\(paymentMethodType.rawValue))"
         logger.info(message: logMessage)
         logger.info(message: paymentMethodType.rawValue)
         let stepEvent = Analytics.Event(
