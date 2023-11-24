@@ -128,7 +128,7 @@ public class PrimerKlarnaOptions: Codable {
 
 public class PrimerCardPaymentOptions: Codable {
     
-    let supportedCardNetworks: Set<CardNetwork>
+    let supportedCardNetworks: [CardNetwork]
     
     let is3DSOnVaultingEnabled: Bool
 
@@ -143,8 +143,8 @@ public class PrimerCardPaymentOptions: Codable {
         self.supportedCardNetworks = .allCardNetworks
     }
     
-    public init(supportedCardNetworks: Set<CardNetwork>) {
-        self.supportedCardNetworks = supportedCardNetworks
+    public init(supportedCardNetworks: [CardNetwork]) {
+        self.supportedCardNetworks = supportedCardNetworks.unique
         self.is3DSOnVaultingEnabled = true
     }
 }

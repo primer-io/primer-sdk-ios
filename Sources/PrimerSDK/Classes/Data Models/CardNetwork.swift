@@ -352,10 +352,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             self = cardNetwork
         }
     }
-
 }
 
-extension Set<CardNetwork> {
+extension Array<CardNetwork> {
     
     /// A list of card networks that the merchant supports
     static var supportedCardNetworks: Self {
@@ -365,6 +364,6 @@ extension Set<CardNetwork> {
     /// A list of all card networks, used by default when a merchant does not specify the networks they support
     /// Also used to configure suppoted networks for Apple Pay
     static var allCardNetworks: Self {
-        return Set(Element.allCases)
+        return Element.allCases
     }
 }
