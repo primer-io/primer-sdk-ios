@@ -45,10 +45,6 @@ final class MockWebRedirectTokenizationModel: WebRedirectTokenizationDelegate {
     var didDismissPaymentMethodUI: (() -> Void)?
     var didCancel: (() -> Void)?
 
-    func handlePaymentMethodTokenData() -> Promise<Void> {
-        return Promise { seal in }
-    }
-
     func setup() {}
     func cancel() {}
     func cleanup() {}

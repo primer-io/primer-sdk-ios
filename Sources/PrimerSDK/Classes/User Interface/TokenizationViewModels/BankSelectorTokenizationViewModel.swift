@@ -9,7 +9,6 @@
 
 import SafariServices
 import UIKit
-import PrimerSDK
 
 class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
     
@@ -333,7 +332,7 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
 }
 
 
-extension BankSelectorTokenizationViewModel: BankSelectorTokenizationDelegate {
+extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
     func retrieveListOfBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
             firstly {

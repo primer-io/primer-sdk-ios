@@ -19,11 +19,11 @@ final class DefaultBanksComponent: BanksComponent {
     private(set) var banks: [IssuingBank] = []
     private(set) var bankId: String?
     private let onFinished: () -> WebRedirectComponent
-    private let tokenizationModelDelegate: BankSelectorTokenizationDelegate
+    private let tokenizationProvingModel: BankSelectorTokenizationProviding
 
-    init(paymentMethodType: PrimerPaymentMethodType, tokenizationModelDelegate: BankSelectorTokenizationDelegate, onFinished: @escaping () -> WebRedirectComponent) {
+    init(paymentMethodType: PrimerPaymentMethodType, tokenizationProvingModel: BankSelectorTokenizationProviding, onFinished: @escaping () -> WebRedirectComponent) {
         self.paymentMethodType = paymentMethodType
-        self.tokenizationModelDelegate = tokenizationModelDelegate
+        self.tokenizationProvingModel = tokenizationProvingModel
         self.onFinished = onFinished
     }
     
@@ -35,7 +35,7 @@ final class DefaultBanksComponent: BanksComponent {
             if isBankIdValid(bankId: bankId) {
                 let redirectComponent = onFinished()
                 redirectComponent.start()
-                tokenizationModelDelegate.tokenize(bankId: bankId)
+                tokenizationProvingModel.tokenize(bankId: bankId)
                     .done { model in
                         redirectComponent.didReceiveStep(step: WebStep.loaded)
                 }.catch { errror in
@@ -43,7 +43,7 @@ final class DefaultBanksComponent: BanksComponent {
                 }
             }
         case .bankFilterText(text: let text):
-            let filteredBanks = tokenizationModelDelegate.filterBanks(query: text)
+            let filteredBanks = tokenizationProvingModel.filterBanks(query: text)
             stepDelegate?.didReceiveStep(step: BanksStep.banksRetrieved(banks: filteredBanks.map { IssuingBank(bank: $0) }))
         }
     }
@@ -96,7 +96,7 @@ final class DefaultBanksComponent: BanksComponent {
     public func start() {
         trackStart()
         stepDelegate?.didReceiveStep(step: BanksStep.loading)
-        tokenizationModelDelegate.retrieveListOfBanks()
+        tokenizationProvingModel.retrieveListOfBanks()
             .done { banks -> Void in
                 self.banks = banks.map { IssuingBank(bank: $0) }
                 self.stepDelegate?.didReceiveStep(step: BanksStep.banksRetrieved(banks: self.banks))
@@ -114,7 +114,7 @@ final class DefaultBanksComponent: BanksComponent {
     }
 
     public func cancel() {
-        tokenizationModelDelegate.cancel()
+        tokenizationProvingModel.cancel()
     }
 }
 
