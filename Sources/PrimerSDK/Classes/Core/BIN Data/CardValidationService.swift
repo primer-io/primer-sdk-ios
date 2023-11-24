@@ -14,7 +14,7 @@ protocol CardValidationService {
 
 class DefaultCardValidationService: CardValidationService, LogReporter {
     
-    static let maximumBinLength = 9
+    static let maximumBinLength = 8
     
     static var apiClient: PrimerAPIClientProtocol?
 
