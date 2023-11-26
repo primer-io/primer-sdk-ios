@@ -107,7 +107,8 @@ class PrimerNavigationBar: PrimerView {
         backButton.setImage(customColorImage, for: .normal)
         backButton.tintColor = theme.colors.primary
         backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
-        
+        backButton.accessibilityIdentifier = AccessibilityIdentifier.General.backButton.rawValue
+
         leftView.addSubview(backButton)
         
         backButton.pin(view: leftView)
