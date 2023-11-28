@@ -79,8 +79,9 @@ final class BankComponentTests: XCTestCase {
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             XCTAssertEqual(self.banks.map { $0.name }, mockModel.mockBanks.map { $0.name })
             bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: bankId))
-            banksRetrievedExpectation.fulfill()
             XCTAssertEqual(bankComponent.bankId, bankId)
+            bankComponent.submit()
+            banksRetrievedExpectation.fulfill()
         }
         waitForExpectations(timeout: 10)
         XCTAssertNotNil(webRedirectComponent)

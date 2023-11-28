@@ -31,16 +31,8 @@ final class DefaultBanksComponent: BanksComponent {
         validateData(for: collectableData)
         switch collectableData {
         case .bankId(bankId: let bankId):
-            self.bankId = bankId
             if isBankIdValid(bankId: bankId) {
-                let redirectComponent = onFinished()
-                redirectComponent.start()
-                tokenizationProvingModel.tokenize(bankId: bankId)
-                    .done { _ in
-                        redirectComponent.didReceiveStep(step: WebStep.loaded)
-                }.catch { _ in
-                    print("Error")
-                }
+                self.bankId = bankId
             }
         case .bankFilterText(text: let text):
             let filteredBanks = tokenizationProvingModel.filterBanks(query: text)
@@ -100,7 +92,9 @@ final class DefaultBanksComponent: BanksComponent {
         tokenizationProvingModel.retrieveListOfBanks()
             .done { banks -> Void in
                 self.banks = banks.map { IssuingBank(bank: $0) }
-                self.stepDelegate?.didReceiveStep(step: BanksStep.banksRetrieved(banks: self.banks))
+                let step = BanksStep.banksRetrieved(banks: self.banks)
+                self.nextDataStep = step
+                self.stepDelegate?.didReceiveStep(step: step)
             }.catch { error in
                 ErrorHandler.handle(error: error)
             }
@@ -110,7 +104,16 @@ final class DefaultBanksComponent: BanksComponent {
         trackSubmit()
         switch nextDataStep {
         case .loading: break
-        case .banksRetrieved(banks: _): break
+        case .banksRetrieved:
+            guard let bankId = self.bankId else { return }
+            let redirectComponent = onFinished()
+            redirectComponent.start()
+            tokenizationProvingModel.tokenize(bankId: bankId)
+                .done { _ in
+                    redirectComponent.didReceiveStep(step: WebStep.loaded)
+            }.catch { error in
+                ErrorHandler.handle(error: error)
+            }
         }
     }
 
