@@ -28,7 +28,6 @@ final class DefaultBanksComponent: BanksComponent {
     }
     
     public func updateCollectedData(collectableData: BanksCollectableData) {
-        validateData(for: collectableData)
         switch collectableData {
         case .bankId(bankId: let bankId):
             if isBankIdValid(bankId: bankId) {
@@ -38,6 +37,7 @@ final class DefaultBanksComponent: BanksComponent {
             let filteredBanks = tokenizationProvingModel.filterBanks(query: text)
             stepDelegate?.didReceiveStep(step: BanksStep.banksRetrieved(banks: filteredBanks.map { IssuingBank(bank: $0) }))
         }
+        validateData(for: collectableData)
     }
 
     func isBankIdValid(bankId: String) -> Bool {
