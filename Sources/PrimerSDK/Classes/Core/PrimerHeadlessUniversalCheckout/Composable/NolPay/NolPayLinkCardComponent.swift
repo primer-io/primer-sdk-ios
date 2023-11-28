@@ -22,6 +22,7 @@ public enum NolPayLinkCardStep: PrimerHeadlessStep {
 public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     
     public typealias T = NolPayLinkCollectableData
+    public typealias P = NolPayLinkCardStep
     
 #if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPayProtocol!
@@ -36,10 +37,9 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public var otpCode: String?
     public var cardNumber: String?
     public var linkToken: String?
-    public var nextDataStep: NolPayLinkCardStep = .collectTagData
-    
-    public func updateCollectedData(collectableData: NolPayLinkCollectableData) {
-        
+    public internal(set) var nextDataStep: NolPayLinkCardStep = .collectTagData
+
+    public func updateCollectedData(collectableData: T) {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(

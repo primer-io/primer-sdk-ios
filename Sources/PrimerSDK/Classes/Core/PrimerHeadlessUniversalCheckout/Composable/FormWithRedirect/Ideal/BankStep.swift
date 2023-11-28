@@ -8,9 +8,7 @@
 import Foundation
 public enum BanksStep: PrimerHeadlessStep {
     case loading
-    case banksRetrieved(banks: [BanksComponent.IssuingBank])
-    // temporary, will be address in the Web redirect implementation story
-    case webRedirect(component: WebRedirectComponent)
+    case banksRetrieved(banks: [IssuingBank])
 }
 
 extension BanksStep: Equatable {

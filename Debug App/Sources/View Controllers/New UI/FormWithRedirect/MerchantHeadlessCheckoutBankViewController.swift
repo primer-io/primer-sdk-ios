@@ -12,16 +12,16 @@ import SwiftUI
 import PrimerSDK
 
 final class MerchantHeadlessCheckoutBankViewController: UIViewController {
-    private lazy var idealManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessFormWithRedirectManager(paymentMethodType: paymentMethodType)!
+    private lazy var manager: PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
     let paymentMethodType: String = "ADYEN_IDEAL"
 
     private(set) var activityIndicator: UIActivityIndicatorView?
-    private(set) var bankComponent: BanksComponent?
+    private(set) var bankComponent: (any BanksComponent)?
     private let banksModel: BanksListModel = BanksListModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let bankComponent = idealManager.provideBanksComponent() else {
+        guard let bankComponent: any BanksComponent = try? manager.provide(paymentMethodType: paymentMethodType) else {
             return
         }
         addBanksListViewController()
@@ -32,13 +32,20 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
         self.bankComponent = bankComponent
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        hideLoadingOverlay()
+    }
+
     private func addBanksListViewController() {
         let headerView = BanksListView(paymentMethodModel: PaymentMethodModel(name: paymentMethodType, logo: nil), banksModel: banksModel, didSelectBank: { [weak self] bankId in
             guard let self = self else { return }
-            self.bankComponent?.updateCollectedData(collectableData: .bankId(bankId: bankId))
+            self.showLoadingOverlay()
+            self.bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: bankId))
         }, didFilterByText: { [weak self] filterText in
             guard let self = self else { return }
-            self.bankComponent?.updateCollectedData(collectableData: .bankFilterText(text: filterText))
+            self.showLoadingOverlay()
+            self.bankComponent?.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: filterText))
         })
         let listViewController = UIHostingController(rootView: headerView)
         listViewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -64,7 +71,6 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
 
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         switch validationStatus {
-
         case .validating:
             print("Forms with redirect validation in progress")
         case .valid:
@@ -76,9 +82,11 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
             for error in errors {
                 message += (error.errorDescription ?? error.localizedDescription) + "\n"
             }
+            hideLoadingOverlay()
             self.showAlert(title: "Validation Error", message: "\(message)")
         case .error(error: let error):
             self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+            hideLoadingOverlay()
         }
     }
 
@@ -94,7 +102,6 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
         switch step {
         case .loading: showLoadingOverlay()
         case .banksRetrieved(banks: let banks): renderBanks(banks)
-        case .webRedirect(component: let redirectComponent): handleRedirectComponent(redirectComponent)
         }
     }
 }
@@ -120,12 +127,9 @@ private extension MerchantHeadlessCheckoutBankViewController {
         }
     }
 
-    private func renderBanks(_ banks: [BanksComponent.IssuingBank]) {
+    private func renderBanks(_ banks: [IssuingBank]) {
         hideLoadingOverlay()
         banksModel.updateBanks(banks)
-    }
-
-    private func handleRedirectComponent(_ redirectComponent: WebRedirectComponent) {
     }
 
     private func showAlert(title: String, message: String) {

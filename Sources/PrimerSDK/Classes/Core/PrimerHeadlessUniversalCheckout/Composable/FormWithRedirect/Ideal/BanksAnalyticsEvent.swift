@@ -7,7 +7,7 @@
 
 import Foundation
 enum BanksAnalyticsEvent: String {
-    case start = "BanksComponent.start()"
-    case updateCollectedData = "BanksComponent.updateCollectedData()"
-    case submit = "BanksComponent.submit()"
+    case start = "DefaultBanksComponent.start()"
+    case updateCollectedData = "DefaultBanksComponent.updateCollectedData()"
+    case submit = "DefaultBanksComponent.submit()"
 }

@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import PrimerSDK
 
 struct PaymentMethodModel {
     let name: String
@@ -47,6 +48,7 @@ struct BanksListView: View {
             Text("Choose your bank")
                 .multilineTextAlignment(.leading)
                 .padding(.leading, metrics.textLeftPadding)
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.title.rawValue)
 
             SearchBar(text: $filterText.didSet { text in
                 didFilterByText(text)
@@ -78,13 +80,14 @@ struct BanksListView: View {
         }
         .padding(.top, 0)
         .padding(.leading, 0)
+        .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.banksList.rawValue)
     }
 
     private func image(url: URL) -> some View {
         ImageViewWithUrl(
             url: url,
             placeholder: {
-              Image("questionmark.circle")
+                Image(systemName: "questionmark.app")
                     .frame(width: metrics.imageSize.width, height: metrics.imageSize.height)
             },
             image: {
@@ -131,6 +134,7 @@ extension BanksListView {
                 TextField("Search bank", text: $text)
                     .padding(.horizontal, metrics.textLeftPadding)
                     .padding(.horizontal, metrics.hPadding)
+                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.searchBar.rawValue)
                     .onTapGesture {
                         self.isEditing = true
                     }
@@ -163,3 +167,13 @@ struct BanksListView_Previews: PreviewProvider {
     }
 }
 
+
+extension View {
+   @ViewBuilder func addAccessibilityIdentifier(identifier: String) -> some View {
+        if #available(iOS 14.0, *) {
+            accessibilityIdentifier(identifier)
+        } else {
+            accessibility(identifier: identifier)
+        }
+    }
+}

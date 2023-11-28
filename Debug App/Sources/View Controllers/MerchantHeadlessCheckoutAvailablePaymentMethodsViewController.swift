@@ -330,9 +330,13 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
         self.logs.append(#function)
         self.primerError = err
         self.hideLoadingOverlay()
-        
-        let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
-        self.navigationController?.pushViewController(rvc, animated: true)
+        if navigationController?.children.last is MerchantHeadlessCheckoutBankViewController {
+            navigationController?.popViewController(animated: false)
+        }
+        DispatchQueue.main.async {
+            let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
+            self.navigationController?.pushViewController(rvc, animated: true)
+        }
     }
     
     func primerHeadlessUniversalCheckoutWillUpdateClientSession() {
