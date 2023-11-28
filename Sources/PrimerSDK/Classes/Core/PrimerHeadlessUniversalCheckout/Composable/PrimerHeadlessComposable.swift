@@ -20,7 +20,7 @@ public protocol PrimerHeadlessValidatableDelegate: AnyObject {
 }
 
 public enum PrimerValidationStatus: Equatable {
-    
+
     public static func == (lhs: PrimerValidationStatus, rhs: PrimerValidationStatus) -> Bool {
         switch (lhs, rhs) {
         case (.validating, .validating):

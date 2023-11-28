@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 3/9/21.
 //
 
-
-
 import Foundation
 
 @objc
@@ -19,7 +17,7 @@ internal enum PaymentStatus: Int, Codable {
     case settled
     case declined
     case cancelled
-    
+
     public init?(strValue: String) {
         switch strValue.uppercased() {
         case "PENDING":
@@ -64,5 +62,3 @@ internal protocol RequiredActionProtocol {
     var description: String { get }
     var clientToken: String? { get }
 }
-
-

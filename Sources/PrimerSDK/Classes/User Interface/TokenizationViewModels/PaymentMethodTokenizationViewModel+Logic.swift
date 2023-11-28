@@ -5,8 +5,6 @@
 //  Created by Evangelos on 6/5/22.
 //
 
-
-
 import Foundation
 import UIKit
 
@@ -26,25 +24,22 @@ extension PaymentMethodTokenizationViewModel {
         }
         .catch { err in
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-            
+
             if let primerErr = err as? PrimerError,
                case .cancelled = primerErr,
                PrimerInternal.shared.sdkIntegrationType == .dropIn,
-               (
-                self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
+               self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
                 self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                self.config.type == PrimerPaymentMethodType.payPal.rawValue
-               )
-            {
+                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                 firstly {
                     clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                 }
-                .done { merchantErrorMessage in
+                .done { _ in
                     PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
                 }
                 // The above promises will never end up on error.
                 .catch { _ in }
-                
+
             } else {
                 firstly {
                     clientSessionActionsModule.unselectPaymentMethodIfNeeded()
@@ -56,7 +51,7 @@ extension PaymentMethodTokenizationViewModel {
                     } else {
                         primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
                     }
-                    
+
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                 }
                 .done { merchantErrorMessage in
@@ -110,12 +105,11 @@ extension PaymentMethodTokenizationViewModel {
                         self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
                         self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
                         self.config.type == PrimerPaymentMethodType.payPal.rawValue
-                       )
-                    {
+                       ) {
                         firstly {
                             clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                         }
-                        .done { merchantErrorMessage in
+                        .done { _ in
                             PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
                         }
                         // The above promises will never end up on error.
@@ -145,7 +139,6 @@ extension PaymentMethodTokenizationViewModel {
             }
     }
 
-    
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
             var cancelledError: PrimerError?
@@ -156,7 +149,7 @@ extension PaymentMethodTokenizationViewModel {
                 seal.reject(cancelledError!)
                 self.isCancelled = false
             }
-            
+
             firstly { () -> Promise<DecodedJWTToken?> in
                 if let cancelledError = cancelledError {
                     throw cancelledError
@@ -167,7 +160,7 @@ extension PaymentMethodTokenizationViewModel {
                 if let cancelledError = cancelledError {
                     throw cancelledError
                 }
-                
+
                 if let decodedJWTToken = decodedJWTToken {
                     firstly { () -> Promise<String?> in
                         if let cancelledError = cancelledError {
@@ -179,7 +172,7 @@ extension PaymentMethodTokenizationViewModel {
                         if let cancelledError = cancelledError {
                             throw cancelledError
                         }
-                        
+
                         if let resumeToken = resumeToken {
                             firstly { () -> Promise<PrimerCheckoutData?> in
                                 if let cancelledError = cancelledError {
@@ -220,7 +213,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     // This function will do one of the two following:
     //     - Wait a response from the merchant, via the delegate function. The response can be:
     //         - A new client token
@@ -236,7 +229,7 @@ extension PaymentMethodTokenizationViewModel {
     //     - A decoded client token
     //     - nil for success
     //     - Reject with an error
-    
+
     func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
@@ -245,10 +238,10 @@ extension PaymentMethodTokenizationViewModel {
                         switch resumeDecisionType {
                         case .succeed:
                             seal.fulfill(nil)
-                            
+
                         case .continueWithNewClientToken(let newClientToken):
                             let apiConfigurationModule = PrimerAPIConfigurationModule()
-                        
+
                         firstly {
                             apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
                         }
@@ -258,13 +251,13 @@ extension PaymentMethodTokenizationViewModel {
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
-                            
+
                             seal.fulfill(decodedJWTToken)
                         }
                             .catch { err in
                                 seal.reject(err)
                             }
-                            
+
                         case .fail(let message):
                             var merchantErr: Error!
                             if let message = message {
@@ -275,12 +268,12 @@ extension PaymentMethodTokenizationViewModel {
                             }
                             seal.reject(merchantErr)
                         }
-                        
+
                     } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                         switch resumeDecisionType {
                         case .continueWithNewClientToken(let newClientToken):
                             let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
-                            
+
                             firstly {
                                 apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
                             }
@@ -290,17 +283,17 @@ extension PaymentMethodTokenizationViewModel {
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
-                                
+
                                 seal.fulfill(decodedJWTToken)
                             }
                             .catch { err in
                                 seal.reject(err)
                             }
-                            
+
                         case .complete:
                             seal.fulfill(nil)
                         }
-                        
+
                     } else {
                         precondition(false)
                     }
@@ -315,7 +308,7 @@ extension PaymentMethodTokenizationViewModel {
                     seal.reject(err)
                     return
                 }
-                
+
                 firstly {
                     self.handleCreatePaymentEvent(token)
                 }
@@ -327,10 +320,10 @@ extension PaymentMethodTokenizationViewModel {
 
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse!))
                     self.resumePaymentId = paymentResponse!.id
-                    
+
                     if let requiredAction = paymentResponse!.requiredAction {
                         let apiConfigurationModule = PrimerAPIConfigurationModule()
-                        
+
                         firstly {
                             apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
                         }
@@ -340,13 +333,13 @@ extension PaymentMethodTokenizationViewModel {
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
-                            
+
                             seal.fulfill(decodedJWTToken)
                         }
                         .catch { err in
                             seal.reject(err)
                         }
-                        
+
                     } else {
                         seal.fulfill(nil)
                     }
@@ -357,9 +350,9 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?> {
-        return Promise { seal in            
+        return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
                 PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
                     if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
@@ -380,7 +373,7 @@ extension PaymentMethodTokenizationViewModel {
                     case .continueWithNewClientToken:
                         seal.fulfill(nil)
                         }
-                        
+
                     } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                         switch resumeDecisionType {
                         case .continueWithNewClientToken:
@@ -388,12 +381,12 @@ extension PaymentMethodTokenizationViewModel {
                         case .complete:
                             seal.fulfill(nil)
                         }
-                        
+
                     } else {
                       precondition(false)
                     }
                 }
-                
+
             } else {
                 guard let resumePaymentId = self.resumePaymentId else {
                     let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -401,7 +394,7 @@ extension PaymentMethodTokenizationViewModel {
                     seal.reject(resumePaymentIdError)
                     return
                 }
-                
+
                 firstly {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
@@ -411,7 +404,7 @@ extension PaymentMethodTokenizationViewModel {
                         ErrorHandler.handle(error: err)
                         throw err
                     }
-                    
+
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
@@ -421,12 +414,11 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
-    
+
     func handleFailureFlow(errorMessage: String?) {
         PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
     }
-        
+
     internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
             if PrimerInternal.shared.intent == .vault {
@@ -434,9 +426,9 @@ extension PaymentMethodTokenizationViewModel {
             } else {
                 let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
                 let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
-                
+
                 var decisionHandlerHasBeenCalled = false
-                
+
                 PrimerDelegateProxy.primerWillCreatePaymentWithData(
                     checkoutPaymentMethodData,
                     decisionHandler: { paymentCreationDecision in
@@ -449,7 +441,7 @@ extension PaymentMethodTokenizationViewModel {
                             seal.fulfill()
                         }
                     })
-                
+
                 Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
                     if !decisionHandlerHasBeenCalled {
                         self?.logger.warn(message: "The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.")
@@ -465,14 +457,14 @@ extension PaymentMethodTokenizationViewModel {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
-                
+
                 if let error = error {
                     if let paymentResponse {
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     }
-                    
+
                     seal.reject(error)
-                    
+
                 } else if let paymentResponse = paymentResponse {
                     if paymentResponse.id == nil {
                         let err = PrimerError.paymentFailed(
@@ -486,7 +478,7 @@ extension PaymentMethodTokenizationViewModel {
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
-                        
+
                     } else if paymentResponse.status == .failed {
                         let err = PrimerError.failedToProcessPayment(
                             paymentId: paymentResponse.id ?? "nil",
@@ -500,11 +492,11 @@ extension PaymentMethodTokenizationViewModel {
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
-                        
+
                     } else {
                         seal.fulfill(paymentResponse)
                     }
-                    
+
                 } else {
                     let err = PrimerError.paymentFailed(
                         description: "Failed to create payment",
@@ -521,21 +513,21 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     // Resume payment with Resume payment ID
-    
+
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
-                
+
                 if let error = error {
                     if let paymentResponse {
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     }
-                    
+
                     seal.reject(error)
-                    
+
                 } else if let paymentResponse = paymentResponse {
                     if paymentResponse.id == nil {
                         let err = PrimerError.paymentFailed(
@@ -549,7 +541,7 @@ extension PaymentMethodTokenizationViewModel {
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
-                        
+
                     } else if paymentResponse.status == .failed {
                         let err = PrimerError.failedToProcessPayment(
                             paymentId: paymentResponse.id ?? "nil",
@@ -563,11 +555,11 @@ extension PaymentMethodTokenizationViewModel {
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
-                        
+
                     } else {
                         seal.fulfill(paymentResponse)
                     }
-                    
+
                 } else {
                     let err = PrimerError.paymentFailed(
                         description: "Failed to resume payment",
@@ -584,7 +576,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     func validateReturningPromise() -> Promise<Void> {
         return Promise { seal in
             do {
@@ -595,11 +587,9 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     func nullifyEventCallbacks() {
         self.didStartPayment = nil
         self.didFinishPayment = nil
     }
 }
-
-

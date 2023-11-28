@@ -5,14 +5,12 @@
 //  Created by Evangelos on 2/9/22.
 //
 
-
-
 import Foundation
 
 extension Response.Body {
-    
+
     public class Tokenization: NSObject, Codable {
-        
+
         public var analyticsId: String?
         public var id: String?
         internal var isAlreadyVaulted: Bool?
@@ -24,7 +22,7 @@ extension Response.Body {
         public var token: String?
         public var tokenType: TokenType?
         public var vaultData: Response.Body.Tokenization.VaultData?
-        
+
         init(
             analyticsId: String?,
             id: String?,
@@ -55,7 +53,7 @@ extension Response.Body {
 
 // Should be removed
 extension Response.Body.Tokenization {
-    
+
     public var icon: ImageName {
         switch self.paymentInstrumentType {
         case .paymentCard:
@@ -72,7 +70,7 @@ extension Response.Body.Tokenization {
         default: return .creditCard
         }
     }
-    
+
     var cardButtonViewModel: CardButtonViewModel? {
         switch self.paymentInstrumentType {
         case .paymentCard:
@@ -112,7 +110,7 @@ extension Response.Body.Tokenization {
             } else {
                 return nil
             }
-            
+
         default:
             return nil
         }
@@ -120,9 +118,9 @@ extension Response.Body.Tokenization {
 }
 
 extension Response.Body.Tokenization {
-    
+
     public struct PaymentInstrumentData: Codable {
-        
+
         public let paypalBillingAgreementId: String?
         public let first6Digits: String?
         public let last4Digits: String?
@@ -146,21 +144,21 @@ extension Response.Body.Tokenization {
         public let mx: String?
         public let currencyCode: Currency?
         public let productId: String?
-        
+
         public let paymentMethodConfigId: String?
         public let paymentMethodType: String?
         public let sessionInfo: SessionInfo?
-        
+
         public struct SessionInfo: Codable {
             public let locale: String?
             public let platform: String?
             public let redirectionUrl: String?
-        }        
+        }
     }
 }
 
 extension Response.Body.Tokenization {
-    
+
     public struct VaultData: Codable {
         public var customerId: String
     }

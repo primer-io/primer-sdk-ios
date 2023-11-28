@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 16/3/21.
 //
 
-
-
 // swiftlint:disable file_length
 import Foundation
 import UIKit
@@ -19,7 +17,7 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
 }
 
 public enum PrimerError: PrimerErrorProtocol {
-    
+
     case generic(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String)
     case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String)
@@ -60,7 +58,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
-    
+
     public var errorId: String {
         switch self {
         case .generic:
@@ -145,7 +143,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "unknown"
         }
     }
-    
+
     public var underlyingErrorCode: String? {
         switch self {
         case .nolError(let code, _, _, _):
@@ -154,7 +152,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return nil
         }
     }
-    
+
     public var diagnosticsId: String {
         switch self {
         case .generic(_, _, let diagnosticsId):
@@ -239,7 +237,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         }
     }
-    
+
     var plainDescription: String? {
         switch self {
         case .generic(let message, let userInfo, _):
@@ -275,7 +273,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Failed to create session with error: \(error?.localizedDescription ?? "nil")"
         case .failedOnWebViewFlow(error: let error, _, _):
             return "Failed on webview flow with error: \(error?.localizedDescription ?? "nil")"
-        case .failedToImport3DS(_, _):
+        case .failedToImport3DS:
             return "Failed on import Primer3DS"
         case .failedToPerform3DS(let error, _, _):
             return "Failed on perform 3DS with error: \(error?.localizedDescription ?? "nil")"
@@ -331,14 +329,14 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Something went wrong"
         }
     }
-    
+
     public var errorDescription: String? {
         return "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
     }
-    
+
     var info: [String: Any]? {
         var tmpUserInfo: [String: Any] = errorUserInfo
-        
+
         switch self {
         case .generic(_, let userInfo, _),
                 .uninitializedSDKSession(let userInfo, _),
@@ -380,23 +378,23 @@ public enum PrimerError: PrimerErrorProtocol {
                 .nolError(_, _, let userInfo, _),
                 .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-            
+
         case .sdkDismissed:
             break
         }
-        
+
         return tmpUserInfo
     }
-    
-    public var errorUserInfo: [String : Any] {
+
+    public var errorUserInfo: [String: Any] {
         let tmpUserInfo: [String: Any] = [
             "createdAt": Date().toString(),
-            "diagnosticsId": diagnosticsId,
+            "diagnosticsId": diagnosticsId
         ]
-        
+
         return tmpUserInfo
     }
-    
+
     public var recoverySuggestion: String? {
         switch self {
         case .generic:
@@ -462,7 +460,7 @@ public enum PrimerError: PrimerErrorProtocol {
             } else {
                 return "Change the intent to .checkout"
             }
-        case .unsupportedPaymentMethod(_, _, _):
+        case .unsupportedPaymentMethod:
             return "Change the payment method type"
         case .underlyingErrors:
             return "Check underlying errors for more information."
@@ -490,7 +488,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Contact Primer and provide them diagnostics id \(self.diagnosticsId)"
         }
     }
-    
+
     var exposedError: Error {
         return self
     }
@@ -498,9 +496,9 @@ public enum PrimerError: PrimerErrorProtocol {
 
 // TODO: Review custom initializer for simplified payment error
 extension PrimerError {
-    
+
     internal static func simplifiedErrorFromErrorID(_ errorCode: PrimerPaymentErrorCode, message: String? = nil, userInfo: [String: String]?) -> PrimerError? {
-        
+
         switch errorCode {
         case .failed:
             return PrimerError.paymentFailed(description: message ?? "", userInfo: userInfo, diagnosticsId: UUID().uuidString)

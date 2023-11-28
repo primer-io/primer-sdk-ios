@@ -1,11 +1,10 @@
 import Dispatch
 
 /// Provides `catch` and `recover` to your object that conforms to `Thenable`
-internal protocol CatchMixin: Thenable
-{}
+internal protocol CatchMixin: Thenable {}
 
 internal extension CatchMixin {
-    
+
     /**
      The provided closure executes when this promise rejects.
      
@@ -186,7 +185,7 @@ internal class PMKCascadingFinalizer {
             body($0)
         }
     }
-    
+
     /**
      Consumes the Swift unused-result warning.
      - Note: You should `catch`, but in situations where you know you don’t need a `catch`, `cauterize` makes your intentions clear.
@@ -200,7 +199,7 @@ internal class PMKCascadingFinalizer {
 }
 
 internal extension CatchMixin {
-    
+
     /**
      The provided closure executes when this promise rejects.
      
@@ -417,7 +416,6 @@ internal extension CatchMixin {
         return rp
     }
 
-
     /**
      Consumes the Swift unused-result warning.
      - Note: You should `catch`, but in situations where you know you don’t need a `catch`, `cauterize` makes your intentions clear.
@@ -430,9 +428,8 @@ internal extension CatchMixin {
     }
 }
 
-
 internal extension CatchMixin where T == Void {
-    
+
     /**
      The provided closure executes when this promise rejects.
      

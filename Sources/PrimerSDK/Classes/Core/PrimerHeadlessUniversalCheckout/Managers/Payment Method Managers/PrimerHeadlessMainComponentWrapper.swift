@@ -63,8 +63,7 @@ import Foundation
     }
 }
 
-
-extension PrimerHeadlessMainComponentWrapper:   PrimerHeadlessErrorableDelegate,
+extension PrimerHeadlessMainComponentWrapper: PrimerHeadlessErrorableDelegate,
                                                 PrimerHeadlessValidatableDelegate,
                                                 PrimerHeadlessSteppableDelegate {
     public func didReceiveError(error: PrimerError) {
@@ -92,8 +91,8 @@ private extension PrimerValidationStatus {
         switch self {
         case .valid: return .valid
         case .validating: return .validating
-        case .error(error: _): return .error
-        case .invalid(errors: _): return .invalid
+        case .error: return .error
+        case .invalid: return .invalid
         }
     }
 }

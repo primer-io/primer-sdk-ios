@@ -11,10 +11,10 @@ import Dispatch
 internal class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin {
     /// Delegate `promise` for this CancellablePromise
     internal let promise: Promise<T>
-    
+
     /// Type of the delegate `thenable`
     internal typealias U = Promise<T>
-    
+
     /// Delegate `thenable` for this CancellablePromise
     internal var thenable: U {
         return promise
@@ -22,24 +22,24 @@ internal class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin
 
     /// Type of the delegate `catchable`
     internal typealias C = Promise<T>
-    
+
     /// Delegate `catchable` for this CancellablePromise
     internal var catchable: C {
         return promise
     }
-    
+
     /// The CancelContext associated with this CancellablePromise
     internal var cancelContext: CancelContext
-    
+
     /// Tracks the cancel items for this CancellablePromise.  These items are removed from the associated CancelContext when the promise resolves.
     internal var cancelItemList: CancelItemList
-    
+
     init(promise: Promise<T>, context: CancelContext? = nil, cancelItemList: CancelItemList? = nil) {
         self.promise = promise
         self.cancelContext = context ?? CancelContext()
         self.cancelItemList = cancelItemList ?? CancelItemList()
     }
-    
+
     /// Initialize a new rejected cancellable promise.
     internal convenience init(cancellable: Cancellable? = nil, error: Error) {
         var reject: ((Error) -> Void)!
@@ -49,7 +49,7 @@ internal class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin
         })
         self.appendCancellable(cancellable, reject: reject)
     }
-    
+
     /// Initialize a new cancellable promise bound to the provided `Thenable`.
     internal convenience init<U: Thenable>(_ bridge: U, cancelContext: CancelContext? = nil) where U.T == T {
         var promise: Promise<U.T>!
@@ -67,7 +67,7 @@ internal class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin
         } else {
             cancellable = nil
         }
-        
+
         if promise == nil {
             // Wrapper promise
             promise = Promise { seal in
@@ -83,7 +83,7 @@ internal class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin
         self.init(promise: promise, context: cancelContext)
         self.appendCancellable(cancellable, reject: reject)
     }
-    
+
     /// Initialize a new cancellable promise that can be resolved with the provided `Resolver`.
     internal convenience init(cancellable: Cancellable? = nil, resolver body: (Resolver<T>) throws -> Void) {
         var reject: ((Error) -> Void)!
@@ -93,7 +93,7 @@ internal class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin
         })
         self.appendCancellable(cancellable, reject: reject)
     }
-    
+
     /// Initialize a new cancellable promise using the given Promise and its Resolver.
     internal convenience init(cancellable: Cancellable? = nil, promise: Promise<T>, resolver: Resolver<T>) {
         self.init(promise: promise)
@@ -105,13 +105,13 @@ internal class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin
         let rp = Promise<T>.pending()
         return (promise: CancellablePromise(promise: rp.promise), resolver: rp.resolver)
     }
-    
+
     /// Internal function required for `Thenable` conformance.
     /// - See: `Thenable.pipe`
     internal func pipe(to: @escaping (Result<T, Error>) -> Void) {
         promise.pipe(to: to)
     }
-    
+
     /// - Returns: The current `Result` for this cancellable promise.
     /// - See: `Thenable.result`
     internal var result: Result<T, Error>? {

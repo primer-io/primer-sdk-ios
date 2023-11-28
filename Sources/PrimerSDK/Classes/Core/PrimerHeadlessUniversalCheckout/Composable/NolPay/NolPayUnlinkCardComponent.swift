@@ -50,33 +50,33 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             properties: SDKEventProperties(
                 name: NolPayAnalyticsConstants.UNLINK_CARD_UPDATE_COLLECTED_DATA_METHOD,
                 params: [
-                    "category": "NOL_PAY",
+                    "category": "NOL_PAY"
                 ]))
         Analytics.Service.record(events: [sdkEvent])
-        
+
         switch collectableData {
-        
+
         case .cardAndPhoneData(nolPaymentCard: let nolPaymentCard,
                                mobileNumber: let mobileNumber):
-            
+            nextDataStep = .collectCardAndPhoneData
             cardNumber = nolPaymentCard.cardNumber
             self.mobileNumber = mobileNumber
-
         case .otpData(otpCode: let otpCode):
+            nextDataStep = .collectOtpData
             self.otpCode = otpCode
         }
-        
+
         validateData(for: collectableData)
     }
-    
+
     public func validateData(for data: NolPayUnlinkCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         var errors: [PrimerValidationError] = []
-        
+
         switch data {
-            
+
         case .cardAndPhoneData(nolPaymentCard: let card, mobileNumber: let mobileNumber):
-            
+
             if card.cardNumber.isEmpty || !card.cardNumber.isNumeric {
                 errors.append(PrimerValidationError.invalidCardnumber(
                     message: "Invalid Nol card number",
@@ -88,13 +88,13 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                     ], diagnosticsId: UUID().uuidString))
                 ErrorHandler.handle(error: errors.last!)
             }
-            
+
             phoneMetadataService?.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
                 switch result {
-                    
+
                 case let .success((validationStatus, countryCode, mobileNumber)):
                     switch validationStatus {
-                        
+
                     case .valid:
                         if errors.isEmpty {
                             self?.countryCode = countryCode
@@ -132,44 +132,44 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             }
         }
     }
-    
+
     public func submit() {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: NolPayAnalyticsConstants.UNLINK_CARD_SUBMIT_DATA_METHOD,
                 params: [
-                    "category": "NOL_PAY",
+                    "category": "NOL_PAY"
                 ]))
         Analytics.Service.record(events: [sdkEvent])
-        
+
         switch nextDataStep {
-            
+
         case .collectCardAndPhoneData:
             guard let mobileNumber = mobileNumber
             else {
                 makeAndHandleInvalidValueError(forKey: "mobileNumber")
                 return
             }
-            
+
             guard let countryCode = countryCode
             else {
                 makeAndHandleInvalidValueError(forKey: "phoneCountryDiallingCode")
                 return
             }
-            
+
             guard let cardNumber = cardNumber
             else {
                 makeAndHandleInvalidValueError(forKey: "cardNumber")
                 return
             }
-            
+
 #if canImport(PrimerNolPaySDK)
             nolPay.sendUnlinkOTP(to: mobileNumber,
                                  with: countryCode,
                                  and: cardNumber) { result in
                 switch result {
-                    
+
                 case .success((_, let token)):
                     self.unlinkToken = token
                     self.nextDataStep = .collectOtpData
@@ -195,19 +195,19 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                 makeAndHandleInvalidValueError(forKey: "otpCode")
                 return
             }
-            
+
             guard let unlinkToken = unlinkToken
             else {
                 makeAndHandleInvalidValueError(forKey: "unlinkToken")
                 return
             }
-            
+
             guard let cardNumber = cardNumber
             else {
                 makeAndHandleInvalidValueError(forKey: "cardNumber")
                 return
             }
-            
+
 #if canImport(PrimerNolPaySDK)
             nolPay.unlinkCard(with: cardNumber, otp: otpCode, and: unlinkToken) { result in
                 switch result {
@@ -240,7 +240,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                                                      diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: error)
                     self.errorDelegate?.didReceiveError(error: error)
-                    
+
                 }
             }
 #endif
@@ -248,26 +248,26 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             break
         }
     }
-    
+
     public func start() {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
                 name: NolPayAnalyticsConstants.UNLINK_CARD_START_METHOD,
                 params: [
-                    "category": "NOL_PAY",
+                    "category": "NOL_PAY"
                 ]))
         Analytics.Service.record(events: [sdkEvent])
-        
+
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
             makeAndHandleInvalidValueError(forKey: "Nol AppID")
             return
         }
-        
+
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, 
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
                                                                 "line": "\(#line)"],
@@ -275,22 +275,22 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             ErrorHandler.handle(error: err)
             return
         }
-        
+
         let isSandbox = clientToken.env != "PRODUCTION"
         var isDebug = false
 #if DEBUG
         isDebug =  PrimerLogging.shared.logger.logLevel == .debug
 #endif
-        
+
 #if canImport(PrimerNolPaySDK)
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
-            
+
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
                                                                                 nolAppId: sdkId,
                                                                                 phoneVendor: "Apple",
                                                                                 phoneModel: UIDevice.modelIdentifier!)
             let client = PrimerAPIClient()
-            
+
             if #available(iOS 13, *) {
                 return try await withCheckedThrowingContinuation { continuation in
                     client.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in

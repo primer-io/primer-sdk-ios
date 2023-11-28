@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 4/3/23.
 //
 
-
-
 import Foundation
 
 // Inspired by https://gist.github.com/mbuchetics/c9bc6c22033014aa0c550d3b4324411a
@@ -27,8 +25,8 @@ struct JSONCodingKeys: CodingKey {
 }
 
 extension KeyedEncodingContainer {
-    
-    mutating func encodeIfPresent(_ dictionary: Dictionary<String, Any>?, forKey key: KeyedEncodingContainer<K>.Key, mapNilToUndefined: Bool = false) throws  {
+
+    mutating func encodeIfPresent(_ dictionary: [String: Any]?, forKey key: KeyedEncodingContainer<K>.Key, mapNilToUndefined: Bool = false) throws {
         guard let dictionary = dictionary else {
             if !mapNilToUndefined {
                 try encodeNil(forKey: key)
@@ -37,10 +35,10 @@ extension KeyedEncodingContainer {
         }
         try encode(dictionary, forKey: key, mapNilToUndefined: mapNilToUndefined)
     }
-    
-    mutating func encode(_ dictionary: Dictionary<String, Any>, forKey key: KeyedEncodingContainer<K>.Key, mapNilToUndefined: Bool = false) throws  {
+
+    mutating func encode(_ dictionary: [String: Any], forKey key: KeyedEncodingContainer<K>.Key, mapNilToUndefined: Bool = false) throws {
         var nestedContainer = nestedContainer(keyedBy: JSONCodingKeys.self, forKey: key)
-        
+
         for (entryKey, entryVal) in dictionary {
             if let boolVal = entryVal as? Bool {
                 try nestedContainer.encode(boolVal, forKey: JSONCodingKeys(stringValue: entryKey)!)
@@ -63,12 +61,12 @@ extension KeyedEncodingContainer {
 
 extension KeyedDecodingContainer {
 
-    func decode(_ type: Dictionary<String, Any>.Type, forKey key: K) throws -> Dictionary<String, Any> {
+    func decode(_ type: Dictionary<String, Any>.Type, forKey key: K) throws -> [String: Any] {
         let container = try self.nestedContainer(keyedBy: JSONCodingKeys.self, forKey: key)
         return try container.decode(type)
     }
 
-    func decodeIfPresent(_ type: Dictionary<String, Any>.Type, forKey key: K) throws -> Dictionary<String, Any>? {
+    func decodeIfPresent(_ type: Dictionary<String, Any>.Type, forKey key: K) throws -> [String: Any]? {
         guard contains(key) else {
             return nil
         }
@@ -78,12 +76,12 @@ extension KeyedDecodingContainer {
         return try decode(type, forKey: key)
     }
 
-    func decode(_ type: Array<Any>.Type, forKey key: K) throws -> Array<Any> {
+    func decode(_ type: Array<Any>.Type, forKey key: K) throws -> [Any] {
         var container = try self.nestedUnkeyedContainer(forKey: key)
         return try container.decode(type)
     }
 
-    func decodeIfPresent(_ type: Array<Any>.Type, forKey key: K) throws -> Array<Any>? {
+    func decodeIfPresent(_ type: Array<Any>.Type, forKey key: K) throws -> [Any]? {
         guard contains(key) else {
             return nil
         }
@@ -93,8 +91,8 @@ extension KeyedDecodingContainer {
         return try decode(type, forKey: key)
     }
 
-    func decode(_ type: Dictionary<String, Any>.Type) throws -> Dictionary<String, Any> {
-        var dictionary = Dictionary<String, Any>()
+    func decode(_ type: Dictionary<String, Any>.Type) throws -> [String: Any] {
+        var dictionary = [String: Any]()
 
         for key in allKeys {
             if let boolValue = try? decode(Bool.self, forKey: key) {
@@ -117,7 +115,7 @@ extension KeyedDecodingContainer {
 
 extension UnkeyedDecodingContainer {
 
-    mutating func decode(_ type: Array<Any>.Type) throws -> Array<Any> {
+    mutating func decode(_ type: Array<Any>.Type) throws -> [Any] {
         var array: [Any] = []
         while isAtEnd == false {
             // See if the current value in the JSON array is `null` first and prevent infite recursion with nested arrays.
@@ -138,10 +136,8 @@ extension UnkeyedDecodingContainer {
         return array
     }
 
-    mutating func decode(_ type: Dictionary<String, Any>.Type) throws -> Dictionary<String, Any> {
+    mutating func decode(_ type: Dictionary<String, Any>.Type) throws -> [String: Any] {
         let nestedContainer = try self.nestedContainer(keyedBy: JSONCodingKeys.self)
         return try nestedContainer.decode(type)
     }
 }
-
-

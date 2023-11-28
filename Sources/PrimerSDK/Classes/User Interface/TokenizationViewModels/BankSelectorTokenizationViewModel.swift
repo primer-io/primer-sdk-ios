@@ -5,13 +5,11 @@
 //  Created by Admin on 8/11/21.
 //
 
-
-
 import SafariServices
 import UIKit
 
 class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
-    
+
     internal private(set) var banks: [AdyenBank] = []
     internal private(set) var dataSource: [AdyenBank] = [] {
         didSet {
@@ -26,7 +24,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         self.paymentMethodType = config.internalPaymentMethodType!
         super.init(config: config)
     }
-    
+
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -34,15 +32,15 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             throw err
         }
     }
-    
+
     internal lazy var tableView: UITableView = {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        
+
         let tableView = UITableView()
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
         tableView.backgroundColor = theme.view.backgroundColor
-        
+
         if #available(iOS 11.0, *) {
             tableView.contentInsetAdjustmentBehavior = .never
         }
@@ -54,7 +52,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         tableView.accessibilityIdentifier = AccessibilityIdentifier.BanksComponent.banksList.rawValue
         return tableView
     }()
-    
+
     internal lazy var searchBankTextField: PrimerSearchTextField? = {
         let textField = PrimerSearchTextField(frame: .zero)
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -68,7 +66,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         textField.accessibilityIdentifier = AccessibilityIdentifier.BanksComponent.searchBar.rawValue
         return textField
     }()
-    
+
     private var selectedBank: AdyenBank?
 
     override func cancel() {
@@ -76,14 +74,14 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         self.webViewCompletion = nil
         super.cancel()
     }
-    
+
     override func performPreTokenizationSteps() -> Promise<Void> {
         if !PrimerInternal.isInHeadlessMode {
             DispatchQueue.main.async {
                 PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
             }
         }
-        
+
         let event = Analytics.Event(
             eventType: .ui,
             properties: UIEventProperties(
@@ -98,7 +96,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                 objectClass: "\(Self.self)",
                 place: .bankSelectionList))
         Analytics.Service.record(event: event)
-        
+
         return Promise { seal in
             firstly {
                 self.validateReturningPromise()
@@ -138,7 +136,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             }
         }
     }
-    
+
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
@@ -172,13 +170,13 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             }
         }
     }
-    
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
     }
-    
+
     private func presentBankList() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
@@ -190,7 +188,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             }
         }
     }
-    
+
     private func awaitBankSelection() -> Promise<Void> {
         return Promise { seal in
             self.bankSelectionCompletion = { bank in
@@ -199,7 +197,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             }
         }
     }
-    
+
     private func fetchBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -208,7 +206,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                 seal.reject(err)
                 return
             }
-            
+
             var paymentMethodRequestValue: String = ""
             switch self.config.type {
             case PrimerPaymentMethodType.adyenDotPay.rawValue:
@@ -218,25 +216,25 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             default:
                 break
             }
-                    
+
             let request = Request.Body.Adyen.BanksList(
                 paymentMethodConfigId: config.id!,
                 parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
-            
+
             let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-            
+
             apiClient.listAdyenBanks(clientToken: decodedJWTToken, request: request) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
-                    
+
                 case .success(let banks):
                     seal.fulfill(banks)
                 }
             }
         }
     }
-    
+
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.tokenize(bank: self.selectedBank!) { paymentMethodTokenData, err in
@@ -258,14 +256,14 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             completion(nil, err)
             return
         }
-        
+
         let tokenizationService: TokenizationServiceProtocol = TokenizationService()
         let requestBody = Request.Body.Tokenization(
             paymentInstrument: OffSessionPaymentInstrument(
                 paymentMethodConfigId: self.config.id!,
                 paymentMethodType: config.type,
                 sessionInfo: BankSelectorSessionInfo(issuer: bank.id)))
-        
+
         firstly {
             tokenizationService.tokenize(requestBody: requestBody)
         }
@@ -277,22 +275,22 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             completion(nil, err)
         }
     }
-    
+
 }
 
 extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewDelegate {
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataSource.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let bank = dataSource[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "BankTableViewCell", for: indexPath) as! BankTableViewCell
         cell.configure(viewModel: bank)
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let bank = self.dataSource[indexPath.row]
         self.bankSelectionCompletion?(bank)
@@ -300,37 +298,35 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
 }
 
 extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
-    
+
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if string == "\n" {
             // Keyboard's return button tapoped
             textField.resignFirstResponder()
             return false
         }
-        
+
         var query: String
-        
+
         if string.isEmpty {
             query = String((textField.text ?? "").dropLast())
         } else {
             query = (textField.text ?? "") + string
         }
-        
+
         if query.isEmpty {
             dataSource = banks
             return true
         }
         dataSource = filterBanks(query: query)
-        
         return true
     }
-    
+
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         dataSource = banks
         return true
     }
 }
-
 
 extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
     func retrieveListOfBanks() -> Promise<[AdyenBank]> {
@@ -350,7 +346,7 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
             }
         }
     }
-    func filterBanks(query: String) -> [AdyenBank]  {
+    func filterBanks(query: String) -> [AdyenBank] {
         guard !query.isEmpty else {
             return banks
         }
@@ -370,7 +366,7 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
     }
 
     func handlePaymentMethodTokenData() -> Promise<Void> {
-        return Promise { seal in
+        return Promise { _ in
             processPaymentMethodTokenData()
         }
     }

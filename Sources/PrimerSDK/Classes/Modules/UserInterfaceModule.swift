@@ -5,18 +5,15 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-
-
-
 protocol UserInterfaceModuleProtocol {
-    
+
     var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol! { get }
     var logo: UIImage? { get }
     var icon: UIImage? { get }
     var surchargeSectionText: String? { get }
     var paymentMethodButton: PrimerButton { get }
     var submitButton: PrimerButton? { get }
-    
+
     init(paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol)
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView?
     func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView?
@@ -25,26 +22,26 @@ protocol UserInterfaceModuleProtocol {
 import UIKit
 
 class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
-    
+
     // MARK: - PROPERTIES
-    
+
     weak var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol!
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    
+
     var logo: UIImage? {
         return paymentMethodTokenizationViewModel.config.logo
     }
-    
+
     var invertedLogo: UIImage? {
         return paymentMethodTokenizationViewModel.config.invertedLogo
     }
-    
+
     var navigationBarLogo: UIImage? {
-        
+
         guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodTokenizationViewModel.config.type) else {
             return logo
         }
-        
+
         switch internaPaymentMethodType {
         case .adyenBlik:
             return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "blik-logo-light", in: Bundle.primerResources, compatibleWith: nil)
@@ -54,11 +51,11 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return logo
         }
     }
-    
+
     var icon: UIImage? {
         var fileName = paymentMethodTokenizationViewModel.config.type.lowercased().replacingOccurrences(of: "_", with: "-")
         fileName += "-icon"
-        
+
         switch self.themeMode {
         case .colored:
             fileName += "-colored"
@@ -67,10 +64,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         case .light:
             fileName += "-colored"
         }
-        
+
         return UIImage(named: fileName, in: Bundle.primerResources, compatibleWith: nil)
     }
-    
+
     var themeMode: PrimerTheme.Mode {
         if let baseLogoImage = paymentMethodTokenizationViewModel.config.baseLogoImage {
             if UIScreen.isDarkModeEnabled {
@@ -91,17 +88,17 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 }
             }
         }
-        
+
         if UIScreen.isDarkModeEnabled {
             return .dark
         } else {
             return .colored
         }
     }
-    
+
     var localDisplayMetadata: PrimerPaymentMethod.DisplayMetadata? {
         guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodTokenizationViewModel.config.type) else { return nil }
-        
+
         switch internaPaymentMethodType {
         case .adyenAlipay:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -122,7 +119,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .adyenBlik:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -142,10 +139,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-        
+
         case .adyenBancontactCard:
             return nil
-            
+
         case .adyenDotPay:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -165,7 +162,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .adyenGiropay,
             .buckarooGiropay,
             .payNLGiropay:
@@ -187,7 +184,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: nil),
                     text: nil,
                     textColor: nil))
-            
+
         case .adyenIDeal,
             .buckarooIdeal,
             .mollieIdeal,
@@ -210,10 +207,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .adyenInterac:
             return nil
-            
+
         case .adyenMobilePay:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -253,7 +250,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .adyenMultibanco:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -293,7 +290,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .adyenPayshop:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -313,7 +310,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .adyenSofort,
             .buckarooSofort,
             .primerTestSofort:
@@ -335,7 +332,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .adyenTrustly:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -355,7 +352,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .adyenTwint:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -375,7 +372,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .adyenVipps:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -395,7 +392,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .apaya:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -418,7 +415,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         coloredHex: nil,
                         lightHex: "#000000",
                         darkHex: "#FFFFFF")))
-            
+
         case .applePay:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -438,7 +435,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .atome:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -458,7 +455,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .buckarooBancontact,
             .mollieBankcontact,
             .payNLBancontact:
@@ -480,7 +477,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: nil),
                     text: nil,
                     textColor: nil))
-            
+
         case .buckarooEps:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -500,7 +497,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: nil),
                     text: nil,
                     textColor: nil))
-            
+
         case .coinbase:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -520,13 +517,13 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .goCardless:
             return nil
-            
+
         case .googlePay:
             return nil
-            
+
         case .hoolah:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -546,7 +543,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .iPay88Card:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -569,7 +566,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         coloredHex: "#000000",
                         lightHex: "#000000",
                         darkHex: "#FFFFFF")))
-            
+
         case .klarna,
                 .primerTestKlarna:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -590,7 +587,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .opennode:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -610,7 +607,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .payNLPayconiq:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -630,7 +627,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF"),
                     text: nil,
                     textColor: nil))
-            
+
         case .paymentCard:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -653,7 +650,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         coloredHex: "#000000",
                         lightHex: "#000000",
                         darkHex: "#FFFFFF")))
-            
+
         case .payPal,
                 .primerTestPayPal:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -674,13 +671,13 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: nil),
                     text: nil,
                     textColor: nil))
-            
+
         case .rapydFast:
             return nil
-            
+
         case .rapydGCash:
             return nil
-            
+
         case .rapydGrabPay:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -700,13 +697,13 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: nil),
                     text: nil,
                     textColor: nil))
-                        
+
         case .rapydPoli:
             return nil
-            
+
         case .twoCtwoP:
             return nil
-    
+
         case .rapydPromptPay,
                 .omisePromptPay:
             return PrimerPaymentMethod.DisplayMetadata(
@@ -750,7 +747,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
         case .xenditRetailOutlets:
             return nil
-            
+
         case .xfersPayNow:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -774,7 +771,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return nil
         }
     }
-    
+
     var surchargeSectionText: String? {
         switch paymentMethodTokenizationViewModel.config.type {
         case PrimerPaymentMethodType.paymentCard.rawValue:
@@ -786,62 +783,62 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return "+\(str)"
         }
     }
-    
+
     var buttonTitle: String? {
-        
+
         let metadataButtonText = paymentMethodTokenizationViewModel.config.displayMetadata?.button.text
             ?? self.localDisplayMetadata?.button.text
-        
+
         switch paymentMethodTokenizationViewModel.config.type {
-        
+
         case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
             return Strings.PaymentButton.payWithCard
-            
+
         case PrimerPaymentMethodType.apaya.rawValue:
             // Update with `metadataButtonText ?? Strings.PaymentButton.payByMobile` once we'll get localized strings
             return Strings.PaymentButton.payByMobile
-            
+
         case PrimerPaymentMethodType.iPay88Card.rawValue:
             return Strings.PaymentButton.payWithCard
-            
+
         case PrimerPaymentMethodType.paymentCard.rawValue:
             // Commenting the below code as we are not getting localized strings in `text` key
             // for the a Payment Method Instrument object out of `/configuration` API response
             //
             // if let metadataButtonText = metadataButtonText { return metadataButtonText }
             return PrimerInternal.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.PaymentButton.payWithCard
-            
+
         case PrimerPaymentMethodType.twoCtwoP.rawValue:
             return Strings.PaymentButton.payInInstallments
-                    
+
         default:
             return metadataButtonText
         }
     }
-    
+
     var buttonImage: UIImage? {
         return self.logo
     }
-    
+
     lazy var buttonFont: UIFont? = {
         return UIFont.systemFont(ofSize: 17.0, weight: .medium)
     }()
-    
+
     var buttonCornerRadius: CGFloat? {
         let cornerRadius = paymentMethodTokenizationViewModel.config.displayMetadata?.button.cornerRadius
             ?? self.localDisplayMetadata?.button.cornerRadius
         guard cornerRadius != nil else { return 4.0 }
         return CGFloat(cornerRadius!)
     }
-    
+
     var buttonColor: UIColor? {
         let baseBackgroundColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.backgroundColor
             ?? localDisplayMetadata?.button.backgroundColor
-        
+
         guard baseBackgroundColor != nil else {
             return nil
         }
-        
+
         switch self.themeMode {
         case .colored:
             if let coloredColorHex = baseBackgroundColor!.coloredHex {
@@ -856,18 +853,18 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 return PrimerColor(hex: darkColorHex)
             }
         }
-        
+
         return nil
     }
-    
+
     var buttonTitleColor: UIColor? {
         let baseTextColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.textColor
             ?? self.localDisplayMetadata?.button.textColor
-        
+
         guard baseTextColor != nil else {
             return nil
         }
-        
+
         switch self.themeMode {
         case .colored:
             if let coloredColorHex = baseTextColor!.coloredHex {
@@ -882,17 +879,17 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 return PrimerColor(hex: darkColorHex)
             }
         }
-        
+
         return nil
     }
-    
+
     var buttonBorderWidth: CGFloat {
         let baseBorderWidth = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderWidth
             ?? self.localDisplayMetadata?.button.borderWidth
         guard baseBorderWidth != nil else {
             return 0.0
         }
-        
+
         switch self.themeMode {
         case .colored:
             return baseBorderWidth!.colored ?? 0.0
@@ -902,14 +899,14 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return baseBorderWidth!.dark ?? 0.0
         }
     }
-    
+
     var buttonBorderColor: UIColor? {
         let baseBorderColor = paymentMethodTokenizationViewModel.config.displayMetadata?.button.borderColor
             ?? self.localDisplayMetadata?.button.borderColor
         guard baseBorderColor != nil else {
             return nil
         }
-        
+
         switch self.themeMode {
         case .colored:
             if let coloredColorHex = baseBorderColor!.coloredHex {
@@ -924,14 +921,14 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 return PrimerColor(hex: darkColorHex)
             }
         }
-        
+
         return nil
     }
-    
+
     var buttonTintColor: UIColor? {
         return nil
     }
-    
+
     var paymentMethodButton: PrimerButton {
         let customPaddingSettingsCard: [String] = [
             PrimerPaymentMethodType.adyenBancontactCard.rawValue,
@@ -939,7 +936,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             PrimerPaymentMethodType.iPay88Card.rawValue,
             PrimerPaymentMethodType.paymentCard.rawValue
         ]
-        
+
         let paymentMethodButton = PrimerButton()
         paymentMethodButton.translatesAutoresizingMaskIntoConstraints = false
         paymentMethodButton.accessibilityIdentifier = paymentMethodTokenizationViewModel.config.type
@@ -969,10 +966,10 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         paymentMethodButton.addTarget(self, action: #selector(paymentMethodButtonTapped(_:)), for: .touchUpInside)
         return paymentMethodButton
     }
-    
+
     lazy var submitButton: PrimerButton? = {
         var buttonTitle: String = ""
-        
+
         switch self.paymentMethodTokenizationViewModel.config.type {
         case PrimerPaymentMethodType.paymentCard.rawValue,
             PrimerPaymentMethodType.adyenMBWay.rawValue:
@@ -983,28 +980,28 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                 if let amountStr = universalCheckoutViewModel.amountStr {
                     buttonTitle += " \(amountStr)"
                 }
-                
+
             case .vault:
                 buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle
-                
+
             case .none:
                 precondition(false, "Intent should have been set")
             }
-            
+
             return makePrimerButtonWithTitleText(buttonTitle, isEnabled: false)
-            
+
         case PrimerPaymentMethodType.primerTestKlarna.rawValue,
             PrimerPaymentMethodType.primerTestPayPal.rawValue,
             PrimerPaymentMethodType.primerTestSofort.rawValue:
             return makePrimerButtonWithTitleText(Strings.PaymentButton.pay, isEnabled: false)
-            
+
         case PrimerPaymentMethodType.adyenBlik.rawValue,
             PrimerPaymentMethodType.xfersPayNow.rawValue:
             return makePrimerButtonWithTitleText(Strings.PaymentButton.confirm, isEnabled: false)
-        
+
         case PrimerPaymentMethodType.adyenMultibanco.rawValue:
             return makePrimerButtonWithTitleText(Strings.PaymentButton.confirmToPay, isEnabled: true)
-        
+
         case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
             return makePrimerButtonWithTitleText(Strings.PaymentButton.pay, isEnabled: false)
 
@@ -1012,19 +1009,19 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return nil
         }
     }()
-    
+
     var isSubmitButtonAnimating: Bool {
         submitButton?.isAnimating == true
     }
-    
+
     // MARK: - INITIALIZATION
-    
+
     required init(paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol) {
         self.paymentMethodTokenizationViewModel = paymentMethodTokenizationViewModel
     }
-    
+
     // MARK: - HELPERS
-    
+
     private func makePrimerButtonWithTitleText(_ titleText: String, isEnabled: Bool) -> PrimerButton {
         let submitButton = PrimerButton()
         submitButton.translatesAutoresizingMaskIntoConstraints = false
@@ -1040,15 +1037,15 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         submitButton.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
         return submitButton
     }
-    
+
     func makeLogoImageView(withSize size: CGSize?) -> UIImageView? {
         guard let logo = self.logo else { return nil }
-        
+
         var tmpSize: CGSize! = size
         if size == nil {
             tmpSize = CGSize(width: logo.size.width, height: logo.size.height)
         }
-        
+
         let imgView = UIImageView()
         imgView.image = logo
         imgView.contentMode = .scaleAspectFit
@@ -1057,7 +1054,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         imgView.widthAnchor.constraint(equalToConstant: tmpSize.height).isActive = true
         return imgView
     }
-    
+
     func makeIconImageView(withDimension dimension: CGFloat) -> UIImageView? {
         guard let squareLogo = self.icon else { return nil }
         let imgView = UIImageView()
@@ -1068,14 +1065,12 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         imgView.widthAnchor.constraint(equalToConstant: dimension).isActive = true
         return imgView
     }
-    
+
     @IBAction private func paymentMethodButtonTapped(_ sender: UIButton) {
         self.paymentMethodTokenizationViewModel.start()
     }
-    
+
     @IBAction private func submitButtonTapped(_ sender: UIButton) {
         self.paymentMethodTokenizationViewModel.submitButtonTapped()
     }
 }
-
-

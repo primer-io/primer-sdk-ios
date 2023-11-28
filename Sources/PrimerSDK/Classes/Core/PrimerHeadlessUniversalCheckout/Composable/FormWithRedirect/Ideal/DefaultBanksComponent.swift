@@ -36,9 +36,9 @@ final class DefaultBanksComponent: BanksComponent {
                 let redirectComponent = onFinished()
                 redirectComponent.start()
                 tokenizationProvingModel.tokenize(bankId: bankId)
-                    .done { model in
+                    .done { _ in
                         redirectComponent.didReceiveStep(step: WebStep.loaded)
-                }.catch { errror in
+                }.catch { _ in
                     print("Error")
                 }
             }
@@ -75,14 +75,15 @@ final class DefaultBanksComponent: BanksComponent {
             } else {
                 validationDelegate?.didUpdate(validationStatus: .valid, for: data)
             }
-        case .bankFilterText(text: _):
+        case .bankFilterText(text: let text):
             if banks.isEmpty {
                 let error = PrimerValidationError.banksNotLoaded(
                     userInfo: [
                         "file": #file,
                         "class": "\(Self.self)",
                         "function": #function,
-                        "line": "\(#line)"
+                        "line": "\(#line)",
+                        "text": text
                     ],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
@@ -100,8 +101,8 @@ final class DefaultBanksComponent: BanksComponent {
             .done { banks -> Void in
                 self.banks = banks.map { IssuingBank(bank: $0) }
                 self.stepDelegate?.didReceiveStep(step: BanksStep.banksRetrieved(banks: self.banks))
-            }.catch { errror in
-                print("Error")
+            }.catch { error in
+                ErrorHandler.handle(error: error)
             }
     }
     

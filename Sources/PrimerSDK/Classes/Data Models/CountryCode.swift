@@ -1,5 +1,3 @@
-
-
 import Foundation
 import UIKit
 
@@ -255,7 +253,7 @@ public enum CountryCode: String, Codable, CaseIterable {
     case ye = "YE"
     case zm = "ZM"
     case zw = "ZW"
-    
+
     init?(optionalRawValue: String?) {
         guard let rawValue = optionalRawValue else {
             return nil
@@ -285,30 +283,30 @@ internal extension CountryCode {
 }
 
 extension CountryCode {
-    
+
     static var phoneNumberCountryCodes: [PhoneNumberCountryCode] = CountryCode.loadedPhoneNumberCountryCodes ?? []
 }
 
 extension CountryCode {
-    
+
     private static var languageCode: String {
         Locale.current.languageCode ?? "en"
     }
-    
+
     struct DecodableLocalizedCountries: Decodable {
         let locale: String
         var countries: [CountryCode.RawValue: String]
-        
+
         enum CodingKeys: String, CodingKey {
             case locale
             case countries
         }
-        
+
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.locale = try container.decode(String.self, forKey: .locale)
             self.countries = [:]
-            
+
             if let countriesWithMultipleOptionNames = try container.decodeIfPresent([CountryCode.RawValue: AnyCodable].self, forKey: .countries) {
                 var updatedCountries: [CountryCode.RawValue: String] = [:]
                 countriesWithMultipleOptionNames.forEach {
@@ -322,9 +320,9 @@ extension CountryCode {
             }
         }
     }
-    
+
     struct LocalizedCountries {
-        
+
         static var loadedCountriesBasedOnLocale: DecodableLocalizedCountries? = {
             let jsonParser = JSONParser()
             guard let localizedCountriesData = jsonParser.loadJsonData(fileName: CountryCode.languageCode) else {
@@ -332,8 +330,8 @@ extension CountryCode {
             }
             return try? jsonParser.parse(DecodableLocalizedCountries.self, from: localizedCountriesData)
         }()
-    }    
-    
+    }
+
     private var localizedCountryName: String {
         return LocalizedCountries.loadedCountriesBasedOnLocale?.countries.first { $0.key == self.rawValue }?.value ?? "N/A"
     }
@@ -355,5 +353,3 @@ extension CountryCode {
         return try? jsonParser.parse([PhoneNumberCountryCode].self, from: currenciesData)
     }()
 }
-
-

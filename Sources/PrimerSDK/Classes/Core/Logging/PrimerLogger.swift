@@ -40,50 +40,50 @@ public protocol PrimerLogger {
     ///  - setting a level of `info` will result in all `info`, `warning` and `error` logs being received, but no debug logs.
     ///  - setting a level of `none` will result in no logs being received
     var logLevel: LogLevel { get set }
-
+    
     func log(level: LogLevel, message: String, userInfo: Encodable?, metadata: PrimerLogMetadata)
 }
 
 extension PrimerLogger {
     
     public func debug(message: String,
-                     userInfo: Encodable? = nil,
-                     file: String = #file,
-                     line: Int = #line,
-                     function: String = #function) {
+                      userInfo: Encodable? = nil,
+                      file: String = #file,
+                      line: Int = #line,
+                      function: String = #function) {
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
         logProxy(level: .debug, message: message, userInfo: nil, metadata: metadata)
     }
     
     public func info(message: String,
-                    userInfo: Encodable? = nil,
-                    file: String = #file,
-                    line: Int = #line,
-                    function: String = #function) {
-        let metadata = PrimerLogMetadata(file: file, line: line, function: function)
-        logProxy(level: .info, message: message, userInfo: userInfo, metadata: metadata)
-    }
-    
-    public func warn(message: String,
-                    userInfo: Encodable? = nil,
-                    file: String = #file,
-                    line: Int = #line,
-                    function: String = #function) {
-        let metadata = PrimerLogMetadata(file: file, line: line, function: function)
-        logProxy(level: .warning, message: message, userInfo: userInfo, metadata: metadata)
-    }
-    
-    public func error(message: String,
                      userInfo: Encodable? = nil,
                      file: String = #file,
                      line: Int = #line,
                      function: String = #function) {
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
+        logProxy(level: .info, message: message, userInfo: userInfo, metadata: metadata)
+    }
+    
+    public func warn(message: String,
+                     userInfo: Encodable? = nil,
+                     file: String = #file,
+                     line: Int = #line,
+                     function: String = #function) {
+        let metadata = PrimerLogMetadata(file: file, line: line, function: function)
+        logProxy(level: .warning, message: message, userInfo: userInfo, metadata: metadata)
+    }
+    
+    public func error(message: String,
+                      userInfo: Encodable? = nil,
+                      file: String = #file,
+                      line: Int = #line,
+                      function: String = #function) {
+        let metadata = PrimerLogMetadata(file: file, line: line, function: function)
         logProxy(level: .error, message: message, userInfo: userInfo, metadata: metadata)
     }
     
     private func logUserInfo(level: LogLevel,
-                           userInfo: Encodable?, metadata: PrimerLogMetadata) {
+                             userInfo: Encodable?, metadata: PrimerLogMetadata) {
         guard let userInfo = userInfo, let dictionary = try? userInfo.asDictionary() else {
             return
         }
@@ -113,7 +113,7 @@ public class DefaultLogger: PrimerLogger {
     }
     
     public func log(level: PrimerSDK.LogLevel, message: String, userInfo: Encodable?, metadata: PrimerLogMetadata) {
-
+        
         let message = format(level: level, message: message, metadata: metadata)
         
         guard #available(iOS 14, *) else {

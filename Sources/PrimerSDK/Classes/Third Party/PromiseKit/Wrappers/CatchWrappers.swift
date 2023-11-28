@@ -39,8 +39,7 @@ internal extension _PMKCatchWrappers {
      - SeeAlso: [Cancellation](http://promisekit.org/docs/)
      */
     func `catch`<E: Swift.Error>(only: E, on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, _ body: @escaping(E) -> Void)
-        -> CascadingFinalizer where E: Equatable
-    {
+    -> CascadingFinalizer where E: Equatable {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.return, flags: flags)
         return `catch`(only: only, on: dispatcher, body)
     }
@@ -61,13 +60,13 @@ internal extension _PMKCatchWrappers {
      - Parameter body: The handler to execute if this promise is rejected with the provided error type.
      - SeeAlso: [Cancellation](http://promisekit.org/docs/)
      */
-    func `catch`<E: Swift.Error>(only: E.Type, on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil,
-        policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) -> Void) -> CascadingFinalizer
+    func `catch`<E: Swift.Error>(only: E.Type, 
+                                 on: DispatchQueue? = .pmkDefault,
+                                 flags: DispatchWorkItemFlags? = nil,
+                                 policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) -> Void) -> CascadingFinalizer
     {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.return, flags: flags)
         return `catch`(only: only, on: dispatcher, policy: policy, body)
     }
     
 }
-
-

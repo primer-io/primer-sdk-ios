@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
-
-
 import UIKit
 
 /// The PrimerTextFieldViewDelegate protocol can be used to retrieve information about the text input.
@@ -19,13 +17,13 @@ public protocol PrimerTextFieldViewDelegate {
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?)
     /// Will return a the validation error on the text input.
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error)
-    
+
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView)
-    
+
     func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool
-    
+
     func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool
-    
+
     func primerTextFieldViewDidEndEditing(_ primerTextFieldView: PrimerTextFieldView)
 }
 
@@ -40,7 +38,7 @@ public extension PrimerTextFieldViewDelegate {
 }
 
 public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
-    
+
     @IBOutlet internal weak var textField: PrimerTextField!
     internal var isValid: ((_ text: String) -> Bool?)?
     internal(set) public var isTextValid: Bool = false
@@ -64,13 +62,13 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public var isEmpty: Bool {
         return textField.isEmpty
     }
-        
+
     // MARK: - PROXY
-    
+
     public override var backgroundColor: UIColor? { didSet {
         textField?.backgroundColor = backgroundColor
     } }
-    
+
     public var text: String? { didSet { textField.text = text } }
     public var attributedText: NSAttributedString? { didSet { textField.attributedText = attributedText } }
     public var textColor: UIColor? { didSet { textField.textColor = textColor } }
@@ -96,59 +94,59 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public var keyboardType: UIKeyboardType = .default { didSet { textField.keyboardType = keyboardType }}
     public var isTextFieldAccessibilityElement: Bool = false { didSet { textField.isAccessibilityElement = isTextFieldAccessibilityElement }}
     public var textFieldaccessibilityIdentifier: String? { didSet { textField.accessibilityIdentifier = textFieldaccessibilityIdentifier }}
-    
+
     public func borderRectForBounds(forBounds bounds: CGRect) -> CGRect {
         return textField.borderRect(forBounds: bounds)
     }
-    
+
     public func textRect(forBounds bounds: CGRect) -> CGRect {
         return textField.textRect(forBounds: bounds)
     }
-    
+
     public func placeholderRect(forBounds bounds: CGRect) -> CGRect {
         return textField.placeholderRect(forBounds: bounds)
     }
-    
+
     public func editingRect(forBounds bounds: CGRect) -> CGRect {
         return textField.editingRect(forBounds: bounds)
     }
-    
+
     public func clearButtonRect(forBounds bounds: CGRect) -> CGRect {
         return textField.clearButtonRect(forBounds: bounds)
     }
-    
+
     public func leftViewRect(forBounds bounds: CGRect) -> CGRect {
         return textField.leftViewRect(forBounds: bounds)
     }
-    
+
     public func rightViewRect(forBounds bounds: CGRect) -> CGRect {
         return textField.rightViewRect(forBounds: bounds)
     }
-    
+
     public func drawText(in rect: CGRect) {
         return textField.drawText(in: rect)
     }
-    
+
     public func drawPlaceholderInRect(in rect: CGRect) {
         return textField.drawPlaceholder(in: rect)
     }
-    
+
     public override func becomeFirstResponder() -> Bool {
         return textField.becomeFirstResponder()
     }
-    
+
     public override func resignFirstResponder() -> Bool {
         return textField.resignFirstResponder()
     }
 
     public var clearsOnInsertion: Bool = false { didSet { textField.clearsOnInsertion = clearsOnInsertion }}
-    
+
     override func loadNib() -> UIView {
         let bundle = Bundle.primerResources
         let nib = UINib(nibName: PrimerTextFieldView.className, bundle: bundle)
         return nib.instantiate(withOwner: self, options: nil).first as! UIView
     }
-    
+
     override func xibSetup() {
         super.xibSetup()
         backgroundColor = .clear
@@ -156,57 +154,57 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         textField.backgroundColor = backgroundColor
         textField.delegate = self
     }
-    
+
     // MARK: - TEXT FIELD DELEGATE
-    
+
     public func textFieldDidBeginEditing(_ textField: UITextField) {
         delegate?.primerTextFieldViewDidBeginEditing(self)
     }
-    
+
     public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         return delegate?.primerTextFieldViewShouldBeginEditing(self) ?? true
     }
-    
+
     public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         return delegate?.primerTextFieldViewShouldEndEditing(self) ?? true
     }
-    
+
     public func textFieldDidEndEditing(_ textField: UITextField) {
-        
+
         guard let primerTextField = textField as? PrimerTextField else { return }
-        
+
         if let isValid = self.isValid {
             validation = (isValid(primerTextField._text ?? "") ?? false)
                 ? PrimerTextField.Validation.valid
             : PrimerTextField.Validation.invalid(PrimerError.invalidValue(key: "primerTextField.text", value: textField.text, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
         }
-        
+
         switch validation {
         case .valid:
             delegate?.primerTextFieldView(self, isValid: true)
 
         case .invalid(let err):
             delegate?.primerTextFieldView(self, isValid: false)
-            
+
             if let err = err {
                 delegate?.primerTextFieldView(self, validationDidFailWithError: err)
             }
-    
+
         case .notAvailable:
             delegate?.primerTextFieldView(self, isValid: nil)
         }
-        
+
         delegate?.primerTextFieldViewDidEndEditing(self)
     }
-    
+
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return true
     }
-    
+
 }
 
 class PrimerCustomFieldView: UIView {
-    
+
     var fieldView: PrimerTextFieldView!
     override var tintColor: UIColor! {
         didSet {
@@ -242,7 +240,7 @@ class PrimerCustomFieldView: UIView {
             errorLabel.text = errorText ?? ""
         }
     }
-    
+
     private var verticalStackView: UIStackView = UIStackView()
     private let errorLabel = UILabel()
     private let topPlaceholderLabel = UILabel()
@@ -262,7 +260,7 @@ class PrimerCustomFieldView: UIView {
         topPlaceholderLabel.text = placeholderText
         topPlaceholderLabel.textColor = theme.text.system.color
         verticalStackView.addArrangedSubview(topPlaceholderLabel)
-        
+
         rightImageView1.contentMode = .scaleAspectFit
         rightImageView2.contentMode = .scaleAspectFit
 
@@ -272,7 +270,7 @@ class PrimerCustomFieldView: UIView {
         textFieldStackView.addArrangedSubview(fieldView)
         textFieldStackView.addArrangedSubview(rightImageView2)
         textFieldStackView.spacing = 6
-        
+
         textFieldStackView.addArrangedSubview(rightImageView2Container)
         rightImageView2Container.translatesAutoresizingMaskIntoConstraints = false
         rightImageView2Container.addSubview(rightImageView2)
@@ -282,7 +280,7 @@ class PrimerCustomFieldView: UIView {
         rightImageView2.leadingAnchor.constraint(equalTo: rightImageView2Container.leadingAnchor, constant: 0).isActive = true
         rightImageView2.trailingAnchor.constraint(equalTo: rightImageView2Container.trailingAnchor, constant: 0).isActive = true
         rightImageView2.widthAnchor.constraint(equalTo: rightImageView2Container.heightAnchor, multiplier: 1.0).isActive = true
-        
+
         textFieldStackView.addArrangedSubview(rightImageView1Container)
         rightImageView1Container.translatesAutoresizingMaskIntoConstraints = false
         rightImageView1Container.addSubview(rightImageView1)
@@ -292,7 +290,7 @@ class PrimerCustomFieldView: UIView {
         rightImageView1.leadingAnchor.constraint(equalTo: rightImageView1Container.leadingAnchor, constant: 0).isActive = true
         rightImageView1.trailingAnchor.constraint(equalTo: rightImageView1Container.trailingAnchor, constant: 0).isActive = true
         rightImageView1.widthAnchor.constraint(equalTo: rightImageView1.heightAnchor, multiplier: 1.0).isActive = true
-        
+
         bottomLine.backgroundColor = theme.colors.primary
         bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
         verticalStackView.addArrangedSubview(textFieldStackView)
@@ -302,7 +300,7 @@ class PrimerCustomFieldView: UIView {
         errorLabel.heightAnchor.constraint(equalToConstant: 12.0).isActive = true
         errorLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         errorLabel.text = nil
-        
+
         verticalStackView.addArrangedSubview(errorLabel)
 
         verticalStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -315,38 +313,32 @@ class PrimerCustomFieldView: UIView {
 }
 
 internal class PaddedImageView: PrimerImageView {
-    
+
     internal private(set) var insets: UIEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        
+
     override var alignmentRectInsets: UIEdgeInsets {
         return insets
     }
-    
+
     convenience init(insets: UIEdgeInsets) {
         self.init(image: nil)
     }
-    
+
     convenience init(image: UIImage?, insets: UIEdgeInsets) {
         self.init(image: image)
         self.insets = insets
     }
-    
+
     override init(image: UIImage?) {
         super.init(image: image)
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-    }
-    
+
 }
-
-

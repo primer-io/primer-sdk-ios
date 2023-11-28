@@ -10,7 +10,7 @@ public struct AccessibilityIdentifier {
     public enum General: String {
         case backButton = "navigation_bar_back"
     }
-    public enum BanksComponent: String  {
+    public enum BanksComponent: String {
         case title = "choose_bank_title"
         case banksList = "banks_list"
         case searchBar = "search_bar"

@@ -10,7 +10,7 @@ import XCTest
 
 var mockClientToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil, nolPayTransactionNo: nil)
 
-//(
+// (
 //    accessToken: "bla",
 //    configurationUrl: "bla",
 //    paymentFlow: "bla",
@@ -19,7 +19,7 @@ var mockClientToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeInte
 //    coreUrl: "https://primer.io",
 //    pciUrl: "https://primer.io",
 //    env: "bla"
-//)
+// )
 
 var mockSettings = PrimerSettings(
     paymentMethodOptions: PrimerPaymentMethodOptions(
@@ -65,7 +65,6 @@ class Mocks {
         requiredAction: nil,
         status: .success,
         paymentFailureReason: nil)
-    
     
     static func createMockAPIConfiguration(
         clientSession: ClientSession.APIResponse?,
@@ -194,13 +193,10 @@ class MockPrimerDelegate: PrimerDelegate {
     func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
 
     }
-
     
     func tokenAddedToVault(_ token: PrimerPaymentMethodTokenData) {
         
     }
-
-    
 
     func authorizePayment(_ result: PrimerPaymentMethodTokenData, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
@@ -543,7 +539,7 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
     }
     
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
-        return Promise { seal in
+        return Promise { _ in
             guard let mockedAPIConfiguration = mockedAPIConfiguration else {
                 XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
                 return
@@ -556,7 +552,7 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
     }
     
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
-        return Promise { seal in
+        return Promise { _ in
             Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
                 PrimerAPIConfigurationModule.clientToken = newClientToken
             }

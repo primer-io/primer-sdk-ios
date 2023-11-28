@@ -20,13 +20,13 @@ import Foundation
 /// 100% thread safe.
 
 internal final class RateLimitedDispatcher: RateLimitedDispatcherBase {
-    
+
     private var tokensInBucket: Double = 0
     private var latestAccrual: DispatchTime = DispatchTime.now()
     private var retryWorkItem: DispatchWorkItem? { willSet { retryWorkItem?.cancel() }}
-    
+
     private var tokensPerSecond: Double { return Double(maxDispatches) / interval }
-    
+
     /// A `PromiseKit` `Dispatcher` that dispatches X executions every Y
     /// seconds, on average.
     ///
@@ -44,16 +44,16 @@ internal final class RateLimitedDispatcher: RateLimitedDispatcherBase {
         super.init(maxDispatches: maxDispatches, perInterval: interval, queue: queue)
         tokensInBucket = Double(maxDispatches)
     }
-    
+
     internal convenience init(maxDispatches: Int, perInterval interval: TimeInterval, queue: DispatchQueue) {
         self.init(maxDispatches: maxDispatches, perInterval: interval, queue: queue as Dispatcher)
     }
-    
+
     override func dispatchFromQueue() {
         // swiftlint:disable empty_count
         guard undispatched.count > 0 else { return }
         cleanupNonce += 1
-        
+
         let now = DispatchTime.now()
         let tokensToAdd = (now - latestAccrual) * tokensPerSecond
         tokensInBucket = min(Double(maxDispatches - nDispatched), tokensInBucket + tokensToAdd)
@@ -80,7 +80,7 @@ internal final class RateLimitedDispatcher: RateLimitedDispatcherBase {
         }
 
     }
-    
+
     private func scheduleRetry() {
         guard retryWorkItem == nil && !undispatched.isEmpty && nDispatched < maxDispatches else { return }
         let tokenDeficit = 1 - tokensInBucket
@@ -92,7 +92,7 @@ internal final class RateLimitedDispatcher: RateLimitedDispatcherBase {
         }
         serializer.asyncAfter(deadline: deadline, execute: retryWorkItem!)
     }
-    
+
     override func cleanup(_ nonce: Int64) {
         super.cleanup(nonce)
         guard nonce == cleanupNonce else { return }
@@ -102,9 +102,8 @@ internal final class RateLimitedDispatcher: RateLimitedDispatcherBase {
 }
 
 extension DispatchTime {
-    static func -(a: DispatchTime, b: DispatchTime) -> TimeInterval {
+    static func - (a: DispatchTime, b: DispatchTime) -> TimeInterval {
         let delta = a.uptimeNanoseconds - b.uptimeNanoseconds
         return TimeInterval(delta) / 1_000_000_000
     }
 }
-

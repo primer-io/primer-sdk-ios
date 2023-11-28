@@ -5,14 +5,12 @@
 //  Created by Evangelos on 28/1/22.
 //
 
-
-
 import UIKit
 
 public class PrimerHeadlessUniversalCheckout: LogReporter {
-    
+
     public static let current = PrimerHeadlessUniversalCheckout()
-    
+
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate? {
         didSet {
             PrimerInternal.shared.sdkIntegrationType = .headless
@@ -24,7 +22,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         }
     }
     private(set) public var clientToken: String?
-    
+
     internal let sdkSessionId = UUID().uuidString
     internal private(set) var checkoutSessionId: String?
     internal private(set) var timingEventId: String?
@@ -38,13 +36,13 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         PrimerPaymentMethodType.primerTestKlarna.rawValue,
         PrimerPaymentMethodType.primerTestPayPal.rawValue,
         PrimerPaymentMethodType.primerTestSofort.rawValue,
-        PrimerPaymentMethodType.xfersPayNow.rawValue,
+        PrimerPaymentMethodType.xfersPayNow.rawValue
     ]
-    
+
     fileprivate init() {
         Analytics.Service.sync()
     }
-    
+
     public func start(
         withClientToken clientToken: String,
         settings: PrimerSettings? = nil,
@@ -54,22 +52,22 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
     ) {
         PrimerInternal.shared.sdkIntegrationType = .headless
         PrimerInternal.shared.intent = .checkout
-        
+
         DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
-        
+
         if delegate != nil {
             PrimerHeadlessUniversalCheckout.current.delegate = delegate
         }
-        
+
         if PrimerHeadlessUniversalCheckout.current.delegate == nil {
             logger.warn(message: "PrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
         }
-        
+
         PrimerInternal.shared.checkoutSessionId = UUID().uuidString
         PrimerInternal.shared.timingEventId = UUID().uuidString
-        
+
         var events: [Analytics.Event] = []
-        
+
 #if canImport(Primer3DS)
         logger.info(message: "Can import Primer3DS")
 #else
@@ -82,7 +80,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
                 severity: .error))
         events.append(event)
 #endif
-        
+
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
@@ -90,27 +88,26 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
                 params: [
                     "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
                 ]))
-        
+
         let connectivityEvent = Analytics.Event(
             eventType: .networkConnectivity,
             properties: NetworkConnectivityEventProperties(
                 networkType: Connectivity.networkType))
-        
-        
+
         let timingStartEvent = Analytics.Event(
             eventType: .timerEvent,
             properties: TimerEventProperties(
                 momentType: .start,
                 id: PrimerInternal.shared.timingEventId!))
-        
+
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
-        
+
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         settings.uiOptions.isInitScreenEnabled = false
         settings.uiOptions.isSuccessScreenEnabled = false
         settings.uiOptions.isErrorScreenEnabled = false
-                
+
         firstly {
             self.apiConfigurationModule.setupSession(
                 forClientToken: clientToken,
@@ -121,7 +118,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         .done {
             let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
             if (availablePaymentMethodsTypes ?? []).isEmpty {
-                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, 
+                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file,
                                                                              "class": "\(Self.self)",
                                                                              "function": #function,
                                                                              "line": "\(#line)"],
@@ -144,13 +141,13 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
             }
         }
     }
-    
+
     public func cleanUp() {
         PrimerAPIConfigurationModule.resetSession()
     }
-    
+
     // MARK: - HELPERS
-    
+
     private func continueValidateSession() -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
@@ -159,35 +156,35 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
                 seal.reject(err)
                 return
             }
-            
+
             guard let decodedJWTToken = clientToken.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token cannot be decoded"], diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }
-            
+
             do {
                 try decodedJWTToken.validate()
             } catch {
                 seal.reject(error)
             }
-            
+
             guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
                 let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }
-            
+
             guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }
-            
+
             seal.fulfill()
         }
     }
-    
+
     internal func validateSession() -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
@@ -196,43 +193,43 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
                 seal.reject(err)
                 return
             }
-            
+
             guard let decodedJWTToken = clientToken.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token cannot be decoded"], diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }
-            
+
             do {
                 try decodedJWTToken.validate()
             } catch {
                 seal.reject(error)
             }
-            
+
             guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
                 let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }
-            
+
             guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }
-            
+
             seal.fulfill()
         }
     }
-    
+
     internal func listAvailablePaymentMethodsTypes() -> [String]? {
         var paymentMethods = PrimerAPIConfiguration.paymentMethodConfigs
-        
+
 #if !canImport(PrimerKlarnaSDK)
         if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
             paymentMethods?.remove(at: klarnaIndex)
             logger.warn(message: "Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.")
-            
+
             let event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
@@ -240,15 +237,15 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
                     messageType: .error,
                     severity: .error))
             Analytics.Service.record(events: [event])
-            
+
         }
 #endif
-        
+
 #if !canImport(PrimerIPay88MYSDK)
         if let iPay88ViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
             paymentMethods?.remove(at: iPay88ViewModelIndex)
             logger.warn(message: "iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.")
-            
+
             let event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
@@ -258,12 +255,12 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
             Analytics.Service.record(events: [event])
         }
 #endif
-        
+
 #if !canImport(PrimerNolPaySDK)
         if let nolPayViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.nolPay.rawValue }) {
             paymentMethods?.remove(at: nolPayViewModelIndex)
             logger.warn(message: "NolPay configuration has been found but module 'PrimerNolPaySDK' is missing. Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your podfile, so you can perform payments with NolPay.")
-            
+
             let event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
@@ -273,9 +270,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
             Analytics.Service.record(events: [event])
         }
 #endif
-        
+
         return paymentMethods?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
 }
-
-

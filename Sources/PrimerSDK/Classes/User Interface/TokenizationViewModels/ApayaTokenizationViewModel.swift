@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 12/10/21.
 //
 
-
-
 import Foundation
 import UIKit
 import WebKit
@@ -17,40 +15,39 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var webViewController: PrimerWebViewController?
     private var webViewCompletion: ((_ res: Apaya.WebViewResponse?, _ error: Error?) -> Void)?
     private var apayaWebViewResponse: Apaya.WebViewResponse!
-    
+
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         guard decodedJWTToken.pciUrl != nil else {
             let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         guard let configuration = PrimerAPIConfigurationModule.apiConfiguration else {
             let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
-                
-                
+
         guard configuration.getProductId(for: PrimerPaymentMethodType.apaya.rawValue) != nil else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         guard AppState.current.currency != nil else {
             let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
     }
-    
+
     override func performPreTokenizationSteps() -> Promise<Void> {
         let event = Analytics.Event(
             eventType: .ui,
@@ -66,9 +63,9 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 objectClass: "\(Self.self)",
                 place: .paymentMethodPopup))
         Analytics.Service.record(event: event)
-        
+
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
-        
+
         return Promise { seal in
             firstly {
                 self.validateReturningPromise()
@@ -98,7 +95,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
@@ -111,7 +108,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.paymentMethodTokenData = paymentMethodTokenData
                 return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
-            .done { dat in
+            .done { _ in
                 seal.fulfill()
             }
             .catch { err in
@@ -119,13 +116,13 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
     }
-    
+
     private func generateWebViewUrl() -> Promise<URL> {
         return Promise { seal in
             self.generateWebViewUrl { result in
@@ -138,7 +135,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     private func generateWebViewUrl(_ completion: @escaping (Result<String, Error>) -> Void) {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
               let merchantAccountId = PrimerAPIConfigurationModule.apiConfiguration?.getProductId(for: PrimerPaymentMethodType.apaya.rawValue)
@@ -147,40 +144,40 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             ErrorHandler.handle(error: err)
             return completion(.failure(err))
         }
-        
+
         guard let currency = AppState.current.currency else {
             let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             return completion(.failure(err))
         }
-        
+
         let body = Request.Body.Apaya.CreateSession(
             merchantAccountId: merchantAccountId,
             language: PrimerSettings.current.localeData.languageCode,
             currencyCode: currency.rawValue,
             phoneNumber: PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.mobileNumber)
-        
+
         let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-        
+
         apiClient.createApayaSession(clientToken: decodedJWTToken, request: body) { result in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
-                
+
             case .success(let res):
                 self.logger.info(message: "\(res)")
                 completion(.success(res.url))
             }
         }
     }
-    
+
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
                 self.webViewController = PrimerWebViewController(with: self.apayaUrl)
                 self.webViewController!.navigationDelegate = self
                 self.webViewController!.modalPresentationStyle = .fullScreen
-                
+
                 self.willPresentPaymentMethodUI?()
                 PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
@@ -191,7 +188,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.webViewCompletion = { (res, err) in
@@ -206,7 +203,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.tokenize(apayaWebViewResponse: self.apayaWebViewResponse) { paymentMethod, err in
@@ -214,7 +211,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.webViewController?.dismiss(animated: true, completion: {
                     self.didDismissPaymentMethodUI?()
                 })
-                
+
                 if let err = err {
                     seal.reject(err)
                 } else if let paymentMethod = paymentMethod {
@@ -225,7 +222,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     private func tokenize(apayaWebViewResponse: Apaya.WebViewResponse, completion: @escaping (_ paymentMethod: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -233,14 +230,14 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             completion(nil, err)
             return
         }
-        
+
         guard let currencyStr = AppState.current.currency?.rawValue else {
             let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
         }
-        
+
         let paymentInstrument = ApayaPaymentInstrument(
             mx: apayaWebViewResponse.mxNumber,
             mnc: apayaWebViewResponse.mnc,
@@ -248,10 +245,10 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             hashedIdentifier: apayaWebViewResponse.hashedIdentifier,
             productId: apayaWebViewResponse.productId,
             currencyCode: currencyStr)
-        
+
         let tokenizationService: TokenizationServiceProtocol = TokenizationService()
         let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-        
+
         firstly {
             tokenizationService.tokenize(requestBody: requestBody)
         }
@@ -266,7 +263,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 }
 
 extension ApayaTokenizationViewModel: WKNavigationDelegate {
-    
+
     func webView(
         _ webView: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction,
@@ -276,19 +273,19 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
             do {
                 let apayaWebViewResponse = try Apaya.WebViewResponse(url: navigationAction.request.url!)
                 webViewCompletion?(apayaWebViewResponse, nil)
-                
+
             } catch {
                 webViewCompletion?(nil, error)
             }
-            
+
             webViewCompletion = nil
             decisionHandler(.cancel)
-            
+
         } else {
             decisionHandler(.allow)
         }
     }
-    
+
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         let nsError = error as NSError
         if !(nsError.domain == "NSURLErrorDomain" && nsError.code == -1002) {
@@ -298,7 +295,5 @@ extension ApayaTokenizationViewModel: WKNavigationDelegate {
             webViewCompletion = nil
         }
     }
-    
+
 }
-
-

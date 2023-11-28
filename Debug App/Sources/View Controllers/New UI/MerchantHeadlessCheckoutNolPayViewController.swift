@@ -182,11 +182,9 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
         startPaymentPhoneNumberTextField.borderStyle = .roundedRect
         startPaymentPhoneNumberTextField.keyboardType = .phonePad
         
-        
         startPaymentSubmitPhoneNumberButton = UIButton(type: .roundedRect)
         startPaymentSubmitPhoneNumberButton.setTitle("3. Submit phone", for: .normal)
         startPaymentSubmitPhoneNumberButton.addTarget(self, action: #selector(submitPaymentPhoneNumberButtonTapped), for: .touchUpInside)
-        
         
         func makeSpacerLabel() -> UILabel {
             let spacerLabel = UILabel()
@@ -243,13 +241,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     }
     
     @objc func submitPhoneNumberTapped() {
-        guard let mobileNumber = linkMobileNumberTextField.text, !mobileNumber.isEmpty
-        else {
-            showAlert(title: "Error", message: "Please enter both country code and phone number.")
-            return
-        }
-        
-        linkCardComponent.updateCollectedData(collectableData: NolPayLinkCollectableData.phoneData(mobileNumber: mobileNumber))
+        linkCardComponent.updateCollectedData(collectableData: NolPayLinkCollectableData.phoneData(mobileNumber: linkMobileNumberTextField.text ?? ""))
     }
     
     @objc func submitLinkOTPTapped() {
@@ -271,16 +263,15 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     }
     
     @objc func submitUnlinkPhoneNumberTapped() {
-        guard let mobileNumber = unlinkPhoneNumberTextField.text, !mobileNumber.isEmpty,
-              let card = selectedCardForUnlinking
+        guard let card = selectedCardForUnlinking
         else {
-            showAlert(title: "Error", message: "Please enter both country code and phone number.")
+            showAlert(title: "Error", message: "Please select the card for unlinking.")
             return
         }
         
         unlinkCardComponent.updateCollectedData(
             collectableData: .cardAndPhoneData(nolPaymentCard: card,
-                                               mobileNumber: mobileNumber)
+                                               mobileNumber: unlinkPhoneNumberTextField.text ?? "")
         )
     }
     
@@ -296,14 +287,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     
     // MARK: - Listing of the linked cards
     @objc private func getLinkedCards() {
-        
-        guard let phoneNumber = self.listCardsPhoneNumberTextField.text, !phoneNumber.isEmpty
-        else {
-            showAlert(title: "Error", message: "Invalid phone number or country code")
-            return
-        }
-        
-        getLinkedCardsComponent.getLinkedCardsFor(mobileNumber: phoneNumber) { result in
+        getLinkedCardsComponent.getLinkedCardsFor(mobileNumber: listCardsPhoneNumberTextField.text ?? "") { result in
             switch result {
                 
             case .success(let cards):
@@ -318,7 +302,6 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     
     // MARK: - Payment flow
     
-    
     @objc func startPaymentFlowButtonTapped() {
         paymentComponent.start()
         paymentInProgress = true
@@ -327,15 +310,9 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     }
     
     @objc func submitPaymentPhoneNumberButtonTapped() {
-        guard let phoneNumber = startPaymentPhoneNumberTextField.text, !phoneNumber.isEmpty
-        else {
-            showAlert(title: "Error", message: "Please enter both country code and phone number.")
-            return
-        }
-        
         paymentComponent.updateCollectedData(collectableData: NolPayPaymentCollectableData.paymentData(
             cardNumber: selectedCardForPayment?.cardNumber ?? "",
-            mobileNumber: phoneNumber))
+            mobileNumber: startPaymentPhoneNumberTextField.text ?? ""))
     }
         
     // MARK: - Helper

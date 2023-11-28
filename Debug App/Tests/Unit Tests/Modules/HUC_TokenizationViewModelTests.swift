@@ -159,7 +159,6 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
 //            abortPayment: false)
 //    }
     
-    
     // MARK: - ABORT PAYMENT
     
     // MARK: PAYMENT HANDLING: AUTO
@@ -281,7 +280,6 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
         PollingModule.apiClient = mockApiClient
         CreateResumePaymentService.apiClient = mockApiClient
         
-        
         PrimerHeadlessUniversalCheckout.current.delegate = self
         PrimerHeadlessUniversalCheckout.current.uiDelegate = self
         
@@ -354,7 +352,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
             }
             
         } else {
-            self.paymentCompletion = { checkoutData, err in
+            self.paymentCompletion = { _, _ in
                 if isSurchargeIncluded {
                     print(self.eventsCalled)
                     XCTAssert(self.eventsCalled.count == 6, "6 events should have been called.")
@@ -520,7 +518,7 @@ extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutUIDeleg
 
 extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
     
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String : Any]?) {
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?) {
         
     }
     

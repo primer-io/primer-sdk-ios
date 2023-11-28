@@ -39,7 +39,6 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
     }
 }
 
-
 extension WebRedirectComponent: PrimerHeadlessSteppableDelegate {
     func didReceiveStep(step: PrimerHeadlessStep) {
         guard let step = step as? WebStep else {

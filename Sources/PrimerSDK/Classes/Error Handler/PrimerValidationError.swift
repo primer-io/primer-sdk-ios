@@ -8,7 +8,7 @@
 import Foundation
 
 public enum PrimerValidationError: PrimerErrorProtocol {
-    
+
     case invalidCardholderName(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidCardnumber(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidCvv(message: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -29,7 +29,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
     case invalidOTPCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case banksNotLoaded(userInfo: [String: String]?, diagnosticsId: String)
     case invalidBankId(bankId: String?, userInfo: [String: String]?, diagnosticsId: String)
-    
+
     public var diagnosticsId: String {
         switch self {
         case .invalidCardholderName(_, _, let diagnosticsId):
@@ -74,7 +74,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return diagnosticId
         }
     }
-    
+
     public var errorId: String {
         switch self {
         case .invalidCardholderName:
@@ -119,7 +119,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "banks-not-loaded"
         }
     }
-    
+
     public var errorDescription: String? {
         switch self {
         case .invalidCardholderName(let message, _, _):
@@ -158,16 +158,16 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "[\(errorId)] \(message)"
         case .invalidOTPCode(message: let message, _, _):
             return "[\(errorId)] \(message)"
-        case .invalidBankId(_, _, _):
+        case .invalidBankId:
             return "Please provide a valid bank id"
-        case .banksNotLoaded(_, _):
+        case .banksNotLoaded:
             return "Banks need to be loaded before bank id can be collected."
         }
     }
-    
+
     var info: [String: Any]? {
         var tmpUserInfo: [String: Any] = errorUserInfo
-        
+
         switch self {
         case .invalidCardholderName(_, let userInfo, _),
                 .invalidCardnumber(_, let userInfo, _),
@@ -191,31 +191,31 @@ public enum PrimerValidationError: PrimerErrorProtocol {
                 .banksNotLoaded(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
-        
+
         return tmpUserInfo
     }
-    
-    public var errorUserInfo: [String : Any] {
+
+    public var errorUserInfo: [String: Any] {
         var tmpUserInfo: [String: Any] = [
             "createdAt": Date().toString(),
             "diagnosticsId": diagnosticsId
         ]
-        
+
         if let inputElementType {
             tmpUserInfo["inputElementType"] = inputElementType
         }
-        
+
         return tmpUserInfo
     }
-    
+
     public var recoverySuggestion: String? {
         return nil
     }
-    
+
     var exposedError: Error {
         return self
     }
-    
+
     var inputElementType: String? {
         switch self {
         case .invalidCardholderName:
@@ -292,4 +292,3 @@ extension PrimerValidationError: Equatable {
         }
     }
 }
-

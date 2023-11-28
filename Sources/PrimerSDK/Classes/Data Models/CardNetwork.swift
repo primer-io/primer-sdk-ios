@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
-
-
 import Foundation
 import PassKit
 import UIKit
@@ -25,7 +23,7 @@ struct CardNetworkCode {
 }
 
 public enum CardNetwork: String, CaseIterable, LogReporter {
-    
+
     case amex
     case bancontact
     case diners
@@ -40,7 +38,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
     case visa
     case unionpay
     case unknown
-    
+
     var validation: CardNetworkValidation? {
         switch self {
         case .amex:
@@ -52,10 +50,10 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                 code: CardNetworkCode(
                     name: "CID",
                     length: 4))
-            
+
         case .bancontact:
             return nil
-            
+
         case .diners:
             return CardNetworkValidation(
                 niceType: "Diners",
@@ -65,7 +63,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                 code: CardNetworkCode(
                     name: "CVV",
                     length: 3))
-            
+
         case .discover:
             return CardNetworkValidation(
                 niceType: "Discover",
@@ -75,7 +73,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                 code: CardNetworkCode(
                     name: "CID",
                     length: 3))
-            
+
         case .elo:
             return CardNetworkValidation(
                 niceType: "Elo",
@@ -104,14 +102,14 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                     [650901, 650978],
                     [651652, 651679],
                     [655000, 655019],
-                    [655021, 655058],
+                    [655021, 655058]
                 ],
                 gaps: [4, 8, 12],
                 lengths: [16],
                 code: CardNetworkCode(
                     name: "CVE",
                     length: 3))
-            
+
         case .hiper:
             return CardNetworkValidation(
                 niceType: "Hiper",
@@ -121,7 +119,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                 code: CardNetworkCode(
                     name: "CVC",
                     length: 3))
-            
+
         case .hipercard:
             return CardNetworkValidation(
                 niceType: "Hiper",
@@ -131,7 +129,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                 code: CardNetworkCode(
                     name: "CVC",
                     length: 3))
-            
+
         case .jcb:
             return CardNetworkValidation(
                 niceType: "JCB",
@@ -141,7 +139,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                 code: CardNetworkCode(
                     name: "CVV",
                     length: 3))
-            
+
         case .masterCard:
             return CardNetworkValidation(
                 niceType: "Mastercard",
@@ -151,7 +149,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                 code: CardNetworkCode(
                     name: "CVC",
                     length: 3))
-            
+
         case .maestro:
             return CardNetworkValidation(
                 niceType: "Maestro",
@@ -163,14 +161,14 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                     [56, 59],
                     [63],
                     [67],
-                    [6],
+                    [6]
                   ],
                 gaps: [4, 8, 12],
                 lengths: [16, 17, 18, 19],
                 code: CardNetworkCode(
                     name: "CVC",
                     length: 3))
-            
+
         case .mir:
             return CardNetworkValidation(
                 niceType: "Mir",
@@ -180,7 +178,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                 code: CardNetworkCode(
                     name: "CVP2",
                     length: 3))
-            
+
         case .visa:
             return CardNetworkValidation(
                 niceType: "Visa",
@@ -219,7 +217,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
               [8110, 8131],
               [8132, 8151],
               [8152, 8163],
-              [8164, 8171],
+              [8164, 8171]
             ],
                 gaps: [4, 8, 12],
                 lengths: [14, 15, 16, 17, 18, 19],
@@ -230,7 +228,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
             return nil
         }
     }
-    
+
     public var icon: UIImage? {
         switch self {
         case .amex:
@@ -263,7 +261,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
             return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
         }
     }
-    
+
     var directoryServerId: String? {
         switch self {
         case .visa:
@@ -292,10 +290,10 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
             }
         }
     }
-    
+
     var surcharge: Int? {
         guard let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options, !options.isEmpty else { return nil }
-        
+
         for paymentMethodOption in options {
             guard let type = paymentMethodOption["type"] as? String, type == PrimerPaymentMethodType.paymentCard.rawValue else { continue }
             guard let networks = paymentMethodOption["networks"] as? [[String: Any]] else { continue }
@@ -303,16 +301,16 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
             guard let surcharge = tmpNetwork["surcharge"] as? Int else { continue }
             return surcharge
         }
-        
+
         return nil
     }
-    
+
     static func cardNumber(_ cardnumber: String, matchesPatterns patterns: [[Int]]) -> Bool {
         for pattern in patterns {
             if pattern.count == 1 || pattern.count == 2 {
                 let min = pattern.first!
                 let max = pattern.count == 2 ? pattern[1] : min
-                
+
                 for num in min...max {
                     let numStr = String(num)
                     if cardnumber.withoutNonNumericCharacters.hasPrefix(numStr) {
@@ -323,13 +321,13 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                 logger.debug(message: "Card network patterns array must contain one or two Ints")
             }
         }
-        
+
         return false
     }
-    
+
     public init(cardNumber: String) {
         self = .unknown
-        
+
         for cardNetwork in CardNetwork.allCases {
             if let patterns = cardNetwork.validation?.patterns,
                CardNetwork.cardNumber(cardNumber.withoutNonNumericCharacters, matchesPatterns: patterns),
@@ -339,19 +337,19 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
             }
         }
     }
-    
+
     public init(cardNetworkStr: String) {
         self = .unknown
-        
+
         if let cardNetwork = CardNetwork(rawValue: cardNetworkStr.lowercased()) {
             self = cardNetwork
         }
     }
-    
+
 }
 
 public enum PaymentNetwork: String {
-    
+
     case chinaUnionPay
     case discover
     case eftpos
@@ -370,7 +368,7 @@ public enum PaymentNetwork: String {
     case vPay
     case barcode
     case girocard
-    
+
     var applePayPaymentNetwork: PKPaymentNetwork? {
         switch self {
         case .chinaUnionPay:
@@ -459,7 +457,7 @@ public enum PaymentNetwork: String {
             }
         }
     }
-    
+
     static var iOSSupportedPKPaymentNetworks: [PKPaymentNetwork] {
         var supportedNetworks: [PKPaymentNetwork] = [
             .amex,
@@ -470,7 +468,7 @@ public enum PaymentNetwork: String {
             .privateLabel,
             .visa
         ]
-        
+
         if #available(iOS 11.2, *) {
 //            @available(iOS 11.2, *)
             supportedNetworks.append(.cartesBancaires)
@@ -495,32 +493,30 @@ public enum PaymentNetwork: String {
             supportedNetworks.append(.elo)
             supportedNetworks.append(.mada)
         }
-        
+
         if #available(iOS 10.3.1, *) {
 //            @available(iOS 10.3, *)
             supportedNetworks.append(.idCredit)
         }
-        
+
         if #available(iOS 10.1, *) {
 //            @available(iOS 10.1, *)
             supportedNetworks.append(.JCB)
             supportedNetworks.append(.suica)
         }
-        
+
         if #available(iOS 10.3, *) {
 //            @available(iOS 10.3, *)
             supportedNetworks.append(.quicPay)
         }
-        
+
         if #available(iOS 14.0, *) {
 //            @available(iOS 14.0, *)
 //            supportedNetworks.append(.barcode)
             supportedNetworks.append(.girocard)
         }
-        
+
         return supportedNetworks
     }
-    
+
 }
-
-

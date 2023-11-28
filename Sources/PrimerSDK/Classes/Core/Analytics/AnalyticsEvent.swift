@@ -5,12 +5,10 @@
 //  Created by Evangelos on 13/12/21.
 //
 
-
-
 import Foundation
 
 extension Analytics.Event {
-    
+
     enum EventType: String, Codable {
         case ui                             = "UI_EVENT"
         case crash                          = "APP_CRASHED_EVENT"
@@ -22,7 +20,7 @@ extension Analytics.Event {
         case paymentMethodImageLoading      = "PM_IMAGE_LOADING_DURATION"
         case paymentMethodAllImagesLoading  = "PM_ALL_IMAGES_LOADING_DURATION"
     }
-    
+
     struct Property {
         enum Action: String, Codable {
             case blur       = "BLUR"
@@ -32,15 +30,15 @@ extension Analytics.Event {
             case present    = "PRESENT"
             case dismiss    = "DISMISS"
         }
-        
+
         struct Context: Codable {
-            
+
             var issuerId: String?
             var paymentMethodType: String?
             var url: String?
             var iPay88PaymentMethodId: String?
             var iPay88ActionType: String?
-            
+
             init(
                 issuerId: String? = nil,
                 paymentMethodType: String? = nil,
@@ -54,7 +52,7 @@ extension Analytics.Event {
                 self.iPay88PaymentMethodId = iPay88PaymentMethodId
                 self.iPay88ActionType = iPay88ActionType
             }
-            
+
             func encode(to encoder: Encoder) throws {
                 var container = encoder.container(keyedBy: Analytics.Event.Property.Context.CodingKeys.self)
                 try container.encodeIfPresent(self.issuerId, forKey: Analytics.Event.Property.Context.CodingKeys.issuerId)
@@ -64,7 +62,7 @@ extension Analytics.Event {
                 try container.encodeIfPresent(self.iPay88ActionType, forKey: Analytics.Event.Property.Context.CodingKeys.iPay88ActionType)
             }
         }
-        
+
         enum MessageType: String, Codable {
             case error                              = "ERROR"
             case missingValue                       = "MISSING_VALUE"
@@ -73,17 +71,17 @@ extension Analytics.Event {
             case info                               = "INFO"
             case other                              = "OTHER"
         }
-        
+
         enum TimerType: String, Codable {
             case start  = "START"
             case end    = "END"
         }
-        
+
         enum NetworkCallType: String, Codable {
             case requestStart   = "REQUEST_START"
             case requestEnd     = "REQUEST_END"
         }
-        
+
         enum ObjectType: String, Codable {
             case alert          = "ALERT"
             case button         = "BUTTON"
@@ -96,7 +94,7 @@ extension Analytics.Event {
             case webpage        = "WEB_PAGE"
             case thirdPartyView = "3RD_PARTY_VIEW"
         }
-        
+
         enum ObjectId: String, Codable {
             case back                       = "BACK"
             case cancel                     = "CANCEL"
@@ -124,7 +122,7 @@ extension Analytics.Event {
             case billingAddressState        = "BILLING_ADDRESS_STATE"
             case billingAddressCountry      = "BILLING_ADDRESS_COUNTRY"
         }
-        
+
         enum Place: String, Codable {
             case bankSelectionList      = "BANK_SELECTION_LIST"
             case countrySelectionList   = "COUNTRY_SELECTION_LIST"
@@ -144,7 +142,7 @@ extension Analytics.Event {
             case threeDSScreen          = "3DS_VIEW"
             case iPay88View             = "IPAY88_VIEW"
         }
-        
+
         enum Severity: String, Codable {
             case debug      = "DEBUG"
             case info       = "INFO"
@@ -152,24 +150,24 @@ extension Analytics.Event {
             case error      = "ERROR"
         }
     }
-    
+
 }
 
 protocol AnalyticsEventProperties: Codable {}
 
 struct CrashEventProperties: AnalyticsEventProperties {
-    
+
     var stacktrace: [String]
     var params: [String: AnyCodable]?
-    
+
     private enum CodingKeys: String, CodingKey {
         case stacktrace
         case params
     }
-    
+
     init(stacktrace: [String]) {
         self.stacktrace = stacktrace
-        
+
         let sdkProperties = SDKProperties()
         if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
            let data = try? JSONSerialization.data(withJSONObject: sdkPropertiesDict, options: .fragmentsAllowed) {
@@ -181,13 +179,13 @@ struct CrashEventProperties: AnalyticsEventProperties {
             self.params = nil
         }
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         stacktrace = try container.decode([String].self, forKey: .stacktrace)
         params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.stacktrace, forKey: .stacktrace)
@@ -196,13 +194,13 @@ struct CrashEventProperties: AnalyticsEventProperties {
 }
 
 struct MessageEventProperties: AnalyticsEventProperties {
-    
+
     var message: String?
     var messageType: Analytics.Event.Property.MessageType
     var severity: Analytics.Event.Property.Severity
     var diagnosticsId: String?
     var context: [String: Any]?
-    
+
     private enum CodingKeys: String, CodingKey {
         case message
         case messageType
@@ -210,7 +208,7 @@ struct MessageEventProperties: AnalyticsEventProperties {
         case diagnosticsId
         case context
     }
-    
+
     init(
         message: String?,
         messageType: Analytics.Event.Property.MessageType,
@@ -224,7 +222,7 @@ struct MessageEventProperties: AnalyticsEventProperties {
         self.diagnosticsId = diagnosticsId
         self.context = context
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.message = try container.decodeIfPresent(String.self, forKey: .message)
@@ -233,7 +231,7 @@ struct MessageEventProperties: AnalyticsEventProperties {
         self.diagnosticsId = try container.decodeIfPresent(String.self, forKey: .diagnosticsId)
         self.context = try container.decodeIfPresent([String: Any].self, forKey: .context)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(message, forKey: .message)
@@ -245,7 +243,7 @@ struct MessageEventProperties: AnalyticsEventProperties {
 }
 
 struct NetworkCallEventProperties: AnalyticsEventProperties {
-    
+
     var callType: Analytics.Event.Property.NetworkCallType
     var id: String
     var url: String
@@ -253,7 +251,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
     var errorBody: String?
     var responseCode: Int?
     var params: [String: AnyCodable]?
-    
+
     private enum CodingKeys: String, CodingKey {
         case callType
         case id
@@ -263,7 +261,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         case responseCode
         case params
     }
-    
+
     init(
         callType: Analytics.Event.Property.NetworkCallType,
         id: String,
@@ -278,7 +276,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         self.method = method
         self.errorBody = errorBody
         self.responseCode = responseCode
-        
+
         let sdkProperties = SDKProperties()
         if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
            let data = try? JSONSerialization.data(withJSONObject: sdkPropertiesDict, options: .fragmentsAllowed) {
@@ -290,7 +288,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
             self.params = nil
         }
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.callType = try container.decode(Analytics.Event.Property.NetworkCallType.self, forKey: .callType)
@@ -301,7 +299,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         self.responseCode = try container.decodeIfPresent(Int.self, forKey: .responseCode)
         self.params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(callType, forKey: .callType)
@@ -315,18 +313,18 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
 }
 
 struct NetworkConnectivityEventProperties: AnalyticsEventProperties {
-    
+
     var networkType: Connectivity.NetworkType
     var params: [String: AnyCodable]?
-    
+
     private enum CodingKeys: String, CodingKey {
         case networkType
         case params
     }
-    
+
     init(networkType: Connectivity.NetworkType) {
         self.networkType = networkType
-        
+
         let sdkProperties = SDKProperties()
         if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
            let data = try? JSONSerialization.data(withJSONObject: sdkPropertiesDict, options: .fragmentsAllowed) {
@@ -338,13 +336,13 @@ struct NetworkConnectivityEventProperties: AnalyticsEventProperties {
             self.params = nil
         }
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.networkType = try container.decode(Connectivity.NetworkType.self, forKey: .networkType)
         self.params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(networkType, forKey: .networkType)
@@ -353,25 +351,25 @@ struct NetworkConnectivityEventProperties: AnalyticsEventProperties {
 }
 
 struct SDKEventProperties: AnalyticsEventProperties {
-    
+
     var name: String
     var params: [String: AnyCodable]?
-    
+
     private enum CodingKeys: String, CodingKey {
         case name
         case params
     }
-    
+
     init(name: String, params: [String: String]?) {
         self.name = name
-        
+
         var _params: [String: Any] = params ?? [:]
-        
+
         let sdkProperties = SDKProperties()
         if let sdkPropertiesDict = try? sdkProperties.asDictionary() {
-            _params.merge(sdkPropertiesDict) {(current,_) in current}
+            _params.merge(sdkPropertiesDict) {(current, _) in current}
         }
-        
+
         if !_params.isEmpty, let _paramsData = try? JSONSerialization.data(withJSONObject: _params, options: .fragmentsAllowed) {
             let decoder = JSONDecoder()
             if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: _paramsData) {
@@ -381,13 +379,13 @@ struct SDKEventProperties: AnalyticsEventProperties {
             self.params = nil
         }
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.name = try container.decode(String.self, forKey: .name)
         self.params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
@@ -396,24 +394,24 @@ struct SDKEventProperties: AnalyticsEventProperties {
 }
 
 struct TimerEventProperties: AnalyticsEventProperties {
-    
+
     var momentType: Analytics.Event.Property.TimerType
     var id: String?
     var params: [String: AnyCodable]?
-    
+
     private enum CodingKeys: String, CodingKey {
         case momentType
         case id
         case params
     }
-    
+
     init(
         momentType: Analytics.Event.Property.TimerType,
         id: String?
     ) {
         self.momentType = momentType
         self.id = id
-        
+
         let sdkProperties = SDKProperties()
         if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
            let data = try? JSONSerialization.data(withJSONObject: sdkPropertiesDict, options: .fragmentsAllowed) {
@@ -425,14 +423,14 @@ struct TimerEventProperties: AnalyticsEventProperties {
             self.params = nil
         }
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.momentType = try container.decode(Analytics.Event.Property.TimerType.self, forKey: .momentType)
         self.id = try container.decodeIfPresent(String.self, forKey: .id)
         self.params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(momentType, forKey: .momentType)
@@ -442,7 +440,7 @@ struct TimerEventProperties: AnalyticsEventProperties {
 }
 
 struct UIEventProperties: AnalyticsEventProperties {
-    
+
     var action: Analytics.Event.Property.Action
     var context: Analytics.Event.Property.Context?
     var extra: String?
@@ -451,7 +449,7 @@ struct UIEventProperties: AnalyticsEventProperties {
     var objectClass: String?
     var place: Analytics.Event.Property.Place
     var params: [String: String]?
-    
+
     private enum CodingKeys: String, CodingKey {
         case action
         case context
@@ -462,7 +460,7 @@ struct UIEventProperties: AnalyticsEventProperties {
         case place
         case params
     }
-    
+
     init(
         action: Analytics.Event.Property.Action,
         context: Analytics.Event.Property.Context?,
@@ -479,15 +477,14 @@ struct UIEventProperties: AnalyticsEventProperties {
         self.objectId = objectId
         self.objectClass = objectClass
         self.place = place
-        
+
         if let jsonData = try? JSONEncoder().encode(SDKProperties()),
            let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: .allowFragments),
-           let params = jsonObject as? [String: String]
-        {
+           let params = jsonObject as? [String: String] {
             self.params = params
         }
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.action = try container.decode(Analytics.Event.Property.Action.self, forKey: .action)
@@ -499,7 +496,7 @@ struct UIEventProperties: AnalyticsEventProperties {
         self.place = try container.decode(Analytics.Event.Property.Place.self, forKey: .place)
         self.params = try container.decodeIfPresent([String: String].self, forKey: .params)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(action, forKey: .action)
@@ -514,7 +511,7 @@ struct UIEventProperties: AnalyticsEventProperties {
 }
 
 struct SDKProperties: Codable {
-    
+
     let clientToken: String?
     let integrationType: String?
     let paymentMethodType: String?
@@ -525,7 +522,7 @@ struct SDKProperties: Codable {
     let sdkSettings: [String: AnyCodable]?
     let sdkType: String?
     let sdkVersion: String?
-    
+
     private enum CodingKeys: String, CodingKey {
         case clientToken
         case integrationType
@@ -538,7 +535,7 @@ struct SDKProperties: Codable {
         case sdkType
         case sdkVersion
     }
-    
+
     init() {
         self.clientToken = AppState.current.clientToken
         self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
@@ -551,10 +548,10 @@ struct SDKProperties: Codable {
         self.sdkIntent = PrimerInternal.shared.intent
         self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
         self.sdkSessionId = PrimerInternal.shared.checkoutSessionId
-        
+
         self.sdkType = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
         self.sdkVersion = VersionUtils.releaseVersionNumber
-        
+
         if let settingsData = try? JSONEncoder().encode(PrimerSettings.current) {
             let decoder = JSONDecoder()
             if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: settingsData) {
@@ -562,10 +559,10 @@ struct SDKProperties: Codable {
                 return
             }
         }
-        
+
         self.sdkSettings = nil
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.clientToken = try container.decodeIfPresent(String.self, forKey: .clientToken)
@@ -579,7 +576,7 @@ struct SDKProperties: Codable {
         self.sdkType = try container.decodeIfPresent(String.self, forKey: .sdkType)
         self.sdkVersion = try container.decodeIfPresent(String.self, forKey: .sdkVersion)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(clientToken, forKey: .clientToken)
@@ -594,5 +591,3 @@ struct SDKProperties: Codable {
         try container.encodeIfPresent(sdkVersion, forKey: .sdkVersion)
     }
 }
-
-

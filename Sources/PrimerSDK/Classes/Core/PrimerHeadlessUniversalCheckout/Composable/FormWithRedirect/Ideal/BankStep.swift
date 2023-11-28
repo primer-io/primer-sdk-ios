@@ -20,4 +20,3 @@ extension BanksStep: Equatable {
         }
     }
 }
-

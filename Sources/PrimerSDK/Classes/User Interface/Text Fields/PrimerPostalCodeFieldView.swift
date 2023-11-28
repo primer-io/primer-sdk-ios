@@ -1,13 +1,11 @@
-
-
 import UIKit
 
 public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
-    
+
     internal var postalCode: String? {
         return textField._text
     }
-    
+
     override func xibSetup() {
         super.xibSetup()
         keyboardType = .namePhonePad
@@ -20,13 +18,13 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
             return text.isValidPostalCode
         }
     }
-    
+
     public override func textFieldDidBeginEditing(_ textField: UITextField) {
         super.textFieldDidBeginEditing(textField)
         let event = cardFormFieldDidBeginEditingEventWithObjectId(.billingAddressPostalCode)
         sendTextFieldDidEndEditingAnalyticsEventIfNeeded(event)
     }
-    
+
     public override func textFieldDidEndEditing(_ textField: UITextField) {
         super.textFieldDidEndEditing(textField)
         let event = cardFormFieldDidEndEditingEventWithObjectId(.billingAddressPostalCode)
@@ -40,11 +38,11 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
             from: positionOriginal,
             offset: (range.location + NSString(string: string).length)
         )
-        
+
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField._text ?? ""
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
-        
+
         switch self.isValid?(newText) {
         case true:
             validation = .valid
@@ -63,24 +61,22 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
         default:
             validation = .notAvailable
         }
-        
+
         switch validation {
         case .valid:
             delegate?.primerTextFieldView(self, isValid: true)
         default:
             delegate?.primerTextFieldView(self, isValid: nil)
         }
-        
+
         primerTextField._text = newText
         primerTextField.text = newText
-        
+
         if let cursorLoc = cursorLocation {
             textField.selectedTextRange = textField.textRange(from: cursorLoc, to: cursorLoc)
         }
-        
+
         return false
     }
-    
+
 }
-
-

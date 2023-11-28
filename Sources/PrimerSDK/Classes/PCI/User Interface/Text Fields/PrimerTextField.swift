@@ -5,16 +5,14 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
-
-
 import UIKit
 
 internal class PrimerTextField: UITextField {
-    
+
     internal enum Validation: Equatable {
         case valid, invalid(_ error: Error?), notAvailable
-        
-        static func ==(lhs: Validation, rhs: Validation) -> Bool {
+
+        static func == (lhs: Validation, rhs: Validation) -> Bool {
                 switch (lhs, rhs) {
                 case (.valid, .valid):
                     return lhs == rhs
@@ -27,7 +25,7 @@ internal class PrimerTextField: UITextField {
                 }
             }
     }
-    
+
     override var delegate: UITextFieldDelegate? {
         get {
             return super.delegate
@@ -38,11 +36,11 @@ internal class PrimerTextField: UITextField {
             }
         }
     }
-    
+
     // swiftlint:disable identifier_name
     internal var _text: String?
     // swiftlint:enable identifier_name
-        
+
     override var text: String? {
         get {
             return "****"
@@ -52,11 +50,9 @@ internal class PrimerTextField: UITextField {
             _text = super.text
         }
     }
-    
+
     internal var isEmpty: Bool {
         return (_text ?? "").isEmpty
     }
-        
+
 }
-
-

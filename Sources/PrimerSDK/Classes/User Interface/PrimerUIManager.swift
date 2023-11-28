@@ -5,16 +5,14 @@
 //  Created by Evangelos on 9/9/22.
 //
 
-
-
 import UIKit
 
 internal class PrimerUIManager {
-    
+
     internal static var primerWindow: UIWindow?
     internal static var primerRootViewController: PrimerRootViewController?
     internal static var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol?
-    
+
     static func preparePresentation(clientToken: String) -> Promise<Void> {
         return Promise { seal in
             firstly {
@@ -23,7 +21,7 @@ internal class PrimerUIManager {
             .then { () -> Promise<Void> in
                 let isHeadlessCheckoutDelegateImplemented = PrimerHeadlessUniversalCheckout.current.delegate != nil
                 let apiConfigurationModule = PrimerUIManager.apiConfigurationModule ?? PrimerAPIConfigurationModule()
-                
+
                 return apiConfigurationModule.setupSession(
                     forClientToken: clientToken,
                     requestDisplayMetadata: true,
@@ -41,7 +39,7 @@ internal class PrimerUIManager {
             }
         }
     }
-    
+
     static func presentPaymentUI() {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             PrimerUIManager.presentPaymentMethod(type: paymentMethodType)
@@ -57,12 +55,12 @@ internal class PrimerUIManager {
             PrimerUIManager.handleErrorBasedOnSDKSettings(err)
         }
     }
-    
+
     static func presentPaymentMethod(type: String) {
         let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first
-        
+
         precondition(paymentMethodTokenizationViewModel != nil, "PrimerUIManager should have validated that the view model exists.")
-        
+
         var imgView: UIImageView?
         if let squareLogo = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.uiModule.icon {
             imgView = UIImageView()
@@ -72,33 +70,33 @@ internal class PrimerUIManager {
             imgView?.heightAnchor.constraint(equalToConstant: 24.0).isActive = true
             imgView?.widthAnchor.constraint(equalToConstant: 24.0).isActive = true
         }
-        
+
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
-        
+
         paymentMethodTokenizationViewModel?.checkouEventsNotifierModule.didStartTokenization = {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
-        
+
         paymentMethodTokenizationViewModel?.willPresentPaymentMethodUI = {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
-        
+
         paymentMethodTokenizationViewModel?.didPresentPaymentMethodUI = {}
-        
+
         paymentMethodTokenizationViewModel?.willDismissPaymentMethodUI = {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
-        
+
         paymentMethodTokenizationViewModel?.start()
     }
-    
-    static func prepareRootViewController()  -> Promise<Void> {
+
+    static func prepareRootViewController() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
                 if PrimerUIManager.primerRootViewController == nil {
                     PrimerUIManager.primerRootViewController = PrimerRootViewController()
                 }
-                
+
                 if PrimerUIManager.primerWindow == nil {
                     if #available(iOS 13.0, *) {
                         if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
@@ -111,18 +109,18 @@ internal class PrimerUIManager {
                         // Fallback on earlier versions
                         PrimerUIManager.primerWindow = UIWindow(frame: UIScreen.main.bounds)
                     }
-                    
+
                     PrimerUIManager.primerWindow!.rootViewController = PrimerUIManager.primerRootViewController
                     PrimerUIManager.primerWindow!.backgroundColor = UIColor.clear
                     PrimerUIManager.primerWindow!.windowLevel = UIWindow.Level.normal
                     PrimerUIManager.primerWindow!.makeKeyAndVisible()
                 }
-                
+
                 seal.fulfill()
             }
         }
     }
-    
+
     static func validatePaymentUIPresentation() -> Promise<Void> {
         return Promise { seal in
             if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
@@ -135,7 +133,7 @@ internal class PrimerUIManager {
                     seal.reject(err)
                     return
                 }
-                
+
                 guard PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0.config.type == paymentMethodType }) != nil else {
                     let err = PrimerError.unableToPresentPaymentMethod(
                         paymentMethodType: paymentMethodType,
@@ -145,15 +143,15 @@ internal class PrimerUIManager {
                     seal.reject(err)
                     return
                 }
-                
-                if case .checkout = PrimerInternal.shared.intent, paymentMethod.isCheckoutEnabled == false  {
+
+                if case .checkout = PrimerInternal.shared.intent, paymentMethod.isCheckoutEnabled == false {
                     let err = PrimerError.unsupportedIntent(
                         intent: .checkout,
                         userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
                     seal.reject(err)
                     return
-                    
+
                 } else if case .vault = PrimerInternal.shared.intent, paymentMethod.isVaultingEnabled == false {
                     let err = PrimerError.unsupportedIntent(
                         intent: .vault,
@@ -163,20 +161,20 @@ internal class PrimerUIManager {
                     return
                 }
             }
-            
+
             let state: AppStateProtocol = DependencyContainer.resolve()
-            
+
             if PrimerInternal.shared.intent == .vault, state.apiConfiguration?.clientSession?.customer?.id == nil {
                 let err = PrimerError.invalidValue(key: "customer.id", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"], diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
-                
+
             }
-            
+
             seal.fulfill()
         }
     }
-    
+
     @discardableResult
     static func dismissPrimerUI(animated flag: Bool) -> Promise<Void> {
         return Promise { seal in
@@ -187,7 +185,7 @@ internal class PrimerUIManager {
             }
         }
     }
-    
+
     static func dismissPrimerUI(animated flag: Bool, completion: (() -> Void)? = nil) {
         DispatchQueue.main.async {
             guard let primerRootViewController = PrimerUIManager.primerRootViewController else {
@@ -195,7 +193,7 @@ internal class PrimerUIManager {
                 completion?()
                 return
             }
-            
+
             if #available(iOS 16.1, *) {
                 primerRootViewController.dismissPrimerRootViewController(animated: flag) {
                     PrimerUIManager.dismissPrimerWindow(completion: completion)
@@ -213,21 +211,21 @@ internal class PrimerUIManager {
             }
         }
     }
-    
+
     static func dismissPrimerWindow(completion: (() -> Void)? = nil) {
         DispatchQueue.main.async {
             PrimerUIManager.primerWindow?.isHidden = true
             if #available(iOS 13, *) {
                 PrimerUIManager.primerWindow?.windowScene = nil
             }
-            
+
             PrimerUIManager.primerWindow?.resignKey()
             PrimerUIManager.primerWindow = nil
             PrimerUIManager.primerRootViewController = nil
             completion?()
         }
     }
-    
+
     static func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, withMessage message: String? = nil) {
         if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
             showResultScreenForResultType(type: .success, message: message)
@@ -237,7 +235,7 @@ internal class PrimerUIManager {
             PrimerInternal.shared.dismiss()
         }
     }
-    
+
     static func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
         PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
             switch errorDecision.type {
@@ -246,7 +244,7 @@ internal class PrimerUIManager {
             }
         }
     }
-    
+
     static private func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
         let resultViewController = PrimerResultViewController(screenType: type, message: message)
         resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -254,5 +252,3 @@ internal class PrimerUIManager {
         PrimerUIManager.primerRootViewController?.show(viewController: resultViewController)
     }
 }
-
-

@@ -8,7 +8,7 @@
 import Foundation
 
 struct NolPayAnalyticsConstants {
-    
+
     // link component
     static let LINK_CARD_START_METHOD = "NolPayLinkCardComponent.start()"
     static let LINK_CARD_UPDATE_COLLECTED_DATA_METHOD = "NolPayLinkCardComponent.updateCollectedData()"
@@ -21,7 +21,7 @@ struct NolPayAnalyticsConstants {
 
     // list cards component
     static let LINKED_CARDS_GET_CARDS_METHOD = "NolPayLinkedCardsComponent.getLinkedCards()"
-    
+
     // payment component
     static let PAYMENT_START_METHOD = "NolPayStartPaymentComponent.start()"
     static let PAYMENT_UPDATE_COLLECTED_DATA_METHOD = "NolPayStartPaymentComponent.updateCollectedData()"

@@ -20,7 +20,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
 
     func testGetLinkedCardsWithValidMobileNumber() {
         let component = NolPayLinkedCardsComponent()
-        let mockNolPay = MockPrimerNolPay(appId: "", isDebug: true, isSandbox: true, appSecretHandler: { sdkId, deviceId in
+        let mockNolPay = MockPrimerNolPay(appId: "", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
             return "appSecret"
         })
         
@@ -54,7 +54,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         
         component.getLinkedCardsFor(mobileNumber: "+1234567890") { result in
             switch result {
-            case .success(_):
+            case .success:
                 XCTFail("Expected failure but got success")
             case .failure(let error):
                 XCTAssertEqual(error.errorCode, 37)
