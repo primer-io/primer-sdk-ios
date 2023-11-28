@@ -5,9 +5,9 @@
         "package": "PrimerKlarnaSDK",
         "repositoryURL": "https://github.com/primer-io/primer-klarna-sdk-ios.git",
         "state": {
-          "branch": "feature/klarnamobilesdk_v2",
-          "revision": "c231cf32cee07376d60ea0a1385d5dc683a8015a",
-          "version": null
+          "branch": null,
+          "revision": "eb6a4145649f93d04ea8ead8bbccc3c3bd1ae9c2",
+          "version": "1.1.0-b0"
         }
       },
       {

@@ -17,7 +17,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/primer-io/primer-klarna-sdk-ios.git",
-            .branchItem("feature/klarnamobilesdk_v2")
+            .upToNextMajor(from: "1.1.0-b0")
         )
     ],
     targets: [
