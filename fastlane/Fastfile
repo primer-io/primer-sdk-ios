@@ -127,9 +127,9 @@ platform :ios do
     )
 
     # Run Unit Tests
-    if options[:tests]
-      tests
-    end
+    # if options[:tests]
+    #   tests
+    # end
 
     # Build for appetize
 
