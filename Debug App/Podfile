@@ -12,7 +12,7 @@ target 'Debug App' do
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerNolPaySDK'
   pod 'IQKeyboardManagerSwift'
-  pod 'PrimerKlarnaSDK', :path=>'../../Klarna_SDK'
+  pod 'PrimerKlarnaSDK', "1.1.0-b0"
   
   target 'Debug App Tests' do
     inherit! :search_paths
