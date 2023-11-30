@@ -12,82 +12,86 @@ import XCTest
 
 final class PrimerHeadlessKlarnaManagerTests: XCTestCase {
     
-    var sut: PrimerHeadlessUniversalCheckout.PrimerHeadlessKlarnaManager!
+    var manager: PrimerHeadlessUniversalCheckout.PrimerHeadlessKlarnaManager!
+    var viewHandlingComponent: KlarnaPaymentViewHandlingComponent!
     
     override func setUp() {
         super.setUp()
-        sut = PrimerHeadlessUniversalCheckout.PrimerHeadlessKlarnaManager()
+        manager = PrimerHeadlessUniversalCheckout.PrimerHeadlessKlarnaManager()
+        viewHandlingComponent = manager.provideKlarnaPaymentViewHandlingComponent(
+            clientToken: KlarnaTestsMocks.clientToken,
+            paymentCategory: KlarnaTestsMocks.paymentMethod
+        )
     }
     
     override func tearDown() {
-        sut = nil
+        manager = nil
+        viewHandlingComponent = nil
         super.tearDown()
     }
     
     func testInitialization_Succeeds() {
-        XCTAssertNotNil(sut)
+        XCTAssertNotNil(manager)
     }
     
     func testPaymentSessionCreationComponent_Initialized() {
-        XCTAssertNotNil(sut.provideKlarnaPaymentSessionCreationComponent(type: KlarnaTestsMocks.sessionType))
+        XCTAssertNotNil(manager.provideKlarnaPaymentSessionCreationComponent(type: KlarnaTestsMocks.sessionType))
     }
     
     func testKlarnaPaymentViewHandlingComponent_Initialized() {
-        let component = sut.provideKlarnaPaymentViewHandlingComponent(
-            clientToken: KlarnaTestsMocks.clientToken,
-            paymentCategory: KlarnaTestsMocks.paymentMethod
-        )
-        XCTAssertNotNil(component)
-        XCTAssertNotNil(component.klarnaProvider)
+        XCTAssertNotNil(viewHandlingComponent)
+        XCTAssertNotNil(viewHandlingComponent.klarnaProvider)
     }
     
     func testPaymentSessionAuthorizationComponent_Initialized() {
-        let component = sut.provideKlarnaPaymentSessionAuthorizationComponent()
+        let _ = manager
+        let component = manager.provideKlarnaPaymentSessionAuthorizationComponent()
         XCTAssertNotNil(component)
         XCTAssertNotNil(component.klarnaProvider)
     }
     
     func testPaymentSessionFinalizationComponent_Initialized() {
-        let component = sut.provideKlarnaPaymentSessionFinalizationComponent()
+        let component = manager.provideKlarnaPaymentSessionFinalizationComponent()
+        component.setProvider(provider: KlarnaTestsMocks.klarnaProvider)
         XCTAssertNotNil(component)
         XCTAssertNotNil(component.klarnaProvider)
     }
     
     func testPaymentSessionCreationComponent_ReturnsStoredInstance() {
-        let providedComponent = sut.provideKlarnaPaymentSessionCreationComponent(type: KlarnaTestsMocks.sessionType)
-        XCTAssertTrue(providedComponent === sut.sessionCreationComponent)
+        let providedComponent = manager.provideKlarnaPaymentSessionCreationComponent(type: KlarnaTestsMocks.sessionType)
+        XCTAssertTrue(providedComponent === manager.sessionCreationComponent)
     }
     
     func testPaymentViewHandlingComponent_ReturnsStoredInstance() {
-        let providedComponent = sut.provideKlarnaPaymentViewHandlingComponent(
+        let providedComponent = manager.provideKlarnaPaymentViewHandlingComponent(
             clientToken: KlarnaTestsMocks.clientToken,
             paymentCategory: KlarnaTestsMocks.paymentMethod
         )
-        XCTAssertTrue(providedComponent === sut.viewHandlingComponent)
+        XCTAssertTrue(providedComponent === manager.viewHandlingComponent)
     }
     
     func testPaymentSessionAuthorizationComponent_ReturnsStoredInstance() {
-        let providedComponent = sut.provideKlarnaPaymentSessionAuthorizationComponent()
-        XCTAssertTrue(providedComponent === sut.sessionAuthorizationComponent)
+        let providedComponent = manager.provideKlarnaPaymentSessionAuthorizationComponent()
+        XCTAssertTrue(providedComponent === manager.sessionAuthorizationComponent)
     }
     
     func testPaymentSessionFinalizationComponent_ReturnsStoredInstance() {
-        let providedComponent = sut.provideKlarnaPaymentSessionFinalizationComponent()
-        XCTAssertTrue(providedComponent === sut.sessionFinalizationComponent)
+        let providedComponent = manager.provideKlarnaPaymentSessionFinalizationComponent()
+        XCTAssertTrue(providedComponent === manager.sessionFinalizationComponent)
     }
     
     func testPaymentSessionCreationComponent_SingletonBehavior() {
-        let component1 = sut.provideKlarnaPaymentSessionCreationComponent(type: KlarnaTestsMocks.sessionType)
-        let component2 = sut.provideKlarnaPaymentSessionCreationComponent(type: KlarnaTestsMocks.sessionType)
+        let component1 = manager.provideKlarnaPaymentSessionCreationComponent(type: KlarnaTestsMocks.sessionType)
+        let component2 = manager.provideKlarnaPaymentSessionCreationComponent(type: KlarnaTestsMocks.sessionType)
         XCTAssertTrue(component1 === component2)
     }
     
     func testPaymentViewHandlingComponent_SingletonBehavior() {
-        let component1 = sut.provideKlarnaPaymentViewHandlingComponent(
+        let component1 = manager.provideKlarnaPaymentViewHandlingComponent(
             clientToken: KlarnaTestsMocks.clientToken,
             paymentCategory: KlarnaTestsMocks.paymentMethod
         )
-        let component2 = sut.provideKlarnaPaymentViewHandlingComponent(
+        let component2 = manager.provideKlarnaPaymentViewHandlingComponent(
             clientToken: KlarnaTestsMocks.clientToken,
             paymentCategory: KlarnaTestsMocks.paymentMethod
         )
@@ -95,25 +99,25 @@ final class PrimerHeadlessKlarnaManagerTests: XCTestCase {
     }
     
     func testPaymentSessionAuthorizationComponent_SingletonBehavior() {
-        let component1 = sut.provideKlarnaPaymentSessionAuthorizationComponent()
-        let component2 = sut.provideKlarnaPaymentSessionAuthorizationComponent()
+        let component1 = manager.provideKlarnaPaymentSessionAuthorizationComponent()
+        let component2 = manager.provideKlarnaPaymentSessionAuthorizationComponent()
         XCTAssertTrue(component1 === component2)
     }
     
     func testPaymentSessionFinalizationComponent_SingletonBehavior() {
-        let component1 = sut.provideKlarnaPaymentSessionFinalizationComponent()
-        let component2 = sut.provideKlarnaPaymentSessionFinalizationComponent()
+        let component1 = manager.provideKlarnaPaymentSessionFinalizationComponent()
+        let component2 = manager.provideKlarnaPaymentSessionFinalizationComponent()
         XCTAssertTrue(component1 === component2)
     }
     
     func testInitialization_OrderedCorrectly() {
-        let component1 = sut.provideKlarnaPaymentSessionCreationComponent(type: KlarnaTestsMocks.sessionType)
-        let component2 = sut.provideKlarnaPaymentViewHandlingComponent(
+        let component1 = manager.provideKlarnaPaymentSessionCreationComponent(type: KlarnaTestsMocks.sessionType)
+        let component2 = manager.provideKlarnaPaymentViewHandlingComponent(
             clientToken: KlarnaTestsMocks.clientToken,
             paymentCategory: KlarnaTestsMocks.paymentMethod
         )
-        let component3 = sut.provideKlarnaPaymentSessionAuthorizationComponent()
-        let component4 = sut.provideKlarnaPaymentSessionFinalizationComponent()
+        let component3 = manager.provideKlarnaPaymentSessionAuthorizationComponent()
+        let component4 = manager.provideKlarnaPaymentSessionFinalizationComponent()
 
         XCTAssertTrue(component1 !== component2)
         XCTAssertTrue(component1 !== component3)
@@ -125,13 +129,13 @@ final class PrimerHeadlessKlarnaManagerTests: XCTestCase {
     
     func testInitialization_AllDifferentComponents() {
         let componentsSet: Set = [
-            ObjectIdentifier(sut.provideKlarnaPaymentSessionCreationComponent(type: KlarnaTestsMocks.sessionType)),
-            ObjectIdentifier(sut.provideKlarnaPaymentViewHandlingComponent(
+            ObjectIdentifier(manager.provideKlarnaPaymentSessionCreationComponent(type: KlarnaTestsMocks.sessionType)),
+            ObjectIdentifier(manager.provideKlarnaPaymentViewHandlingComponent(
                 clientToken: KlarnaTestsMocks.clientToken,
                 paymentCategory: KlarnaTestsMocks.paymentMethod
             )),
-            ObjectIdentifier(sut.provideKlarnaPaymentSessionAuthorizationComponent()),
-            ObjectIdentifier(sut.provideKlarnaPaymentSessionFinalizationComponent())
+            ObjectIdentifier(manager.provideKlarnaPaymentSessionAuthorizationComponent()),
+            ObjectIdentifier(manager.provideKlarnaPaymentSessionFinalizationComponent())
         ]
         XCTAssertEqual(componentsSet.count, 4)
     }

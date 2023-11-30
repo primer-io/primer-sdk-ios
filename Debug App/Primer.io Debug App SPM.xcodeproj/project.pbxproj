@@ -7,68 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8376154A2B0B7092005420C9 /* AnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF07D2421252EA2AE5C2FC4F /* AnalyticsTests.swift */; };
-		8376154B2B0B7098005420C9 /* AnalyticsTests+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90441E821B5FE76643B62A6 /* AnalyticsTests+Constants.swift */; };
-		8376154C2B0B709C005420C9 /* ApayaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F79B50111AC4161CFB1EFE8 /* ApayaTests.swift */; };
-		8376154D2B0B709E005420C9 /* ApplePayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CFA93A373A7DB78DA77283 /* ApplePayTests.swift */; };
-		8376154E2B0B70A0005420C9 /* DecodedClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DC3341BDBB9AEDBE8D6DD /* DecodedClientToken.swift */; };
-		8376154F2B0B70A2005420C9 /* IPay88Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */; };
-		837615502B0B70A5005420C9 /* PaymentMethodConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752785ACCF65527C239391A8 /* PaymentMethodConfigTests.swift */; };
-		837615512B0B70A6005420C9 /* PayPalConfirmBillingAgreementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D122A0B71B707C2110AB7F5 /* PayPalConfirmBillingAgreementTests.swift */; };
-		837615522B0B70A9005420C9 /* PrimerCheckoutTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9813BD518AC7C3F442B5075 /* PrimerCheckoutTheme.swift */; };
-		837615532B0B70AB005420C9 /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD381E7E16D01D8D743232F7 /* ThemeTests.swift */; };
-		837615542B0B70AD005420C9 /* ThreeDSErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8639891B79E2FCCE10A510 /* ThreeDSErrorTests.swift */; };
-		837615552B0B70AF005420C9 /* ThreeDSProtocolVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */; };
-		837615562B0B70B2005420C9 /* TokenizationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A003705AFF7F922BCFE75F /* TokenizationResponseTests.swift */; };
-		837615572B0B70EA005420C9 /* EncodingDecodingContainerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D8E1E91CA11EC6831ADEE4 /* EncodingDecodingContainerTests.swift */; };
-		837615582B0B70EE005420C9 /* CardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3D9154BF1E011FED6799CD5 /* CardData.swift */; };
-		837615592B0B70F0005420C9 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = D038BDB23C062D362AAA09BE /* Networking.swift */; };
-		8376155A2B0B70F4005420C9 /* CreateResumePaymentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DD0A9535544D446514124A /* CreateResumePaymentService.swift */; };
-		8376155B2B0B70F6005420C9 /* PayPalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FD540BEA16ABBDFE7DE182 /* PayPalService.swift */; };
-		8376155C2B0B70F8005420C9 /* TokenizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8F69253D85350BB7A1A761 /* TokenizationService.swift */; };
-		8376155D2B0B70FA005420C9 /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8D7F3C53F8CCE4A03C975E /* VaultService.swift */; };
-		8376155E2B0B70FD005420C9 /* MockVaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3E75CD834937EF85DE1C14 /* MockVaultCheckoutViewModel.swift */; };
-		8376155F2B0B7100005420C9 /* MockPaymentMethodTokenizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A23886804B13FA754E775D0 /* MockPaymentMethodTokenizationViewModel.swift */; };
-		837615602B0B7103005420C9 /* DropInUI_TokenizationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB3B88857B810440CDA881E /* DropInUI_TokenizationViewModelTests.swift */; };
-		837615612B0B7106005420C9 /* HUC_TokenizationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5E3ACDA26D44F66B55766B /* HUC_TokenizationViewModelTests.swift */; };
-		837615622B0B710C005420C9 /* PollingModuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49DFB1ACD5014BF28ED283B3 /* PollingModuleTests.swift */; };
-		837615632B0B710F005420C9 /* PrimerAPIConfigurationModuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C690FB7E6E8C942C87B1A1B /* PrimerAPIConfigurationModuleTests.swift */; };
-		837615642B0B7111005420C9 /* UserInterfaceModuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B8CB5A11A44AA9F3D7FE356 /* UserInterfaceModuleTests.swift */; };
-		837615652B0B7115005420C9 /* URLSessionStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4E35F809D3FAF4354D5B05 /* URLSessionStackTests.swift */; };
-		837615662B0B7118005420C9 /* PrimerBancontactCardDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9899972360BCA5992CEE5BC /* PrimerBancontactCardDataManagerTests.swift */; };
-		837615672B0B711A005420C9 /* PrimerRawCardDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */; };
-		837615682B0B711C005420C9 /* PrimerRawRetailerDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B266F9E1651BD20E45DCCF68 /* PrimerRawRetailerDataTests.swift */; };
-		837615692B0B7120005420C9 /* CardComponentManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 994AE6760B506D02499AEC90 /* CardComponentManagerTests.swift */; };
-		8376156A2B0B7121005420C9 /* PaymentMethodConfigServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743F107C464526926A34A433 /* PaymentMethodConfigServiceTests.swift */; };
-		8376156B2B0B7124005420C9 /* PayPalServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7EC742DEB5BE12252E3E5B /* PayPalServiceTests.swift */; };
-		8376156C2B0B7127005420C9 /* TokenizationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952364FBFD6FA09653ECA37E /* TokenizationServiceTests.swift */; };
-		8376156D2B0B712B005420C9 /* DateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0B2BEE5C389FD13E210847 /* DateTests.swift */; };
-		8376156E2B0B712D005420C9 /* IntExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9314E0A4E884A8228611A030 /* IntExtensionTests.swift */; };
-		8376156F2B0B7130005420C9 /* MaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD26E8C6074BB89ACBD5B8B9 /* MaskTests.swift */; };
-		837615702B0B7132005420C9 /* StringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 872A0647D4136E27365FB7F8 /* StringTests.swift */; };
-		837615712B0B7134005420C9 /* WebViewUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA30891B2D5F9B6B97E56B99 /* WebViewUtilTests.swift */; };
-		837615722B0B7136005420C9 /* VersionUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F03699582AC2E63700E4179D /* VersionUtilsTests.swift */; };
-		837615732B0B713C005420C9 /* HeadlessUniversalCheckoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E63F5C5C1FD2F3E6CB02EC5A /* HeadlessUniversalCheckoutTests.swift */; };
-		837615742B0B7143005420C9 /* HeadlessVaultManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA706A14BACFDB8E5715788 /* HeadlessVaultManagerTests.swift */; };
-		837615752B0B7145005420C9 /* MockAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17476BFBED51F389FCE82F16 /* MockAPIClient.swift */; };
-		837615762B0B7147005420C9 /* MockModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */; };
-		837615772B0B714A005420C9 /* RawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */; };
-		837615782B0B714D005420C9 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC1EC0F98CB56DA4D075CA /* Mocks.swift */; };
-		837615822B0B718A005420C9 /* NolPayLinkedCardsComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8376157A2B0B718A005420C9 /* NolPayLinkedCardsComponentTests.swift */; };
-		837615832B0B718A005420C9 /* PrimerHeadlessNolPayManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8376157B2B0B718A005420C9 /* PrimerHeadlessNolPayManagerTests.swift */; };
-		837615842B0B718A005420C9 /* NolTestsMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8376157C2B0B718A005420C9 /* NolTestsMocks.swift */; };
-		837615852B0B718A005420C9 /* NolPayLinkCardComponentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8376157D2B0B718A005420C9 /* NolPayLinkCardComponentTest.swift */; };
-		837615862B0B718A005420C9 /* NolPayUnlinkCardComponentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8376157E2B0B718A005420C9 /* NolPayUnlinkCardComponentTest.swift */; };
-		837615872B0B718A005420C9 /* NolPayPhoneMetadataServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8376157F2B0B718A005420C9 /* NolPayPhoneMetadataServiceTests.swift */; };
-		837615882B0B718A005420C9 /* NolPayPaymentComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837615802B0B718A005420C9 /* NolPayPaymentComponentTests.swift */; };
-		8376158C2B0B720B005420C9 /* AnalyticsTests+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8376158A2B0B720B005420C9 /* AnalyticsTests+Helpers.swift */; };
-		8376158D2B0B720B005420C9 /* AnalyticsEventsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8376158B2B0B720B005420C9 /* AnalyticsEventsTests.swift */; };
-		837615902B0B734F005420C9 /* PrimerHeadlessKlarnaManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8376158F2B0B734F005420C9 /* PrimerHeadlessKlarnaManagerTests.swift */; };
-		837615922B0B745B005420C9 /* KlarnaTestsMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837615912B0B745B005420C9 /* KlarnaTestsMocks.swift */; };
-		837615942B0B7E07005420C9 /* KlarnaPaymentSessionCreationComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837615932B0B7E07005420C9 /* KlarnaPaymentSessionCreationComponentTests.swift */; };
-		837615962B0B91BE005420C9 /* KlarnaPaymentViewHandlingComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837615952B0B91BE005420C9 /* KlarnaPaymentViewHandlingComponentTests.swift */; };
-		837615982B0B9686005420C9 /* KlarnaPaymentSessionAuthorizationComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837615972B0B9686005420C9 /* KlarnaPaymentSessionAuthorizationComponentTests.swift */; };
-		8376159A2B0B96FE005420C9 /* KlarnaPaymentSessionFinalizationComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837615992B0B96FE005420C9 /* KlarnaPaymentSessionFinalizationComponentTests.swift */; };
 		83F31F8C2AFB876A0090AE9E /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F31F8B2AFB876A0090AE9E /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
 		F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */; };
 		F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1594BC5C96ECC3F46C811B2F /* Data+Extensions.swift */; };
@@ -102,16 +40,6 @@
 		F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E22ACD98E100A0A48C /* PrimerSDK */; };
 		F04510E92ACD991200A0A48C /* Primer3DS in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E82ACD991200A0A48C /* Primer3DS */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		8382FDA52B0B6D82000D192B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 25AB41367F759CCDA1881AD2 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = F00C65F52ACC67FA00187028;
-			remoteInfo = "Debug App SPM";
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		F00C66172ACC67FA00187028 /* Embed Frameworks */ = {
@@ -195,7 +123,6 @@
 		837615952B0B91BE005420C9 /* KlarnaPaymentViewHandlingComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlarnaPaymentViewHandlingComponentTests.swift; sourceTree = "<group>"; };
 		837615972B0B9686005420C9 /* KlarnaPaymentSessionAuthorizationComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlarnaPaymentSessionAuthorizationComponentTests.swift; sourceTree = "<group>"; };
 		837615992B0B96FE005420C9 /* KlarnaPaymentSessionFinalizationComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlarnaPaymentSessionFinalizationComponentTests.swift; sourceTree = "<group>"; };
-		8382FDA12B0B6D82000D192B /* Debug App SPM Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Debug App SPM Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		83F31F8B2AFB876A0090AE9E /* MerchantHeadlessCheckoutKlarnaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutKlarnaViewController.swift; sourceTree = "<group>"; };
 		872A0647D4136E27365FB7F8 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
 		8A23886804B13FA754E775D0 /* MockPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
@@ -258,13 +185,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8382FD9E2B0B6D82000D192B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		F00C66182ACC67FA00187028 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -567,7 +487,6 @@
 			isa = PBXGroup;
 			children = (
 				F00C661E2ACC67FA00187028 /* Debug App SPM.app */,
-				8382FDA12B0B6D82000D192B /* Debug App SPM Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -625,24 +544,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8382FDA02B0B6D82000D192B /* Debug App SPM Tests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8382FDA92B0B6D82000D192B /* Build configuration list for PBXNativeTarget "Debug App SPM Tests" */;
-			buildPhases = (
-				8382FD9D2B0B6D82000D192B /* Sources */,
-				8382FD9E2B0B6D82000D192B /* Frameworks */,
-				8382FD9F2B0B6D82000D192B /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				8382FDA62B0B6D82000D192B /* PBXTargetDependency */,
-			);
-			name = "Debug App SPM Tests";
-			productName = "Debug App SPM Tests";
-			productReference = 8382FDA12B0B6D82000D192B /* Debug App SPM Tests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		F00C65F52ACC67FA00187028 /* Debug App SPM */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F00C661B2ACC67FA00187028 /* Build configuration list for PBXNativeTarget "Debug App SPM" */;
@@ -674,12 +575,6 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1500;
 				ORGANIZATIONNAME = "Primer API Ltd";
-				TargetAttributes = {
-					8382FDA02B0B6D82000D192B = {
-						CreatedOnToolsVersion = 15.0;
-						TestTargetID = F00C65F52ACC67FA00187028;
-					};
-				};
 			};
 			buildConfigurationList = 10479B54C02C96DE0B327687 /* Build configuration list for PBXProject "Primer.io Debug App SPM" */;
 			compatibilityVersion = "Xcode 13.0";
@@ -712,19 +607,11 @@
 			projectRoot = "";
 			targets = (
 				F00C65F52ACC67FA00187028 /* Debug App SPM */,
-				8382FDA02B0B6D82000D192B /* Debug App SPM Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		8382FD9F2B0B6D82000D192B /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		F00C66122ACC67FA00187028 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -739,75 +626,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8382FD9D2B0B6D82000D192B /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				837615582B0B70EE005420C9 /* CardData.swift in Sources */,
-				8376154C2B0B709C005420C9 /* ApayaTests.swift in Sources */,
-				837615522B0B70A9005420C9 /* PrimerCheckoutTheme.swift in Sources */,
-				837615842B0B718A005420C9 /* NolTestsMocks.swift in Sources */,
-				837615592B0B70F0005420C9 /* Networking.swift in Sources */,
-				837615882B0B718A005420C9 /* NolPayPaymentComponentTests.swift in Sources */,
-				837615542B0B70AD005420C9 /* ThreeDSErrorTests.swift in Sources */,
-				837615722B0B7136005420C9 /* VersionUtilsTests.swift in Sources */,
-				8376156F2B0B7130005420C9 /* MaskTests.swift in Sources */,
-				837615832B0B718A005420C9 /* PrimerHeadlessNolPayManagerTests.swift in Sources */,
-				837615662B0B7118005420C9 /* PrimerBancontactCardDataManagerTests.swift in Sources */,
-				8376156B2B0B7124005420C9 /* PayPalServiceTests.swift in Sources */,
-				837615902B0B734F005420C9 /* PrimerHeadlessKlarnaManagerTests.swift in Sources */,
-				8376155C2B0B70F8005420C9 /* TokenizationService.swift in Sources */,
-				8376159A2B0B96FE005420C9 /* KlarnaPaymentSessionFinalizationComponentTests.swift in Sources */,
-				8376158D2B0B720B005420C9 /* AnalyticsEventsTests.swift in Sources */,
-				8376155A2B0B70F4005420C9 /* CreateResumePaymentService.swift in Sources */,
-				8376154D2B0B709E005420C9 /* ApplePayTests.swift in Sources */,
-				8376154B2B0B7098005420C9 /* AnalyticsTests+Constants.swift in Sources */,
-				837615822B0B718A005420C9 /* NolPayLinkedCardsComponentTests.swift in Sources */,
-				8376158C2B0B720B005420C9 /* AnalyticsTests+Helpers.swift in Sources */,
-				8376154E2B0B70A0005420C9 /* DecodedClientToken.swift in Sources */,
-				837615552B0B70AF005420C9 /* ThreeDSProtocolVersionTests.swift in Sources */,
-				8376155E2B0B70FD005420C9 /* MockVaultCheckoutViewModel.swift in Sources */,
-				837615682B0B711C005420C9 /* PrimerRawRetailerDataTests.swift in Sources */,
-				837615982B0B9686005420C9 /* KlarnaPaymentSessionAuthorizationComponentTests.swift in Sources */,
-				837615782B0B714D005420C9 /* Mocks.swift in Sources */,
-				837615752B0B7145005420C9 /* MockAPIClient.swift in Sources */,
-				837615632B0B710F005420C9 /* PrimerAPIConfigurationModuleTests.swift in Sources */,
-				837615652B0B7115005420C9 /* URLSessionStackTests.swift in Sources */,
-				837615612B0B7106005420C9 /* HUC_TokenizationViewModelTests.swift in Sources */,
-				837615712B0B7134005420C9 /* WebViewUtilTests.swift in Sources */,
-				8376155B2B0B70F6005420C9 /* PayPalService.swift in Sources */,
-				837615532B0B70AB005420C9 /* ThemeTests.swift in Sources */,
-				837615942B0B7E07005420C9 /* KlarnaPaymentSessionCreationComponentTests.swift in Sources */,
-				837615562B0B70B2005420C9 /* TokenizationResponseTests.swift in Sources */,
-				8376155F2B0B7100005420C9 /* MockPaymentMethodTokenizationViewModel.swift in Sources */,
-				837615772B0B714A005420C9 /* RawDataManagerTests.swift in Sources */,
-				837615742B0B7143005420C9 /* HeadlessVaultManagerTests.swift in Sources */,
-				837615692B0B7120005420C9 /* CardComponentManagerTests.swift in Sources */,
-				837615732B0B713C005420C9 /* HeadlessUniversalCheckoutTests.swift in Sources */,
-				837615762B0B7147005420C9 /* MockModule.swift in Sources */,
-				8376156C2B0B7127005420C9 /* TokenizationServiceTests.swift in Sources */,
-				837615512B0B70A6005420C9 /* PayPalConfirmBillingAgreementTests.swift in Sources */,
-				8376156E2B0B712D005420C9 /* IntExtensionTests.swift in Sources */,
-				837615602B0B7103005420C9 /* DropInUI_TokenizationViewModelTests.swift in Sources */,
-				837615702B0B7132005420C9 /* StringTests.swift in Sources */,
-				837615852B0B718A005420C9 /* NolPayLinkCardComponentTest.swift in Sources */,
-				837615872B0B718A005420C9 /* NolPayPhoneMetadataServiceTests.swift in Sources */,
-				8376154F2B0B70A2005420C9 /* IPay88Tests.swift in Sources */,
-				837615622B0B710C005420C9 /* PollingModuleTests.swift in Sources */,
-				837615502B0B70A5005420C9 /* PaymentMethodConfigTests.swift in Sources */,
-				8376154A2B0B7092005420C9 /* AnalyticsTests.swift in Sources */,
-				8376156A2B0B7121005420C9 /* PaymentMethodConfigServiceTests.swift in Sources */,
-				8376156D2B0B712B005420C9 /* DateTests.swift in Sources */,
-				837615962B0B91BE005420C9 /* KlarnaPaymentViewHandlingComponentTests.swift in Sources */,
-				8376155D2B0B70FA005420C9 /* VaultService.swift in Sources */,
-				837615572B0B70EA005420C9 /* EncodingDecodingContainerTests.swift in Sources */,
-				837615922B0B745B005420C9 /* KlarnaTestsMocks.swift in Sources */,
-				837615642B0B7111005420C9 /* UserInterfaceModuleTests.swift in Sources */,
-				837615672B0B711A005420C9 /* PrimerRawCardDataManagerTests.swift in Sources */,
-				837615862B0B718A005420C9 /* NolPayUnlinkCardComponentTest.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		F00C65F72ACC67FA00187028 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -842,14 +660,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		8382FDA62B0B6D82000D192B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = F00C65F52ACC67FA00187028 /* Debug App SPM */;
-			targetProxy = 8382FDA52B0B6D82000D192B /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		CE259612A00F85709107B872 /* Main.storyboard */ = {
@@ -900,62 +710,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		8382FDA72B0B6D82000D192B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4XL84F39P3;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Primer.Debug-App-SPM-Tests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Debug App SPM.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Debug App SPM";
-			};
-			name = Debug;
-		};
-		8382FDA82B0B6D82000D192B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4XL84F39P3;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Primer.Debug-App-SPM-Tests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Debug App SPM.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Debug App SPM";
-			};
-			name = Release;
-		};
 		C02E8D181B9F35EB41C35E07 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1141,15 +895,6 @@
 			buildConfigurations = (
 				F5CDF642D3EADA50CDF5FF84 /* Debug */,
 				C02E8D181B9F35EB41C35E07 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		8382FDA92B0B6D82000D192B /* Build configuration list for PBXNativeTarget "Debug App SPM Tests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8382FDA72B0B6D82000D192B /* Debug */,
-				8382FDA82B0B6D82000D192B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

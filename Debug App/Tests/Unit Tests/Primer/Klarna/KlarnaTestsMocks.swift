@@ -21,41 +21,4 @@ class KlarnaTestsMocks {
     )
 }
 
-class MockValidationDelegate: PrimerHeadlessValidatableDelegate {
-    func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
-        validationsReceived = validationStatus
-        if case let .invalid(errors) = validationStatus {
-            validationErrorsReceived = errors
-        }
-        wasValidatedCalled = true
-    }
-    
-    var validationsReceived: PrimerSDK.PrimerValidationStatus?
-    var wasValidatedCalled = false
-    var validationErrorsReceived: [PrimerValidationError] = []
-}
-
-
-class MockStepDelegate: PrimerHeadlessSteppableDelegate {
-    var stepValueChanged: (() -> ())?
-    
-    var stepReceived: PrimerHeadlessStep? {
-        didSet {
-            stepValueChanged?()
-        }
-    }
-    
-    func didReceiveStep(step: PrimerHeadlessStep) {
-        stepReceived = step
-    }
-}
-
-class MockErrorDelegate: PrimerHeadlessErrorableDelegate {
-    var errorReceived: Error?
-    
-    func didReceiveError(error: PrimerSDK.PrimerError) {
-        errorReceived = error
-    }
-}
-
 #endif

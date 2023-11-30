@@ -17,7 +17,7 @@ final class KlarnaPaymentViewHandlingComponentTests: XCTestCase {
     override func setUp() {
         super.setUp()
         sut = KlarnaPaymentViewHandlingComponent()
-        
+        sut.setProvider(provider: KlarnaTestsMocks.klarnaProvider)
     }
     
     override func tearDown() {
@@ -30,7 +30,6 @@ final class KlarnaPaymentViewHandlingComponentTests: XCTestCase {
     }
     
     func testKlarnaProvider_NotNil() {
-        sut.setProvider(provider: KlarnaTestsMocks.klarnaProvider)
         XCTAssertNotNil(sut.klarnaProvider)
     }
     
