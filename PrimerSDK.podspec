@@ -34,8 +34,7 @@ Pod::Spec.new do |s|
                 "${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS",
                 "${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK",
                 "${PODS_CONFIGURATION_BUILD_DIR}/PrimerNolPaySDK",
-                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK/Frameworks/KlarnaMobileSDK.xcframework",
-                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK/Frameworks/PrimerKlarnaSDK.xcframework"
+                "${PODS_XCFRAMEWORKS_BUILD_DIR}/PrimerKlarnaSDK"
             ]
         }
     end
