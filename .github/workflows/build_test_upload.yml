@@ -68,7 +68,7 @@ jobs:
           SOURCE_BRANCH: ${{ github.head_ref }}
   build-and-upload-to-appetize:
     needs: danger
-    runs-on: macos-13
+    runs-on: macos-14
     timeout-minutes: 45
     name: "Build and upload app to Appetize"
     steps:
