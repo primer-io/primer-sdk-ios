@@ -18,6 +18,8 @@ extension Analytics {
         }()
 
         static let sdkLogsUrl = URL(string: "https://analytics.production.data.primer.io/sdk-logs")!
+        
+        static let maximumBatchSize: UInt = 100
 
         @discardableResult
         internal static func record(event: Analytics.Event) -> Promise<Void> {
@@ -55,7 +57,7 @@ extension Analytics {
         }
 
         @discardableResult
-        internal static func sync(batchSize: UInt = 300) -> Promise<Void> {
+        internal static func sync(batchSize: UInt = maximumBatchSize) -> Promise<Void> {
             return Promise { seal in
                 Analytics.queue.async {
                     logger.debug(message: "📚 Analytics: Syncing...")
@@ -222,6 +224,7 @@ extension Analytics {
                 let eventsData = try Data(contentsOf: Analytics.Service.filepath)
                 let events = try JSONDecoder().decode([Analytics.Event].self, from: eventsData)
                 let sortedEvents = events.sorted(by: { $0.createdAt > $1.createdAt })
+                logger.debug(message: "📚 Loaded events: \(sortedEvents.count)")
                 return sortedEvents
 
             } catch {
