@@ -58,3 +58,12 @@ jobs:
           slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           github-run-id: ${{ github.run_id }}
           run-tests: false
+      - name: Record changelog for current release
+        run: cz changelog $RELEASE_VERSION --file-name="release.md"
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          title: Release ${{ env.RELEASE_VERSION }}
+          name: "Release ${{ env.RELEASE_VERSION }}"
+          tag: ${{ env.RELEASE_VERSION }}
+          bodyFile: "release.md"
