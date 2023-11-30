@@ -15,8 +15,6 @@ Pod::Spec.new do |s|
 
     s.default_subspec = "Core"
     s.ios.frameworks  = "Foundation", "UIKit"
- 
-    s.dependency 'PrimerKlarnaSDK'
 
     s.subspec "Core" do |ss|
         ss.ios.source_files = "Sources/PrimerSDK/Classes/**/*.{h,m,swift}"
@@ -35,7 +33,9 @@ Pod::Spec.new do |s|
                 "$(inherited)",
                 "${PODS_CONFIGURATION_BUILD_DIR}/Primer3DS",
                 "${PODS_CONFIGURATION_BUILD_DIR}/PrimerIPay88MYSDK",
-                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerNolPaySDK"
+                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerNolPaySDK",
+                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK/Frameworks/KlarnaMobileSDK.xcframework",
+                "${PODS_CONFIGURATION_BUILD_DIR}/PrimerKlarnaSDK/Frameworks/PrimerKlarnaSDK.xcframework"
             ]
         }
     end
