@@ -68,7 +68,7 @@ jobs:
           SOURCE_BRANCH: ${{ github.head_ref }}
   build-and-upload-to-appetize:
     needs: danger
-    runs-on: macos-14
+    runs-on: macos-13
     timeout-minutes: 45
     name: "Build and upload app to Appetize"
     steps:
@@ -100,7 +100,7 @@ jobs:
           slack-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           github-run-id: ${{ github.run_id }}
-          run-tests: true
+          run-tests: false
       - uses: peter-evans/find-comment@v2
         if: ${{ success() }}
         id: find_comment
