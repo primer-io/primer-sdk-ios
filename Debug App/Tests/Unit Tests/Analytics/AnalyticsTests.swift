@@ -97,7 +97,7 @@ class AnalyticsTests: XCTestCase {
         }
         .then { events -> Promise<[Analytics.Event]> in
             newEvents.append(contentsOf: events)
-            return Promise.fulfilled(Analytics.Service.loadEvents())
+            return Promise.fulfilled(self.storage.loadEvents())
         }
         .done { events in
             storedEvents = events
@@ -135,17 +135,7 @@ class AnalyticsTests: XCTestCase {
             return self.corruptAnalyticsFileData()
         }
         .then { () -> Promise<[Analytics.Event]> in
-            do {
-                let storedEvents = try Analytics.Service.loadEvents()
-                return Promise { seal in
-                    seal.fulfill(storedEvents)
-                }
-                
-            } catch {
-                return Promise { seal in
-                    seal.fulfill([])
-                }
-            }
+            Promise.fulfilled(self.storage.loadEvents())
         }
         .done { events in
             storedEvents = events
@@ -157,15 +147,17 @@ class AnalyticsTests: XCTestCase {
 
         waitForExpectations(timeout: 10)
         
-        if (newEvents ?? []).isEmpty {
+        guard let newEvents = newEvents, !newEvents.isEmpty else {
             XCTFail("Failed to created new events")
-            
-        } else if storedEvents == nil {
-            XCTFail("Failed to load stored events")
-            
-        } else {
-            XCTAssert(storedEvents!.count == 0, "There shouldn't be any stored events. storedEvents.count \(storedEvents)")
+            return
         }
+        
+        guard let storedEvents = storedEvents else {
+            XCTFail("Failed to load stored events")
+            return
+        }
+        
+        XCTAssert(storedEvents.isEmpty, "There shouldn't be any stored events. storedEvents.count = \(storedEvents)")
     }
     
     func test_corrupt_analytics_file_with_rc_3_events() throws {
@@ -206,7 +198,7 @@ class AnalyticsTests: XCTestCase {
         
         wait(for: expectationsToBeFulfilled, timeout: 30)
         
-        var storedEvents = Analytics.Service.loadEvents()
+        let storedEvents = storage.loadEvents()
         XCTAssert(storedEvents.count == 10, "storedEvents should be 10")
     }
     
@@ -240,13 +232,13 @@ class AnalyticsTests: XCTestCase {
             Analytics.Service.record(events: events)
         }
         .then {
-            Promise.fulfilled(Analytics.Service.loadEvents())
+            Promise.fulfilled(self.storage.loadEvents())
         }
         .then { _ in
             Analytics.Service.flush()
         }
         .then {
-            Promise.fulfilled(Analytics.Service.loadEvents())
+            Promise.fulfilled(self.storage.loadEvents())
         }
         .done { events in
             storedEvents = events
@@ -320,7 +312,7 @@ class AnalyticsTests: XCTestCase {
         
         wait(for: [recordEvent], timeout: 10)
         
-        let events = Analytics.Service.loadEvents()
+        let events = storage.loadEvents()
         let errorEvents = events.filter({ ($0.properties as? MessageEventProperties)?.diagnosticsId == diagnosticsId })
         let errorEvent = errorEvents.first
         
@@ -342,7 +334,7 @@ class AnalyticsTests: XCTestCase {
         self.cleanUpAnalytics()
         self.createAnalyticsFileForRC3()
         
-        var storedEvents = Analytics.Service.loadEvents()
+        var storedEvents = storage.loadEvents()
         XCTAssert(storedEvents.count == 0, "Analytics events should be empty")
         
         let serialQueue     = DispatchQueue(label: "Serial Queue")
@@ -489,7 +481,7 @@ class AnalyticsTests: XCTestCase {
             writeEventsOnConcurrentQueueExpectation2
         ], timeout: 20)
                 
-        storedEvents = Analytics.Service.loadEvents()
+        storedEvents = storage.loadEvents()
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events but found \(storedEvents.count)")
     }
     
@@ -501,7 +493,7 @@ class AnalyticsTests: XCTestCase {
         self.cleanUpAnalytics()
         self.createAnalyticsFileForRC3()
         
-        var storedEvents = Analytics.Service.loadEvents()
+        var storedEvents = storage.loadEvents()
         
         let events = self.createEvents(1000, withMessage: "A message")
         var eventsIds: [String] = []
@@ -526,7 +518,7 @@ class AnalyticsTests: XCTestCase {
         }
         
         wait(for: expectationsToBeFulfilled, timeout: 20)
-        storedEvents = Analytics.Service.loadEvents()
+        storedEvents = storage.loadEvents()
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events")
         
         let createClientSessionExpectation    = expectation(description: "Create client session")
@@ -534,9 +526,6 @@ class AnalyticsTests: XCTestCase {
         
         firstly {
             self.createDemoClientSessionAndSetAppState()
-        }
-        .done { _ in
-            
         }
         .ensure {
             createClientSessionExpectation.fulfill()
@@ -582,35 +571,9 @@ class AnalyticsTests: XCTestCase {
         }
         
         wait(for: expectationsToBeFulfilled, timeout: 60)
-        storedEvents = Analytics.Service.loadEvents()
+        storedEvents = storage.loadEvents()
         let nonNetworkEvents = storedEvents.filter({ $0.eventType != .networkCall && $0.eventType != .networkConnectivity })
         XCTAssert(nonNetworkEvents.count == 0, "nonNetworkEvents: \(nonNetworkEvents.count)")
     }
 }
 
-
-extension Promise {
-    static func fulfilled(_ value: T) -> Promise<T> {
-        return Promise<T> { $0.fulfill(value) }
-    }
-    
-    static func rejected(_ error: Error) -> Promise<T> {
-        return Promise<T> { $0.reject(error) }
-    }
-    
-    static func resolved(_ closure: () throws -> T) -> Promise<T> {
-        Promise<T> { seal in
-            do {
-                seal.fulfill(try closure())
-            } catch {
-                seal.reject(error)
-            }
-        }
-    }
-    
-    func erase() -> Promise<Void> {
-        then { _ in
-            Promise<Void>.fulfilled(())
-        }
-    }
-}

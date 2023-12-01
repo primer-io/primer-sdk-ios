@@ -190,11 +190,17 @@ extension AnalyticsTests {
     
     func cleanUpAnalytics() {
         self.deleteAnalyticsFileSynchonously()
-        let storedEvents = Analytics.Service.loadEvents()
+        let storedEvents = storage.loadEvents()
         XCTAssert(storedEvents.count == 0, "Analytics events should be empty")
     }
     
     func deleteAnalyticsFileSynchonously() {
-        Analytics.Service.deleteAnalyticsFile()
+        Analytics.Service.clear()
+    }
+    
+    var storage: Analytics.Storage {
+        return _storage
     }
 }
+
+fileprivate let _storage = Analytics.DefaultStorage()

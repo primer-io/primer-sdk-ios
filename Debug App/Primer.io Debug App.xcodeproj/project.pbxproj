@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		041295AA2AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		041295AD2AB9E2C100A4F243 /* PrimerHeadlessNolPayManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */; };
+		04769C152B1A680C0051581C /* Promises+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04769C142B1A680C0051581C /* Promises+Helper.swift */; };
 		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
 		04F6EF722AE69FC500115D05 /* AnalyticsTests+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */; };
 		04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */; };
@@ -138,6 +139,7 @@
 		021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeDSProtocolVersionTests.swift; sourceTree = "<group>"; };
 		041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutNolPayViewController.swift; sourceTree = "<group>"; };
 		041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessNolPayManagerTests.swift; sourceTree = "<group>"; };
+		04769C142B1A680C0051581C /* Promises+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promises+Helper.swift"; sourceTree = "<group>"; };
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
 		04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsTests+Helpers.swift"; sourceTree = "<group>"; };
 		04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventsTests.swift; sourceTree = "<group>"; };
@@ -463,6 +465,7 @@
 			children = (
 				D3D9154BF1E011FED6799CD5 /* CardData.swift */,
 				D038BDB23C062D362AAA09BE /* Networking.swift */,
+				04769C142B1A680C0051581C /* Promises+Helper.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -835,6 +838,7 @@
 				8064B65A8F83D5B004D081FD /* PaymentMethodConfigTests.swift in Sources */,
 				4BD7794627267B40E9E10686 /* PrimerCheckoutTheme.swift in Sources */,
 				F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */,
+				04769C152B1A680C0051581C /* Promises+Helper.swift in Sources */,
 				24C060A48D4A2670FFC3426F /* ThreeDSErrorTests.swift in Sources */,
 				F1A71C2E0D900FEB9AF1351C /* ThreeDSProtocolVersionTests.swift in Sources */,
 				04FAF9EC2AE7B33E002E4BAE /* StringExtensionTests.swift in Sources */,

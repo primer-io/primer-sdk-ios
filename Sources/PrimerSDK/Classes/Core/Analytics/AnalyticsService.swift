@@ -32,9 +32,8 @@ extension Analytics {
         internal static func record(events: [Analytics.Event]) -> Promise<Void> {
             return Promise { seal in
                 Analytics.queue.async(flags: .barrier) {
-                    print(">>>>> EVENT ID: \(events.first!.localId)")
-//                    logger.debug(message: "📚 Analytics: Recording \(events.count) events")
-                    let storedEvents: [Analytics.Event] = Analytics.Service.loadEvents()
+                    logger.debug(message: "📚 Analytics: Recording \(events.count) events")
+                    let storedEvents: [Analytics.Event] = storage.loadEvents()
 
                     let storedEventsIds = storedEvents.compactMap({ $0.localId })
                     var eventsToAppend: [Analytics.Event] = []
@@ -46,13 +45,18 @@ extension Analytics {
 
                     var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
                     combinedEvents.append(contentsOf: storedEvents)
+                    
+                    do {
+                        try storage.save(combinedEvents)
+                        
+                        if combinedEvents.count > 100 {
+                            sync(events: combinedEvents)
+                        }
 
-                    print(">>>>> EVENTS: \(combinedEvents.count)")
-                    Analytics.Service.save(combinedEvents)
-                    if combinedEvents.count > 100 {
-                        sync(events: combinedEvents)
+                        seal.fulfill()
+                    } catch {
+                        seal.reject(error)
                     }
-                    seal.fulfill()
                 }
             }
         }
@@ -60,16 +64,12 @@ extension Analytics {
         @discardableResult
         internal static func flush() -> Promise<Void> {
             Promise { seal in
-                do {
-                    let events = loadEvents()
-                    sync(events: events, isFlush: true)
-                    .done {
-                        seal.fulfill()
-                    }.catch { error in
-                        seal.reject(error)
-                    }
-                } catch {
-                    deleteAnalyticsFile()
+                let events = storage.loadEvents()
+                sync(events: events, isFlush: true)
+                .done {
+                    seal.fulfill()
+                }.catch { error in
+                    seal.reject(error)
                 }
             }
         }
@@ -107,7 +107,7 @@ extension Analytics {
                             logger.error(message: "📚 Analytics: Failed to sync events with error \(err.localizedDescription)")
                         }
                         .finally {
-                            let remainingEvents = loadEvents()
+                            let remainingEvents = storage.loadEvents()
                             logger.debug(message: "📚 Analytics: Sync completed. \(remainingEvents.count) events present after sync.")
                             isSyncing = false
                             seal.fulfill()
@@ -115,57 +115,42 @@ extension Analytics {
                 }
             }
         }
+        
+        static func clear() {
+            storage.deleteAnalyticsFile()
+        }
 
         private static func sendSkdLogEvents(events: [Analytics.Event]) -> Promise<Void> {
-            return Promise { seal in
-                let storedEvents = events
-                let sdkLogEvents = storedEvents.filter({ $0.analyticsUrl == nil })
-                let sdkLogEventsBatches = sdkLogEvents.toBatches(of: maximumBatchSize)
+            let storedEvents = events
+            let sdkLogEvents = storedEvents.filter({ $0.analyticsUrl == nil })
+            let sdkLogEventsBatches = sdkLogEvents.toBatches(of: maximumBatchSize)
 
-                var promises: [Promise<Void>] = []
+            var promises: [Promise<Void>] = []
 
-                for sdkLogEventsBatch in sdkLogEventsBatches {
-                    let p = Analytics.Service.sendEvents(sdkLogEventsBatch, to: Analytics.Service.sdkLogsUrl)
-                    promises.append(p)
-                }
-
-                when(fulfilled: promises)
-                .done {
-                    seal.fulfill()
-                }
-                .catch { err in
-                    seal.reject(err)
-                }
+            for sdkLogEventsBatch in sdkLogEventsBatches {
+                let p = Analytics.Service.sendEvents(sdkLogEventsBatch, to: Analytics.Service.sdkLogsUrl)
+                promises.append(p)
             }
+
+            return when(fulfilled: promises)
         }
 
         private static func sendSkdAnalyticsEvents(events: [Analytics.Event]) -> Promise<Void> {
-            return Promise { seal in
-                let storedEvents = events
-                let analyticsEvents = storedEvents.filter({ $0.analyticsUrl != nil })
-                let analyticsEventsBatches = analyticsEvents.toBatches(of: maximumBatchSize)
+            let storedEvents = events
+            let analyticsEvents = storedEvents.filter({ $0.analyticsUrl != nil })
+            let analyticsEventsBatches = analyticsEvents.toBatches(of: maximumBatchSize)
 
-                var promises: [Promise<Void>] = []
+            var promises: [Promise<Void>] = []
 
-                if let analyticsUrlStr = analyticsEvents.first(where: { $0.analyticsUrl != nil })?.analyticsUrl,
-                   let analyticsUrl = URL(string: analyticsUrlStr) {
-                    for analyticsEventsBatch in analyticsEventsBatches {
-                        let p = sendEvents(analyticsEventsBatch, to: analyticsUrl)
-                        promises.append(p)
-                    }
-
-                    when(fulfilled: promises)
-                    .done {
-                        seal.fulfill()
-                    }
-                    .catch { err in
-                        seal.reject(err)
-                    }
-
-                } else {
-                    seal.fulfill()
+            if let analyticsUrlStr = analyticsEvents.first(where: { $0.analyticsUrl != nil })?.analyticsUrl,
+               let analyticsUrl = URL(string: analyticsUrlStr) {
+                for analyticsEventsBatch in analyticsEventsBatches {
+                    let p = sendEvents(analyticsEventsBatch, to: analyticsUrl)
+                    promises.append(p)
                 }
             }
+            
+            return when(fulfilled: promises)
         }
 
         private static func sendEvents(
@@ -213,7 +198,7 @@ extension Analytics {
                 switch result {
                 case .success:
                     logger.debug(message: "📚 Analytics: Finished syncing \(events.count) events on URL: \(url.absoluteString)")
-                    Analytics.Service.delete(events)
+                    storage.delete(events)
                     completion(nil)
 
                 case .failure(let err):
@@ -222,93 +207,6 @@ extension Analytics {
                     completion(err)
                 }
             }
-        }
-
-        internal static func loadEvents() -> [Analytics.Event] {
-            do {
-                if #available(iOS 16.0, *) {
-                    if !FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
-                        return []
-                    }
-                } else {
-                    if !FileManager.default.fileExists(atPath: Analytics.Service.filepath.path) {
-                        return []
-                    }
-                }
-
-                let eventsData = try Data(contentsOf: Analytics.Service.filepath)
-                let events = try JSONDecoder().decode([Analytics.Event].self, from: eventsData)
-                let sortedEvents = events.sorted(by: { $0.createdAt > $1.createdAt })
-//                logger.debug(message: "📚 Analytics: Loaded events: \(sortedEvents.count)")
-                return sortedEvents
-
-            } catch {
-                Analytics.Service.deleteAnalyticsFile()
-                return []
-            }
-        }
-
-        // JN TODO: should this do
-        private static func save(_ events: [Analytics.Event]) {
-            do {
-                let eventsData = try JSONEncoder().encode(events)
-                try eventsData.write(to: Analytics.Service.filepath)
-                //                    logger.debug(message: "📚 Analytics: Saved \(events.count) events")
-            } catch {
-                logger.error(message: "📚 Analytics: Failed to save file \(error.localizedDescription)")
-            }
-        }
-
-        private static func delete(_ events: [Analytics.Event]? = nil) {
-            logger.debug(message: "📚 Analytics: Deleting \(events == nil ? "all" : "\(events!.count)") events")
-
-            do {
-                if let events = events {
-                    let storedEvents = Analytics.Service.loadEvents()
-                    let eventsLocalIds = events.compactMap({ $0.localId })
-                    let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId )})
-                    logger.debug(message: "📚 Analytics: Deleted \(eventsLocalIds.count) events, saving remaining \(remainingEvents.count)")
-                    Analytics.Service.save(remainingEvents)
-                } else {
-                    Analytics.Service.deleteAnalyticsFile()
-                }
-            } catch {
-                logger.error(message: "📚 Analytics: Failed to save partial events before deleting file. Deleting file anyway.")
-                Analytics.Service.deleteAnalyticsFile()
-            }
-        }
-
-        static func deleteAnalyticsFile() {
-            logger.debug(message: "📚 Analytics: Deleting analytics file at \(Analytics.Service.filepath.absoluteString)")
-
-            if #available(iOS 16.0, *) {
-                if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
-                    do {
-                        try FileManager.default.removeItem(at: Analytics.Service.filepath)
-
-                    } catch {
-                        let err = PrimerError.underlyingErrors(
-                            errors: [error],
-                            userInfo: nil,
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                    }
-                }
-            } else {
-                if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path) {
-                    do {
-                        try FileManager.default.removeItem(at: Analytics.Service.filepath)
-
-                    } catch {
-                        let err = PrimerError.underlyingErrors(
-                            errors: [error],
-                            userInfo: nil,
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                    }
-                }
-            }
-
         }
 
         struct Response: Decodable {
