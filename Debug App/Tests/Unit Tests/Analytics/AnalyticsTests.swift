@@ -99,7 +99,7 @@ class AnalyticsTests: XCTestCase {
             newEvents.append(contentsOf: events)
 
             do {
-                let storedEvents = try Analytics.Service.loadEventsSynchronously()
+                let storedEvents = try Analytics.Service.loadEvents()
                 return Promise { seal in
                     seal.fulfill(storedEvents)
                 }
@@ -146,7 +146,7 @@ class AnalyticsTests: XCTestCase {
         }
         .then { () -> Promise<[Analytics.Event]> in
             do {
-                let storedEvents = try Analytics.Service.loadEventsSynchronously()
+                let storedEvents = try Analytics.Service.loadEvents()
                 return Promise { seal in
                     seal.fulfill(storedEvents)
                 }
@@ -221,7 +221,7 @@ class AnalyticsTests: XCTestCase {
         
         wait(for: expectationsToBeFulfilled, timeout: 30)
         
-        var storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        var storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         XCTAssert(storedEvents.count == 10, "storedEvents should be 10")
     }
     
@@ -257,7 +257,7 @@ class AnalyticsTests: XCTestCase {
         }
         .then { () -> Promise<[Analytics.Event]> in
             do {
-                let storedEvents = try Analytics.Service.loadEventsSynchronously()
+                let storedEvents = try Analytics.Service.loadEvents()
                 return Promise { seal in
                     seal.fulfill(storedEvents)
                 }
@@ -273,7 +273,7 @@ class AnalyticsTests: XCTestCase {
         }
         .then { () -> Promise<[Analytics.Event]> in
             do {
-                let storedEvents = try Analytics.Service.loadEventsSynchronously()
+                let storedEvents = try Analytics.Service.loadEvents()
                 return Promise { seal in
                     seal.fulfill(storedEvents)
                 }
@@ -356,7 +356,7 @@ class AnalyticsTests: XCTestCase {
         
         wait(for: [recordEvent], timeout: 10)
         
-        let events = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        let events = (try? Analytics.Service.loadEvents()) ?? []
         let errorEvents = events.filter({ ($0.properties as? MessageEventProperties)?.diagnosticsId == diagnosticsId })
         let errorEvent = errorEvents.first
         
@@ -377,7 +377,7 @@ class AnalyticsTests: XCTestCase {
     func test_recording_race_conditions() throws {
         self.cleanUpAnalytics()
         self.createAnalyticsFileForRC3()
-        var storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        var storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         XCTAssert(storedEvents.count == 0, "Analytics events should be empty")
         
         let serialQueue     = DispatchQueue(label: "Serial Queue")
@@ -509,7 +509,7 @@ class AnalyticsTests: XCTestCase {
             writeEventsOnConcurrentQueueExpectation2
         ], timeout: 20)
                 
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events")
     }
     
@@ -520,7 +520,7 @@ class AnalyticsTests: XCTestCase {
         
         self.cleanUpAnalytics()
         self.createAnalyticsFileForRC3()
-        var storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        var storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         
         self.createAnalyticsFileForRC3()
 
@@ -674,7 +674,7 @@ class AnalyticsTests: XCTestCase {
             writeEventsOnConcurrentQueueExpectation2
         ], timeout: 20)
                 
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         let storedEventsIds = storedEvents.compactMap({ $0.localId })
         
         XCTAssert(storedEventsIds.contains(e1_1.localId), "Analytics file should contain event \(e1_1.localId)")
@@ -685,8 +685,8 @@ class AnalyticsTests: XCTestCase {
 
         // Delete events from different queues
 
-        Analytics.Service.deleteEventsSynchronously([e3])
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        Analytics.Service.delete([e3])
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         var deletedEvent3 = storedEvents.first(where: { $0.localId == e3.localId })
         XCTAssert(deletedEvent3 == nil, "Stored events should not contain event \(deletedEvent3?.localId ?? "n/a")")
         eventsIds = eventsIds.filter({ $0 != e3.localId })
@@ -697,20 +697,20 @@ class AnalyticsTests: XCTestCase {
         let deleteEvent2OnSerialQueueExpectation = expectation(description: "Delete event e1_2 on serial queue")
 
         serialQueue.async {
-            Analytics.Service.deleteEventsSynchronously([e1_1])
+            Analytics.Service.delete([e1_1])
             eventsIds = eventsIds.filter({ $0 != e1_1.localId })
             deleteEvent1OnSerialQueueExpectation.fulfill()
         }
 
         serialQueue.async {
-            Analytics.Service.deleteEventsSynchronously([e1_2])
+            Analytics.Service.delete([e1_2])
             eventsIds = eventsIds.filter({ $0 != e1_2.localId })
             deleteEvent2OnSerialQueueExpectation.fulfill()
         }
 
         wait(for: [deleteEvent1OnSerialQueueExpectation, deleteEvent2OnSerialQueueExpectation], timeout: 10)
 
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
 
         var deletedEvent1_1 = storedEvents.first(where: { $0.localId == e1_1.localId })
         var deletedEvent1_2 = storedEvents.first(where: { $0.localId == e1_2.localId })
@@ -727,13 +727,13 @@ class AnalyticsTests: XCTestCase {
         let deleteEvent2OnConcurrentQueueExpectation = expectation(description: "Delete event e2_2 on concurrent queue")
 
         concurrentQueue.async {
-            Analytics.Service.deleteEventsSynchronously([e2_1])
+            Analytics.Service.delete([e2_1])
             eventsIds = eventsIds.filter({ $0 != e2_1.localId })
             deleteEvent1OnConcurrentQueueExpectation.fulfill()
         }
 
         concurrentQueue.async {
-            Analytics.Service.deleteEventsSynchronously([e2_2])
+            Analytics.Service.delete([e2_2])
             eventsIds = eventsIds.filter({ $0 != e2_2.localId })
             deleteEvent2OnConcurrentQueueExpectation.fulfill()
         }
@@ -743,7 +743,7 @@ class AnalyticsTests: XCTestCase {
             deleteEvent2OnConcurrentQueueExpectation
         ], timeout: 10)
 
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
 
         var deletedEvent2_1 = storedEvents.first(where: { $0.localId == e2_1.localId })
         var deletedEvent2_2 = storedEvents.first(where: { $0.localId == e2_2.localId })
@@ -792,7 +792,7 @@ class AnalyticsTests: XCTestCase {
             Analytics.Service.record(events: events)
         }
         .done {
-            storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+            storedEvents = (try? Analytics.Service.loadEvents()) ?? []
             eventsIds = events.compactMap({ $0.localId })
         }
         .ensure {
@@ -809,20 +809,20 @@ class AnalyticsTests: XCTestCase {
         let deleteEvent1OnConcurrentQueueExpectation2 = expectation(description: "Delete event e2_1 on concurrent queue")
         
         serialQueue.async {
-            Analytics.Service.deleteEventsSynchronously([e1_1])
+            Analytics.Service.delete([e1_1])
             eventsIds = eventsIds.filter({ $0 != e1_1.localId })
             deleteEvent1OnSerialQueueExpectation2.fulfill()
         }
         
         concurrentQueue.async {
-            Analytics.Service.deleteEventsSynchronously([e2_1])
+            Analytics.Service.delete([e2_1])
             eventsIds = eventsIds.filter({ $0 != e2_1.localId })
             deleteEvent1OnConcurrentQueueExpectation2.fulfill()
         }
         
         // I'm having so much fun, so let's delete an event from the main queue
         
-        Analytics.Service.deleteEventsSynchronously([e3])
+        Analytics.Service.delete([e3])
         deleteEvent3OnMainQueueExpectation2.fulfill()
         eventsIds = eventsIds.filter({ $0 != e3.localId })
         
@@ -832,7 +832,7 @@ class AnalyticsTests: XCTestCase {
             deleteEvent3OnMainQueueExpectation2
         ], timeout: 10)
         
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         deletedEvent1_1 = storedEvents.first(where: { $0.localId == e1_1.localId })
         deletedEvent2_1 = storedEvents.first(where: { $0.localId == e2_1.localId })
         deletedEvent3 = storedEvents.first(where: { $0.localId == e3.localId })
@@ -877,7 +877,7 @@ class AnalyticsTests: XCTestCase {
         }
         
         serialQueue.async {
-            Analytics.Service.deleteEventsSynchronously([e1_2])
+            Analytics.Service.delete([e1_2])
             eventsIds = eventsIds.filter({ $0 != e1_2.localId })
             deleteEvent2OnSerialQueueExpectation3.fulfill()
         }
@@ -898,7 +898,7 @@ class AnalyticsTests: XCTestCase {
         }
         
         concurrentQueue.async {
-            Analytics.Service.deleteEventsSynchronously([e2_2])
+            Analytics.Service.delete([e2_2])
             eventsIds = eventsIds.filter({ $0 != e2_2.localId })
             deleteEvent2OnConcurrentQueueExpectation3.fulfill()
         }
@@ -912,7 +912,7 @@ class AnalyticsTests: XCTestCase {
         
         // Now events e1_1, e2_1 and e3 should still be in
         
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         let storedEvent1_1 = storedEvents.first(where: { $0.localId == e1_1.localId })
         let storedEvent2_1 = storedEvents.first(where: { $0.localId == e2_1.localId })
         deletedEvent1_2 = storedEvents.first(where: { $0.localId == e1_2.localId })
@@ -944,7 +944,7 @@ class AnalyticsTests: XCTestCase {
         self.cleanUpAnalytics()
         self.createAnalyticsFileForRC3()
         
-        var storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        var storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         
         let events = self.createEvents(1000, withMessage: "A message")
         var eventsIds: [String] = []
@@ -969,7 +969,7 @@ class AnalyticsTests: XCTestCase {
         }
         
         wait(for: expectationsToBeFulfilled, timeout: 20)
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events")
         
         let createClientSessionExpectation    = expectation(description: "Create client session")
@@ -1025,7 +1025,7 @@ class AnalyticsTests: XCTestCase {
         }
         
         wait(for: expectationsToBeFulfilled, timeout: 60)
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         let nonNetworkEvents = storedEvents.filter({ $0.eventType != .networkCall && $0.eventType != .networkConnectivity })
         XCTAssert(nonNetworkEvents.count == 0, "nonNetworkEvents: \(nonNetworkEvents.count)")
     }
@@ -1036,7 +1036,7 @@ class AnalyticsTests: XCTestCase {
         
         self.createAnalyticsFileForRC3()
         
-        var storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        var storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         XCTAssert(storedEvents.isEmpty, "storedEvents should be empty since load should delete migration events")
         
         let serialQueue     = DispatchQueue(label: "Serial Queue")
@@ -1095,7 +1095,7 @@ class AnalyticsTests: XCTestCase {
         wait(for: expectationsToBeFulfilled, timeout: 20)
         expectationsToBeFulfilled = []
                 
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events")
         
         for event in storedEvents {
@@ -1140,7 +1140,7 @@ class AnalyticsTests: XCTestCase {
         wait(for: expectationsToBeFulfilled, timeout: 20)
         expectationsToBeFulfilled = []
         
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         XCTAssert(storedEvents.isEmpty, "Stored events in analytics file should be 0")
      
         // Rewrite some events
@@ -1181,7 +1181,7 @@ class AnalyticsTests: XCTestCase {
         wait(for: expectationsToBeFulfilled, timeout: 20)
         expectationsToBeFulfilled = []
         
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events")
         
         // TEST
@@ -1207,7 +1207,7 @@ class AnalyticsTests: XCTestCase {
         wait(for: expectationsToBeFulfilled, timeout: 20)
         expectationsToBeFulfilled = []
         
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events")
         
         // TEST
@@ -1233,7 +1233,7 @@ class AnalyticsTests: XCTestCase {
         wait(for: expectationsToBeFulfilled, timeout: 20)
         expectationsToBeFulfilled = []
         
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events")
         
         // TEST
@@ -1259,7 +1259,7 @@ class AnalyticsTests: XCTestCase {
         wait(for: expectationsToBeFulfilled, timeout: 20)
         expectationsToBeFulfilled = []
         
-        storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events")
     }    
 }
