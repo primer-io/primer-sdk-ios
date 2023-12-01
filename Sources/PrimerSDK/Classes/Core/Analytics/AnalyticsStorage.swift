@@ -7,6 +7,8 @@
 
 import Foundation
 
+private let analyticsURL: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
+
 protocol AnalyticsStorage {
     
     func loadEvents() -> [Analytics.Event]
@@ -26,13 +28,19 @@ extension Analytics {
     
     class DefaultStorage: AnalyticsStorage, LogReporter {
         
+        let fileURL: URL
+        
+        init(fileURL: URL = analyticsURL) {
+            self.fileURL = fileURL
+        }
+        
         func loadEvents() -> [Analytics.Event] {
             do {
-                guard FileManager.default.fileExists(atPath: Analytics.Service.filepath.path) else {
+                guard FileManager.default.fileExists(atPath: fileURL.path) else {
                     return []
                 }
 
-                let eventsData = try Data(contentsOf: Analytics.Service.filepath)
+                let eventsData = try Data(contentsOf: fileURL)
                 let events = try JSONDecoder().decode([Analytics.Event].self, from: eventsData)
                 let sortedEvents = events.sorted(by: { $0.createdAt > $1.createdAt })
                 return sortedEvents
@@ -46,7 +54,7 @@ extension Analytics {
         func save(_ events: [Analytics.Event]) throws {
             do {
                 let eventsData = try JSONEncoder().encode(events)
-                try eventsData.write(to: Analytics.Service.filepath)
+                try eventsData.write(to: fileURL)
                 //                    logger.debug(message: "📚 Analytics: Saved \(events.count) events")
             } catch {
                 logger.error(message: "📚 Analytics: Failed to save file \(error.localizedDescription)")
@@ -76,33 +84,18 @@ extension Analytics {
         }
 
         func deleteAnalyticsFile() {
-            logger.debug(message: "📚 Analytics: Deleting analytics file at \(Analytics.Service.filepath.absoluteString)")
+            logger.debug(message: "📚 Analytics: Deleting analytics file at \(fileURL.absoluteString)")
 
-            if #available(iOS 16.0, *) {
-                if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
-                    do {
-                        try FileManager.default.removeItem(at: Analytics.Service.filepath)
+            if FileManager.default.fileExists(atPath: fileURL.path) {
+                do {
+                    try FileManager.default.removeItem(at: fileURL)
 
-                    } catch {
-                        let err = PrimerError.underlyingErrors(
-                            errors: [error],
-                            userInfo: nil,
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                    }
-                }
-            } else {
-                if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path) {
-                    do {
-                        try FileManager.default.removeItem(at: Analytics.Service.filepath)
-
-                    } catch {
-                        let err = PrimerError.underlyingErrors(
-                            errors: [error],
-                            userInfo: nil,
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                    }
+                } catch {
+                    let err = PrimerError.underlyingErrors(
+                        errors: [error],
+                        userInfo: nil,
+                        diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
                 }
             }
         }

@@ -17,10 +17,10 @@ extension AnalyticsTests {
             
             do {
                 let eventsData = randomStr.data(using: .utf8)!
-                try eventsData.write(to: Analytics.Service.filepath)
+                try eventsData.write(to: storage.fileURL)
                 seal.fulfill()
             } catch {
-                XCTFail("Failed to write '\(randomStr)' in '\(Analytics.Service.filepath.absoluteString)'")
+                XCTFail("Failed to write '\(randomStr)' in '\(storage.fileURL.absoluteString)'")
                 seal.reject(error)
             }
         }
@@ -160,7 +160,7 @@ extension AnalyticsTests {
     func createAnalyticsFileForRC3() {
         do {
             let eventsData = AnalyticsTestsConstants.analytics_v_2_17_0_rc_3_Events.data(using: .utf8)!
-            try eventsData.write(to: Analytics.Service.filepath)
+            try eventsData.write(to: storage.fileURL)
             
         } catch {
             XCTFail("Failed to create analytics file for RC3 - error message: \(error.localizedDescription)")
@@ -198,7 +198,7 @@ extension AnalyticsTests {
         Analytics.Service.clear()
     }
     
-    var storage: Analytics.Storage {
+    var storage: Analytics.DefaultStorage {
         return _storage
     }
 }

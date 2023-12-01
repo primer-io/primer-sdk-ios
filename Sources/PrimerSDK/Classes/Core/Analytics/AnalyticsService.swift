@@ -11,12 +11,6 @@ extension Analytics {
 
     internal class Service: LogReporter {
 
-        static var filepath: URL = {
-            let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
-            logger.debug(message: "Analytics URL: \(url)")
-            return url
-        }()
-
         static let sdkLogsUrl = URL(string: "https://analytics.production.data.primer.io/sdk-logs")!
         
         static let maximumBatchSize: UInt = 100

@@ -272,8 +272,8 @@ class AnalyticsTests: XCTestCase {
 
         waitForExpectations(timeout: 10)
         
-        if FileManager.default.fileExists(atPath: Analytics.Service.filepath.path) {
-            XCTFail("Failed to delete analytics file at '\(Analytics.Service.filepath.absoluteString)'")
+        if FileManager.default.fileExists(atPath: storage.fileURL.path) {
+            XCTFail("Failed to delete analytics file at '\(storage.fileURL.absoluteString)'")
         }
     }
     
