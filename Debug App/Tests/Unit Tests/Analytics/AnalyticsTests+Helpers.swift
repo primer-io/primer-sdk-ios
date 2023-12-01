@@ -215,7 +215,7 @@ extension AnalyticsTests {
     
     func cleanUpAnalytics() {
         self.deleteAnalyticsFileSynchonously()
-        let storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        let storedEvents = (try? Analytics.Service.loadEvents()) ?? []
         XCTAssert(storedEvents.count == 0, "Analytics events should be empty")
     }
     
