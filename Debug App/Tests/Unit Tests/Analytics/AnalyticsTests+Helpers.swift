@@ -199,10 +199,10 @@ extension AnalyticsTests {
     func syncAnalyticsFile(fromQueue queue: DispatchQueue, batchSize: UInt = 100, completion: @escaping (() -> Void)) {
         queue.async {
             firstly {
-                Analytics.Service.sync(batchSize: batchSize)
-            }
-            .done {
-                
+                Promise<Void> { seal in
+                    Analytics.Service.flush()
+                    seal.fulfill()
+                }
             }
             .ensure {
                 completion()

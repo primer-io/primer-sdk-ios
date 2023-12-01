@@ -206,12 +206,7 @@ class AnalyticsTests: XCTestCase {
         
         let newEvents = self.createEvents(10, withMessage: "A message")
         
-        firstly {
-            Analytics.Service.record(events: newEvents)
-        }
-        .done {
-            
-        }
+        Analytics.Service.record(events: newEvents)
         .ensure {
             writeEventExpectation.fulfill()
         }
@@ -269,7 +264,10 @@ class AnalyticsTests: XCTestCase {
             }
         }
         .then { _ -> Promise<Void> in
-            return Analytics.Service.sync(batchSize: batchSize)
+            Promise<Void> {
+                Analytics.Service.flush()
+                $0.fulfill()
+            }
         }
         .then { () -> Promise<[Analytics.Event]> in
             do {

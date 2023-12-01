@@ -48,14 +48,16 @@ extension Analytics {
                         var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
                         combinedEvents.append(contentsOf: storedEvents)
                         
-                        Analytics.Service.save(combinedEvents)
-
-                        if combinedEvents.count > 100 {
-                            sync(events: combinedEvents)
+                        Analytics.Service.save(combinedEvents).done { _ in
+                            if combinedEvents.count > 100 {
+                                sync(events: combinedEvents)
+                            }
+                            
+                            seal.fulfill()
                         }
-                        
-                        seal.fulfill()
-
+                        .catch { _ in
+                            // JN TODO
+                        }
                     } catch {
                         seal.reject(error)
                     }
@@ -66,7 +68,7 @@ extension Analytics {
         internal static func flush() {
             do {
                 let events = try loadEvents()
-                sync(events: events)
+                sync(events: events, isFlush: true)
             } catch {
                 deleteAnalyticsFile()
             }
@@ -81,11 +83,13 @@ extension Analytics {
             Analytics.queue.async(flags: .barrier) {
                 logger.debug(message: "📚 Analytics : Syncing...")
 
-                let events = events ?? []
+                var events = events ?? []
                 guard events.count > 0 else {
                     logger.warn(message: "📚 Analytics [sync]: Attempted to sync but had no events")
                     return
                 }
+                
+                events = isFlush ? events : Array(events.prefix(Int(maximumBatchSize)))
                 
                 let promises: [Promise<Void>] = [
                     Analytics.Service.sendSkdLogEvents(events: events),
@@ -196,7 +200,7 @@ extension Analytics {
 
             let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
             
-            logger.debug(message: "📚 Analytics: Sending \(events.count) events to \(url.pathComponents.last ?? "unknown")")
+            logger.debug(message: "📚 Analytics: Sending \(events.count) events to \(url.absoluteString)")
             
             apiClient.sendAnalyticsEvents(
                 clientToken: decodedJWTToken,
@@ -241,15 +245,19 @@ extension Analytics {
             }
         }
 
-        private static func save(_ events: [Analytics.Event]) {
-            Analytics.queue.async(flags: .barrier) {
-
-                do {
-                    let eventsData = try JSONEncoder().encode(events)
-                    try eventsData.write(to: Analytics.Service.filepath)
-//                    logger.debug(message: "📚 Analytics: Saved \(events.count) events")
-                } catch {
-                    logger.error(message: "📚 \(error.localizedDescription)")
+        @discardableResult
+        private static func save(_ events: [Analytics.Event]) -> Promise<Void> {
+            Promise<Void> { seal in
+                Analytics.queue.async(flags: .barrier) {
+                    do {
+                        let eventsData = try JSONEncoder().encode(events)
+                        try eventsData.write(to: Analytics.Service.filepath)
+                        //                    logger.debug(message: "📚 Analytics: Saved \(events.count) events")
+                        seal.fulfill()
+                    } catch {
+                        logger.error(message: "📚 Analytics: \(error.localizedDescription)")
+                        seal.reject(error)
+                    }
                 }
             }
         }
