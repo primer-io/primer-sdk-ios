@@ -127,22 +127,6 @@ extension AnalyticsTests {
                 DependencyContainer.register(appState as AppStateProtocol)
                 seal.fulfill(MockAppState.mockClientToken)
             }
-//            let networking = Networking()
-//            networking.requestClientSession(
-//                clientSessionRequestBody: ClientSessionRequestBody.demoClientSessionRequestBody) { clientToken, err in
-//                    if let err = err {
-//                        seal.reject(err)
-//                    } else if let clientToken = clientToken {
-//                        let settings = PrimerSettings()
-//                        DependencyContainer.register(settings as PrimerSettingsProtocol)
-//                        let appState = AppState()
-//                        appState.clientToken = clientToken
-//                        DependencyContainer.register(appState as AppStateProtocol)
-//                        seal.fulfill(clientToken)
-//                    } else {
-//                        fatalError()
-//                    }
-//                }
         }
     }
     
@@ -164,17 +148,11 @@ extension AnalyticsTests {
     
     func writeEvents(_ events: [Analytics.Event], fromQueue queue: DispatchQueue, completion: @escaping (() -> Void)) {
         queue.async {
-            firstly {
+            _ = firstly {
                 Analytics.Service.record(events: events)
-            }
-            .done {
-                
             }
             .ensure {
                 completion()
-            }
-            .catch { _ in
-                
             }
         }
     }
@@ -199,10 +177,7 @@ extension AnalyticsTests {
     func syncAnalyticsFile(fromQueue queue: DispatchQueue, batchSize: UInt = 100, completion: @escaping (() -> Void)) {
         queue.async {
             firstly {
-                Promise<Void> { seal in
-                    Analytics.Service.flush()
-                    seal.fulfill()
-                }
+                Analytics.Service.flush()
             }
             .ensure {
                 completion()
@@ -215,13 +190,11 @@ extension AnalyticsTests {
     
     func cleanUpAnalytics() {
         self.deleteAnalyticsFileSynchonously()
-        let storedEvents = (try? Analytics.Service.loadEvents()) ?? []
+        let storedEvents = Analytics.Service.loadEvents()
         XCTAssert(storedEvents.count == 0, "Analytics events should be empty")
     }
     
     func deleteAnalyticsFileSynchonously() {
-        Analytics.queue.sync {
-            Analytics.Service.deleteAnalyticsFile()
-        }
+        Analytics.Service.deleteAnalyticsFile()
     }
 }

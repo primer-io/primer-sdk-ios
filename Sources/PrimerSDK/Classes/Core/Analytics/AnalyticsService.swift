@@ -32,83 +32,86 @@ extension Analytics {
         internal static func record(events: [Analytics.Event]) -> Promise<Void> {
             return Promise { seal in
                 Analytics.queue.async(flags: .barrier) {
+                    print(">>>>> EVENT ID: \(events.first!.localId)")
 //                    logger.debug(message: "📚 Analytics: Recording \(events.count) events")
+                    let storedEvents: [Analytics.Event] = Analytics.Service.loadEvents()
 
-                    do {
-                        let storedEvents: [Analytics.Event] = try Analytics.Service.loadEvents()
+                    let storedEventsIds = storedEvents.compactMap({ $0.localId })
+                    var eventsToAppend: [Analytics.Event] = []
 
-                        let storedEventsIds = storedEvents.compactMap({ $0.localId })
-                        var eventsToAppend: [Analytics.Event] = []
-
-                        for event in events {
-                            if storedEventsIds.contains(event.localId) { continue }
-                            eventsToAppend.append(event)
-                        }
-
-                        var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
-                        combinedEvents.append(contentsOf: storedEvents)
-                        
-                        Analytics.Service.save(combinedEvents).done { _ in
-                            if combinedEvents.count > 100 {
-                                sync(events: combinedEvents)
-                            }
-                            
-                            seal.fulfill()
-                        }
-                        .catch { _ in
-                            // JN TODO
-                        }
-                    } catch {
-                        seal.reject(error)
+                    for event in events {
+                        if storedEventsIds.contains(event.localId) { continue }
+                        eventsToAppend.append(event)
                     }
+
+                    var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
+                    combinedEvents.append(contentsOf: storedEvents)
+
+                    print(">>>>> EVENTS: \(combinedEvents.count)")
+                    Analytics.Service.save(combinedEvents)
+                    if combinedEvents.count > 100 {
+                        sync(events: combinedEvents)
+                    }
+                    seal.fulfill()
                 }
             }
         }
         
-        internal static func flush() {
-            do {
-                let events = try loadEvents()
-                sync(events: events, isFlush: true)
-            } catch {
-                deleteAnalyticsFile()
+        @discardableResult
+        internal static func flush() -> Promise<Void> {
+            Promise { seal in
+                do {
+                    let events = loadEvents()
+                    sync(events: events, isFlush: true)
+                    .done {
+                        seal.fulfill()
+                    }.catch { error in
+                        seal.reject(error)
+                    }
+                } catch {
+                    deleteAnalyticsFile()
+                }
             }
         }
 
-        private static func sync(events: [Analytics.Event]? = nil, isFlush: Bool = false) {
+        @discardableResult
+        private static func sync(events: [Analytics.Event]? = nil, isFlush: Bool = false) -> Promise<Void> {
             if !isFlush {
-                guard !isSyncing else { return }
+                guard !isSyncing else { return Promise<Void> { $0.fulfill() } }
                 isSyncing = true
             }
-            
-            Analytics.queue.async(flags: .barrier) {
-                logger.debug(message: "📚 Analytics : Syncing...")
-
-                var events = events ?? []
-                guard events.count > 0 else {
-                    logger.warn(message: "📚 Analytics [sync]: Attempted to sync but had no events")
-                    return
-                }
-                
-                events = isFlush ? events : Array(events.prefix(Int(maximumBatchSize)))
-                
-                let promises: [Promise<Void>] = [
-                    Analytics.Service.sendSkdLogEvents(events: events),
-                    Analytics.Service.sendSkdAnalyticsEvents(events: events)
-                ]
-
-                when(fulfilled: promises)
-                .done { _ in
-                    logger.debug(message: "📚 Analytics: All events synced...")
-                }
-                .ensure {
-                }
-                .catch { err in
-                    logger.error(message: "📚 Analytics: Failed to sync events with error \(err.localizedDescription)")
-                }
-                .finally {
-                    let remainingEvents = try? self.loadEvents()
-                    logger.debug(message: "📚 Analytics: Sync completed. \((remainingEvents ?? []).count) events present after sync.")
-                    isSyncing = false
+            return Promise<Void> { seal in
+                Analytics.queue.async(flags: .barrier) {
+                    logger.debug(message: "📚 Analytics : Syncing...")
+                    
+                    var events = events ?? []
+                    guard events.count > 0 else {
+                        logger.warn(message: "📚 Analytics [sync]: Attempted to sync but had no events")
+                        return
+                    }
+                    
+                    events = isFlush ? events : Array(events.prefix(Int(maximumBatchSize)))
+                    
+                    let promises: [Promise<Void>] = [
+                        Analytics.Service.sendSkdLogEvents(events: events),
+                        Analytics.Service.sendSkdAnalyticsEvents(events: events)
+                    ]
+                    
+                    when(fulfilled: promises)
+                        .done { _ in
+                            logger.debug(message: "📚 Analytics: All events synced...")
+                        }
+                        .ensure {
+                        }
+                        .catch { err in
+                            logger.error(message: "📚 Analytics: Failed to sync events with error \(err.localizedDescription)")
+                        }
+                        .finally {
+                            let remainingEvents = loadEvents()
+                            logger.debug(message: "📚 Analytics: Sync completed. \(remainingEvents.count) events present after sync.")
+                            isSyncing = false
+                            seal.fulfill()
+                        }
                 }
             }
         }
@@ -221,7 +224,7 @@ extension Analytics {
             }
         }
 
-        internal static func loadEvents() throws -> [Analytics.Event] {
+        internal static func loadEvents() -> [Analytics.Event] {
             do {
                 if #available(iOS 16.0, *) {
                     if !FileManager.default.fileExists(atPath: Analytics.Service.filepath.path()) {
@@ -245,45 +248,37 @@ extension Analytics {
             }
         }
 
-        @discardableResult
-        private static func save(_ events: [Analytics.Event]) -> Promise<Void> {
-            Promise<Void> { seal in
-                Analytics.queue.async(flags: .barrier) {
-                    do {
-                        let eventsData = try JSONEncoder().encode(events)
-                        try eventsData.write(to: Analytics.Service.filepath)
-                        //                    logger.debug(message: "📚 Analytics: Saved \(events.count) events")
-                        seal.fulfill()
-                    } catch {
-                        logger.error(message: "📚 Analytics: \(error.localizedDescription)")
-                        seal.reject(error)
-                    }
-                }
+        // JN TODO: should this do
+        private static func save(_ events: [Analytics.Event]) {
+            do {
+                let eventsData = try JSONEncoder().encode(events)
+                try eventsData.write(to: Analytics.Service.filepath)
+                //                    logger.debug(message: "📚 Analytics: Saved \(events.count) events")
+            } catch {
+                logger.error(message: "📚 Analytics: Failed to save file \(error.localizedDescription)")
             }
         }
 
-        internal static func delete(_ events: [Analytics.Event]? = nil) {
-            Analytics.queue.async(flags: .barrier) {
-                logger.debug(message: "📚 Analytics: Deleting \(events == nil ? "all" : "\(events!.count)") events")
+        private static func delete(_ events: [Analytics.Event]? = nil) {
+            logger.debug(message: "📚 Analytics: Deleting \(events == nil ? "all" : "\(events!.count)") events")
 
-                do {
-                    if let events = events {
-                        let storedEvents = try Analytics.Service.loadEvents()
-                        let eventsLocalIds = events.compactMap({ $0.localId })
-                        let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId )})
-                        logger.debug(message: "📚 Analytics: Deleted \(eventsLocalIds.count) events, saving remaining \(remainingEvents.count)")
-                        Analytics.Service.save(remainingEvents)
-                    } else {
-                        Analytics.Service.deleteAnalyticsFile()
-                    }
-                } catch {
-                    logger.error(message: "📚 Analytics: Failed to save partial events before deleting file. Deleting file anyway.")
+            do {
+                if let events = events {
+                    let storedEvents = Analytics.Service.loadEvents()
+                    let eventsLocalIds = events.compactMap({ $0.localId })
+                    let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId )})
+                    logger.debug(message: "📚 Analytics: Deleted \(eventsLocalIds.count) events, saving remaining \(remainingEvents.count)")
+                    Analytics.Service.save(remainingEvents)
+                } else {
                     Analytics.Service.deleteAnalyticsFile()
                 }
+            } catch {
+                logger.error(message: "📚 Analytics: Failed to save partial events before deleting file. Deleting file anyway.")
+                Analytics.Service.deleteAnalyticsFile()
             }
         }
 
-        internal static func deleteAnalyticsFile() {
+        static func deleteAnalyticsFile() {
             logger.debug(message: "📚 Analytics: Deleting analytics file at \(Analytics.Service.filepath.absoluteString)")
 
             if #available(iOS 16.0, *) {
