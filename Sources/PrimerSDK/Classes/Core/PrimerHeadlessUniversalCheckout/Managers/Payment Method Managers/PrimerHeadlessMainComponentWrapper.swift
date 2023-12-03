@@ -1,5 +1,5 @@
 //
-//  PrimerHeadlessMainComponentWrapper.swift
+//  PrimerHeadlessBanksComponentWrapper.swift
 //  PrimerSDK
 //
 //  Created by Alexandra Lovin on 22.11.2023.
@@ -26,7 +26,7 @@ import Foundation
     @objc func didReceiveValidationStatus(_ status: ValidStatus)
 }
 
-@objc public protocol PrimerHeadlessMainComponentWrapperDelegate: AnyObject, PrimerHeadlessSubmitable, PrimerHeadlessStartable {
+@objc public protocol PrimerHeadlessBanksComponentWrapperDelegate: AnyObject, PrimerHeadlessSubmitable, PrimerHeadlessStartable {
     @objc var stepDelegate: BanksComponentSteppable? { get set }
     @objc var errorDelegate: BanksComponentErrorable? { get set }
     @objc var validationDelegate: BanksComponentValidatable? { get set }
@@ -34,7 +34,7 @@ import Foundation
     @objc func filterBankByName(_ text: String)
 }
 
-@objc public final class PrimerHeadlessMainComponentWrapper: NSObject, PrimerHeadlessMainComponentWrapperDelegate {
+@objc public final class PrimerHeadlessBanksComponentWrapper: NSObject, PrimerHeadlessBanksComponentWrapperDelegate {
     var banksComponent: (any BanksComponent)?
     @objc public var stepDelegate: BanksComponentSteppable?
     @objc public var errorDelegate: BanksComponentErrorable?
@@ -63,7 +63,7 @@ import Foundation
     }
 }
 
-extension PrimerHeadlessMainComponentWrapper: PrimerHeadlessErrorableDelegate,
+extension PrimerHeadlessBanksComponentWrapper: PrimerHeadlessErrorableDelegate,
                                                 PrimerHeadlessValidatableDelegate,
                                                 PrimerHeadlessSteppableDelegate {
     public func didReceiveError(error: PrimerError) {

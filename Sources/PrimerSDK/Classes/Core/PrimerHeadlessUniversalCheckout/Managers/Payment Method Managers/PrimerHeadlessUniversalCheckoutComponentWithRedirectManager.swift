@@ -8,8 +8,8 @@
 import Foundation
 extension PrimerHeadlessUniversalCheckout {
     @objc public class ComponentWithRedirectManager: NSObject {
-        @objc public func provideComponent(paymentMethodType: String) -> PrimerHeadlessMainComponentWrapper {
-            PrimerHeadlessMainComponentWrapper(manager: self, paymentMethodType: paymentMethodType)
+        @objc public func provideComponent(paymentMethodType: String) -> PrimerHeadlessBanksComponentWrapper {
+            PrimerHeadlessBanksComponentWrapper(manager: self, paymentMethodType: paymentMethodType)
         }
         @available(iOS 13, *)
         public func provide<PrimerHeadlessMainComponent>(paymentMethodType: String) throws -> PrimerHeadlessMainComponent? where PrimerCollectableData: Any, PrimerHeadlessStep: Any {

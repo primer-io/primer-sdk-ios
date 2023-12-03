@@ -54,7 +54,7 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
                 let manager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
                 if $0 == .adyenIDeal {
                     XCTAssertNotNil(try? manager.provideBanksComponent(paymentMethodType: $0.rawValue))
-                    let wrapper = PrimerHeadlessMainComponentWrapper(manager: PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager(), paymentMethodType: $0.rawValue)
+                    let wrapper = PrimerHeadlessBanksComponentWrapper(manager: PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager(), paymentMethodType: $0.rawValue)
                     XCTAssertNotNil(wrapper.banksComponent)
                 } else {
                     XCTAssertNil(try? manager.provideBanksComponent(paymentMethodType: $0.rawValue))
