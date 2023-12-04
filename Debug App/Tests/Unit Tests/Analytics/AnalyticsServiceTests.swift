@@ -186,8 +186,6 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
         } else {
             completion(.failure(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: "")))
         }
-        DispatchQueue.global(qos: .background).async {
-            self.onSendAnalyticsEvent?(body)
-        }
+        self.onSendAnalyticsEvent?(body)
     }
 }
