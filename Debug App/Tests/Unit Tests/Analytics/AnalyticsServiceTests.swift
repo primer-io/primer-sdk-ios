@@ -70,9 +70,7 @@ final class AnalyticsServiceTests: XCTestCase {
         }
         sendEvents(numberOfEvents: 4, delay: 0.1)
         
-        waitForExpectations(timeout: 15.0) { _ in
-            print(" >>>> ERROR: batches found: \(self.apiClient.batches.count), events total: \(self.apiClient.batches.joined().count)")
-        }
+        waitForExpectations(timeout: 15.0)
         
         XCTAssertEqual(apiClient.batches.count, 5)
         XCTAssertEqual(apiClient.batches.joined().count, 25)
@@ -93,9 +91,7 @@ final class AnalyticsServiceTests: XCTestCase {
         }
         sendEvents(numberOfEvents: 4, delay: 0.5)
         
-        waitForExpectations(timeout: 15.0) { _ in
-            print(" >>>> ERROR: batches found: \(self.apiClient.batches.count), events total: \(self.apiClient.batches.joined().count)")
-        }
+        waitForExpectations(timeout: 15.0)
         
         XCTAssertEqual(apiClient.batches.count, 3)
         XCTAssertEqual(apiClient.batches.joined().count, 15)
@@ -175,11 +171,11 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
         }
         print(">>>>> Received batch of: \(body.count)")
         batches.append(body)
-        onSendAnalyticsEvent?(body)
         if shouldSucceed {
             completion(.success(.init(id: nil, result: nil)))
         } else {
             completion(.failure(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: "")))
         }
+        onSendAnalyticsEvent?(body)
     }
 }
