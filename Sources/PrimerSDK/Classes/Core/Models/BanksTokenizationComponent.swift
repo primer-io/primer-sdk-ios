@@ -9,8 +9,8 @@ import Foundation
 import UIKit
 import SafariServices
 
-final class BanksTokenizationComponent: NSObject {
-    let config: PrimerPaymentMethod
+final class BanksTokenizationComponent: NSObject, LogReporter {
+    var config: PrimerPaymentMethod
     var paymentMethodType: PrimerPaymentMethodType
     private(set) var banks: [AdyenBank] = []
     private var selectedBank: AdyenBank?
@@ -21,6 +21,8 @@ final class BanksTokenizationComponent: NSObject {
     var didPresentPaymentMethodUI: (() -> Void)?
     var willPresentPaymentMethodUI: (() -> Void)?
     var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+
+    static var apiClient: PrimerAPIClientProtocol?
 
     private var redirectUrl: URL!
     private var statusUrl: URL!
@@ -38,10 +40,13 @@ final class BanksTokenizationComponent: NSObject {
     var successMessage: String?
     var resumePaymentId: String?
 
+    private var bankSelectionCompletion: ((AdyenBank) -> Void)?
+
     required init(config: PrimerPaymentMethod) {
         self.config = config
         self.paymentMethodType = config.internalPaymentMethodType!
     }
+
     func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
@@ -821,10 +826,6 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
         }
     }
 
-    func setup() {
-
-    }
-
     func cleanup() {
 
     }
@@ -897,6 +898,227 @@ extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
             self.webViewController?.dismiss(animated: true)
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+        }
+    }
+}
+
+extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
+
+    func start() {
+        self.didFinishPayment = { [weak self] _ in
+            guard let self = self else { return }
+            self.cleanup()
+        }
+
+        setup()
+// TODO: Map any start steps from PaymentMethodTokenizationViewModel+Logic.swift
+//        super.start()
+    }
+
+    @objc func receivedNotification(_ notification: Notification) {
+        switch notification.name.rawValue {
+        case Notification.Name.receivedUrlSchemeRedirect.rawValue:
+            self.webViewController?.dismiss(animated: true)
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+
+        case Notification.Name.receivedUrlSchemeCancellation.rawValue:
+            self.webViewController?.dismiss(animated: true)
+            self.didCancel?()
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+        default: break
+        }
+    }
+
+    func setup() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeRedirect, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
+
+        self.didFinishPayment = { _ in
+            self.willDismissPaymentMethodUI?()
+            self.webViewController?.dismiss(animated: true, completion: {
+                self.didDismissPaymentMethodUI?()
+            })
+        }
+    }
+
+    func performPreTokenizationSteps() -> Promise<Void> {
+        if !PrimerInternal.isInHeadlessMode {
+            DispatchQueue.main.async {
+                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+            }
+        }
+
+        let event = Analytics.Event(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: self.config.type,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .select,
+                objectClass: "\(Self.self)",
+                place: .bankSelectionList))
+        Analytics.Service.record(event: event)
+
+        return Promise { seal in
+            firstly {
+                self.validateReturningPromise()
+            }
+            .then {
+                self.fetchBanks()
+            }
+            .then { banks -> Promise<Void> in
+                self.banks = banks
+                return self.awaitBankSelection()
+            }
+            .then { () -> Promise<Void> in
+                self.bankSelectionCompletion = nil
+                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+            }
+            .done {
+                seal.fulfill()
+            }
+            .ensure { [unowned self] in
+                self.closePaymentMethodUI()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+
+    func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
+        return Promise { seal in
+            if PrimerInternal.shared.intent == .vault {
+                seal.fulfill()
+            } else {
+                let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
+                let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
+
+                var decisionHandlerHasBeenCalled = false
+
+                PrimerDelegateProxy.primerWillCreatePaymentWithData(
+                    checkoutPaymentMethodData,
+                    decisionHandler: { paymentCreationDecision in
+                        decisionHandlerHasBeenCalled = true
+                        switch paymentCreationDecision.type {
+                        case .abort(let errorMessage):
+                            let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            seal.reject(error)
+                        case .continue:
+                            seal.fulfill()
+                        }
+                    })
+
+                Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
+                    if !decisionHandlerHasBeenCalled {
+                        self?.logger.warn(message: "The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.")
+                    }
+                }
+            }
+        }
+    }
+
+    private func awaitBankSelection() -> Promise<Void> {
+        return Promise { seal in
+            self.bankSelectionCompletion = { bank in
+                self.selectedBank = bank
+                seal.fulfill()
+            }
+        }
+    }
+
+    private func closePaymentMethodUI() {
+        DispatchQueue.main.async {
+            self.willDismissPaymentMethodUI?()
+            self.webViewController?.dismiss(animated: true, completion: {
+                self.didDismissPaymentMethodUI?()
+            })
+        }
+
+        self.bankSelectionCompletion = nil
+        self.webViewController = nil
+        self.webViewCompletion = nil
+    }
+
+    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            var cancelledError: PrimerError?
+            self.didCancel = {
+                self.isCancelled = true
+                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: cancelledError!)
+                seal.reject(cancelledError!)
+                self.isCancelled = false
+            }
+
+            firstly { () -> Promise<Void> in
+                if let cancelledError = cancelledError {
+                    throw cancelledError
+                }
+                return self.performPreTokenizationSteps()
+            }
+            .then { () -> Promise<Void> in
+                if let cancelledError = cancelledError {
+                    throw cancelledError
+                }
+                return self.performTokenizationStep()
+            }
+            .then { () -> Promise<Void> in
+                if let cancelledError = cancelledError {
+                    throw cancelledError
+                }
+                return self.performPostTokenizationSteps()
+            }
+            .done {
+                if let cancelledError = cancelledError {
+                    throw cancelledError
+                }
+                seal.fulfill(self.paymentMethodTokenData!)
+            }
+            .catch { err in
+                if cancelledError == nil {
+                    seal.reject(err)
+                } else {
+                    // Cancelled error has already been thrown
+                }
+            }
+        }
+    }
+
+    func awaitUserInput() -> Promise<Void> {
+        return Promise { seal in
+            let pollingModule = PollingModule(url: self.statusUrl)
+            self.didCancel = {
+                let err = PrimerError.cancelled(
+                    paymentMethodType: self.config.type,
+                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                pollingModule.cancel(withError: err)
+                self.didDismissPaymentMethodUI?()
+            }
+
+            firstly { () -> Promise<String> in
+                if self.isCancelled {
+                    let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
+                    throw err
+                }
+                return pollingModule.start()
+            }
+            .done { resumeToken in
+                self.resumeToken = resumeToken
+                seal.fulfill()
+            }
+            .ensure {
+                self.didCancel = nil
+            }
+            .catch { err in
+                seal.reject(err)
+            }
         }
     }
 }
