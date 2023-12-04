@@ -123,8 +123,9 @@ final class AnalyticsServiceTests: XCTestCase {
         events.forEach { event in
             let _callback = {
                 print(">>>>> Reporting event on queue")
-                _ = self.service.record(event: event)
-                callback()
+                _ = self.service.record(event: event).ensure {
+                    callback()
+                }
             }
             if let delay = delay {
                 queue.asyncAfter(deadline: .now() + delay, execute: _callback)
