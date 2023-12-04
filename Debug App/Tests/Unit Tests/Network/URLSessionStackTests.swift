@@ -81,7 +81,7 @@ final class URLSessionStackTests: XCTestCase {
     func testAnalyticsReportingForOmitted() {
         // Test endpoints that shouldn't cause a network event to be reported
         XCTAssertFalse(sut.shouldReportNetworkEvents(for: .poll(clientToken: nil, url: "")))
-        XCTAssertFalse(sut.shouldReportNetworkEvents(for: .sendAnalyticsEvents(clientToken: nil, url: Analytics.Service.sdkLogsUrl, body: nil)))
+        XCTAssertFalse(sut.shouldReportNetworkEvents(for: .sendAnalyticsEvents(clientToken: nil, url: Analytics.Service.defaultSdkLogsUrl, body: nil)))
         XCTAssertFalse(sut.shouldReportNetworkEvents(for: .sendAnalyticsEvents(clientToken: nil, url: URL(string: "https://anything-that-ends.with/sdk-logs")!, body: nil)))
 
         // Test selection of endpoints that should cause a network event to be reported
