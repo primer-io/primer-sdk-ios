@@ -59,17 +59,21 @@ final class AnalyticsServiceTests: XCTestCase {
     func testComplexMultiBatchFastSend() throws {
         
         let expectation = self.expectation(description: "Called expected number of times")
-        
+        expectation.expectedFulfillmentCount = 5
+
         apiClient.onSendAnalyticsEvent = { _ in
-            guard self.apiClient.batches.joined().count >= 25 else { return }
             expectation.fulfill()
         }
         
         (0..<5).forEach { _ in
             sendEvents(numberOfEvents: 5, delay: 0.1)
         }
-        sendEvents(numberOfEvents: 4, delay: 0.1)
-        
+        let expectRemainingEvents = self.expectation(description: "Remaining events are recorded")
+        expectRemainingEvents.expectedFulfillmentCount = 4
+        sendEvents(numberOfEvents: 4, delay: 0.5) {
+            expectRemainingEvents.fulfill()
+        }
+
         waitForExpectations(timeout: 15.0)
         
         XCTAssertEqual(apiClient.batches.count, 5)
@@ -80,16 +84,20 @@ final class AnalyticsServiceTests: XCTestCase {
     func testComplexMultiBatchSlowSend() throws {
         
         let expectation = self.expectation(description: "Called expected number of times")
+        expectation.expectedFulfillmentCount = 3
         
         apiClient.onSendAnalyticsEvent = { _ in
-            guard self.apiClient.batches.joined().count == 15 else { return }
             expectation.fulfill()
         }
         
         (0..<3).forEach { _ in
             sendEvents(numberOfEvents: 5, delay: 0.5)
         }
-        sendEvents(numberOfEvents: 4, delay: 0.5)
+        let expectRemainingEvents = self.expectation(description: "Remaining events are recorded")
+        expectRemainingEvents.expectedFulfillmentCount = 4
+        sendEvents(numberOfEvents: 4, delay: 0.5) {
+            expectRemainingEvents.fulfill()
+        }
         
         waitForExpectations(timeout: 15.0)
         
@@ -106,20 +114,22 @@ final class AnalyticsServiceTests: XCTestCase {
     
     func sendEvents(numberOfEvents: Int,
                     delay: TimeInterval? = nil,
-                    onQueue queue: DispatchQueue = AnalyticsServiceTests.createQueue()) {
+                    onQueue queue: DispatchQueue = AnalyticsServiceTests.createQueue(),
+                    callback: @escaping () -> Void = {}) {
         let events = (0..<numberOfEvents).map { num in messageEvent(withMessage: "Test #\(num + 1)") }
         
         print(">>>>> About to report \(events.count) events")
         
         events.forEach { event in
-            let callback = {
+            let _callback = {
                 print(">>>>> Reporting event on queue")
                 _ = self.service.record(event: event)
+                callback()
             }
             if let delay = delay {
-                queue.asyncAfter(deadline: .now() + delay, execute: callback)
+                queue.asyncAfter(deadline: .now() + delay, execute: _callback)
             } else {
-                queue.async(execute: callback)
+                queue.async(execute: _callback)
             }
         }
     }
@@ -176,6 +186,8 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
         } else {
             completion(.failure(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: "")))
         }
-        onSendAnalyticsEvent?(body)
+        DispatchQueue.global(qos: .background).async {
+            self.onSendAnalyticsEvent?(body)
+        }
     }
 }
