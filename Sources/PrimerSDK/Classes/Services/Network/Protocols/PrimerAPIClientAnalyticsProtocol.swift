@@ -1,6 +1,6 @@
 //
 //  PrimerAPIClientAnalyticsProtocol.swift
-//  IQKeyboardManagerSwift
+//  PrimerSDK
 //
 //  Created by Jack Newcombe on 04/12/2023.
 //

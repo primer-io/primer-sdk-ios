@@ -46,6 +46,7 @@ extension Analytics {
                 return sortedEvents
 
             } catch {
+                logger.error(message: "📚 Analytics: Failed to load analytics file. Deleting file")
                 deleteAnalyticsFile()
                 return []
             }
@@ -55,7 +56,6 @@ extension Analytics {
             do {
                 let eventsData = try JSONEncoder().encode(events)
                 try eventsData.write(to: fileURL)
-                //                    logger.debug(message: "📚 Analytics: Saved \(events.count) events")
             } catch {
                 logger.error(message: "📚 Analytics: Failed to save file \(error.localizedDescription)")
                 throw error
