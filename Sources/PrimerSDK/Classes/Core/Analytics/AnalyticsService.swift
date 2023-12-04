@@ -45,7 +45,7 @@ extension Analytics {
                     guard let self = self else { return }
 
                     self.logger.debug(message: "📚 Analytics: Recording \(events.count) events")
-                    let storedEvents: [Analytics.Event] = storage.loadEvents()
+                    let storedEvents: [Analytics.Event] = self.storage.loadEvents()
 
                     let storedEventsIds = storedEvents.compactMap({ $0.localId })
                     var eventsToAppend: [Analytics.Event] = []
@@ -59,7 +59,7 @@ extension Analytics {
                     combinedEvents.append(contentsOf: storedEvents)
                     
                     do {
-                        try storage.save(combinedEvents)
+                        try self.storage.save(combinedEvents)
                         
                         if combinedEvents.count > 100 {
                             self.sync(events: combinedEvents)
