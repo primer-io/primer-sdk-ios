@@ -18,16 +18,6 @@ extension Promise {
         return Promise<T> { $0.reject(error) }
     }
     
-    static func resolved(_ closure: () throws -> T) -> Promise<T> {
-        Promise<T> { seal in
-            do {
-                seal.fulfill(try closure())
-            } catch {
-                seal.reject(error)
-            }
-        }
-    }
-    
     func erase() -> Promise<Void> {
         then { _ in
             Promise<Void>.fulfilled(())

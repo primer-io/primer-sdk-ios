@@ -10,14 +10,17 @@ import Foundation
 extension Analytics {
 
     internal class Service: LogReporter {
-
+        
         static let defaultSdkLogsUrl = URL(string: "https://analytics.production.data.primer.io/sdk-logs")!
         
         static let maximumBatchSize: UInt = 100
         
-        static let shared = Service(sdkLogsUrl: Service.defaultSdkLogsUrl,
-                                    batchSize: Service.maximumBatchSize,
-                                    storage: Analytics.storage)
+        static var shared = {
+            Service(sdkLogsUrl: Service.defaultSdkLogsUrl,
+                    batchSize: Service.maximumBatchSize,
+                    storage: Analytics.storage,
+                    apiClient: Analytics.apiClient ?? PrimerAPIClient())
+        }()
         
         let sdkLogsUrl: URL
         
@@ -25,12 +28,18 @@ extension Analytics {
         
         let storage: Storage
         
+        let apiClient: PrimerAPIClientAnalyticsProtocol
+        
         private var isSyncing: Bool = false
         
-        init(sdkLogsUrl: URL, batchSize: UInt, storage: Storage) {
+        init(sdkLogsUrl: URL,
+             batchSize: UInt,
+             storage: Storage,
+             apiClient: PrimerAPIClientAnalyticsProtocol) {
             self.sdkLogsUrl = sdkLogsUrl
             self.batchSize = batchSize
             self.storage = storage
+            self.apiClient = apiClient
         }
 
         @discardableResult
@@ -61,7 +70,9 @@ extension Analytics {
                     do {
                         try self.storage.save(combinedEvents)
                         
-                        if combinedEvents.count > 100 {
+                        if combinedEvents.count >= batchSize {
+                            let batchSizeExceeded = combinedEvents.count > batchSize
+                            self.logger.debug(message: "📚 Analytics: Minimum batch size of \(batchSize) \(batchSizeExceeded ? "exceeded" : "reached") (\(combinedEvents.count) events present). Attempting sync ...")
                             self.sync(events: combinedEvents)
                         }
 
@@ -87,24 +98,28 @@ extension Analytics {
         }
 
         @discardableResult
-        private func sync(events: [Analytics.Event]? = nil, isFlush: Bool = false) -> Promise<Void> {
+        private func sync(events: [Analytics.Event], isFlush: Bool = false) -> Promise<Void> {
+            let syncType = isFlush ? "flush" : "sync"
+            guard events.count > 0 else {
+                self.logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")
+                return Promise<Void> { $0.fulfill() }
+            }
+
             if !isFlush {
-                guard !isSyncing else { return Promise<Void> { $0.fulfill() } }
+                guard !isSyncing else {
+                    self.logger.debug(message: "📚 Analytics: Attempted to sync while already syncing. Skipping ...")
+                    return Promise<Void> { $0.fulfill() }
+                }
                 isSyncing = true
             }
             return Promise<Void> { seal in
                 Analytics.queue.async(flags: .barrier) { [weak self] in
                     guard let self = self else { return }
-                    self.logger.debug(message: "📚 Analytics : Syncing...")
                     
-                    var events = events ?? []
-                    guard events.count > 0 else {
-                        self.logger.warn(message: "📚 Analytics [sync]: Attempted to sync but had no events")
-                        return
-                    }
-                    
-                    events = isFlush ? events : Array(events.prefix(Int(batchSize)))
-                    
+                    let events = isFlush ? events : Array(events.prefix(Int(batchSize)))
+
+                    self.logger.debug(message: "📚 Analytics: \(syncType.capitalized)ing \(events.count) events ...")
+
                     let promises: [Promise<Void>] = [
                         self.sendSkdLogEvents(events: events),
                         self.sendSkdAnalyticsEvents(events: events)
@@ -112,18 +127,23 @@ extension Analytics {
                     
                     when(fulfilled: promises)
                         .done { _ in
-                            self.logger.debug(message: "📚 Analytics: All events synced...")
+                            self.logger.debug(message: "📚 Analytics: All events \(syncType)ed ...")
                         }
                         .ensure {
                         }
                         .catch { err in
-                            self.logger.error(message: "📚 Analytics: Failed to sync events with error \(err.localizedDescription)")
+                            self.logger.error(message: "📚 Analytics: Failed to \(syncType) events with error \(err.localizedDescription)")
                         }
                         .finally {
                             let remainingEvents = self.storage.loadEvents()
-                            self.logger.debug(message: "📚 Analytics: Sync completed. \(remainingEvents.count) events present after sync.")
+                            self.logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
                             self.isSyncing = false
+
                             seal.fulfill()
+
+                            if remainingEvents.count >= self.batchSize {
+                                self.sync(events: remainingEvents)
+                            }
                         }
                 }
             }
@@ -198,24 +218,22 @@ extension Analytics {
             }
 
             let decodedJWTToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken
-
-            let apiClient: PrimerAPIClientProtocol = Analytics.apiClient ?? PrimerAPIClient()
             
             logger.debug(message: "📚 Analytics: Sending \(events.count) events to \(url.absoluteString)")
             
-            apiClient.sendAnalyticsEvents(
+            self.apiClient.sendAnalyticsEvents(
                 clientToken: decodedJWTToken,
                 url: url,
                 body: events
             ) { result in
                 switch result {
                 case .success:
-                    self.logger.debug(message: "📚 Analytics: Finished syncing \(events.count) events on URL: \(url.absoluteString)")
+                    self.logger.debug(message: "📚 Analytics: Finished sending \(events.count) events on URL: \(url.absoluteString)")
                     self.storage.delete(events)
                     completion(nil)
 
                 case .failure(let err):
-                    self.logger.error(message: "📚 Analytics: Failed to sync \(events.count) events on URL \(url.absoluteString) with error \(err)")
+                    self.logger.error(message: "📚 Analytics: Failed to send \(events.count) events on URL \(url.absoluteString) with error \(err)")
                     ErrorHandler.handle(error: err)
                     completion(err)
                 }

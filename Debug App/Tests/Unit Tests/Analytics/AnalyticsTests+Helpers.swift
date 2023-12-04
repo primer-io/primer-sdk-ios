@@ -174,7 +174,7 @@ extension AnalyticsTests {
         }
     }
     
-    func syncAnalyticsFile(fromQueue queue: DispatchQueue, batchSize: UInt = 100, completion: @escaping (() -> Void)) {
+    func syncAnalyticsFile(fromQueue queue: DispatchQueue, completion: @escaping (() -> Void)) {
         queue.async {
             firstly {
                 Analytics.Service.flush()
@@ -200,6 +200,15 @@ extension AnalyticsTests {
     
     var storage: Analytics.DefaultStorage {
         return _storage
+    }
+    
+    func recreateService() {
+        Analytics.Service.shared = {
+            Analytics.Service(sdkLogsUrl: Analytics.Service.defaultSdkLogsUrl,
+                              batchSize: Analytics.Service.maximumBatchSize,
+                              storage: Analytics.storage,
+                              apiClient: Analytics.apiClient ?? PrimerAPIClient())
+        }()
     }
 }
 

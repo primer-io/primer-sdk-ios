@@ -11,6 +11,10 @@ import XCTest
 
 class AnalyticsTests: XCTestCase {
     
+    override func tearDown() {
+        self.cleanUpAnalytics()
+    }
+    
     var newEvents: [Analytics.Event] {
         return [
             Analytics.Event(
@@ -206,6 +210,7 @@ class AnalyticsTests: XCTestCase {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.sendAnalyticsEventsResult = (Analytics.Service.Response(id: "mock-d", result: "success"), nil)
         Analytics.apiClient = mockApiClient
+        recreateService()
         
         self.createAnalyticsFileForRC3()
         
@@ -489,7 +494,8 @@ class AnalyticsTests: XCTestCase {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.mockSuccessfulResponses()
         Analytics.apiClient = mockApiClient
-        
+        recreateService()
+
         self.cleanUpAnalytics()
         self.createAnalyticsFileForRC3()
         
