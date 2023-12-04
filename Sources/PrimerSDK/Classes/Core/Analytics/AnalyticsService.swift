@@ -70,9 +70,9 @@ extension Analytics {
                     do {
                         try self.storage.save(combinedEvents)
                         
-                        if combinedEvents.count >= batchSize {
-                            let batchSizeExceeded = combinedEvents.count > batchSize
-                            self.logger.debug(message: "📚 Analytics: Minimum batch size of \(batchSize) \(batchSizeExceeded ? "exceeded" : "reached") (\(combinedEvents.count) events present). Attempting sync ...")
+                        if combinedEvents.count >= self.batchSize {
+                            let batchSizeExceeded = combinedEvents.count > self.batchSize
+                            self.logger.debug(message: "📚 Analytics: Minimum batch size of \(self.batchSize) \(batchSizeExceeded ? "exceeded" : "reached") (\(combinedEvents.count) events present). Attempting sync ...")
                             self.sync(events: combinedEvents)
                         }
 
@@ -116,7 +116,7 @@ extension Analytics {
                 Analytics.queue.async(flags: .barrier) { [weak self] in
                     guard let self = self else { return }
                     
-                    let events = isFlush ? events : Array(events.prefix(Int(batchSize)))
+                    let events = isFlush ? events : Array(events.prefix(Int(self.batchSize)))
 
                     self.logger.debug(message: "📚 Analytics: \(syncType.capitalized)ing \(events.count) events ...")
 
