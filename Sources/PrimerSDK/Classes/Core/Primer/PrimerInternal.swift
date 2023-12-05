@@ -77,7 +77,7 @@ internal class PrimerInternal: LogReporter {
 
     @objc
     private func onAppStateChange() {
-        Analytics.Service.sync()
+        Analytics.Service.flush()
     }
 
     // MARK: - CONFIGURATION
@@ -291,7 +291,7 @@ internal class PrimerInternal: LogReporter {
                 id: self.timingEventId))
 
         Analytics.Service.record(events: [sdkEvent, timingEvent])
-        Analytics.Service.sync()
+        Analytics.Service.flush()
 
         self.checkoutSessionId = nil
         self.selectedPaymentMethodType = nil
