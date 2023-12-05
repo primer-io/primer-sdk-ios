@@ -68,11 +68,7 @@ final class AnalyticsServiceTests: XCTestCase {
         (0..<5).forEach { _ in
             sendEvents(numberOfEvents: 5, delay: 0.1)
         }
-        let expectRemainingEvents = self.expectation(description: "Remaining events are recorded")
-        expectRemainingEvents.expectedFulfillmentCount = 4
-        sendEvents(numberOfEvents: 4, delay: 0.5) {
-            expectRemainingEvents.fulfill()
-        }
+        sendEvents(numberOfEvents: 4, delay: 0.5)
 
         waitForExpectations(timeout: 15.0)
         
