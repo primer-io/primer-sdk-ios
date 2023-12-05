@@ -106,20 +106,13 @@ final class AnalyticsServiceTests: XCTestCase {
     
     func sendEvents(numberOfEvents: Int,
                     delay: TimeInterval? = nil,
-                    onQueue queue: DispatchQueue = AnalyticsServiceTests.createQueue(),
-                    callback: @escaping () -> Void = {}) {
+                    onQueue queue: DispatchQueue = AnalyticsServiceTests.createQueue()) {
         let events = (0..<numberOfEvents).map { num in messageEvent(withMessage: "Test #\(num + 1)") }
-        
-        print(">>>>> About to report \(events.count) events")
-
-
         events.forEach { (event: Analytics.Event) in
             let expectEventToRecord = self.expectation(description: "event is recorded - \(event.localId)")
             let _callback = {
-                print(">>>>> Reporting event on queue")
                 _ = self.service.record(event: event).ensure {
                     expectEventToRecord.fulfill()
-                    callback()
                 }
             }
             if let delay = delay {

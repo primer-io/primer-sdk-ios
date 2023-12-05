@@ -7,7 +7,7 @@
 
 import Foundation
 
-private let analyticsURL: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
+private let analyticsFileURL: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
 
 protocol AnalyticsStorage {
     
@@ -30,7 +30,7 @@ extension Analytics {
         
         let fileURL: URL
         
-        init(fileURL: URL = analyticsURL) {
+        init(fileURL: URL = analyticsFileURL) {
             self.fileURL = fileURL
         }
         
