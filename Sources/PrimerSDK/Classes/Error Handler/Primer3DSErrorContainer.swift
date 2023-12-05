@@ -93,6 +93,32 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     var exposedError: Error {
         return self
     }
+    
+    var analyticsContext: [String: Any] {
+        var context: [String: Any] = [:]
+        
+        context["initProtocolVersion"] = continueInfo.initProtocolVersion
+        context["threeDsSdkVersion"] = continueInfo.threeDsSdkVersion
+        context["threeDsSdkProvider"] = continueInfo.threeDsSdkProvider
+        context["threeDsWrapperSdkVersion"] = continueInfo.threeDsWrapperSdkVersion
+        
+        switch self {
+        case .primer3DSSdkError(_, _, _, let errorInfo):
+            context["reasonCode"] = errorInfo.errorId
+            context["reasonText"] = errorInfo.errorDescription
+            context["threeDsErrorCode"] = errorInfo.threeDsErrorCode
+            context["threeDsErrorComponent"] = errorInfo.threeDsErrorComponent
+            context["threeDsErrorDescription"] = errorInfo.errorDescription
+            context["threeDsErrorDetail"] = errorInfo.threeDsErrorDetail
+            context["threeDsSdkTranscationId"] = errorInfo.threeDsSdkTranscationId
+            context["protocolVersion"] = errorInfo.threeDsSErrorVersion
+            context["errorId"] = errorInfo.errorId
+        default:
+            break
+        }
+        
+        return context
+    }
 
     internal var info: [String: Any]? {
         let tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
