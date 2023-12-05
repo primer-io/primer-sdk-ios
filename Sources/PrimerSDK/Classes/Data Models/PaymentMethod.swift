@@ -106,9 +106,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
                 return ApayaTokenizationViewModel(config: self)
 
             case PrimerPaymentMethodType.applePay:
-                if #available(iOS 11.0, *) {
-                    return ApplePayTokenizationViewModel(config: self)
-                }
+                return ApplePayTokenizationViewModel(config: self)
 
             case PrimerPaymentMethodType.klarna:
                 return KlarnaTokenizationViewModel(config: self)

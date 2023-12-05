@@ -376,73 +376,33 @@ public enum PaymentNetwork: String {
         case .discover:
             return .discover
         case .eftpos:
-            if #available(iOS 12.0, *) {
                 return .eftpos
-            } else {
-                return nil
-            }
         case .electron:
-            if #available(iOS 12.0, *) {
-                return .electron
-            } else {
-                return nil
-            }
+            return .electron
         case .elo:
-            if #available(iOS 12.1.1, *) {
-                return .elo
-            } else {
-                return nil
-            }
+            return .elo
         case .idCredit:
-            if #available(iOS 10.3, *) {
-                return .idCredit
-            } else {
-                return nil
-            }
+            return .idCredit
         case .interac:
             return .interac
         case .jcb:
-            if #available(iOS 10.1, *) {
-                return .JCB
-            } else {
-                return nil
-            }
+            return .JCB
         case .mada:
-            if #available(iOS 12.1.1, *) {
-                return .mada
-            } else {
-                return nil
-            }
+            return .mada
         case .maestro:
-            if #available(iOS 12.0, *) {
-                return .maestro
-            } else {
-                return nil
-            }
+            return .maestro
         case .masterCard:
             return .masterCard
         case .privateLabel:
             return .privateLabel
         case .quicPay:
-            if #available(iOS 10.3, *) {
-                return .quicPay
-            } else {
-                return nil
-            }
+            return .quicPay
         case .suica:
-            if #available(iOS 10.1, *) {
-                return .suica
-            } else {
-                return nil
-            }
+            return .suica
         case .visa:
             return .visa
         case .vPay:
-            if #available(iOS 12.0, *) {
-                return .vPay
-            } else {
-                return nil
-            }
+            return .vPay
         case .barcode:
             if #available(iOS 14.0, *) {
                 return .barcode
@@ -466,56 +426,24 @@ public enum PaymentNetwork: String {
             .interac,
             .masterCard,
             .privateLabel,
-            .visa
+            .visa,
+            .cartesBancaires,
+            .eftpos,
+            .electron,
+            .maestro,
+            .vPay,
+            .elo,
+            .mada,
+            .idCredit,
+            .JCB,
+            .suica,
+            .quicPay
         ]
-
-        if #available(iOS 11.2, *) {
-//            @available(iOS 11.2, *)
-            supportedNetworks.append(.cartesBancaires)
-        } else if #available(iOS 11.0, *) {
-//            @available(iOS, introduced: 11.0, deprecated: 11.2, message: "Use PKPaymentNetworkCartesBancaires instead.")
-            supportedNetworks.append(.carteBancaires)
-        } else if #available(iOS 10.3, *) {
-//            @available(iOS, introduced: 10.3, deprecated: 11.0, message: "Use PKPaymentNetworkCartesBancaires instead.")
-            supportedNetworks.append(.carteBancaire)
-        }
-
-        if #available(iOS 12.0, *) {
-//            @available(iOS 12.0, *)
-            supportedNetworks.append(.eftpos)
-            supportedNetworks.append(.electron)
-            supportedNetworks.append(.maestro)
-            supportedNetworks.append(.vPay)
-        }
-
-        if #available(iOS 12.1.1, *) {
-//            @available(iOS 12.1.1, *)
-            supportedNetworks.append(.elo)
-            supportedNetworks.append(.mada)
-        }
-
-        if #available(iOS 10.3.1, *) {
-//            @available(iOS 10.3, *)
-            supportedNetworks.append(.idCredit)
-        }
-
-        if #available(iOS 10.1, *) {
-//            @available(iOS 10.1, *)
-            supportedNetworks.append(.JCB)
-            supportedNetworks.append(.suica)
-        }
-
-        if #available(iOS 10.3, *) {
-//            @available(iOS 10.3, *)
-            supportedNetworks.append(.quicPay)
-        }
-
+                
         if #available(iOS 14.0, *) {
-//            @available(iOS 14.0, *)
-//            supportedNetworks.append(.barcode)
             supportedNetworks.append(.girocard)
         }
-
+        
         return supportedNetworks
     }
 

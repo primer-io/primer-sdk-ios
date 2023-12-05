@@ -45,72 +45,46 @@ struct CheckoutTheme {
     }
     
     static var primer: PrimerTheme {
-        if #available(iOS 13.0, *) {
-            let themeData = PrimerThemeData()
-            themeData.colors.primary = .systemBlue
-            themeData.colors.gray = .systemGray2
-            themeData.colors.light = .systemGray4
-            themeData.blurView.backgroundColor = .black.withAlphaComponent(0.4)
-            themeData.text.system = PrimerThemeData.Text(defaultColor: .systemBlue)
-            themeData.buttons.paymentMethod.border.selectedColor = .systemBlue
-            themeData.buttons.main.text.defaultColor = .white
-            themeData.buttons.main.defaultColor = .systemBlue
-            themeData.buttons.main.disabledColor = .systemGray4
-            themeData.buttons.paymentMethod.border.width = 1.0
+        let themeData = PrimerThemeData()
+        themeData.colors.primary = .systemBlue
+        themeData.colors.gray = .systemGray2
+        themeData.colors.light = .systemGray4
+        themeData.blurView.backgroundColor = .black.withAlphaComponent(0.4)
+        themeData.text.system = PrimerThemeData.Text(defaultColor: .systemBlue)
+        themeData.buttons.paymentMethod.border.selectedColor = .systemBlue
+        themeData.buttons.main.text.defaultColor = .white
+        themeData.buttons.main.defaultColor = .systemBlue
+        themeData.buttons.main.disabledColor = .systemGray4
+        themeData.buttons.paymentMethod.border.width = 1.0
+        
+        if UITraitCollection.current.userInterfaceStyle == .dark {
+            themeData.view.backgroundColor = .systemGray6
+            themeData.text.title = PrimerThemeData.Text(defaultColor: .systemGray)
+            themeData.text.amountLabel = PrimerThemeData.Text(defaultColor: .white)
+            themeData.text.body = PrimerThemeData.Text(defaultColor: .systemGray)
+            themeData.buttons.paymentMethod.defaultColor = .systemGray4
+            themeData.buttons.paymentMethod.border.defaultColor = .white
+            themeData.buttons.paymentMethod.text.defaultColor = .white
+            themeData.buttons.paymentMethod.iconColor = .white
+            themeData.input.border = PrimerThemeData.Border(defaultColor: .systemGray, selectedColor: .systemBlue)
+            themeData.input.text = PrimerThemeData.Text(defaultColor: .systemGray)
+            themeData.input.backgroundColor = .systemGray3
             
-            if UITraitCollection.current.userInterfaceStyle == .dark {
-                themeData.view.backgroundColor = .systemGray6
-                themeData.text.title = PrimerThemeData.Text(defaultColor: .systemGray)
-                themeData.text.amountLabel = PrimerThemeData.Text(defaultColor: .white)
-                themeData.text.body = PrimerThemeData.Text(defaultColor: .systemGray)
-                themeData.buttons.paymentMethod.defaultColor = .systemGray4
-                themeData.buttons.paymentMethod.border.defaultColor = .white
-                themeData.buttons.paymentMethod.text.defaultColor = .white
-                themeData.buttons.paymentMethod.iconColor = .white
-                themeData.input.border = PrimerThemeData.Border(defaultColor: .systemGray, selectedColor: .systemBlue)
-                themeData.input.text = PrimerThemeData.Text(defaultColor: .systemGray)
-                themeData.input.backgroundColor = .systemGray3
-                
-            } else {
-                themeData.view.backgroundColor = .white
-                themeData.text.title = PrimerThemeData.Text(defaultColor: .black)
-                themeData.text.amountLabel = PrimerThemeData.Text(defaultColor: .black)
-                themeData.text.subtitle = PrimerThemeData.Text(defaultColor: UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0))
-                themeData.text.body = PrimerThemeData.Text(defaultColor: .black)
-                themeData.buttons.paymentMethod.defaultColor = .white
-                themeData.buttons.paymentMethod.border.defaultColor = .black
-                themeData.buttons.paymentMethod.text.defaultColor = .black
-                themeData.buttons.paymentMethod.iconColor = .black
-                themeData.input.border = PrimerThemeData.Border(defaultColor: .black, selectedColor: .systemBlue)
-                themeData.input.text = PrimerThemeData.Text(defaultColor: .black)
-                themeData.input.backgroundColor = .systemGray5
-            }
-            
-            return PrimerTheme.init(with: themeData)
         } else {
-            let lightThemeData = PrimerThemeData()
-            lightThemeData.colors.primary = .systemBlue
-            lightThemeData.colors.gray = UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0)
-            lightThemeData.colors.light = .white
-            lightThemeData.blurView.backgroundColor = .black.withAlphaComponent(0.4)
-            lightThemeData.view.backgroundColor = .white
-            lightThemeData.text.title = PrimerThemeData.Text(defaultColor: .black)
-            lightThemeData.text.amountLabel = PrimerThemeData.Text(defaultColor: .black)
-            lightThemeData.text.subtitle = PrimerThemeData.Text(defaultColor: UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0))
-            lightThemeData.text.body = PrimerThemeData.Text(defaultColor: .black)
-            lightThemeData.text.system = PrimerThemeData.Text(defaultColor: .blue)
-            lightThemeData.buttons.paymentMethod.border.defaultColor = .black
-            lightThemeData.buttons.paymentMethod.border.selectedColor = .blue
-            lightThemeData.buttons.paymentMethod.text.defaultColor = .black
-            lightThemeData.buttons.paymentMethod.iconColor = .black
-            lightThemeData.buttons.main.text.defaultColor = .blue
-            lightThemeData.buttons.main.defaultColor = .blue
-            lightThemeData.buttons.main.disabledColor = .lightGray
-            lightThemeData.buttons.main.text.defaultColor = .white
-            lightThemeData.input.border = PrimerThemeData.Border(defaultColor: UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0), selectedColor: .blue)
-            lightThemeData.input.text = PrimerThemeData.Text(defaultColor: .black)
-            lightThemeData.buttons.paymentMethod.border.width = 1.0
-            return PrimerTheme.init(with: lightThemeData)
+            themeData.view.backgroundColor = .white
+            themeData.text.title = PrimerThemeData.Text(defaultColor: .black)
+            themeData.text.amountLabel = PrimerThemeData.Text(defaultColor: .black)
+            themeData.text.subtitle = PrimerThemeData.Text(defaultColor: UIColor(red: 142.0/255, green: 142.0/255, blue: 147.0/255, alpha: 1.0))
+            themeData.text.body = PrimerThemeData.Text(defaultColor: .black)
+            themeData.buttons.paymentMethod.defaultColor = .white
+            themeData.buttons.paymentMethod.border.defaultColor = .black
+            themeData.buttons.paymentMethod.text.defaultColor = .black
+            themeData.buttons.paymentMethod.iconColor = .black
+            themeData.input.border = PrimerThemeData.Border(defaultColor: .black, selectedColor: .systemBlue)
+            themeData.input.text = PrimerThemeData.Text(defaultColor: .black)
+            themeData.input.backgroundColor = .systemGray5
         }
+        
+        return PrimerTheme.init(with: themeData)
     }
 }

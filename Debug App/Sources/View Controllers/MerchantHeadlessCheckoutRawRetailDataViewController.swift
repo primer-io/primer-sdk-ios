@@ -29,9 +29,7 @@ class MerchantHeadlessCheckoutRawRetailDataViewController: UIViewController {
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
         tableView.rowHeight = 56
-        if #available(iOS 11.0, *) {
-            tableView.contentInsetAdjustmentBehavior = .never
-        }
+        tableView.contentInsetAdjustmentBehavior = .never
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
         tableView.dataSource = self
         tableView.delegate = self
@@ -155,7 +153,7 @@ extension MerchantHeadlessCheckoutRawRetailDataViewController: UITableViewDataSo
             content.text = retailer.name
             cell.contentConfiguration = content
         } else {
-            // Fallback on earlier versions
+            cell.textLabel?.text = retailer.name
         }
         
         return cell

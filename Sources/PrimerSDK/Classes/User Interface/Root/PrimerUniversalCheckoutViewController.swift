@@ -151,9 +151,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             paymentMethodStackView.distribution = .fill
             paymentMethodStackView.spacing = 8.0
             paymentMethodStackView.isLayoutMarginsRelativeArrangement = true
-            if #available(iOS 11.0, *) {
-                paymentMethodStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
-            }
+            paymentMethodStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
 
             guard var amount = AppState.current.amount,
                   let currency = AppState.current.currency

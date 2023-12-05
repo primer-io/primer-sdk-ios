@@ -23,11 +23,7 @@ internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol, L
     }
 
     var paymentMethods: [PrimerPaymentMethodTokenData] {
-        if #available(iOS 11.0, *) {
-            return AppState.current.paymentMethods
-        } else {
-            return AppState.current.paymentMethods.filter { $0.paymentInstrumentType == .paymentCard }
-        }
+        return AppState.current.paymentMethods
     }
 
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? {

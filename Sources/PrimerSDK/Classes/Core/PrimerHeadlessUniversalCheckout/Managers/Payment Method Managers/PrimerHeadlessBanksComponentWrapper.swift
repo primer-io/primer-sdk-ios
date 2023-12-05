@@ -44,9 +44,9 @@ import Foundation
         guard let banksComponent = try? manager.provideBanksComponent(paymentMethodType: paymentMethodType) as? (any BanksComponent) else {
             return
         }
-        banksComponent?.stepDelegate = self
-        banksComponent?.errorDelegate = self
-        banksComponent?.validationDelegate = self
+		banksComponent.stepDelegate = self
+		banksComponent.errorDelegate = self
+		banksComponent.validationDelegate = self
         self.banksComponent = banksComponent
     }
     @objc public func submit() {

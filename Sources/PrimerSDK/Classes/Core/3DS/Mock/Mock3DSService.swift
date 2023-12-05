@@ -16,15 +16,10 @@ class Mock3DSService: ThreeDSServiceProtocol {
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
         sdkDismissed: (() -> Void)?,
         completion: @escaping (_ result: Result<String, Error>) -> Void) {
-            if #available(iOS 13.0, *) {
-                if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
-                    demo3DSWindow = UIWindow(windowScene: windowScene)
-                } else {
-                    // Not opted-in in UISceneDelegate
-                    demo3DSWindow = UIWindow(frame: UIScreen.main.bounds)
-                }
+            if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                demo3DSWindow = UIWindow(windowScene: windowScene)
             } else {
-                // Fallback on earlier versions
+                // Not opted-in in UISceneDelegate
                 demo3DSWindow = UIWindow(frame: UIScreen.main.bounds)
             }
 

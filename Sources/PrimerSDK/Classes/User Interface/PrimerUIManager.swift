@@ -101,15 +101,10 @@ internal class PrimerUIManager {
                 }
 
                 if PrimerUIManager.primerWindow == nil {
-                    if #available(iOS 13.0, *) {
-                        if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
-                            PrimerUIManager.primerWindow = UIWindow(windowScene: windowScene)
-                        } else {
-                            // Not opted-in in UISceneDelegate
-                            PrimerUIManager.primerWindow = UIWindow(frame: UIScreen.main.bounds)
-                        }
+                    if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                        PrimerUIManager.primerWindow = UIWindow(windowScene: windowScene)
                     } else {
-                        // Fallback on earlier versions
+                        // Not opted-in in UISceneDelegate
                         PrimerUIManager.primerWindow = UIWindow(frame: UIScreen.main.bounds)
                     }
 
@@ -233,10 +228,7 @@ internal class PrimerUIManager {
     static func dismissPrimerWindow(completion: (() -> Void)? = nil) {
         DispatchQueue.main.async {
             PrimerUIManager.primerWindow?.isHidden = true
-            if #available(iOS 13, *) {
-                PrimerUIManager.primerWindow?.windowScene = nil
-            }
-
+            PrimerUIManager.primerWindow?.windowScene = nil
             PrimerUIManager.primerWindow?.resignKey()
             PrimerUIManager.primerWindow = nil
             PrimerUIManager.primerRootViewController = nil
