@@ -93,11 +93,7 @@ final class AnalyticsServiceTests: XCTestCase {
         (0..<3).forEach { _ in
             sendEvents(numberOfEvents: 5, delay: 0.5)
         }
-        let expectRemainingEvents = self.expectation(description: "Remaining events are recorded")
-        expectRemainingEvents.expectedFulfillmentCount = 4
-        sendEvents(numberOfEvents: 4, delay: 0.5) {
-            expectRemainingEvents.fulfill()
-        }
+        sendEvents(numberOfEvents: 4, delay: 0.5)
         
         waitForExpectations(timeout: 15.0)
         
@@ -119,11 +115,14 @@ final class AnalyticsServiceTests: XCTestCase {
         let events = (0..<numberOfEvents).map { num in messageEvent(withMessage: "Test #\(num + 1)") }
         
         print(">>>>> About to report \(events.count) events")
-        
-        events.forEach { event in
+
+
+        events.forEach { (event: Analytics.Event) in
+            let expectEventToRecord = self.expectation(description: "event is recorded - \(event.localId)")
             let _callback = {
                 print(">>>>> Reporting event on queue")
                 _ = self.service.record(event: event).ensure {
+                    expectEventToRecord.fulfill()
                     callback()
                 }
             }
