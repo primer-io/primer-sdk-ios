@@ -30,6 +30,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
             view.bringSubviewToFront(categoriesTableView)
         }
     }
+    private var finalizeManually: Bool = false
     
     private var registrationFieldActive: Bool = false
     private var accountRegistrationDate: Date = Date() {
@@ -60,6 +61,8 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     private let paymentContainerView = UIView()
     private let paymentViewContainerView = UIView()
     private let paymentContinueButton = UIButton()
+    private let finalizationLabel = UILabel()
+    private let finalizationSwitch = UISwitch()
     
     // MARK: - Constraints
     private lazy var paymentViewContainerHeightConstraint = paymentViewContainerView.heightAnchor.constraint(equalToConstant: 0.0)
@@ -165,6 +168,13 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
         paymentContinueButton.addTarget(self, action: #selector(continueButtonTapped(_:)), for: .touchUpInside)
         paymentContinueButton.translatesAutoresizingMaskIntoConstraints = false
         
+        finalizationLabel.text = "Finalize session manually:"
+        finalizationLabel.font = .systemFont(ofSize: 18.0, weight: .medium)
+        finalizationLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        finalizationSwitch.addTarget(self, action: #selector(finalizationSwitchValueChanged(_:)), for: .valueChanged)
+        finalizationSwitch.translatesAutoresizingMaskIntoConstraints = false
+        
         let toolBar = getToolbar()
         customerAccountIdTextField.inputAccessoryView = toolBar
         customerAccountRegistrationTextField.inputAccessoryView = toolBar
@@ -205,6 +215,18 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
             customerInfoContainerView.topAnchor.constraint(equalTo: guestCheckoutButton.bottomAnchor, constant: 20.0),
             customerInfoContainerView.leadingAnchor.constraint(equalTo: checkoutTypeContainerView.leadingAnchor, constant: 10.0),
             customerInfoContainerView.trailingAnchor.constraint(equalTo: checkoutTypeContainerView.trailingAnchor, constant: -10.0)
+        ])
+        
+        checkoutTypeContainerView.addSubview(finalizationLabel)
+        NSLayoutConstraint.activate([
+            finalizationLabel.topAnchor.constraint(equalTo: customerInfoContainerView.bottomAnchor, constant: 20.0),
+            finalizationLabel.leadingAnchor.constraint(equalTo: customerInfoContainerView.leadingAnchor)
+        ])
+        
+        checkoutTypeContainerView.addSubview(finalizationSwitch)
+        NSLayoutConstraint.activate([
+            finalizationSwitch.centerYAnchor.constraint(equalTo: finalizationLabel.centerYAnchor),
+            finalizationSwitch.leadingAnchor.constraint(equalTo: finalizationLabel.trailingAnchor, constant: 20.0)
         ])
         
         customerInfoContainerView.addSubview(customerInfoTitleLabel)
@@ -329,6 +351,10 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
     @objc func doneToolBarButtonPressed(_ sender: UIBarButtonItem) {
         view.endEditing(true)
     }
+    
+    @objc func finalizationSwitchValueChanged(_ sender: UISwitch) {
+        finalizeManually = sender.isOn
+    }
 }
 
 // MARK: - Helpers
@@ -426,7 +452,7 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
         klarnaSessionAuthorizationComponent = klarnaManager.provideKlarnaPaymentSessionAuthorizationComponent()
         klarnaSessionAuthorizationComponent.stepDelegate = self
         
-        klarnaSessionAuthorizationComponent.authorizeSession()
+        klarnaSessionAuthorizationComponent.authorizeSession(autoFinalize: !finalizeManually)
     }
     
     func finalizeSession() {
@@ -570,7 +596,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessSteppableD
                 
             case .paymentSessionAuthorizationFailed:
                 showAlert(title: "Authorization", message: "Payment authorization failed") { [unowned self] in
-                    klarnaSessionAuthorizationComponent.reauthorizeSession()
+                    navigationController?.popToRootViewController(animated: true)
                 }
                 
             case .paymentSessionFinalizationRequired:

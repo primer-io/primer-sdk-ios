@@ -73,8 +73,13 @@ extension KlarnaPaymentSessionAuthorizationComponent: PrimerKlarnaProviderAuthor
         finalizeRequired: Bool
     ) {
         if approved == false {
-            let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorizationFailed
-            self.stepDelegate?.didReceiveStep(step: step)
+            if finalizeRequired == true {
+                let step = KlarnaPaymentSessionAuthorization.paymentSessionFinalizationRequired
+                self.stepDelegate?.didReceiveStep(step: step)
+            } else {
+                let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorizationFailed
+                self.stepDelegate?.didReceiveStep(step: step)
+            }
         }
         
         if let authToken = authToken, approved == true {
@@ -82,7 +87,7 @@ extension KlarnaPaymentSessionAuthorizationComponent: PrimerKlarnaProviderAuthor
             self.stepDelegate?.didReceiveStep(step: step)
         }
         
-        if finalizeRequired {
+        if finalizeRequired == true {
             let step = KlarnaPaymentSessionAuthorization.paymentSessionFinalizationRequired
             self.stepDelegate?.didReceiveStep(step: step)
         }
