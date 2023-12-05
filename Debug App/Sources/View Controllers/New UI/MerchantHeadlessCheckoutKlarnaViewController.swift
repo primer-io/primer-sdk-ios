@@ -31,6 +31,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         }
     }
     private var finalizeManually: Bool = false
+    private var finalizePayment: Bool = false
     
     private var registrationFieldActive: Bool = false
     private var accountRegistrationDate: Date = Date() {
@@ -337,7 +338,13 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
     }
     
     @objc func continueButtonTapped(_ sender: UIButton) {
-        authorizeSession()
+        if finalizePayment {
+            paymentContinueButton.isHidden = true
+            
+            finalizeSession()
+        } else {
+            authorizeSession()
+        }
     }
     
     @objc func datePickerValueChanged(_ sender: UIDatePicker) {
@@ -600,10 +607,11 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessSteppableD
                 }
                 
             case .paymentSessionFinalizationRequired:
-                finalizeSession()
+                finalizePayment = true
+                paymentContinueButton.setTitle("Finalize", for: .normal)
                 
             case .paymentSessionReauthorized(let authToken):
-                showAlert(title: "Success", message: "Payment session completed with token: \(authToken)") { [unowned self] in
+                showAlert(title: "Success", message: "Payment session reauthorized with token: \(authToken)") { [unowned self] in
                     navigationController?.popToRootViewController(animated: true)
                 }
             
@@ -617,7 +625,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessSteppableD
         if let step = step as? KlarnaPaymentSessionFinalization {
             switch step {
             case .paymentSessionFinalized(let authToken):
-                showAlert(title: "Success", message: "Payment session completed with token: \(authToken)") { [unowned self] in
+                showAlert(title: "Success", message: "Payment session finalized with token: \(authToken)") { [unowned self] in
                     navigationController?.popToRootViewController(animated: true)
                 }
                 
