@@ -45,7 +45,8 @@ internal class ErrorHandler: LogReporter {
                     message: primerError.errorDescription,
                     messageType: .error,
                     severity: .error,
-                    diagnosticsId: primerError.diagnosticsId))
+                    diagnosticsId: primerError.diagnosticsId,
+                    context: primerError.analyticsContext))
 
             if let createdAt = (primerError.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970

@@ -9,11 +9,20 @@
 import Foundation
 import UIKit
 
+struct AnalyticsContextKeys {
+    static let createdAt = "createdAt"
+    static let paymentMethodType = "paymentMethodType"
+    static let reasonCode = "reasonCode"
+    static let reasonText = "reasonText"
+    static let errorId = "errorId"
+}
+
 protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
     var errorId: String { get }
     var exposedError: Error { get }
     var info: [String: Any]? { get }
     var diagnosticsId: String { get }
+    var analyticsContext: [String: Any] { get }
 }
 
 public enum PrimerError: PrimerErrorProtocol {
@@ -491,6 +500,27 @@ public enum PrimerError: PrimerErrorProtocol {
 
     var exposedError: Error {
         return self
+    }
+    
+    var analyticsContext: [String : Any] {
+        var context: [String: Any] = [:]
+        if let paymentMethodType = paymentMethodType {
+            context[AnalyticsContextKeys.paymentMethodType] = paymentMethodType
+        }
+        context[AnalyticsContextKeys.errorId] = errorId
+        return context
+    }
+    
+    private var paymentMethodType: String? {
+        switch self {
+        case .cancelled(let paymentMethodType, _, _),
+                .unableToPresentPaymentMethod(let paymentMethodType, _, _),
+                .unsupportedPaymentMethod(let paymentMethodType, _ , _),
+                .missingCustomUI(let paymentMethodType, _, _),
+                .missingSDK(let paymentMethodType, _, _, _):
+            return paymentMethodType
+        default: return nil
+        }
     }
 }
 

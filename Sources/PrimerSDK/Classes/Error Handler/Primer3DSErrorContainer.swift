@@ -20,11 +20,12 @@ public struct Primer3DSErrorInfo {
 }
 
 public enum Primer3DSErrorContainer: PrimerErrorProtocol {
-
+    typealias K = AnalyticsContextKeys
+    
     case missingSdkDependency(userInfo: [String: String]?, diagnosticsId: String)
     case invalid3DSSdkVersion(userInfo: [String: String]?, diagnosticsId: String, invalidVersion: String?, validVersion: String)
     case missing3DSConfiguration(userInfo: [String: String]?, diagnosticsId: String, missingKey: String)
-    case primer3DSSdkError(userInfo: [String: String]?, diagnosticsId: String, initProtocolVersion: String?, errorInfo: Primer3DSErrorInfo)
+    case primer3DSSdkError(paymentMethodType: String?, userInfo: [String: String]?, diagnosticsId: String, initProtocolVersion: String?, errorInfo: Primer3DSErrorInfo)
     case underlyingError(userInfo: [String: String]?, diagnosticsId: String, error: Error)
 
     public var errorId: String {
@@ -35,7 +36,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
             return "invalid-3ds-sdk-version"
         case .missing3DSConfiguration:
             return "missing-3ds-configuration"
-        case .primer3DSSdkError(_, _, _, let errorInfo):
+        case .primer3DSSdkError(_, _, _, _, let errorInfo):
             return errorInfo.errorId
         case .underlyingError(_, _, let err):
             if let primerErr = err as? PrimerError {
@@ -55,7 +56,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
             return "Cannot perform 3DS due to library versions mismatch."
         case .missing3DSConfiguration(_, _, let missingKey):
             return "Cannot perform 3DS due to invalid 3DS configuration. 3DS Config \(missingKey) is missing"
-        case .primer3DSSdkError(_, _, _, let errorInfo):
+        case .primer3DSSdkError(_, _, _, _, let errorInfo):
             return errorInfo.errorDescription
         case .underlyingError(_, _, let err):
             if let primerErr = err as? PrimerError {
@@ -77,7 +78,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
             return "Please follow the integration guide and include 3DS dependency."
         case .invalid3DSSdkVersion(_, _, _, let validVersion):
             return "Please update to Primer3DS v.\(validVersion)"
-        case .primer3DSSdkError(_, _, _, let errorInfo):
+        case .primer3DSSdkError(_, _, _, _, let errorInfo):
             return errorInfo.recoverySuggestion
         case .missing3DSConfiguration:
             return nil
@@ -94,25 +95,30 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
         return self
     }
     
+    
+
     var analyticsContext: [String: Any] {
         var context: [String: Any] = [:]
         
-        context["initProtocolVersion"] = continueInfo.initProtocolVersion
-        context["threeDsSdkVersion"] = continueInfo.threeDsSdkVersion
-        context["threeDsSdkProvider"] = continueInfo.threeDsSdkProvider
-        context["threeDsWrapperSdkVersion"] = continueInfo.threeDsWrapperSdkVersion
+        context[K.initProtocolVersion] = continueInfo.initProtocolVersion
+        context[K.threeDsSdkVersion] = continueInfo.threeDsSdkVersion
+        context[K.threeDsSdkProvider] = continueInfo.threeDsSdkProvider
+        context[K.threeDsWrapperSdkVersion] = continueInfo.threeDsWrapperSdkVersion
         
         switch self {
-        case .primer3DSSdkError(_, _, _, let errorInfo):
-            context["reasonCode"] = errorInfo.errorId
-            context["reasonText"] = errorInfo.errorDescription
-            context["threeDsErrorCode"] = errorInfo.threeDsErrorCode
-            context["threeDsErrorComponent"] = errorInfo.threeDsErrorComponent
-            context["threeDsErrorDescription"] = errorInfo.errorDescription
-            context["threeDsErrorDetail"] = errorInfo.threeDsErrorDetail
-            context["threeDsSdkTranscationId"] = errorInfo.threeDsSdkTranscationId
-            context["protocolVersion"] = errorInfo.threeDsSErrorVersion
-            context["errorId"] = errorInfo.errorId
+        case .primer3DSSdkError(let paymentMethodType, _, _, _, let errorInfo):
+            context[K.reasonCode] = errorInfo.errorId
+            context[K.reasonText] = errorInfo.errorDescription
+            context[K.threeDsErrorCode] = errorInfo.threeDsErrorCode
+            context[K.threeDsErrorComponent] = errorInfo.threeDsErrorComponent
+            context[K.threeDsErrorDescription] = errorInfo.errorDescription
+            context[K.threeDsErrorDetail] = errorInfo.threeDsErrorDetail
+            context[K.threeDsSdkTranscationId] = errorInfo.threeDsSdkTranscationId
+            context[K.protocolVersion] = errorInfo.threeDsSErrorVersion
+            context[K.errorId] = errorInfo.errorId
+            if let paymentMethodType = paymentMethodType {
+                context[K.paymentMethodType] = paymentMethodType
+            }
         default:
             break
         }
@@ -121,7 +127,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     }
 
     internal var info: [String: Any]? {
-        let tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
+        let tmpUserInfo: [String: String] = [K.createdAt: Date().toString()]
         return tmpUserInfo
     }
 
@@ -134,7 +140,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
         case .missingSdkDependency(_, let diagnosticsId),
                 .invalid3DSSdkVersion(_, let diagnosticsId, _, _),
                 .missing3DSConfiguration(_, let diagnosticsId, _),
-                .primer3DSSdkError(_, let diagnosticsId, _, _),
+                .primer3DSSdkError(_, _, let diagnosticsId, _, _),
                 .underlyingError(_, let diagnosticsId, _):
             return diagnosticsId
         }
@@ -147,7 +153,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
                 .missing3DSConfiguration,
                 .underlyingError:
             return nil
-        case .primer3DSSdkError(_, _, let initProtocolVersion, _):
+        case .primer3DSSdkError(_, _, _, let initProtocolVersion, _):
             return initProtocolVersion
         }
     }
@@ -158,7 +164,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
 
     internal var threeDsErrorDescription: String? {
         switch self {
-        case .primer3DSSdkError(_, _, _, let errorInfo):
+        case .primer3DSSdkError(_, _, _, _, let errorInfo):
             return errorInfo.errorDescription
         case .underlyingError(_, _, let err):
             if let primerErr = err as? PrimerError {
@@ -174,7 +180,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
 
     internal var threeDsErrorCode: Int? {
         switch self {
-        case .primer3DSSdkError(_, _, _, let errorInfo):
+        case .primer3DSSdkError(_, _, _, _, let errorInfo):
             return errorInfo.threeDsErrorCode
         default:
             return nil
@@ -183,7 +189,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
 
     internal var threeDsErrorType: String? {
         switch self {
-        case .primer3DSSdkError(_, _, _, let errorInfo):
+        case .primer3DSSdkError(_, _, _, _, let errorInfo):
             return errorInfo.threeDsErrorType
         default:
             return nil
@@ -192,7 +198,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
 
     internal var threeDsErrorComponent: String? {
         switch self {
-        case .primer3DSSdkError(_, _, _, let errorInfo):
+        case .primer3DSSdkError(_, _, _, _, let errorInfo):
             return errorInfo.threeDsErrorComponent
         default:
             return nil
@@ -201,7 +207,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
 
     internal var threeDsSdkTranscationId: String? {
         switch self {
-        case .primer3DSSdkError(_, _, _, let errorInfo):
+        case .primer3DSSdkError(_, _, _, _, let errorInfo):
             return errorInfo.threeDsSdkTranscationId
         default:
             return nil
@@ -210,7 +216,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
 
     internal var threeDsSErrorVersion: String? {
         switch self {
-        case .primer3DSSdkError(_, _, _, let errorInfo):
+        case .primer3DSSdkError(_, _, _, _, let errorInfo):
             return errorInfo.threeDsSErrorVersion
         default:
             return nil
@@ -219,10 +225,23 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
 
     internal var threeDsErrorDetail: String? {
         switch self {
-        case .primer3DSSdkError(_, _, _, let errorInfo):
+        case .primer3DSSdkError(_, _, _, _, let errorInfo):
             return errorInfo.threeDsErrorDetail
         default:
             return nil
         }
     }
+}
+
+extension AnalyticsContextKeys {
+    static let initProtocolVersion = "initProtocolVersion"
+    static let threeDsSdkVersion = "threeDsSdkVersion"
+    static let threeDsSdkProvider = "threeDsSdkProvider"
+    static let threeDsWrapperSdkVersion = "threeDsWrapperSdkVersion"
+    static let threeDsErrorCode = "threeDsErrorCode"
+    static let threeDsErrorComponent = "threeDsErrorComponent"
+    static let threeDsErrorDescription = "threeDsErrorDescription"
+    static let threeDsErrorDetail = "threeDsErrorDetail"
+    static let threeDsSdkTranscationId = "threeDsSdkTranscationId"
+    static let protocolVersion = "protocolVersion"
 }
