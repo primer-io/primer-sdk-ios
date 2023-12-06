@@ -39,7 +39,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
     case failedOnWebViewFlow(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
     case failedToImport3DS(userInfo: [String: String]?, diagnosticsId: String)
-    case failedToPerform3DS(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
+    case failedToPerform3DS(paymentMethodType: String, error: Error?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalid3DSKey(userInfo: [String: String]?, diagnosticsId: String)
     case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String)
@@ -188,7 +188,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .failedToImport3DS(_, let diagnosticsId):
             return diagnosticsId
-        case .failedToPerform3DS(_, _, let diagnosticsId):
+        case .failedToPerform3DS(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .invalidUrl(_, _, let diagnosticsId):
             return diagnosticsId
@@ -284,7 +284,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Failed on webview flow with error: \(error?.localizedDescription ?? "nil")"
         case .failedToImport3DS:
             return "Failed on import Primer3DS"
-        case .failedToPerform3DS(let error, _, _):
+        case .failedToPerform3DS(_, let error, _, _):
             return "Failed on perform 3DS with error: \(error?.localizedDescription ?? "nil")"
         case .invalid3DSKey:
             return "Invalid 3DS key"
@@ -359,7 +359,7 @@ public enum PrimerError: PrimerErrorProtocol {
                 .failedToCreateSession(_, let userInfo, _),
                 .failedOnWebViewFlow(_, let userInfo, _),
                 .failedToImport3DS(let userInfo, _),
-                .failedToPerform3DS(_, let userInfo, _),
+                .failedToPerform3DS(_, _, let userInfo, _),
                 .invalidUrl(_, let userInfo, _),
                 .invalid3DSKey(let userInfo, _),
                 .invalidArchitecture(_, _, let userInfo, _),
@@ -518,7 +518,8 @@ public enum PrimerError: PrimerErrorProtocol {
                 .unsupportedPaymentMethod(let paymentMethodType, _ , _),
                 .missingCustomUI(let paymentMethodType, _, _),
                 .missingSDK(let paymentMethodType, _, _, _),
-                .failedToProcessPayment(let paymentMethodType?, _, _, _, _):
+                .failedToProcessPayment(let paymentMethodType?, _, _, _, _),
+                .failedToPerform3DS(let paymentMethodType, _, _, _):
             return paymentMethodType
         case .applePayTimedOut:
             return PrimerPaymentMethodType.applePay.rawValue

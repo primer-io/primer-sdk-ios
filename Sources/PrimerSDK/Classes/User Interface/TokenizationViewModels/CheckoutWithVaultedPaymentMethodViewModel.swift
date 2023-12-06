@@ -495,7 +495,10 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 guard let paymentMethodTokenData = self.paymentMethodTokenData else {
                     let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                    let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
+                                                                      error: err,
+                                                                      userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                                                      diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: containerErr)
                     seal.reject(containerErr)
                     return
@@ -592,5 +595,9 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
     func handleFailureFlow(errorMessage: String?) {
         PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
+    }
+    
+    private var paymentMethodType: String {
+        self.paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN"
     }
 }

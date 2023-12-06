@@ -494,7 +494,10 @@ extension PrimerHeadlessUniversalCheckout {
                 if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                     guard let paymentMethodTokenData = paymentMethodTokenData else {
                         let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
+                                                                          error: err,
+                                                                          userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                                                          diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: containerErr)
                         seal.reject(containerErr)
                         return
@@ -737,7 +740,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                         } else if paymentResponse.status == .failed {
                             let err = PrimerError.failedToProcessPayment(
-                                paymentMethodType: self.paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN",
+                                paymentMethodType: self.paymentMethodType,
                                 paymentId: paymentResponse.id ?? "nil",
                                 status: paymentResponse.status.rawValue,
                                 userInfo: [
@@ -799,7 +802,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                         } else if paymentResponse.status == .failed {
                             let err = PrimerError.failedToProcessPayment(
-                                paymentMethodType: self.paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN",
+                                paymentMethodType: self.paymentMethodType,
                                 paymentId: paymentResponse.id ?? "nil",
                                 status: paymentResponse.status.rawValue,
                                 userInfo: [
@@ -876,7 +879,7 @@ extension PrimerHeadlessUniversalCheckout.VaultManager: SFSafariViewControllerDe
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion = webViewCompletion {
             // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodTokenData!.paymentInstrumentData!.paymentMethodType!, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)
         }
@@ -937,3 +940,16 @@ extension PrimerPaymentMethodTokenData {
         )
     }
 }
+
+protocol PaymentMethodTypeViaPaymentMethodTokenDataProviding {
+    var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get }
+    var paymentMethodType: String { get }
+}
+
+extension PaymentMethodTypeViaPaymentMethodTokenDataProviding {
+    var paymentMethodType: String {
+        self.paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN"
+    }
+}
+
+extension PrimerHeadlessUniversalCheckout.VaultManager: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
