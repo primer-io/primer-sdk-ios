@@ -941,15 +941,4 @@ extension PrimerPaymentMethodTokenData {
     }
 }
 
-protocol PaymentMethodTypeViaPaymentMethodTokenDataProviding {
-    var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get }
-    var paymentMethodType: String { get }
-}
-
-extension PaymentMethodTypeViaPaymentMethodTokenDataProviding {
-    var paymentMethodType: String {
-        self.paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN"
-    }
-}
-
 extension PrimerHeadlessUniversalCheckout.VaultManager: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
