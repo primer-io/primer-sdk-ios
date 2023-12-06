@@ -17,7 +17,6 @@ public protocol PrimerHeadlessUniversalCheckoutCardComponentsManagerDelegate: An
 
 extension PrimerHeadlessUniversalCheckout {
 
-    
     @available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
     public final class CardComponentsManager: NSObject, PrimerInputElementDelegate, LogReporter {
 
@@ -66,7 +65,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                 var tmpInputElementsContainers: [Weak<PrimerInputElementDelegateContainer>] = []
                 inputElements.forEach { el in
-                    if let _ = el.inputElementDelegate {
+                    if el.inputElementDelegate != nil {
                         tmpInputElementsContainers.append(Weak(value: PrimerInputElementDelegateContainer(element: el, delegate: el.inputElementDelegate)))
                     }
                 }
@@ -194,11 +193,9 @@ extension PrimerHeadlessUniversalCheckout {
         private func validateInputData() -> Promise<Void> {
             return Promise { seal in
                 var errors: [PrimerError] = []
-                for inputElementType in self.requiredInputElementTypes {
-                    if self.inputElements.filter({ $0.type == inputElementType }).isEmpty {
-                        let err = PrimerError.missingPrimerInputElement(inputElementType: inputElementType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                        errors.append(err)
-                    }
+                for inputElementType in self.requiredInputElementTypes where self.inputElements.filter({ $0.type == inputElementType }).isEmpty {
+                    let err = PrimerError.missingPrimerInputElement(inputElementType: inputElementType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    errors.append(err)
                 }
 
                 if !errors.isEmpty {
@@ -207,11 +204,9 @@ extension PrimerHeadlessUniversalCheckout {
                     return
                 }
 
-                for inputElement in inputElements {
-                    if !inputElement.isValid {
+                for inputElement in inputElements where !inputElement.isValid {
                         let err = PrimerError.invalidValue(key: "input-element", value: inputElement.type.rawValue, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         errors.append(err)
-                    }
                 }
 
                 if !errors.isEmpty {
@@ -281,7 +276,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                 let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
                                                                                    paymentMethodType: paymentMethodType,
-                                                                                   number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as! String,
+                                                                                   number: (PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String) ?? cardNumber,
                                                                                    expirationMonth: expiryMonth,
                                                                                    expirationYear: expiryYear,
                                                                                    cardholderName: cardholderName)
@@ -336,7 +331,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
 
                 let paymentInstrument = CardPaymentInstrument(
-                    number: PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as! String,
+                    number: (PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String) ?? cardNumber,
                     cvv: cvv,
                     expirationMonth: expiryMonth,
                     expirationYear: expiryYear,

@@ -202,10 +202,8 @@ extension Response.Body {
                 }
             }
 
-            for (index, viewModel) in validViewModels.enumerated() {
-                if viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
-                    validViewModels.swapAt(0, index)
-                }
+            for (index, viewModel) in validViewModels.enumerated() where viewModel.config.type == PrimerPaymentMethodType.applePay.rawValue {
+                validViewModels.swapAt(0, index)
             }
 
             for (index, viewModel) in validViewModels.enumerated() {

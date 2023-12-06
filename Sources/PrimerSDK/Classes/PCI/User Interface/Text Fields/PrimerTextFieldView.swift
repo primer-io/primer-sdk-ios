@@ -10,7 +10,7 @@ import UIKit
 /// The PrimerTextFieldViewDelegate protocol can be used to retrieve information about the text input.
 /// PrimerCardNumberFieldView, PrimerExpiryDateFieldView, PrimerCVVFieldView & PrimerCardholderNameFieldView
 /// all have a delegate of PrimerTextFieldViewDelegate type.
-public protocol PrimerTextFieldViewDelegate {
+public protocol PrimerTextFieldViewDelegate: AnyObject {
     /// Will return true if valid, false if invalid, nil if it cannot be detected yet. It is applied on all PrimerTextFieldViews.
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?)
     /// Will return the card network (e.g. Visa) detected, unknown if the network cannot be detected. Only applies on PrimerCardNumberFieldView
@@ -144,7 +144,11 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     override func loadNib() -> UIView {
         let bundle = Bundle.primerResources
         let nib = UINib(nibName: PrimerTextFieldView.className, bundle: bundle)
-        return nib.instantiate(withOwner: self, options: nil).first as! UIView
+        guard let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
+        else {
+            fatalError()
+        }
+        return view
     }
 
     override func xibSetup() {

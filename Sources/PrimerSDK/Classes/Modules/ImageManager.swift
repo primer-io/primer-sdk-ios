@@ -230,11 +230,9 @@ internal class ImageManager: LogReporter {
         do {
             let fileNames = try FileManager.default.contentsOfDirectory(atPath: "\(documentsPath)")
 
-            for fileName in fileNames {
-                if fileName.hasSuffix(".png") {
-                    let filePathName = "\(documentsPath)/\(fileName)"
-                    try FileManager.default.removeItem(atPath: filePathName)
-                }
+            for fileName in fileNames where fileName.hasSuffix(".png") {
+                let filePathName = "\(documentsPath)/\(fileName)"
+                try FileManager.default.removeItem(atPath: filePathName)
             }
 
         } catch {

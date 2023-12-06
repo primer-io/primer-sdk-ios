@@ -76,7 +76,7 @@ internal class ErrorHandler: LogReporter {
             var userInfo = nsError.userInfo
             userInfo["description"] = nsError.description
 
-            if let _ = userInfo[NSLocalizedDescriptionKey] {
+            if userInfo[NSLocalizedDescriptionKey] != nil {
                 userInfo[NSLocalizedDescriptionKey] = nil
             }
 

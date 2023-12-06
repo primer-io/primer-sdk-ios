@@ -637,7 +637,6 @@ extension PrimerHeadlessUniversalCheckout {
                     default:
                         self.logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")
                         self.logger.info(message: self.paymentMethodType)
-                        break
                     }
 
                     if isManualPaymentHandling {

@@ -70,6 +70,7 @@
 		A1536BAD2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1536BAC2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift */; };
 		A1536BAF2AEC0A6D0087DDC0 /* NolTestsMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1536BAE2AEC0A6D0087DDC0 /* NolTestsMocks.swift */; };
 		A1585C752ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1585C742ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift */; };
+		A19EF5632B20E22E00A72F60 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = A19EF5622B20E22E00A72F60 /* .swiftlint.yml */; };
 		A1A3D0F32AD5585A00F7D8C9 /* NolPayUnlinkCardComponentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A3D0F22AD5585A00F7D8C9 /* NolPayUnlinkCardComponentTest.swift */; };
 		A1A3D0F52AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A3D0F42AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift */; };
 		A39750255D4C33527A3766A0 /* UserInterfaceModuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B8CB5A11A44AA9F3D7FE356 /* UserInterfaceModuleTests.swift */; };
@@ -224,6 +225,7 @@
 		A1536BAE2AEC0A6D0087DDC0 /* NolTestsMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolTestsMocks.swift; sourceTree = "<group>"; };
 		A1585C742ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayLinkedCardsComponentTests.swift; sourceTree = "<group>"; };
 		A1604A656AF654D7422A2A5E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
+		A19EF5622B20E22E00A72F60 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		A1A3D0F22AD5585A00F7D8C9 /* NolPayUnlinkCardComponentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayUnlinkCardComponentTest.swift; sourceTree = "<group>"; };
 		A1A3D0F42AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayPaymentComponentTests.swift; sourceTree = "<group>"; };
 		A6AEF11B151368BF993C3EA9 /* TestScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenario.swift; sourceTree = "<group>"; };
@@ -324,6 +326,7 @@
 		1C9799A622D0CCDBBF94925B = {
 			isa = PBXGroup;
 			children = (
+				A19EF5622B20E22E00A72F60 /* .swiftlint.yml */,
 				FBDF3F8B5F93A0EC28048640 /* Project */,
 				DF30711EB149C64C364BB79A /* Products */,
 				61E8D69DF93462D748F446DF /* Pods */,
@@ -729,6 +732,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A19EF5632B20E22E00A72F60 /* .swiftlint.yml in Resources */,
 				04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */,
 				EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */,
 				F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */,
@@ -770,6 +774,7 @@
 		};
 		A18BD8BD2AFE4B0900923C87 /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
