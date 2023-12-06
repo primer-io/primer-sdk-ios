@@ -476,6 +476,7 @@ extension PaymentMethodTokenizationViewModel {
 
                     } else if paymentResponse.status == .failed {
                         let err = PrimerError.failedToProcessPayment(
+                            paymentMethodType: self.paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN",
                             paymentId: paymentResponse.id ?? "nil",
                             status: paymentResponse.status.rawValue,
                             userInfo: [
@@ -539,6 +540,7 @@ extension PaymentMethodTokenizationViewModel {
 
                     } else if paymentResponse.status == .failed {
                         let err = PrimerError.failedToProcessPayment(
+                            paymentMethodType: self.paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN",
                             paymentId: paymentResponse.id ?? "nil",
                             status: paymentResponse.status.rawValue,
                             userInfo: [

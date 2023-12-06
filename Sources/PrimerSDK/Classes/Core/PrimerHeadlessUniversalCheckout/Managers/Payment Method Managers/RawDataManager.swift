@@ -748,6 +748,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                         } else if paymentResponse.status == .failed {
                             let err = PrimerError.failedToProcessPayment(
+                                paymentMethodType: self.paymentMethodType,
                                 paymentId: paymentResponse.id ?? "nil",
                                 status: paymentResponse.status.rawValue,
                                 userInfo: [
@@ -809,6 +810,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                         } else if paymentResponse.status == .failed {
                             let err = PrimerError.failedToProcessPayment(
+                                paymentMethodType: self.paymentMethodType,
                                 paymentId: paymentResponse.id ?? "nil",
                                 status: paymentResponse.status.rawValue,
                                 userInfo: [

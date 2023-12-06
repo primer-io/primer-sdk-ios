@@ -63,7 +63,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String)
     case failedToFindModule(name: String, userInfo: [String: String]?, diagnosticsId: String)
     case sdkDismissed
-    case failedToProcessPayment(paymentId: String, status: String, userInfo: [String: String]?, diagnosticsId: String)
+    case failedToProcessPayment(paymentMethodType: String?, paymentId: String, status: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
@@ -236,7 +236,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .sdkDismissed:
             return UUID().uuidString
-        case .failedToProcessPayment(_, _, _, let diagnosticsId):
+        case .failedToProcessPayment(_, _, _, _, let diagnosticsId):
             return diagnosticsId
         case .invalidVaultedPaymentMethodId(_, _, let diagnosticsId):
             return diagnosticsId
@@ -328,7 +328,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Failed to find module \(name)"
         case .sdkDismissed:
             return "SDK has been dismissed"
-        case .failedToProcessPayment(let paymentId, let status, _, _):
+        case .failedToProcessPayment(_, let paymentId, let status, _, _):
             return "The payment with id \(paymentId) was created but ended up in a \(status) status."
         case .invalidVaultedPaymentMethodId(let vaultedPaymentMethodId, _, _):
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
@@ -382,7 +382,7 @@ public enum PrimerError: PrimerErrorProtocol {
                 .paymentFailed(_, let userInfo, _),
                 .applePayTimedOut(let userInfo, _),
                 .failedToFindModule(_, let userInfo, _),
-                .failedToProcessPayment(_, _, let userInfo, _),
+                .failedToProcessPayment(_, _, _, let userInfo, _),
                 .invalidVaultedPaymentMethodId(_, let userInfo, _),
                 .nolError(_, _, let userInfo, _),
                 .unknown(let userInfo, _):
@@ -517,8 +517,13 @@ public enum PrimerError: PrimerErrorProtocol {
                 .unableToPresentPaymentMethod(let paymentMethodType, _, _),
                 .unsupportedPaymentMethod(let paymentMethodType, _ , _),
                 .missingCustomUI(let paymentMethodType, _, _),
-                .missingSDK(let paymentMethodType, _, _, _):
+                .missingSDK(let paymentMethodType, _, _, _),
+                .failedToProcessPayment(let paymentMethodType?, _, _, _, _):
             return paymentMethodType
+        case .applePayTimedOut:
+            return PrimerPaymentMethodType.applePay.rawValue
+        case .nolError:
+            return PrimerPaymentMethodType.nolPay.rawValue
         default: return nil
         }
     }
