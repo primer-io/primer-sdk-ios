@@ -949,5 +949,3 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
         return true
     }
 }
-
-extension CardFormPaymentMethodTokenizationViewModel: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}

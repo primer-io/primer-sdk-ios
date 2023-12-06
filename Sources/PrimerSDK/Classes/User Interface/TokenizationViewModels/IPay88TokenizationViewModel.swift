@@ -603,6 +603,7 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
             switch error {
             case .iPay88Error(let description, _):
                 let err = PrimerError.paymentFailed(
+                    paymentMethodType: PrimerPaymentMethodType.iPay88Card.rawValue,
                     description: "iPay88 payment (transId: \(self.primerIPay88Payment.transId ?? "nil"), refNo: \(self.primerIPay88Payment.refNo ) failed with error '\(description)'",
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)

@@ -379,7 +379,7 @@ public enum PrimerError: PrimerErrorProtocol {
                 .missingSDK(_, _, let userInfo, _),
                 .merchantError(_, let userInfo, _),
                 .cancelledByCustomer(_, let userInfo, _),
-                .paymentFailed(_, let userInfo, _),
+                .paymentFailed(_, _, let userInfo, _),
                 .applePayTimedOut(let userInfo, _),
                 .failedToFindModule(_, let userInfo, _),
                 .failedToProcessPayment(_, _, _, let userInfo, _),
@@ -534,13 +534,21 @@ public enum PrimerError: PrimerErrorProtocol {
 // TODO: Review custom initializer for simplified payment error
 extension PrimerError {
 
-    internal static func simplifiedErrorFromErrorID(_ errorCode: PrimerPaymentErrorCode, message: String? = nil, userInfo: [String: String]?) -> PrimerError? {
+    internal static func simplifiedErrorFromErrorID(_ errorCode: PrimerPaymentErrorCode,
+                                                    paymentMethodType: String = "mock_payment_method",
+                                                    message: String? = nil,
+                                                    userInfo: [String: String]?) -> PrimerError? {
 
         switch errorCode {
         case .failed:
-            return PrimerError.paymentFailed(description: message ?? "", userInfo: userInfo, diagnosticsId: UUID().uuidString)
+            return PrimerError.paymentFailed(paymentMethodType: paymentMethodType,
+                                             description: message ?? "",
+                                             userInfo: userInfo,
+                                             diagnosticsId: UUID().uuidString)
         case .cancelledByCustomer:
-            return PrimerError.cancelledByCustomer(message: message, userInfo: userInfo, diagnosticsId: UUID().uuidString)
+            return PrimerError.cancelledByCustomer(message: message, 
+                                                   userInfo: userInfo,
+                                                   diagnosticsId: UUID().uuidString)
         default:
             return nil
         }
