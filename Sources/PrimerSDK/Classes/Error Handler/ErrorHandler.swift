@@ -52,6 +52,14 @@ internal class ErrorHandler: LogReporter {
                 event.createdAt = createdAt.millisecondsSince1970
             }
 
+        } else if let klarnaError = error as? PrimerKlarnaError {
+            event = Analytics.Event(eventType: .message, 
+                                    properties: MessageEventProperties(
+                message: klarnaError.errorDescription,
+                messageType: .error,
+                severity: .error,
+                diagnosticsId: klarnaError.diagnosticsId,
+                context: klarnaError.analyticsContext))
         } else {
             let nsError = error as NSError
             var userInfo = nsError.userInfo

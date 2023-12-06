@@ -59,7 +59,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case missingSDK(paymentMethodType: String, sdkName: String, userInfo: [String: String]?, diagnosticsId: String)
     case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case cancelledByCustomer(message: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case paymentFailed(description: String, userInfo: [String: String]?, diagnosticsId: String)
+    case paymentFailed(paymentMethodType: String, description: String, userInfo: [String: String]?, diagnosticsId: String)
     case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String)
     case failedToFindModule(name: String, userInfo: [String: String]?, diagnosticsId: String)
     case sdkDismissed
@@ -228,7 +228,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .cancelledByCustomer(_, _, let diagnosticsId):
             return diagnosticsId
-        case .paymentFailed(_, _, let diagnosticsId):
+        case .paymentFailed(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .applePayTimedOut(_, let diagnosticsId):
             return diagnosticsId
@@ -320,7 +320,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Missing custom user interface for \(paymentMethod)"
         case .merchantError(let message, _, _):
             return message
-        case .paymentFailed(let description, _, _):
+        case .paymentFailed(_, let description, _, _):
             return "\(description)"
         case .applePayTimedOut:
             return "Apple Pay timed out"
@@ -521,7 +521,8 @@ public enum PrimerError: PrimerErrorProtocol {
                 .failedToProcessPayment(let paymentMethodType?, _, _, _, _),
                 .failedToPerform3DS(let paymentMethodType, _, _, _):
             return paymentMethodType
-        case .applePayTimedOut:
+        case .applePayTimedOut,
+                .unableToMakePaymentsOnProvidedNetworks:
             return PrimerPaymentMethodType.applePay.rawValue
         case .nolError:
             return PrimerPaymentMethodType.nolPay.rawValue

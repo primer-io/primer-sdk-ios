@@ -731,6 +731,7 @@ extension PrimerHeadlessUniversalCheckout {
                     } else if let paymentResponse = paymentResponse {
                         if paymentResponse.id == nil {
                             let err = PrimerError.paymentFailed(
+                                paymentMethodType: self.paymentMethodType,
                                 description: "Failed to create payment",
                                 userInfo: [
                                     "file": #file,
