@@ -15,9 +15,6 @@ extension PrimerHeadlessUniversalCheckout {
         // MARK: - Provider
         private var klarnaProvider: PrimerKlarnaProviding?
         
-        // MARK: - ViewModel
-        private let tokenizationViewModel: KlarnaHeadlessTokenizationViewModel
-        
         // MARK: - Delegate
         public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
         
@@ -32,14 +29,10 @@ extension PrimerHeadlessUniversalCheckout {
         
         // MARK: - Init
         public override init() {
-            self.tokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({
-                $0.config.type == "KLARNA"
-            }).first as! KlarnaHeadlessTokenizationViewModel
-            
-            self.sessionCreationComponent = KlarnaPaymentSessionCreationComponent(tokenizationViewModel: self.tokenizationViewModel)
+            self.sessionCreationComponent = KlarnaPaymentSessionCreationComponent()
             self.viewHandlingComponent = KlarnaPaymentViewHandlingComponent()
-            self.sessionAuthorizationComponent = KlarnaPaymentSessionAuthorizationComponent(tokenizationViewModel: self.tokenizationViewModel)
-            self.sessionFinalizationComponent = KlarnaPaymentSessionFinalizationComponent(tokenizationViewModel: self.tokenizationViewModel)
+            self.sessionAuthorizationComponent = KlarnaPaymentSessionAuthorizationComponent()
+            self.sessionFinalizationComponent = KlarnaPaymentSessionFinalizationComponent()
             
             super.init()
         }

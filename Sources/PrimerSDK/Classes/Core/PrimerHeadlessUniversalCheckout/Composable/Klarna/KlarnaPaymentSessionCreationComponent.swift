@@ -25,7 +25,7 @@ enum KlarnaPaymentSessionCreationComponentError {
 
 public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessCollectDataComponent, PrimerHeadlessAnalyticsRecordable {
     // MARK: - ViewModel
-    private let tokenizationViewModel: KlarnaHeadlessTokenizationViewModel
+    private var tokenizationViewModel: KlarnaHeadlessTokenizationViewModel?
     
     // MARK: - Settings
     private(set) var settings: PrimerSettingsProtocol?
@@ -43,8 +43,11 @@ public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessCollectDataCom
     public typealias T = KlarnaPaymentSessionCollectableData
     
     // MARK: - Init
-    init(tokenizationViewModel: KlarnaHeadlessTokenizationViewModel) {
-        self.tokenizationViewModel = tokenizationViewModel
+    init() {
+        self.tokenizationViewModel = self.getViewModel(
+            with: "KLARNA",
+            viewModelType: KlarnaHeadlessTokenizationViewModel.self
+        )
     }
 }
 
@@ -68,7 +71,7 @@ public extension KlarnaPaymentSessionCreationComponent {
             return
         }
         
-        tokenizationViewModel.klarnaPaymentSessionCreated = { [weak self] (session) in
+        tokenizationViewModel?.klarnaPaymentSessionCreated = { [weak self] (session) in
             if let session = session {
                 self?.handleSuccess(success: session)
             } else {
@@ -77,7 +80,7 @@ public extension KlarnaPaymentSessionCreationComponent {
         }
         
         if let customerAccountInfo = customerAccountInfo {
-            tokenizationViewModel.setAttachment(attachment: .init(body: .init(customerAccountInfo: [
+            tokenizationViewModel?.setAttachment(attachment: .init(body: .init(customerAccountInfo: [
                 .init(
                     uniqueAccountIdenitfier: customerAccountInfo.accountUniqueId,
                     acountRegistrationDate: customerAccountInfo.accountRegistrationDate.toString(),
@@ -87,7 +90,7 @@ public extension KlarnaPaymentSessionCreationComponent {
             ])))
         }
        
-        tokenizationViewModel.start()
+        tokenizationViewModel?.start()
     }
 }
 

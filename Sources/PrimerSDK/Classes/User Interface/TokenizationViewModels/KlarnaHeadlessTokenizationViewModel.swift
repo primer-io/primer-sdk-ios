@@ -19,7 +19,7 @@ class KlarnaHeadlessTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     // MARK: - Closures
     var klarnaPaymentSessionCreated: ((_ klarnaPaymentSession: Response.Body.Klarna.CreatePaymentSession?) -> Void)?
-    var klarnaPaymentSessionCompleted: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
+    var klarnaPaymentSessionAuthorized: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     var klarnaPaymentSessionFinalized: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     
     // MARK: - Set
@@ -238,7 +238,7 @@ class KlarnaHeadlessTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.fulfill()
                 
             case .authorizeSession:
-                self.klarnaPaymentSessionCompleted = { (authorizationToken, error) in
+                self.klarnaPaymentSessionAuthorized = { (authorizationToken, error) in
                     if let error = error {
                         seal.reject(error)
                     } else if let authorizationToken = authorizationToken {

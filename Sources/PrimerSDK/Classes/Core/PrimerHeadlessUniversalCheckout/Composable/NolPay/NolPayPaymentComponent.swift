@@ -133,7 +133,12 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
                 return
             }
 
-            guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == "NOL_PAY" }).first as? NolPayTokenizationViewModel else {
+            guard
+                let paymentMethod = getViewModel(
+                    with: "NOL_PAY",
+                    viewModelType: NolPayTokenizationViewModel.self
+                )
+            else {
                 return
             }
             self.tokenizationViewModel = paymentMethod

@@ -16,7 +16,7 @@ public enum KlarnaPaymentSessionFinalization: PrimerHeadlessStep {
 
 public class KlarnaPaymentSessionFinalizationComponent: PrimerHeadlessComponent, PrimerHeadlessAnalyticsRecordable {
     // MARK: - ViewModel
-    private let tokenizationViewModel: KlarnaHeadlessTokenizationViewModel
+    private var tokenizationViewModel: KlarnaHeadlessTokenizationViewModel?
     
     // MARK: - Provider
     private(set) weak var klarnaProvider: PrimerKlarnaProviding?
@@ -31,8 +31,11 @@ public class KlarnaPaymentSessionFinalizationComponent: PrimerHeadlessComponent,
     }
     
     // MARK: - Init
-    init(tokenizationViewModel: KlarnaHeadlessTokenizationViewModel) {
-        self.tokenizationViewModel = tokenizationViewModel
+    init() {
+        self.tokenizationViewModel = self.getViewModel(
+            with: "KLARNA",
+            viewModelType: KlarnaHeadlessTokenizationViewModel.self
+        )
     }
 }
 
@@ -66,11 +69,11 @@ private extension KlarnaPaymentSessionFinalizationComponent {
             diagnosticsId: UUID().uuidString
         )
         
-        self.tokenizationViewModel.klarnaPaymentSessionFinalized?(nil, error)
+        self.tokenizationViewModel?.klarnaPaymentSessionFinalized?(nil, error)
     }
     
     func handleSuccess(authToken: String) {
-        self.tokenizationViewModel.klarnaPaymentSessionFinalized?(authToken, nil)
+        self.tokenizationViewModel?.klarnaPaymentSessionFinalized?(authToken, nil)
     }
 }
 
