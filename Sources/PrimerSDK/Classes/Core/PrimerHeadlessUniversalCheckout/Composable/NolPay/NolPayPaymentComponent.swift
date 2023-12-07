@@ -134,8 +134,8 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent, PrimerH
             }
 
             guard
-                let paymentMethod = getViewModel(
-                    with: "NOL_PAY",
+                let paymentMethod = getTokenizationViewModel(
+                    paymentType: .nolPay,
                     viewModelType: NolPayTokenizationViewModel.self
                 )
             else {

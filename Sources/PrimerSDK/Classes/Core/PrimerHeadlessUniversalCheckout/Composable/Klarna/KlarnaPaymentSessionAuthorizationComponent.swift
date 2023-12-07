@@ -30,8 +30,8 @@ public class KlarnaPaymentSessionAuthorizationComponent: PrimerHeadlessComponent
     
     // MARK: - Init
     init() {
-        self.tokenizationViewModel = self.getViewModel(
-            with: "KLARNA",
+        self.tokenizationViewModel = self.getTokenizationViewModel(
+            paymentType: .klarna,
             viewModelType: KlarnaHeadlessTokenizationViewModel.self
         )
     }

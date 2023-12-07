@@ -12,12 +12,12 @@ public protocol PrimerHeadlessComponent {
 }
 
 extension PrimerHeadlessComponent {
-    func getViewModel<T>(
-        with configType: String,
+    func getTokenizationViewModel<T>(
+        paymentType type: PrimerPaymentMethodType,
         viewModelType: T.Type = T.self
     ) -> T? where T: PaymentMethodTokenizationViewModel {
         return PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({
-            $0.config.type == configType
+            $0.config.type == type.rawValue
         }).first as? T
     }
 }
