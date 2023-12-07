@@ -15,7 +15,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     
     // MARK: - Components
     private var klarnaSessionCreationComponent: KlarnaPaymentSessionCreationComponent!
-    private var klaraViewHandlingComponent: KlarnaPaymentViewHandlingComponent!
+    private var klarnaViewHandlingComponent: KlarnaPaymentViewHandlingComponent!
     private var klarnaSessionAuthorizationComponent: KlarnaPaymentSessionAuthorizationComponent!
     private var klarnaSessionFinalizationComponent: KlarnaPaymentSessionFinalizationComponent!
     
@@ -430,13 +430,13 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
             return
         }
         
-        klaraViewHandlingComponent = klarnaManager.provideKlarnaPaymentViewHandlingComponent(
+        klarnaViewHandlingComponent = klarnaManager.provideKlarnaPaymentViewHandlingComponent(
             clientToken: clientToken,
             paymentCategory: category.id
         )
-        klaraViewHandlingComponent.stepDelegate = self
+        klarnaViewHandlingComponent.stepDelegate = self
         
-        guard let paymentView = klaraViewHandlingComponent.createPaymentView() else {
+        guard let paymentView = klarnaViewHandlingComponent.createPaymentView() else {
             showAlert(title: "Payment view", message: "Unable to create payment view")
             return
         }
@@ -452,7 +452,7 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
             paymentView.bottomAnchor.constraint(equalTo: paymentViewContainerView.bottomAnchor)
         ])
         
-        klaraViewHandlingComponent.initPaymentView()
+        klarnaViewHandlingComponent.initPaymentView()
     }
     
     func authorizeSession() {
@@ -467,17 +467,6 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
         klarnaSessionFinalizationComponent.stepDelegate = self
         
         klarnaSessionFinalizationComponent.finalise()
-    }
-}
-
-// MARK: - UITableViewDelegate
-extension MerchantHeadlessCheckoutKlarnaViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        categoriesContainerView.isHidden = true
-        
-        showLoader()
-        
-        createPaymentView(category: paymentCategories[indexPath.row])
     }
 }
 
@@ -507,6 +496,17 @@ extension MerchantHeadlessCheckoutKlarnaViewController: UITextFieldDelegate {
             textField.inputView = datePicker
             textField.inputView?.frame.size = CGSize(width: view.frame.width, height: 200.0)
         }
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension MerchantHeadlessCheckoutKlarnaViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        categoriesContainerView.isHidden = true
+        
+        showLoader()
+        
+        createPaymentView(category: paymentCategories[indexPath.row])
     }
 }
 
@@ -576,7 +576,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessSteppableD
         if let step = step as? KlarnaPaymentViewHandling {
             switch step {
             case .viewInitialized:
-                klaraViewHandlingComponent.loadPaymentView()
+                klarnaViewHandlingComponent.loadPaymentView()
                 
             case .viewResized(let height):
                 paymentViewContainerHeightConstraint.constant = height
