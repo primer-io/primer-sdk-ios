@@ -20,12 +20,12 @@ public enum KlarnaPaymentSessionCreation: PrimerHeadlessStep {
 enum KlarnaPaymentSessionCreationComponentError {
     case missingConfiguration
     case invalidClientToken
-    case createPaymentSessionFailed(error: Error)
+    case createPaymentSessionFailed
 }
 
 public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessCollectDataComponent, PrimerHeadlessAnalyticsRecordable {
-    // MARK: - API
-    let apiClient: PrimerAPIClientProtocol
+    // MARK: - ViewModel
+    private let tokenizationViewModel: KlarnaHeadlessTokenizationViewModel
     
     // MARK: - Settings
     private(set) var settings: PrimerSettingsProtocol?
@@ -43,17 +43,8 @@ public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessCollectDataCom
     public typealias T = KlarnaPaymentSessionCollectableData
     
     // MARK: - Init
-    init() {
-        self.apiClient = PrimerAPIClient()
-    }
-    
-    // MARK: - Set
-    func setSettings(settings: PrimerSettingsProtocol) {
-        self.settings = settings
-    }
-    
-    func setSessionType(type: KlarnaSessionType) {
-        self.sessionType = type
+    init(tokenizationViewModel: KlarnaHeadlessTokenizationViewModel) {
+        self.tokenizationViewModel = tokenizationViewModel
     }
 }
 
@@ -69,62 +60,34 @@ public extension KlarnaPaymentSessionCreationComponent {
         )
         
         guard
-            let settings = settings,
-            let sessionType = sessionType,
             let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: {
                 $0.name == "Klarna"
-            }),
-            let paymentMethodConfigId = paymentMethod.id
+            })
         else {
             self.handleError(error: .missingConfiguration)
             return
         }
         
-        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            self.handleError(error: .invalidClientToken)
-            return
+        tokenizationViewModel.klarnaPaymentSessionCreated = { [weak self] (session) in
+            if let session = session {
+                self?.handleSuccess(success: session)
+            } else {
+                self?.handleError(error: .createPaymentSessionFailed)
+            }
         }
         
-        var totalAmount: Int? = nil
-        if sessionType == .hostedPaymentPage {
-            totalAmount = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.totalOrderAmount
-        }
-        
-        var attachment: Request.Body.Klarna.CreatePaymentSession.Attachment?
         if let customerAccountInfo = customerAccountInfo {
-            attachment = .init(body: .init(customerAccountInfo: [
+            tokenizationViewModel.setAttachment(attachment: .init(body: .init(customerAccountInfo: [
                 .init(
                     uniqueAccountIdenitfier: customerAccountInfo.accountUniqueId,
                     acountRegistrationDate: customerAccountInfo.accountRegistrationDate.toString(),
                     accountLastModified: customerAccountInfo.accountLastModified.toString(),
                     appId: (paymentMethod.options as? MerchantOptions)?.appId
                 )
-            ]))
+            ])))
         }
-        
-        let createPaymentSessionAPIRequest = Request.Body.Klarna.CreatePaymentSession(
-            paymentMethodConfigId: paymentMethodConfigId,
-            sessionType: sessionType,
-            localeData: settings.localeData,
-            description: settings.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
-            redirectUrl: settings.paymentMethodOptions.urlScheme,
-            totalAmount: totalAmount,
-            orderItems: nil,
-            attachment: attachment
-        )
-        
-        self.apiClient.createKlarnaPaymentSession(
-            clientToken: clientToken,
-            klarnaCreatePaymentSessionAPIRequest: createPaymentSessionAPIRequest
-        ) { [weak self] (result) in
-            switch result {
-            case .success(let success):
-                self?.handleSuccess(success: success)
-                
-            case .failure(let failure):
-                self?.handleError(error: .createPaymentSessionFailed(error: failure.primerError))
-            }
-        }
+       
+        tokenizationViewModel.start()
     }
 }
 
@@ -185,9 +148,9 @@ private extension KlarnaPaymentSessionCreationComponent {
                 diagnosticsId: UUID().uuidString
             )
             
-        case .createPaymentSessionFailed(let error):
+        case .createPaymentSessionFailed:
             primerError = PrimerError.failedToCreateSession(
-                error: error,
+                error: nil,
                 userInfo: userInfo,
                 diagnosticsId: UUID().uuidString
             )

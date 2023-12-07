@@ -15,6 +15,9 @@ public enum KlarnaPaymentSessionFinalization: PrimerHeadlessStep {
 }
 
 public class KlarnaPaymentSessionFinalizationComponent: PrimerHeadlessComponent, PrimerHeadlessAnalyticsRecordable {
+    // MARK: - ViewModel
+    private let tokenizationViewModel: KlarnaHeadlessTokenizationViewModel
+    
     // MARK: - Provider
     private(set) weak var klarnaProvider: PrimerKlarnaProviding?
     
@@ -25,6 +28,11 @@ public class KlarnaPaymentSessionFinalizationComponent: PrimerHeadlessComponent,
     func setProvider(provider: PrimerKlarnaProviding?) {
         self.klarnaProvider = provider
         self.klarnaProvider?.finalizationDelegate = self
+    }
+    
+    // MARK: - Init
+    init(tokenizationViewModel: KlarnaHeadlessTokenizationViewModel) {
+        self.tokenizationViewModel = tokenizationViewModel
     }
 }
 
@@ -44,16 +52,44 @@ public extension KlarnaPaymentSessionFinalizationComponent {
     }
 }
 
+// MARK: - Handlers
+private extension KlarnaPaymentSessionFinalizationComponent {
+    func handleError() {
+        let error = PrimerError.klarnaWrapperError(
+            message: "Finalization failed",
+            userInfo: [
+                "file": #file,
+                "class": "\(Self.self)",
+                "function": #function,
+                "line": "\(#line)"
+            ],
+            diagnosticsId: UUID().uuidString
+        )
+        
+        self.tokenizationViewModel.klarnaPaymentSessionFinalized?(nil, error)
+    }
+    
+    func handleSuccess(authToken: String) {
+        self.tokenizationViewModel.klarnaPaymentSessionFinalized?(authToken, nil)
+    }
+}
+
 // MARK: - PrimerKlarnaProviderFinalizationDelegate
 extension KlarnaPaymentSessionFinalizationComponent: PrimerKlarnaProviderFinalizationDelegate {
     public func primerKlarnaWrapperFinalized(approved: Bool, authToken: String?) {
         if approved == false {
             let step = KlarnaPaymentSessionFinalization.paymentSessionFinalizationFailed
+            
+            self.handleError()
+            
             self.stepDelegate?.didReceiveStep(step: step)
         }
         
         if let authToken = authToken, approved == true {
             let step = KlarnaPaymentSessionFinalization.paymentSessionFinalized(authToken: authToken)
+            
+            self.handleSuccess(authToken: authToken)
+            
             self.stepDelegate?.didReceiveStep(step: step)
         }
     }

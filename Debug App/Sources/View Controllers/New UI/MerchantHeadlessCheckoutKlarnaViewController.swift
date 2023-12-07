@@ -78,7 +78,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         klarnaManager = PrimerHeadlessUniversalCheckout.PrimerHeadlessKlarnaManager()
         klarnaManager.errorDelegate = self
         
-        klarnaSessionCreationComponent = klarnaManager.provideKlarnaPaymentSessionCreationComponent(type: .recurringPayment)
+        klarnaSessionCreationComponent = klarnaManager.provideKlarnaPaymentSessionCreationComponent()
         klarnaSessionCreationComponent.errorDelegate = self
         klarnaSessionCreationComponent.stepDelegate = self
         klarnaSessionCreationComponent.validationDelegate = self

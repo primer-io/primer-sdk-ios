@@ -111,7 +111,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
                 }
 
             case PrimerPaymentMethodType.klarna:
-                return KlarnaTokenizationViewModel(config: self)
+                return KlarnaHeadlessTokenizationViewModel(config: self)
 
             case PrimerPaymentMethodType.paymentCard,
                 PrimerPaymentMethodType.adyenBancontactCard:
