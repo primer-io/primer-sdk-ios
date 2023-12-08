@@ -82,8 +82,10 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                 self?.useLocalValidation(withCardState: cardState)
                 return
             }
-            let cardMetadata = PrimerCardNumberEntryMetadata(availableCardNetworks: result.networks.map { network in
-                PrimerCardNetwork(displayName: network.displayName, networkIdentifier: network.value)
+            let cardMetadata = PrimerCardNumberEntryMetadata(source: .remote,
+                                                             availableCardNetworks: result.networks.map { network in
+                PrimerCardNetwork(displayName: network.displayName,
+                                  network: CardNetwork(cardNetworkStr: network.value))
             })
             
             self?.delegate?.primerRawDataManager?(rawDataManager,
@@ -101,10 +103,13 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         let localValidationNetwork = CardNetwork(cardNumber: cardState.cardNumber)
         let displayName = localValidationNetwork.validation?.niceType ?? localValidationNetwork.rawValue.lowercased().capitalized
         let cardNetwork = PrimerCardNetwork(displayName: displayName,
-                                            networkIdentifier: localValidationNetwork.rawValue)
+                                            network: CardNetwork(cardNetworkStr: localValidationNetwork.rawValue))
+        
+        let metadata = PrimerCardNumberEntryMetadata(source: .local,
+                                                     availableCardNetworks: [cardNetwork])
         
         delegate?.primerRawDataManager?(rawDataManager,
-                                        didReceiveCardMetadata: .init(availableCardNetworks: [cardNetwork]),
+                                        didReceiveCardMetadata: metadata,
                                         forCardState: cardState)
     }
     

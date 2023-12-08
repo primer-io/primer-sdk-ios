@@ -8,6 +8,12 @@
 import Foundation
 
 @objc
+public enum PrimerCardValidationSource: Int {
+    case local
+    case remote
+}
+
+@objc
 public class PrimerCardNumberEntryState: NSObject {
     public let cardNumber: String
     
@@ -19,11 +25,11 @@ public class PrimerCardNumberEntryState: NSObject {
 @objc
 public class PrimerCardNetwork: NSObject {
     public let displayName: String
-    public let networkIdentifier: String
+    public let network: CardNetwork
     
-    init(displayName: String, networkIdentifier: String) {
+    init(displayName: String, network: CardNetwork) {
         self.displayName = displayName
-        self.networkIdentifier = networkIdentifier
+        self.network = network
     }
 }
 
@@ -34,9 +40,13 @@ public class PrimerCardNumberEntryMetadata: NSObject {
         return availableCardNetworks.first
     }
     
+    public let source: PrimerCardValidationSource
+
     public let availableCardNetworks: [PrimerCardNetwork]
-    
-    init(availableCardNetworks: [PrimerCardNetwork]) {
+        
+    init(source: PrimerCardValidationSource,
+         availableCardNetworks: [PrimerCardNetwork]) {
+        self.source = source
         self.availableCardNetworks = availableCardNetworks
     }
 }
