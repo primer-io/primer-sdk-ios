@@ -108,6 +108,20 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         let metadata = PrimerCardNumberEntryMetadata(source: .local,
                                                      availableCardNetworks: [cardNetwork])
         
+        if cardState.cardNumber.count >= Self.maximumBinLength {
+            let logMessage = "Local validation was used where remote validation would have been preferred (max BIN length exceeded)."
+
+            logger.warn(message: logMessage)
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: logMessage,
+                    messageType: .other,
+                    severity: .warning)
+            )
+            Analytics.Service.record(event: event)
+        }
+        
         delegate?.primerRawDataManager?(rawDataManager,
                                         didReceiveCardMetadata: metadata,
                                         forCardState: cardState)
