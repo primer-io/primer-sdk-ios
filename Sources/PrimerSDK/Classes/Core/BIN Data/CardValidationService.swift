@@ -73,7 +73,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     
     private func useRemoteValidation(withCardState cardState: PrimerCardNumberEntryState) {
         delegate?.primerRawDataManager?(rawDataManager,
-                                        willFetchCardMetadataForState: cardState)
+                                        willFetchMetadataForState: cardState)
         
         let rawDataManager = rawDataManager
         
@@ -89,8 +89,8 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
             })
             
             self?.delegate?.primerRawDataManager?(rawDataManager,
-                                                  didReceiveCardMetadata: cardMetadata,
-                                                  forCardState: cardState)
+                                                  didReceiveMetadata: cardMetadata,
+                                                  forState: cardState)
             self?.sendEvent(forNetworks: cardMetadata.availableCardNetworks)
         }.catch { error in
             self.sendEvent(forError: error)
@@ -123,8 +123,8 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         }
         
         delegate?.primerRawDataManager?(rawDataManager,
-                                        didReceiveCardMetadata: metadata,
-                                        forCardState: cardState)
+                                        didReceiveMetadata: metadata,
+                                        forState: cardState)
     }
     
     // MARK: Analytics
