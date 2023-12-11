@@ -57,7 +57,11 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             case .success:
                 XCTFail("Expected failure but got success")
             case .failure(let error):
-                XCTAssertEqual(error.errorCode, 37)
+                if case let PrimerError.nolError = error {
+                    break
+                } else {
+                    XCTFail("Expected PrimerError.nolError but got \(error)")
+                }
             }
             expectation.fulfill()
         }

@@ -35,6 +35,8 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 #if canImport(Primer3DS)
     private var primer3DS: Primer3DS!
 #endif
+    
+    private var paymentMethodType: String?
 
     internal func perform3DS(
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
@@ -42,6 +44,7 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         completion: @escaping (_ result: Result<String, Error>) -> Void
     ) {
 #if canImport(Primer3DS)
+        paymentMethodType = paymentMethodTokenData.paymentMethodType
         firstly {
             self.validate()
         }
@@ -280,6 +283,7 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
                     if let primer3DSError = error as? Primer3DSError {
                         let err = Primer3DSErrorContainer.primer3DSSdkError(
+                            paymentMethodType: paymentMethodType,
                             userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                             diagnosticsId: uuid,
                             initProtocolVersion: self.initProtocolVersion?.rawValue,
@@ -339,6 +343,7 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                     cardNetwork: paymentMethodTokenData.paymentInstrumentData?.binData?.network ?? "n/a")
 
                 let err = Primer3DSErrorContainer.primer3DSSdkError(
+                    paymentMethodType: paymentMethodType,
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: uuid,
                     initProtocolVersion: self.initProtocolVersion?.rawValue,
@@ -371,6 +376,7 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
                 if let primer3DSError = error as? Primer3DSError {
                     let err = Primer3DSErrorContainer.primer3DSSdkError(
+                        paymentMethodType: paymentMethodType,
                         userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                         diagnosticsId: uuid,
                         initProtocolVersion: self.initProtocolVersion?.rawValue,
@@ -470,6 +476,7 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 let primer3DSError = Primer3DSError.initializationError(error: nil, warnings: "Uninitialized SDK")
 
                 let err = Primer3DSErrorContainer.primer3DSSdkError(
+                    paymentMethodType: paymentMethodType,
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: uuid,
                     initProtocolVersion: self.initProtocolVersion?.rawValue,
@@ -521,12 +528,13 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             primer3DS.performChallenge(
                 threeDSAuthData: threeDSAuthData,
                 threeDsAppRequestorUrl: threeDsAppRequestorUrl,
-                presentOn: self.threeDSSDKWindow!.rootViewController!) { primer3DSCompletion, err in
+                presentOn: self.threeDSSDKWindow!.rootViewController!) { [weak self] primer3DSCompletion, err in
                     if let primer3DSError = err as? Primer3DSError {
                         let err = Primer3DSErrorContainer.primer3DSSdkError(
+                            paymentMethodType: self?.paymentMethodType,
                             userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                             diagnosticsId: UUID().uuidString,
-                            initProtocolVersion: self.initProtocolVersion?.rawValue,
+                            initProtocolVersion: self?.initProtocolVersion?.rawValue,
                             errorInfo: Primer3DSErrorInfo(
                                 errorId: primer3DSError.errorId,
                                 errorDescription: primer3DSError.errorDescription,

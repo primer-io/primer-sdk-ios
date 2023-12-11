@@ -456,7 +456,10 @@ extension PrimerHeadlessUniversalCheckout {
                 if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                     guard let paymentMethodTokenData = paymentMethodTokenData else {
                         let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                        let containerErr = PrimerError.failedToPerform3DS(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
+                                                                          error: err,
+                                                                          userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                                                          diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: containerErr)
                         seal.reject(containerErr)
                         return
@@ -734,6 +737,7 @@ extension PrimerHeadlessUniversalCheckout {
                     } else if let paymentResponse = paymentResponse {
                         if paymentResponse.id == nil {
                             let err = PrimerError.paymentFailed(
+                                paymentMethodType: self.paymentMethodType,
                                 description: "Failed to create payment",
                                 userInfo: [
                                     "file": #file,
@@ -747,6 +751,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                         } else if paymentResponse.status == .failed {
                             let err = PrimerError.failedToProcessPayment(
+                                paymentMethodType: self.paymentMethodType,
                                 paymentId: paymentResponse.id ?? "nil",
                                 status: paymentResponse.status.rawValue,
                                 userInfo: [
@@ -765,6 +770,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                     } else {
                         let err = PrimerError.paymentFailed(
+                            paymentMethodType: self.paymentMethodType,
                             description: "Failed to create payment",
                             userInfo: [
                                 "file": #file,
@@ -795,6 +801,7 @@ extension PrimerHeadlessUniversalCheckout {
                     } else if let paymentResponse = paymentResponse {
                         if paymentResponse.id == nil {
                             let err = PrimerError.paymentFailed(
+                                paymentMethodType: self.paymentMethodType,
                                 description: "Failed to resume payment",
                                 userInfo: [
                                     "file": #file,
@@ -808,6 +815,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                         } else if paymentResponse.status == .failed {
                             let err = PrimerError.failedToProcessPayment(
+                                paymentMethodType: self.paymentMethodType,
                                 paymentId: paymentResponse.id ?? "nil",
                                 status: paymentResponse.status.rawValue,
                                 userInfo: [
@@ -826,6 +834,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                     } else {
                         let err = PrimerError.paymentFailed(
+                            paymentMethodType: self.paymentMethodType,
                             description: "Failed to resume payment",
                             userInfo: [
                                 "file": #file,

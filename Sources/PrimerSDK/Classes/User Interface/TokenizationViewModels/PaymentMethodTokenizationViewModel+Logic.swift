@@ -463,6 +463,7 @@ extension PaymentMethodTokenizationViewModel {
                 } else if let paymentResponse = paymentResponse {
                     if paymentResponse.id == nil {
                         let err = PrimerError.paymentFailed(
+                            paymentMethodType: self.paymentMethodType,
                             description: "Failed to create payment",
                             userInfo: [
                                 "file": #file,
@@ -476,6 +477,7 @@ extension PaymentMethodTokenizationViewModel {
                         
                     } else if paymentResponse.status == .failed {
                         let err = PrimerError.failedToProcessPayment(
+                            paymentMethodType: self.paymentMethodType,
                             paymentId: paymentResponse.id ?? "nil",
                             status: paymentResponse.status.rawValue,
                             userInfo: [
@@ -494,6 +496,7 @@ extension PaymentMethodTokenizationViewModel {
                     
                 } else {
                     let err = PrimerError.paymentFailed(
+                        paymentMethodType: self.paymentMethodType,
                         description: "Failed to create payment",
                         userInfo: [
                             "file": #file,
@@ -526,6 +529,7 @@ extension PaymentMethodTokenizationViewModel {
                 } else if let paymentResponse = paymentResponse {
                     if paymentResponse.id == nil {
                         let err = PrimerError.paymentFailed(
+                            paymentMethodType: self.paymentMethodType,
                             description: "Failed to resume payment",
                             userInfo: [
                                 "file": #file,
@@ -539,6 +543,7 @@ extension PaymentMethodTokenizationViewModel {
                         
                     } else if paymentResponse.status == .failed {
                         let err = PrimerError.failedToProcessPayment(
+                            paymentMethodType: self.paymentMethodType,
                             paymentId: paymentResponse.id ?? "nil",
                             status: paymentResponse.status.rawValue,
                             userInfo: [
@@ -557,6 +562,7 @@ extension PaymentMethodTokenizationViewModel {
                     
                 } else {
                     let err = PrimerError.paymentFailed(
+                        paymentMethodType: self.paymentMethodType,
                         description: "Failed to resume payment",
                         userInfo: [
                             "file": #file,
@@ -588,3 +594,5 @@ extension PaymentMethodTokenizationViewModel {
         self.didFinishPayment = nil
     }
 }
+
+extension PaymentMethodTokenizationViewModel: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
