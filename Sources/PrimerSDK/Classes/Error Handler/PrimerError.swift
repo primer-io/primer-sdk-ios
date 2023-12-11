@@ -53,7 +53,6 @@ public enum PrimerError: PrimerErrorProtocol {
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String)
     case unsupportedPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
-    case missingCustomUI(paymentMethod: String, userInfo: [String: String]?, diagnosticsId: String)
     case missingSDK(paymentMethodType: String, sdkName: String, userInfo: [String: String]?, diagnosticsId: String)
     case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case paymentFailed(paymentMethodType: String, description: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -118,8 +117,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "unsupported-payment-method-type"
         case .underlyingErrors:
             return "generic-underlying-errors"
-        case .missingCustomUI:
-            return "missing-custom-ui"
         case .missingSDK:
             return "missing-sdk-dependency"
         case .merchantError:
@@ -204,8 +201,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .underlyingErrors(_, _, let diagnosticsId):
             return diagnosticsId
-        case .missingCustomUI(_, _, let diagnosticsId):
-            return diagnosticsId
         case .missingSDK(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .merchantError(_, _, let diagnosticsId):
@@ -289,8 +284,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Multiple errors occured: \(errors.combinedDescription)"
         case .unsupportedPaymentMethod(let paymentMethodType, _, _):
             return "Unsupported payment method type \(paymentMethodType)"
-        case .missingCustomUI(let paymentMethod, _, _):
-            return "Missing custom user interface for \(paymentMethod)"
         case .merchantError(let message, _, _):
             return message
         case .paymentFailed(_, let description, _, _):
@@ -344,7 +337,6 @@ public enum PrimerError: PrimerErrorProtocol {
                 .unsupportedIntent(_, let userInfo, _),
                 .unsupportedPaymentMethod(_, let userInfo, _),
                 .underlyingErrors(_, let userInfo, _),
-                .missingCustomUI(_, let userInfo, _),
                 .missingSDK(_, _, let userInfo, _),
                 .merchantError(_, let userInfo, _),
                 .paymentFailed(_, _, let userInfo, _),
@@ -434,8 +426,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Change the payment method type"
         case .underlyingErrors:
             return "Check underlying errors for more information."
-        case .missingCustomUI(let paymentMethod, _, _):
-            return "You have to built your UI for \(paymentMethod) and utilize PrimerCheckoutComponents.UIManager's functionality."
         case .missingSDK(let paymentMethodType, let sdkName, _, _):
             return "Add \(sdkName) in your project so you can perform payments with \(paymentMethodType)"
         case .merchantError:
@@ -475,7 +465,6 @@ public enum PrimerError: PrimerErrorProtocol {
         case .cancelled(let paymentMethodType, _, _),
                 .unableToPresentPaymentMethod(let paymentMethodType, _, _),
                 .unsupportedPaymentMethod(let paymentMethodType, _ , _),
-                .missingCustomUI(let paymentMethodType, _, _),
                 .missingSDK(let paymentMethodType, _, _, _),
                 .failedToProcessPayment(let paymentMethodType?, _, _, _, _),
                 .failedToPerform3DS(let paymentMethodType, _, _, _):
