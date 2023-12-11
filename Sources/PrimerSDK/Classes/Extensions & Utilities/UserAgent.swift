@@ -19,8 +19,11 @@ struct UserAgent {
     }
     // eg. CFNetwork/808.3
     private static func CFNetworkVersion() -> String {
-        let dictionary = Bundle(identifier: "com.apple.CFNetwork")?.infoDictionary!
-        let version = dictionary?["CFBundleShortVersionString"] as! String
+        guard let dictionary = Bundle(identifier: "com.apple.CFNetwork")?.infoDictionary,
+              let version = dictionary["CFBundleShortVersionString"] as? String else {
+            return "CFNetwork/unknown_version"
+
+        }
         return "CFNetwork/\(version)"
     }
 
@@ -38,9 +41,9 @@ struct UserAgent {
     // eg. PrimerApp/1
     private static func appNameAndVersion() -> String {
         let dictionary = Bundle.main.infoDictionary!
-        let version = dictionary["CFBundleShortVersionString"] as! String
-        let name = dictionary["CFBundleName"] as! String
-        return "\(name)/\(version)"
+        let version = dictionary["CFBundleShortVersionString"] as? String
+        let name = dictionary["CFBundleName"] as? String
+        return "\(name ?? "unknown_bundle_name")/\(version ?? "unknown_version")"
     }
 }
 

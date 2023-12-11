@@ -248,15 +248,15 @@ extension Analytics {
 }
 
 extension Analytics.Service {
-    static func record(event: Analytics.Event) -> Promise<Void> {
+    @discardableResult static func record(event: Analytics.Event) -> Promise<Void> {
         shared.record(event: event)
     }
 
-    static func record(events: [Analytics.Event]) -> Promise<Void> {
+    @discardableResult static func record(events: [Analytics.Event]) -> Promise<Void> {
         shared.record(events: events)
     }
     
-    static func flush() -> Promise<Void> {
+    @discardableResult static func flush() -> Promise<Void> {
         shared.flush()
     }
     
@@ -264,4 +264,3 @@ extension Analytics.Service {
         shared.clear()
     }
 }
-

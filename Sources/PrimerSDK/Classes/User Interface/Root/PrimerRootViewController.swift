@@ -51,7 +51,6 @@ internal class PrimerRootViewController: PrimerViewController {
     // MARK: Helpers
 
     private func registerForNotifications() {
-        NotificationCenter.default.removeObserver(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.keyboardNotification(notification:)),

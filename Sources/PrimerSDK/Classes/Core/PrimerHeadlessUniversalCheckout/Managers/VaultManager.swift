@@ -356,7 +356,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw err
             }
 
-            guard let _ = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id else {
+            guard PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id != nil else {
                 let err = PrimerError.invalidClientSessionValue(
                     name: "customer.id",
                     value: nil,
