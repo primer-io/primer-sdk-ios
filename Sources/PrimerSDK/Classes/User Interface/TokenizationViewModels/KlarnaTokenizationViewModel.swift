@@ -145,7 +145,10 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
             }
 #else
-            let err = PrimerError.failedToFindModule(name: "Primer/Klarna", userInfo: nil, diagnosticsId: UUID().uuidString)
+            let err = PrimerError.missingSDK(paymentMethodType: PrimerPaymentMethodType.klarna.rawValue,
+                                             sdkName: "KlarnaSDK",
+                                             userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                             diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
 #endif

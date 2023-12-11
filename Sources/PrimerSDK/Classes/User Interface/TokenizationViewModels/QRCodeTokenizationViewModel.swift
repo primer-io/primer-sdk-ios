@@ -310,7 +310,6 @@ extension QRCodeTokenizationViewModel {
             default:
                 self.logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")
                 self.logger.info(message: self.config.type)
-                break
             }
 
             if let additionalInfo = additionalInfo {

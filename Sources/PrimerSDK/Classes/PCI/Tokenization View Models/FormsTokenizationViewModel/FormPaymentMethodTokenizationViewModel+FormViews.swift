@@ -256,39 +256,36 @@ extension FormPaymentMethodTokenizationViewModel {
         voucherInfoContainerStackView.isLayoutMarginsRelativeArrangement = true
         voucherInfoContainerStackView.layer.cornerRadius = 8.0
 
-        for voucherValue in VoucherValue.currentVoucherValues {
-
-            if voucherValue.value != nil {
-
-                let voucherValueStackView = PrimerStackView()
-                voucherValueStackView.axis = .horizontal
-                voucherValueStackView.spacing = 12.0
-                voucherValueStackView.distribution = .fillProportionally
-
-                let voucherValueLabel = UILabel()
-                voucherValueLabel.text = voucherValue.description
-                voucherValueLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
-                voucherValueLabel.textColor = .gray600
-                voucherValueStackView.addArrangedSubview(voucherValueLabel)
-
-                let voucherValueText = UILabel()
-                voucherValueText.text = voucherValue.value
-                voucherValueText.font = UIFont.boldSystemFont(ofSize: PrimerDimensions.Font.label)
-                voucherValueText.textColor = theme.text.title.color
-                voucherValueText.setContentHuggingPriority(.required, for: .horizontal)
-                voucherValueText.setContentCompressionResistancePriority(.required, for: .horizontal)
-                voucherValueStackView.addArrangedSubview(voucherValueText)
-
-                voucherInfoContainerStackView.addArrangedSubview(voucherValueStackView)
-
-                if let lastValue = VoucherValue.currentVoucherValues.last, voucherValue != lastValue {
-                    // Separator view
-                    let separatorView = PrimerView()
-                    separatorView.backgroundColor = .gray200
-                    separatorView.translatesAutoresizingMaskIntoConstraints = false
-                    separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-                    voucherInfoContainerStackView.addArrangedSubview(separatorView)
-                }
+        for voucherValue in VoucherValue.currentVoucherValues where voucherValue.value != nil {
+            
+            let voucherValueStackView = PrimerStackView()
+            voucherValueStackView.axis = .horizontal
+            voucherValueStackView.spacing = 12.0
+            voucherValueStackView.distribution = .fillProportionally
+            
+            let voucherValueLabel = UILabel()
+            voucherValueLabel.text = voucherValue.description
+            voucherValueLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
+            voucherValueLabel.textColor = .gray600
+            voucherValueStackView.addArrangedSubview(voucherValueLabel)
+            
+            let voucherValueText = UILabel()
+            voucherValueText.text = voucherValue.value
+            voucherValueText.font = UIFont.boldSystemFont(ofSize: PrimerDimensions.Font.label)
+            voucherValueText.textColor = theme.text.title.color
+            voucherValueText.setContentHuggingPriority(.required, for: .horizontal)
+            voucherValueText.setContentCompressionResistancePriority(.required, for: .horizontal)
+            voucherValueStackView.addArrangedSubview(voucherValueText)
+            
+            voucherInfoContainerStackView.addArrangedSubview(voucherValueStackView)
+            
+            if let lastValue = VoucherValue.currentVoucherValues.last, voucherValue != lastValue {
+                // Separator view
+                let separatorView = PrimerView()
+                separatorView.backgroundColor = .gray200
+                separatorView.translatesAutoresizingMaskIntoConstraints = false
+                separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+                voucherInfoContainerStackView.addArrangedSubview(separatorView)
             }
         }
 
