@@ -26,7 +26,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     
     // https://github.com/primer-io/platform/blob/59980a07113089000c9814b079579e15c616b6db/platform/commons/models/bin_range.py#L66
     case amex = "AMEX"
-    case bancontact = "DANKORT"
+    case bancontact = "BANCONTACT"
     case cartesBancaires = "CARTES_BANCAIRES"
     case diners = "DINERS_CLUB"
     case discover = "DISCOVER"
