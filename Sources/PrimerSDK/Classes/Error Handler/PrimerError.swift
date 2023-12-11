@@ -47,7 +47,6 @@ public enum PrimerError: PrimerErrorProtocol {
     case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidUrlScheme(urlScheme: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidSetting(name: String, value: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidSupportedPaymentNetworks(userInfo: [String: String]?, diagnosticsId: String)
     case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String)
     case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String)
     case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -107,8 +106,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "invalid-url-scheme"
         case .invalidSetting:
             return "invalid-setting"
-        case .invalidSupportedPaymentNetworks:
-            return "invalid-supported-payment-networks"
         case .invalidValue:
             return "invalid-value"
         case .unableToMakePaymentsOnProvidedNetworks:
@@ -195,8 +192,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .invalidSetting(_, _, _, let diagnosticsId):
             return diagnosticsId
-        case .invalidSupportedPaymentNetworks(_, let diagnosticsId):
-            return diagnosticsId
         case .invalidValue(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .unableToMakePaymentsOnProvidedNetworks(_, let diagnosticsId):
@@ -282,8 +277,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Invalid URL scheme: \(urlScheme == nil ? "nil" : "\(urlScheme!)")"
         case .invalidSetting(let name, let value, _, _):
             return "Invalid setting for \(name) (provided value is \(value ?? "nil"))"
-        case .invalidSupportedPaymentNetworks:
-            return "Invalid supported payment networks"
         case .invalidValue(key: let key, value: let value, _, _):
             return "Invalid value '\(value ?? "nil")' for key '\(key)'"
         case .unableToMakePaymentsOnProvidedNetworks:
@@ -345,7 +338,6 @@ public enum PrimerError: PrimerErrorProtocol {
                 .invalidMerchantIdentifier(_, let userInfo, _),
                 .invalidUrlScheme(_, let userInfo, _),
                 .invalidSetting(_, _, let userInfo, _),
-                .invalidSupportedPaymentNetworks(let userInfo, _),
                 .invalidValue(_, _, let userInfo, _),
                 .unableToMakePaymentsOnProvidedNetworks(let userInfo, _),
                 .unableToPresentPaymentMethod(_, let userInfo, _),
@@ -426,8 +418,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Check if you have provided a valid URL scheme in the SDK settings."
         case .invalidSetting(let name, _, _, _):
             return "Check if you have provided a value for \(name) in the SDK settings."
-        case .invalidSupportedPaymentNetworks:
-            return nil
         case .invalidValue(let key, let value, _, _):
             return "Check if value \(value ?? "nil") is valid for key \(key)"
         case .unableToMakePaymentsOnProvidedNetworks:
