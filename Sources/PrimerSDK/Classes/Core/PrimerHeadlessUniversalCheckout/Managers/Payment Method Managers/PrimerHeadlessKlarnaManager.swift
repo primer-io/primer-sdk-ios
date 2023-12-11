@@ -73,7 +73,7 @@ extension PrimerHeadlessUniversalCheckout {
         public func primerKlarnaWrapperFailed(with error: PrimerKlarnaSDK.PrimerKlarnaError) {
             let primerError = PrimerError.klarnaWrapperError(
                 message: error.errorDescription,
-                userInfo: error.info, 
+                userInfo: nil, 
                 diagnosticsId: error.diagnosticsId
             )
             errorDelegate?.didReceiveError(error: primerError)
