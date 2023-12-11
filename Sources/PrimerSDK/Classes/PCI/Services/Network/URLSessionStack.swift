@@ -21,7 +21,6 @@ internal class URLSessionStack: NetworkService, LogReporter {
 
     // MARK: - Network Stack logic
 
-    // swiftlint:disable function_body_length
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) {
 
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
@@ -181,7 +180,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
 #endif
 
                 if endpoint.shouldParseResponseBody == false, httpResponse?.statusCode == 200 {
-                    let dummyRes: T = DummySuccess(success: true) as! T
+                    guard let dummyRes: T = DummySuccess(success: true) as? T
+                    else {
+                        fatalError()
+                    }
                     DispatchQueue.main.async { completion(.success(dummyRes)) }
                 } else {
                     let result = try self.parser.parse(T.self, from: data)

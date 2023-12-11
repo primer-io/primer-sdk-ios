@@ -716,7 +716,11 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
     }
 
     func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, isLoading: Bool) {
-        isLoading ? self.uiModule.submitButton?.startAnimating() : self.uiModule.submitButton?.stopAnimating()
+        if isLoading {
+            self.uiModule.submitButton?.startAnimating()
+        } else {
+            self.uiModule.submitButton?.stopAnimating()
+        }
         PrimerUIManager.primerRootViewController?.enableUserInteraction(!isLoading)
     }
 
@@ -894,7 +898,10 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let country = dataSource[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as! CountryTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as? CountryTableViewCell
+        else {
+            fatalError("Unexpected cell dequed in PrimerSDK.CardFormPaymentMethodTokenizationViewModel")
+        }
         cell.configure(viewModel: country)
         return cell
     }
@@ -933,10 +940,8 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
 
         var countryResults: [CountryCode] = []
 
-        for country in countries {
-            if country.country.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
-                countryResults.append(country)
-            }
+        for country in countries where country.country.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
+            countryResults.append(country)
         }
 
         dataSource = countryResults

@@ -405,8 +405,13 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         let amountStr = self.iPay88NumberFormatter.string(from: NSNumber(value: Double(AppState.current.amount!)/100)) ?? ""
 
+        guard let merchantOptions = self.config.options as? MerchantOptions
+        else {
+            fatalError()
+        }
+        
         let primerIPayPayment = PrimerIPay88Payment(
-            merchantCode: (self.config.options as! MerchantOptions).merchantId,
+            merchantCode: merchantOptions.merchantId,
             paymentId: iPay88PaymentMethodId,
             refNo: primerTransactionId,
             amount: amountStr,

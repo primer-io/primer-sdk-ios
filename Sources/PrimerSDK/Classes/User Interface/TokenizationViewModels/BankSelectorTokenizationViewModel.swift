@@ -276,7 +276,10 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let bank = dataSource[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "BankTableViewCell", for: indexPath) as! BankTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "BankTableViewCell", for: indexPath) as? BankTableViewCell
+        else {
+            fatalError("Unexpected cell dequed in BankSelectorTokenizationViewModel")
+        }
         cell.configure(viewModel: bank)
         return cell
     }
@@ -311,10 +314,8 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
 
         var bankResults: [AdyenBank] = []
 
-        for bank in banks {
-            if bank.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
-                bankResults.append(bank)
-            }
+        for bank in banks where bank.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
+            bankResults.append(bank)
         }
 
         dataSource = bankResults

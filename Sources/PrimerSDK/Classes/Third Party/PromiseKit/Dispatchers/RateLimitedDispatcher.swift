@@ -50,7 +50,6 @@ internal final class RateLimitedDispatcher: RateLimitedDispatcherBase {
     }
 
     override func dispatchFromQueue() {
-        // swiftlint:disable empty_count
         guard undispatched.count > 0 else { return }
         cleanupNonce += 1
 

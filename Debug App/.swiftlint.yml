@@ -7,23 +7,13 @@ disabled_rules:
     - identifier_name
     - force_try
     - type_name
-    - force_cast
     - cyclomatic_complexity
     
 # warnings
-    - trailing_whitespace
-    - unused_optional_binding
-    - void_function_in_ternary
-    - nesting
-    - blanket_disable_command
-    - for_where
-    - switch_case_alignment
-    - unneeded_break_in_switch
-    - large_tuple
-    - notification_center_detachment
-    - deployment_target
-    - class_delegate_protocol
-    - discouraged_direct_init
+    - trailing_whitespace # this rule should stay disabled, I have never saw a codebase with this rule applied
+    - nesting #to disable this whole data model should be refactored, we have a lot of nesting at the moment
+    - large_tuple #can be very tricky, it is found in PromiseKit as well
+    - deployment_target # used in PromiseKit
     
 included:
   - ../Sources

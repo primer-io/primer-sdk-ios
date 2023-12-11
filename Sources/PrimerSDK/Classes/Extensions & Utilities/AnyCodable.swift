@@ -8,8 +8,6 @@
 
 import Foundation
 
-// swiftlint:disable cyclomatic_complexity
-
 /**
  A type-erased `Codable` value.
  The `AnyCodable` type forwards encoding and decoding responsibilities

@@ -10,8 +10,6 @@
 import Foundation
 #endif
 
-// swiftlint:disable cyclomatic_complexity
-
 /**
  A type-erased `Decodable` value.
  The `AnyDecodable` type forwards decoding responsibilities
