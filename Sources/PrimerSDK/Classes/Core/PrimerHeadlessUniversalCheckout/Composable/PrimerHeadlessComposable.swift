@@ -11,17 +11,6 @@ public protocol PrimerHeadlessComponent {
     var stepDelegate: PrimerHeadlessSteppableDelegate? { get set }
 }
 
-extension PrimerHeadlessComponent {
-    func getTokenizationViewModel<T>(
-        paymentType type: PrimerPaymentMethodType,
-        viewModelType: T.Type = T.self
-    ) -> T? where T: PaymentMethodTokenizationViewModel {
-        return PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({
-            $0.config.type == type.rawValue
-        }).first as? T
-    }
-}
-
 public protocol PrimerCollectableData { }
 
 public protocol PrimerHeadlessErrorableDelegate: AnyObject {

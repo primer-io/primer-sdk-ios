@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol KlarnaTokenizationManagerProtocol {
+protocol KlarnaTokenizationManagerProtocol: TokenizationManagerProtocol {
     func createPaymentSession(
         attachment: Request.Body.Klarna.CreatePaymentSession.Attachment?,
         completion: @escaping (Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void
@@ -19,12 +19,9 @@ protocol KlarnaTokenizationManagerProtocol {
     func finalizePaymentSession(
         completion: @escaping (Result<Response.Body.Klarna.CustomerToken, Error>) -> Void
     )
-    func tokenize(
-        completion: @escaping (Result<PrimerPaymentMethodTokenData, Error>) -> Void
-    )
 }
 
-class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
+class KlarnaTokenizationManager: TokenizationManager, KlarnaTokenizationManagerProtocol {
     // MARK: - Properties
     private let paymentMethod: PrimerPaymentMethod
     private let apiClient: PrimerAPIClientProtocol
@@ -32,14 +29,15 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
     private let clientSession: ClientSession.APIResponse?
     
     private var paymentSessionId: String?
-    private var customerToken: Response.Body.Klarna.CustomerToken?
     
     // MARK: - Init
     init(paymentMethod: PrimerPaymentMethod) {
         self.paymentMethod = paymentMethod
         self.apiClient = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
-        self.tokenizationService = TokenizationService()
         self.clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
+        self.tokenizationService = TokenizationService()
+        
+        super.init()
     }
 }
 
@@ -213,42 +211,6 @@ extension KlarnaTokenizationManager {
     }
 }
 
-// MARK: - Tokenize payment session
-extension KlarnaTokenizationManager {
-    func tokenize(
-        completion: @escaping (Result<PrimerPaymentMethodTokenData, Error>) -> Void
-    ) {
-        guard let klarnaCustomerToken = self.customerToken?.customerTokenId else {
-            let error = self.getInvalidValueError(
-                key: "tokenization.klarnaCustomerToken",
-                value: nil
-            )
-            completion(.failure(error))
-            return
-        }
-
-        guard let sessionData = self.customerToken?.sessionData else {
-            let error = self.getInvalidValueError(
-                key: "tokenization.sessionData",
-                value: nil
-            )
-            completion(.failure(error))
-            return
-        }
-
-        let paymentInstrument = KlarnaCustomerTokenPaymentInstrument(
-            klarnaCustomerToken: klarnaCustomerToken,
-            sessionData: sessionData
-        )
-
-        let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-
-        self.tokenizationService.tokenize(requestBody: requestBody) { (result) in
-            completion(result)
-        }
-    }
-}
-
 // MARK: - Helpers
 private extension KlarnaTokenizationManager {
     func getSessionType() -> KlarnaSessionType {
@@ -263,53 +225,5 @@ private extension KlarnaTokenizationManager {
         return PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(
             for: PrimerPaymentMethodType.klarna.rawValue
         )
-    }
-}
-
-// MARK: - Errors
-private extension KlarnaTokenizationManager {
-    func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: self.getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
-    }
-    
-    func getInvalidSettingError(
-        name: String
-    ) -> PrimerError {
-        let error = PrimerError.invalidSetting(
-            name: name,
-            value: nil,
-            userInfo: self.getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
-    }
-    
-    func getInvalidValueError(
-        key: String,
-        value: Any? = nil
-    ) -> PrimerError {
-        let error = PrimerError.invalidValue(
-            key: key,
-            value: value,
-            userInfo: self.getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
-    }
-    
-    func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
     }
 }

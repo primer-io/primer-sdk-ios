@@ -83,6 +83,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
     }
 
     var hasUnknownSurcharge: Bool = false
+    
     lazy var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? = {
         if implementationType == .webRedirect {
             return WebRedirectPaymentMethodTokenizationViewModel(config: self)
@@ -141,6 +142,20 @@ class PrimerPaymentMethod: Codable, LogReporter {
         self.logger.info(message: type)
 
         return nil
+    }()
+    
+    lazy var tokenizationManager: TokenizationManagerProtocol? = {
+        guard let internalPaymentMethodType = internalPaymentMethodType else {
+            return nil
+        }
+        
+        switch internalPaymentMethodType {
+        case PrimerPaymentMethodType.klarna:
+            return KlarnaTokenizationManager(paymentMethod: self)
+            
+        default:
+            return nil
+        }
     }()
 
     var isCheckoutEnabled: Bool {

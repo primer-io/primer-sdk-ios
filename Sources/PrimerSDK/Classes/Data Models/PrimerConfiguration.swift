@@ -90,6 +90,14 @@ extension Response.Body {
             let cardSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { (($0["networks"] as? [[String: Any]])?.first(where: { $0["surcharge"] as? Int != nil })) != nil  })
             return pmSurcharge != nil || cardSurcharge != nil
         }
+        
+        static var paymentMethodConfigTokenizationManagers: [TokenizationManagerProtocol] {
+            return PrimerAPIConfiguration.paymentMethodConfigs?
+                .filter({ $0.isEnabled })
+                .filter({ $0.baseLogoImage != nil })
+                .compactMap({ $0.tokenizationManager })
+            ?? []
+        }
 
         static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
             var viewModels: [PaymentMethodTokenizationViewModelProtocol] = PrimerAPIConfiguration.paymentMethodConfigs?
