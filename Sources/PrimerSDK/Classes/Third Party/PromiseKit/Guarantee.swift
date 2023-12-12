@@ -9,6 +9,7 @@ internal final class Guarantee<T>: Thenable {
     let box: Box<T>
 
     fileprivate init(box: SealedBox<T>) {
+        // swiftlint:disable:next force_cast
         self.box = box as! Box<T>
     }
 

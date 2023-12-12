@@ -617,7 +617,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 default:
                     self.logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")
                     self.logger.info(message: self.config.type)
-                    break
                 }
 
                 if isManualPaymentHandling {
@@ -871,7 +870,11 @@ extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
 
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
         let isTextsValid = inputs.allSatisfy { $0.primerTextFieldView?.isTextValid == true }
-        isTextsValid ? enableSubmitButton(true) : enableSubmitButton(false)
+        if isTextsValid {
+            enableSubmitButton(true)
+        } else {
+            enableSubmitButton(false)
+        }
     }
 
     func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool {
@@ -895,7 +898,10 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let country = countriesDataSource[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as! CountryTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as? CountryTableViewCell
+        else {
+            fatalError("Unexpected cell dequed in FormPaymentMethodTokenizationViewModel")
+        }
         cell.configure(viewModel: country)
         return cell
     }
@@ -935,10 +941,8 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
 
         var countryResults: [CountryCode] = []
 
-        for country in countries {
-            if country.country.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
-                countryResults.append(country)
-            }
+        for country in countries where country.country.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
+            countryResults.append(country)
         }
 
         countriesDataSource = countryResults

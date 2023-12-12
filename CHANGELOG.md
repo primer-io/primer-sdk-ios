@@ -1,3 +1,9 @@
+## 2.18.3 (2023-12-06)
+
+### Fix
+
+- Reduce memory usage for analytics service (#756)
+
 ## 2.18.2 (2023-11-14)
 
 ### Fix

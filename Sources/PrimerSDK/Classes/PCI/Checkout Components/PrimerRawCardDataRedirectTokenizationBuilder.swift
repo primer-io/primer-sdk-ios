@@ -120,7 +120,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
 
             let paymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
                                                                     paymentMethodType: paymentMethodType,
-                                                                    number: PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as! String,
+                                                                    number: (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber,
                                                                     expirationMonth: expiryMonth,
                                                                     expirationYear: expiryYear,
                                                                     cardholderName: rawData.cardholderName ?? "")

@@ -42,9 +42,9 @@ public class PrimerNibView: UIView {
 
     /** Loads instance from nib with the same name. */
 
-    func loadNib() -> UIView {
+    func loadNib() -> UIView? {
         let bundle = Bundle.primerResources
         let nib = UINib(nibName: className, bundle: bundle)
-        return nib.instantiate(withOwner: self, options: nil).first as! UIView
+        return nib.instantiate(withOwner: self, options: nil).first as? UIView
     }
 }

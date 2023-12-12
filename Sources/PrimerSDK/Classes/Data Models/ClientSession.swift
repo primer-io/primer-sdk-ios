@@ -334,7 +334,8 @@ internal extension Encodable {
     func asDictionary() throws -> [String: Any] {
         let data = try JSONEncoder().encode(self)
         guard let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
-            throw NSError()
+            let error = NSError(domain: "EncodableError", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Failed to serialize object to dictionary"])
+            throw error
         }
         return dictionary
     }
