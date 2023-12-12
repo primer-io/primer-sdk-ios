@@ -143,6 +143,14 @@ class PrimerPaymentMethod: Codable, LogReporter {
         return nil
     }()
 
+    lazy var tokenizationModel: PaymentMethodTokenizationModelProtocol? = {
+        switch internalPaymentMethodType {
+        case .adyenIDeal:
+            return BanksTokenizationComponent(config: self)
+        default: return nil
+        }
+    }()
+
     var isCheckoutEnabled: Bool {
         if self.baseLogoImage == nil {
             return false

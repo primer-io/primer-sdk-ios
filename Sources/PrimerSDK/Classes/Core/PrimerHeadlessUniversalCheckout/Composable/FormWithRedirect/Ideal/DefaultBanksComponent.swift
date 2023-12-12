@@ -28,6 +28,7 @@ final class DefaultBanksComponent: BanksComponent {
     }
     
     public func updateCollectedData(collectableData: BanksCollectableData) {
+        trackCollectableData()
         switch collectableData {
         case .bankId(bankId: let bankId):
             if isBankIdValid(bankId: bankId) {
@@ -133,7 +134,8 @@ private extension DefaultBanksComponent {
         trackEvent(BanksAnalyticsEvent.updateCollectedData)
     }
     func trackEvent(_ event: BanksAnalyticsEvent, additionalParams: [String: String]? = nil) {
-        var params: [String: String] = ["category": paymentMethodType.rawValue]
+        var params: [String: String] = ["paymentMethodType": paymentMethodType.rawValue,
+                                        "category": PrimerPaymentMethodManagerCategory.componentWithRedirect.rawValue]
         if let additionalParams {
             params.merge(additionalParams) { (_, new) in new }
         }

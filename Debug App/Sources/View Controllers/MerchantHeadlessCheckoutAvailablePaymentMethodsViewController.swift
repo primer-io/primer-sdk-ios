@@ -327,7 +327,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
             navigationController?.popViewController(animated: false)
         }
         DispatchQueue.main.async {
-            let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
+            let rvc = MerchantResultViewController.instantiate(checkoutData: nil, error: self.primerError, logs: self.logs)
             self.navigationController?.pushViewController(rvc, animated: true)
         }
     }
