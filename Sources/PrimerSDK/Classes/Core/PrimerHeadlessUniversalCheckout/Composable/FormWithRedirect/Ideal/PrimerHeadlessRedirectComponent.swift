@@ -51,9 +51,8 @@ extension WebRedirectComponent: PrimerHeadlessSteppableDelegate {
 
 extension WebRedirectComponent: LogReporter {
     func logStep() {
-        let logMessage = "\(step.logMessage) (\(paymentMethodType.rawValue))"
+        let logMessage = step.logMessage(paymentMethodType: paymentMethodType.rawValue)
         logger.info(message: logMessage)
-        logger.info(message: paymentMethodType.rawValue)
         let stepEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: MessageEventProperties(
@@ -65,13 +64,13 @@ extension WebRedirectComponent: LogReporter {
 }
 
 extension WebStep {
-    var logMessage: String {
+    func logMessage(paymentMethodType: String) -> String {
         switch self {
-        case .loading: return "Web redirect is loading"
-        case .loaded: return "Web redirect has loaded"
-        case .dismissed: return "Payment dismissed by user"
-        case .success: return "Payment was successfull"
-        case .failure: return "Payment was not successfull"
+        case .loading: return "Web redirect is loading for '\(paymentMethodType)'"
+        case .loaded: return "Web redirect has loaded for '\(paymentMethodType)'"
+        case .dismissed: return "Payment for '\(paymentMethodType)' was dismissed by user"
+        case .success: return "Payment for '\(paymentMethodType)' was successfull"
+        case .failure: return "Payment for '\(paymentMethodType)' was not successfull"
         }
     }
 }

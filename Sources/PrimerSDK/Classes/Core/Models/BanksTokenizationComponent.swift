@@ -127,12 +127,10 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                    case .cancelled = primerErr,
                    PrimerInternal.shared.sdkIntegrationType == .dropIn,
                    PrimerInternal.shared.selectedPaymentMethodType == nil,
-                   (
                     self.config.implementationType == .webRedirect ||
                     self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
                     self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                    self.config.type == PrimerPaymentMethodType.payPal.rawValue
-                   ) {
+                    self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                     firstly {
                         clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                     }
@@ -240,7 +238,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             }
         }
     }
-
 
     // This function will do one of the two following:
     //     - Wait a response from the merchant, via the delegate function. The response can be:
@@ -459,6 +456,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
                     firstly {
                         self.presentPaymentMethodUserInterface()
+                    }
+                    .then { () -> Promise<Void> in
+                        return self.awaitUserInput()
                     }
                     .done {
                         seal.fulfill(self.resumeToken)
@@ -833,10 +833,10 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
     func cancel() {
 
     }
-
-
 }
 
+extension BanksTokenizationComponent: WebRedirectTokenizationDelegate {
+}
 
 extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
 
@@ -911,8 +911,6 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         }
 
         setup()
-// TODO: Map any start steps from PaymentMethodTokenizationViewModel+Logic.swift
-//        super.start()
     }
 
     @objc func receivedNotification(_ notification: Notification) {

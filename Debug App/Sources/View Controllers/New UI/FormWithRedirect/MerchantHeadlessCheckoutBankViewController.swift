@@ -74,8 +74,13 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
         case .validating:
             print("Forms with redirect validation in progress")
         case .valid:
-            if data is BanksCollectableData {
-                bankComponent?.submit()
+            if let data = data as? BanksCollectableData {
+                switch data {
+                case .bankId(bankId: _):
+                    bankComponent?.submit()
+                default:
+                    break
+                }
             }
         case .invalid(errors: let errors):
             var message = ""
