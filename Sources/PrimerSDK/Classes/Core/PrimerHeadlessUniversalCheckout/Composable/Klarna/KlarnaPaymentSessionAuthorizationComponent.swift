@@ -10,17 +10,17 @@ import Foundation
 import PrimerKlarnaSDK
 
 public enum KlarnaPaymentSessionAuthorization: PrimerHeadlessStep {
-    case paymentSessionAuthorized(authToken: String)
+    case paymentSessionAuthorized(tokenData: PrimerPaymentMethodTokenData)
     case paymentSessionAuthorizationFailed
     case paymentSessionFinalizationRequired
     
-    case paymentSessionReauthorized(authToken: String)
+    case paymentSessionReauthorized(tokenData: PrimerPaymentMethodTokenData)
     case paymentSessionReauthorizationFailed
 }
 
 public class KlarnaPaymentSessionAuthorizationComponent: PrimerHeadlessComponent, PrimerHeadlessAnalyticsRecordable {
-    // MARK: - ViewModel
-    private var tokenizationViewModel: KlarnaHeadlessTokenizationViewModel?
+    // MARK: - Tokenization
+    private let tokenizationManager: KlarnaTokenizationManagerProtocol?
     
     // MARK: - Provider
     private(set) weak var klarnaProvider: PrimerKlarnaProviding?
@@ -29,11 +29,8 @@ public class KlarnaPaymentSessionAuthorizationComponent: PrimerHeadlessComponent
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     
     // MARK: - Init
-    init() {
-        self.tokenizationViewModel = self.getTokenizationViewModel(
-            paymentType: .klarna,
-            viewModelType: KlarnaHeadlessTokenizationViewModel.self
-        )
+    init(tokenizationManager: KlarnaTokenizationManagerProtocol?) {
+        self.tokenizationManager = tokenizationManager
     }
     
     // MARK: - Set
@@ -76,29 +73,32 @@ public extension KlarnaPaymentSessionAuthorizationComponent {
     }
 }
 
-// MARK: - Handlers
+// MARK: - Private
 private extension KlarnaPaymentSessionAuthorizationComponent {
-    func handleError() {
-        let error = PrimerError.klarnaWrapperError(
-            message: "Auhtorization failed",
-            userInfo: [
-                "file": #file,
-                "class": "\(Self.self)",
-                "function": #function,
-                "line": "\(#line)"
-            ],
-            diagnosticsId: UUID().uuidString
-        )
-        
-        self.tokenizationViewModel?.klarnaPaymentSessionAuthorized?(nil, error)
-    }
-    
-    func handleSuccess(authToken: String) {
-        self.tokenizationViewModel?.klarnaPaymentSessionAuthorized?(authToken, nil)
-    }
-    
-    func handleFinalization() {
-        self.tokenizationViewModel?.klarnaPaymentSessionAuthorized?(nil, nil)
+    func finalizeSession(token: String, reauthorization: Bool) {
+        self.tokenizationManager?.authorizePaymentSession(authorizationToken: token) { [weak self] (result) in
+            switch result {
+            case .success(let success):
+                self?.tokenizationManager?.tokenize(customerToken: success) { (result) in
+                    switch result {
+                    case .success(let success):
+                        var step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorized(tokenData: success)
+                        if reauthorization {
+                            step = KlarnaPaymentSessionAuthorization.paymentSessionReauthorized(tokenData: success)
+                        }
+                        self?.stepDelegate?.didReceiveStep(step: step)
+                        
+                    case .failure:
+                        let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorizationFailed
+                        self?.stepDelegate?.didReceiveStep(step: step)
+                    }
+                }
+                
+            case .failure:
+                let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorizationFailed
+                self?.stepDelegate?.didReceiveStep(step: step)
+            }
+        }
     }
 }
 
@@ -112,32 +112,19 @@ extension KlarnaPaymentSessionAuthorizationComponent: PrimerKlarnaProviderAuthor
         if approved == false {
             if finalizeRequired == true {
                 let step = KlarnaPaymentSessionAuthorization.paymentSessionFinalizationRequired
-                       
-                self.handleFinalization()
-                
                 self.stepDelegate?.didReceiveStep(step: step)
             } else {
                 let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorizationFailed
-                
-                self.handleError()
-                
                 self.stepDelegate?.didReceiveStep(step: step)
             }
         }
         
         if let authToken = authToken, approved == true {
-            let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorized(authToken: authToken)
-            
-            self.handleSuccess(authToken: authToken)
-            
-            self.stepDelegate?.didReceiveStep(step: step)
+            self.finalizeSession(token: authToken, reauthorization: false)
         }
         
         if finalizeRequired == true {
             let step = KlarnaPaymentSessionAuthorization.paymentSessionFinalizationRequired
-            
-            self.handleFinalization()
-            
             self.stepDelegate?.didReceiveStep(step: step)
         }
     }
@@ -145,15 +132,11 @@ extension KlarnaPaymentSessionAuthorizationComponent: PrimerKlarnaProviderAuthor
     public func primerKlarnaWrapperReauthorized(approved: Bool, authToken: String?) {
         if approved == false {
             let step = KlarnaPaymentSessionAuthorization.paymentSessionReauthorizationFailed
-            
-            handleError()
-            
             self.stepDelegate?.didReceiveStep(step: step)
         }
         
         if let authToken = authToken, approved == true {
-            let step = KlarnaPaymentSessionAuthorization.paymentSessionReauthorized(authToken: authToken)
-            self.stepDelegate?.didReceiveStep(step: step)
+            self.finalizeSession(token: authToken, reauthorization: true)
         }
     }
 }

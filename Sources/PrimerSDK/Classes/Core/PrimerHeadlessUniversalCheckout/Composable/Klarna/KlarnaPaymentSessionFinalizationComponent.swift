@@ -10,13 +10,13 @@ import Foundation
 import PrimerKlarnaSDK
 
 public enum KlarnaPaymentSessionFinalization: PrimerHeadlessStep {
-    case paymentSessionFinalized(authToken: String)
+    case paymentSessionFinalized(tokenData: PrimerPaymentMethodTokenData)
     case paymentSessionFinalizationFailed
 }
 
 public class KlarnaPaymentSessionFinalizationComponent: PrimerHeadlessComponent, PrimerHeadlessAnalyticsRecordable {
-    // MARK: - ViewModel
-    private var tokenizationViewModel: KlarnaHeadlessTokenizationViewModel?
+    // MARK: - Tokenization
+    private let tokenizationManager: KlarnaTokenizationManagerProtocol?
     
     // MARK: - Provider
     private(set) weak var klarnaProvider: PrimerKlarnaProviding?
@@ -31,11 +31,8 @@ public class KlarnaPaymentSessionFinalizationComponent: PrimerHeadlessComponent,
     }
     
     // MARK: - Init
-    init() {
-        self.tokenizationViewModel = self.getTokenizationViewModel(
-            paymentType: .klarna,
-            viewModelType: KlarnaHeadlessTokenizationViewModel.self
-        )
+    init(tokenizationManager: KlarnaTokenizationManagerProtocol?) {
+        self.tokenizationManager = tokenizationManager
     }
 }
 
@@ -57,23 +54,27 @@ public extension KlarnaPaymentSessionFinalizationComponent {
 
 // MARK: - Handlers
 private extension KlarnaPaymentSessionFinalizationComponent {
-    func handleError() {
-        let error = PrimerError.klarnaWrapperError(
-            message: "Finalization failed",
-            userInfo: [
-                "file": #file,
-                "class": "\(Self.self)",
-                "function": #function,
-                "line": "\(#line)"
-            ],
-            diagnosticsId: UUID().uuidString
-        )
-        
-        self.tokenizationViewModel?.klarnaPaymentSessionFinalized?(nil, error)
-    }
-    
-    func handleSuccess(authToken: String) {
-        self.tokenizationViewModel?.klarnaPaymentSessionFinalized?(authToken, nil)
+    func finalizeSession(token: String) {
+        self.tokenizationManager?.authorizePaymentSession(authorizationToken: token) { [weak self] (result) in
+            switch result {
+            case .success(let success):
+                self?.tokenizationManager?.tokenize(customerToken: success) { (result) in
+                    switch result {
+                    case .success(let success):
+                        let step = KlarnaPaymentSessionFinalization.paymentSessionFinalized(tokenData: success)
+                        self?.stepDelegate?.didReceiveStep(step: step)
+                        
+                    case .failure:
+                        let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorizationFailed
+                        self?.stepDelegate?.didReceiveStep(step: step)
+                    }
+                }
+                
+            case .failure:
+                let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorizationFailed
+                self?.stepDelegate?.didReceiveStep(step: step)
+            }
+        }
     }
 }
 
@@ -82,18 +83,11 @@ extension KlarnaPaymentSessionFinalizationComponent: PrimerKlarnaProviderFinaliz
     public func primerKlarnaWrapperFinalized(approved: Bool, authToken: String?) {
         if approved == false {
             let step = KlarnaPaymentSessionFinalization.paymentSessionFinalizationFailed
-            
-            self.handleError()
-            
             self.stepDelegate?.didReceiveStep(step: step)
         }
         
         if let authToken = authToken, approved == true {
-            let step = KlarnaPaymentSessionFinalization.paymentSessionFinalized(authToken: authToken)
-            
-            self.handleSuccess(authToken: authToken)
-            
-            self.stepDelegate?.didReceiveStep(step: step)
+            self.finalizeSession(token: authToken)
         }
     }
 }
