@@ -23,6 +23,14 @@ jobs:
         run: |
           git tag $RELEASE_VERSION
           git push origin $RELEASE_VERSION
+      - name: Record changelog for current release
+        run: cz changelog $RELEASE_VERSION --file-name="release.md"
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          name: "Release ${{ env.RELEASE_VERSION }}"
+          tag: ${{ env.RELEASE_VERSION }}
+          bodyFile: "release.md"
   build-and-upload-to-appetize:
     if: github.head_ref == 'release/next' && github.event.pull_request.merged == true
     runs-on: macos-latest
@@ -58,3 +66,4 @@ jobs:
           slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           github-run-id: ${{ github.run_id }}
           run-tests: false
+

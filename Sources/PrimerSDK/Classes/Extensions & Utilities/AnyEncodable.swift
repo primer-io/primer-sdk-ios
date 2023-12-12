@@ -10,8 +10,6 @@
 import Foundation
 #endif
 
-// swiftlint:disable cyclomatic_complexity
-
 /**
  A type-erased `Encodable` value.
  The `AnyEncodable` type forwards encoding responsibilities
@@ -294,4 +292,3 @@ extension AnyEncodable: Hashable {
         }
     }
 }
-// swiftlint:disable cyclomatic_complexity

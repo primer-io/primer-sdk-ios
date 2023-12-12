@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol PaymentMethodsGroupViewDelegate {
+protocol PaymentMethodsGroupViewDelegate: AnyObject {
     func paymentMethodsGroupView(_ paymentMethodsGroupView: PaymentMethodsGroupView, paymentMethodTapped paymentMethodTokenizationViewModels: PaymentMethodTokenizationViewModelProtocol)
 }
 

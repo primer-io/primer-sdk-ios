@@ -40,7 +40,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
     ]
 
     fileprivate init() {
-        Analytics.Service.sync()
+        Analytics.Service.flush()
     }
 
     public func start(

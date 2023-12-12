@@ -286,7 +286,10 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let bank = dataSource[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "BankTableViewCell", for: indexPath) as! BankTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "BankTableViewCell", for: indexPath) as? BankTableViewCell
+        else {
+            fatalError("Unexpected cell dequed in BankSelectorTokenizationViewModel")
+        }
         cell.configure(viewModel: bank)
         return cell
     }

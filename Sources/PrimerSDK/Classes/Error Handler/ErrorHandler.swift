@@ -23,28 +23,7 @@ internal class ErrorHandler: LogReporter {
         var event: Analytics.Event!
 
         if let threeDsError = error as? Primer3DSErrorContainer {
-            var context: [String: Any] = [:]
-
-            let continueInfo = threeDsError.continueInfo
-            context["initProtocolVersion"] = continueInfo.initProtocolVersion
-            context["threeDsSdkVersion"] = continueInfo.threeDsSdkVersion
-            context["threeDsSdkProvider"] = continueInfo.threeDsSdkProvider
-            context["threeDsWrapperSdkVersion"] = continueInfo.threeDsWrapperSdkVersion
-
-            switch threeDsError {
-            case .primer3DSSdkError(_, _, _, let errorInfo):
-                context["reasonCode"] = errorInfo.errorId
-                context["reasonText"] = errorInfo.errorDescription
-                context["threeDsErrorCode"] = errorInfo.threeDsErrorCode
-                context["threeDsErrorComponent"] = errorInfo.threeDsErrorComponent
-                context["threeDsErrorDescription"] = errorInfo.errorDescription
-                context["threeDsErrorDetail"] = errorInfo.threeDsErrorDetail
-                context["threeDsSdkTranscationId"] = errorInfo.threeDsSdkTranscationId
-                context["protocolVersion"] = errorInfo.threeDsSErrorVersion
-            default:
-                break
-            }
-
+          
             event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
@@ -52,7 +31,8 @@ internal class ErrorHandler: LogReporter {
                     messageType: .error,
                     severity: .error,
                     diagnosticsId: threeDsError.diagnosticsId,
-                    context: context.isEmpty ? nil : context))
+                    context: threeDsError.analyticsContext)
+            )
 
             if let createdAt = (threeDsError.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
@@ -65,7 +45,8 @@ internal class ErrorHandler: LogReporter {
                     message: primerError.errorDescription,
                     messageType: .error,
                     severity: .error,
-                    diagnosticsId: primerError.diagnosticsId))
+                    diagnosticsId: primerError.diagnosticsId,
+                    context: primerError.analyticsContext))
 
             if let createdAt = (primerError.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
@@ -76,7 +57,7 @@ internal class ErrorHandler: LogReporter {
             var userInfo = nsError.userInfo
             userInfo["description"] = nsError.description
 
-            if let _ = userInfo[NSLocalizedDescriptionKey] {
+            if userInfo[NSLocalizedDescriptionKey] != nil {
                 userInfo[NSLocalizedDescriptionKey] = nil
             }
 
