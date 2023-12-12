@@ -27,8 +27,13 @@ final class AssetsManagerTests: XCTestCase {
         XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .masterCard))
         XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .visa))
         XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .amex))
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .elo))
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .diners))
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .jcb))
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .maestro))
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .mir))
 
-        XCTAssertNil(try AssetsManager.getCardNetworkAsset(for: .elo))
+        XCTAssertNil(try AssetsManager.getCardNetworkAsset(for: .unknown))
     }
 
 }
