@@ -16,9 +16,6 @@ protocol KlarnaTokenizationManagerProtocol: TokenizationManagerProtocol {
         authorizationToken: String,
         completion: @escaping (Result<Response.Body.Klarna.CustomerToken, Error>) -> Void
     )
-    func finalizePaymentSession(
-        completion: @escaping (Result<Response.Body.Klarna.CustomerToken, Error>) -> Void
-    )
 }
 
 class KlarnaTokenizationManager: TokenizationManager, KlarnaTokenizationManagerProtocol {
@@ -171,40 +168,6 @@ extension KlarnaTokenizationManager {
         self.apiClient.createKlarnaCustomerToken(
             clientToken: decodedJWTToken,
             klarnaCreateCustomerTokenAPIRequest: body
-        ) { (result) in
-            completion(result)
-        }
-    }
-}
-
-// MARK: - Finalize payment session
-extension KlarnaTokenizationManager {
-    func finalizePaymentSession(
-        completion: @escaping (Result<Response.Body.Klarna.CustomerToken, Error>) -> Void
-    ) {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let error = self.getInvalidTokenError()
-            completion(.failure(error))
-            return
-        }
-        
-        guard
-            let configId = self.getConfigId(),
-            let sessionId = self.paymentSessionId
-        else {
-            let error = self.getInvalidValueError(
-                key: "paymentSessionId || configId",
-                value: nil
-            )
-            completion(.failure(error))
-            return
-        }
-        
-        let body = Request.Body.Klarna.FinalizePaymentSession(paymentMethodConfigId: configId, sessionId: sessionId)
-        
-        self.apiClient.finalizeKlarnaPaymentSession(
-            clientToken: decodedJWTToken,
-            klarnaFinalizePaymentSessionRequest: body
         ) { (result) in
             completion(result)
         }
