@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol {
+protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPIClientBINDataProtocol {
 
     func genericAPICall(clientToken: DecodedJWTToken,
                         url: URL,
