@@ -12,7 +12,8 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
 
     static var current: PrimerSettings {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        return settings as! PrimerSettings
+        guard let primerSettings = settings as? PrimerSettings else { fatalError() }
+        return primerSettings
     }
     public let paymentHandling: PrimerPaymentHandling
     let localeData: PrimerLocaleData

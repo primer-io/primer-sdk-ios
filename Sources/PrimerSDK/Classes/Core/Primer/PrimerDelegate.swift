@@ -169,7 +169,7 @@ internal class PrimerDelegateProxy: LogReporter {
                             id: timingEventId))
 
                     Analytics.Service.record(events: [timingEndEvent])
-                    Analytics.Service.sync()
+                    Analytics.Service.flush()
                 }
 
                 PrimerUIManager.dismissPrimerUI(animated: true)

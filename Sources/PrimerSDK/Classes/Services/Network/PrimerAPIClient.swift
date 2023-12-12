@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-protocol PrimerAPIClientProtocol: PrimerAPIClientBINDataProtocol {
+protocol PrimerAPIClientProtocol: PrimerAPIClientBINDataProtocol: PrimerAPIClientAnalyticsProtocol {
     
     func genericAPICall(clientToken: DecodedJWTToken,
                         url: URL,
@@ -101,7 +101,6 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientBINDataProtocol {
 
     func requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken, request: ClientSessionUpdateRequest, completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void)
 
-    func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?, completion: @escaping (_ result: Result<Analytics.Service.Response, Error>) -> Void)
     func fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken, payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void)
 
     // Payment

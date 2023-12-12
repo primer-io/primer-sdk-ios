@@ -357,7 +357,10 @@ extension PrimerTestPaymentMethodTokenizationViewModel: UITableViewDataSource, U
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let decision = decisions[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "FlowDecisionTableViewCell", for: indexPath) as! FlowDecisionTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "FlowDecisionTableViewCell", for: indexPath) as? FlowDecisionTableViewCell
+        else {
+            fatalError("Unexpected cell dequed in PrimerTestPaymentMethodTokenizationViewModel")
+        }
         cell.configure(decision: decision)
         return cell
     }

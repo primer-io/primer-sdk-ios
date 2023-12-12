@@ -70,7 +70,12 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
         
         mockService.getPhoneMetadata(mobileNumber: "1234567890") { result in
             if case let .failure(error) = result {
-                XCTAssertEqual(error.errorCode, 27)
+                switch error {
+                case .underlyingErrors:
+                    break
+                default:
+                    XCTFail("Expected underlyingErrors but got \(error)")
+                }
                 expectation.fulfill()
             } else {
                 XCTFail("Expected failure but got success")

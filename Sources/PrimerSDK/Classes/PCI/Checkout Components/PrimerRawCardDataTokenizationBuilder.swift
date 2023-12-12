@@ -116,7 +116,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             let expiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
 
             let paymentInstrument = CardPaymentInstrument(
-                number: PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as! String,
+                number: (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber,
                 cvv: rawData.cvv,
                 expirationMonth: expiryMonth,
                 expirationYear: expiryYear,
