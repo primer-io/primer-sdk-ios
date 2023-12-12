@@ -392,6 +392,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 } else if let paymentResponse = paymentResponse {
                     if paymentResponse.id == nil {
                         let err = PrimerError.paymentFailed(
+                            paymentMethodType: self.paymentMethodType,
                             description: "Failed to create payment",
                             userInfo: [
                                 "file": #file,
@@ -405,6 +406,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
                     } else if paymentResponse.status == .failed {
                         let err = PrimerError.failedToProcessPayment(
+                            paymentMethodType: self.paymentMethodType,
                             paymentId: paymentResponse.id ?? "nil",
                             status: paymentResponse.status.rawValue,
                             userInfo: [
@@ -423,6 +425,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
                 } else {
                     let err = PrimerError.paymentFailed(
+                        paymentMethodType: self.paymentMethodType,
                         description: "Failed to create payment",
                         userInfo: [
                             "file": #file,
@@ -576,11 +579,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                             }
                             seal.reject(merchantErr)
 
-                    case .succeed:
-                        seal.fulfill(nil)
+                        case .succeed:
+                            seal.fulfill(nil)
 
-                    case .continueWithNewClientToken:
-                        seal.fulfill(nil)
+                        case .continueWithNewClientToken:
+                            seal.fulfill(nil)
                         }
 
                     } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
@@ -723,6 +726,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 } else if let paymentResponse = paymentResponse {
                     if paymentResponse.id == nil {
                         let err = PrimerError.paymentFailed(
+                            paymentMethodType: self.paymentMethodType,
                             description: "Failed to resume payment",
                             userInfo: [
                                 "file": #file,
@@ -736,6 +740,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
                     } else if paymentResponse.status == .failed {
                         let err = PrimerError.failedToProcessPayment(
+                            paymentMethodType: self.paymentMethodType,
                             paymentId: paymentResponse.id ?? "nil",
                             status: paymentResponse.status.rawValue,
                             userInfo: [
@@ -754,6 +759,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
                 } else {
                     let err = PrimerError.paymentFailed(
+                        paymentMethodType: self.paymentMethodType,
                         description: "Failed to resume payment",
                         userInfo: [
                             "file": #file,
@@ -837,6 +843,8 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
 
 extension BanksTokenizationComponent: WebRedirectTokenizationDelegate {
 }
+
+extension BanksTokenizationComponent: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
 
 extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
 
