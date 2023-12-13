@@ -36,9 +36,9 @@ class MockRawDataManagerDelegate: RawDataManager.Delegate {
     var onWillFetchCardMetadataForStateCount = 0
 
     func primerRawDataManager(_ rawDataManager: RawDataManager,
-                              willFetchCardMetadataForState cardState: PrimerCardNumberEntryState) {
+                              willFetchMetadataForState state: PrimerValidationState) {
         onWillFetchCardMetadataForStateCount += 1
-        onWillFetchCardMetadataForState?(rawDataManager, cardState)
+        onWillFetchCardMetadataForState?(rawDataManager, state as! PrimerCardNumberEntryState)
     }
     
     // MARK: metadata forCardValidationState
@@ -48,9 +48,11 @@ class MockRawDataManagerDelegate: RawDataManager.Delegate {
     var onMetadataForCardValidationStateCount = 0
     
     func primerRawDataManager(_ rawDataManager: RawDataManager,
-                              didReceiveCardMetadata metadata: PrimerCardNumberEntryMetadata,
-                              forCardState cardState: PrimerCardNumberEntryState) {
+                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+                              forState state: PrimerValidationState) {
         onMetadataForCardValidationStateCount += 1
-        onMetadataForCardValidationState?(rawDataManager, metadata, cardState)
+        onMetadataForCardValidationState?(rawDataManager,
+                                          metadata as! PrimerCardNumberEntryMetadata,
+                                          state as! PrimerCardNumberEntryState)
     }
 }

@@ -11,7 +11,8 @@ import SafariServices
 @objc
 public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
-    @objc optional 
+    @available(*, deprecated, message: "Use _:didReceiveCardMetadata:forState: instead")
+    @objc optional
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               metadataDidChange metadata: [String: Any]?)
 
@@ -22,12 +23,12 @@ public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
     
     @objc optional 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              willFetchCardMetadataForState cardState: PrimerCardNumberEntryState)
+                              willFetchMetadataForState state: PrimerValidationState)
     
     @objc optional 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              didReceiveCardMetadata metadata: PrimerCardNumberEntryMetadata,
-                              forCardState cardState: PrimerCardNumberEntryState)
+                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+                              forState state: PrimerValidationState)
 }
 
 protocol PrimerRawDataTokenizationBuilderProtocol {

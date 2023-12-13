@@ -73,7 +73,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     
     private func useRemoteValidation(withCardState cardState: PrimerCardNumberEntryState) {
         delegate?.primerRawDataManager?(rawDataManager,
-                                        willFetchCardMetadataForState: cardState)
+                                        willFetchMetadataForState: cardState)
         
         let rawDataManager = rawDataManager
         
@@ -82,13 +82,15 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                 self?.useLocalValidation(withCardState: cardState)
                 return
             }
-            let cardMetadata = PrimerCardNumberEntryMetadata(availableCardNetworks: result.networks.map { network in
-                PrimerCardNetwork(displayName: network.displayName, networkIdentifier: network.value)
+            let cardMetadata = PrimerCardNumberEntryMetadata(source: .remote,
+                                                             availableCardNetworks: result.networks.map { network in
+                PrimerCardNetwork(displayName: network.displayName,
+                                  network: CardNetwork(cardNetworkStr: network.value))
             })
             
             self?.delegate?.primerRawDataManager?(rawDataManager,
-                                                  didReceiveCardMetadata: cardMetadata,
-                                                  forCardState: cardState)
+                                                  didReceiveMetadata: cardMetadata,
+                                                  forState: cardState)
             self?.sendEvent(forNetworks: cardMetadata.availableCardNetworks)
         }.catch { error in
             self.sendEvent(forError: error)
@@ -101,11 +103,28 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         let localValidationNetwork = CardNetwork(cardNumber: cardState.cardNumber)
         let displayName = localValidationNetwork.validation?.niceType ?? localValidationNetwork.rawValue.lowercased().capitalized
         let cardNetwork = PrimerCardNetwork(displayName: displayName,
-                                            networkIdentifier: localValidationNetwork.rawValue)
+                                            network: CardNetwork(cardNetworkStr: localValidationNetwork.rawValue))
+        
+        let metadata = PrimerCardNumberEntryMetadata(source: .local,
+                                                     availableCardNetworks: [cardNetwork])
+        
+        if cardState.cardNumber.count >= Self.maximumBinLength {
+            let logMessage = "Local validation was used where remote validation would have been preferred (max BIN length exceeded)."
+
+            logger.warn(message: logMessage)
+            let event = Analytics.Event(
+                eventType: .message,
+                properties: MessageEventProperties(
+                    message: logMessage,
+                    messageType: .other,
+                    severity: .warning)
+            )
+            Analytics.Service.record(event: event)
+        }
         
         delegate?.primerRawDataManager?(rawDataManager,
-                                        didReceiveCardMetadata: .init(availableCardNetworks: [cardNetwork]),
-                                        forCardState: cardState)
+                                        didReceiveMetadata: metadata,
+                                        forState: cardState)
     }
     
     // MARK: Analytics

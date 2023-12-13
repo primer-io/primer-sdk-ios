@@ -50,7 +50,7 @@ extension PrimerHeadlessUniversalCheckout {
         public static func getCardNetworkAsset(for cardNetwork: CardNetwork) throws -> PrimerCardNetworkAsset? {
             try verifyAPIConfig()
             
-            let prefix = "\(cardNetwork.rawValue.lowercased())-card-icon-"
+            let prefix = "\(cardNetwork.assetName.lowercased())-card-icon-"
             guard let asset = PrimerInternalAsset(
                 colored: UIImage(named: "\(prefix)colored", in: Bundle.primerResources, compatibleWith: nil),
                 light: UIImage(named: "\(prefix)light", in: Bundle.primerResources, compatibleWith: nil),

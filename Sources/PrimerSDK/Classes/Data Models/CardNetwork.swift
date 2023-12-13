@@ -24,21 +24,22 @@ struct CardNetworkCode {
 
 public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     
-    case amex
-    case bancontact
-    case cartesBancaires
-    case diners
-    case discover
-    case elo
-    case hiper
-    case hipercard
-    case jcb
-    case maestro
-    case masterCard = "mastercard"
-    case mir
-    case visa
-    case unionpay
-    case unknown
+    // https://github.com/primer-io/platform/blob/59980a07113089000c9814b079579e15c616b6db/platform/commons/models/bin_range.py#L66
+    case amex = "AMEX"
+    case bancontact = "BANCONTACT"
+    case cartesBancaires = "CARTES_BANCAIRES"
+    case diners = "DINERS_CLUB"
+    case discover = "DISCOVER"
+    case elo = "ELO"
+    case hiper = "HIPER"
+    case hipercard = "HIPERCARD"
+    case jcb = "JCB"
+    case maestro = "MAESTRO"
+    case masterCard = "MASTERCARD"
+    case mir = "MIR"
+    case visa = "VISA"
+    case unionpay = "UNIONPAY"
+    case unknown = "OTHER" // or "UNKNOWN"
 
     var validation: CardNetworkValidation? {
         switch self {
@@ -328,6 +329,10 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         return false
     }
     
+    var assetName: String {
+        rawValue.lowercased().filter { $0.isLetter }
+    }
+    
     static var coBadgedNetworks: [CardNetwork] {
         return [.cartesBancaires]
     }
@@ -348,7 +353,19 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     public init(cardNetworkStr: String) {
         self = .unknown
 
-        if let cardNetwork = CardNetwork(rawValue: cardNetworkStr.lowercased()) {
+        let stringValue = cardNetworkStr.uppercased()
+        
+        if ["DINERS", "DINERSCLUB"].contains(stringValue) {
+            self = .diners
+            return
+        }
+        
+        if "CARTESBANCAIRES" == stringValue {
+            self = .cartesBancaires
+            return
+        }
+        
+        if let cardNetwork = CardNetwork(rawValue: stringValue) {
             self = cardNetwork
         }
     }
