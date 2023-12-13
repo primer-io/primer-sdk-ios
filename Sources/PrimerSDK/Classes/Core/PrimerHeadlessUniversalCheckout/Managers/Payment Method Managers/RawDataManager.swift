@@ -181,7 +181,7 @@ extension PrimerHeadlessUniversalCheckout {
                         "category": "RAW_DATA",
                         "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
                         "paymentMethodType": paymentMethodType,
-                        "selectedNetwork": (rawData as? PrimerCardData)?.cardNetworkIdentifier ?? ""
+                        "selectedNetwork": (rawData as? PrimerCardData)?.cardNetwork?.rawValue ?? ""
                     ]
                 )
             )

@@ -30,7 +30,7 @@ public class PrimerCardData: PrimerRawData {
         }
     }
     
-    public var cardNetworkIdentifier: String? {
+    public var cardNetwork: CardNetwork? {
         didSet {
             self.onDataDidChange?()
         }
@@ -49,13 +49,13 @@ public class PrimerCardData: PrimerRawData {
         expiryDate: String,
         cvv: String,
         cardholderName: String?,
-        cardNetworkIdentifier: String? = nil
+        cardNetwork: CardNetwork? = nil
     ) {
         self.cardNumber = cardNumber
         self.expiryDate = expiryDate
         self.cvv = cvv
         self.cardholderName = cardholderName
-        self.cardNetworkIdentifier = cardNetworkIdentifier
+        self.cardNetwork = cardNetwork
         super.init()
     }
 
@@ -65,8 +65,8 @@ public class PrimerCardData: PrimerRawData {
         try container.encode(expiryDate, forKey: .expiryDate)
         try container.encode(cvv, forKey: .cvv)
         try container.encode(cardholderName, forKey: .cardholderName)
-        if let cardNetworkIdentifier = cardNetworkIdentifier {
-            try container.encode(cardNetworkIdentifier, forKey: .cardNetworkIdentifier)
+        if let cardNetwork = cardNetwork {
+            try container.encode(cardNetwork.rawValue, forKey: .cardNetworkIdentifier)
         }
     }
 }

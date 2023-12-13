@@ -62,8 +62,12 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     /// Indicates whether or not one of the co-badged networks is present in the merchant config
     /// If it is present, the remote card validation service will be called during card validation
     var isCoBadgedCardsEnabled: Bool {
-        let supportedCardNetworks: Set<CardNetwork> = Set(Array.supportedCardNetworks)
         return !supportedCardNetworks.isDisjoint(with: CardNetwork.coBadgedNetworks)
+    }
+    
+    /// List of supported card networks taken from merchant configuration
+    var supportedCardNetworks: Set<CardNetwork> {
+        Set(Array.supportedCardNetworks)
     }
     
     var requiredInputElementTypes: [PrimerInputElementType] {
@@ -134,12 +138,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
 
                 guard let rawData = data as? PrimerCardData else {
                     let err = PrimerValidationError.invalidRawData(
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: self.errorDictionary(),
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
                     ErrorHandler.handle(error: err)
@@ -161,24 +160,14 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 if rawData.cardNumber.isEmpty {
                     let err = PrimerValidationError.invalidCardnumber(
                         message: "Card number can not be blank.",
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: self.errorDictionary(),
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
 
                 } else if !rawData.cardNumber.isValidCardNumber {
                     let err = PrimerValidationError.invalidCardnumber(
                         message: "Card number is not valid.",
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: self.errorDictionary(),
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
                 }
@@ -196,6 +185,15 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 // Remote validation
                 self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
                 
+                if let network = rawData.cardNetwork, !self.supportedCardNetworks.contains(network) {
+                    let err = PrimerValidationError.invalidCardNetwork(
+                        message: "\(network.validation?.niceType ?? "Your card network") is not supported for this transaction",
+                        userInfo: self.errorDictionary(),
+                        diagnosticsId: UUID().uuidString
+                    )
+                    errors.append(err)
+                }
+                
                 if rawData.cvv.isEmpty {
                     let err = PrimerValidationError.invalidCvv(
                         message: "CVV cannot be blank.",
@@ -211,12 +209,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
                     let err = PrimerValidationError.invalidCvv(
                         message: "CVV is not valid.",
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: self.errorDictionary(),
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
                 }
@@ -225,22 +218,12 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     if (rawData.cardholderName ?? "").isEmpty {
                         errors.append(PrimerValidationError.invalidCardholderName(
                             message: "Cardholder name cannot be blank.",
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
+                            userInfo: self.errorDictionary(),
                             diagnosticsId: UUID().uuidString))
                     } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
                         errors.append(PrimerValidationError.invalidCardholderName(
                             message: "Cardholder name is not valid.",
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
+                            userInfo: self.errorDictionary(),
                             diagnosticsId: UUID().uuidString))
                     }
                 }
@@ -279,5 +262,18 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 }
             }
         }
+    }
+    
+    private func errorDictionary(
+        file: StaticString = #file,
+        function: StaticString = #function,
+        line: Int = #line
+    ) -> [String: String] {
+        return [
+            "file": "\(file)",
+            "class": "\(Self.self)",
+            "function": "\(function)",
+            "line": "\(line)"
+        ]
     }
 }
