@@ -157,9 +157,9 @@ extension AnalyticsTests {
         }
     }
     
-    func createAnalyticsFileForRC3() {
+    func createMockAnalyticsFile() {
         do {
-            let eventsData = AnalyticsTestsConstants.analytics_v_2_17_0_rc_3_Events.data(using: .utf8)!
+            let eventsData = AnalyticsTestsConstants.analyticsEvents.data(using: .utf8)!
             try eventsData.write(to: storage.fileURL)
             
         } catch {
