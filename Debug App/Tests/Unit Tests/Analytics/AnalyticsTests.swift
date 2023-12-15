@@ -85,7 +85,7 @@ class AnalyticsTests: XCTestCase {
     }
         
     func test_record_new_events() throws {
-        self.createAnalyticsFileForRC3()
+        self.createMockAnalyticsFile()
          
         let exp = expectation(description: "Await")
 
@@ -185,7 +185,7 @@ class AnalyticsTests: XCTestCase {
         
         self.cleanUpAnalytics()
         
-        self.createAnalyticsFileForRC3()
+        self.createMockAnalyticsFile()
         
         let writeEventExpectation = expectation(description: "Create client session")
         expectationsToBeFulfilled = [writeEventExpectation]
@@ -212,7 +212,7 @@ class AnalyticsTests: XCTestCase {
         Analytics.apiClient = mockApiClient
         recreateService()
         
-        self.createAnalyticsFileForRC3()
+        self.createMockAnalyticsFile()
         
         let exp = expectation(description: "Await")
         
@@ -260,7 +260,7 @@ class AnalyticsTests: XCTestCase {
     }
     
     func test_delete_analytics_file() throws {
-        self.createAnalyticsFileForRC3()
+        self.createMockAnalyticsFile()
         
         let exp = expectation(description: "Await")
         
@@ -337,7 +337,7 @@ class AnalyticsTests: XCTestCase {
     
     func test_recording_race_conditions() throws {
         self.cleanUpAnalytics()
-        self.createAnalyticsFileForRC3()
+        self.createMockAnalyticsFile()
         
         var storedEvents = storage.loadEvents()
         XCTAssert(storedEvents.count == 0, "Analytics events should be empty")
@@ -497,7 +497,7 @@ class AnalyticsTests: XCTestCase {
         recreateService()
 
         self.cleanUpAnalytics()
-        self.createAnalyticsFileForRC3()
+        self.createMockAnalyticsFile()
         
         var storedEvents = storage.loadEvents()
         
