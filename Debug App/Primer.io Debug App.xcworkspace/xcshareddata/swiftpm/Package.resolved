@@ -14,9 +14,9 @@
         "package": "Primer3DS",
         "repositoryURL": "https://github.com/primer-io/primer-sdk-3ds-ios",
         "state": {
-          "branch": null,
-          "revision": "56e39e0778b1abdb5d5abe20d96ea96e803b07a9",
-          "version": "2.0.0"
+          "branch": "nq/update_3ds_sdk",
+          "revision": "250748290f79374f4d1e70e6f8c8b65d9f14adaa",
+          "version": null
         }
       }
     ]
