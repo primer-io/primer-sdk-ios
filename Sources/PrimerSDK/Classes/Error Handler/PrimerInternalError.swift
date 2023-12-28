@@ -8,7 +8,6 @@
 import Foundation
 
 internal enum InternalError: PrimerErrorProtocol {
-    
 
     case failedToEncode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case failedToDecode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
@@ -189,8 +188,8 @@ internal enum InternalError: PrimerErrorProtocol {
             return PrimerError.unknown(userInfo: self.errorUserInfo as? [String: String], diagnosticsId: self.diagnosticsId)
         }
     }
-    
-    var analyticsContext: [String : Any] {
+
+    var analyticsContext: [String: Any] {
         var context: [String: Any] = [:]
         context[AnalyticsContextKeys.errorId] = errorId
         return context

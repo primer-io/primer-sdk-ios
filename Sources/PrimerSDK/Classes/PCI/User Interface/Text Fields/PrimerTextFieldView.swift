@@ -11,9 +11,11 @@ import UIKit
 /// PrimerCardNumberFieldView, PrimerExpiryDateFieldView, PrimerCVVFieldView & PrimerCardholderNameFieldView
 /// all have a delegate of PrimerTextFieldViewDelegate type.
 public protocol PrimerTextFieldViewDelegate: AnyObject {
-    /// Will return true if valid, false if invalid, nil if it cannot be detected yet. It is applied on all PrimerTextFieldViews.
+    /// Will return true if valid, false if invalid, nil if it cannot be detected yet.
+    ///  It is applied on all PrimerTextFieldViews.
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?)
-    /// Will return the card network (e.g. Visa) detected, unknown if the network cannot be detected. Only applies on PrimerCardNumberFieldView
+    /// Will return the card network (e.g. Visa) detected, unknown if the network cannot be detected.
+    ///  Only applies on PrimerCardNumberFieldView
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?)
     /// Will return a the validation error on the text input.
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error)
@@ -29,8 +31,10 @@ public protocol PrimerTextFieldViewDelegate: AnyObject {
 
 public extension PrimerTextFieldViewDelegate {
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {}
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {}
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error) {}
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView,
+                             didDetectCardNetwork cardNetwork: CardNetwork?) {}
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView,
+                             validationDidFailWithError error: Error) {}
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {}
     func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true }
     func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true}
@@ -74,26 +78,48 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     public var textColor: UIColor? { didSet { textField.textColor = textColor } }
     public var font: UIFont? { didSet { textField.font = font } }
     public var textAlignment: NSTextAlignment = .left { didSet { textField.textAlignment = textAlignment } }
-    public var borderStyle: UITextField.BorderStyle = .none { didSet { textField.borderStyle = borderStyle } }
-    public var defaultTextAttributes: [NSAttributedString.Key: Any] = [:] { didSet { textField.defaultTextAttributes = defaultTextAttributes } }
-    public var placeholder: String? { didSet { textField.placeholder = placeholder } }
-    public var attributedPlaceholder: NSAttributedString? { didSet { textField.attributedPlaceholder = attributedPlaceholder } }
-    public var clearsOnBeginEditing: Bool = false { didSet { textField.clearsOnBeginEditing = clearsOnBeginEditing } }
-    public var adjustsFontSizeToFitWidth: Bool = false { didSet { textField.adjustsFontSizeToFitWidth = adjustsFontSizeToFitWidth } }
+    public var borderStyle: UITextField.BorderStyle = .none {
+        didSet { textField.borderStyle = borderStyle }
+    }
+    public var defaultTextAttributes: [NSAttributedString.Key: Any] = [:] {
+        didSet { textField.defaultTextAttributes = defaultTextAttributes }
+    }
+    public var placeholder: String? {
+        didSet { textField.placeholder = placeholder }
+    }
+    public var attributedPlaceholder: NSAttributedString? { didSet {
+        textField.attributedPlaceholder = attributedPlaceholder }
+    }
+    public var clearsOnBeginEditing: Bool = false {
+        didSet { textField.clearsOnBeginEditing = clearsOnBeginEditing }
+    }
+    public var adjustsFontSizeToFitWidth: Bool = false {
+        didSet { textField.adjustsFontSizeToFitWidth = adjustsFontSizeToFitWidth }
+    }
     public var minimumFontSize: CGFloat = 0.0 { didSet { textField.minimumFontSize = minimumFontSize } }
     public var background: UIImage? { didSet { textField.background = background } }
     public var disabledBackground: UIImage? { didSet { textField.disabledBackground = disabledBackground } }
     public var isEditing: Bool {
         return textField.isEditing
     }
-    public var allowsEditingTextAttributes: Bool = false { didSet { textField.allowsEditingTextAttributes = allowsEditingTextAttributes }}
-    public var typingAttributes: [NSAttributedString.Key: Any]? { didSet { textField.typingAttributes = typingAttributes }}
+    public var allowsEditingTextAttributes: Bool = false {
+        didSet { textField.allowsEditingTextAttributes = allowsEditingTextAttributes }
+    }
+    public var typingAttributes: [NSAttributedString.Key: Any]? {
+        didSet { textField.typingAttributes = typingAttributes }
+    }
     public var clearButtonMode: UITextField.ViewMode = .never { didSet { textField.clearButtonMode = clearButtonMode }}
     public var leftViewMode: UITextField.ViewMode = .never { didSet { textField.leftViewMode = leftViewMode }}
     public var rightViewMode: UITextField.ViewMode = .never { didSet { textField.rightViewMode = rightViewMode }}
-    public var keyboardType: UIKeyboardType = .default { didSet { textField.keyboardType = keyboardType }}
-    public var isTextFieldAccessibilityElement: Bool = false { didSet { textField.isAccessibilityElement = isTextFieldAccessibilityElement }}
-    public var textFieldaccessibilityIdentifier: String? { didSet { textField.accessibilityIdentifier = textFieldaccessibilityIdentifier }}
+    public var keyboardType: UIKeyboardType = .default {
+        didSet { textField.keyboardType = keyboardType }
+    }
+    public var isTextFieldAccessibilityElement: Bool = false {
+        didSet { textField.isAccessibilityElement = isTextFieldAccessibilityElement }
+    }
+    public var textFieldaccessibilityIdentifier: String? {
+        didSet { textField.accessibilityIdentifier = textFieldaccessibilityIdentifier }
+    }
 
     public func borderRectForBounds(forBounds bounds: CGRect) -> CGRect {
         return textField.borderRect(forBounds: bounds)
@@ -179,8 +205,14 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
 
         if let isValid = self.isValid {
             validation = (isValid(primerTextField._text ?? "") ?? false)
-                ? PrimerTextField.Validation.valid
-            : PrimerTextField.Validation.invalid(PrimerError.invalidValue(key: "primerTextField.text", value: textField.text, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+            ? PrimerTextField.Validation.valid
+            : PrimerTextField.Validation.invalid(PrimerError.invalidValue(key: "primerTextField.text",
+                                                                          value: textField.text,
+                                                                          userInfo: ["file": #file,
+                                                                                     "class": "\(Self.self)",
+                                                                                     "function": #function,
+                                                                                     "line": "\(#line)"],
+                                                                          diagnosticsId: UUID().uuidString))
         }
 
         switch validation {
@@ -201,7 +233,9 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         delegate?.primerTextFieldViewDidEndEditing(self)
     }
 
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    public func textField(_ textField: UITextField,
+                          shouldChangeCharactersIn range: NSRange,
+                          replacementString string: String) -> Bool {
         return true
     }
 

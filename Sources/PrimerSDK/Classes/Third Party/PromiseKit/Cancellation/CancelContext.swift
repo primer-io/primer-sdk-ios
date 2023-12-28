@@ -243,10 +243,10 @@ private class CancelItem: Hashable {
         cancellable?.cancel()
         reject?(error)
 
-        if var v = visited, let c = context {
-            if !v.contains(c) {
-                v.insert(c)
-                c.cancel(with: error, visited: v)
+        if var visited = visited, let contex = context {
+            if !visited.contains(contex) {
+                visited.insert(contex)
+                contex.cancel(with: error, visited: visited)
             }
         }
     }

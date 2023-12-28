@@ -9,18 +9,24 @@ import UIKit
 
 @objc
 internal protocol InternalCardComponentsManagerDelegate {
-    /// The cardComponentsManager(_:clientTokenCallback:) can be used to provide the CardComponentsManager with an access token from the merchants backend.
-    /// This delegate function is optional since you can initialize the CardComponentsManager with an access token. Still, if the access token is not valid, the CardComponentsManager
-    /// will try to acquire an access token through this function.
-    @objc optional func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void)
+    /// The cardComponentsManager(_:clientTokenCallback:) can be used to provide the CardComponentsManager
+    /// with an access token from the merchants backend.
+    /// This delegate function is optional since you can initialize the CardComponentsManager with an access token.
+    /// Still, if the access token is not valid, the CardComponentsManager will try to acquire
+    /// an access token through this function.
+    @objc optional func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager,
+                                              clientTokenCallback completion: @escaping (String?, Error?) -> Void)
     /// The cardComponentsManager(_:onTokenizeSuccess:) is the only required method, and it will return the payment method token (which
     /// contains all the information needed)
-    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData)
+    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager,
+                               onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData)
     /// The cardComponentsManager(_:tokenizationFailedWith:) will return any tokenization errors that have occured.
-    @objc optional func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, tokenizationFailedWith errors: [Error])
-    /// The cardComponentsManager(_:isLoading:) will return true when the CardComponentsManager is performing an async operation and waiting for a result, false
-    /// when loading has finished.
-    @objc optional func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, isLoading: Bool)
+    @objc optional func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager,
+                                              tokenizationFailedWith errors: [Error])
+    /// The cardComponentsManager(_:isLoading:) will return true when the CardComponentsManager
+    /// is performing an async operation and waiting for a result, false when loading has finished.
+    @objc optional func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager,
+                                              isLoading: Bool)
 }
 
 protocol InternalCardComponentsManagerProtocol {
@@ -70,7 +76,9 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         setIsLoading(false)
     }
 
-    /// The CardComponentsManager can be initialized with/out an access token. In the case that is initialized without an access token, the delegate function cardComponentsManager(_:clientTokenCallback:) will be called. You can initialize an instance (representing a session) by registering the necessary PrimerTextFieldViews
+    /// The CardComponentsManager can be initialized with/out an access token.
+    /// In the case that is initialized without an access token, the delegate function cardComponentsManager(_:clientTokenCallback:) will be called.
+    /// You can initialize an instance (representing a session) by registering the necessary PrimerTextFieldViews
     init(
         cardnumberField: PrimerCardNumberFieldView,
         expiryDateField: PrimerExpiryDateFieldView,
@@ -85,7 +93,8 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         self.cvvField = cvvField
         self.cardholderField = cardholderNameField
         self.billingAddressFieldViews = billingAddressFieldViews
-        if let paymentMethodType = paymentMethodType, let primerPaymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) {
+        if let paymentMethodType = paymentMethodType,
+           let primerPaymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) {
             self.primerPaymentMethodType = primerPaymentMethodType
             self.paymentMethodType = primerPaymentMethodType.rawValue
         } else {
@@ -106,7 +115,11 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         return Promise { seal in
             guard let delegate = delegate else {
                 logger.warn(message: "Delegate has not been set for InternalCardComponentsManager")
-                let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file,
+                                                                       "class": "\(Self.self)",
+                                                                       "function": #function,
+                                                                       "line": "\(#line)"],
+                                                            diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -130,8 +143,12 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
                     if let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken {
                         seal.fulfill(decodedJWTToken)
                     } else {
-                        precondition(false, "Decoded client token should never be null at this point.")
-                        let err = PrimerError.invalidValue(key: "self.decodedClientToken", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
+                        let preconditionMessage = "Decoded client token should never be null at this point."
+                        precondition(false, preconditionMessage)
+                        let err = PrimerError.invalidValue(key: "self.decodedClientToken",
+                                                           value: nil,
+                                                           userInfo: nil,
+                                                           diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
                     }
@@ -257,7 +274,12 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         }
 
         if !errors.isEmpty {
-            let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.underlyingErrors(errors: errors,
+                                                   userInfo: ["file": #file,
+                                                              "class": "\(Self.self)",
+                                                              "function": #function,
+                                                              "line": "\(#line)"],
+                                                   diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -268,7 +290,8 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
     /// current year = "2022"
     /// first two digits = "20"
     private var cardExpirationYear: String? {
-        guard let expiryYear = self.expiryDateField.expiryYear else { return nil }
+        guard let expiryYear = self.expiryDateField.expiryYear
+        else { return nil }
         let currentYearAsString = Date().yearComponentAsString
         let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2))
         return "\(milleniumAndCenturyOfCurrentYearAsString)\(expiryYear)"
@@ -317,7 +340,13 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
             .done { _ in
 
                 guard let tokenizationPaymentInstrument = self.tokenizationPaymentInstrument else {
-                    let err = PrimerError.invalidValue(key: "Payment Instrument", value: self.tokenizationPaymentInstrument, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidValue(key: "Payment Instrument",
+                                                       value: self.tokenizationPaymentInstrument,
+                                                       userInfo: ["file": #file,
+                                                                  "class": "\(Self.self)",
+                                                                  "function": #function,
+                                                                  "line": "\(#line)"],
+                                                       diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                     return
@@ -334,7 +363,10 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
                     self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                 }
                 .catch { err in
-                    let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file,
+                                                                                              "class": "\(Self.self)",
+                                                                                              "function": #function,
+                                                                                              "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: containerErr)
                     self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 }
@@ -343,7 +375,10 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
                 self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 self.setIsLoading(false)
             }
-        } catch PrimerError.underlyingErrors(errors: let errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString) {
+        } catch PrimerError.underlyingErrors(errors: let errors, userInfo: ["file": #file,
+                                                                            "class": "\(Self.self)",
+                                                                            "function": #function,
+                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString) {
             delegate?.cardComponentsManager?(self, tokenizationFailedWith: errors)
             setIsLoading(false)
         } catch {

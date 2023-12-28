@@ -29,7 +29,10 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
         textField.delegate = self
     }
 
-    public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    public override func textField(_ textField: UITextField,
+                                   shouldChangeCharactersIn range: NSRange,
+                                   replacementString string: String) -> Bool {
+
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField._text ?? ""
 
@@ -47,7 +50,8 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
 
         primerTextField._text = newText
 
-        validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? PrimerTextField.Validation.valid : PrimerTextField.Validation.invalid(PrimerValidationError.invalidCardnumber(
+        let valid = PrimerTextField.Validation.valid
+        let invalid = PrimerTextField.Validation.invalid(PrimerValidationError.invalidCardnumber(
             message: "Card number is not valid.",
             userInfo: [
                 "file": #file,
@@ -55,7 +59,9 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
                 "function": #function,
                 "line": "\(#line)"
             ],
-            diagnosticsId: UUID().uuidString))
+            diagnosticsId: UUID().uuidString
+        ))
+        validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? valid : invalid
 
         switch validation {
         case .valid:

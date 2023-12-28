@@ -53,7 +53,12 @@ public class ThreeDS {
         var responseCode: String
         var transactionId: String?
 
-        init(acsReferenceNumber: String?, acsSignedContent: String?, acsTransactionId: String?, responseCode: String, transactionId: String?) {
+        init(acsReferenceNumber: String?,
+             acsSignedContent: String?,
+             acsTransactionId: String?,
+             responseCode: String,
+             transactionId: String?) {
+
             self.acsReferenceNumber = acsReferenceNumber
             self.acsSignedContent = acsSignedContent
             self.acsTransactionId = acsTransactionId
@@ -90,7 +95,7 @@ public class ThreeDS {
     }
 
     internal enum AuthenticationStatus: String {
-
+        // swiftlint:disable:next identifier_name
         case y, a, n, u, e
 
         init(rawValue: String) {
@@ -127,11 +132,9 @@ public class ThreeDS {
 
         var recommendation: AuthenticationRecommendation {
             switch self {
-            case .y,
-                    .a:
+            case .y, .a:
                 return .proceed
-            case .n,
-                    .e:
+            case .n, .e:
                 return .stop
             case .u:
                 return .merchantDecision
@@ -145,7 +148,6 @@ public class ThreeDS {
 
     internal enum TestScenario: String, Codable {
 
-        // swiftlint:disable identifier_name
         case three3DS2MethodTimeout = "3DS_V2_METHOD_TIMEOUT"
         case threeDS2FrictionlessNoMethod = "3DS_V2_FRICTIONLESS_NO_METHOD"
         case threeDS2FrictionlessPass = "3DS_V2_FRICTIONLESS_PASS"
@@ -158,7 +160,6 @@ public class ThreeDS {
         case threeDS2FrictionlessFailureR = "3DS_V2_FRICTIONLESS_FAILURE_R"
         case threeDS2FrictionlessFailureAttempted = "3DS_V2_FRICTIONLESS_FAILURE_ATTEMPTED"
         case threeDS2DSTimeout = "3DS_V2_DS_TIMEOUT"
-        // swiftlint:enable identifier_name
     }
 
     internal struct SDKAuthData: ThreeDSSDKAuthDataProtocol {
@@ -183,9 +184,10 @@ public class ThreeDS {
     }
 
     internal enum ProtocolVersion: String, Codable {
-
+        // swiftlint:disable identifier_name
         case v_2_1_0 = "2.1.0"
         case v_2_2_0 = "2.2.0"
+        // swiftlint:enable identifier_name
 
         init?(rawValue: String) {
             if rawValue == ProtocolVersion.v_2_1_0.rawValue {
@@ -194,11 +196,13 @@ public class ThreeDS {
                 self = ProtocolVersion.v_2_2_0
             } else {
                 if (rawValue.compareWithVersion("2.1") == .orderedSame) ||
-                    (rawValue.compareWithVersion("2.1") == .orderedDescending && rawValue.compareWithVersion("2.2") == .orderedAscending) {
+                    (rawValue.compareWithVersion("2.1") == .orderedDescending
+                     && rawValue.compareWithVersion("2.2") == .orderedAscending) {
                     self = ProtocolVersion.v_2_1_0
 
                 } else if (rawValue.compareWithVersion("2.2") == .orderedSame) ||
-                            (rawValue.compareWithVersion("2.2") == .orderedDescending && rawValue.compareWithVersion("2.3") == .orderedAscending) {
+                            (rawValue.compareWithVersion("2.2") == .orderedDescending
+                             && rawValue.compareWithVersion("2.3") == .orderedAscending) {
                     self = ProtocolVersion.v_2_2_0
                 } else {
                     return nil
@@ -319,23 +323,34 @@ public class ThreeDS {
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-
-            if let threeDSDeclinedAPIResponse = (try? container.decode(ThreeDS.DeclinedAPIResponse.self, forKey: .authentication)) {
-                authentication = threeDSDeclinedAPIResponse
-            } else if let threeDSSkippedAPIResponse = try? container.decode(ThreeDS.SkippedAPIResponse.self, forKey: .authentication) {
-                authentication = threeDSSkippedAPIResponse
-            } else if let threeDSAppV2ChallengeAPIResponse = try? container.decode(ThreeDS.AppV2ChallengeAPIResponse.self, forKey: .authentication) {
-                authentication = threeDSAppV2ChallengeAPIResponse
-            } else if let threeDSBrowserV2ChallengeAPIResponse = try? container.decode(ThreeDS.BrowserV2ChallengeAPIResponse.self, forKey: .authentication) {
-                authentication = threeDSBrowserV2ChallengeAPIResponse
-            } else if let threeDSBrowserV1ChallengeAPIResponse = try? container.decode(ThreeDS.BrowserV1ChallengeAPIResponse.self, forKey: .authentication) {
-                authentication = threeDSBrowserV1ChallengeAPIResponse
-            } else if let threeDSSuccessAPIResponse = try? container.decode(Authentication.self, forKey: .authentication) {
-                authentication = threeDSSuccessAPIResponse
-            } else if let threeDSMethodAPIResponse = try? container.decode(ThreeDS.MethodAPIResponse.self, forKey: .authentication) {
-                authentication = threeDSMethodAPIResponse
+            if let declinedResponse = try? container.decode(ThreeDS.DeclinedAPIResponse.self,
+                                                                      forKey: .authentication) {
+                authentication = declinedResponse
+            } else if let skippedResponse = try? container.decode(ThreeDS.SkippedAPIResponse.self,
+                                                                            forKey: .authentication) {
+                authentication = skippedResponse
+            } else if let appV2ChallengeResponse = try? container.decode(ThreeDS.AppV2ChallengeAPIResponse.self,
+                                                                                   forKey: .authentication) {
+                authentication = appV2ChallengeResponse
+            } else if let browserV2ChallengeResponse = try? container.decode(ThreeDS.BrowserV2ChallengeAPIResponse.self,
+                                                                                       forKey: .authentication) {
+                authentication = browserV2ChallengeResponse
+            } else if let browserV1ChallengeResponse = try? container.decode(ThreeDS.BrowserV1ChallengeAPIResponse.self,
+                                                                                       forKey: .authentication) {
+                authentication = browserV1ChallengeResponse
+            } else if let successResponse = try? container.decode(Authentication.self,
+                                                                            forKey: .authentication) {
+                authentication = successResponse
+            } else if let methodResponse = try? container.decode(ThreeDS.MethodAPIResponse.self,
+                                                                           forKey: .authentication) {
+                authentication = methodResponse
             } else {
-                let err = InternalError.failedToDecode(message: "ThreeDS.BeginAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = InternalError.failedToDecode(message: "ThreeDS.BeginAuthResponse",
+                                                       userInfo: ["file": #file,
+                                                                  "class": "\(Self.self)",
+                                                                  "function": #function,
+                                                                  "line": "\(#line)"],
+                                                       diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -377,7 +392,19 @@ public class ThreeDS {
         let protocolVersion: String?
         let xid: String?
 
-        init(acsReferenceNumber: String?, acsSignedContent: String?, acsTransactionId: String?, responseCode: ThreeDS.ResponseCode, transactionId: String?, acsOperatorId: String?, cryptogram: String?, dsReferenceNumber: String?, dsTransactionId: String?, eci: String?, protocolVersion: String, xid: String?) {
+        init(acsReferenceNumber: String?,
+             acsSignedContent: String?,
+             acsTransactionId: String?,
+             responseCode: ThreeDS.ResponseCode,
+             transactionId: String?,
+             acsOperatorId: String?,
+             cryptogram: String?,
+             dsReferenceNumber: String?,
+             dsTransactionId: String?,
+             eci: String?,
+             protocolVersion: String,
+             xid: String?) {
+
             self.acsReferenceNumber = acsReferenceNumber
             self.acsSignedContent = acsSignedContent
             self.acsTransactionId = acsTransactionId
@@ -537,7 +564,8 @@ public class ThreeDS {
         case decoupledRequiredByACS = "DECOUPLED_REQUIRED_BY_ACS"
         case decoupledMaxExpiryExceeded = "DECOUPLED_MAX_EXPIRY_EXCEEDED"
         case decoupledAuthenticationInsufficientTime = "DECOUPLED_AUTHENTICATION_INSUFFICIENT_TIME"
-        case authenticationAttemptedButNotPerformedByCardholder = "AUTHENTICATION_ATTEMPTED_BUT_NOT_PERFORMED_BY_CARDHOLDER"
+        case authenticationAttemptedButNotPerformedByCardholder =
+                "AUTHENTICATION_ATTEMPTED_BUT_NOT_PERFORMED_BY_CARDHOLDER"
         case acsTimedOut = "ACS_TIMED_OUT"
         case invalidACSResponse = "INVALID_ACS_RESPONSE"
         case acsSystemErrorResponse = "ACS_SYSTEM_ERROR_RESPONSE"

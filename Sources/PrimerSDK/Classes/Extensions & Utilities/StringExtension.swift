@@ -168,12 +168,12 @@ internal extension String {
         return str
     }
 
-    func toDate(withFormat f: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil) -> Date? {
-        let df = DateFormatter()
-        df.dateFormat = f
-        df.locale = Locale(identifier: "en_US_POSIX")
-        df.timeZone = timeZone == nil ? TimeZone(abbreviation: "UTC") : timeZone
-        return df.date(from: self)
+    func toDate(withFormat format: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil) -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.timeZone = timeZone == nil ? TimeZone(abbreviation: "UTC") : timeZone
+        return dateFormatter.date(from: self)
     }
 
     static func randomString(length: Int) -> String {

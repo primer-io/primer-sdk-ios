@@ -310,7 +310,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
         case .nolError(let code, let message, _, _):
             return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
-        case .unableToPresentApplePay( _, _):
+        case .unableToPresentApplePay:
             return "Unable to present Apple Pay"
         case .unknown:
             return "Something went wrong"
@@ -392,11 +392,24 @@ public enum PrimerError: PrimerErrorProtocol {
         case .missingPrimerDelegate:
             return "Primer's delegate has not been set. Ensure that you have added Primer.shared.delegate = self on the view controller you wish to present Primer's SDK."
         case .missingPrimerCheckoutComponentsDelegate:
-            return "Primer Checkout Components' delegate has not been set. Ensure that you have added PrimerCheckoutComponents.delegate = self on the view controller you wish to implement the components."
+            let message =
+"""
+Primer Checkout Components' delegate has not been set.
+Ensure that you have added PrimerCheckoutComponents.delegate = self,
+on the view controller you wish to implement the components.
+"""
+            return message
         case .missingPrimerInputElement(let inputElementtype, _, _):
             return "A PrimerInputElement for \(inputElementtype) has to be provided."
         case .misconfiguredPaymentMethods:
-            return "Payment Methods are not configured correctly. Ensure that you have configured them in the Connection, and/or that they are set up for the specified conditions on your dashboard https://dashboard.primer.io/"
+            let message =
+"""
+Payment Methods are not configured correctly.
+Ensure that you have configured them in the Connection,
+and/or that they are set up for the specified conditions
+on your dashboard https://dashboard.primer.io/
+"""
+            return message
         case .cancelled:
             return nil
         case .failedToCreateSession:
@@ -470,8 +483,8 @@ public enum PrimerError: PrimerErrorProtocol {
     var exposedError: Error {
         return self
     }
-    
-    var analyticsContext: [String : Any] {
+
+    var analyticsContext: [String: Any] {
         var context: [String: Any] = [:]
         if let paymentMethodType = paymentMethodType {
             context[AnalyticsContextKeys.paymentMethodType] = paymentMethodType
@@ -479,12 +492,12 @@ public enum PrimerError: PrimerErrorProtocol {
         context[AnalyticsContextKeys.errorId] = errorId
         return context
     }
-    
+
     private var paymentMethodType: String? {
         switch self {
         case .cancelled(let paymentMethodType, _, _),
                 .unableToPresentPaymentMethod(let paymentMethodType, _, _),
-                .unsupportedPaymentMethod(let paymentMethodType, _ , _),
+                .unsupportedPaymentMethod(let paymentMethodType, _, _),
                 .missingSDK(let paymentMethodType, _, _, _),
                 .failedToProcessPayment(let paymentMethodType?, _, _, _, _),
                 .failedToPerform3DS(let paymentMethodType, _, _, _):

@@ -35,7 +35,7 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 #if canImport(Primer3DS)
     private var primer3DS: Primer3DS!
 #endif
-    
+
     private var paymentMethodType: String?
 
     internal func perform3DS(
@@ -54,20 +54,28 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         .then { () -> Promise<SDKAuthResult> in
             self.create3DsAuthData(paymentMethodTokenData: paymentMethodTokenData)
         }
-        .then { sdkAuthResult -> Promise<(serverAuthData: ThreeDS.ServerAuthData, resumeToken: String, threeDsAppRequestorUrl: URL?)> in
-            self.initProtocolVersion = ThreeDS.ProtocolVersion(rawValue: sdkAuthResult.maxSupportedThreeDsProtocolVersion)
-            return self.initialize3DSAuthorization(sdkAuthResult: sdkAuthResult, paymentMethodTokenData: paymentMethodTokenData)
+        .then { sdkAuthResult -> Promise<(serverAuthData: ThreeDS.ServerAuthData,
+                                          resumeToken: String,
+                                          threeDsAppRequestorUrl: URL?)> in
+            self.initProtocolVersion =
+            ThreeDS.ProtocolVersion(rawValue: sdkAuthResult.maxSupportedThreeDsProtocolVersion)
+            return self.initialize3DSAuthorization(sdkAuthResult: sdkAuthResult,
+                                                   paymentMethodTokenData: paymentMethodTokenData)
         }
         .then { result -> Promise<Primer3DSCompletion> in
             self.resumePaymentToken = result.resumeToken
-            return self.perform3DSChallenge(threeDSAuthData: result.serverAuthData, threeDsAppRequestorUrl: result.threeDsAppRequestorUrl)
+            return self.perform3DSChallenge(threeDSAuthData: result.serverAuthData,
+                                            threeDsAppRequestorUrl: result.threeDsAppRequestorUrl)
         }
         .then { _ -> Promise<ThreeDS.PostAuthResponse> in
             sdkDismissed?()
 
             guard let token = paymentMethodTokenData.token else {
                 let err = PrimerError.invalidClientToken(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
@@ -106,7 +114,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                     let err = PrimerError.invalidValue(
                         key: "resumeToken",
                         value: nil,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     completion(.failure(err))
@@ -127,7 +138,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
             } else {
                 let errContainer = Primer3DSErrorContainer.underlyingError(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString,
                     error: err)
                 continueInfo = ThreeDS.ContinueInfo(
@@ -138,7 +152,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
             guard let token = paymentMethodTokenData.token else {
                 let err = PrimerError.invalidClientToken(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 completion(.failure(err.primerError))
@@ -159,7 +176,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
 #else
         let missingSdkErr = Primer3DSErrorContainer.missingSdkDependency(
-            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+            userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: missingSdkErr)
 
@@ -171,7 +191,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         .then { () -> Promise<ThreeDS.PostAuthResponse> in
             guard let token = paymentMethodTokenData.token else {
                 let err = PrimerError.invalidClientToken(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
@@ -195,7 +218,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 let uuid = UUID().uuidString
 
                 let err = PrimerError.invalidClientToken(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: uuid)
 
                 let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
@@ -207,7 +233,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 let uuid = UUID().uuidString
 
                 let err = PrimerError.missingPrimerConfiguration(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: uuid)
 
                 let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
@@ -224,7 +253,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
 
                 let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
@@ -233,7 +265,11 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             }
 
             guard let apiConfiguration = AppState.current.apiConfiguration else {
-                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file,
+                                                                            "class": "\(Self.self)",
+                                                                            "function": #function,
+                                                                            "line": "\(#line)"],
+                                                                 diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -243,7 +279,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 let uuid = UUID().uuidString
 
                 let err = Primer3DSErrorContainer.missing3DSConfiguration(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: uuid,
                     missingKey: "netceteraApiKey")
 
@@ -259,8 +298,6 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 certs.append(cer)
             }
 
-            let useThreeDsWeakValidation = decodedJWTToken.useThreeDsWeakValidation == false ? false : true
-
             switch Environment(rawValue: decodedJWTToken.env ?? "") {
             case .production:
                 primer3DS = Primer3DS(environment: .production)
@@ -272,7 +309,8 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
             // ⚠️  Property version doesn't exist on version before 1.1.0, so PrimerSDK won't build
             //     if Primer3DS is not equal or above 1.1.0
-            if Primer3DS.hardcodedVersion.compareWithVersion("1.1.1") == .orderedDescending || Primer3DS.hardcodedVersion.compareWithVersion("1.1.1") == .orderedSame {
+            if Primer3DS.hardcodedVersion.compareWithVersion("1.1.1") == .orderedDescending ||
+                Primer3DS.hardcodedVersion.compareWithVersion("1.1.1") == .orderedSame {
                 do {
                     primer3DS.is3DSSanityCheckEnabled = PrimerSettings.current.debugOptions.is3DSSanityCheckEnabled
                     try primer3DS.initializeSDK(apiKey: apiKey, certificates: certs)
@@ -284,7 +322,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                     if let primer3DSError = error as? Primer3DSError {
                         let err = Primer3DSErrorContainer.primer3DSSdkError(
                             paymentMethodType: paymentMethodType,
-                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                            userInfo: ["file": #file,
+                                       "class": "\(Self.self)",
+                                       "function": #function,
+                                       "line": "\(#line)"],
                             diagnosticsId: uuid,
                             initProtocolVersion: self.initProtocolVersion?.rawValue,
                             errorInfo: Primer3DSErrorInfo(
@@ -311,7 +352,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 let uuid = UUID().uuidString
 
                 let err = Primer3DSErrorContainer.invalid3DSSdkVersion(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: uuid,
                     invalidVersion: Primer3DS.version,
                     validVersion: "1.1.0")
@@ -326,7 +370,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
 
                 let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
@@ -344,7 +391,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
                 let err = Primer3DSErrorContainer.primer3DSSdkError(
                     paymentMethodType: paymentMethodType,
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: uuid,
                     initProtocolVersion: self.initProtocolVersion?.rawValue,
                     errorInfo: Primer3DSErrorInfo(
@@ -377,7 +427,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 if let primer3DSError = error as? Primer3DSError {
                     let err = Primer3DSErrorContainer.primer3DSSdkError(
                         paymentMethodType: paymentMethodType,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                         diagnosticsId: uuid,
                         initProtocolVersion: self.initProtocolVersion?.rawValue,
                         errorInfo: Primer3DSErrorInfo(
@@ -416,7 +469,13 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                     // All good, url value is valid and https
                     threeDsAppRequestorUrl = url
                 } else {
-                    logger.warn(message: "threeDsAppRequestorUrl is not in a valid format (\"https://applink\"). In case you want to support redirecting back during the OOB flows please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK initialization.")
+                    let message =
+"""
+threeDsAppRequestorUrl is not in a valid format (\"https://applink\").
+In case you want to support redirecting back during the OOB flows,
+please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK initialization.
+"""
+                    logger.warn(message: message)
                 }
             }
 
@@ -477,7 +536,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
                 let err = Primer3DSErrorContainer.primer3DSSdkError(
                     paymentMethodType: paymentMethodType,
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: uuid,
                     initProtocolVersion: self.initProtocolVersion?.rawValue,
                     errorInfo: Primer3DSErrorInfo(
@@ -532,7 +594,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                     if let primer3DSError = err as? Primer3DSError {
                         let err = Primer3DSErrorContainer.primer3DSSdkError(
                             paymentMethodType: self?.paymentMethodType,
-                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                            userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                             diagnosticsId: UUID().uuidString,
                             initProtocolVersion: self?.initProtocolVersion?.rawValue,
                             errorInfo: Primer3DSErrorInfo(
@@ -572,7 +637,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     ) {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                 diagnosticsId: UUID().uuidString)
 
             let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
@@ -591,7 +659,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 } else {
                     primerErr = PrimerError.underlyingErrors(
                         errors: [underlyingErr],
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
                 }
 
@@ -614,7 +685,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
 
                 let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
@@ -622,11 +696,13 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 return
             }
 
+            let continueInfo = continueInfo ?? ThreeDS.ContinueInfo(initProtocolVersion: self.initProtocolVersion?.rawValue,
+                                                     error: nil)
             let apiClient: PrimerAPIClientProtocol = ThreeDSService.apiClient ?? PrimerAPIClient()
             apiClient.continue3DSAuth(
                 clientToken: decodedJWTToken,
                 threeDSTokenId: paymentMethodToken,
-                continueInfo: continueInfo ?? ThreeDS.ContinueInfo(initProtocolVersion: self.initProtocolVersion?.rawValue, error: nil)
+                continueInfo: continueInfo
             ) { result in
                 switch result {
                 case .failure(let underlyingErr):
@@ -637,7 +713,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                     } else {
                         primerErr = PrimerError.underlyingErrors(
                             errors: [underlyingErr],
-                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                            userInfo: ["file": #file,
+                                       "class": "\(Self.self)",
+                                       "function": #function,
+                                       "line": "\(#line)"],
                             diagnosticsId: UUID().uuidString)
                     }
 
