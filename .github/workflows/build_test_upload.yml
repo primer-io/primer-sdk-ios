@@ -55,12 +55,12 @@ jobs:
         run: |
           bundle exec fastlane tests
         env:
-          MATCH_PASSWORD: ${{ inputs.match-password }}
-          MATCH_GIT_PRIVATE_KEY: ${{ inputs.ssh-private-key }}
-          FASTLANE_PASSWORD: ${{ inputs.fastlane-password }}
-          FASTLANE_SESSION: ${{ inputs.fastlane-session }}
-          MATCH_KEYCHAIN_NAME: ${{ inputs.match-keychain-name }}
-          MATCH_KEYCHAIN_PASSWORD: ${{ inputs.match-password }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
+          MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
   spm-build:
     needs: unit-test
     runs-on: macos-13
