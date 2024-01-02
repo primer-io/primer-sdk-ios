@@ -250,19 +250,26 @@ internal class ClientSession {
 
         let vaultOnSuccess: Bool
         let options: [[String: Any]]?
+        let orderedAllowedCardNetworks: [String]?
 
         enum CodingKeys: String, CodingKey {
-            case vaultOnSuccess, options
+            case vaultOnSuccess,
+                 options,
+                 orderedAllowedCardNetworks
         }
 
-        init(vaultOnSuccess: Bool, options: [[String: Any]]?) {
+        init(vaultOnSuccess: Bool,
+             options: [[String: Any]]?,
+             orderedAllowedCardNetworks: [String]?) {
             self.vaultOnSuccess = vaultOnSuccess
             self.options = options
+            self.orderedAllowedCardNetworks = orderedAllowedCardNetworks
         }
 
         required internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.vaultOnSuccess = (try? container.decode(Bool.self, forKey: .vaultOnSuccess)) ?? false
+            self.orderedAllowedCardNetworks = try? container.decode([String].self, forKey: .orderedAllowedCardNetworks)
 
             if let tmpOptions = (try? container.decode([[String: AnyCodable]]?.self, forKey: .options)),
                let optionsData = try? JSONEncoder().encode(tmpOptions),
@@ -276,6 +283,7 @@ internal class ClientSession {
         internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(vaultOnSuccess, forKey: .vaultOnSuccess)
+            try container.encode(orderedAllowedCardNetworks, forKey: .orderedAllowedCardNetworks)
 
             if let options = options,
                let optionsData = try? JSONSerialization.data(withJSONObject: options, options: .fragmentsAllowed),
