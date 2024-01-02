@@ -25,7 +25,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
   unit-test:
     needs: danger
-    runs-on: macos-13
+    runs-on: macos-latest
     timeout-minutes: 30
     name: "Unit Tests"
     steps:
@@ -36,7 +36,7 @@ jobs:
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '15.1'
+          xcode-version: 'latest-stable'
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
