@@ -371,11 +371,15 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     }
 }
 
-extension Array<CardNetwork> {
+extension Array<CardNetwork>: LogReporter {
     
     /// A list of card networks that the merchant supports
     static var supportedCardNetworks: Self {
-        return PrimerSettings.current.paymentMethodOptions.cardPaymentOptions.supportedCardNetworks
+        guard let networkStrings = PrimerAPIConfiguration.current?.clientSession?.paymentMethod?.orderedAllowedCardNetworks else {
+            logger.warn(message: "Expected allowed networks to be present in client session")
+            return []
+        }
+        return networkStrings.compactMap { CardNetwork(rawValue: $0) }
     }
     
     /// A list of all card networks, used by default when a merchant does not specify the networks they support
