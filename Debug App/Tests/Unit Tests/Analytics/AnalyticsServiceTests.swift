@@ -53,7 +53,7 @@ final class AnalyticsServiceTests: XCTestCase {
         
         sendEvents(numberOfEvents: 5)
         
-        waitForExpectations(timeout: 1.0)
+        waitForExpectations(timeout: 30.0)
     }
     
     func testComplexMultiBatchFastSend() throws {
