@@ -46,9 +46,6 @@ inputs:
   github-run-id:
     description: GitHub run ID
     required: true
-  run-tests:
-    description: Run tests
-    required: true
   pr-number:
     description: PR number
     required: true
@@ -86,7 +83,7 @@ runs:
     - name: Test, Build, and Distribute app to Appetize 🚀
       shell: bash
       run: |
-        bundle exec fastlane appetize_build_and_upload tests:${{ inputs.run-tests }}
+        bundle exec fastlane appetize_build_and_upload
       env:
         MATCH_PASSWORD: ${{ inputs.match-password }}
         MATCH_GIT_PRIVATE_KEY: ${{ inputs.ssh-private-key }}
