@@ -36,12 +36,12 @@ jobs:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ inputs.ssh-private-key }}
+          key: ${{ secrets.SSH_KEY }}
           name: id_rsa_github_actions
-          known_hosts: ${{ inputs.known-hosts }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ inputs.ssh-private-key }}
+          ssh-private-key: ${{ secrets.SSH_KEY }}
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
