@@ -25,21 +25,21 @@ final class CardNetworkTests: XCTestCase {
         // Default value
         SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: .allCardNetworks)
         XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
-        XCTAssertEqual(CardNetworks.supportedCardNetworks, CardNetwork.allCases)
+        XCTAssertEqual(CardNetworks.allowedCardNetworks, CardNetwork.allCases)
         
         // w/ CB
         SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires])
         XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
-        XCTAssertEqual(CardNetworks.supportedCardNetworks, [.cartesBancaires])
+        XCTAssertEqual(CardNetworks.allowedCardNetworks, [.cartesBancaires])
         
         // w/ mixed
         SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa, .masterCard, .amex])
         XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
-        XCTAssertEqual(CardNetworks.supportedCardNetworks, [.visa, .masterCard, .amex])
+        XCTAssertEqual(CardNetworks.allowedCardNetworks, [.visa, .masterCard, .amex])
         
         // w/ none
         SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [])
         XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
-        XCTAssertEqual(CardNetworks.supportedCardNetworks, [])
+        XCTAssertEqual(CardNetworks.allowedCardNetworks, [])
     }
 }

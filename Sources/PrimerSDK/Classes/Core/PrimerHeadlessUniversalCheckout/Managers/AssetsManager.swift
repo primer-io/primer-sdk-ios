@@ -21,7 +21,7 @@ extension PrimerHeadlessUniversalCheckout {
         public static func getSupportedCardNetworkAssets() throws -> [CardNetwork: PrimerCardNetworkAsset] {
             try verifyAPIConfig()
 
-            let supportedCardNetworks: [CardNetwork] = .supportedCardNetworks
+            let supportedCardNetworks: [CardNetwork] = .allowedCardNetworks
             
             var result: [CardNetwork: PrimerCardNetworkAsset] = [:]
             

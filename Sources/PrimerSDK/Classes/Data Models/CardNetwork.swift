@@ -374,7 +374,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
 extension Array<CardNetwork>: LogReporter {
     
     /// A list of card networks that the merchant supports
-    static var supportedCardNetworks: Self {
+    static var allowedCardNetworks: Self {
         guard let networkStrings = PrimerAPIConfiguration.current?.clientSession?.paymentMethod?.orderedAllowedCardNetworks else {
             logger.warn(message: "Expected allowed networks to be present in client session")
             return []
