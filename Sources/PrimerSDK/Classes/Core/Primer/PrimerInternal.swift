@@ -38,7 +38,6 @@ internal class PrimerInternal: LogReporter {
     }
 
     fileprivate init() {
-        NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
     }
@@ -77,7 +76,7 @@ internal class PrimerInternal: LogReporter {
 
     @objc
     private func onAppStateChange() {
-        Analytics.Service.sync()
+        Analytics.Service.flush()
     }
 
     // MARK: - CONFIGURATION
@@ -88,18 +87,6 @@ internal class PrimerInternal: LogReporter {
 
     internal func configure(settings: PrimerSettings? = nil) {
         var events: [Analytics.Event] = []
-
-#if canImport(Primer3DS)
-        self.logger.info(message: "Can import Primer3DS")
-#else
-        self.logger.warn(message: "Failed to import Primer3DS")
-        events.append(Analytics.Event(
-            eventType: .message,
-            properties: MessageEventProperties(
-                message: "Primer3DS has not been integrated",
-                messageType: .error,
-                severity: .error)))
-#endif
 
         let releaseVersionNumber = VersionUtils.releaseVersionNumber
         events.append(
@@ -291,7 +278,7 @@ internal class PrimerInternal: LogReporter {
                 id: self.timingEventId))
 
         Analytics.Service.record(events: [sdkEvent, timingEvent])
-        Analytics.Service.sync()
+        Analytics.Service.flush()
 
         self.checkoutSessionId = nil
         self.selectedPaymentMethodType = nil

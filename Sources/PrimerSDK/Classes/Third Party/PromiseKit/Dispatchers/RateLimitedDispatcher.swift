@@ -50,7 +50,6 @@ internal final class RateLimitedDispatcher: RateLimitedDispatcherBase {
     }
 
     override func dispatchFromQueue() {
-        // swiftlint:disable empty_count
         guard undispatched.count > 0 else { return }
         cleanupNonce += 1
 
@@ -102,7 +101,7 @@ internal final class RateLimitedDispatcher: RateLimitedDispatcherBase {
 }
 
 extension DispatchTime {
-    static func -(a: DispatchTime, b: DispatchTime) -> TimeInterval {
+    static func - (a: DispatchTime, b: DispatchTime) -> TimeInterval {
         let delta = a.uptimeNanoseconds - b.uptimeNanoseconds
         return TimeInterval(delta) / 1_000_000_000
     }

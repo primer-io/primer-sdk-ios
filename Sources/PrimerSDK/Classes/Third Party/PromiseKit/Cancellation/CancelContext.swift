@@ -161,7 +161,6 @@ internal class CancelContext: Hashable {
         var error: Error?
         barrier.sync(flags: .barrier) {
             error = internalCancelledError
-            // swiftlint:disable empty_count
             if error == nil && list.items.count != 0 {
                 var currentIndex = 1
                 // The `list` parameter should match a block of items in the cancelItemList, remove them from the cancelItemList

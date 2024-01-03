@@ -1,35 +1,47 @@
-DEX-
+# Description
 
-# What this PR does
+CHKT-XXXX
 
-Describe ... (Features / UI / logic changes)
+- What do these changes do?
+- Note any breaking changes and why they are necessary
 
-# Notable decisions & other stuff
+# Other Notes
 
-List & explain ...
+- Other changes that are not specifically related to the intent of the PR
 
-# Instructions on how to test this
+# Manual Testing
 
-Let other reviewers know how they can test this.
+_Add manual testing notes here if applicable, otherwise remove this section_
 
-# Before merging
+# Screenshots
 
-_QA_
+_If applicable, otherwise remove this section_
 
-- [ ] I manually tested this with a demo application (simulator)
-- [ ] I manually tested this with a demo application (real device)
-- [ ] I wrote unit tests for each new util-like function
-- [ ] I wrote at least basic e2e tests for the new functionalities or new paths
-- [ ] If this PR introduces UI changes, I manually tested this PR on iPhone 8 (iOS 10, 12, 14), iPhone 12, and iPhone 12 Max
-- [ ] If this PR modifies the behavior of an API, I did my best to make my new API backward compatible
-- [ ] If this PR modifies the API, I attempted to implement the feature with an example
+# Contributor Checklist
 
-_Documentation_
+- [ ]  All status checks have passed prior to code review
+- [ ]  I have correctly prefixed one of the following conventional commit titles:
+    - [ ]  chore - no version update
+    - [ ]  fix - patch version update
+    - [ ]  feat - minor version update
+    - [ ]  BREAKING CHANGE - major version update
+- [ ]  I have added unit tests to a reasonable level of coverage where suitable
+- [ ]  I have added UI tests to new user flows, if applicable
+- [ ]  I have manually tested newly added UX
+- [ ]  I have open a documentation PR, if applicable
 
-- [ ] If this PR modifies the API, I updated the API Reference.
-- [ ] If this PR adds new options to the API, I wrote some documentation or guide in the online documentation
-- [ ] If the PR modifies the API, I wrote some documentation to deprecate it
+# Reviewer Checklist
 
-# After merging
+- [ ]  I have verified that a suitable set of automated tests has been added
+- [ ]  I have verified that the title prefix aligns to the code changes + whether a release is expected after merging the PR
+- [ ]  I have verified the documentation PR aligns with this PR, if applicable
 
-- Make sure a new release has been pushed to Cocoapods trunk
+# Before Merging
+
+- [ ]  If introducing a breaking change, I have communicated it internally
+- [ ]  Any related documentation PRs are ready to merge
+
+# Other Stuff
+
+- You can find out more about our automation checks [here](https://primerio.notion.site/iOS-Automation-Checks-198a1eb0e8994d999fb696d5902d97bb)
+- Find out more about conventional commits [here](https://primerio.notion.site/Conventional-Commits-6ecfd6a0269a4db2af76d9f0537936b3)

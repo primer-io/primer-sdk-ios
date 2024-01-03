@@ -1,3 +1,19 @@
+## 2.19.0 (2023-12-15)
+
+### Feat
+
+- Support for 3DS SDK v2.1.0 (#764)
+
+### Fix
+
+- add additional info to errors (#759)
+
+## 2.18.3 (2023-12-06)
+
+### Fix
+
+- Reduce memory usage for analytics service (#756)
+
 ## 2.18.2 (2023-11-14)
 
 ### Fix

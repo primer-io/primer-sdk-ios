@@ -105,10 +105,8 @@ internal func race<V: CancellableThenable>(_ thenables: [V]) -> CancellablePromi
 
     let cancelThenables: (Result<V.U.T, Error>) -> Void = { result in
         if case .failure = result {
-            for t in thenables {
-                if !t.cancelAttempted {
-                    t.cancel()
-                }
+            for t in thenables where !t.cancelAttempted {
+                t.cancel()
             }
         }
     }

@@ -17,10 +17,10 @@ extension AnalyticsTests {
             
             do {
                 let eventsData = randomStr.data(using: .utf8)!
-                try eventsData.write(to: Analytics.Service.filepath)
+                try eventsData.write(to: storage.fileURL)
                 seal.fulfill()
             } catch {
-                XCTFail("Failed to write '\(randomStr)' in '\(Analytics.Service.filepath.absoluteString)'")
+                XCTFail("Failed to write '\(randomStr)' in '\(storage.fileURL.absoluteString)'")
                 seal.reject(error)
             }
         }
@@ -127,22 +127,6 @@ extension AnalyticsTests {
                 DependencyContainer.register(appState as AppStateProtocol)
                 seal.fulfill(MockAppState.mockClientToken)
             }
-//            let networking = Networking()
-//            networking.requestClientSession(
-//                clientSessionRequestBody: ClientSessionRequestBody.demoClientSessionRequestBody) { clientToken, err in
-//                    if let err = err {
-//                        seal.reject(err)
-//                    } else if let clientToken = clientToken {
-//                        let settings = PrimerSettings()
-//                        DependencyContainer.register(settings as PrimerSettingsProtocol)
-//                        let appState = AppState()
-//                        appState.clientToken = clientToken
-//                        DependencyContainer.register(appState as AppStateProtocol)
-//                        seal.fulfill(clientToken)
-//                    } else {
-//                        fatalError()
-//                    }
-//                }
         }
     }
     
@@ -164,25 +148,19 @@ extension AnalyticsTests {
     
     func writeEvents(_ events: [Analytics.Event], fromQueue queue: DispatchQueue, completion: @escaping (() -> Void)) {
         queue.async {
-            firstly {
+            _ = firstly {
                 Analytics.Service.record(events: events)
-            }
-            .done {
-                
             }
             .ensure {
                 completion()
             }
-            .catch { _ in
-                
-            }
         }
     }
     
-    func createAnalyticsFileForRC3() {
+    func createMockAnalyticsFile() {
         do {
-            let eventsData = AnalyticsTestsConstants.analytics_v_2_17_0_rc_3_Events.data(using: .utf8)!
-            try eventsData.write(to: Analytics.Service.filepath)
+            let eventsData = AnalyticsTestsConstants.analyticsEvents.data(using: .utf8)!
+            try eventsData.write(to: storage.fileURL)
             
         } catch {
             XCTFail("Failed to create analytics file for RC3 - error message: \(error.localizedDescription)")
@@ -196,13 +174,10 @@ extension AnalyticsTests {
         }
     }
     
-    func syncAnalyticsFile(fromQueue queue: DispatchQueue, batchSize: UInt = 100, completion: @escaping (() -> Void)) {
+    func syncAnalyticsFile(fromQueue queue: DispatchQueue, completion: @escaping (() -> Void)) {
         queue.async {
             firstly {
-                Analytics.Service.sync(batchSize: batchSize)
-            }
-            .done {
-                
+                Analytics.Service.flush()
             }
             .ensure {
                 completion()
@@ -215,13 +190,26 @@ extension AnalyticsTests {
     
     func cleanUpAnalytics() {
         self.deleteAnalyticsFileSynchonously()
-        let storedEvents = (try? Analytics.Service.loadEventsSynchronously()) ?? []
+        let storedEvents = storage.loadEvents()
         XCTAssert(storedEvents.count == 0, "Analytics events should be empty")
     }
     
     func deleteAnalyticsFileSynchonously() {
-        Analytics.queue.sync {
-            Analytics.Service.deleteAnalyticsFile()
-        }
+        Analytics.Service.clear()
+    }
+    
+    var storage: Analytics.DefaultStorage {
+        return _storage
+    }
+    
+    func recreateService() {
+        Analytics.Service.shared = {
+            Analytics.Service(sdkLogsUrl: Analytics.Service.defaultSdkLogsUrl,
+                              batchSize: Analytics.Service.maximumBatchSize,
+                              storage: Analytics.storage,
+                              apiClient: Analytics.apiClient ?? PrimerAPIClient())
+        }()
     }
 }
+
+fileprivate let _storage = Analytics.DefaultStorage()

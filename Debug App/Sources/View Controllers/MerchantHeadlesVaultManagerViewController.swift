@@ -54,7 +54,6 @@ class MerchantHeadlesVaultManagerViewController: UIViewController, PrimerHeadles
             Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
                 if let err = err {
                     self.hideLoadingOverlay()
-                    let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
                     let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: err, logs: self.logs)
                     self.navigationController?.pushViewController(rvc, animated: true)
                     
@@ -107,7 +106,10 @@ class MerchantHeadlesVaultManagerViewController: UIViewController, PrimerHeadles
         // Quick filter validating expiry year
         let expiredVaultedCards = vaultedPaymentMethods.filter({ $0.paymentMethodType == "PAYMENT_CARD" && Int($0.paymentInstrumentData.expirationYear ?? "") ?? 0 < 2023 })
         let expiredVaultedCardsIds: [String] = expiredVaultedCards.compactMap({ $0.id })
-        let filteredVaultedPaymentMethods = vaultedPaymentMethods.filter({ !expiredVaultedCardsIds.contains($0.id) })
+        // To be returned when not testing CVV recapture
+        let _ = vaultedPaymentMethods.filter({ !expiredVaultedCardsIds.contains($0.id) })
+        // swiftlint:disable:previous
+
         // Comment out next line when you're not testing CVV recapture
         return vaultedPaymentMethods.filter({ $0.paymentInstrumentData.first6Digits == "411111" && $0.paymentInstrumentData.expirationMonth == "03" && $0.paymentInstrumentData.expirationYear == "2030" })
     }

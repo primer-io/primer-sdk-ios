@@ -266,10 +266,11 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let viewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
         let paymentMethod = viewModel.paymentMethods[indexPath.row]
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: "VaultedPaymentInstrumentCell",
-            for: indexPath
-        ) as! VaultedPaymentInstrumentCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "VaultedPaymentInstrumentCell", for: indexPath) as? VaultedPaymentInstrumentCell
+        else {
+            fatalError()
+        }
+        
         cell.configure(paymentMethod: paymentMethod, isDeleting: isDeleting)
         return cell
     }

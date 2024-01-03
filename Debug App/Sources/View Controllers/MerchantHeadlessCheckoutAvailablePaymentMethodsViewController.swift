@@ -179,16 +179,9 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             })
             rawDataAlertAction.accessibilityIdentifier = "raw_data_huc_alert_action"
             
-            let cardComponentsAlertAction = UIAlertAction(title: "Card Components", style: .default, handler: { (_)in
-                let vc = MerchantHeadlessCheckoutCardComponentsViewController.instantiate(paymentMethodType: paymentMethodType)
-                self.navigationController?.pushViewController(vc, animated: true)
-            })
-            cardComponentsAlertAction.accessibilityIdentifier = "card_components_huc_data_alert_action"
-            
             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
             cancelAction.accessibilityIdentifier = "cancel_huc_alert_action"
             
-            alert.addAction(cardComponentsAlertAction)
             alert.addAction(rawDataAlertAction)
             alert.addAction(cancelAction)
             self.present(alert, animated: true, completion: nil)

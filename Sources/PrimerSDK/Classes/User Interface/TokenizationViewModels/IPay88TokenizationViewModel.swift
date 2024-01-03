@@ -405,8 +405,13 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         let amountStr = self.iPay88NumberFormatter.string(from: NSNumber(value: Double(AppState.current.amount!)/100)) ?? ""
 
+        guard let merchantOptions = self.config.options as? MerchantOptions
+        else {
+            fatalError()
+        }
+        
         let primerIPayPayment = PrimerIPay88Payment(
-            merchantCode: (self.config.options as! MerchantOptions).merchantId,
+            merchantCode: merchantOptions.merchantId,
             paymentId: iPay88PaymentMethodId,
             refNo: primerTransactionId,
             amount: amountStr,
@@ -603,6 +608,7 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
             switch error {
             case .iPay88Error(let description, _):
                 let err = PrimerError.paymentFailed(
+                    paymentMethodType: PrimerPaymentMethodType.iPay88Card.rawValue,
                     description: "iPay88 payment (transId: \(self.primerIPay88Payment.transId ?? "nil"), refNo: \(self.primerIPay88Payment.refNo ) failed with error '\(description)'",
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)

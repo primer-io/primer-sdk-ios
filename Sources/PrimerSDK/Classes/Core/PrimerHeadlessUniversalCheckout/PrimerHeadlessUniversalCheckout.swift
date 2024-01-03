@@ -41,7 +41,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
     ]
 
     fileprivate init() {
-        Analytics.Service.sync()
+        Analytics.Service.flush()
     }
 
     public func start(
@@ -68,19 +68,6 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         PrimerInternal.shared.timingEventId = UUID().uuidString
 
         var events: [Analytics.Event] = []
-
-#if canImport(Primer3DS)
-        logger.info(message: "Can import Primer3DS")
-#else
-        logger.warn(message: "Failed to import Primer3DS")
-        let event = Analytics.Event(
-            eventType: .message,
-            properties: MessageEventProperties(
-                message: "Primer3DS has not been integrated",
-                messageType: .error,
-                severity: .error))
-        events.append(event)
-#endif
 
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
@@ -230,15 +217,6 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
             paymentMethods?.remove(at: klarnaIndex)
             logger.warn(message: "Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.")
-
-            let event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "PrimerKlarnaSDK has not been integrated",
-                    messageType: .error,
-                    severity: .error))
-            Analytics.Service.record(events: [event])
-
         }
 #endif
 
@@ -246,14 +224,6 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         if let iPay88ViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
             paymentMethods?.remove(at: iPay88ViewModelIndex)
             logger.warn(message: "iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.")
-
-            let event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "PrimerIPay88MYSDK has not been integrated",
-                    messageType: .error,
-                    severity: .error))
-            Analytics.Service.record(events: [event])
         }
 #endif
 
@@ -261,14 +231,6 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         if let nolPayViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.nolPay.rawValue }) {
             paymentMethods?.remove(at: nolPayViewModelIndex)
             logger.warn(message: "NolPay configuration has been found but module 'PrimerNolPaySDK' is missing. Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your podfile, so you can perform payments with NolPay.")
-
-            let event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "PrimerNolPaySDK has not been integrated",
-                    messageType: .error,
-                    severity: .error))
-            Analytics.Service.record(events: [event])
         }
 #endif
 
