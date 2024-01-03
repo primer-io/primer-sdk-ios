@@ -139,10 +139,6 @@ public class PrimerCardPaymentOptions: Codable {
     public init() {
         self.is3DSOnVaultingEnabled = true
     }
-    
-    public init(supportedCardNetworks: [CardNetwork]) {
-        self.is3DSOnVaultingEnabled = true
-    }
 }
 
 // MARK: - UI OPTIONS

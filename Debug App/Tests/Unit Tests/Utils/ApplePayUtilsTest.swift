@@ -10,6 +10,14 @@ import XCTest
 @testable import PrimerSDK
 
 final class ApplePayUtilsTest: XCTestCase {
+    
+    override func setUp() {
+        SDKSessionHelper.setUp()
+    }
+    
+    override func tearDown() {
+        SDKSessionHelper.tearDown()
+    }
 
     func testApplePaySupportedPaymentNetworks() {
         // w/ CB
@@ -25,16 +33,15 @@ final class ApplePayUtilsTest: XCTestCase {
     func testApplePaySupportedPaymentNetworksViaPrimerSettings() {
         
         // w/ CB
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [.cartesBancaires])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires])
         XCTAssertEqual(Set(ApplePayUtils.supportedPKPaymentNetworks()), Set([.cartesBancaires]))
         
         // w/ mixed
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [.visa, .masterCard, .amex, .cartesBancaires])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa, .masterCard, .amex, .cartesBancaires])
         XCTAssertEqual(Set(ApplePayUtils.supportedPKPaymentNetworks()), Set([.visa, .masterCard, .amex, .cartesBancaires]))
         
         // w/ none
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [])
         XCTAssertEqual(Set(ApplePayUtils.supportedPKPaymentNetworks()), Set())
     }
-
 }
