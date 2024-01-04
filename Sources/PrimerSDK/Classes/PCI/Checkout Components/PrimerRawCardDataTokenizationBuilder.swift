@@ -186,7 +186,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
                 
                 if let network = rawData.cardNetwork, !self.supportedCardNetworks.contains(network) {
-                    let err = PrimerValidationError.invalidCardNetwork(
+                    let err = PrimerValidationError.invalidCardType(
                         message: "\(network.validation?.niceType ?? "Your card network") is not supported for this transaction",
                         userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString
