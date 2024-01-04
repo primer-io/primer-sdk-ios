@@ -132,7 +132,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssertTrue(isValid, "Data should be invalid")
+            XCTAssertTrue(isValid, "Data should be valid")
             XCTAssertNil(errors, "Should not have thrown errors")
             validation.fulfill()
         }
@@ -157,7 +157,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(false, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -181,7 +181,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(false, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -206,7 +206,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(false, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -230,7 +230,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(false, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -254,7 +254,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(false, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -280,7 +280,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(false, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -305,7 +305,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(false, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -329,7 +329,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(false, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -354,7 +354,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(false, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -378,7 +378,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(false, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -402,7 +402,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(isValid, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -426,7 +426,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(isValid, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -450,7 +450,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(isValid, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -474,7 +474,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(isValid, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -498,7 +498,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(isValid, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -522,7 +522,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(isValid, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -546,7 +546,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(isValid, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -570,7 +570,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(isValid, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -594,7 +594,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(isValid, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -617,7 +617,7 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
+            XCTAssertFalse(isValid, "Data should be invalid")
             XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
@@ -642,7 +642,8 @@ class RawDataManagerTests: XCTestCase {
             self.validateWithRawDataManager()
         }
         .done { (isValid, errors) in
-            XCTAssertTrue(isValid, "Data should be invalid")
+            XCTAssertFalse(isValid, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             validation.fulfill()
         }
         .catch { _ in
