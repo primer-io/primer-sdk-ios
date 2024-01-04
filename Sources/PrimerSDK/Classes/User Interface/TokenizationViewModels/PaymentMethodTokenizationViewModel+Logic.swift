@@ -465,12 +465,7 @@ extension PaymentMethodTokenizationViewModel {
                         let err = PrimerError.paymentFailed(
                             paymentMethodType: self.paymentMethodType,
                             description: "Failed to create payment",
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
+                            userInfo: .errorUserInfoDictionary(),
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
@@ -480,12 +475,7 @@ extension PaymentMethodTokenizationViewModel {
                             paymentMethodType: self.paymentMethodType,
                             paymentId: paymentResponse.id ?? "nil",
                             status: paymentResponse.status.rawValue,
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
+                            userInfo: .errorUserInfoDictionary(),
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
@@ -498,12 +488,7 @@ extension PaymentMethodTokenizationViewModel {
                     let err = PrimerError.paymentFailed(
                         paymentMethodType: self.paymentMethodType,
                         description: "Failed to create payment",
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -531,12 +516,7 @@ extension PaymentMethodTokenizationViewModel {
                         let err = PrimerError.paymentFailed(
                             paymentMethodType: self.paymentMethodType,
                             description: "Failed to resume payment",
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
+                            userInfo: .errorUserInfoDictionary(),
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
@@ -546,12 +526,7 @@ extension PaymentMethodTokenizationViewModel {
                             paymentMethodType: self.paymentMethodType,
                             paymentId: paymentResponse.id ?? "nil",
                             status: paymentResponse.status.rawValue,
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
+                            userInfo: .errorUserInfoDictionary(),
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
@@ -564,12 +539,7 @@ extension PaymentMethodTokenizationViewModel {
                     let err = PrimerError.paymentFailed(
                         paymentMethodType: self.paymentMethodType,
                         description: "Failed to resume payment",
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)

@@ -22,12 +22,7 @@ public final class PrimerCardholderNameFieldView: PrimerSimpleCardFormTextFieldV
         editingAnalyticsObjectId = .cardHolder
         validationError = .invalidCardholderName(
             message: "Cardholder name is not valid.",
-            userInfo: [
-                "file": #file,
-                "class": "\(Self.self)",
-                "function": #function,
-                "line": "\(#line)"
-            ],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         isValid = { text in
             return text.isValidNonDecimalString

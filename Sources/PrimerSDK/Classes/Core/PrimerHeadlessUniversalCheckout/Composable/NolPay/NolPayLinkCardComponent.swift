@@ -217,12 +217,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                         case .failure(let error):
                             let primerError = PrimerError.nolError(code: error.errorCode,
                                                              message: error.description,
-                                                             userInfo: [
-                                                                "file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"
-                                                             ],
+                                                             userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: primerError)
                             self.errorDelegate?.didReceiveError(error: primerError)
@@ -232,12 +227,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 case .failure(let error):
                     let error = PrimerError.nolError(code: error.errorCode,
                                                      message: error.description,
-                                                     userInfo: [
-                                                        "file": #file,
-                                                        "class": "\(Self.self)",
-                                                        "function": #function,
-                                                        "line": "\(#line)"
-                                                     ],
+                                                     userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: error)
                     self.errorDelegate?.didReceiveError(error: error)
@@ -267,10 +257,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         }
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             return
@@ -310,10 +297,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         let error = PrimerError.missingSDK(
             paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue,
             sdkName: "PrimerNolPaySDK",
-            userInfo: ["file": #file,
-                       "class": "\(Self.self)",
-                       "function": #function,
-                       "line": "\(#line)"],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         errorDelegate?.didReceiveError(error: error)
@@ -322,13 +306,10 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
 
     // Helper method
     private func makeAndHandleInvalidValueError(forKey key: String) {
-        let error = PrimerError.invalidValue(key: key, value: nil, userInfo: [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ],
-        diagnosticsId: UUID().uuidString)
+        let error = PrimerError.invalidValue(key: key, 
+                                             value: nil,
+                                             userInfo: .errorUserInfoDictionary(),
+                                             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         self.errorDelegate?.didReceiveError(error: error)
     }

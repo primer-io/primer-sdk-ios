@@ -76,12 +76,7 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
 
                 guard let rawData = data as? PrimerRetailerData else {
                     let err = PrimerValidationError.invalidRawData(
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
                     ErrorHandler.handle(error: err)
@@ -102,12 +97,7 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
 
                 if rawData.id.isEmpty {
                     errors.append(PrimerValidationError.invalidRawData(
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString))
                 }
 

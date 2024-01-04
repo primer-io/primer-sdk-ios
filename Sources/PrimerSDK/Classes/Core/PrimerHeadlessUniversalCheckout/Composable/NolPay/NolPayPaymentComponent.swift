@@ -152,12 +152,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                         } else {
                             let error = PrimerError.nolError(code: "unknown",
                                                              message: "Payment failed from unknown reason",
-                                                             userInfo: [
-                                                                "file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"
-                                                             ],
+                                                             userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: error)
                             completion?(.failure(error))
@@ -165,12 +160,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                     case .failure(let error):
                         let error = PrimerError.nolError(code: error.errorCode,
                                                          message: error.description,
-                                                         userInfo: [
-                                                            "file": #file,
-                                                            "class": "\(Self.self)",
-                                                            "function": #function,
-                                                            "line": "\(#line)"
-                                                         ],
+                                                         userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: error)
                         completion?(.failure(error))
@@ -244,10 +234,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         let error = PrimerError.missingSDK(
             paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue,
             sdkName: "PrimerNolPaySDK",
-            userInfo: ["file": #file,
-                       "class": "\(Self.self)",
-                       "function": #function,
-                       "line": "\(#line)"],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         errorDelegate?.didReceiveError(error: error)
@@ -256,13 +243,10 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
 
     // Helper method
     private func makeAndHandleInvalidValueError(forKey key: String) {
-        let error = PrimerError.invalidValue(key: key, value: nil, userInfo: [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ],
-        diagnosticsId: UUID().uuidString)
+        let error = PrimerError.invalidValue(key: key,
+                                             value: nil,
+                                             userInfo: .errorUserInfoDictionary(),
+                                             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         self.errorDelegate?.didReceiveError(error: error)
     }

@@ -106,10 +106,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         .done {
             let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
             if (availablePaymentMethodsTypes ?? []).isEmpty {
-                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file,
-                                                                             "class": "\(Self.self)",
-                                                                             "function": #function,
-                                                                             "line": "\(#line)"],
+                let err = PrimerError.misconfiguredPaymentMethods(userInfo: .errorUserInfoDictionary(),
                                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 DispatchQueue.main.async {
@@ -139,14 +136,16 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
     private func continueValidateSession() -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token is nil"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(reason: "Client token is nil"), 
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
 
             guard let decodedJWTToken = clientToken.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token cannot be decoded"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(reason: "Client token cannot be decoded"),
+                                                         diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }
@@ -176,14 +175,16 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
     internal func validateSession() -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token is nil"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(reason: "Client token is nil"), 
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
 
             guard let decodedJWTToken = clientToken.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Client token cannot be decoded"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(reason: "Client token cannot be decoded"),
+                                                         diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }

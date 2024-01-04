@@ -206,12 +206,7 @@ internal extension String {
         if self.isEmpty {
             let err = PrimerValidationError.invalidExpiryDate(
                 message: "Expiry date cannot be blank.",
-                userInfo: [
-                    "file": #file,
-                    "class": "\(Self.self)",
-                    "function": #function,
-                    "line": "\(#line)"
-                ],
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
             throw err
 
@@ -223,12 +218,7 @@ internal extension String {
                 if !expiryDate.isValidExpiryDate {
                     let err = PrimerValidationError.invalidExpiryDate(
                         message: "Card expiry date is not valid. Expiry date should not be less than a year in the past.",
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     throw err
                 }

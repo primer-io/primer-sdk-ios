@@ -20,10 +20,7 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
 
         debouncer.debounce {
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                    "class": "\(Self.self)",
-                                                                    "function": #function,
-                                                                    "line": "\(#line)"],
+                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 completion(.failure(err))
@@ -59,12 +56,7 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
                     } else {
                         let validationError = PrimerValidationError.invalidPhoneNumber(
                             message: "Phone number is not valid.",
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
+                            userInfo: .errorUserInfoDictionary(),
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: validationError)
 

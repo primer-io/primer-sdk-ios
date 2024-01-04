@@ -187,24 +187,14 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         if cardnumberField.cardnumber.isEmpty {
             let err = PrimerValidationError.invalidCardnumber(
                 message: "Card number can not be blank.",
-                userInfo: [
-                    "file": #file,
-                    "class": "\(Self.self)",
-                    "function": #function,
-                    "line": "\(#line)"
-                ],
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
             errors.append(err)
 
         } else if !cardnumberField.cardnumber.isValidCardNumber {
             let err = PrimerValidationError.invalidCardnumber(
                 message: "Card number is not valid.",
-                userInfo: [
-                    "file": #file,
-                    "class": "\(Self.self)",
-                    "function": #function,
-                    "line": "\(#line)"
-                ],
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
             errors.append(err)
         }
@@ -212,12 +202,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
             errors.append(PrimerValidationError.invalidExpiryDate(
                 message: "Expiry date is not valid. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year separated by '/'.",
-                userInfo: [
-                    "file": #file,
-                    "class": "\(Self.self)",
-                    "function": #function,
-                    "line": "\(#line)"
-                ],
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString))
         }
 

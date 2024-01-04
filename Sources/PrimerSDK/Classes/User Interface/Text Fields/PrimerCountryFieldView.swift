@@ -19,12 +19,7 @@ public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
         editingAnalyticsObjectId = .billingAddressCountry
         validationError = .invalidCountry(
             message: "Country is not valid.",
-            userInfo: [
-                "file": #file,
-                "class": "\(Self.self)",
-                "function": #function,
-                "line": "\(#line)"
-            ],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         isValid = { text in
             return !text.isEmpty

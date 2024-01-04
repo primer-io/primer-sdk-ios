@@ -12,13 +12,20 @@ extension Dictionary<String, String> {
         file: StaticString = #file,
         function: StaticString = #function,
         line: Int = #line,
-        type: T.Type = Self.self
+        type: T.Type = Self.self,
+        reason: String? = nil
     ) -> [String: String] {
-        return [
+        var dict = [
             "file": "\(file)",
             "class": "\(type)",
             "function": "\(function)",
             "line": "\(line)"
         ]
+        
+        if let reason = reason {
+            dict["reason"] = reason
+        }
+        
+        return dict
     }
 }

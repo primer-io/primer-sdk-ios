@@ -49,12 +49,7 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
 
         validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? PrimerTextField.Validation.valid : PrimerTextField.Validation.invalid(PrimerValidationError.invalidCardnumber(
             message: "Card number is not valid.",
-            userInfo: [
-                "file": #file,
-                "class": "\(Self.self)",
-                "function": #function,
-                "line": "\(#line)"
-            ],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString))
 
         switch validation {

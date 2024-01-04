@@ -166,12 +166,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                 case .failure(let error):
                     let error = PrimerError.nolError(code: error.errorCode,
                                                      message: error.description,
-                                                     userInfo: [
-                                                        "file": #file,
-                                                        "class": "\(Self.self)",
-                                                        "function": #function,
-                                                        "line": "\(#line)"
-                                                     ],
+                                                     userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: error)
                     self.errorDelegate?.didReceiveError(error: error)
@@ -207,12 +202,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                     } else {
                         let error = PrimerError.nolError(code: "unknown",
                                                          message: "Unlinking failed from unknown reason",
-                                                         userInfo: [
-                                                            "file": #file,
-                                                            "class": "\(Self.self)",
-                                                            "function": #function,
-                                                            "line": "\(#line)"
-                                                         ],
+                                                         userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: error)
                         self.errorDelegate?.didReceiveError(error: error)
@@ -220,12 +210,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                 case .failure(let error):
                     let error = PrimerError.nolError(code: error.errorCode,
                                                      message: error.description,
-                                                     userInfo: [
-                                                        "file": #file,
-                                                        "class": "\(Self.self)",
-                                                        "function": #function,
-                                                        "line": "\(#line)"
-                                                     ],
+                                                     userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: error)
                     self.errorDelegate?.didReceiveError(error: error)
@@ -256,10 +241,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         }
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             return
@@ -300,10 +282,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         let error = PrimerError.missingSDK(
             paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue,
             sdkName: "PrimerNolPaySDK",
-            userInfo: ["file": #file,
-                       "class": "\(Self.self)",
-                       "function": #function,
-                       "line": "\(#line)"],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         errorDelegate?.didReceiveError(error: error)
@@ -312,13 +291,10 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
 
     // Helper method
     private func makeAndHandleInvalidValueError(forKey key: String) {
-        let error = PrimerError.invalidValue(key: key, value: nil, userInfo: [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ],
-        diagnosticsId: UUID().uuidString)
+        let error = PrimerError.invalidValue(key: key,
+                                             value: nil,
+                                             userInfo: .errorUserInfoDictionary(),
+                                             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         self.errorDelegate?.didReceiveError(error: error)
     }
