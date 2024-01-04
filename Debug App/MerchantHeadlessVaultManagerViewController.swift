@@ -107,11 +107,9 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
         let expiredVaultedCards = vaultedPaymentMethods.filter({ $0.paymentMethodType == "PAYMENT_CARD" && Int($0.paymentInstrumentData.expirationYear ?? "") ?? 0 < 2023 })
         let expiredVaultedCardsIds: [String] = expiredVaultedCards.compactMap({ $0.id })
         // To be returned when not testing CVV recapture
-        let _ = vaultedPaymentMethods.filter({ !expiredVaultedCardsIds.contains($0.id) })
-        // swiftlint:disable:previous
-
-        // Comment out next line when you're not testing CVV recapture
-        return vaultedPaymentMethods.filter({ $0.paymentInstrumentData.first6Digits == "411111" && $0.paymentInstrumentData.expirationMonth == "03" && $0.paymentInstrumentData.expirationYear == "2030" })
+        return vaultedPaymentMethods.filter({ !expiredVaultedCardsIds.contains($0.id) })
+        // Uncomment this line and comment out the above, when you are not testing CVV recapture
+        // return vaultedPaymentMethods.filter({ $0.paymentInstrumentData.first6Digits == "411111" && $0.paymentInstrumentData.expirationMonth == "03" && $0.paymentInstrumentData.expirationYear == "2030" })
     }
     
     // MARK: - HELPERS
