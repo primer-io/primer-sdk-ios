@@ -99,7 +99,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                     let err = PrimerError.invalidValue(
                         key: "paymentMethodTokenId",
                         value: nil,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
@@ -187,7 +187,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
                         switch paymentCreationDecision.type {
                         case .abort(let errorMessage):
-                            let error = PrimerError.generic(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            let error = PrimerError.generic(message: errorMessage ?? "", userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                             seal.reject(error)
                         case .continue:
                             seal.fulfill()
@@ -250,7 +250,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                         case .fail(let message):
                             var merchantErr: Error!
                             if let message = message {
-                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                let err = PrimerError.merchantError(message: message, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                                 merchantErr = err
                             } else {
                                 merchantErr = NSError.emptyDescriptionError
@@ -279,7 +279,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
             } else {
                 guard let resumePaymentId = self.resumePaymentId else {
-                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: resumePaymentIdError)
                     seal.reject(resumePaymentIdError)
                     return
@@ -290,7 +290,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                 }
                 .done { paymentResponse -> Void in
                     guard let paymentResponse = paymentResponse else {
-                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         throw err
                     }
@@ -388,7 +388,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                             }
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
@@ -402,7 +402,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                         case .fail(let message):
                             var merchantErr: Error!
                             if let message = message {
-                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                let err = PrimerError.merchantError(message: message, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                                 merchantErr = err
                             } else {
                                 merchantErr = NSError.emptyDescriptionError
@@ -420,7 +420,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                             }
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
@@ -443,7 +443,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             } else {
                 guard let token = paymentMethodTokenData.token else {
                     let err = PrimerError.invalidClientToken(
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -455,7 +455,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                 }
                 .done { paymentResponse -> Void in
                     guard paymentResponse != nil else {
-                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                         throw err
                     }
 
@@ -470,7 +470,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                         }
                         .done {
                             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
@@ -496,10 +496,10 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
         return Promise { seal in
             if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 guard let paymentMethodTokenData = self.paymentMethodTokenData else {
-                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                     let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
                                                                       error: err,
-                                                                      userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                                                      userInfo: .errorUserInfoDictionary(),
                                                                       diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: containerErr)
                     seal.reject(containerErr)
@@ -522,7 +522,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                     }
 
             } else {
-                let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
             }

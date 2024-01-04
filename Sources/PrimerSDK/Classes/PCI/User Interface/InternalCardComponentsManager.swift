@@ -106,7 +106,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         return Promise { seal in
             guard let delegate = delegate else {
                 logger.warn(message: "Delegate has not been set for InternalCardComponentsManager")
-                let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.missingPrimerDelegate(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -225,24 +225,14 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
             if cvvField.cvv.isEmpty {
                 let err = PrimerValidationError.invalidCvv(
                     message: "CVV cannot be blank.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
                 errors.append(err)
 
             } else if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
                 let err = PrimerValidationError.invalidCvv(
                     message: "CVV is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
                 errors.append(err)
             }
@@ -257,7 +247,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         }
 
         if !errors.isEmpty {
-            let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.underlyingErrors(errors: errors, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -317,7 +307,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
             .done { _ in
 
                 guard let tokenizationPaymentInstrument = self.tokenizationPaymentInstrument else {
-                    let err = PrimerError.invalidValue(key: "Payment Instrument", value: self.tokenizationPaymentInstrument, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidValue(key: "Payment Instrument", value: self.tokenizationPaymentInstrument, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                     return
@@ -334,7 +324,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
                     self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                 }
                 .catch { err in
-                    let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: containerErr)
                     self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 }
@@ -343,7 +333,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
                 self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 self.setIsLoading(false)
             }
-        } catch PrimerError.underlyingErrors(errors: let errors, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString) {
+        } catch PrimerError.underlyingErrors(errors: let errors, _, diagnosticsId: UUID().uuidString) {
             delegate?.cardComponentsManager?(self, tokenizationFailedWith: errors)
             setIsLoading(false)
         } catch {

@@ -257,7 +257,7 @@ extension PrimerHeadlessUniversalCheckout {
                             decisionHandlerHasBeenCalled = true
                             switch paymentCreationDecision.type {
                             case .abort(let errorMessage):
-                                let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                                 seal.reject(error)
                             case .continue:
                                 seal.fulfill()
@@ -369,7 +369,7 @@ extension PrimerHeadlessUniversalCheckout {
                                 }
                                 .done {
                                     guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                        let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                        let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                                         ErrorHandler.handle(error: err)
                                         throw err
                                     }
@@ -383,7 +383,7 @@ extension PrimerHeadlessUniversalCheckout {
                             case .fail(let message):
                                 var merchantErr: Error!
                                 if let message = message {
-                                    let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                    let err = PrimerError.merchantError(message: message, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                                     merchantErr = err
                                 } else {
                                     merchantErr = NSError.emptyDescriptionError
@@ -401,7 +401,7 @@ extension PrimerHeadlessUniversalCheckout {
                                 }
                                 .done {
                                     guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                        let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                        let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                                         ErrorHandler.handle(error: err)
                                         throw err
                                     }
@@ -424,7 +424,7 @@ extension PrimerHeadlessUniversalCheckout {
                 } else {
                     guard let token = paymentMethodTokenData.token else {
                         let err = PrimerError.invalidClientToken(
-                            userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                            userInfo: .errorUserInfoDictionary(),
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
@@ -436,7 +436,7 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     .done { paymentResponse -> Void in
                         guard paymentResponse != nil else {
-                            let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                             throw err
                         }
 
@@ -451,7 +451,7 @@ extension PrimerHeadlessUniversalCheckout {
                             }
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
@@ -477,10 +477,10 @@ extension PrimerHeadlessUniversalCheckout {
             return Promise { seal in
                 if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                     guard let paymentMethodTokenData = paymentMethodTokenData else {
-                        let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                         let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
                                                                           error: err,
-                                                                          userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                                                          userInfo: .errorUserInfoDictionary(),
                                                                           diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: containerErr)
                         seal.reject(containerErr)
@@ -556,7 +556,7 @@ extension PrimerHeadlessUniversalCheckout {
                         }
 
                     } else {
-                        let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
                     }
@@ -619,7 +619,7 @@ extension PrimerHeadlessUniversalCheckout {
                         }
 
                     } else {
-                        let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                         seal.reject(error)
                     }
 
@@ -632,14 +632,14 @@ extension PrimerHeadlessUniversalCheckout {
                     case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
 
                         guard let decodedExpiresAt = decodedJWTToken.expiresAt else {
-                            let err = PrimerError.invalidValue(key: "decodedJWTToken.expiresAt", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            let err = PrimerError.invalidValue(key: "decodedJWTToken.expiresAt", value: nil, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
                             return
                         }
 
                         guard let decodedVoucherReference = decodedJWTToken.reference else {
-                            let err = PrimerError.invalidValue(key: "decodedJWTToken.reference", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            let err = PrimerError.invalidValue(key: "decodedJWTToken.reference", value: nil, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
                             return
@@ -647,7 +647,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                         guard let selectedRetailer = rawData as? PrimerRetailerData,
                               let selectedRetailerName = (initializationData as? RetailOutletsList)?.result.first(where: { $0.id == selectedRetailer.id })?.name else {
-                            let err = PrimerError.invalidValue(key: "rawData.id", value: "Invalid Retailer Identifier", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            let err = PrimerError.invalidValue(key: "rawData.id", value: "Invalid Retailer Identifier", userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
                             return
@@ -672,7 +672,7 @@ extension PrimerHeadlessUniversalCheckout {
                     }
 
                 } else {
-                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }
@@ -688,7 +688,7 @@ extension PrimerHeadlessUniversalCheckout {
                             case .fail(let message):
                                 var merchantErr: Error!
                                 if let message = message {
-                                    let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                    let err = PrimerError.merchantError(message: message, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                                     merchantErr = err
                                 } else {
                                     merchantErr = NSError.emptyDescriptionError
@@ -718,7 +718,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                 } else {
                     guard let resumePaymentId = self.resumePaymentId else {
-                        let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: resumePaymentIdError)
                         seal.reject(resumePaymentIdError)
                         return
@@ -729,7 +729,7 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     .done { paymentResponse -> Void in
                         guard let paymentResponse = paymentResponse else {
-                            let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             throw err
                         }
@@ -915,7 +915,7 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager: SFSafariViewController
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion = webViewCompletion {
             // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)
         }
@@ -943,7 +943,7 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
         }
 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return

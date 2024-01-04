@@ -49,13 +49,13 @@ internal struct OrderItem: Codable {
         isPending: Bool = false
     ) throws {
         if isPending && unitAmount != nil {
-            let err = PrimerError.generic(message: "amount should be null for pending items", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.generic(message: "amount should be null for pending items", userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         if !isPending && unitAmount == nil {
-            let err = PrimerError.generic(message: "amount cannot be null for non-pending items", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.generic(message: "amount cannot be null for non-pending items", userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }

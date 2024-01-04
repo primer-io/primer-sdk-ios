@@ -222,7 +222,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                 if !errors.isEmpty {
                     let err = PrimerError.underlyingErrors(
                         errors: errors,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
 
                     self.isDataValid = false

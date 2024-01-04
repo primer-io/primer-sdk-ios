@@ -24,19 +24,19 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func validate() throws {
 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: nil, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         guard config.id != nil else {
-            let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -100,7 +100,7 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -148,14 +148,14 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
                     case .success:
                         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                            let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: error)
                             seal.reject(error)
                             return
                         }
 
                         guard let redirectUrl = self.redirectUrl else {
-                            let error = PrimerError.invalidUrl(url: self.redirectUrl?.absoluteString, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            let error = PrimerError.invalidUrl(url: self.redirectUrl?.absoluteString, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: error)
                             seal.reject(error)
                             return
@@ -185,7 +185,7 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
 
             guard let statusUrl = self.statusUrl else {
-                let error = PrimerError.invalidUrl(url: self.statusUrl?.absoluteString, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let error = PrimerError.invalidUrl(url: self.statusUrl?.absoluteString, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 seal.reject(error)
                 return
@@ -195,7 +195,7 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             self.didCancel = {
                 let err = PrimerError.cancelled(
                     paymentMethodType: self.config.type,
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 pollingModule.cancel(withError: err)
@@ -253,7 +253,7 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         seal.reject(err)
                     }
                 } else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }

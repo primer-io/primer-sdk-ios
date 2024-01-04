@@ -42,24 +42,14 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
             if newText.isEmpty {
                 let err = PrimerValidationError.invalidCvv(
                     message: "CVV cannot be blank.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
                 validation = .invalid(err)
 
             } else {
                 let err = PrimerValidationError.invalidCvv(
                     message: "CVV is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
                 validation = .invalid(err)
             }

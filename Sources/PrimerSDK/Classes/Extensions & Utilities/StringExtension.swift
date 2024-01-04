@@ -236,12 +236,7 @@ internal extension String {
             } else {
                 let err = PrimerValidationError.invalidExpiryDate(
                     message: "Card expiry date is not valid. Valid expiry date format is MM/YYYY.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
                 throw err
             }

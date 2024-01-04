@@ -69,12 +69,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
             if cardNumber.isEmpty {
                 errors.append(PrimerValidationError.invalidCardnumber(
                     message: "Card number is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString))
             }
 
@@ -208,7 +203,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         }
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             return
         }

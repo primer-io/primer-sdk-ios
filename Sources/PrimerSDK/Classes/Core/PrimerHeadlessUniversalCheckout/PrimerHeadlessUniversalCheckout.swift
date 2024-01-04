@@ -158,13 +158,13 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
             }
 
             guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
-                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }
 
             guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
-                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.misconfiguredPaymentMethods(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }
@@ -195,13 +195,13 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
             }
 
             guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
-                let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }
 
             guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
-                let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.misconfiguredPaymentMethods(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }

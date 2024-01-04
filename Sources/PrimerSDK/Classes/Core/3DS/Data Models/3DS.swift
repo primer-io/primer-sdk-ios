@@ -335,7 +335,7 @@ public class ThreeDS {
             } else if let threeDSMethodAPIResponse = try? container.decode(ThreeDS.MethodAPIResponse.self, forKey: .authentication) {
                 authentication = threeDSMethodAPIResponse
             } else {
-                let err = InternalError.failedToDecode(message: "ThreeDS.BeginAuthResponse", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = InternalError.failedToDecode(message: "ThreeDS.BeginAuthResponse", userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }

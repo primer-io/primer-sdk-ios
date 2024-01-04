@@ -80,12 +80,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             if card.cardNumber.isEmpty || !card.cardNumber.isNumeric {
                 errors.append(PrimerValidationError.invalidCardnumber(
                     message: "Invalid Nol card number",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ], diagnosticsId: UUID().uuidString))
+                    userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString))
             }
 
             phoneMetadataService?.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
@@ -116,12 +111,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             if !otpCode.isValidOTP {
                 errors.append(PrimerValidationError.invalidOTPCode(
                     message: "OTP is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString))
                 ErrorHandler.handle(error: errors.last!)
                 self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
