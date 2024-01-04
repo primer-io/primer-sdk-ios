@@ -27,8 +27,6 @@ class RawDataManagerTests: XCTestCase {
     override func tearDown() {
         delegate = nil
         rawDataManager = nil
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [])
-
     }
     
     // MARK: suite-wide setUp and tearDown
@@ -615,7 +613,6 @@ class RawDataManagerTests: XCTestCase {
     
     func test_validation_callback_invalidCardNetwork() throws {
         let validation = self.expectation(description: "Await validation")
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [.maestro])
         firstly {
             self.validateWithRawDataManager()
         }
@@ -640,7 +637,6 @@ class RawDataManagerTests: XCTestCase {
     
     func test_validation_callback_invalidCardNetwork2() throws {
         let validation = self.expectation(description: "Await validation")
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [.maestro])
 
         firstly {
             self.validateWithRawDataManager()

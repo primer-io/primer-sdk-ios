@@ -67,8 +67,8 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     }
     
     /// List of supported card networks taken from merchant configuration
-    var supportedCardNetworks: Set<CardNetwork> {
-        Set(Array.supportedCardNetworks)
+    var allowedCardNetworks: Set<CardNetwork> {
+        Set(Array.allowedCardNetworks)
     }
     
     var requiredInputElementTypes: [PrimerInputElementType] {
@@ -186,7 +186,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 // Remote validation
                 self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
                 
-                if let network = rawData.cardNetwork, !self.supportedCardNetworks.contains(network) {
+                if let network = rawData.cardNetwork, !self.allowedCardNetworks.contains(network) {
                     let err = PrimerValidationError.invalidCardType(
                         message: "\(network.validation?.niceType ?? "Your card network") is not supported for this transaction",
                         userInfo: .errorUserInfoDictionary(),
