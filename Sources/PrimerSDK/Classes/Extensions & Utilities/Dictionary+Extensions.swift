@@ -8,14 +8,15 @@
 import Foundation
 
 extension Dictionary<String, String> {
-    static func errorUserInfoDictionary(
+    static func errorUserInfoDictionary<T>(
         file: StaticString = #file,
         function: StaticString = #function,
-        line: Int = #line
+        line: Int = #line,
+        type: T.Type = Self.self
     ) -> [String: String] {
         return [
             "file": "\(file)",
-            "class": "\(Self.self)",
+            "class": "\(type)",
             "function": "\(function)",
             "line": "\(line)"
         ]
