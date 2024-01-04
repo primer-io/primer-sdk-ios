@@ -159,7 +159,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
                         logger.debug(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.debug(message: "Analytics event sent")
-                    } else {
+                    } else if !data.isEmpty {
                         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
                         let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
                         var jsonStr: String?
@@ -269,6 +269,9 @@ internal class URLSessionStack: NetworkService, LogReporter {
 #if DEBUG
                     self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                     self.logger.error(message: "Error: Failed to parse")
+                    if let stringResponse = String(data: data, encoding: .utf8) {
+                        logger.error(message: "String response: \(stringResponse)")
+                    }
 #endif
 
                     DispatchQueue.main.async { completion(.failure(InternalError.underlyingErrors(errors: [err], userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))) }
