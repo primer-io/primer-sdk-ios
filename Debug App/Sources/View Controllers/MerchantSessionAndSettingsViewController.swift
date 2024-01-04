@@ -128,8 +128,21 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
     
+    static let customerIdStorageKey = "io.primer.debug.customer-id"
+    
+    static var customerId: String {
+        
+        if let customerId = UserDefaults.standard.string(forKey: customerIdStorageKey) {
+            return customerId
+        }
+
+        let customerId = "ios-customer-\(String.randomString(length: 8))"
+        UserDefaults.standard.set(customerId, forKey: customerIdStorageKey)
+        return customerId
+    }
+    
     var clientSession = ClientSessionRequestBody(
-        customerId: "ios-customer-\(String.randomString(length: 8))",
+        customerId: customerId,
         orderId: "ios-order-\(String.randomString(length: 8))",
         currencyCode: .EUR,
         amount: nil,
@@ -170,7 +183,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     taxAmount: nil)
             ]),
         paymentMethod: ClientSessionRequestBody.PaymentMethod(
-            vaultOnSuccess: false,
+            vaultOnSuccess: true,
             options: nil,
             paymentType: nil
         ),
@@ -257,7 +270,14 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         shippinAddressPostalCodeTextField.text = clientSession.customer?.shippingAddress?.postalCode
         shippinAddressCountryTextField.text = clientSession.customer?.shippingAddress?.countryCode
         
+        customerIdTextField.addTarget(self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
+        
         render()
+    }
+    
+    @objc func customerIdChanged(_ textField: UITextField!) {
+        guard let text = customerIdTextField.text else { return }
+        UserDefaults.standard.set(text, forKey: Self.customerIdStorageKey)
     }
     
     @objc func viewTapped() {

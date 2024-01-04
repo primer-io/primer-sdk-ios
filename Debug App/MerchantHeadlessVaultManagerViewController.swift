@@ -9,10 +9,10 @@
 import UIKit
 import PrimerSDK
 
-class MerchantHeadlesVaultManagerViewController: UIViewController, PrimerHeadlessUniversalCheckoutDelegate {
+class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadlessUniversalCheckoutDelegate {
     
-    class func instantiate(settings: PrimerSettings, clientSession: ClientSessionRequestBody?, clientToken: String?) -> MerchantHeadlesVaultManagerViewController {
-        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHeadlesVaultedViewController") as! MerchantHeadlesVaultManagerViewController
+    class func instantiate(settings: PrimerSettings, clientSession: ClientSessionRequestBody?, clientToken: String?) -> MerchantHeadlessVaultManagerViewController {
+        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHeadlessVaultManagerViewController") as! MerchantHeadlessVaultManagerViewController
         mcvc.settings = settings
         mcvc.clientSession = clientSession
         mcvc.clientToken = clientToken
@@ -137,7 +137,7 @@ class MerchantHeadlesVaultManagerViewController: UIViewController, PrimerHeadles
     }
 }
 
-extension MerchantHeadlesVaultManagerViewController: UITableViewDataSource, UITableViewDelegate {
+extension MerchantHeadlessVaultManagerViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.availablePaymentMethods.count
@@ -163,7 +163,7 @@ extension MerchantHeadlesVaultManagerViewController: UITableViewDataSource, UITa
 
 // MARK: Manual Payment Handling
 
-extension MerchantHeadlesVaultManagerViewController {
+extension MerchantHeadlessVaultManagerViewController {
     
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
@@ -232,7 +232,7 @@ extension MerchantHeadlesVaultManagerViewController {
 
 // MARK: Common
 
-extension MerchantHeadlesVaultManagerViewController {
+extension MerchantHeadlessVaultManagerViewController {
     
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
         print("\n\nMERCHANT APP\n\(#function)")
@@ -296,7 +296,7 @@ extension MerchantHeadlesVaultManagerViewController {
     }
 }
 
-extension MerchantHeadlesVaultManagerViewController: PrimerHeadlessUniversalCheckoutUIDelegate {
+extension MerchantHeadlessVaultManagerViewController: PrimerHeadlessUniversalCheckoutUIDelegate {
     
     func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)")
