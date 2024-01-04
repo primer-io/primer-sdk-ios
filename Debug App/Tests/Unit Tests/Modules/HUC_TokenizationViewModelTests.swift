@@ -32,7 +32,9 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             clientSessionId: "mock_client_session_id",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
-                options: nil),
+                options: nil,
+                orderedAllowedCardNetworks: nil
+            ),
             order: nil,
             customer: nil,
             testId: nil)
@@ -251,7 +253,9 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             clientSessionId: "mock_client_session_id",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
-                options: isSurchargeIncluded ? [["surcharge": 99]] : nil),
+                options: isSurchargeIncluded ? [["surcharge": 99]] : nil,
+                orderedAllowedCardNetworks: nil
+            ),
             order: nil,
             customer: nil,
             testId: nil)

@@ -23,7 +23,9 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             clientSessionId: "mock-client-session-id-1",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
-                options: nil),
+                options: nil,
+                orderedAllowedCardNetworks: nil
+            ),
             order: ClientSession.Order(
                 id: "mock-client-session-order-id-1",
                 merchantAmount: nil,

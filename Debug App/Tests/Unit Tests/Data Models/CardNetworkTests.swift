@@ -13,30 +13,33 @@ final class CardNetworkTests: XCTestCase {
 
     typealias CardNetworks = Array<CardNetwork>
     
+    override func setUp() {
+        SDKSessionHelper.setUp()
+    }
+    
     override func tearDown() {
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init()
-        super.tearDown()
+        SDKSessionHelper.tearDown()
     }
     
     func testCardNetworksAvailable() throws {
         // Default value
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init()
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: .allCardNetworks)
         XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
-        XCTAssertEqual(CardNetworks.supportedCardNetworks, CardNetwork.allCases)
+        XCTAssertEqual(CardNetworks.allowedCardNetworks, CardNetwork.allCases)
         
         // w/ CB
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [.cartesBancaires])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires])
         XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
-        XCTAssertEqual(CardNetworks.supportedCardNetworks, [.cartesBancaires])
+        XCTAssertEqual(CardNetworks.allowedCardNetworks, [.cartesBancaires])
         
         // w/ mixed
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [.visa, .masterCard, .amex])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa, .masterCard, .amex])
         XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
-        XCTAssertEqual(CardNetworks.supportedCardNetworks, [.visa, .masterCard, .amex])
+        XCTAssertEqual(CardNetworks.allowedCardNetworks, [.visa, .masterCard, .amex])
         
         // w/ none
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init(supportedCardNetworks: [])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [])
         XCTAssertEqual(CardNetworks.allCardNetworks, CardNetwork.allCases)
-        XCTAssertEqual(CardNetworks.supportedCardNetworks, [])
+        XCTAssertEqual(CardNetworks.allowedCardNetworks, [])
     }
 }

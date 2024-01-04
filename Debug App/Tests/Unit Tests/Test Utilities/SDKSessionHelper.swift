@@ -37,5 +37,17 @@ final class SDKSessionHelper {
         PrimerAPIConfigurationModule.apiConfiguration = nil
         PrimerAPIConfigurationModule.clientToken = nil
     }
+    
+    static func updateAllowedCardNetworks(cardNetworks: [CardNetwork]) {
+        PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(
+            clientSessionId: "",
+            paymentMethod: .init(vaultOnSuccess: false,
+                                 options: nil,
+                                 orderedAllowedCardNetworks: cardNetworks.map { $0.rawValue }),
+            order: nil,
+            customer: nil,
+            testId: nil
+        )
+    }
 
 }

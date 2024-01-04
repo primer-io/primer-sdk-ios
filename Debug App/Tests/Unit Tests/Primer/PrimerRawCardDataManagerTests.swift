@@ -13,9 +13,12 @@ class PrimerRawCardDataManagerTests: XCTestCase {
     
     static let validationTimeout = 1.0
     
+    override func setUp() {
+        SDKSessionHelper.setUp()
+    }
+    
     override func tearDown() {
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = .init()
-        super.tearDown()
+        SDKSessionHelper.tearDown()
     }
     
     func test_invalid_cardnumber_in_raw_card_data() throws {
@@ -341,19 +344,19 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
 
         // Only co-badged
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires])
         XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
         
         // Co-badged w/ provider (VISA)
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires, .visa])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires, .visa])
         XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
 
         // Co-badged w/ provided (MC)
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires, .masterCard])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires, .masterCard])
         XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
 
         // Co-badged with mixed
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.cartesBancaires, .masterCard, .visa, .discover, .amex])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires, .masterCard, .visa, .discover, .amex])
         XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
     }
     
@@ -361,19 +364,19 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
 
         // No networks
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [])
         XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
 
         // No co-badged w/ provider (VISA)
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.visa])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa])
         XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
 
         // No co-badged w/ provider (MC)
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.masterCard])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.masterCard])
         XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
 
         // No co-badged w/ mixed
-        PrimerSettings.current.paymentMethodOptions.cardPaymentOptions = PrimerCardPaymentOptions(supportedCardNetworks: [.masterCard, .visa, .discover, .amex])
+        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.masterCard, .visa, .discover, .amex])
         XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
 
     }
