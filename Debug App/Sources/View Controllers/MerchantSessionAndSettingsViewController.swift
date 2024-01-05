@@ -184,7 +184,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     taxAmount: nil)
             ]),
         paymentMethod: ClientSessionRequestBody.PaymentMethod(
-            vaultOnSuccess: true,
+            vaultOnSuccess: false,
             options: nil,
             paymentType: nil
         ),
