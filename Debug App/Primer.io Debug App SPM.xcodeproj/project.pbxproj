@@ -19,10 +19,8 @@
 		F00C66012ACC67FA00187028 /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229849A3DBE0858EE90673B9 /* CreateClientToken.swift */; };
 		F00C66022ACC67FA00187028 /* TestScenario.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6AEF11B151368BF993C3EA9 /* TestScenario.swift */; };
 		F00C66032ACC67FA00187028 /* TransactionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D3D6CF0F006A06B7CEC71B /* TransactionResponse.swift */; };
-		F00C66042ACC67FA00187028 /* Networking+Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E08473D1DF8C47A6EB61B2 /* Networking+Models.swift */; };
 		F00C66052ACC67FA00187028 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DE1E4FB055B60582977315 /* Networking.swift */; };
 		F00C66062ACC67FA00187028 /* MerchantDropInUIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */; };
-		F00C66072ACC67FA00187028 /* MerchantHeadlesVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698F95A8EC4DF45AFFDA783 /* MerchantHeadlesVaultManagerViewController.swift */; };
 		F00C66082ACC67FA00187028 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E691B9A6A8EBB9F6A6B266 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift */; };
 		F00C660A2ACC67FA00187028 /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */; };
 		F00C660B2ACC67FA00187028 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */; };
@@ -596,10 +594,8 @@
 				F00C66012ACC67FA00187028 /* CreateClientToken.swift in Sources */,
 				F00C66022ACC67FA00187028 /* TestScenario.swift in Sources */,
 				F00C66032ACC67FA00187028 /* TransactionResponse.swift in Sources */,
-				F00C66042ACC67FA00187028 /* Networking+Models.swift in Sources */,
 				F00C66052ACC67FA00187028 /* Networking.swift in Sources */,
 				F00C66062ACC67FA00187028 /* MerchantDropInUIViewController.swift in Sources */,
-				F00C66072ACC67FA00187028 /* MerchantHeadlesVaultManagerViewController.swift in Sources */,
 				F00C66082ACC67FA00187028 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
 				F00C660A2ACC67FA00187028 /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,
 				F00C660B2ACC67FA00187028 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */,
