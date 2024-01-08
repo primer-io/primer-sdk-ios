@@ -47,6 +47,7 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            binDataUrl: "https://primer.io/bindata",
             clientSession: clientSession,
             paymentMethods: [
                 PrimerPaymentMethod(
@@ -144,6 +145,7 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            binDataUrl: "https://primer.io/bindata",
             clientSession: clientSession,
             paymentMethods: [
                 PrimerPaymentMethod(

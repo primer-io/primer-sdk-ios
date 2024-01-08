@@ -215,6 +215,7 @@ extension Response.Body {
 
         let coreUrl: String?
         let pciUrl: String?
+        let binDataUrl: String?
         var clientSession: ClientSession.APIResponse?
         let paymentMethods: [PrimerPaymentMethod]?
         let primerAccountId: String?
@@ -231,6 +232,7 @@ extension Response.Body {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
             self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
+            self.binDataUrl = (try? container.decode(String?.self, forKey: .binDataUrl)) ?? nil
             self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
             let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
             self.paymentMethods = throwables.compactMap({ $0.value })
@@ -265,6 +267,7 @@ extension Response.Body {
         init(
             coreUrl: String?,
             pciUrl: String?,
+            binDataUrl: String?,
             clientSession: ClientSession.APIResponse?,
             paymentMethods: [PrimerPaymentMethod]?,
             primerAccountId: String?,
@@ -273,6 +276,7 @@ extension Response.Body {
         ) {
             self.coreUrl = coreUrl
             self.pciUrl = pciUrl
+            self.binDataUrl = binDataUrl
             self.clientSession = clientSession
             self.paymentMethods = paymentMethods
             self.primerAccountId = primerAccountId

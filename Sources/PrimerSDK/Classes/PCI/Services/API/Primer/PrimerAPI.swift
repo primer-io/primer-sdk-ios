@@ -228,12 +228,12 @@ internal extension PrimerAPI {
                 .listRetailOutlets(let clientToken, _),
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
                 .testFinalizePolling(let clientToken, _),
-//                .listCardNetworks(let clientToken, _),
                 .getNolSdkSecret(let clientToken, _):
-            guard let urlStr = clientToken.coreUrl else { return nil }
-            return urlStr
-        case .listCardNetworks(let clientToken, _):
-            return "https://bin-data.api.sandbox.core.primer.io/v1"
+            guard let baseURL = configuration?.coreUrl ?? clientToken.coreUrl else { return nil }
+            return baseURL
+        case .listCardNetworks(_, _):
+            guard let baseURL = configuration?.binDataUrl else { return nil }
+            return baseURL
         case .deleteVaultedPaymentMethod(let clientToken, _),
                 .fetchVaultedPaymentMethods(let clientToken),
                 .exchangePaymentMethodToken(let clientToken, _, _),
@@ -244,11 +244,11 @@ internal extension PrimerAPI {
                 .resumePayment(let clientToken, _, _),
                 .requestPrimerConfigurationWithActions(let clientToken, _),
                 .getPhoneMetadata(let clientToken, _):
-            guard let urlStr = clientToken.pciUrl else { return nil }
-            return urlStr
+            guard let baseURL = configuration?.pciUrl ?? clientToken.pciUrl else { return nil }
+            return baseURL
         case .fetchConfiguration(let clientToken, _):
-            guard let urlStr = clientToken.configurationUrl else { return nil }
-            return urlStr
+            guard let baseURL = clientToken.configurationUrl else { return nil }
+            return baseURL
         case .poll(_, let url):
             return url
         case .sendAnalyticsEvents(_, let url, _):
@@ -450,6 +450,12 @@ internal extension PrimerAPI {
         default:
             return true
         }
+    }
+    
+    // MARK: Helpers
+    
+    var configuration: PrimerAPIConfiguration? {
+        PrimerAPIConfiguration.current
     }
 
 }
