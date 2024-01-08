@@ -18,7 +18,7 @@ extension PrimerHeadlessUniversalCheckout {
                 .compactMap({ PrimerHeadlessUniversalCheckout.PaymentMethod(paymentMethodType: $0) })
 
             if PrimerSettings.current.paymentMethodOptions.applePayOptions?.showApplePayForUnsupportedDevice != true {
-                if !PKPaymentAuthorizationViewController.canMakePayments() {
+                if !PKPaymentAuthorizationController.canMakePayments() {
                     // Filter out Apple pay from payment methods
                     availablePaymentMethods = availablePaymentMethods?.filter({ (method: PrimerHeadlessUniversalCheckout.PaymentMethod) in
                         return method.paymentMethodType != "APPLE_PAY"
