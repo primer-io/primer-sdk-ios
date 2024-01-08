@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum PrimerValidationError: PrimerErrorProtocol {
+public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
 
     case invalidCardholderName(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidCardnumber(message: String, userInfo: [String: String]?, diagnosticsId: String)

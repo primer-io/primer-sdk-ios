@@ -63,7 +63,7 @@ struct BanksListView: View {
             } label: {
                 HStack(spacing: metrics.hStackSpacing) {
                     HStack {
-                            if let imageUrlString = bank.iconUrlStr,
+                            if let imageUrlString = bank.iconUrl,
                                let imageUrl = URL(string: imageUrlString) {
                                 image(url: imageUrl)
                             }

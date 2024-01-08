@@ -43,7 +43,7 @@ final class BankComponentTests: XCTestCase {
         let issuingBank = IssuingBank(bank: adyenBank)
         XCTAssertEqual(issuingBank.id, adyenBank.id)
         XCTAssertEqual(issuingBank.name, adyenBank.name)
-        XCTAssertEqual(issuingBank.iconUrlStr, adyenBank.iconUrlStr)
+        XCTAssertEqual(issuingBank.iconUrl, adyenBank.iconUrlStr)
         XCTAssertEqual(issuingBank.isDisabled, adyenBank.disabled)
     }
 

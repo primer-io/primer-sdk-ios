@@ -6,15 +6,15 @@
 //
 
 import Foundation
-@objc public final class IssuingBank: NSObject {
+@objc public final class IssuingBank: NSObject, Encodable {
     public let id: String
     public let name: String
-    public let iconUrlStr: String?
+    public let iconUrl: String?
     public let isDisabled: Bool
     init(bank: AdyenBank) {
         self.id = bank.id
         self.name = bank.name
-        self.iconUrlStr = bank.iconUrlStr
+        self.iconUrl = bank.iconUrlStr
         self.isDisabled = bank.disabled
     }
 }
