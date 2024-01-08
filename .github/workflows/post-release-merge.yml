@@ -33,7 +33,7 @@ jobs:
           bodyFile: "release.md"
   build-and-upload-to-appetize:
     if: github.head_ref == 'release/next' && github.event.pull_request.merged == true
-    runs-on: macos-latest
+    runs-on: macos-13
     timeout-minutes: 20
     name: "Build and upload app to Appetize"
     steps:
