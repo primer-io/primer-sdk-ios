@@ -46,9 +46,15 @@ extension PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 throw err
             }
-
+            
             guard let paymentMethod = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.first(where: { $0.type == paymentMethodType }) else {
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+            
+            guard let cats = paymentMethod.paymentMethodManagerCategories, cats.contains(.nativeUI) else {
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethod.type, userInfo: nil, diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
