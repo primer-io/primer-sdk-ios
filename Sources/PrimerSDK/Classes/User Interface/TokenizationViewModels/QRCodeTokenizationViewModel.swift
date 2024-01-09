@@ -264,8 +264,8 @@ extension QRCodeTokenizationViewModel {
             guard isHeadlessDidReceiveAdditionalInfoImplemented else {
                 let message =
 """
-Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)' hasn't been implemented.
- No events will be sent to your delegate instance.
+Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)' hasn't been implemented. \
+No events will be sent to your delegate instance.
 """
                 let err = PrimerError.generic(message: message,
                                               userInfo: ["file": #file,

@@ -473,7 +473,7 @@ extension PaymentMethodTokenizationViewModel {
                     if !decisionHandlerHasBeenCalled {
                         let message =
 """
-The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called.
+The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
 Make sure you call the decision handler otherwise the SDK will hang.
 """
                         self?.logger.warn(message: message)

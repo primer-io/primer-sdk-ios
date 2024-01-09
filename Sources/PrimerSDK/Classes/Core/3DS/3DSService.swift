@@ -471,8 +471,8 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 } else {
                     let message =
 """
-threeDsAppRequestorUrl is not in a valid format (\"https://applink\").
-In case you want to support redirecting back during the OOB flows,
+threeDsAppRequestorUrl is not in a valid format (\"https://applink\"). \
+In case you want to support redirecting back during the OOB flows, \
 please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK initialization.
 """
                     logger.warn(message: message)

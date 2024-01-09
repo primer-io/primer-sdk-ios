@@ -252,8 +252,8 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
             paymentMethods?.remove(at: klarnaIndex)
             let message =
 """
-Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing.
-Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile,
+Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
+Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
 or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager
 """
             logger.warn(message: message)
@@ -265,7 +265,7 @@ or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager
             paymentMethods?.remove(at: iPay88ViewModelIndex)
             let message =
 """
-iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing.
+iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
 Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
 """
             logger.warn(message: message)
@@ -277,7 +277,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             paymentMethods?.remove(at: nolPayViewModelIndex)
             let message =
 """
-NolPay configuration has been found but module 'PrimerNolPaySDK' is missing.
+NolPay configuration has been found but module 'PrimerNolPaySDK' is missing. \
 Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your Podfile.
 """
             logger.warn(message: message)

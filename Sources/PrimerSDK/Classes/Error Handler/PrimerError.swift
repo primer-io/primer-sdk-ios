@@ -394,8 +394,8 @@ public enum PrimerError: PrimerErrorProtocol {
         case .missingPrimerCheckoutComponentsDelegate:
             let message =
 """
-Primer Checkout Components' delegate has not been set.
-Ensure that you have added PrimerCheckoutComponents.delegate = self,
+Primer Checkout Components' delegate has not been set. \
+Ensure that you have added PrimerCheckoutComponents.delegate = self, \
 on the view controller you wish to implement the components.
 """
             return message
@@ -404,9 +404,9 @@ on the view controller you wish to implement the components.
         case .misconfiguredPaymentMethods:
             let message =
 """
-Payment Methods are not configured correctly.
-Ensure that you have configured them in the Connection,
-and/or that they are set up for the specified conditions
+Payment Methods are not configured correctly. \
+Ensure that you have configured them in the Connection, \
+and/or that they are set up for the specified conditions \
 on your dashboard https://dashboard.primer.io/
 """
             return message
