@@ -9,10 +9,10 @@
 import UIKit
 import PrimerSDK
 
-class MerchantHeadlesVaultManagerViewController: UIViewController, PrimerHeadlessUniversalCheckoutDelegate {
+class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadlessUniversalCheckoutDelegate {
     
-    class func instantiate(settings: PrimerSettings, clientSession: ClientSessionRequestBody?, clientToken: String?) -> MerchantHeadlesVaultManagerViewController {
-        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHeadlesVaultedViewController") as! MerchantHeadlesVaultManagerViewController
+    class func instantiate(settings: PrimerSettings, clientSession: ClientSessionRequestBody?, clientToken: String?) -> MerchantHeadlessVaultManagerViewController {
+        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHeadlessVaultManagerViewController") as! MerchantHeadlessVaultManagerViewController
         mcvc.settings = settings
         mcvc.clientSession = clientSession
         mcvc.clientToken = clientToken
@@ -107,11 +107,9 @@ class MerchantHeadlesVaultManagerViewController: UIViewController, PrimerHeadles
         let expiredVaultedCards = vaultedPaymentMethods.filter({ $0.paymentMethodType == "PAYMENT_CARD" && Int($0.paymentInstrumentData.expirationYear ?? "") ?? 0 < 2023 })
         let expiredVaultedCardsIds: [String] = expiredVaultedCards.compactMap({ $0.id })
         // To be returned when not testing CVV recapture
-        let _ = vaultedPaymentMethods.filter({ !expiredVaultedCardsIds.contains($0.id) })
-        // swiftlint:disable:previous
-
-        // Comment out next line when you're not testing CVV recapture
-        return vaultedPaymentMethods.filter({ $0.paymentInstrumentData.first6Digits == "411111" && $0.paymentInstrumentData.expirationMonth == "03" && $0.paymentInstrumentData.expirationYear == "2030" })
+        return vaultedPaymentMethods.filter({ !expiredVaultedCardsIds.contains($0.id) })
+        // Uncomment this line and comment out the above, when you are not testing CVV recapture
+        // return vaultedPaymentMethods.filter({ $0.paymentInstrumentData.first6Digits == "411111" && $0.paymentInstrumentData.expirationMonth == "03" && $0.paymentInstrumentData.expirationYear == "2030" })
     }
     
     // MARK: - HELPERS
@@ -137,7 +135,7 @@ class MerchantHeadlesVaultManagerViewController: UIViewController, PrimerHeadles
     }
 }
 
-extension MerchantHeadlesVaultManagerViewController: UITableViewDataSource, UITableViewDelegate {
+extension MerchantHeadlessVaultManagerViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.availablePaymentMethods.count
@@ -163,7 +161,7 @@ extension MerchantHeadlesVaultManagerViewController: UITableViewDataSource, UITa
 
 // MARK: Manual Payment Handling
 
-extension MerchantHeadlesVaultManagerViewController {
+extension MerchantHeadlessVaultManagerViewController {
     
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
@@ -232,7 +230,7 @@ extension MerchantHeadlesVaultManagerViewController {
 
 // MARK: Common
 
-extension MerchantHeadlesVaultManagerViewController {
+extension MerchantHeadlessVaultManagerViewController {
     
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
         print("\n\nMERCHANT APP\n\(#function)")
@@ -296,7 +294,7 @@ extension MerchantHeadlesVaultManagerViewController {
     }
 }
 
-extension MerchantHeadlesVaultManagerViewController: PrimerHeadlessUniversalCheckoutUIDelegate {
+extension MerchantHeadlessVaultManagerViewController: PrimerHeadlessUniversalCheckoutUIDelegate {
     
     func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)")

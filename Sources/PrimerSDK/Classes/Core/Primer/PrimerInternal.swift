@@ -92,18 +92,6 @@ internal class PrimerInternal: LogReporter {
     internal func configure(settings: PrimerSettings? = nil) {
         var events: [Analytics.Event] = []
 
-#if canImport(Primer3DS)
-        self.logger.info(message: "Can import Primer3DS")
-#else
-        self.logger.warn(message: "Failed to import Primer3DS")
-        events.append(Analytics.Event(
-            eventType: .message,
-            properties: MessageEventProperties(
-                message: "Primer3DS has not been integrated",
-                messageType: .error,
-                severity: .error)))
-#endif
-
         let releaseVersionNumber = VersionUtils.releaseVersionNumber
         events.append(
             Analytics.Event(

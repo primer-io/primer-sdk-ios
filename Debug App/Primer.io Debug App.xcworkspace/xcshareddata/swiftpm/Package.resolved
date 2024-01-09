@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "PrimerKlarnaSDK",
+        "repositoryURL": "https://github.com/primer-io/primer-klarna-sdk-ios",
+        "state": {
+          "branch": null,
+          "revision": "f13260c24a900f28e21bafd213c22191e6280e86",
+          "version": "1.0.4"
+        }
+      },
+      {
+        "package": "Primer3DS",
+        "repositoryURL": "https://github.com/primer-io/primer-sdk-3ds-ios",
+        "state": {
+          "branch": "nq/update_3ds_sdk",
+          "revision": "250748290f79374f4d1e70e6f8c8b65d9f14adaa",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -12,6 +12,7 @@
 		04769C152B1A680C0051581C /* Promises+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04769C142B1A680C0051581C /* Promises+Helper.swift */; };
 		049298012B1DD466002E04B8 /* AnalyticsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */; };
 		049298072B1E1F4D002E04B8 /* AnalyticsStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */; };
+		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
 		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
 		04F6EF722AE69FC500115D05 /* AnalyticsTests+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */; };
 		04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */; };
@@ -24,6 +25,7 @@
 		1589385B62C86DE7C735F3EC /* PrimerAPIConfigurationModuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C690FB7E6E8C942C87B1A1B /* PrimerAPIConfigurationModuleTests.swift */; };
 		161D4BE3FFD5E4A60F4461F0 /* CreateResumePaymentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DD0A9535544D446514124A /* CreateResumePaymentService.swift */; };
 		170F3A07A039EE30E065AA30 /* MerchantNewLineItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */; };
+		1C19FB531A6AE5F3B899F7B6 /* Pods_Debug_App_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5453CA45E1B852330D0E944A /* Pods_Debug_App_Tests.framework */; };
 		208CA849F3187C2DA63CC17B /* HUC_TokenizationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5E3ACDA26D44F66B55766B /* HUC_TokenizationViewModelTests.swift */; };
 		213196DEDF2A3A84037ED884 /* PollingModuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49DFB1ACD5014BF28ED283B3 /* PollingModuleTests.swift */; };
 		242EF5037D6FB396B7AE1CB5 /* HeadlessUniversalCheckoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E63F5C5C1FD2F3E6CB02EC5A /* HeadlessUniversalCheckoutTests.swift */; };
@@ -39,7 +41,6 @@
 		3EE90DEB1DB7BE9270FB17BF /* URLSessionStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4E35F809D3FAF4354D5B05 /* URLSessionStackTests.swift */; };
 		3FD160A4D951EA772ADF4E25 /* DecodedClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DC3341BDBB9AEDBE8D6DD /* DecodedClientToken.swift */; };
 		4BD7794627267B40E9E10686 /* PrimerCheckoutTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9813BD518AC7C3F442B5075 /* PrimerCheckoutTheme.swift */; };
-		4F9F6D38EFCA656CB936C98F /* Pods_Debug_App_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 348BA24B92FB00C80AC511F7 /* Pods_Debug_App_Tests.framework */; };
 		53E3182FFC4E5F05D866CFAE /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DE1E4FB055B60582977315 /* Networking.swift */; };
 		583EBAA90902121CEA479416 /* VaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8D7F3C53F8CCE4A03C975E /* VaultService.swift */; };
 		592E00D98C8835CBCDAA26D9 /* MerchantDropInUIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */; };
@@ -57,7 +58,6 @@
 		8064B65A8F83D5B004D081FD /* PaymentMethodConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752785ACCF65527C239391A8 /* PaymentMethodConfigTests.swift */; };
 		85605C241F1CD45BA676D4A7 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9023841AFCE8E3205CB713A /* String+Extensions.swift */; };
 		85EDC3F175D699BFF6BD48EF /* ViewController+Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CCCB917D1881082ED75975 /* ViewController+Primer.swift */; };
-		8B51ABC1C475342A047D5FA6 /* Networking+Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E08473D1DF8C47A6EB61B2 /* Networking+Models.swift */; };
 		8B5CB0C992DBAB293D378FAD /* MockModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */; };
 		91FAC91E687B6981268E677E /* DateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0B2BEE5C389FD13E210847 /* DateTests.swift */; };
 		9263BD762EC26F6AA986F0C9 /* MockAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17476BFBED51F389FCE82F16 /* MockAPIClient.swift */; };
@@ -77,7 +77,6 @@
 		A61B9E61EDCE18D34438352E /* PayPalConfirmBillingAgreementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D122A0B71B707C2110AB7F5 /* PayPalConfirmBillingAgreementTests.swift */; };
 		AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229849A3DBE0858EE90673B9 /* CreateClientToken.swift */; };
 		AD9CF1073EE0676E6640481A /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */; };
-		AFCA91A7F80DAC8228029F44 /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD2EC8A195C6BB1D85F1D805 /* Pods_Debug_App.framework */; };
 		C0115AC7BC96FDF49EF8E530 /* PaymentMethodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */; };
 		C29B625B5698094691227852 /* TokenizationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A003705AFF7F922BCFE75F /* TokenizationResponseTests.swift */; };
 		C5B3635FC90C149C4961BD9A /* Apaya.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E4B74F7EEA3D2D19E08FDA /* Apaya.swift */; };
@@ -110,12 +109,12 @@
 		E4DF956CABAE0633980D5B89 /* AnalyticsTests+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90441E821B5FE76643B62A6 /* AnalyticsTests+Constants.swift */; };
 		E52B5646C4E1E712FEDE06CB /* AnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF07D2421252EA2AE5C2FC4F /* AnalyticsTests.swift */; };
 		E6F85ECD80B64754E7A6D35E /* RawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */; };
+		E76363AEF6D17C53C4ECBCE0 /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BD844940445D871BB48CB32 /* Pods_Debug_App.framework */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
 		F03699592AC2E63700E4179D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F1A71C2E0D900FEB9AF1351C /* ThreeDSProtocolVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */; };
-		F3B88F24999785898FE54C53 /* MerchantHeadlesVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698F95A8EC4DF45AFFDA783 /* MerchantHeadlesVaultManagerViewController.swift */; };
 		F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD381E7E16D01D8D743232F7 /* ThemeTests.swift */; };
 		FD5ADBCFA70DB606339F3AF2 /* TransactionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D3D6CF0F006A06B7CEC71B /* TransactionResponse.swift */; };
 /* End PBXBuildFile section */
@@ -162,10 +161,12 @@
 		04769C142B1A680C0051581C /* Promises+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promises+Helper.swift"; sourceTree = "<group>"; };
 		049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsServiceTests.swift; sourceTree = "<group>"; };
 		049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStorageTests.swift; sourceTree = "<group>"; };
+		049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessVaultManagerViewController.swift; sourceTree = "<group>"; };
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
 		04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsTests+Helpers.swift"; sourceTree = "<group>"; };
 		04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventsTests.swift; sourceTree = "<group>"; };
 		04FAF9EB2AE7B33E002E4BAE /* StringExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensionTests.swift; sourceTree = "<group>"; };
+		0D4BB4C9A0035B4AD7CDE5DB /* Pods-Debug App Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App Tests.release.xcconfig"; path = "Target Support Files/Pods-Debug App Tests/Pods-Debug App Tests.release.xcconfig"; sourceTree = "<group>"; };
 		0DA32ABCF07A4EBED014327B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantNewLineItemViewController.swift; sourceTree = "<group>"; };
 		0FD08B8CE57A11D1E35A8684 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -178,27 +179,25 @@
 		1F79B50111AC4161CFB1EFE8 /* ApayaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApayaTests.swift; sourceTree = "<group>"; };
 		229849A3DBE0858EE90673B9 /* CreateClientToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateClientToken.swift; sourceTree = "<group>"; };
 		25FD540BEA16ABBDFE7DE182 /* PayPalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPalService.swift; sourceTree = "<group>"; };
+		281B29223A18A80B81605D3E /* Pods-Debug App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.release.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.release.xcconfig"; sourceTree = "<group>"; };
 		2A328E38DA586FFE0ED2894B /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
 		2E64F057A39A91CA01CCB57F /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Main.strings; sourceTree = "<group>"; };
 		2E8F69253D85350BB7A1A761 /* TokenizationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenizationService.swift; sourceTree = "<group>"; };
 		31CFA93A373A7DB78DA77283 /* ApplePayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayTests.swift; sourceTree = "<group>"; };
 		33E18D5B5190C64631309D1B /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		348BA24B92FB00C80AC511F7 /* Pods_Debug_App_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		38DD0A9535544D446514124A /* CreateResumePaymentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateResumePaymentService.swift; sourceTree = "<group>"; };
 		39CCCB917D1881082ED75975 /* ViewController+Primer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Primer.swift"; sourceTree = "<group>"; };
 		404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift; sourceTree = "<group>"; };
-		46462A21AE534FBDEAFD0362 /* Pods-Debug App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.debug.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.debug.xcconfig"; sourceTree = "<group>"; };
 		483D2036DE3F89CA2C244C4F /* Debug App Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Debug App Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DFB1ACD5014BF28ED283B3 /* PollingModuleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollingModuleTests.swift; sourceTree = "<group>"; };
 		4A5E3ACDA26D44F66B55766B /* HUC_TokenizationViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUC_TokenizationViewModelTests.swift; sourceTree = "<group>"; };
 		4ACFB17A73AB7240BED98585 /* ExampleApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ExampleApp.entitlements; sourceTree = "<group>"; };
 		4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawRetailDataViewController.swift; sourceTree = "<group>"; };
 		4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodCell.swift; sourceTree = "<group>"; };
-		50ADF2146EF969A01C605A58 /* Pods-Debug App Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App Tests.debug.xcconfig"; path = "Target Support Files/Pods-Debug App Tests/Pods-Debug App Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		5197B864C8787498BBE0F7A1 /* Pods-Debug App Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App Tests.release.xcconfig"; path = "Target Support Files/Pods-Debug App Tests/Pods-Debug App Tests.release.xcconfig"; sourceTree = "<group>"; };
 		52F54EC3C1ACE19DF48BD6E2 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		5698F95A8EC4DF45AFFDA783 /* MerchantHeadlesVaultManagerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlesVaultManagerViewController.swift; sourceTree = "<group>"; };
+		5453CA45E1B852330D0E944A /* Pods_Debug_App_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AA706A14BACFDB8E5715788 /* HeadlessVaultManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlessVaultManagerTests.swift; sourceTree = "<group>"; };
+		5BD844940445D871BB48CB32 /* Pods_Debug_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D7EC742DEB5BE12252E3E5B /* PayPalServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPalServiceTests.swift; sourceTree = "<group>"; };
 		5DB3B88857B810440CDA881E /* DropInUI_TokenizationViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropInUI_TokenizationViewModelTests.swift; sourceTree = "<group>"; };
 		5E8D7F3C53F8CCE4A03C975E /* VaultService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultService.swift; sourceTree = "<group>"; };
@@ -208,7 +207,6 @@
 		6C690FB7E6E8C942C87B1A1B /* PrimerAPIConfigurationModuleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerAPIConfigurationModuleTests.swift; sourceTree = "<group>"; };
 		6D2261DDEE5DC5D2ED518037 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		6D665EEA8106E51925C3CF2B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Main.strings; sourceTree = "<group>"; };
-		6F4C8EF34EA71C6948F17CBC /* Pods-Debug App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.release.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.release.xcconfig"; sourceTree = "<group>"; };
 		70D3D6CF0F006A06B7CEC71B /* TransactionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionResponse.swift; sourceTree = "<group>"; };
 		721B75053C8E82756FB8AD0D /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		72845A3010F10A88F2EC7849 /* CheckoutTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutTheme.swift; sourceTree = "<group>"; };
@@ -217,14 +215,15 @@
 		743F107C464526926A34A433 /* PaymentMethodConfigServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigServiceTests.swift; sourceTree = "<group>"; };
 		7480FE5F665CC66C092BC95A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		752785ACCF65527C239391A8 /* PaymentMethodConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigTests.swift; sourceTree = "<group>"; };
-		77E08473D1DF8C47A6EB61B2 /* Networking+Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Networking+Models.swift"; sourceTree = "<group>"; };
 		7A3E75CD834937EF85DE1C14 /* MockVaultCheckoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockVaultCheckoutViewModel.swift; sourceTree = "<group>"; };
 		7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPay88Tests.swift; sourceTree = "<group>"; };
 		7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockModule.swift; sourceTree = "<group>"; };
+		82192B2FE496F95BBA686EC6 /* Pods-Debug App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.debug.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.debug.xcconfig"; sourceTree = "<group>"; };
 		872A0647D4136E27365FB7F8 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
 		8A23886804B13FA754E775D0 /* MockPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		8A3FDC6FE0EB5AB5828D4D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDataManagerTests.swift; sourceTree = "<group>"; };
+		8ED324D57EE5B8626DC01C57 /* Pods-Debug App Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App Tests.debug.xcconfig"; path = "Target Support Files/Pods-Debug App Tests/Pods-Debug App Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		9128566126AA7F571FFECA3A /* Range+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Range+Extensions.swift"; sourceTree = "<group>"; };
 		92BE0A1A904DCEA405A11CC1 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Main.strings; sourceTree = "<group>"; };
 		9314E0A4E884A8228611A030 /* IntExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtensionTests.swift; sourceTree = "<group>"; };
@@ -268,7 +267,6 @@
 		D5C1B1F65A9382606A25CE77 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Main.strings; sourceTree = "<group>"; };
 		DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBC8EA85D1CBC1EC4AB3EB8C /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		DD2EC8A195C6BB1D85F1D805 /* Pods_Debug_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DECCDC4079DC6471CEDDEA84 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		E108F58D2B0D4F0800EC3CC6 /* WebRedirectComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRedirectComponentTests.swift; sourceTree = "<group>"; };
 		E11F473C2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessFormWithRedirectManagerTests.swift; sourceTree = "<group>"; };
@@ -308,7 +306,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F9F6D38EFCA656CB936C98F /* Pods_Debug_App_Tests.framework in Frameworks */,
+				1C19FB531A6AE5F3B899F7B6 /* Pods_Debug_App_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,22 +314,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AFCA91A7F80DAC8228029F44 /* Pods_Debug_App.framework in Frameworks */,
+				E76363AEF6D17C53C4ECBCE0 /* Pods_Debug_App.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0283A80BA4B23F3E11168A46 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				DD2EC8A195C6BB1D85F1D805 /* Pods_Debug_App.framework */,
-				348BA24B92FB00C80AC511F7 /* Pods_Debug_App_Tests.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		094077DEFDC2739B10CF4183 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -350,7 +339,7 @@
 				B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */,
 				404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */,
 				4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */,
-				5698F95A8EC4DF45AFFDA783 /* MerchantHeadlesVaultManagerViewController.swift */,
+				049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */,
 				00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */,
 				C18C9664115CFDEB59FED19A /* MerchantSessionAndSettingsViewController.swift */,
 			);
@@ -364,7 +353,7 @@
 				FBDF3F8B5F93A0EC28048640 /* Project */,
 				DF30711EB149C64C364BB79A /* Products */,
 				61E8D69DF93462D748F446DF /* Pods */,
-				0283A80BA4B23F3E11168A46 /* Frameworks */,
+				330246F9FAF95FD1DCB0AB20 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -384,6 +373,15 @@
 				1F4E35F809D3FAF4354D5B05 /* URLSessionStackTests.swift */,
 			);
 			path = Network;
+			sourceTree = "<group>";
+		};
+		330246F9FAF95FD1DCB0AB20 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5BD844940445D871BB48CB32 /* Pods_Debug_App.framework */,
+				5453CA45E1B852330D0E944A /* Pods_Debug_App_Tests.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		553A7EDE72B8249F55A0E6B9 /* Extension */ = {
@@ -451,10 +449,10 @@
 		61E8D69DF93462D748F446DF /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				46462A21AE534FBDEAFD0362 /* Pods-Debug App.debug.xcconfig */,
-				6F4C8EF34EA71C6948F17CBC /* Pods-Debug App.release.xcconfig */,
-				50ADF2146EF969A01C605A58 /* Pods-Debug App Tests.debug.xcconfig */,
-				5197B864C8787498BBE0F7A1 /* Pods-Debug App Tests.release.xcconfig */,
+				82192B2FE496F95BBA686EC6 /* Pods-Debug App.debug.xcconfig */,
+				281B29223A18A80B81605D3E /* Pods-Debug App.release.xcconfig */,
+				8ED324D57EE5B8626DC01C57 /* Pods-Debug App Tests.debug.xcconfig */,
+				0D4BB4C9A0035B4AD7CDE5DB /* Pods-Debug App Tests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -727,7 +725,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4700FFD06E10F0EE123A7B8B /* Build configuration list for PBXNativeTarget "Debug App Tests" */;
 			buildPhases = (
-				4B7C16A2C93313265C6FF289 /* [CP] Check Pods Manifest.lock */,
+				F64B9E59C79BBDCBBCE53F6B /* [CP] Check Pods Manifest.lock */,
 				1E0FCAD905F5F8F13B6A164B /* Sources */,
 				9CED4C4EFACB340F3C55B1F0 /* Resources */,
 				D11E367C3560C383BC4CA0A7 /* Embed Frameworks */,
@@ -747,13 +745,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CA98A6B11506835A81F6391A /* Build configuration list for PBXNativeTarget "Debug App" */;
 			buildPhases = (
-				A787C35FC61395E3E2B8DDAC /* [CP] Check Pods Manifest.lock */,
+				0AC696812A6DBEF49EDAF794 /* [CP] Check Pods Manifest.lock */,
 				66BB6A7BADD3A9CDD6412CE2 /* Sources */,
 				10FBAAC827CE0E3983CD7597 /* Resources */,
 				73B416AD9A0CB3B0EA16AF79 /* Embed Frameworks */,
 				CB612F7DF16CD3190025327F /* Frameworks */,
-				D158702D902B8C93D2526CAF /* [CP] Embed Pods Frameworks */,
 				A18BD8BD2AFE4B0900923C87 /* SwiftLint */,
+				A448FBAD5927122CDB8973FC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -834,7 +832,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		4B7C16A2C93313265C6FF289 /* [CP] Check Pods Manifest.lock */ = {
+		0AC696812A6DBEF49EDAF794 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -849,7 +847,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Debug App Tests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Debug App-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -875,29 +873,7 @@
 			shellPath = /bin/sh;
 			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
-		A787C35FC61395E3E2B8DDAC /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Debug App-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D158702D902B8C93D2526CAF /* [CP] Embed Pods Frameworks */ = {
+		A448FBAD5927122CDB8973FC /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -912,6 +888,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Debug App/Pods-Debug App-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F64B9E59C79BBDCBBCE53F6B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Debug App Tests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1009,7 +1007,7 @@
 				C75A11E6AEEFC2B7A29BBC04 /* TestScenario.swift in Sources */,
 				E1A2971F2B021ABA005ADA51 /* URL+NetworkHeaders.swift in Sources */,
 				FD5ADBCFA70DB606339F3AF2 /* TransactionResponse.swift in Sources */,
-				8B51ABC1C475342A047D5FA6 /* Networking+Models.swift in Sources */,
+				049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */,
 				53E3182FFC4E5F05D866CFAE /* Networking.swift in Sources */,
 				592E00D98C8835CBCDAA26D9 /* MerchantDropInUIViewController.swift in Sources */,
 				E11F474C2B06C4E30091C31F /* MerchantNewLineItemViewController.swift in Sources */,
@@ -1097,7 +1095,7 @@
 /* Begin XCBuildConfiguration section */
 		313E094F25A94116E340B043 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 46462A21AE534FBDEAFD0362 /* Pods-Debug App.debug.xcconfig */;
+			baseConfigurationReference = 82192B2FE496F95BBA686EC6 /* Pods-Debug App.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/ExampleApp.entitlements";
@@ -1132,7 +1130,7 @@
 		};
 		44381669975E0C07E78FA641 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6F4C8EF34EA71C6948F17CBC /* Pods-Debug App.release.xcconfig */;
+			baseConfigurationReference = 281B29223A18A80B81605D3E /* Pods-Debug App.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/ExampleApp.entitlements";
@@ -1166,7 +1164,7 @@
 		};
 		5434DA74E34D2EBEBD3D74C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 50ADF2146EF969A01C605A58 /* Pods-Debug App Tests.debug.xcconfig */;
+			baseConfigurationReference = 8ED324D57EE5B8626DC01C57 /* Pods-Debug App Tests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1249,7 +1247,7 @@
 		};
 		F10A44A87CE1B40DAFF5D30F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5197B864C8787498BBE0F7A1 /* Pods-Debug App Tests.release.xcconfig */;
+			baseConfigurationReference = 0D4BB4C9A0035B4AD7CDE5DB /* Pods-Debug App Tests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";

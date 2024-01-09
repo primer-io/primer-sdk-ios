@@ -43,6 +43,15 @@ platform :ios do
 ###################### PUBLIC LANES #######################
 
   lane :tests do
+
+    common_pre_build_action
+
+    cocoapods(
+      clean_install: true,
+      use_bundle_exec: true,
+      podfile: podfile_path
+    )
+
     run_tests(workspace: app_workspace, 
               scheme: "Debug App Tests",
               destination: "platform=iOS Simulator,name=iPhone 14 Pro",
@@ -125,11 +134,6 @@ platform :ios do
       use_bundle_exec: true,
       podfile: podfile_path
     )
-
-    # Run Unit Tests
-    if options[:tests]
-      tests
-    end
 
     # Build for appetize
 

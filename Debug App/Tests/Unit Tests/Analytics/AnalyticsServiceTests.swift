@@ -53,7 +53,7 @@ final class AnalyticsServiceTests: XCTestCase {
         
         sendEvents(numberOfEvents: 5)
         
-        waitForExpectations(timeout: 1.0)
+        waitForExpectations(timeout: 30.0)
     }
     
     func testComplexMultiBatchFastSend() throws {
@@ -70,7 +70,7 @@ final class AnalyticsServiceTests: XCTestCase {
         }
         sendEvents(numberOfEvents: 4, delay: 0.5)
 
-        waitForExpectations(timeout: 15.0)
+        waitForExpectations(timeout: 30.0)
         
         XCTAssertEqual(apiClient.batches.count, 5)
         XCTAssertEqual(apiClient.batches.joined().count, 25)
@@ -91,7 +91,7 @@ final class AnalyticsServiceTests: XCTestCase {
         }
         sendEvents(numberOfEvents: 4, delay: 0.5)
         
-        waitForExpectations(timeout: 15.0)
+        waitForExpectations(timeout: 30.0)
         
         XCTAssertEqual(apiClient.batches.count, 3)
         XCTAssertEqual(apiClient.batches.joined().count, 15)

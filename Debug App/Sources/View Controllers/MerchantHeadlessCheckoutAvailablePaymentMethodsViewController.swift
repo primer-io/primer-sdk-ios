@@ -109,7 +109,7 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
     }
     
     @IBAction func onVaultManagerButtonTap(_ sender: Any) {
-        let vc = MerchantHeadlesVaultManagerViewController.instantiate(settings: settings,
+        let vc = MerchantHeadlessVaultManagerViewController.instantiate(settings: settings,
                                                                   clientSession: clientSession,
                                                                   clientToken: clientToken)
         self.navigationController?.pushViewController(vc, animated: true)

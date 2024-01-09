@@ -239,13 +239,13 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 return
             }
 
-            guard let licenseKey = apiConfiguration.keys?.netceteraLicenseKey else {
+            guard let apiKey = apiConfiguration.keys?.netceteraApiKey else {
                 let uuid = UUID().uuidString
 
                 let err = Primer3DSErrorContainer.missing3DSConfiguration(
                     userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                     diagnosticsId: uuid,
-                    missingKey: "netceteraLicenseKey")
+                    missingKey: "netceteraApiKey")
 
                 let internalError = InternalError.failedToPerform3dsButShouldContinue(error: err)
 
@@ -275,7 +275,7 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             if Primer3DS.hardcodedVersion.compareWithVersion("1.1.1") == .orderedDescending || Primer3DS.hardcodedVersion.compareWithVersion("1.1.1") == .orderedSame {
                 do {
                     primer3DS.is3DSSanityCheckEnabled = PrimerSettings.current.debugOptions.is3DSSanityCheckEnabled
-                    try primer3DS.initializeSDK(licenseKey: licenseKey, certificates: certs, enableWeakValidation: useThreeDsWeakValidation)
+                    try primer3DS.initializeSDK(apiKey: apiKey, certificates: certs)
                     seal.fulfill(())
 
                 } catch {
