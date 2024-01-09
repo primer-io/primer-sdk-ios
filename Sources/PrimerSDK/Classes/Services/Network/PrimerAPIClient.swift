@@ -307,7 +307,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                         imageManager.getImages(for: imageFiles)
                     }
                     .done { imageFiles in
-                        for (counter, paymentMethod) in (apiConfiguration.paymentMethods ?? []).enumerated() {
+                        for (index, paymentMethod) in (apiConfiguration.paymentMethods ?? []).enumerated() {
                             let paymentMethodImageFiles = imageFiles.filter { $0.fileName.contains(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-")) }
                             if paymentMethodImageFiles.isEmpty {
                                 continue
@@ -324,7 +324,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                                 colored: coloredImageFile?.image,
                                 light: lightImageFile?.image,
                                 dark: darkImageFile?.image)
-                            apiConfiguration.paymentMethods?[counter].baseLogoImage = baseImage
+                            apiConfiguration.paymentMethods?[index].baseLogoImage = baseImage
                         }
 
                         completion(.success(apiConfiguration))

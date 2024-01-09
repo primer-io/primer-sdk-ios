@@ -19,13 +19,12 @@ extension PrimerHeadlessUniversalCheckout {
 
             let sdkEvent = Analytics.Event(
                 eventType: .sdkEvent,
-                properties: SDKEventProperties(
-                    name: "\(Self.self).\(#function)",
-                    params: [
-                        "category": "NATIVE_UI",
-                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
-                        "paymentMethodType": paymentMethodType
-                    ]))
+                properties: SDKEventProperties(name: "\(Self.self).\(#function)",
+                                               params: [
+                                                "category": "NATIVE_UI",
+                                                "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                                                "paymentMethodType": paymentMethodType
+                                               ]))
             Analytics.Service.record(events: [sdkEvent])
 
             self.paymentMethodType = paymentMethodType
@@ -65,13 +64,12 @@ extension PrimerHeadlessUniversalCheckout {
             if let intent = intent {
                 if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
                     (intent == .checkout && !paymentMethod.isCheckoutEnabled) {
-                    let err = PrimerError.unsupportedIntent(
-                        intent: intent,
-                        userInfo: ["file": #file,
-                                   "class": "\(Self.self)",
-                                   "function": #function,
-                                   "line": "\(#line)"],
-                        diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.unsupportedIntent(intent: intent,
+                                                            userInfo: ["file": #file,
+                                                                       "class": "\(Self.self)",
+                                                                       "function": #function,
+                                                                       "line": "\(#line)"],
+                                                            diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
                 }
@@ -80,20 +78,25 @@ extension PrimerHeadlessUniversalCheckout {
             switch paymentMethodType {
             case PrimerPaymentMethodType.applePay.rawValue:
                 if PrimerSettings.current.paymentMethodOptions.applePayOptions == nil {
-                    let err = PrimerError.invalidValue(key: "settings.paymentMethodOptions.applePayOptions", value: nil, userInfo: ["file": #file,
-                                                                                                                                    "class": "\(Self.self)",
-                                                                                                                                    "function": #function,
-                                                                                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidValue(key: "settings.paymentMethodOptions.applePayOptions",
+                                                       value: nil,
+                                                       userInfo: ["file": #file,
+                                                                  "class": "\(Self.self)",
+                                                                  "function": #function,
+                                                                  "line": "\(#line)"],
+                                                       diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
                 }
 
             case PrimerPaymentMethodType.payPal.rawValue:
                 if PrimerSettings.current.paymentMethodOptions.urlScheme == nil {
-                    let err = PrimerError.invalidUrlScheme(urlScheme: nil, userInfo: ["file": #file,
-                                                                                      "class": "\(Self.self)",
-                                                                                      "function": #function,
-                                                                                      "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidUrlScheme(urlScheme: nil,
+                                                           userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
                 }

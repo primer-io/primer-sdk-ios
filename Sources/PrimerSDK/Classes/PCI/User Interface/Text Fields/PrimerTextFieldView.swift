@@ -204,7 +204,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         guard let primerTextField = textField as? PrimerTextField else { return }
 
         if let isValid = self.isValid {
-            validation = (isValid(primerTextField._text ?? "") ?? false)
+            validation = (isValid(primerTextField.internalText ?? "") ?? false)
             ? PrimerTextField.Validation.valid
             : PrimerTextField.Validation.invalid(PrimerError.invalidValue(key: "primerTextField.text",
                                                                           value: textField.text,

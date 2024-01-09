@@ -983,10 +983,7 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
         var countryResults: [CountryCode] = []
 
         for country in countries where
-        country.country.lowercased().folding(options: .diacriticInsensitive,
-                                             locale: nil).contains(query.lowercased()
-            .folding(options: .diacriticInsensitive,
-                     locale: nil)) == true {
+        country.country.lowercasedAndFolded().contains(query.lowercasedAndFolded()) == true {
             countryResults.append(country)
         }
 
@@ -999,4 +996,14 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
         dataSource = countries
         return true
     }
+}
+
+private extension String {
+   func lowercasedAndFolded() -> String {
+       self
+       .lowercased()
+       .folding(
+           options: .diacriticInsensitive,
+           locale: nil)
+   }
 }

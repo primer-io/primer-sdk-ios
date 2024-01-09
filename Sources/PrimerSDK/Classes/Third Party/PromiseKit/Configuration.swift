@@ -1,4 +1,5 @@
 import Dispatch
+// swiftlint:disable all
 
 /**
  PromiseKit’s configurable parameters.
@@ -7,7 +8,6 @@ import Dispatch
 
  We would like it to be, but sadly `Swift` does not expose `dispatch_once` et al. which is what we used to use in order to make the configuration immutable once first used.
 */
-// swiftlint:disable identifier_name
 internal struct PMKConfiguration {
     /// Backward compatibility: the default Dispatcher to which handlers dispatch, represented as DispatchQueues.
     internal var Q: (map: DispatchQueue?, return: DispatchQueue?) {
@@ -35,4 +35,4 @@ internal struct PMKConfiguration {
 
 /// Modify this as soon as possible in your application’s lifetime
 internal var conf = PMKConfiguration()
-// swiftlint:enable identifier_name
+// swiftlint:enable all

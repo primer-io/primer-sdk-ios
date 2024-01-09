@@ -30,7 +30,7 @@ public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
         let cursorLocation = textField.position(from: positionOriginal, offset: (range.location + NSString(string: string).length))
 
         guard let primerTextField = textField as? PrimerTextField else { return true }
-        let currentText = primerTextField._text ?? ""
+        let currentText = primerTextField.internalText ?? ""
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
 
         switch self.isValid?(newText) {
@@ -52,7 +52,7 @@ public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
             delegate?.primerTextFieldView(self, isValid: nil)
         }
 
-        primerTextField._text = newText
+        primerTextField.internalText = newText
         primerTextField.text = newText
 
         if let cursorLoc = cursorLocation {

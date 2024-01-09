@@ -28,7 +28,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
 
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
-        let currentText = primerTextField._text ?? ""
+        let currentText = primerTextField.internalText ?? ""
         var newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         newText = newText.replacingOccurrences(of: "/", with: "")
         if !(newText.isNumeric || newText.isEmpty) { return false }
@@ -65,7 +65,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             }
         }
 
-        primerTextField._text = newText
+        primerTextField.internalText = newText
         primerTextField.text = newText
 
         if newText.isValidExpiryDate {

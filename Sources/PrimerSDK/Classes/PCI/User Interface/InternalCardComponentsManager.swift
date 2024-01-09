@@ -435,7 +435,7 @@ internal class MockCardComponentsManager: InternalCardComponentsManagerProtocol 
         cardnumber: String?
     ) {
         let cardnumberFieldView = PrimerCardNumberFieldView()
-        cardnumberFieldView.textField._text = cardnumber
+        cardnumberFieldView.textField.internalText = cardnumber
         self.init(
             cardnumberField: cardnumberFieldView,
             expiryDateField: PrimerExpiryDateFieldView(),
