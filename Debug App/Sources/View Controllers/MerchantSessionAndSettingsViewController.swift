@@ -60,6 +60,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var checkoutFlowSegmentedControl: UISegmentedControl!
     @IBOutlet weak var merchantNameTextField: UITextField!
     @IBOutlet weak var applyThemingSwitch: UISwitch!
+    @IBOutlet weak var vaultPaymentsSwitch: UISwitch!
     @IBOutlet weak var disableSuccessScreenSwitch: UISwitch!
     @IBOutlet weak var disableErrorScreenSwitch: UISwitch!
     @IBOutlet weak var disableInitScreenSwitch: UISwitch!
@@ -128,8 +129,21 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
     
+    static let customerIdStorageKey = "io.primer.debug.customer-id"
+    
+    static var customerId: String {
+        
+        if let customerId = UserDefaults.standard.string(forKey: customerIdStorageKey) {
+            return customerId
+        }
+
+        let customerId = "ios-customer-\(String.randomString(length: 8))"
+        UserDefaults.standard.set(customerId, forKey: customerIdStorageKey)
+        return customerId
+    }
+    
     var clientSession = ClientSessionRequestBody(
-        customerId: "ios-customer-\(String.randomString(length: 8))",
+        customerId: customerId,
         orderId: "ios-order-\(String.randomString(length: 8))",
         currencyCode: .EUR,
         amount: nil,
@@ -256,6 +270,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         shippinAddressStateTextField.text = clientSession.customer?.shippingAddress?.state
         shippinAddressPostalCodeTextField.text = clientSession.customer?.shippingAddress?.postalCode
         shippinAddressCountryTextField.text = clientSession.customer?.shippingAddress?.countryCode
+        
+        customerIdTextField.addTarget(self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
         
         render()
     }
@@ -426,6 +442,89 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         surchargeStackView.isHidden = !sender.isOn
     }
     
+    func configureClientSession() {
+        clientSession.currencyCode = Currency(rawValue: currencyTextField.text ?? "")
+        clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
+        clientSession.orderId = orderIdTextField.text
+        clientSession.customerId = customerIdTextField.text
+        clientSession.customer?.firstName = customerFirstNameTextField.text
+        clientSession.customer?.lastName = customerLastNameTextField.text
+        clientSession.customer?.emailAddress = customerEmailTextField.text
+        clientSession.customer?.mobileNumber = customerMobileNumberTextField.text
+        
+        if billingAddressSwitch.isOn {
+            clientSession.customer?.billingAddress?.firstName = billingAddressFirstNameTextField.text
+            clientSession.customer?.billingAddress?.lastName = billingAddressLastNameTextField.text
+            clientSession.customer?.billingAddress?.addressLine1 = billingAddressLine1TextField.text
+            clientSession.customer?.billingAddress?.addressLine2 = billingAddressLine2TextField.text
+            clientSession.customer?.billingAddress?.city = billingAddressCityTextField.text
+            clientSession.customer?.billingAddress?.state = billingAddressStateTextField.text
+            clientSession.customer?.billingAddress?.postalCode = billingAddressPostalCodeTextField.text
+            clientSession.customer?.billingAddress?.countryCode = billingAddressCountryTextField.text
+        } else {
+            clientSession.customer?.billingAddress = nil
+        }
+        
+        if shippingAddressSwitch.isOn {
+            clientSession.customer?.shippingAddress?.firstName = shippinAddressFirstNameTextField.text
+            clientSession.customer?.shippingAddress?.lastName = shippinAddressLastNameTextField.text
+            clientSession.customer?.shippingAddress?.addressLine1 = shippinAddressLine1TextField.text
+            clientSession.customer?.shippingAddress?.addressLine2 = shippinAddressLine2TextField.text
+            clientSession.customer?.shippingAddress?.city = shippinAddressCityTextField.text
+            clientSession.customer?.shippingAddress?.state = shippinAddressStateTextField.text
+            clientSession.customer?.shippingAddress?.postalCode = shippinAddressPostalCodeTextField.text
+            clientSession.customer?.shippingAddress?.countryCode = shippinAddressCountryTextField.text
+        } else {
+            clientSession.customer?.shippingAddress = nil
+        }
+        
+        clientSession.paymentMethod = .init(vaultOnSuccess: vaultPaymentsSwitch.isOn, options: nil, paymentType: nil)
+    }
+    
+    func configureTestScenario() {
+        guard let selectedTestScenario = selectedTestScenario else {
+            let alert = UIAlertController(title: "Error", message: "Please choose Test Scenario", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
+        var testParams = Test.Params(
+            scenario: selectedTestScenario,
+            result: .success,
+            network: nil,
+            polling: nil,
+            threeDS: nil)
+        
+        if testResultSegmentedControl.selectedSegmentIndex == 1 {
+            guard let selectedTestFlow = selectedTestFlow else {
+                let alert = UIAlertController(title: "Error", message: "Please choose failure flow in the Failure Parameters", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                present(alert, animated: true)
+                return
+            }
+            
+            let failure = Test.Params.Failure(
+                flow: selectedTestFlow,
+                error: Test.Params.Failure.Error(
+                    errorId: testErrorIdTextField.text ?? "test-error-id",
+                    description: testErrorDescriptionTextField.text ?? "test-error-description"))
+            
+            testParams.result = .failure(failure: failure)
+            
+        } else if case .testNative3DS = selectedTestScenario {
+            guard let selectedTest3DSScenario = selectedTest3DSScenario else {
+                let alert = UIAlertController(title: "Error", message: "Please choose 3DS scenario", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                present(alert, animated: true)
+                return
+            }
+            testParams.threeDS = Test.Params.ThreeDS(scenario: selectedTest3DSScenario)
+        }
+        
+        clientSession.testParams = testParams
+    }
+    
     @IBAction func primerSDKButtonTapped(_ sender: Any) {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
         
@@ -450,87 +549,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         )
         
         switch renderMode {
-        case .createClientSession,
-                .testScenario:
-            clientSession.currencyCode = Currency(rawValue: currencyTextField.text ?? "")
-            clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
-            clientSession.orderId = orderIdTextField.text
-            clientSession.customerId = customerIdTextField.text
-            clientSession.customer?.firstName = customerFirstNameTextField.text
-            clientSession.customer?.lastName = customerLastNameTextField.text
-            clientSession.customer?.emailAddress = customerEmailTextField.text
-            clientSession.customer?.mobileNumber = customerMobileNumberTextField.text
-            
-            if billingAddressSwitch.isOn {
-                clientSession.customer?.billingAddress?.firstName = billingAddressFirstNameTextField.text
-                clientSession.customer?.billingAddress?.lastName = billingAddressLastNameTextField.text
-                clientSession.customer?.billingAddress?.addressLine1 = billingAddressLine1TextField.text
-                clientSession.customer?.billingAddress?.addressLine2 = billingAddressLine2TextField.text
-                clientSession.customer?.billingAddress?.city = billingAddressCityTextField.text
-                clientSession.customer?.billingAddress?.state = billingAddressStateTextField.text
-                clientSession.customer?.billingAddress?.postalCode = billingAddressPostalCodeTextField.text
-                clientSession.customer?.billingAddress?.countryCode = billingAddressCountryTextField.text
-            } else {
-                clientSession.customer?.billingAddress = nil
-            }
-            
-            if shippingAddressSwitch.isOn {
-                clientSession.customer?.shippingAddress?.firstName = shippinAddressFirstNameTextField.text
-                clientSession.customer?.shippingAddress?.lastName = shippinAddressLastNameTextField.text
-                clientSession.customer?.shippingAddress?.addressLine1 = shippinAddressLine1TextField.text
-                clientSession.customer?.shippingAddress?.addressLine2 = shippinAddressLine2TextField.text
-                clientSession.customer?.shippingAddress?.city = shippinAddressCityTextField.text
-                clientSession.customer?.shippingAddress?.state = shippinAddressStateTextField.text
-                clientSession.customer?.shippingAddress?.postalCode = shippinAddressPostalCodeTextField.text
-                clientSession.customer?.shippingAddress?.countryCode = shippinAddressCountryTextField.text
-            } else {
-                clientSession.customer?.shippingAddress = nil
-            }
-            
+        case .createClientSession, .testScenario:
+            configureClientSession()
             if case .testScenario = renderMode {
-                guard let selectedTestScenario = selectedTestScenario else {
-                    let alert = UIAlertController(title: "Error", message: "Please choose Test Scenario", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    present(alert, animated: true)
-                    return
-                }
-                
-                var testParams = Test.Params(
-                    scenario: selectedTestScenario,
-                    result: .success,
-                    network: nil,
-                    polling: nil,
-                    threeDS: nil)
-                
-                if testResultSegmentedControl.selectedSegmentIndex == 1 {
-                    guard let selectedTestFlow = selectedTestFlow else {
-                        let alert = UIAlertController(title: "Error", message: "Please choose failure flow in the Failure Parameters", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: .default))
-                        present(alert, animated: true)
-                        return
-                    }
-                    
-                    let failure = Test.Params.Failure(
-                        flow: selectedTestFlow,
-                        error: Test.Params.Failure.Error(
-                            errorId: testErrorIdTextField.text ?? "test-error-id",
-                            description: testErrorDescriptionTextField.text ?? "test-error-description"))
-                    
-                    testParams.result = .failure(failure: failure)
-                    
-                } else if case .testNative3DS = selectedTestScenario {
-                    guard let selectedTest3DSScenario = selectedTest3DSScenario else {
-                        let alert = UIAlertController(title: "Error", message: "Please choose 3DS scenario", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: .default))
-                        present(alert, animated: true)
-                        return
-                    }
-                    testParams.threeDS = Test.Params.ThreeDS(scenario: selectedTest3DSScenario)
-                }
-                
-                clientSession.testParams = testParams
+                configureTestScenario()
             }
-            
             let vc = MerchantDropInUIViewController.instantiate(settings: settings, clientSession: clientSession, clientToken: nil)
             navigationController?.pushViewController(vc, animated: true)
             
@@ -558,99 +581,26 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         )
         
         switch renderMode {
-        case .createClientSession,
-                .testScenario:
-            clientSession.currencyCode = Currency(rawValue: currencyTextField.text ?? "")
-            clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
-            clientSession.orderId = orderIdTextField.text
-            clientSession.customerId = customerIdTextField.text
-            clientSession.customer?.firstName = customerFirstNameTextField.text
-            clientSession.customer?.lastName = customerLastNameTextField.text
-            clientSession.customer?.emailAddress = customerEmailTextField.text
-            clientSession.customer?.mobileNumber = customerMobileNumberTextField.text
-            
-            if billingAddressSwitch.isOn {
-                clientSession.customer?.billingAddress?.firstName = billingAddressFirstNameTextField.text
-                clientSession.customer?.billingAddress?.lastName = billingAddressLastNameTextField.text
-                clientSession.customer?.billingAddress?.addressLine1 = billingAddressLine1TextField.text
-                clientSession.customer?.billingAddress?.addressLine2 = billingAddressLine2TextField.text
-                clientSession.customer?.billingAddress?.city = billingAddressCityTextField.text
-                clientSession.customer?.billingAddress?.state = billingAddressStateTextField.text
-                clientSession.customer?.billingAddress?.postalCode = billingAddressPostalCodeTextField.text
-                clientSession.customer?.billingAddress?.countryCode = billingAddressCountryTextField.text
-            } else {
-                clientSession.customer?.billingAddress = nil
-            }
-            
-            if shippingAddressSwitch.isOn {
-                clientSession.customer?.shippingAddress?.firstName = shippinAddressFirstNameTextField.text
-                clientSession.customer?.shippingAddress?.lastName = shippinAddressLastNameTextField.text
-                clientSession.customer?.shippingAddress?.addressLine1 = shippinAddressLine1TextField.text
-                clientSession.customer?.shippingAddress?.addressLine2 = shippinAddressLine2TextField.text
-                clientSession.customer?.shippingAddress?.city = shippinAddressCityTextField.text
-                clientSession.customer?.shippingAddress?.state = shippinAddressStateTextField.text
-                clientSession.customer?.shippingAddress?.postalCode = shippinAddressPostalCodeTextField.text
-                clientSession.customer?.shippingAddress?.countryCode = shippinAddressCountryTextField.text
-            } else {
-                clientSession.customer?.shippingAddress = nil
-            }
-            
+        case .createClientSession, .testScenario:
+            configureClientSession()
             if case .testScenario = renderMode {
-                guard let selectedTestScenario = selectedTestScenario else {
-                    let alert = UIAlertController(title: "Error", message: "Please choose Test Scenario", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    present(alert, animated: true)
-                    return
-                }
-                
-                var testParams = Test.Params(
-                    scenario: selectedTestScenario,
-                    result: .success,
-                    network: nil,
-                    polling: nil,
-                    threeDS: nil)
-                
-                if testResultSegmentedControl.selectedSegmentIndex == 1 {
-                    guard let selectedTestFlow = selectedTestFlow else {
-                        let alert = UIAlertController(title: "Error", message: "Please choose failure flow in the Failure Parameters", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: .default))
-                        present(alert, animated: true)
-                        return
-                    }
-                    
-                    let failure = Test.Params.Failure(
-                        flow: selectedTestFlow,
-                        error: Test.Params.Failure.Error(
-                            errorId: testErrorIdTextField.text ?? "test-error-id",
-                            description: testErrorDescriptionTextField.text ?? "test-error-description"))
-                    
-                    testParams.result = .failure(failure: failure)
-                    
-                } else if case .testNative3DS = selectedTestScenario {
-                    guard let selectedTest3DSScenario = selectedTest3DSScenario else {
-                        let alert = UIAlertController(title: "Error", message: "Please choose 3DS scenario", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: .default))
-                        present(alert, animated: true)
-                        return
-                    }
-                    testParams.threeDS = Test.Params.ThreeDS(scenario: selectedTest3DSScenario)
-                }
-                
-                clientSession.testParams = testParams
+                configureTestScenario()
             }
-            
             let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(settings: settings,
                                                                                                clientSession: clientSession,
                                                                                                clientToken: nil)
-
             navigationController?.pushViewController(vc, animated: true)
-                        
         case .clientToken:
             let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(settings: settings,
                                                                                                clientSession: nil,
                                                                                                clientToken: clientTokenTextField.text)
             navigationController?.pushViewController(vc, animated: true)
         }
+    }
+    
+    @objc func customerIdChanged(_ textField: UITextField!) {
+        guard let text = customerIdTextField.text else { return }
+        UserDefaults.standard.set(text, forKey: Self.customerIdStorageKey)
     }
 }
 

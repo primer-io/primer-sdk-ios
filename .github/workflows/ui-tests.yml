@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-upload-to-appetize:
-    runs-on: macos-latest
+    runs-on: macos-13
     timeout-minutes: 20
     name: "Build and upload app to Appetize"
     steps:
