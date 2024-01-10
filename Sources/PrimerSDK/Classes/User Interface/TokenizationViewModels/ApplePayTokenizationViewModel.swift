@@ -249,7 +249,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     let request = PKPaymentRequest()
                     let isBillingContactFieldsRequired = PrimerSettings.current.paymentMethodOptions.applePayOptions?.isCaptureBillingAddressEnabled == true
                     request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
-                    request.currencyCode = applePayRequest.currency.rawValue
+                    request.currencyCode = applePayRequest.currency.code
                     request.countryCode = applePayRequest.countryCode.rawValue
                     request.merchantIdentifier = merchantIdentifier
                     request.merchantCapabilities = [.capability3DS]

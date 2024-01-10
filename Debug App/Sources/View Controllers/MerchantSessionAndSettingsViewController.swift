@@ -147,7 +147,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var clientSession = ClientSessionRequestBody(
         customerId: customerId,
         orderId: "ios-order-\(String.randomString(length: 8))",
-        currencyCode: .EUR,
+        currencyCode: CurrencyLoader.getCurrencyFor("EUR"),
         amount: nil,
         metadata: nil,
         customer: ClientSessionRequestBody.Customer(
@@ -243,7 +243,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         
         merchantNameTextField.text = "Primer Merchant"
         
-        currencyTextField.text = clientSession.currencyCode?.rawValue
+        currencyTextField.text = clientSession.currencyCode?.code
         countryCodeTextField.text = clientSession.order?.countryCode?.rawValue
         orderIdTextField.text = clientSession.orderId
         
@@ -452,7 +452,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
     
     func configureClientSession() {
-        clientSession.currencyCode = Currency(rawValue: currencyTextField.text ?? "")
+        clientSession.currencyCode = CurrencyLoader.getCurrencyFor("EUR")
         clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
         clientSession.orderId = orderIdTextField.text
         clientSession.customerId = customerIdTextField.text

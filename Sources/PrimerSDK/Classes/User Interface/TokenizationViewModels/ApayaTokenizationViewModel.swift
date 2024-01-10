@@ -174,7 +174,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         let body = Request.Body.Apaya.CreateSession(
             merchantAccountId: merchantAccountId,
             language: PrimerSettings.current.localeData.languageCode,
-            currencyCode: currency.rawValue,
+            currencyCode: currency.code,
             phoneNumber: PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.mobileNumber)
 
         let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
@@ -254,11 +254,14 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return
         }
 
-        guard let currencyStr = AppState.current.currency?.rawValue else {
-            let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file,
-                                                                                          "class": "\(Self.self)",
-                                                                                          "function": #function,
-                                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+        guard let currencyStr = AppState.current.currency?.code else {
+            let err = PrimerError.invalidSetting(name: "currency", 
+												 value: nil,
+												 userInfo: ["file": #file,
+															"class": "\(Self.self)",
+															"function": #function,
+															"line": "\(#line)"],
+												 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
