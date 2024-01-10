@@ -52,6 +52,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String)
     case unsupportedPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
+    case unsupportedPaymentMethodForManager(paymentMethodType: String, category: String, userInfo: [String: String]?, diagnosticsId: String)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
     case missingSDK(paymentMethodType: String, sdkName: String, userInfo: [String: String]?, diagnosticsId: String)
     case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -116,6 +117,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "unsupported-session-intent"
         case .unsupportedPaymentMethod:
             return "unsupported-payment-method-type"
+        case .unsupportedPaymentMethodForManager:
+            return "unsupported-payment-method-for-manager"
         case .underlyingErrors:
             return "generic-underlying-errors"
         case .missingSDK:
@@ -204,6 +207,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .unsupportedPaymentMethod(_, _, let diagnosticsId):
             return diagnosticsId
+        case .unsupportedPaymentMethodForManager(_, _, _, let diagnosticsId):
+            return diagnosticsId
         case .underlyingErrors(_, _, let diagnosticsId):
             return diagnosticsId
         case .missingSDK(_, _, _, let diagnosticsId):
@@ -289,6 +294,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Multiple errors occured: \(errors.combinedDescription)"
         case .unsupportedPaymentMethod(let paymentMethodType, _, _):
             return "Unsupported payment method type \(paymentMethodType)"
+        case .unsupportedPaymentMethodForManager(let paymentMethodType, let category, _, _):
+            return "Payment method \(paymentMethodType) is not supported on \(category) manager"
         case .merchantError(let message, _, _):
             return message
         case .paymentFailed(_, let description, _, _):
@@ -343,6 +350,7 @@ public enum PrimerError: PrimerErrorProtocol {
                 .unableToPresentPaymentMethod(_, let userInfo, _),
                 .unsupportedIntent(_, let userInfo, _),
                 .unsupportedPaymentMethod(_, let userInfo, _),
+                .unsupportedPaymentMethodForManager(_, _, let userInfo, _),
                 .underlyingErrors(_, let userInfo, _),
                 .missingSDK(_, _, let userInfo, _),
                 .merchantError(_, let userInfo, _),
@@ -432,6 +440,8 @@ public enum PrimerError: PrimerErrorProtocol {
             }
         case .unsupportedPaymentMethod:
             return "Change the payment method type"
+        case .unsupportedPaymentMethodForManager:
+            return "Use a method that supports this manager, or use the correct manager for the method. See PrimerPaymentMethodManagerCategory."
         case .underlyingErrors:
             return "Check underlying errors for more information."
         case .missingSDK(let paymentMethodType, let sdkName, _, _):
