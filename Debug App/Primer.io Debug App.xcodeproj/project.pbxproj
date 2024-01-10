@@ -22,7 +22,6 @@
 		049298072B1E1F4D002E04B8 /* AnalyticsStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */; };
 		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
 		049A05602B4C191D002CEEBA /* NativeUIManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */; };
-		049A05642B4C1EEB002CEEBA /* SDKSessionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A05622B4C1EE6002CEEBA /* SDKSessionHelper.swift */; };
 		04DAAED42B03EED1002E2614 /* AssetsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */; };
 		04DAAED62B03EF0B002E2614 /* SDKSessionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */; };
 		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
@@ -107,7 +106,6 @@
 		E6F85ECD80B64754E7A6D35E /* RawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
-		F03699592AC2E63700E4179D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F1A71C2E0D900FEB9AF1351C /* ThreeDSProtocolVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */; };
 		F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD381E7E16D01D8D743232F7 /* ThemeTests.swift */; };
@@ -166,7 +164,6 @@
 		049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStorageTests.swift; sourceTree = "<group>"; };
 		049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessVaultManagerViewController.swift; sourceTree = "<group>"; };
 		049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeUIManagerTests.swift; sourceTree = "<group>"; };
-		049A05622B4C1EE6002CEEBA /* SDKSessionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKSessionHelper.swift; sourceTree = "<group>"; };
 		04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsManagerTests.swift; sourceTree = "<group>"; };
 		04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKSessionHelper.swift; sourceTree = "<group>"; };
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
@@ -311,14 +308,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		049A05612B4C1ED4002CEEBA /* Test Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				049A05622B4C1EE6002CEEBA /* SDKSessionHelper.swift */,
-			);
-			path = "Test Utilities";
-			sourceTree = "<group>";
-		};
 		042ED1632AF0F5CE0027833F /* Delegates */ = {
 			isa = PBXGroup;
 			children = (
@@ -593,7 +582,6 @@
 			isa = PBXGroup;
 			children = (
 				04DAAED22B03EEBE002E2614 /* Assets */,
-				0479FB162AF2598800D0AFC9 /* Test Utilities */,
 				E1A2F78003351E14426E0B36 /* Analytics */,
 				D83EED4C1249B62B908781B0 /* Data Models */,
 				626776D8EFEF24D5C5A36307 /* Extensions */,
@@ -603,7 +591,7 @@
 				2F23D3C9CC9CBC1B95329B1C /* Network */,
 				5CC7BF9D8A0A9D8490C48151 /* Primer */,
 				5836043C1C4E5A1CF7B81CDD /* Services */,
-				049A05612B4C1ED4002CEEBA /* Test Utilities */,
+				0479FB162AF2598800D0AFC9 /* Test Utilities */,
 				C8A971C6C0021F0115DF44CC /* Utils */,
 				ACC4CBBD9744630CB46A5EE4 /* v2 */,
 				F4AC1EC0F98CB56DA4D075CA /* Mocks.swift */,
@@ -919,9 +907,7 @@
 				583EBAA90902121CEA479416 /* VaultService.swift in Sources */,
 				961B5D18058EF4CFCD0185AE /* MockVaultCheckoutViewModel.swift in Sources */,
 				622A605DDEA98D981670B53F /* DropInUI_TokenizationViewModelTests.swift in Sources */,
-				F03699592AC2E63700E4179D /* (null) in Sources */,
 				208CA849F3187C2DA63CC17B /* HUC_TokenizationViewModelTests.swift in Sources */,
-				049A05642B4C1EEB002CEEBA /* SDKSessionHelper.swift in Sources */,
 				213196DEDF2A3A84037ED884 /* PollingModuleTests.swift in Sources */,
 				04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */,
 				049298012B1DD466002E04B8 /* AnalyticsServiceTests.swift in Sources */,
