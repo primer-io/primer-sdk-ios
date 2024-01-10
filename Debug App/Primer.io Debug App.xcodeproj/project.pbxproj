@@ -20,6 +20,8 @@
 		047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D8E882ADEA4C700A5E7BD /* NetworkService.swift */; };
 		049298012B1DD466002E04B8 /* AnalyticsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */; };
 		049298072B1E1F4D002E04B8 /* AnalyticsStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */; };
+		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
+		049A05602B4C191D002CEEBA /* NativeUIManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */; };
 		04DAAED42B03EED1002E2614 /* AssetsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */; };
 		04DAAED62B03EF0B002E2614 /* SDKSessionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */; };
 		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
@@ -67,7 +69,6 @@
 		8064B65A8F83D5B004D081FD /* PaymentMethodConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752785ACCF65527C239391A8 /* PaymentMethodConfigTests.swift */; };
 		85605C241F1CD45BA676D4A7 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9023841AFCE8E3205CB713A /* String+Extensions.swift */; };
 		85EDC3F175D699BFF6BD48EF /* ViewController+Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CCCB917D1881082ED75975 /* ViewController+Primer.swift */; };
-		8B51ABC1C475342A047D5FA6 /* Networking+Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E08473D1DF8C47A6EB61B2 /* Networking+Models.swift */; };
 		8B5CB0C992DBAB293D378FAD /* MockModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */; };
 		91FAC91E687B6981268E677E /* DateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0B2BEE5C389FD13E210847 /* DateTests.swift */; };
 		9263BD762EC26F6AA986F0C9 /* MockAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17476BFBED51F389FCE82F16 /* MockAPIClient.swift */; };
@@ -105,10 +106,8 @@
 		E6F85ECD80B64754E7A6D35E /* RawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
-		F03699592AC2E63700E4179D /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F1A71C2E0D900FEB9AF1351C /* ThreeDSProtocolVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */; };
-		F3B88F24999785898FE54C53 /* MerchantHeadlesVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698F95A8EC4DF45AFFDA783 /* MerchantHeadlesVaultManagerViewController.swift */; };
 		F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD381E7E16D01D8D743232F7 /* ThemeTests.swift */; };
 		FD5ADBCFA70DB606339F3AF2 /* TransactionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D3D6CF0F006A06B7CEC71B /* TransactionResponse.swift */; };
 /* End PBXBuildFile section */
@@ -163,6 +162,8 @@
 		047D8E882ADEA4C700A5E7BD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsServiceTests.swift; sourceTree = "<group>"; };
 		049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStorageTests.swift; sourceTree = "<group>"; };
+		049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessVaultManagerViewController.swift; sourceTree = "<group>"; };
+		049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeUIManagerTests.swift; sourceTree = "<group>"; };
 		04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsManagerTests.swift; sourceTree = "<group>"; };
 		04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKSessionHelper.swift; sourceTree = "<group>"; };
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
@@ -197,7 +198,6 @@
 		4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawRetailDataViewController.swift; sourceTree = "<group>"; };
 		4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodCell.swift; sourceTree = "<group>"; };
 		52F54EC3C1ACE19DF48BD6E2 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		5698F95A8EC4DF45AFFDA783 /* MerchantHeadlesVaultManagerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlesVaultManagerViewController.swift; sourceTree = "<group>"; };
 		5AA706A14BACFDB8E5715788 /* HeadlessVaultManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlessVaultManagerTests.swift; sourceTree = "<group>"; };
 		5D7EC742DEB5BE12252E3E5B /* PayPalServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPalServiceTests.swift; sourceTree = "<group>"; };
 		5DB3B88857B810440CDA881E /* DropInUI_TokenizationViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropInUI_TokenizationViewModelTests.swift; sourceTree = "<group>"; };
@@ -218,7 +218,6 @@
 		743F107C464526926A34A433 /* PaymentMethodConfigServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigServiceTests.swift; sourceTree = "<group>"; };
 		7480FE5F665CC66C092BC95A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		752785ACCF65527C239391A8 /* PaymentMethodConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodConfigTests.swift; sourceTree = "<group>"; };
-		77E08473D1DF8C47A6EB61B2 /* Networking+Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Networking+Models.swift"; sourceTree = "<group>"; };
 		7A3E75CD834937EF85DE1C14 /* MockVaultCheckoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockVaultCheckoutViewModel.swift; sourceTree = "<group>"; };
 		7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPay88Tests.swift; sourceTree = "<group>"; };
 		7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockModule.swift; sourceTree = "<group>"; };
@@ -352,7 +351,7 @@
 				B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */,
 				404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */,
 				4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */,
-				5698F95A8EC4DF45AFFDA783 /* MerchantHeadlesVaultManagerViewController.swift */,
+				049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */,
 				00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */,
 				C18C9664115CFDEB59FED19A /* MerchantSessionAndSettingsViewController.swift */,
 			);
@@ -430,6 +429,7 @@
 				E9899972360BCA5992CEE5BC /* PrimerBancontactCardDataManagerTests.swift */,
 				EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */,
 				B266F9E1651BD20E45DCCF68 /* PrimerRawRetailerDataTests.swift */,
+				049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */,
 			);
 			path = Primer;
 			sourceTree = "<group>";
@@ -485,7 +485,6 @@
 			isa = PBXGroup;
 			children = (
 				E8DE1E4FB055B60582977315 /* Networking.swift */,
-				77E08473D1DF8C47A6EB61B2 /* Networking+Models.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -583,7 +582,6 @@
 			isa = PBXGroup;
 			children = (
 				04DAAED22B03EEBE002E2614 /* Assets */,
-				0479FB162AF2598800D0AFC9 /* Test Utilities */,
 				E1A2F78003351E14426E0B36 /* Analytics */,
 				D83EED4C1249B62B908781B0 /* Data Models */,
 				626776D8EFEF24D5C5A36307 /* Extensions */,
@@ -593,6 +591,7 @@
 				2F23D3C9CC9CBC1B95329B1C /* Network */,
 				5CC7BF9D8A0A9D8490C48151 /* Primer */,
 				5836043C1C4E5A1CF7B81CDD /* Services */,
+				0479FB162AF2598800D0AFC9 /* Test Utilities */,
 				C8A971C6C0021F0115DF44CC /* Utils */,
 				ACC4CBBD9744630CB46A5EE4 /* v2 */,
 				F4AC1EC0F98CB56DA4D075CA /* Mocks.swift */,
@@ -908,8 +907,6 @@
 				583EBAA90902121CEA479416 /* VaultService.swift in Sources */,
 				961B5D18058EF4CFCD0185AE /* MockVaultCheckoutViewModel.swift in Sources */,
 				622A605DDEA98D981670B53F /* DropInUI_TokenizationViewModelTests.swift in Sources */,
-				F03699592AC2E63700E4179D /* BuildFile in Sources */,
-				F03699592AC2E63700E4179D /* BuildFile in Sources */,
 				208CA849F3187C2DA63CC17B /* HUC_TokenizationViewModelTests.swift in Sources */,
 				213196DEDF2A3A84037ED884 /* PollingModuleTests.swift in Sources */,
 				04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */,
@@ -930,6 +927,7 @@
 				042ED1652AF0F5FD0027833F /* MockRawDataManagerDelegate.swift in Sources */,
 				041295AD2AB9E2C100A4F243 /* PrimerHeadlessNolPayManagerTests.swift in Sources */,
 				DC98712939835FB79A20BD63 /* IntExtensionTests.swift in Sources */,
+				049A05602B4C191D002CEEBA /* NativeUIManagerTests.swift in Sources */,
 				6B2212601374387CB004DA86 /* MaskTests.swift in Sources */,
 				C8A64A69AD55D9BF82F0D876 /* StringTests.swift in Sources */,
 				0402B7B82AFBBC2200B02C75 /* ApplePayUtilsTest.swift in Sources */,
@@ -962,10 +960,9 @@
 				AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */,
 				C75A11E6AEEFC2B7A29BBC04 /* TestScenario.swift in Sources */,
 				FD5ADBCFA70DB606339F3AF2 /* TransactionResponse.swift in Sources */,
-				8B51ABC1C475342A047D5FA6 /* Networking+Models.swift in Sources */,
+				049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */,
 				53E3182FFC4E5F05D866CFAE /* Networking.swift in Sources */,
 				592E00D98C8835CBCDAA26D9 /* MerchantDropInUIViewController.swift in Sources */,
-				F3B88F24999785898FE54C53 /* MerchantHeadlesVaultManagerViewController.swift in Sources */,
 				041295AA2AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */,
 				135E5BFD51371FABB5FF35D3 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
 				AD9CF1073EE0676E6640481A /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,

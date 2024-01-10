@@ -13,8 +13,8 @@ final class SDKSessionHelper {
     
     private init() {}
     
-    static func setUp() {
-        let paymentMethods = [
+    static func setUp(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil) {
+        let paymentMethods = paymentMethods ?? [
             Mocks.PaymentMethods.paymentCardPaymentMethod
         ]
         let session = ClientSession.APIResponse(clientSessionId: "client_session_id",

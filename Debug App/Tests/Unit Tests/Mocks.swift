@@ -157,6 +157,16 @@ class Mocks {
             surcharge: 299,
             options: nil,
             displayMetadata: nil)
+        
+        static var klarnaPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.klarnaPaymentMethodId,
+            implementationType: .nativeSdk,
+            type: "KLARNA",
+            name: "KLARNA",
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 299,
+            options: nil,
+            displayMetadata: nil)
     }
 }
 
