@@ -73,6 +73,7 @@ class Mocks {
         return PrimerAPIConfiguration(
             coreUrl: "https://core.primer.io",
             pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://primer.io/bindata",
             clientSession: clientSession,
             paymentMethods: paymentMethods,
             primerAccountId: nil,
@@ -83,6 +84,7 @@ class Mocks {
     static var apiConfiguration = PrimerAPIConfiguration(
         coreUrl: "https://core.primer.io",
         pciUrl: "https://pci.primer.io",
+        binDataUrl: "https://primer.io/bindata",
         clientSession: nil,
         paymentMethods: [],
         primerAccountId: nil,
@@ -230,6 +232,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 let mockPaymentMethodConfig = PrimerAPIConfiguration(
     coreUrl: "url",
     pciUrl: "url",
+    binDataUrl: "url",
     clientSession: nil,
     paymentMethods: [
         PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
@@ -271,6 +274,7 @@ class MockAppState: AppStateProtocol {
         apiConfiguration: PrimerAPIConfiguration? = PrimerAPIConfiguration(
             coreUrl: "url",
             pciUrl: "url",
+            binDataUrl: "url",
             clientSession: nil,
             paymentMethods: [
                 PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),

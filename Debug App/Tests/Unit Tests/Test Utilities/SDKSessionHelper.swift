@@ -24,6 +24,7 @@ final class SDKSessionHelper {
                                                 testId: nil)
         let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
                                                pciUrl: "pci_url",
+                                               binDataUrl: "bindata_url",
                                                clientSession: session,
                                                paymentMethods: paymentMethods,
                                                primerAccountId: "account_id",

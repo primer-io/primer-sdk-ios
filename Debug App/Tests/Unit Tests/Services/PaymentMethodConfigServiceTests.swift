@@ -14,6 +14,7 @@ class PaymentMethodConfigServiceTests: XCTestCase {
         let config = PrimerAPIConfiguration(
             coreUrl: "coreUrl",
             pciUrl: "pciUrl",
+            binDataUrl: "binDataUrl",
             clientSession: nil,
             paymentMethods: [
                 PrimerPaymentMethod(

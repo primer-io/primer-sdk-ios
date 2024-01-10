@@ -285,6 +285,7 @@ class ApplePayTests: XCTestCase {
                 apiConfiguration: PrimerAPIConfiguration(
                     coreUrl: "https://core.url",
                     pciUrl: "https://pci.url",
+                    binDataUrl: "https://bindata.url",
                     clientSession: clientSession,
                     paymentMethods: nil,
                     primerAccountId: nil,

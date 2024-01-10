@@ -17,6 +17,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         let mockPrimerAPIConfiguration = PrimerAPIConfiguration(
             coreUrl: "https://core.primer.io",
             pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bindata.primer.io",
             clientSession: nil,
             paymentMethods: [],
             primerAccountId: nil,
