@@ -13,8 +13,8 @@ final class SDKSessionHelper {
     
     private init() {}
     
-    static func setUp() {
-        let paymentMethods = [
+    static func setUp(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil) {
+        let paymentMethods = paymentMethods ?? [
             Mocks.PaymentMethods.paymentCardPaymentMethod
         ]
         let session = ClientSession.APIResponse(clientSessionId: "client_session_id",
@@ -42,8 +42,7 @@ final class SDKSessionHelper {
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(
             clientSessionId: "",
             paymentMethod: .init(vaultOnSuccess: false,
-                                 options: nil,
-                                 orderedAllowedCardNetworks: cardNetworks.map { $0.rawValue }),
+                                 options: nil),
             order: nil,
             customer: nil,
             testId: nil
