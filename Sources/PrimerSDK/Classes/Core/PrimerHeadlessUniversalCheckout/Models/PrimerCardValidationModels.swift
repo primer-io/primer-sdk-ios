@@ -16,6 +16,7 @@ public protocol PrimerPaymentMethodMetadata {}
 @objc
 public enum PrimerCardValidationSource: Int {
     case local
+    case localFallback
     case remote
 }
 
@@ -32,6 +33,10 @@ public class PrimerCardNumberEntryState: NSObject, PrimerValidationState {
 public class PrimerCardNetwork: NSObject {
     public let displayName: String
     public let network: CardNetwork
+    
+    public var allowed: Bool {
+        return [CardNetwork].allowedCardNetworks.contains(network)
+    }
     
     init(displayName: String, network: CardNetwork) {
         self.displayName = displayName

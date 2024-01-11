@@ -56,7 +56,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         
         // Don't validate if incomplete BIN (less than eight digits)
         if sanitizedCardNumber.count < Self.maximumBinLength {
-            useLocalValidation(withCardState: cardState)
+            useLocalValidation(withCardState: cardState, isFallback: false)
             return
         }
         
@@ -79,7 +79,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         
         _ = listCardNetworks(cardState.cardNumber).done { [weak self] result in
             guard result.networks.count > 0 else {
-                self?.useLocalValidation(withCardState: cardState)
+                self?.useLocalValidation(withCardState: cardState, isFallback: true)
                 return
             }
             let cardMetadata = PrimerCardNumberEntryMetadata(source: .remote,
@@ -95,17 +95,17 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         }.catch { error in
             self.sendEvent(forError: error)
             self.logger.warn(message: "Remote card validation failed: \(error.localizedDescription)")
-            self.useLocalValidation(withCardState: cardState)
+            self.useLocalValidation(withCardState: cardState, isFallback: true)
         }
     }
     
-    func useLocalValidation(withCardState cardState: PrimerCardNumberEntryState) {
+    func useLocalValidation(withCardState cardState: PrimerCardNumberEntryState, isFallback: Bool) {
         let localValidationNetwork = CardNetwork(cardNumber: cardState.cardNumber)
         let displayName = localValidationNetwork.validation?.niceType ?? localValidationNetwork.rawValue.lowercased().capitalized
         let cardNetwork = PrimerCardNetwork(displayName: displayName,
                                             network: CardNetwork(cardNetworkStr: localValidationNetwork.rawValue))
         
-        let metadata = PrimerCardNumberEntryMetadata(source: .local,
+        let metadata = PrimerCardNumberEntryMetadata(source: isFallback ? .localFallback : .local,
                                                      availableCardNetworks: [cardNetwork])
         
         if cardState.cardNumber.count >= Self.maximumBinLength {
