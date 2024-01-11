@@ -66,9 +66,9 @@ final class AnalyticsServiceTests: XCTestCase {
         }
         
         (0..<5).forEach { _ in
-            sendEvents(numberOfEvents: 5, delay: 0.1)
+            sendEvents(numberOfEvents: 5, after: 0.1)
         }
-        sendEvents(numberOfEvents: 4, delay: 0.5)
+        sendEvents(numberOfEvents: 4, after: 0.5)
 
         waitForExpectations(timeout: 30.0)
         
@@ -87,9 +87,9 @@ final class AnalyticsServiceTests: XCTestCase {
         }
         
         (0..<3).forEach { _ in
-            sendEvents(numberOfEvents: 5, delay: 0.5)
+            sendEvents(numberOfEvents: 5, after: 0.5)
         }
-        sendEvents(numberOfEvents: 4, delay: 0.5)
+        sendEvents(numberOfEvents: 4, after: 0.5)
         
         waitForExpectations(timeout: 30.0)
         
@@ -105,7 +105,7 @@ final class AnalyticsServiceTests: XCTestCase {
     }
     
     func sendEvents(numberOfEvents: Int,
-                    delay: TimeInterval? = nil,
+                    after delay: TimeInterval? = nil,
                     onQueue queue: DispatchQueue = AnalyticsServiceTests.createQueue()) {
         let events = (0..<numberOfEvents).map { num in messageEvent(withMessage: "Test #\(num + 1)") }
         events.forEach { (event: Analytics.Event) in
