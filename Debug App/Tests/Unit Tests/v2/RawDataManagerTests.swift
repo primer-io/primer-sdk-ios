@@ -30,7 +30,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
                 totalOrderAmount: 100,
                 totalTaxAmount: nil,
                 countryCode: .gb,
-                currencyCode: .GBP,
+                currencyCode: Currency("GBP"),
                 fees: nil,
                 lineItems: [
                     ClientSession.Order.LineItem(

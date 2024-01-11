@@ -41,7 +41,7 @@ class ApplePayTests: XCTestCase {
                     totalOrderAmount: 1000,
                     totalTaxAmount: nil,
                     countryCode: .gb,
-                    currencyCode: .GBP,
+                    currencyCode: Currency("GBP"),
                     fees: nil,
                     lineItems: [
                         ClientSession.Order.LineItem(
@@ -78,7 +78,7 @@ class ApplePayTests: XCTestCase {
                     totalOrderAmount: 5000,
                     totalTaxAmount: nil,
                     countryCode: .gb,
-                    currencyCode: .GBP,
+                    currencyCode: Currency("GBP"),
                     fees: nil,
                     lineItems: [
                         ClientSession.Order.LineItem(
@@ -153,7 +153,7 @@ class ApplePayTests: XCTestCase {
                     totalOrderAmount: 2000,
                     totalTaxAmount: nil,
                     countryCode: .gb,
-                    currencyCode: .GBP,
+                    currencyCode: Currency("GBP"),
                     fees: nil,
                     lineItems: nil,
                     shippingAmount: nil),
@@ -180,7 +180,7 @@ class ApplePayTests: XCTestCase {
                     totalOrderAmount: 2000,
                     totalTaxAmount: nil,
                     countryCode: .gb,
-                    currencyCode: .GBP,
+                    currencyCode: Currency("GBP"),
                     fees: [
                         ClientSession.Order.Fee(
                             type: .surcharge,
@@ -236,7 +236,7 @@ class ApplePayTests: XCTestCase {
                     totalOrderAmount: 30202,
                     totalTaxAmount: nil,
                     countryCode: .gb,
-                    currencyCode: .GBP,
+                    currencyCode: Currency("GBP"),
                     fees: nil,
                     lineItems: [
                         ClientSession.Order.LineItem(
