@@ -21,6 +21,23 @@ class HUC_TokenizationViewModelTests: XCTestCase {
     private var isImplementingPaymentMethodWithRequiredAction = false
     private var abortPayment = false
     
+    override func tearDown() {
+        VaultService.apiClient = nil
+        PrimerAPIConfigurationModule.apiClient = nil
+        PrimerAPIConfigurationModule.clientToken = nil
+        PrimerAPIConfigurationModule.apiConfiguration = nil
+        
+        PrimerAPIConfigurationModule.apiClient = nil
+        PaymentMethodTokenizationViewModel.apiClient = nil
+        TokenizationService.apiClient = nil
+        PollingModule.apiClient = nil
+        CreateResumePaymentService.apiClient = nil
+        DefaultCardValidationService.apiClient = nil
+        
+        PrimerHeadlessUniversalCheckout.current.delegate = nil
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = nil
+    }
+    
     // MARK: - HEADLESS UNIVERSAL CHECKOUT
         
     func test_huc_start() throws {
