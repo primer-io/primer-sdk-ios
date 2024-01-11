@@ -186,16 +186,6 @@ final class BankComponentTests: XCTestCase {
         waitForExpectations(timeout: 10)
 
     }
-
-    func testCancel() {
-        let mockModel = MockBankSelectorTokenizationModel(paymentMethodType: .adyenIDeal)
-        let bankComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal, tokenizationProvingModel: mockModel) {
-            self.webRedirectComponent(tokenizationModelDelegate: mockModel)
-        }
-        XCTAssertFalse(mockModel.didCallCancel)
-        bankComponent.cancel()
-        XCTAssertTrue(mockModel.didCallCancel)
-    }
 }
 
 extension BankComponentTests: PrimerHeadlessSteppableDelegate {

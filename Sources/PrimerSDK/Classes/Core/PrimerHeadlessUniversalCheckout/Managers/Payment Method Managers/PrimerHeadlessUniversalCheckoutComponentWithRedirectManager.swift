@@ -15,7 +15,7 @@ extension PrimerHeadlessUniversalCheckout {
         public func provide<PrimerHeadlessCollectableDataAndCancellableComponent>(paymentMethodType: String) throws -> PrimerHeadlessCollectableDataAndCancellableComponent? where PrimerCollectableData: Any, PrimerHeadlessStep: Any {
             try provideBanksComponent(paymentMethodType: paymentMethodType) as? PrimerHeadlessCollectableDataAndCancellableComponent
         }
-        public func provideBanksComponent(paymentMethodType: String) throws -> any PrimerHeadlessCollectableDataAndCancellableComponent {
+        public func provideBanksComponent(paymentMethodType: String) throws -> any PrimerHeadlessMainComponent {
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType),
                   paymentMethodType == .adyenIDeal else {
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)

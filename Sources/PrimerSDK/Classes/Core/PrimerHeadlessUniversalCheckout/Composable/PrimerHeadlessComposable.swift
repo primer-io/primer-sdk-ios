@@ -56,10 +56,6 @@ public protocol PrimerHeadlessSteppableDelegate: AnyObject {
     func submit()
 }
 
-@objc public protocol PrimerHeadlessCancellable: AnyObject {
-    func cancel()
-}
-
 public protocol PrimerHeadlessCollectDataComponent<Data, Step>: PrimerHeadlessComponent, PrimerHeadlessStartable, PrimerHeadlessSubmitable {
     associatedtype Data: PrimerCollectableData
     associatedtype Step: PrimerHeadlessStep

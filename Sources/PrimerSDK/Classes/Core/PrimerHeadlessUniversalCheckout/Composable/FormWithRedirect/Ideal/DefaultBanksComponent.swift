@@ -117,10 +117,6 @@ final class DefaultBanksComponent: BanksComponent {
             }
         }
     }
-
-    public func cancel() {
-        tokenizationProvingModel.cancel()
-    }
 }
 
 private extension DefaultBanksComponent {

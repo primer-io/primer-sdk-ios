@@ -6,4 +6,4 @@
 //
 
 import Foundation
-public protocol BanksComponent: PrimerHeadlessCollectableDataAndCancellableComponent where Data == BanksCollectableData, Step == BanksStep { }
+public protocol BanksComponent: PrimerHeadlessMainComponent where Data == BanksCollectableData, Step == BanksStep { }
