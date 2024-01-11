@@ -32,7 +32,6 @@ class HUC_TokenizationViewModelTests: XCTestCase {
         TokenizationService.apiClient = nil
         PollingModule.apiClient = nil
         CreateResumePaymentService.apiClient = nil
-        DefaultCardValidationService.apiClient = nil
         
         PrimerHeadlessUniversalCheckout.current.delegate = nil
         PrimerHeadlessUniversalCheckout.current.uiDelegate = nil
@@ -445,7 +444,7 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             }
         }
         
-        wait(for: [expectation], timeout: 600)
+        wait(for: [expectation], timeout: 30)
     }
     
     // MARK: - HELPERS
