@@ -33,7 +33,7 @@ final class CardValidationServiceTests: XCTestCase {
         self.delegate = MockRawDataManagerDelegate()
         self.rawDataManager = try RawDataManager(paymentMethodType: Mocks.PaymentMethods.paymentCardPaymentMethod.type)
         self.apiClient = MockBINDataAPIClient()
-        self.debouncer = Debouncer(delay: 0.5)
+        self.debouncer = Debouncer(delay: 0.275)
         self.rawDataManager.delegate = delegate
         self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
                                                     apiClient: apiClient)
