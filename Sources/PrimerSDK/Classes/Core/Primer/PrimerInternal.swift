@@ -142,6 +142,7 @@ internal class PrimerInternal: LogReporter {
         }
         .done {
             PrimerUIManager.presentPaymentUI()
+			CurrencyLoader.updateCurrenciesFromAPI()
             completion?(nil)
         }
         .catch { err in

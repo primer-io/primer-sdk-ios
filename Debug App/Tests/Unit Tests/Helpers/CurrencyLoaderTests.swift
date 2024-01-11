@@ -38,27 +38,6 @@ class CurrencyLoaderTests: XCTestCase {
 		XCTAssertNil(currencyNonExistent)
 	}
 	
-	func testUpdateCurrencies() {
-		// Here you would mock the network request to return specific data
-		// For example, let's assume the mock returns ["GBP", "JPY"]
-		// MockNetworkSession.mockResponse = ...
-
-		CurrencyLoader.updateCurrenciesFromAPI()
-
-		// Wait for the async call to complete
-		let expectation = XCTestExpectation(description: "Update currencies")
-		DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-			expectation.fulfill()
-		}
-		wait(for: [expectation], timeout: 3)
-
-		// Load currencies and check if they match the mock response
-		let currencyGBP = CurrencyLoader.getCurrencyFor("GBP")
-		XCTAssertNotNil(currencyGBP)
-		let currencyJPY = CurrencyLoader.getCurrencyFor("JPY")
-		XCTAssertNotNil(currencyJPY)
-	}
-	
 	func testLoadAfterInitialBundleCopy() {
 		// Ensure the file doesn't exist
 		storage.deleteCurrenciesFile()

@@ -7,8 +7,6 @@
 
 import Foundation
 
-private let urlString = "https://assets.dev.core.primer.io/currency-information/latest/data.json"
-
 internal struct CurrencyLoader: LogReporter {
 	private static let storage: CurrencyStorage = DefaultCurrencyStorage()
 
@@ -19,6 +17,22 @@ internal struct CurrencyLoader: LogReporter {
 
 	internal static func updateCurrenciesFromAPI() {
 		storage.copyBundleFileIfNeeded()
+
+		guard let environment = PrimerAPIConfigurationModule.decodedJWTToken?.env else {
+			let err = PrimerError.invalidClientToken(
+				userInfo: ["file": #file,
+						   "class": "\(Self.self)",
+						   "function": #function,
+						   "line": "\(#line)"],
+				diagnosticsId: UUID().uuidString)
+
+			ErrorHandler.handle(error: err)
+			logger.error(message: "Invalid client token: \(err)")
+			return
+		}
+
+		let urlString = "https://assets.\(environment.lowercased()).core.primer.io/currency-information/latest/data.json"
+
 		guard let url = URL(string: urlString) else {
 			logger.error(message: "Can't make URL from string: \(urlString)")
 			return
@@ -32,12 +46,12 @@ internal struct CurrencyLoader: LogReporter {
 				logger.error(message: "Error fetching currencies from API: \(error?.localizedDescription ?? "Unknown error")")
 				return
 			}
-			
+
 			do {
 				let currencies = try JSONDecoder().decode([Currency].self, from: data)
 				try storage.save(currencies)
 				logger.debug(message: "Sucesfully updated the list of currencies.")
-				
+
 				let sdkEvent = Analytics.Event(
 					eventType: .sdkEvent,
 					properties: SDKEventProperties(

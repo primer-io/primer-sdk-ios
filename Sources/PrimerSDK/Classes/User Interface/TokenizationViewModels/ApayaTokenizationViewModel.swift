@@ -255,7 +255,7 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
 
         guard let currencyStr = AppState.current.currency?.code else {
-            let err = PrimerError.invalidSetting(name: "currency", 
+            let err = PrimerError.invalidSetting(name: "currency",
 												 value: nil,
 												 userInfo: ["file": #file,
 															"class": "\(Self.self)",

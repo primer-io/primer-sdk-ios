@@ -67,7 +67,7 @@
 		97F0B302DF965C1AD1EC6F4D /* PaymentMethodConfigServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743F107C464526926A34A433 /* PaymentMethodConfigServiceTests.swift */; };
 		9AB1ABF4E46A37766CDBF197 /* ApayaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F79B50111AC4161CFB1EFE8 /* ApayaTests.swift */; };
 		A1055D6F2AF125E90027B967 /* DebouncerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1055D6E2AF125E90027B967 /* DebouncerTests.swift */; };
-		A12AC2532B5046CF00C26999 /* CurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12AC2522B5046CF00C26999 /* CurrencyTests.swift */; };
+		A12AC2532B5046CF00C26999 /* CurrencyStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12AC2522B5046CF00C26999 /* CurrencyStorageTests.swift */; };
 		A12AC2552B505B6200C26999 /* CurrencyLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12AC2542B505B6100C26999 /* CurrencyLoaderTests.swift */; };
 		A13392BC2AD459E90005A4D7 /* NolPayLinkCardComponentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13392BB2AD459E90005A4D7 /* NolPayLinkCardComponentTest.swift */; };
 		A1536BAD2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1536BAC2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift */; };
@@ -240,7 +240,7 @@
 		994AE6760B506D02499AEC90 /* InternalCardComponentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalCardComponentManagerTests.swift; sourceTree = "<group>"; };
 		9D122A0B71B707C2110AB7F5 /* PayPalConfirmBillingAgreementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPalConfirmBillingAgreementTests.swift; sourceTree = "<group>"; };
 		A1055D6E2AF125E90027B967 /* DebouncerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebouncerTests.swift; sourceTree = "<group>"; };
-		A12AC2522B5046CF00C26999 /* CurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyTests.swift; sourceTree = "<group>"; };
+		A12AC2522B5046CF00C26999 /* CurrencyStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyStorageTests.swift; sourceTree = "<group>"; };
 		A12AC2542B505B6100C26999 /* CurrencyLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyLoaderTests.swift; sourceTree = "<group>"; };
 		A13392BB2AD459E90005A4D7 /* NolPayLinkCardComponentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayLinkCardComponentTest.swift; sourceTree = "<group>"; };
 		A1536BAC2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayPhoneMetadataServiceTests.swift; sourceTree = "<group>"; };
@@ -569,7 +569,7 @@
 				1F79B50111AC4161CFB1EFE8 /* ApayaTests.swift */,
 				31CFA93A373A7DB78DA77283 /* ApplePayTests.swift */,
 				5F8DC3341BDBB9AEDBE8D6DD /* DecodedClientToken.swift */,
-				A12AC2522B5046CF00C26999 /* CurrencyTests.swift */,
+				A12AC2522B5046CF00C26999 /* CurrencyStorageTests.swift */,
 				7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */,
 				752785ACCF65527C239391A8 /* PaymentMethodConfigTests.swift */,
 				9D122A0B71B707C2110AB7F5 /* PayPalConfirmBillingAgreementTests.swift */,
@@ -953,7 +953,7 @@
 				4BD7794627267B40E9E10686 /* PrimerCheckoutTheme.swift in Sources */,
 				A12AC2552B505B6200C26999 /* CurrencyLoaderTests.swift in Sources */,
 				F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */,
-				A12AC2532B5046CF00C26999 /* CurrencyTests.swift in Sources */,
+				A12AC2532B5046CF00C26999 /* CurrencyStorageTests.swift in Sources */,
 				04769C152B1A680C0051581C /* Promises+Helper.swift in Sources */,
 				049298072B1E1F4D002E04B8 /* AnalyticsStorageTests.swift in Sources */,
 				24C060A48D4A2670FFC3426F /* ThreeDSErrorTests.swift in Sources */,

@@ -1,5 +1,5 @@
 //
-//  CurrencyTests.swift
+//  CurrencyStorageTests.swift
 //  Debug App Tests
 //
 //  Created by Boris on 11.1.24..

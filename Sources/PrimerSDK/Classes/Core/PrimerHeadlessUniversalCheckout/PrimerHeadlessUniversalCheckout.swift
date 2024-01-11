@@ -96,6 +96,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
                 requestVaultedPaymentMethods: false)
         }
         .done {
+			CurrencyLoader.updateCurrenciesFromAPI()
             let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
             if (availablePaymentMethodsTypes ?? []).isEmpty {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file,

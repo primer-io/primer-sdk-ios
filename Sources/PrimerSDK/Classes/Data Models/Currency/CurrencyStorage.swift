@@ -18,23 +18,23 @@ protocol CurrencyStorage {
 
 class DefaultCurrencyStorage: CurrencyStorage {
 	let fileURL: URL
-	
+
 	init(fileURL: URL = currencyFileURL) {
 		self.fileURL = fileURL
 	}
-	
+
 	func loadCurrencies() -> [Currency] {
 		guard FileManager.default.fileExists(atPath: fileURL.path) else {
 			return []
 		}
 		return (try? Data(contentsOf: fileURL)).flatMap { try? JSONDecoder().decode([Currency].self, from: $0) } ?? []
 	}
-	
+
 	func save(_ currencies: [Currency]) throws {
 		let currencyData = try JSONEncoder().encode(currencies)
 		try currencyData.write(to: fileURL)
 	}
-	
+
 	func deleteCurrenciesFile() {
 		if FileManager.default.fileExists(atPath: fileURL.path) {
 			try? FileManager.default.removeItem(at: fileURL)

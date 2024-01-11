@@ -34,7 +34,6 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         self.paymentMethodOptions = paymentMethodOptions ?? PrimerPaymentMethodOptions()
         self.uiOptions = uiOptions ?? PrimerUIOptions()
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
-        CurrencyLoader.updateCurrenciesFromAPI()
     }
 }
 
