@@ -18,7 +18,7 @@ extension PrimerHeadlessUniversalCheckout {
             return UIImage(named: "\(cardNetwork.rawValue)-logo-colored", in: Bundle.primerResources, compatibleWith: nil)
         }
         
-        public static func getSupportedCardNetworkAssets() throws -> [CardNetwork: PrimerCardNetworkAsset] {
+        public static func getAllowedCardNetworkAssets() throws -> [CardNetwork: PrimerCardNetworkAsset] {
             try verifyAPIConfig()
 
             let supportedCardNetworks: [CardNetwork] = .allowedCardNetworks
