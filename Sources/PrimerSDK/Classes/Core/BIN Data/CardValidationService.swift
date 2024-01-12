@@ -67,11 +67,22 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
     
+    var metadataCache: [String: PrimerCardNumberEntryMetadata] = [:]
+    
     private func useRemoteValidation(withCardState cardState: PrimerCardNumberEntryState) {
         delegate?.primerRawDataManager?(rawDataManager,
                                         willFetchMetadataForState: cardState)
         
         let rawDataManager = rawDataManager
+        
+        if let cachedMetadata = metadataCache[cardState.cardNumber] {
+            DispatchQueue.main.async { [weak self] in
+                self?.delegate?.primerRawDataManager?(rawDataManager,
+                                                      didReceiveMetadata: cachedMetadata,
+                                                      forState: cardState)
+            }
+            return
+        }
         
         _ = listCardNetworks(cardState.cardNumber).done { [weak self] result in
             guard result.networks.count > 0 else {
@@ -83,6 +94,8 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                 PrimerCardNetwork(displayName: network.displayName,
                                   network: CardNetwork(cardNetworkStr: network.value))
             })
+            
+            self?.metadataCache[cardState.cardNumber] = cardMetadata
             
             self?.delegate?.primerRawDataManager?(rawDataManager,
                                                   didReceiveMetadata: cardMetadata,
