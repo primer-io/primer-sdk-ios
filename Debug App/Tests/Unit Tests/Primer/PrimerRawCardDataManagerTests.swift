@@ -339,45 +339,4 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         
         wait(for: [exp], timeout: Self.validationTimeout)
     }
-    
-    func testCoBadgedCardsEnabled() {
-        let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
-
-        // Only co-badged
-        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires])
-        XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
-        
-        // Co-badged w/ provider (VISA)
-        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires, .visa])
-        XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
-
-        // Co-badged w/ provided (MC)
-        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires, .masterCard])
-        XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
-
-        // Co-badged with mixed
-        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires, .masterCard, .visa, .discover, .amex])
-        XCTAssertTrue(tokenizationBuilder.isCoBadgedCardsEnabled)
-    }
-    
-    func testCoBadgedCardsDisabled() {
-        let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
-
-        // No networks
-        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [])
-        XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
-
-        // No co-badged w/ provider (VISA)
-        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa])
-        XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
-
-        // No co-badged w/ provider (MC)
-        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.masterCard])
-        XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
-
-        // No co-badged w/ mixed
-        SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.masterCard, .visa, .discover, .amex])
-        XCTAssertFalse(tokenizationBuilder.isCoBadgedCardsEnabled)
-
-    }
 }

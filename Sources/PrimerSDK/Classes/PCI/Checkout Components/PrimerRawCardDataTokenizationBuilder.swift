@@ -57,15 +57,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             }
         }
     }
-    
-    
-    /// Indicates whether or not one of the co-badged networks is present in the merchant config
-    /// If it is present, the remote card validation service will be called during card validation
-    var isCoBadgedCardsEnabled: Bool {
-        let supportedCardNetworks: Set<CardNetwork> = Set(Array.allowedCardNetworks)
-        return !supportedCardNetworks.isDisjoint(with: CardNetwork.coBadgedNetworks)
-    }
-    
+        
     /// List of supported card networks taken from merchant configuration
     var allowedCardNetworks: Set<CardNetwork> {
         Set(Array.allowedCardNetworks)
@@ -95,9 +87,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     
     func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
-        if isCoBadgedCardsEnabled {
-            self.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager)
-        }
+        self.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager)
     }
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
