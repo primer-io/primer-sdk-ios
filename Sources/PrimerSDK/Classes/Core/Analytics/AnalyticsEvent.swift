@@ -358,16 +358,17 @@ struct SDKEventProperties: AnalyticsEventProperties {
     init(name: String, params: [String: String]?) {
         self.name = name
 
-        var _params: [String: Any] = params ?? [:]
+        var parameters: [String: Any] = params ?? [:]
 
         let sdkProperties = SDKProperties()
         if let sdkPropertiesDict = try? sdkProperties.asDictionary() {
-            _params.merge(sdkPropertiesDict) {(current, _) in current}
+            parameters.merge(sdkPropertiesDict) {(current, _) in current}
         }
 
-        if !_params.isEmpty, let _paramsData = try? JSONSerialization.data(withJSONObject: _params, options: .fragmentsAllowed) {
+        if !parameters.isEmpty,
+            let parametersData = try? JSONSerialization.data(withJSONObject: parameters, options: .fragmentsAllowed) {
             let decoder = JSONDecoder()
-            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: _paramsData) {
+            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: parametersData) {
                 self.params = anyDecodableDictionary
             }
         } else {

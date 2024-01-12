@@ -152,9 +152,21 @@ internal class PrimerRootViewController: PrimerViewController {
         childView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         childView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
 
-        childViewHeightConstraint = NSLayoutConstraint(item: childView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
+        childViewHeightConstraint = NSLayoutConstraint(item: childView,
+                                                       attribute: .height,
+                                                       relatedBy: .equal,
+                                                       toItem: nil,
+                                                       attribute: .notAnAttribute,
+                                                       multiplier: 1,
+                                                       constant: 0)
         childViewHeightConstraint.isActive = true
-        childViewBottomConstraint = NSLayoutConstraint(item: childView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: -childViewHeightConstraint.constant)
+        childViewBottomConstraint = NSLayoutConstraint(item: childView,
+                                                       attribute: .bottom,
+                                                       relatedBy: .equal,
+                                                       toItem: view,
+                                                       attribute: .bottom,
+                                                       multiplier: 1,
+                                                       constant: -childViewHeightConstraint.constant)
         childViewBottomConstraint.isActive = true
         view.layoutIfNeeded()
     }
@@ -218,7 +230,10 @@ internal class PrimerRootViewController: PrimerViewController {
         viewController.view.widthAnchor.constraint(equalToConstant: self.childView.frame.width).isActive = true
         viewController.view.layoutIfNeeded()
 
-        let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height) > self.availableScreenHeight ? self.availableScreenHeight : (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height)
+        let navigationControllerHeight: CGFloat = min(
+            viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height,
+            self.availableScreenHeight
+        )
 
         // We can now set the childView's height and bottom constraint
         let isPresented: Bool = self.nc.viewControllers.isEmpty
@@ -232,7 +247,8 @@ internal class PrimerRootViewController: PrimerViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is PrimerVoucherInfoPaymentViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
-        } else if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
+        } else if let lastViewController = self.nc.viewControllers.last as? PrimerContainerViewController,
+                    lastViewController.children.first is PrimerLoadingViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is PrimerLoadingViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
@@ -342,7 +358,8 @@ internal class PrimerRootViewController: PrimerViewController {
 
     internal func popViewController() {
         guard nc.viewControllers.count > 1,
-              let viewController = (nc.viewControllers[nc.viewControllers.count-2] as? PrimerContainerViewController)?.childViewController else {
+              let viewController = (nc.viewControllers[nc.viewControllers.count-2] as? PrimerContainerViewController)?.childViewController
+        else {
             return
         }
 
@@ -350,7 +367,7 @@ internal class PrimerRootViewController: PrimerViewController {
             (self.nc.viewControllers.last as? PrimerContainerViewController)?.mockedNavigationBar.hidesBackButton = true
         }
 
-        let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + nc.navigationBar.bounds.height) > availableScreenHeight ? availableScreenHeight : (viewController.view.bounds.size.height + nc.navigationBar.bounds.height)
+        let navigationControllerHeight: CGFloat = min(viewController.view.bounds.size.height + nc.navigationBar.bounds.height, availableScreenHeight)
 
         childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
 
@@ -418,7 +435,7 @@ internal class PrimerRootViewController: PrimerViewController {
     }
 
     internal func resetConstraint(for viewController: UIViewController) {
-        let navigationControllerHeight: CGFloat = (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height) > self.availableScreenHeight ? self.availableScreenHeight : (viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height)
+        let navigationControllerHeight: CGFloat = min(viewController.view.bounds.size.height + self.nc.navigationBar.bounds.height, self.availableScreenHeight)
         self.childViewHeightConstraint.isActive = false
         self.childViewHeightConstraint?.constant = navigationControllerHeight + self.bottomPadding
         self.childViewHeightConstraint.isActive = true
@@ -431,11 +448,7 @@ internal class PrimerRootViewController: PrimerViewController {
     }
 }
 
-// MARK: -
-
-extension PrimerRootViewController {
-
-}
+// MARK: - UIGestureRecognizerDelegate
 
 extension PrimerRootViewController: UIGestureRecognizerDelegate {
 

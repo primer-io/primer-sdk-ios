@@ -10,28 +10,28 @@ import Foundation
 extension Analytics {
 
     internal class Service: LogReporter {
-        
+
         static let defaultSdkLogsUrl = URL(string: "https://analytics.production.data.primer.io/sdk-logs")!
-        
+
         static let maximumBatchSize: UInt = 100
-        
+
         static var shared = {
             Service(sdkLogsUrl: Service.defaultSdkLogsUrl,
                     batchSize: Service.maximumBatchSize,
                     storage: Analytics.storage,
                     apiClient: Analytics.apiClient ?? PrimerAPIClient())
         }()
-        
+
         let sdkLogsUrl: URL
-        
+
         let batchSize: UInt
-        
+
         let storage: Storage
-        
+
         let apiClient: PrimerAPIClientAnalyticsProtocol
-        
+
         private var isSyncing: Bool = false
-        
+
         init(sdkLogsUrl: URL,
              batchSize: UInt,
              storage: Storage,
@@ -66,13 +66,16 @@ extension Analytics {
 
                     var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
                     combinedEvents.append(contentsOf: storedEvents)
-                    
+
                     do {
                         try self.storage.save(combinedEvents)
-                        
+
                         if combinedEvents.count >= self.batchSize {
                             let batchSizeExceeded = combinedEvents.count > self.batchSize
-                            self.logger.debug(message: "📚 Analytics: Minimum batch size of \(self.batchSize) \(batchSizeExceeded ? "exceeded" : "reached") (\(combinedEvents.count) events present). Attempting sync ...")
+                            let sizeString = batchSizeExceeded ? "exceeded" : "reached"
+                            let count = combinedEvents.count
+                            let message = "📚 Analytics: Minimum batch size of \(self.batchSize) \(sizeString) (\(count) events present). Attempting sync ..."
+                            self.logger.debug(message: message)
                             self.sync(events: combinedEvents)
                         }
 
@@ -83,7 +86,7 @@ extension Analytics {
                 }
             }
         }
-        
+
         @discardableResult
         internal func flush() -> Promise<Void> {
             Promise { seal in
@@ -115,7 +118,7 @@ extension Analytics {
             return Promise<Void> { seal in
                 Analytics.queue.async(flags: .barrier) { [weak self] in
                     guard let self = self else { return }
-                    
+
                     let events = isFlush ? events : Array(events.prefix(Int(self.batchSize)))
 
                     self.logger.debug(message: "📚 Analytics: \(syncType.capitalized)ing \(events.count) events ...")
@@ -124,7 +127,7 @@ extension Analytics {
                         self.sendSkdLogEvents(events: events),
                         self.sendSkdAnalyticsEvents(events: events)
                     ]
-                    
+
                     when(fulfilled: promises)
                         .done { _ in
                             self.logger.debug(message: "📚 Analytics: All events \(syncType)ed ...")
@@ -132,7 +135,9 @@ extension Analytics {
                         .ensure {
                         }
                         .catch { err in
-                            self.logger.error(message: "📚 Analytics: Failed to \(syncType) events with error \(err.localizedDescription)")
+                            let errorMessage = err.localizedDescription
+                            let message = "📚 Analytics: Failed to \(syncType) events with error \(errorMessage)"
+                            self.logger.error(message: message)
                         }
                         .finally {
                             let remainingEvents = self.storage.loadEvents()
@@ -148,7 +153,7 @@ extension Analytics {
                 }
             }
         }
-        
+
         func clear() {
             storage.deleteAnalyticsFile()
         }
@@ -161,8 +166,8 @@ extension Analytics {
             var promises: [Promise<Void>] = []
 
             for sdkLogEventsBatch in sdkLogEventsBatches {
-                let p = self.sendEvents(sdkLogEventsBatch, to: self.sdkLogsUrl)
-                promises.append(p)
+                let promise = self.sendEvents(sdkLogEventsBatch, to: self.sdkLogsUrl)
+                promises.append(promise)
             }
 
             return when(fulfilled: promises)
@@ -178,11 +183,11 @@ extension Analytics {
             if let analyticsUrlStr = analyticsEvents.first(where: { $0.analyticsUrl != nil })?.analyticsUrl,
                let analyticsUrl = URL(string: analyticsUrlStr) {
                 for analyticsEventsBatch in analyticsEventsBatches {
-                    let p = sendEvents(analyticsEventsBatch, to: analyticsUrl)
-                    promises.append(p)
+                    let promise = sendEvents(analyticsEventsBatch, to: analyticsUrl)
+                    promises.append(promise)
                 }
             }
-            
+
             return when(fulfilled: promises)
         }
 
@@ -211,16 +216,17 @@ extension Analytics {
                 return
             }
 
-            if url.absoluteString != self.sdkLogsUrl.absoluteString, PrimerAPIConfigurationModule.clientToken?.decodedJWTToken == nil {
+            if url.absoluteString != self.sdkLogsUrl.absoluteString,
+                PrimerAPIConfigurationModule.clientToken?.decodedJWTToken == nil {
                 // Sync another time
                 completion(nil)
                 return
             }
 
             let decodedJWTToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken
-            
+
             logger.debug(message: "📚 Analytics: Sending \(events.count) events to \(url.absoluteString)")
-            
+
             self.apiClient.sendAnalyticsEvents(
                 clientToken: decodedJWTToken,
                 url: url,
@@ -228,12 +234,17 @@ extension Analytics {
             ) { result in
                 switch result {
                 case .success:
-                    self.logger.debug(message: "📚 Analytics: Finished sending \(events.count) events on URL: \(url.absoluteString)")
+                    let urlString = url.absoluteString
+                    let message = "📚 Analytics: Finished sending \(events.count) events on URL: \(urlString)"
+                    self.logger.debug(message: message)
                     self.storage.delete(events)
                     completion(nil)
 
                 case .failure(let err):
-                    self.logger.error(message: "📚 Analytics: Failed to send \(events.count) events on URL \(url.absoluteString) with error \(err)")
+                    let urlString = url.absoluteString
+                    let count = events.count
+                    let message = "📚 Analytics: Failed to send \(count) events on URL \(urlString) with error \(err)"
+                    self.logger.error(message: message)
                     ErrorHandler.handle(error: err)
                     completion(err)
                 }
@@ -255,11 +266,11 @@ extension Analytics.Service {
     @discardableResult static func record(events: [Analytics.Event]) -> Promise<Void> {
         shared.record(events: events)
     }
-    
+
     @discardableResult static func flush() -> Promise<Void> {
         shared.flush()
     }
-    
+
     static func clear() {
         shared.clear()
     }

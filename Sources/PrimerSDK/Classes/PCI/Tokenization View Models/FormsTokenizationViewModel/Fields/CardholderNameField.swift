@@ -36,7 +36,8 @@ class PrimerCardholderNameField: PrimerCardFormFieldProtocol {
 extension PrimerCardholderNameField {
 
     internal static var isCardholderNameFieldEnabled: Bool {
-        let cardInfoOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "CARD_INFORMATION" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
+        let cardInfoOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
+            .first(where: { $0.type == "CARD_INFORMATION" })?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
         if let isCardHolderNameCheckoutModuleOptionEnabled = cardInfoOptions?.cardHolderName {
             return isCardHolderNameCheckoutModuleOptionEnabled
         }

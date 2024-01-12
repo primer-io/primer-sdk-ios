@@ -11,7 +11,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
 
     private(set) public var cardNetwork: CardNetwork = .unknown
     internal var cardnumber: String {
-        return (textField._text ?? "").replacingOccurrences(of: " ", with: "").withoutWhiteSpace
+        return (textField.internalText ?? "").replacingOccurrences(of: " ", with: "").withoutWhiteSpace
     }
 
     override func xibSetup() {
@@ -29,14 +29,14 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
 
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
-        let currentText = primerTextField._text ?? ""
+        let currentText = primerTextField.internalText ?? ""
         if string != "" && currentText.withoutWhiteSpace.count == 19 { return false }
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         if !newText.withoutWhiteSpace.isNumeric && !string.isEmpty { return false }
-        primerTextField._text = newText
+        primerTextField.internalText = newText
 
         DispatchQueue.global(qos: .userInitiated).async {
-            self.cardNetwork = CardNetwork(cardNumber: primerTextField._text ?? "")
+            self.cardNetwork = CardNetwork(cardNumber: primerTextField.internalText ?? "")
 
             DispatchQueue.main.async {
                 if newText.isEmpty {
@@ -46,9 +46,9 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
                 }
             }
 
-            if self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false {
+            if self.isValid?(primerTextField.internalText?.withoutWhiteSpace ?? "") ?? false {
                 self.validation = .valid
-            } else if (primerTextField._text?.withoutWhiteSpace ?? "").isEmpty {
+            } else if (primerTextField.internalText?.withoutWhiteSpace ?? "").isEmpty {
                 let err = PrimerValidationError.invalidCardnumber(
                     message: "Card number can not be blank.",
                     userInfo: [

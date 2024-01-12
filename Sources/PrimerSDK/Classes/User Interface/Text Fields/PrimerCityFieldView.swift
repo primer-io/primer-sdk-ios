@@ -3,7 +3,7 @@ import UIKit
 public final class PrimerCityFieldView: PrimerSimpleCardFormTextFieldView {
 
     internal var city: String? {
-        return textField._text
+        return textField.internalText
     }
 
     override func xibSetup() {

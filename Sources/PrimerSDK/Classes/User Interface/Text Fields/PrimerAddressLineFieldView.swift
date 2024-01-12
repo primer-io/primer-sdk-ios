@@ -25,7 +25,7 @@ public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
 public final class PrimerAddressLine1FieldView: PrimerAddressLineFieldView {
 
     internal var addressLine1: String? {
-        return textField._text
+        return textField.internalText
     }
 
     override func xibSetup() {
@@ -38,7 +38,7 @@ public final class PrimerAddressLine1FieldView: PrimerAddressLineFieldView {
 public final class PrimerAddressLine2FieldView: PrimerSimpleCardFormTextFieldView {
 
     internal var addressLine2: String? {
-        return textField._text
+        return textField.internalText
     }
 
     override func xibSetup() {

@@ -104,7 +104,10 @@ class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
             let err = InternalError.invalidValue(
                 key: "SessionInfo",
                 value: self.sessionInfo,
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                userInfo: ["file": #file,
+                           "class": "\(Self.self)",
+                           "function": #function,
+                           "line": "\(#line)"],
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
@@ -123,7 +126,7 @@ struct PayPalPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
 
 /**
  Enum exposing available payment methods
-  
+ 
  *Values*
  
  `PAYMENT_CARD`: Used for card payments.
@@ -143,7 +146,7 @@ struct PayPalPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
  `KLARNA_CUSTOMER_TOKEN`: Used for vaulted Klarna payment methods.
  
  `KLARNA`:
-  
+ 
  `unknown`: Unknown payment instrument..
  
  - Author:

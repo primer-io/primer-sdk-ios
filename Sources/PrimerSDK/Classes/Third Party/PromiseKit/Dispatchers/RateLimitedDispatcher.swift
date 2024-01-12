@@ -99,10 +99,11 @@ internal final class RateLimitedDispatcher: RateLimitedDispatcherBase {
     }
 
 }
-
+// swiftlint:disable identifier_name
 extension DispatchTime {
     static func - (a: DispatchTime, b: DispatchTime) -> TimeInterval {
         let delta = a.uptimeNanoseconds - b.uptimeNanoseconds
         return TimeInterval(delta) / 1_000_000_000
     }
 }
+// swiftlint:enable identifier_name

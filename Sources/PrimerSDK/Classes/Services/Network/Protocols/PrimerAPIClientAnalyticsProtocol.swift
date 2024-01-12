@@ -8,9 +8,9 @@
 import Foundation
 
 protocol PrimerAPIClientAnalyticsProtocol {
-    
+
     typealias ResponseHandler = (_ result: Result<Analytics.Service.Response, Error>) -> Void
-    
+
     func sendAnalyticsEvents(clientToken: DecodedJWTToken?,
                              url: URL,
                              body: [Analytics.Event]?,

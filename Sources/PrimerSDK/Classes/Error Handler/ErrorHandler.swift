@@ -23,7 +23,7 @@ internal class ErrorHandler: LogReporter {
         var event: Analytics.Event!
 
         if let threeDsError = error as? Primer3DSErrorContainer {
-          
+
             event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(

@@ -48,7 +48,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.UNLINK_CARD_UPDATE_COLLECTED_DATA_METHOD,
+                name: NolPayAnalyticsConstants.unlinkCardUpdateCollectedDataMethod,
                 params: [
                     "category": "NOL_PAY"
                 ]))
@@ -136,7 +136,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.UNLINK_CARD_SUBMIT_DATA_METHOD,
+                name: NolPayAnalyticsConstants.unlinkCardSubmitDataMethod,
                 params: [
                     "category": "NOL_PAY"
                 ]))
@@ -252,7 +252,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.UNLINK_CARD_START_METHOD,
+                name: NolPayAnalyticsConstants.unlinkCardStartMethod,
                 params: [
                     "category": "NOL_PAY"
                 ]))

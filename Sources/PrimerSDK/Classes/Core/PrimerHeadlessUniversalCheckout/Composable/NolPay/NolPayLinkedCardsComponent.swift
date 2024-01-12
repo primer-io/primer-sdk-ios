@@ -87,7 +87,7 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.LINKED_CARDS_GET_CARDS_METHOD,
+                name: NolPayAnalyticsConstants.linkedCardsGetCardsMethod,
                 params: [
                     "category": "NOL_PAY"
                 ]))
