@@ -57,63 +57,11 @@ class Networking {
         queryParameters: [String: String]?,
         body: Data?,
         completion: @escaping (_ result: Result<Data, Error>) -> Void) {
-        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-        
-        if let queryParameters = queryParameters {
-            components.queryItems = queryParameters.map { (key, value) in
-                URLQueryItem(name: key, value: value)
-            }
-        }
-        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
-        
-        logger.debug(message: "URL: \(components.url!.absoluteString )")
-        
-        var request = URLRequest(url: components.url!)
-        request.httpMethod = method.rawValue
-        
-        request.addValue(environment.rawValue, forHTTPHeaderField: "environment")
-        if method != .get {
-            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        }
-        
-        if let customDefinedApiKey = customDefinedApiKey {
-            request.addValue(customDefinedApiKey, forHTTPHeaderField: "x-api-key")
-        }
-
-        if let headers = headers {
-            // We have a dedicated argument that takes x-api-key into account
-            // in case a custom one gets defined before SDK initialization
-            // so in case this array contains the same key, it won't be added
-            for header in headers.filter({ $0.value != "x-api-key"}) {
-                request.addValue(header.value, forHTTPHeaderField: header.key)
-            }
-        }
-        
-        if let apiVersion = apiVersion {
-            request.addValue(apiVersion.rawValue, forHTTPHeaderField: "x-api-version")
-            request.addValue("IOS", forHTTPHeaderField: "Client")
-        }
-                        
-        let headerDescriptions = request.allHTTPHeaderFields?.map { key, value in
-            return "\(key) = \(value)"
-        } ?? []
-        logger.debug(message: "Request Headers:\n\(headerDescriptions.joined(separator: "\n"))")
-                
-        if let body = body {
-            request.httpBody = body
-            if let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments) {
-                logger.debug(message: "Request Body (json):\n\(bodyJson)")
-            }
-        }
-        
-        URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
-            DispatchQueue.main.async {
-                logger.debug(message: "Url: \(request.url?.absoluteString ?? "unknown")")
-
-                if err != nil {
-                    logger.debug(message: "Error: \(err!)")
-                    completion(.failure(err!))
-                    return
+            var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            
+            if let queryParameters = queryParameters {
+                components.queryItems = queryParameters.map { (key, value) in
+                    URLQueryItem(name: key, value: value)
                 }
             }
             components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
@@ -263,7 +211,7 @@ class Networking {
         
         guard let token = paymentMethodTokenData.token else {
             let err = PrimerError.invalidClientToken(
-                userInfo: ["file": #file, 
+                userInfo: ["file": #file,
                            "class": "\(Self.self)",
                            "function": #function,
                            "line": "\(#line)"],
