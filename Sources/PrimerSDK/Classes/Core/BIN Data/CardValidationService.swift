@@ -41,11 +41,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     func validateCardNetworks(withCardNumber cardNumber: String) {
         let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
         let cardState = PrimerCardNumberEntryState(cardNumber: sanitizedCardNumber)
-
-        // Don't validate empty string
-        guard !sanitizedCardNumber.isEmpty else {
-            return
-        }
+        
         // Don't validate if the BIN (first eight digits) hasn't changed
         if let mostRecentCardNumber = mostRecentCardNumber, 
             mostRecentCardNumber.prefix(Self.maximumBinLength) == sanitizedCardNumber.prefix(Self.maximumBinLength) {
