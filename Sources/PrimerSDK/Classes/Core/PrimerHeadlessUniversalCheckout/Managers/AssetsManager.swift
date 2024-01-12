@@ -18,21 +18,23 @@ extension PrimerHeadlessUniversalCheckout {
             return UIImage(named: "\(cardNetwork.rawValue)-logo-colored", in: Bundle.primerResources, compatibleWith: nil)
         }
         
-        public static func getAllowedCardNetworkAssets() throws -> [CardNetwork: PrimerCardNetworkAsset] {
+        public static func getAllowedCardNetworkAssets() throws -> [PrimerCardNetworkAsset] {
             try verifyAPIConfig()
 
             let supportedCardNetworks: [CardNetwork] = .allowedCardNetworks
             
-            var result: [CardNetwork: PrimerCardNetworkAsset] = [:]
+            var result: [PrimerCardNetworkAsset] = []
             
             try supportedCardNetworks.forEach { cardNetwork in
                 if let asset = try getCardNetworkAsset(for: cardNetwork) {
-                    result[cardNetwork] = asset
+                    result.append(asset)
+                } else {
+                    logger.warn(message: "Failed to get card icon asset for \(cardNetwork.rawValue)")
                 }
             }
             
             let cardNetworksDescription = supportedCardNetworks.map { $0.rawValue }.joined(separator: ", ")
-            let assetNetworksDescription = result.keys.map { $0.rawValue }.joined(separator: ", ")
+            let assetNetworksDescription = result.map { $0.cardNetwork.rawValue }.joined(separator: ", ")
             
             let event = Analytics.Event(
                 eventType: .message,
