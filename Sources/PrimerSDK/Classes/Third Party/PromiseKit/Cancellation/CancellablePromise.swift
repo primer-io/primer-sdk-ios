@@ -8,6 +8,7 @@ import Dispatch
  
  - See: `CancellableThenable`
  */
+// swiftlint:disable identifier_name
 internal class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin {
     /// Delegate `promise` for this CancellablePromise
     internal let promise: Promise<T>
@@ -139,3 +140,4 @@ extension CancellablePromise where T == Void {
         self.appendCancellable(cancellable, reject: nil)
     }
 }
+// swiftlint:enable identifier_name

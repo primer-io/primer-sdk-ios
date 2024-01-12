@@ -3,7 +3,7 @@ import UIKit
 public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
 
     internal var country: String? {
-        return textField._text
+        return textField.internalText
     }
 
     internal var countryCode: CountryCode?

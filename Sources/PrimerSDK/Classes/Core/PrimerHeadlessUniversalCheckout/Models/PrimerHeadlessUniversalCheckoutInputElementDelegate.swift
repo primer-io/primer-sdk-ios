@@ -47,7 +47,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
 
-            let currentText = primerCheckoutComponentsTextField._text ?? ""
+            let currentText = primerCheckoutComponentsTextField.internalText ?? ""
 
             var newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
             if let deformattedText = self.inputElement.type.clearFormatting(value: newText) as? String {

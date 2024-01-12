@@ -13,6 +13,8 @@
 		049298012B1DD466002E04B8 /* AnalyticsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */; };
 		049298072B1E1F4D002E04B8 /* AnalyticsStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */; };
 		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
+		049A05602B4C191D002CEEBA /* NativeUIManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */; };
+		049A05642B4C1EEB002CEEBA /* SDKSessionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A05622B4C1EE6002CEEBA /* SDKSessionHelper.swift */; };
 		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
 		04F6EF722AE69FC500115D05 /* AnalyticsTests+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */; };
 		04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */; };
@@ -162,6 +164,8 @@
 		049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsServiceTests.swift; sourceTree = "<group>"; };
 		049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStorageTests.swift; sourceTree = "<group>"; };
 		049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessVaultManagerViewController.swift; sourceTree = "<group>"; };
+		049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeUIManagerTests.swift; sourceTree = "<group>"; };
+		049A05622B4C1EE6002CEEBA /* SDKSessionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKSessionHelper.swift; sourceTree = "<group>"; };
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
 		04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsTests+Helpers.swift"; sourceTree = "<group>"; };
 		04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventsTests.swift; sourceTree = "<group>"; };
@@ -321,6 +325,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		049A05612B4C1ED4002CEEBA /* Test Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				049A05622B4C1EE6002CEEBA /* SDKSessionHelper.swift */,
+			);
+			path = "Test Utilities";
+			sourceTree = "<group>";
+		};
 		094077DEFDC2739B10CF4183 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -417,6 +429,7 @@
 				E9899972360BCA5992CEE5BC /* PrimerBancontactCardDataManagerTests.swift */,
 				EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */,
 				B266F9E1651BD20E45DCCF68 /* PrimerRawRetailerDataTests.swift */,
+				049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */,
 			);
 			path = Primer;
 			sourceTree = "<group>";
@@ -576,6 +589,7 @@
 				2F23D3C9CC9CBC1B95329B1C /* Network */,
 				5CC7BF9D8A0A9D8490C48151 /* Primer */,
 				5836043C1C4E5A1CF7B81CDD /* Services */,
+				049A05612B4C1ED4002CEEBA /* Test Utilities */,
 				C8A971C6C0021F0115DF44CC /* Utils */,
 				ACC4CBBD9744630CB46A5EE4 /* v2 */,
 				F4AC1EC0F98CB56DA4D075CA /* Mocks.swift */,
@@ -956,6 +970,7 @@
 				622A605DDEA98D981670B53F /* DropInUI_TokenizationViewModelTests.swift in Sources */,
 				F03699592AC2E63700E4179D /* (null) in Sources */,
 				208CA849F3187C2DA63CC17B /* HUC_TokenizationViewModelTests.swift in Sources */,
+				049A05642B4C1EEB002CEEBA /* SDKSessionHelper.swift in Sources */,
 				213196DEDF2A3A84037ED884 /* PollingModuleTests.swift in Sources */,
 				04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */,
 				049298012B1DD466002E04B8 /* AnalyticsServiceTests.swift in Sources */,
@@ -975,6 +990,7 @@
 				91FAC91E687B6981268E677E /* DateTests.swift in Sources */,
 				041295AD2AB9E2C100A4F243 /* PrimerHeadlessNolPayManagerTests.swift in Sources */,
 				DC98712939835FB79A20BD63 /* IntExtensionTests.swift in Sources */,
+				049A05602B4C191D002CEEBA /* NativeUIManagerTests.swift in Sources */,
 				6B2212601374387CB004DA86 /* MaskTests.swift in Sources */,
 				C8A64A69AD55D9BF82F0D876 /* StringTests.swift in Sources */,
 				77A8EFBA78D6C6B95A400C74 /* WebViewUtilTests.swift in Sources */,

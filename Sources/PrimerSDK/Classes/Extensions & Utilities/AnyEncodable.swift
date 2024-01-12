@@ -10,6 +10,8 @@
 import Foundation
 #endif
 
+// swiftlint:disable type_name
+
 /**
  A type-erased `Encodable` value.
  The `AnyEncodable` type forwards encoding responsibilities
@@ -292,3 +294,4 @@ extension AnyEncodable: Hashable {
         }
     }
 }
+// swiftlint:enable type_name

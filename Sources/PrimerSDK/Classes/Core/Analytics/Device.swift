@@ -63,11 +63,11 @@ struct Device: Codable {
 
     func reportMemory() -> Int? {
         var info = mach_task_basic_info()
-        let MACH_TASK_BASIC_INFO_COUNT = MemoryLayout<mach_task_basic_info>.stride/MemoryLayout<natural_t>.stride
-        var count = mach_msg_type_number_t(MACH_TASK_BASIC_INFO_COUNT)
+        let machTaskBasicInfoCount = MemoryLayout<mach_task_basic_info>.stride/MemoryLayout<natural_t>.stride
+        var count = mach_msg_type_number_t(machTaskBasicInfoCount)
 
         let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
-            $0.withMemoryRebound(to: integer_t.self, capacity: MACH_TASK_BASIC_INFO_COUNT) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: machTaskBasicInfoCount) {
                 task_info(mach_task_self_,
                           task_flavor_t(MACH_TASK_BASIC_INFO),
                           $0,
@@ -76,8 +76,8 @@ struct Device: Codable {
         }
 
         if kerr == KERN_SUCCESS {
-            let mb = Double(info.resident_size) / 1048576
-            return Int(mb.rounded())
+            let memoryInMegabytes = Double(info.resident_size) / 1048576
+            return Int(memoryInMegabytes.rounded())
         } else {
             return nil
         }

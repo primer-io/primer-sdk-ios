@@ -3,7 +3,7 @@ import UIKit
 public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
 
     internal var postalCode: String? {
-        return textField._text
+        return textField.internalText
     }
 
     override func xibSetup() {
@@ -40,7 +40,7 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
         )
 
         guard let primerTextField = textField as? PrimerTextField else { return true }
-        let currentText = primerTextField._text ?? ""
+        let currentText = primerTextField.internalText ?? ""
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
 
         switch self.isValid?(newText) {
@@ -69,7 +69,7 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
             delegate?.primerTextFieldView(self, isValid: nil)
         }
 
-        primerTextField._text = newText
+        primerTextField.internalText = newText
         primerTextField.text = newText
 
         if let cursorLoc = cursorLocation {

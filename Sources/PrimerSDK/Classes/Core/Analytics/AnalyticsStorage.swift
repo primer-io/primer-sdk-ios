@@ -10,30 +10,30 @@ import Foundation
 private let analyticsFileURL: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
 
 protocol AnalyticsStorage {
-    
+
     func loadEvents() -> [Analytics.Event]
-    
+
     func save(_ events: [Analytics.Event]) throws
-    
+
     func delete(_ events: [Analytics.Event]?)
-    
+
     func deleteAnalyticsFile()
 }
 
 extension Analytics {
-    
+
     typealias Storage = AnalyticsStorage
-    
+
     static let storage: Storage = DefaultStorage()
-    
+
     class DefaultStorage: AnalyticsStorage, LogReporter {
-        
+
         let fileURL: URL
-        
+
         init(fileURL: URL = analyticsFileURL) {
             self.fileURL = fileURL
         }
-        
+
         func loadEvents() -> [Analytics.Event] {
             do {
                 guard FileManager.default.fileExists(atPath: fileURL.path) else {
@@ -70,9 +70,9 @@ extension Analytics {
                     let storedEvents = loadEvents()
                     let eventsLocalIds = events.compactMap({ $0.localId })
                     let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId )})
-                    
+
                     logger.debug(message: "📚 Analytics: Deleted \(eventsLocalIds.count) events, saving remaining \(remainingEvents.count)")
-                    
+
                     try save(remainingEvents)
                 } else {
                     deleteAnalyticsFile()

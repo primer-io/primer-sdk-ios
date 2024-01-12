@@ -52,6 +52,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String)
     case unsupportedPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
+    case unsupportedPaymentMethodForManager(paymentMethodType: String, category: String, userInfo: [String: String]?, diagnosticsId: String)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
     case missingSDK(paymentMethodType: String, sdkName: String, userInfo: [String: String]?, diagnosticsId: String)
     case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -116,6 +117,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "unsupported-session-intent"
         case .unsupportedPaymentMethod:
             return "unsupported-payment-method-type"
+        case .unsupportedPaymentMethodForManager:
+            return "unsupported-payment-method-for-manager"
         case .underlyingErrors:
             return "generic-underlying-errors"
         case .missingSDK:
@@ -204,6 +207,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .unsupportedPaymentMethod(_, _, let diagnosticsId):
             return diagnosticsId
+        case .unsupportedPaymentMethodForManager(_, _, _, let diagnosticsId):
+            return diagnosticsId
         case .underlyingErrors(_, _, let diagnosticsId):
             return diagnosticsId
         case .missingSDK(_, _, _, let diagnosticsId):
@@ -289,6 +294,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Multiple errors occured: \(errors.combinedDescription)"
         case .unsupportedPaymentMethod(let paymentMethodType, _, _):
             return "Unsupported payment method type \(paymentMethodType)"
+        case .unsupportedPaymentMethodForManager(let paymentMethodType, let category, _, _):
+            return "Payment method \(paymentMethodType) is not supported on \(category) manager"
         case .merchantError(let message, _, _):
             return message
         case .paymentFailed(_, let description, _, _):
@@ -303,7 +310,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
         case .nolError(let code, let message, _, _):
             return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
-        case .unableToPresentApplePay( _, _):
+        case .unableToPresentApplePay:
             return "Unable to present Apple Pay"
         case .unknown:
             return "Something went wrong"
@@ -343,6 +350,7 @@ public enum PrimerError: PrimerErrorProtocol {
                 .unableToPresentPaymentMethod(_, let userInfo, _),
                 .unsupportedIntent(_, let userInfo, _),
                 .unsupportedPaymentMethod(_, let userInfo, _),
+                .unsupportedPaymentMethodForManager(_, _, let userInfo, _),
                 .underlyingErrors(_, let userInfo, _),
                 .missingSDK(_, _, let userInfo, _),
                 .merchantError(_, let userInfo, _),
@@ -384,11 +392,24 @@ public enum PrimerError: PrimerErrorProtocol {
         case .missingPrimerDelegate:
             return "Primer's delegate has not been set. Ensure that you have added Primer.shared.delegate = self on the view controller you wish to present Primer's SDK."
         case .missingPrimerCheckoutComponentsDelegate:
-            return "Primer Checkout Components' delegate has not been set. Ensure that you have added PrimerCheckoutComponents.delegate = self on the view controller you wish to implement the components."
+            let message =
+"""
+Primer Checkout Components' delegate has not been set. \
+Ensure that you have added PrimerCheckoutComponents.delegate = self, \
+on the view controller you wish to implement the components.
+"""
+            return message
         case .missingPrimerInputElement(let inputElementtype, _, _):
             return "A PrimerInputElement for \(inputElementtype) has to be provided."
         case .misconfiguredPaymentMethods:
-            return "Payment Methods are not configured correctly. Ensure that you have configured them in the Connection, and/or that they are set up for the specified conditions on your dashboard https://dashboard.primer.io/"
+            let message =
+"""
+Payment Methods are not configured correctly. \
+Ensure that you have configured them in the Connection, \
+and/or that they are set up for the specified conditions \
+on your dashboard https://dashboard.primer.io/
+"""
+            return message
         case .cancelled:
             return nil
         case .failedToCreateSession:
@@ -432,6 +453,8 @@ public enum PrimerError: PrimerErrorProtocol {
             }
         case .unsupportedPaymentMethod:
             return "Change the payment method type"
+        case .unsupportedPaymentMethodForManager:
+            return "Use a method that supports this manager, or use the correct manager for the method. See PrimerPaymentMethodManagerCategory."
         case .underlyingErrors:
             return "Check underlying errors for more information."
         case .missingSDK(let paymentMethodType, let sdkName, _, _):
@@ -460,8 +483,8 @@ public enum PrimerError: PrimerErrorProtocol {
     var exposedError: Error {
         return self
     }
-    
-    var analyticsContext: [String : Any] {
+
+    var analyticsContext: [String: Any] {
         var context: [String: Any] = [:]
         if let paymentMethodType = paymentMethodType {
             context[AnalyticsContextKeys.paymentMethodType] = paymentMethodType
@@ -469,12 +492,12 @@ public enum PrimerError: PrimerErrorProtocol {
         context[AnalyticsContextKeys.errorId] = errorId
         return context
     }
-    
+
     private var paymentMethodType: String? {
         switch self {
         case .cancelled(let paymentMethodType, _, _),
                 .unableToPresentPaymentMethod(let paymentMethodType, _, _),
-                .unsupportedPaymentMethod(let paymentMethodType, _ , _),
+                .unsupportedPaymentMethod(let paymentMethodType, _, _),
                 .missingSDK(let paymentMethodType, _, _, _),
                 .failedToProcessPayment(let paymentMethodType?, _, _, _, _),
                 .failedToPerform3DS(let paymentMethodType, _, _, _):

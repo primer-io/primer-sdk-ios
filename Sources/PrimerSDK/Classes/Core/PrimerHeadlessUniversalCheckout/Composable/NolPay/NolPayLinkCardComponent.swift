@@ -43,7 +43,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.LINK_CARD_UPDATE_COLLECTED_DATA_METHOD,
+                name: NolPayAnalyticsConstants.linkCardUpdateCollectedDataMethod,
                 params: [
                     "category": "NOL_PAY"
                 ]))
@@ -112,7 +112,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.LINK_CARD_SUBMIT_DATA_METHOD,
+                name: NolPayAnalyticsConstants.linkCardSubmitDataMethod,
                 params: [
                     "category": "NOL_PAY"
                 ]))
@@ -278,7 +278,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.LINK_CARD_START_METHOD,
+                name: NolPayAnalyticsConstants.linkCardStartMethod,
                 params: [
                     "category": "NOL_PAY"
                 ]))

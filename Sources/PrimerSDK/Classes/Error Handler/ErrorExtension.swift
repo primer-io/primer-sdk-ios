@@ -41,7 +41,10 @@ extension Error {
             case .underlyingErrors(let errors, _, _):
                 if errors.isEmpty {
                     let unknownErr = PrimerError.unknown(
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: ["file": #file,
+                                   "class": "\(Self.self)",
+                                   "function": #function,
+                                   "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
                     return unknownErr
                 } else if errors.count == 1 {
@@ -57,7 +60,10 @@ extension Error {
         } else {
             let primerErr = PrimerError.underlyingErrors(
                 errors: [self],
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                userInfo: ["file": #file,
+                           "class": "\(Self.self)",
+                           "function": #function,
+                           "line": "\(#line)"],
                 diagnosticsId: UUID().uuidString)
             return primerErr
         }

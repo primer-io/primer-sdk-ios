@@ -56,7 +56,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.PAYMENT_UPDATE_COLLECTED_DATA_METHOD,
+                name: NolPayAnalyticsConstants.paymentUpdateCollectedDataMethod,
                 params: [
                     "category": "NOL_PAY"
                 ]))
@@ -112,7 +112,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.PAYMENT_SUBMIT_DATA_METHOD,
+                name: NolPayAnalyticsConstants.paymentSubmitDataMethod,
                 params: [
                     "category": "NOL_PAY"
                 ]))
@@ -147,7 +147,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
             paymentMethod.mobileCountryCode = countryCode
 
             paymentMethod.triggerAsyncAction = { (transactionNumber: String, completion: ((Result<Bool, Error>) -> Void)?)  in
-    #if canImport(PrimerNolPaySDK)
+#if canImport(PrimerNolPaySDK)
                 self.nolPay.requestPayment(for: cardNumber, and: transactionNumber) { result in
                     switch result {
 
@@ -183,7 +183,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                         completion?(.failure(error))
                     }
                 }
-    #endif
+#endif
             }
             paymentMethod.start()
 
@@ -196,7 +196,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.PAYMENT_START_METHOD,
+                name: NolPayAnalyticsConstants.paymentStartMethod,
                 params: [
                     "category": "NOL_PAY"
                 ]))
@@ -210,7 +210,10 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         }
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             return
         }

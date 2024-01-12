@@ -7,6 +7,7 @@
 
 import UIKit
 
+// swiftlint:disable identifier_name
 internal enum Model: String, Codable {
 
     // Simulator
@@ -126,7 +127,7 @@ internal extension UIDevice {
         var systemInfo = utsname()
         uname(&systemInfo)
         let modelCode = withUnsafePointer(to: &systemInfo.machine) {
-            $0.withMemoryRebound(to: CChar.self, capacity: 1) { ptr in 
+            $0.withMemoryRebound(to: CChar.self, capacity: 1) { ptr in
                 String.init(validatingUTF8: ptr)
             }
         }
@@ -339,3 +340,5 @@ internal extension UIDevice {
         return model
     }
 }
+
+// swiftlint:enable identifier_name

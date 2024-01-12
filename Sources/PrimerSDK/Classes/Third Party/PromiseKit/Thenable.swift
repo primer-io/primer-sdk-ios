@@ -1,5 +1,6 @@
 import Dispatch
 
+// swiftlint:disable identifier_name
 /// Thenable represents an asynchronous operation that can be chained.
 internal protocol Thenable: AnyObject {
     /// The type of the wrapped value
@@ -430,3 +431,4 @@ internal extension Thenable where T: Sequence, T.Iterator.Element: Comparable {
         return map(on: on) { $0.sorted() }
     }
 }
+// swiftlint:enable identifier_name

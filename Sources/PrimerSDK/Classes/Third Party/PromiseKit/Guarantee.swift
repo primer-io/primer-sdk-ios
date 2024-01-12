@@ -257,7 +257,11 @@ internal extension Guarantee where T: Sequence {
                 // $0 => [1,1,2,2,3,3]
             }
      */
-    func thenFlatMap<U: Thenable>(on: DispatchQueue? = conf.Q.map, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(T.Iterator.Element) -> U) -> Guarantee<[U.T.Iterator.Element]> where U.T: Sequence {
+    func thenFlatMap<U: Thenable>(on: DispatchQueue? = conf.Q.map,
+                                  flags: DispatchWorkItemFlags? = nil,
+                                  _ transform: @escaping(T.Iterator.Element) -> U)
+    -> Guarantee<[U.T.Iterator.Element]> where U.T: Sequence {
+
         return then(on: on, flags: flags) {
             when(fulfilled: $0.map(transform))
         }.map(on: nil) {
@@ -292,7 +296,11 @@ internal extension Guarantee where T: Sequence {
             // $0 => [5,4,3,2,1]
         }
      */
-    func sortedValues(on: DispatchQueue? = conf.Q.map, flags: DispatchWorkItemFlags? = nil, _ areInIncreasingOrder: @escaping(T.Iterator.Element, T.Iterator.Element) -> Bool) -> Guarantee<[T.Iterator.Element]> {
+    func sortedValues(on: DispatchQueue? = conf.Q.map,
+                      flags: DispatchWorkItemFlags? = nil,
+                      _ areInIncreasingOrder: @escaping(T.Iterator.Element, T.Iterator.Element) -> Bool)
+    -> Guarantee<[T.Iterator.Element]> {
+
         return map(on: on, flags: flags) {
             $0.sorted(by: areInIncreasingOrder)
         }

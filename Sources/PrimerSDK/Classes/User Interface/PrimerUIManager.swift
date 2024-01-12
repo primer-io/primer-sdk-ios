@@ -50,7 +50,10 @@ internal class PrimerUIManager {
             let pvmvc = PrimerVaultManagerViewController()
             PrimerUIManager.primerRootViewController?.show(viewController: pvmvc)
         } else {
-            let err = PrimerError.invalidValue(key: "paymentMethodType", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a payment method type"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "paymentMethodType",
+                                               value: nil,
+                                               userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a payment method type"],
+                                               diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             PrimerUIManager.handleErrorBasedOnSDKSettings(err)
         }
@@ -127,7 +130,10 @@ internal class PrimerUIManager {
                 guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
                     let err = PrimerError.unableToPresentPaymentMethod(
                         paymentMethodType: paymentMethodType,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: ["file": #file,
+                                   "class": "\(Self.self)",
+                                   "function": #function,
+                                   "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -137,7 +143,10 @@ internal class PrimerUIManager {
                 guard PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0.config.type == paymentMethodType }) != nil else {
                     let err = PrimerError.unableToPresentPaymentMethod(
                         paymentMethodType: paymentMethodType,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: ["file": #file,
+                                   "class": "\(Self.self)",
+                                   "function": #function,
+                                   "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -147,7 +156,10 @@ internal class PrimerUIManager {
                 if case .checkout = PrimerInternal.shared.intent, paymentMethod.isCheckoutEnabled == false {
                     let err = PrimerError.unsupportedIntent(
                         intent: .checkout,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: ["file": #file,
+                                   "class": "\(Self.self)",
+                                   "function": #function,
+                                   "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
                     seal.reject(err)
                     return
@@ -155,7 +167,10 @@ internal class PrimerUIManager {
                 } else if case .vault = PrimerInternal.shared.intent, paymentMethod.isVaultingEnabled == false {
                     let err = PrimerError.unsupportedIntent(
                         intent: .vault,
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: ["file": #file,
+                                   "class": "\(Self.self)",
+                                   "function": #function,
+                                   "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
                     seal.reject(err)
                     return
@@ -165,7 +180,10 @@ internal class PrimerUIManager {
             let state: AppStateProtocol = DependencyContainer.resolve()
 
             if PrimerInternal.shared.intent == .vault, state.apiConfiguration?.clientSession?.customer?.id == nil {
-                let err = PrimerError.invalidValue(key: "customer.id", value: nil, userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "customer.id",
+                                                   value: nil,
+                                                   userInfo: [NSLocalizedDescriptionKey: "Make sure you have set a customerId in the client session"],
+                                                   diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
 

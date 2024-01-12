@@ -37,9 +37,7 @@ internal class PrimerTextField: UITextField {
         }
     }
 
-    // swiftlint:disable identifier_name
-    internal var _text: String?
-    // swiftlint:enable identifier_name
+    internal var internalText: String?
 
     override var text: String? {
         get {
@@ -47,12 +45,12 @@ internal class PrimerTextField: UITextField {
         }
         set {
             super.text = newValue
-            _text = super.text
+            internalText = super.text
         }
     }
 
     internal var isEmpty: Bool {
-        return (_text ?? "").isEmpty
+        return (internalText ?? "").isEmpty
     }
 
 }
