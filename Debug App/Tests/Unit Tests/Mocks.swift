@@ -155,14 +155,16 @@ class Mocks {
             surcharge: 299,
             options: nil,
             displayMetadata: nil)
-
+        
         static var idealFormWithRedirectPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.idealPaymentMethodId,
-            implementationType: .formWithRedirect,
+            implementationType: .nativeSdk,
             type: Mocks.Static.Strings.idealPaymentMethodId,
             name: Mocks.Static.Strings.idealPaymentMethodName,
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
+            options: nil,
+            displayMetadata: nil)
         
         static var klarnaPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.klarnaPaymentMethodId,
