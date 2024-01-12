@@ -50,14 +50,8 @@ extension PrimerHeadlessUniversalCheckout {
         public static func getCardNetworkAsset(for cardNetwork: CardNetwork) throws -> PrimerCardNetworkAsset? {
             try verifyAPIConfig()
             
-            let prefix = "\(cardNetwork.assetName.lowercased())-card-icon-"
-            guard let asset = PrimerInternalAsset(
-                colored: UIImage(named: "\(prefix)colored", in: Bundle.primerResources, compatibleWith: nil),
-                light: UIImage(named: "\(prefix)light", in: Bundle.primerResources, compatibleWith: nil),
-                dark: UIImage(named: "\(prefix)dark", in: Bundle.primerResources, compatibleWith: nil)
-            ) else {
-                return nil
-            }
+            let assetName = "\(cardNetwork.assetName.lowercased())-card-icon-colored"
+            let cardImage = UIImage(named: assetName, in: Bundle.primerResources, compatibleWith: nil)
             
             let event = Analytics.Event(
                 eventType: .message,
@@ -69,7 +63,7 @@ extension PrimerHeadlessUniversalCheckout {
             )
             Analytics.Service.record(event: event)
             
-            return PrimerCardNetworkAsset(cardNetwork: cardNetwork, cardNetworkIcon: asset)
+            return PrimerCardNetworkAsset(cardNetwork: cardNetwork, cardImage: cardImage)
         }
         
         public static func getPaymentMethodAsset(for paymentMethodType: String) throws -> PrimerPaymentMethodAsset? {
@@ -162,11 +156,15 @@ extension PrimerHeadlessUniversalCheckout {
 
 public class PrimerCardNetworkAsset {
     public let cardNetwork: CardNetwork
-    public let cardNetworkIcon: PrimerAsset
+    public let cardImage: UIImage?
     
-    init(cardNetwork: CardNetwork, cardNetworkIcon: PrimerAsset) {
+    var displayName: String? {
+        return cardNetwork.validation?.niceType
+    }
+    
+    init(cardNetwork: CardNetwork, cardImage: UIImage?) {
         self.cardNetwork = cardNetwork
-        self.cardNetworkIcon = cardNetworkIcon
+        self.cardImage = cardImage
     }
 }
 
