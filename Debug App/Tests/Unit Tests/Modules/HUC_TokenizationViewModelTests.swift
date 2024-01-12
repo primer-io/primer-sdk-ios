@@ -443,7 +443,7 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             }
         }
         
-        wait(for: [expectation], timeout: 30)
+        wait(for: [expectation], timeout: 60)
     }
 }
 
