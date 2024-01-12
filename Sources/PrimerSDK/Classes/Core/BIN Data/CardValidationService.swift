@@ -98,11 +98,12 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     func useLocalValidation(withCardState cardState: PrimerCardNumberEntryState, isFallback: Bool) {
         let localValidationNetwork = CardNetwork(cardNumber: cardState.cardNumber)
         let displayName = localValidationNetwork.validation?.niceType ?? localValidationNetwork.rawValue.lowercased().capitalized
+
         let cardNetwork = PrimerCardNetwork(displayName: displayName,
                                             network: CardNetwork(cardNetworkStr: localValidationNetwork.rawValue))
         
         let metadata = PrimerCardNumberEntryMetadata(source: isFallback ? .localFallback : .local,
-                                                     availableCardNetworks: [cardNetwork])
+                                                     availableCardNetworks: cardState.cardNumber.isEmpty ? [] : [cardNetwork])
         
         if cardState.cardNumber.count >= Self.maximumBinLength {
             let logMessage = "Local validation was used where remote validation would have been preferred (max BIN length exceeded)."
