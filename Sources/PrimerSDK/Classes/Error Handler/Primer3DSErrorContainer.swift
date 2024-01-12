@@ -21,7 +21,7 @@ public struct Primer3DSErrorInfo {
 
 public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     typealias K = AnalyticsContextKeys
-    
+
     case missingSdkDependency(userInfo: [String: String]?, diagnosticsId: String)
     case invalid3DSSdkVersion(userInfo: [String: String]?, diagnosticsId: String, invalidVersion: String?, validVersion: String)
     case missing3DSConfiguration(userInfo: [String: String]?, diagnosticsId: String, missingKey: String)
@@ -94,17 +94,15 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     var exposedError: Error {
         return self
     }
-    
-    
 
     var analyticsContext: [String: Any] {
         var context: [String: Any] = [:]
-        
+
         context[K.initProtocolVersion] = continueInfo.initProtocolVersion
         context[K.threeDsSdkVersion] = continueInfo.threeDsSdkVersion
         context[K.threeDsSdkProvider] = continueInfo.threeDsSdkProvider
         context[K.threeDsWrapperSdkVersion] = continueInfo.threeDsWrapperSdkVersion
-        
+
         switch self {
         case .primer3DSSdkError(let paymentMethodType, _, _, _, let errorInfo):
             context[K.reasonCode] = errorInfo.errorId
@@ -122,7 +120,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
         default:
             break
         }
-        
+
         return context
     }
 

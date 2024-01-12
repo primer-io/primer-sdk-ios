@@ -240,8 +240,8 @@ public enum PrimerValidationError: PrimerErrorProtocol {
             return "OTP"
         }
     }
-    
-    var analyticsContext: [String : Any] {
+
+    var analyticsContext: [String: Any] {
         var context: [String: Any] = [:]
         context[AnalyticsContextKeys.errorId] = errorId
         if let paymentMethodType = paymentMethodType {
@@ -249,7 +249,7 @@ public enum PrimerValidationError: PrimerErrorProtocol {
         }
         return context
     }
-    
+
     private var paymentMethodType: String? {
         switch self {
         case .vaultedPaymentMethodAdditionalDataMismatch(let paymentMethodType, _, _, _):

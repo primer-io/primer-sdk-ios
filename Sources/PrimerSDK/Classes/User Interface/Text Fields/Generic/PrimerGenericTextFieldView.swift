@@ -14,10 +14,10 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
     public var shouldMaskText: Bool = false
     public override var text: String? {
         get {
-            return shouldMaskText ? "****" : textField._text
+            return shouldMaskText ? "****" : textField.internalText
         }
         set {
-            textField._text = newValue
+            textField.internalText = newValue
         }
     }
 
@@ -29,9 +29,12 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
         textField.delegate = self
     }
 
-    public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    public override func textField(_ textField: UITextField,
+                                   shouldChangeCharactersIn range: NSRange,
+                                   replacementString string: String) -> Bool {
+
         guard let primerTextField = textField as? PrimerTextField else { return true }
-        let currentText = primerTextField._text ?? ""
+        let currentText = primerTextField.internalText ?? ""
 
         if maxCharactersAllowed != nil && !string.isEmpty && currentText.count >= maxCharactersAllowed! {
             return false
@@ -45,9 +48,10 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
             }
         }
 
-        primerTextField._text = newText
+        primerTextField.internalText = newText
 
-        validation = (self.isValid?(primerTextField._text?.withoutWhiteSpace ?? "") ?? false) ? PrimerTextField.Validation.valid : PrimerTextField.Validation.invalid(PrimerValidationError.invalidCardnumber(
+        let valid = PrimerTextField.Validation.valid
+        let invalid = PrimerTextField.Validation.invalid(PrimerValidationError.invalidCardnumber(
             message: "Card number is not valid.",
             userInfo: [
                 "file": #file,
@@ -55,7 +59,9 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
                 "function": #function,
                 "line": "\(#line)"
             ],
-            diagnosticsId: UUID().uuidString))
+            diagnosticsId: UUID().uuidString
+        ))
+        validation = (self.isValid?(primerTextField.internalText?.withoutWhiteSpace ?? "") ?? false) ? valid : invalid
 
         switch validation {
         case .valid:

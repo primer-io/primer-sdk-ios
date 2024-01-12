@@ -15,6 +15,7 @@ import Dispatch
 // These protocols have to be internal to make their contents accessible to users, but the protocols themselves
 // should never appear in Xcode or in the documentation.
 
+// swiftlint:disable type_name
 internal protocol _PMKSharedWrappers {
 
     associatedtype T
@@ -80,3 +81,4 @@ internal protocol _PMKFinallyWrappers {
 
 extension PMKFinalizer: _PMKFinallyWrappers {}
 extension CancellableFinalizer: _PMKFinallyWrappers {}
+// swiftlint:enable type_name

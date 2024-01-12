@@ -1,7 +1,7 @@
 import Dispatch
 
 internal extension _PMKSharedWrappers {
-    
+
     /**
      The provided closure executes when this promise rejects.
      
@@ -26,7 +26,7 @@ internal extension _PMKSharedWrappers {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(on: dispatcher, policy: policy, body)
     }
-    
+
     /**
      The provided closure executes when this promise rejects with the specific error passed in.
      
@@ -51,7 +51,7 @@ internal extension _PMKSharedWrappers {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(only: only, on: dispatcher, body)
     }
-    
+
     /**
      The provided closure executes when this promise rejects with an error of the type passed in.
      
@@ -81,7 +81,7 @@ internal extension _PMKSharedWrappers {
 }
 
 internal extension _PMKSharedVoidWrappers {
-    
+
     /**
      The provided closure executes when this promise rejects.
      
@@ -99,7 +99,7 @@ internal extension _PMKSharedVoidWrappers {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(on: dispatcher, policy: policy, body)
     }
-    
+
     /**
      The provided closure executes when this promise rejects with the specific error passed in.
      
@@ -118,7 +118,7 @@ internal extension _PMKSharedVoidWrappers {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(only: only, on: dispatcher, body)
     }
-    
+
     /**
      The provided closure executes when this promise rejects with an error of the type passed in.
      
@@ -140,7 +140,7 @@ internal extension _PMKSharedVoidWrappers {
 }
 
 internal extension CatchMixin {
-    
+
     /**
      The provided closure executes when this promise rejects.
      This variant of `recover` requires the handler to return a Guarantee; your closure cannot `throw`.
@@ -161,7 +161,7 @@ internal extension CatchMixin {
 }
 
 internal extension CatchMixin where T == Void {
-    
+
     /**
      The provided closure executes when this promise rejects.
      
@@ -182,7 +182,7 @@ internal extension CatchMixin where T == Void {
 }
 
 internal extension CancellableCatchMixin {
-    
+
     /**
      The provided closure executes when this cancellable promise rejects.
      
@@ -211,7 +211,7 @@ internal extension CancellableCatchMixin {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(on: dispatcher, policy: policy, body)
     }
-    
+
     /**
      The provided closure executes when this cancellable promise rejects with the specific error passed in.
      
@@ -236,7 +236,7 @@ internal extension CancellableCatchMixin {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return recover(only: only, on: dispatcher, body)
     }
-    
+
     /**
      The provided closure executes when this cancellable promise rejects with an error of the type passed in.
      

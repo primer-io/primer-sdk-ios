@@ -378,7 +378,12 @@ internal extension CancellableCatchMixin {
      - Parameter body: The handler to execute if this promise is rejected with the provided error type.
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
      */
-    func recover<V: CancellableThenable, E: Swift.Error>(only: E.Type, on: Dispatcher = conf.D.map, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) throws -> V) -> CancellablePromise<C.T> where V.U.T == C.T {
+    func recover<V: CancellableThenable, E: Swift.Error>(only: E.Type,
+                                                         on: Dispatcher = conf.D.map,
+                                                         policy: CatchPolicy = conf.catchPolicy,
+                                                         _ body: @escaping(E) throws -> V)
+    -> CancellablePromise<C.T> where V.U.T == C.T {
+
         let cancelItemList = CancelItemList()
 
         let cancelBody = { (error: E) throws -> V.U in
@@ -417,7 +422,12 @@ internal extension CancellableCatchMixin {
      - Parameter body: The handler to execute if this promise is rejected with the provided error type.
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
      */
-    func recover<V: Thenable, E: Swift.Error>(only: E.Type, on: Dispatcher = conf.D.map, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) throws -> V) -> CancellablePromise<C.T> where V.T == C.T {
+    func recover<V: Thenable, E: Swift.Error>(only: E.Type,
+                                              on: Dispatcher = conf.D.map,
+                                              policy: CatchPolicy = conf.catchPolicy,
+                                              _ body: @escaping(E) throws -> V)
+    -> CancellablePromise<C.T> where V.T == C.T {
+
         let cancelBody = { (error: E) throws -> V in
             _ = self.cancelContext.removeItems(self.cancelItemList, clearList: true)
             let rval = try body(error)

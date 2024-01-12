@@ -257,18 +257,18 @@ extension FormPaymentMethodTokenizationViewModel {
         voucherInfoContainerStackView.layer.cornerRadius = 8.0
 
         for voucherValue in VoucherValue.currentVoucherValues where voucherValue.value != nil {
-            
+
             let voucherValueStackView = PrimerStackView()
             voucherValueStackView.axis = .horizontal
             voucherValueStackView.spacing = 12.0
             voucherValueStackView.distribution = .fillProportionally
-            
+
             let voucherValueLabel = UILabel()
             voucherValueLabel.text = voucherValue.description
             voucherValueLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
             voucherValueLabel.textColor = .gray600
             voucherValueStackView.addArrangedSubview(voucherValueLabel)
-            
+
             let voucherValueText = UILabel()
             voucherValueText.text = voucherValue.value
             voucherValueText.font = UIFont.boldSystemFont(ofSize: PrimerDimensions.Font.label)
@@ -276,9 +276,9 @@ extension FormPaymentMethodTokenizationViewModel {
             voucherValueText.setContentHuggingPriority(.required, for: .horizontal)
             voucherValueText.setContentCompressionResistancePriority(.required, for: .horizontal)
             voucherValueStackView.addArrangedSubview(voucherValueText)
-            
+
             voucherInfoContainerStackView.addArrangedSubview(voucherValueStackView)
-            
+
             if let lastValue = VoucherValue.currentVoucherValues.last, voucherValue != lastValue {
                 // Separator view
                 let separatorView = PrimerView()

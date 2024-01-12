@@ -28,7 +28,7 @@ public class PrimerInputTextField: UITextField, PrimerHeadlessUniversalCheckoutI
     public var type: PrimerInputElementType = .cardNumber
     public var detectedValueType: Any?
     public var isValid: Bool {
-        return self.type.validate(value: self._text as Any, detectedValueType: self.detectedValueType)
+        return self.type.validate(value: self.internalText as Any, detectedValueType: self.detectedValueType)
     }
     public override var delegate: UITextFieldDelegate? {
         get {
@@ -46,12 +46,12 @@ public class PrimerInputTextField: UITextField, PrimerHeadlessUniversalCheckoutI
         }
         set {
             super.text = newValue
-            self._text = newValue
+            self.internalText = newValue
         }
     }
 
     private var checkoutModulesTextFieldDelegate: PrimerHeadlessUniversalCheckout.Delegate?
-    internal var _text: String?
+    internal var internalText: String?
     private lazy var _keyboardType: UIKeyboardType = {
         return self.type.keyboardType
     }()
