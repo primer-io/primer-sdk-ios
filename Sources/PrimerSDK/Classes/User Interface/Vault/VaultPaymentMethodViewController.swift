@@ -270,7 +270,7 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
         else {
             fatalError()
         }
-        
+
         cell.configure(paymentMethod: paymentMethod, isDeleting: isDeleting)
         return cell
     }

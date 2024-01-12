@@ -3,7 +3,7 @@ import UIKit
 public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
 
     internal var firstName: String? {
-        return textField._text
+        return textField.internalText
     }
 
     override func xibSetup() {

@@ -1,4 +1,5 @@
 import Dispatch
+// swiftlint:disable all
 
 /**
  PromiseKit’s configurable parameters.
@@ -34,3 +35,4 @@ internal struct PMKConfiguration {
 
 /// Modify this as soon as possible in your application’s lifetime
 internal var conf = PMKConfiguration()
+// swiftlint:enable all

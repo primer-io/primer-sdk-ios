@@ -6,6 +6,7 @@
 //  License: https://github.com/Flight-School/AnyCodable/blob/master/LICENSE.md
 //
 
+// swiftlint:disable type_name
 #if canImport(Foundation)
 import Foundation
 #endif
@@ -190,3 +191,4 @@ extension AnyDecodable: Hashable {
         }
     }
 }
+// swiftlint:enable type_name

@@ -1,19 +1,20 @@
 disabled_rules:
-# errors
+ # errors
     - line_length
     - type_body_length
     - function_body_length
     - file_length
     - identifier_name
-    - force_try
-    - type_name
     - cyclomatic_complexity
     
-# warnings
-    - trailing_whitespace # this rule should stay disabled, I have never saw a codebase with this rule applied
-    - nesting #to disable this whole data model should be refactored, we have a lot of nesting at the moment
-    - large_tuple #can be very tricky, it is found in PromiseKit as well
+ # warnings
+    - nesting # to disable this whole data model should be refactored, we have a lot of nesting at the moment
+    - large_tuple # can be very tricky, it is found in PromiseKit as well
     - deployment_target # used in PromiseKit
+    - type_name
     
 included:
   - ../Sources
+
+#excluded:
+#  - ../Sources/PrimerSDK/Classes/Third Party/PromiseKit

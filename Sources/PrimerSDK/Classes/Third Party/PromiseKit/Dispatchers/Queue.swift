@@ -41,8 +41,8 @@ struct Queue<T> {
     }
 
     private mutating func maybeCompactStorage() {
-        let n = elements.count
-        if n > arraySizeWorthCompacting && head > Int(Double(n) * (1 - minUtilization)) {
+        let count = elements.count
+        if count > arraySizeWorthCompacting && head > Int(Double(count) * (1 - minUtilization)) {
             compactStorage()
         }
     }
@@ -60,5 +60,4 @@ struct Queue<T> {
         elements.removeAll(keepingCapacity: false)
         head = 0
     }
-
 }

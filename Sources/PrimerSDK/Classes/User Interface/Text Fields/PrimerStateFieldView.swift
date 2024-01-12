@@ -3,7 +3,7 @@ import UIKit
 public final class PrimerStateFieldView: PrimerSimpleCardFormTextFieldView {
 
     internal var state: String? {
-        return textField._text
+        return textField.internalText
     }
 
     override func xibSetup() {

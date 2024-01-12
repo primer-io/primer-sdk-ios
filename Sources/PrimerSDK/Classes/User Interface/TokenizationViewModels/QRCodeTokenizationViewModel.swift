@@ -23,7 +23,10 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -108,7 +111,10 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             self.didCancel = {
                 let err = PrimerError.cancelled(
                     paymentMethodType: self.config.type,
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 pollingModule.cancel(withError: err)
@@ -134,7 +140,10 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file,
+                                                                                                         "class": "\(Self.self)",
+                                                                                                         "function": #function,
+                                                                                                         "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -187,7 +196,10 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                     seal.reject(err)
                 }
             } else {
-                let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 seal.reject(error)
             }
         }
@@ -233,10 +245,9 @@ extension QRCodeTokenizationViewModel {
     private func evaluateFireDidReceiveAdditionalInfoEvent() -> Promise<Void> {
         return Promise { seal in
 
-            /// There is no need to check whether the Headless is implemented as the unsupported payment methods will be listed into
-            /// PrimerHeadlessUniversalCheckout's private constant `unsupportedPaymentMethodTypes`
+            /// There is no need to check whether the Headless is implemented as the unsupported payment methods 
+            /// will be listed into PrimerHeadlessUniversalCheckout's private constant `unsupportedPaymentMethodTypes`
             /// Xfers is among them so it won't be loaded
-            ///
             ///
             /// This Promise only fires event in case of Headless support ad its been designed ad-hoc for this purpose
 
@@ -251,15 +262,25 @@ extension QRCodeTokenizationViewModel {
             let isHeadlessDidReceiveAdditionalInfoImplemented = PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
 
             guard isHeadlessDidReceiveAdditionalInfoImplemented else {
-                let err = PrimerError.generic(message: "Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)' hasn't been implemented. No events will be sent to your delegate instance.", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let message =
+"""
+Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)' hasn't been implemented. \
+No events will be sent to your delegate instance.
+"""
+                let err = PrimerError.generic(message: message,
+                                              userInfo: ["file": #file,
+                                                         "class": "\(Self.self)",
+                                                         "function": #function,
+                                                         "line": "\(#line)"],
+                                              diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
 
             /// We don't want to put a lot of conditions for already unhandled payment methods
-            /// So we'll fulFill the promise directly, leaving the rest of the logic as clean as possible to proceed with almost
-            /// only happy path
+            /// So we'll fulFill the promise directly, leaving the rest of the logic as clean as possible 
+            /// to proceed with almost only happy path
 
             guard self.config.type != PrimerPaymentMethodType.xfersPayNow.rawValue else {
                 seal.fulfill()
@@ -273,21 +294,37 @@ extension QRCodeTokenizationViewModel {
                 PrimerPaymentMethodType.omisePromptPay.rawValue:
 
                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                        "class": "\(Self.self)",
+                                                                        "function": #function,
+                                                                        "line": "\(#line)"],
+                                                             diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
 
                 guard let expiresAt = decodedJWTToken.expDate else {
-                    let err = PrimerError.invalidValue(key: "decodedClientToken.expiresAt", value: decodedJWTToken.expiresAt, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidValue(key: "decodedClientToken.expiresAt",
+                                                       value: decodedJWTToken.expiresAt,
+                                                       userInfo: ["file": #file,
+                                                                  "class": "\(Self.self)",
+                                                                  "function": #function,
+                                                                  "line": "\(#line)"],
+                                                       diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
 
                 guard let qrCodeString = decodedJWTToken.qrCode else {
-                    let err = PrimerError.invalidValue(key: "decodedClientToken.qrCode", value: decodedJWTToken.qrCode, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidValue(key: "decodedClientToken.qrCode",
+                                                       value: decodedJWTToken.qrCode,
+                                                       userInfo: ["file": #file,
+                                                                  "class": "\(Self.self)",
+                                                                  "function": #function,
+                                                                  "line": "\(#line)"],
+                                                       diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -316,7 +353,13 @@ extension QRCodeTokenizationViewModel {
                 PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
                 seal.fulfill()
             } else {
-                let err = PrimerError.invalidValue(key: "additionalInfo", value: additionalInfo, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "additionalInfo",
+                                                   value: additionalInfo,
+                                                   userInfo: ["file": #file,
+                                                              "class": "\(Self.self)",
+                                                              "function": #function,
+                                                              "line": "\(#line)"],
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
             }

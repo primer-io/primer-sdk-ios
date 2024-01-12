@@ -29,7 +29,7 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
                 completion(.failure(err))
                 return
             }
-            
+
             guard !mobileNumber.isEmpty else {
                 let validationError = PrimerValidationError.invalidPhoneNumber(
                     message: "Phone number cannot be blank.",
@@ -78,7 +78,10 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
                 case .failure(let error):
                     let primerError = PrimerError.underlyingErrors(
                         errors: [error],
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: ["file": #file,
+                                   "class": "\(Self.self)",
+                                   "function": #function,
+                                   "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: primerError)
 

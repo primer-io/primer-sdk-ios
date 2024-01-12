@@ -27,11 +27,16 @@ class PrimerNavigationController: UINavigationController, UINavigationBarDelegat
 }
 
 extension PrimerNavigationController: UINavigationControllerDelegate {
-    func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func navigationController(_ navigationController: UINavigationController,
+                              animationControllerFor operation: UINavigationController.Operation,
+                              from fromVC: UIViewController,
+                              to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return DissolveAnimator()
     }
 
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+    func navigationController(_ navigationController: UINavigationController,
+                              willShow viewController: UIViewController,
+                              animated: Bool) {
         if isInitialized {
             navigationBar.layer.removeAllAnimations()
             let navigationBarAnimation = CATransition()
@@ -46,7 +51,9 @@ extension PrimerNavigationController: UINavigationControllerDelegate {
         }
     }
 
-    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+    func navigationController(_ navigationController: UINavigationController,
+                              didShow viewController: UIViewController,
+                              animated: Bool) {
         if viewController == self {
             if isInitialized {
                 navigationBar.layer.removeAllAnimations()

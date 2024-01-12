@@ -87,7 +87,9 @@ extension Response.Body {
 
         var hasSurchargeEnabled: Bool {
             let pmSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { $0["surcharge"] as? Int != nil })
-            let cardSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { (($0["networks"] as? [[String: Any]])?.first(where: { $0["surcharge"] as? Int != nil })) != nil  })
+
+            let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options
+            let cardSurcharge = options?.first(where: { (($0["networks"] as? [[String: Any]])?.first(where: { $0["surcharge"] as? Int != nil })) != nil  })
             return pmSurcharge != nil || cardSurcharge != nil
         }
 
@@ -116,7 +118,13 @@ extension Response.Body {
 #if !canImport(PrimerKlarnaSDK)
             if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
                 viewModels.remove(at: klarnaViewModelIndex)
-                logger.warn(message: "Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your podfile or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager, so you can perform payments with Klarna.")
+                let message =
+"""
+Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
+Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
+or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager.
+"""
+                logger.warn(message: message)
 
                 let event = Analytics.Event(
                     eventType: .message,
@@ -131,7 +139,12 @@ extension Response.Body {
 #if !canImport(PrimerIPay88MYSDK)
             if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
                 viewModels.remove(at: iPay88ViewModelIndex)
-                logger.warn(message: "iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your podfile, so you can perform payments with iPay88.")
+                let message =
+"""
+iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
+Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
+"""
+                logger.warn(message: message)
 
                 let event = Analytics.Event(
                     eventType: .message,
@@ -287,7 +300,7 @@ extension Response.Body {
 
         func getProductId(for type: String) -> String? {
             guard let method = self.paymentMethods?
-                    .first(where: { method in return method.type == type }) else { return nil }
+                .first(where: { method in return method.type == type }) else { return nil }
 
             if let apayaOptions = method.options as? MerchantOptions {
                 return apayaOptions.merchantAccountId
@@ -328,7 +341,12 @@ extension Response.Body.Configuration {
                 self.saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
 
                 if self.cardHolderName == nil && self.saveCardCheckbox == nil {
-                    let err = InternalError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = InternalError.failedToDecode(message: "All fields are nil",
+                                                           userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
                 }
@@ -379,7 +397,12 @@ extension Response.Body.Configuration {
                     self.countryCode == nil &&
                     self.phoneNumber == nil &&
                     self.state == nil {
-                    let err = InternalError.failedToDecode(message: "All fields are nil", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = InternalError.failedToDecode(message: "All fields are nil",
+                                                           userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
                 }
