@@ -141,7 +141,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     
     private func createValidationMetadata(networks: [CardNetwork], 
                                           source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata {
-        let selectableNetworks: [PrimerCardNetwork] = [CardNetwork].allowedCardNetworks
+        let selectableNetworks: [PrimerCardNetwork] = allowedCardNetworks
             .filter { networks.contains($0) }
             .map { PrimerCardNetwork(network: $0) }
 
