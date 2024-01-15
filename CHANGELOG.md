@@ -1,3 +1,13 @@
+## 2.20.0 (2024-01-15)
+
+### Feat
+
+- iDeal via Adyen , form with redirect component feature (#754)
+
+### Fix
+
+- Throw error when using NativeUIManager for non-native payment method (#772)
+
 ## 2.19.0 (2023-12-15)
 
 ### Feat
