@@ -42,22 +42,41 @@ public class PrimerCardNetwork: NSObject {
         self.displayName = displayName
         self.network = network
     }
+    
+    convenience init(network: CardNetwork) {
+        self.init(
+            displayName: network.validation?.niceType ??
+                network.rawValue.lowercased().capitalized.replacingOccurrences(of: "_", with: " "),
+            network: network
+        )
+    }
+}
+
+@objc
+public class PrimerCardNetworksMetadata: NSObject {
+    let items: [CardNetwork]
+    let preferred: CardNetwork?
+    
+    init(items: [CardNetwork], preferred: CardNetwork?) {
+        self.items = items
+        self.preferred = preferred
+    }
 }
 
 @objc
 public class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodMetadata {
-        
-    public var preferredCardNetwork: PrimerCardNetwork? {
-        return availableCardNetworks.first
-    }
     
     public let source: PrimerCardValidationSource
 
-    public let availableCardNetworks: [PrimerCardNetwork]
+    public let selectableCardNetworks: [PrimerCardNetwork]?
+    
+    public let detectedCardNetworks: [PrimerCardNetwork]
         
     init(source: PrimerCardValidationSource,
-         availableCardNetworks: [PrimerCardNetwork]) {
+         selectableCardNetworks: [PrimerCardNetwork]?,
+         detectedCardNetworks: [PrimerCardNetwork]) {
         self.source = source
-        self.availableCardNetworks = availableCardNetworks
+        self.selectableCardNetworks = selectableCardNetworks
+        self.detectedCardNetworks = detectedCardNetworks
     }
 }
