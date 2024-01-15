@@ -54,6 +54,23 @@ final class AnalyticsStorageTests: XCTestCase {
 
         XCTAssertFalse(FileManager.default.fileExists(atPath: url.path))
     }
+    
+    func testLoadNoFile() throws {
+        storage.deleteAnalyticsFile()
+        let events = storage.loadEvents()
+        XCTAssertEqual(events, [])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: url.path))
+    }
+    
+    func testLoadCorruptFileAndAutoDelete() throws {
+        FileManager.default.createFile(atPath: url.path, contents: "abc123".data(using: .utf8))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
+
+        let events = storage.loadEvents()
+        
+        XCTAssertEqual(events, [])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: url.path))
+    }
 }
 
 extension Analytics.Event: Hashable {
