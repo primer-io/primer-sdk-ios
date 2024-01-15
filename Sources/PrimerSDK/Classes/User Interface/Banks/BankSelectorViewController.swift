@@ -61,7 +61,8 @@ internal class BankSelectorViewController: PrimerFormViewController {
         bankTitleLabel.font = UIFont.systemFont(ofSize: 20)
         bankTitleLabel.textColor = theme.text.title.color
         verticalStackView.addArrangedSubview(bankTitleLabel)
-
+        bankTitleLabel.accessibilityIdentifier = AccessibilityIdentifier.BanksComponent.title.rawValue
+        
         if let subtitle = subtitle {
             let bankSubtitleLabel = UILabel()
             bankSubtitleLabel.text = subtitle

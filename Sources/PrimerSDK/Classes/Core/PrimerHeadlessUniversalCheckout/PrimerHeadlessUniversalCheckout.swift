@@ -31,7 +31,6 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
     private let unsupportedPaymentMethodTypes: [String] = [
         PrimerPaymentMethodType.adyenBlik.rawValue,
         PrimerPaymentMethodType.adyenDotPay.rawValue,
-        PrimerPaymentMethodType.adyenIDeal.rawValue,
         PrimerPaymentMethodType.goCardless.rawValue,
         PrimerPaymentMethodType.googlePay.rawValue,
         PrimerPaymentMethodType.primerTestKlarna.rawValue,

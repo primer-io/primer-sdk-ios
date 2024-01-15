@@ -18,6 +18,12 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }
     private var bankSelectionCompletion: ((AdyenBank) -> Void)?
     private var tokenizationService: TokenizationServiceProtocol?
+    var paymentMethodType: PrimerPaymentMethodType
+
+    required init(config: PrimerPaymentMethod) {
+        self.paymentMethodType = config.internalPaymentMethodType!
+        super.init(config: config)
+    }
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
@@ -46,6 +52,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         tableView.register(BankTableViewCell.self, forCellReuseIdentifier: BankTableViewCell.identifier)
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.accessibilityIdentifier = AccessibilityIdentifier.BanksComponent.banksList.rawValue
         return tableView
     }()
 
@@ -59,6 +66,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         textField.font = UIFont.systemFont(ofSize: 16.0)
         textField.placeholder = Strings.BankSelector.searchBankTitle
         textField.rightViewMode = .always
+        textField.accessibilityIdentifier = AccessibilityIdentifier.BanksComponent.searchBar.rawValue
         return textField
     }()
 
@@ -71,8 +79,10 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }
 
     override func performPreTokenizationSteps() -> Promise<Void> {
-        DispatchQueue.main.async {
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+        if !PrimerInternal.isInHeadlessMode {
+            DispatchQueue.main.async {
+                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+            }
         }
 
         let event = Analytics.Event(
@@ -320,15 +330,7 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
             dataSource = banks
             return true
         }
-
-        var bankResults: [AdyenBank] = []
-
-        for bank in banks where bank.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil)) == true {
-            bankResults.append(bank)
-        }
-
-        dataSource = bankResults
-
+        dataSource = filterBanks(query: query)
         return true
     }
 
@@ -337,3 +339,49 @@ extension BankSelectorTokenizationViewModel: UITextFieldDelegate {
         return true
     }
 }
+
+extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
+    func retrieveListOfBanks() -> Promise<[AdyenBank]> {
+        return Promise { seal in
+            firstly {
+                self.validateReturningPromise()
+            }
+            .then {
+                self.fetchBanks()
+            }
+            .done { banks in
+                self.banks = banks
+                seal.fulfill(banks)
+            }
+            .catch { err in
+                seal.reject(err)
+            }
+        }
+    }
+    func filterBanks(query: String) -> [AdyenBank] {
+        guard !query.isEmpty else {
+            return banks
+        }
+        return banks.filter {
+            $0.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil))
+        }
+    }
+    func tokenize(bankId: String) -> Promise<Void> {
+        self.selectedBank = banks.first(where: { $0.id == bankId })
+        return performTokenizationStep()
+            .then { () -> Promise<Void> in
+                return self.performPostTokenizationSteps()
+            }
+            .then { () -> Promise<Void> in
+                return self.handlePaymentMethodTokenData()
+            }
+    }
+
+    func handlePaymentMethodTokenData() -> Promise<Void> {
+        return Promise { _ in
+            processPaymentMethodTokenData()
+        }
+    }
+}
+
+extension BankSelectorTokenizationViewModel: WebRedirectTokenizationDelegate {}

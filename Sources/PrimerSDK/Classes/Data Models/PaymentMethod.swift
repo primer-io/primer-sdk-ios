@@ -143,6 +143,14 @@ class PrimerPaymentMethod: Codable, LogReporter {
         return nil
     }()
 
+    lazy var tokenizationModel: PaymentMethodTokenizationModelProtocol? = {
+        switch internalPaymentMethodType {
+        case .adyenIDeal:
+            return BanksTokenizationComponent(config: self)
+        default: return nil
+        }
+    }()
+
     var isCheckoutEnabled: Bool {
         if self.baseLogoImage == nil {
             return false
@@ -238,6 +246,10 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
         case .nolPay:
             categories.append(PrimerPaymentMethodManagerCategory.nolPay)
+
+        case .adyenIDeal:
+            categories.append(PrimerPaymentMethodManagerCategory.componentWithRedirect)
+
         default:
             break
         }
@@ -326,6 +338,7 @@ extension PrimerPaymentMethod {
         case nativeSdk      = "NATIVE_SDK"
         case webRedirect    = "WEB_REDIRECT"
         case iPay88Sdk      = "IPAY88_SDK"
+        case formWithRedirect = "FORM_WITH_REDIRECT"
 
         var isEnabled: Bool {
             return true
