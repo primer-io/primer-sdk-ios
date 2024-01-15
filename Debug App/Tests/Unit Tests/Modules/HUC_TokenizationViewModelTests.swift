@@ -9,10 +9,10 @@
 import XCTest
 @testable import PrimerSDK
 
-class HUC_TokenizationViewModelTests: XCTestCase {
+final class HUC_TokenizationViewModelTests: XCTestCase {
     
     private var paymentCompletion: ((PrimerCheckoutData?, Error?) -> Void)?
-    private var availablePaymentMethodsLoadedCompletion: (([PrimerHeadlessUniversalCheckout.PaymentMethod]?, Error?) -> Void)?
+    var availablePaymentMethodsLoadedCompletion: (([PrimerHeadlessUniversalCheckout.PaymentMethod]?, Error?) -> Void)?
     private var tokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
     private var resumeCompletion: ((String?, Error?) -> Void)?
     private var isImplementingManualPaymentFlow: Bool = false
@@ -27,7 +27,6 @@ class HUC_TokenizationViewModelTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Successful HUC initialization")
         
         self.resetTestingEnvironment()
-        
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock_client_session_id",
             paymentMethod: ClientSession.PaymentMethod(
@@ -38,9 +37,10 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             order: nil,
             customer: nil,
             testId: nil)
-        let mockPrimerApiConfiguration = Mocks.createMockAPIConfiguration(
-            clientSession: clientSession,
-            paymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
+        guard let mockPrimerApiConfiguration = self.createMockApiConfiguration(clientSession: clientSession, mockPaymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod]) else {
+            XCTFail("Unable to start mock tokenization")
+            return
+        }
 
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
         
@@ -436,22 +436,6 @@ class HUC_TokenizationViewModelTests: XCTestCase {
         
         wait(for: [expectation], timeout: 600)
     }
-    
-    // MARK: - HELPERS
-    
-    func resetTestingEnvironment() {
-        PrimerHeadlessUniversalCheckout.current.delegate = nil
-        PrimerHeadlessUniversalCheckout.current.uiDelegate = nil
-        
-        self.paymentCompletion = nil
-        self.availablePaymentMethodsLoadedCompletion = nil
-        self.tokenizationCompletion = nil
-        self.resumeCompletion = nil
-        self.isImplementingManualPaymentFlow = false
-        self.isImplementingPaymentMethodWithRequiredAction = false
-        self.abortPayment = false
-        self.eventsCalled = []
-    }
 }
 
 // MARK: - PRIMER HEADLESS UNIVERSAL CHECKOUT DELEGATES
@@ -546,5 +530,18 @@ extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutRawData
     
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
         
+    }
+}
+
+extension HUC_TokenizationViewModelTests: TokenizationTestDelegate {
+    func cleanup() {
+        self.paymentCompletion = nil
+        self.availablePaymentMethodsLoadedCompletion = nil
+        self.tokenizationCompletion = nil
+        self.resumeCompletion = nil
+        self.isImplementingManualPaymentFlow = false
+        self.isImplementingPaymentMethodWithRequiredAction = false
+        self.abortPayment = false
+        self.eventsCalled = []
     }
 }

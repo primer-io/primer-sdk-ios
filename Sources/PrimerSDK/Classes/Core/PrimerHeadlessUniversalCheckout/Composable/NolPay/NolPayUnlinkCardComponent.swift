@@ -23,6 +23,7 @@ public enum NolPayUnlinkCollectableData: PrimerCollectableData {
 
 public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public typealias T = NolPayUnlinkCollectableData
+    public typealias P = NolPayUnlinkDataStep
 
     init() {
         self.phoneMetadataService = NolPayPhoneMetadataService()
@@ -43,8 +44,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     private var unlinkToken: String?
     public var nextDataStep: NolPayUnlinkDataStep = .collectCardAndPhoneData
 
-    public func updateCollectedData(collectableData: NolPayUnlinkCollectableData) {
-
+    public func updateCollectedData(collectableData: T) {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
@@ -318,18 +318,5 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         ErrorHandler.handle(error: error)
         errorDelegate?.didReceiveError(error: error)
 #endif
-    }
-
-    // Helper method
-    private func makeAndHandleInvalidValueError(forKey key: String) {
-        let error = PrimerError.invalidValue(key: key, value: nil, userInfo: [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ],
-        diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        self.errorDelegate?.didReceiveError(error: error)
     }
 }

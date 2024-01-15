@@ -211,7 +211,7 @@ class Networking {
         
         guard let token = paymentMethodTokenData.token else {
             let err = PrimerError.invalidClientToken(
-                userInfo: ["file": #file, 
+                userInfo: ["file": #file,
                            "class": "\(Self.self)",
                            "function": #function,
                            "line": "\(#line)"],
@@ -276,7 +276,7 @@ class Networking {
             apiVersion: .v2_2,
             url: url,
             method: .post,
-            headers: nil,
+            headers: URL.requestSessionHTTPHeaders(useNewWorkflows: useNewWorkflows),
             queryParameters: nil,
             body: bodyData
         ) { result in

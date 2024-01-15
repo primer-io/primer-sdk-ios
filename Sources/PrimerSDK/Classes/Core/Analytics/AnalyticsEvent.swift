@@ -62,6 +62,7 @@ extension Analytics.Event {
             case missingValue                       = "MISSING_VALUE"
             case paymentMethodImageLoadingFailed    = "PM_IMAGE_LOADING_FAILED"
             case validationFailed                   = "VALIDATION_FAILED"
+            case info                               = "INFO"
             case other                              = "OTHER"
         }
 

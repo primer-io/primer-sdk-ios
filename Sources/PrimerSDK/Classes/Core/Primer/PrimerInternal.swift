@@ -37,6 +37,10 @@ internal class PrimerInternal: LogReporter {
         NotificationCenter.default.removeObserver(self)
     }
 
+    static var isInHeadlessMode: Bool {
+        PrimerInternal.shared.sdkIntegrationType == .headless
+    }
+    
     fileprivate init() {
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)

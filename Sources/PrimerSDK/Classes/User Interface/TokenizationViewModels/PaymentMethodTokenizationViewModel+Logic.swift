@@ -17,78 +17,7 @@ extension PaymentMethodTokenizationViewModel {
         }
         .done { paymentMethodTokenData in
             self.paymentMethodTokenData = paymentMethodTokenData
-
-            if PrimerInternal.shared.intent == .vault {
-                PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { _ in }
-                self.handleSuccessfulFlow()
-
-            } else {
-                self.didStartPayment?()
-                self.didStartPayment = nil
-
-                PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
-
-                firstly {
-                    self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
-                }
-                .done { checkoutData in
-                    self.didFinishPayment?(nil)
-                    self.nullifyEventCallbacks()
-
-                    if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
-                        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
-                    }
-
-                    self.handleSuccessfulFlow()
-                }
-                .ensure {
-                    PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
-                }
-                .catch { err in
-                    self.didFinishPayment?(err)
-                    self.nullifyEventCallbacks()
-
-                    let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-
-                    if let primerErr = err as? PrimerError,
-                       case .cancelled = primerErr,
-                       PrimerInternal.shared.sdkIntegrationType == .dropIn,
-                       PrimerInternal.shared.selectedPaymentMethodType == nil,
-                       self.config.implementationType == .webRedirect ||
-                        self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                        self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                        self.config.type == PrimerPaymentMethodType.payPal.rawValue {
-                        firstly {
-                            clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                        }
-                        .done { _ in
-                            PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
-                        }
-                        // The above promises will never end up on error.
-                        .catch { _ in }
-
-                    } else {
-                        firstly {
-                            clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                        }
-                        .then { () -> Promise<String?> in
-                            var primerErr: PrimerError!
-                            if let error = err as? PrimerError {
-                                primerErr = error
-                            } else {
-                                primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
-                            }
-
-                            return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
-                        }
-                        .done { merchantErrorMessage in
-                            self.handleFailureFlow(errorMessage: merchantErrorMessage)
-                        }
-                        // The above promises will never end up on error.
-                        .catch { _ in }
-                    }
-                }
-            }
+            self.processPaymentMethodTokenData()
         }
         .ensure {
             PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
@@ -132,6 +61,82 @@ extension PaymentMethodTokenizationViewModel {
                 .catch { _ in }
             }
         }
+    }
+
+    func processPaymentMethodTokenData() {
+            if PrimerInternal.shared.intent == .vault {
+                PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
+                self.handleSuccessfulFlow()
+
+            } else {
+                self.didStartPayment?()
+                self.didStartPayment = nil
+
+                PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+
+                firstly {
+                    self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+                }
+                .done { checkoutData in
+                    self.didFinishPayment?(nil)
+                    self.nullifyEventCallbacks()
+
+                    if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
+                        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                    }
+
+                    self.handleSuccessfulFlow()
+                }
+                .ensure {
+                    PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                }
+                .catch { err in
+                    self.didFinishPayment?(err)
+                    self.nullifyEventCallbacks()
+
+                    let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+
+                    if let primerErr = err as? PrimerError,
+                       case .cancelled = primerErr,
+                       PrimerInternal.shared.sdkIntegrationType == .dropIn,
+                       PrimerInternal.shared.selectedPaymentMethodType == nil,
+                       (
+                        self.config.implementationType == .webRedirect ||
+                        self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                        self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                        self.config.type == PrimerPaymentMethodType.payPal.rawValue
+                       ) {
+                        firstly {
+                            clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                        }
+                        .done { _ in
+                            PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
+                        }
+                        // The above promises will never end up on error.
+                        .catch { _ in }
+
+                    } else {
+                        firstly {
+                            clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                        }
+                        .then { () -> Promise<String?> in
+                            var primerErr: PrimerError!
+                            if let error = err as? PrimerError {
+                                primerErr = error
+                            } else {
+                                primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
+                            }
+
+                            return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
+                        }
+                        .done { merchantErrorMessage in
+                            self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                        }
+                        // The above promises will never end up on error.
+                        .catch { _ in }
+                    }
+                }
+            }
     }
 
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {

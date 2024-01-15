@@ -22,6 +22,7 @@ public enum NolPayPaymentStep: PrimerHeadlessStep {
 public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
 
     public typealias T = NolPayPaymentCollectableData
+    public typealias P = NolPayPaymentStep
 
 #if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPay!
@@ -36,10 +37,10 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     var mobileNumber: String?
     var countryCode: String?
     var cardNumber: String?
-    var nextDataStep: NolPayPaymentStep = .collectCardAndPhoneData
+    public var nextDataStep: NolPayPaymentStep = .collectCardAndPhoneData
 
-    public func updateCollectedData(collectableData: NolPayPaymentCollectableData) {
-        switch collectableData {
+    public func updateCollectedData(collectableData: T) {
+       switch collectableData {
         case let .paymentData(cardNumber, mobileNumber):
             nextDataStep = .collectCardAndPhoneData
             self.cardNumber = cardNumber
@@ -260,20 +261,5 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         ErrorHandler.handle(error: error)
         errorDelegate?.didReceiveError(error: error)
 #endif
-    }
-
-    // Helper method
-    private func makeAndHandleInvalidValueError(forKey key: String) {
-        let error = PrimerError.invalidValue(key: key,
-                                             value: nil,
-                                             userInfo: [
-                                                "file": #file,
-                                                "class": "\(Self.self)",
-                                                "function": #function,
-                                                "line": "\(#line)"
-                                             ],
-                                             diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        self.errorDelegate?.didReceiveError(error: error)
     }
 }

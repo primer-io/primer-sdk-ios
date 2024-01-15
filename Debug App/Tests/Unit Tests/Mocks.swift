@@ -113,6 +113,8 @@ class Mocks {
             static var paymentCardPaymentMethodName = "Mock Payment Card Payment Method"
             
             static var processorConfigId = "mock_processor_config_id"
+            static var idealPaymentMethodId = "ADYEN_IDEAL"
+            static var idealPaymentMethodName = "Mock Ideal Payment Method"
         }
     }
     
@@ -155,6 +157,16 @@ class Mocks {
             name: Mocks.Static.Strings.klarnaPaymentMethodName,
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 299,
+            options: nil,
+            displayMetadata: nil)
+        
+        static var idealFormWithRedirectPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.idealPaymentMethodId,
+            implementationType: .nativeSdk,
+            type: Mocks.Static.Strings.idealPaymentMethodId,
+            name: Mocks.Static.Strings.idealPaymentMethodName,
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 0,
             options: nil,
             displayMetadata: nil)
         
