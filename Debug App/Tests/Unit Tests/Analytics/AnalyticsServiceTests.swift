@@ -17,7 +17,7 @@ final class AnalyticsServiceTests: XCTestCase {
     
     var service: Analytics.Service!
     
-    override func setUpWithError() throws {
+    override func setUp() {
         apiClient = MockPrimerAPIAnalyticsClient()
         storage = MockAnalyticsStorage()
         service = Analytics.Service(sdkLogsUrl: URL(string: "http://localhost/")!, 
@@ -26,7 +26,7 @@ final class AnalyticsServiceTests: XCTestCase {
                                     apiClient: apiClient)
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() {
         service = nil
         storage = nil
         apiClient = nil
@@ -124,7 +124,14 @@ final class AnalyticsServiceTests: XCTestCase {
     }
     
     func messageEvent(withMessage message: String) -> Analytics.Event {
-        Analytics.Event(eventType: .message, properties: MessageEventProperties(message: message, messageType: .other, severity: .info))
+        Analytics.Event(
+            eventType: .message,
+            properties: MessageEventProperties(
+                message: message,
+                messageType: .other,
+                severity: .info
+            )
+        )
     }
 }
 
