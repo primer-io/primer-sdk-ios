@@ -18,14 +18,17 @@ struct AnalyticsContextKeys {
 }
 
 protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
+    associatedtype InfoType
+    
     var errorId: String { get }
     var exposedError: Error { get }
-    var info: [String: Any]? { get }
+    var info: InfoType? { get }
     var diagnosticsId: String { get }
     var analyticsContext: [String: Any] { get }
 }
 
 public enum PrimerError: PrimerErrorProtocol {
+    typealias InfoType = [String: Any]
 
     case generic(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String)
@@ -314,7 +317,7 @@ public enum PrimerError: PrimerErrorProtocol {
         return "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
     }
 
-    var info: [String: Any]? {
+    var info: InfoType? {
         var tmpUserInfo: [String: Any] = errorUserInfo
 
         switch self {

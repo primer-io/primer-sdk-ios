@@ -38,7 +38,7 @@ internal class ErrorHandler: LogReporter {
                 event.createdAt = createdAt.millisecondsSince1970
             }
 
-        } else if let primerError = error as? PrimerErrorProtocol {
+        } else if let primerError = error as? PrimerError {
             event = Analytics.Event(
                 eventType: .message,
                 properties: MessageEventProperties(
