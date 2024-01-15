@@ -9,10 +9,10 @@
 import XCTest
 @testable import PrimerSDK
 
-class HUC_TokenizationViewModelTests: XCTestCase {
+final class HUC_TokenizationViewModelTests: XCTestCase {
     
     private var paymentCompletion: ((PrimerCheckoutData?, Error?) -> Void)?
-    private var availablePaymentMethodsLoadedCompletion: (([PrimerHeadlessUniversalCheckout.PaymentMethod]?, Error?) -> Void)?
+    var availablePaymentMethodsLoadedCompletion: (([PrimerHeadlessUniversalCheckout.PaymentMethod]?, Error?) -> Void)?
     private var tokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
     private var resumeCompletion: ((String?, Error?) -> Void)?
     private var isImplementingManualPaymentFlow: Bool = false
@@ -59,9 +59,10 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             order: nil,
             customer: nil,
             testId: nil)
-        let mockPrimerApiConfiguration = Mocks.createMockAPIConfiguration(
-            clientSession: clientSession,
-            paymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
+        guard let mockPrimerApiConfiguration = self.createMockApiConfiguration(clientSession: clientSession, mockPaymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod]) else {
+            XCTFail("Unable to start mock tokenization")
+            return
+        }
 
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
         
@@ -539,5 +540,18 @@ extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutRawData
     
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
         
+    }
+}
+
+extension HUC_TokenizationViewModelTests: TokenizationTestDelegate {
+    func cleanup() {
+        self.paymentCompletion = nil
+        self.availablePaymentMethodsLoadedCompletion = nil
+        self.tokenizationCompletion = nil
+        self.resumeCompletion = nil
+        self.isImplementingManualPaymentFlow = false
+        self.isImplementingPaymentMethodWithRequiredAction = false
+        self.abortPayment = false
+        self.eventsCalled = []
     }
 }

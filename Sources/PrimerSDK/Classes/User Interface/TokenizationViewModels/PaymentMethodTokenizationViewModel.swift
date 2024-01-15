@@ -11,48 +11,8 @@ import UIKit
 typealias TokenizationCompletion = ((PrimerPaymentMethodTokenData?, Error?) -> Void)
 typealias PaymentCompletion = ((PrimerCheckoutData?, Error?) -> Void)
 
-internal protocol PaymentMethodTokenizationViewModelProtocol: NSObject {
-
-    static var apiClient: PrimerAPIClientProtocol? { get set }
-
-    init(config: PrimerPaymentMethod)
-
-    // UI
-    var config: PrimerPaymentMethod! { get set }
-    var uiModule: UserInterfaceModule! { get }
-    var position: Int { get set }
-
-    // Events
-    var checkouEventsNotifierModule: CheckoutEventsNotifierModule { get }
-    var didStartPayment: (() -> Void)? { get set }
-    var didFinishPayment: ((Error?) -> Void)? { get set }
-    var willPresentPaymentMethodUI: (() -> Void)? { get set }
-    var didPresentPaymentMethodUI: (() -> Void)? { get set }
-    var willDismissPaymentMethodUI: (() -> Void)? { get set }
-    var didDismissPaymentMethodUI: (() -> Void)? { get set }
-
-    var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
-    var paymentCheckoutData: PrimerCheckoutData? { get set }
-    var successMessage: String? { get set }
-
-    func validate() throws
-    func start()
-    func performPreTokenizationSteps() -> Promise<Void>
-    func performTokenizationStep() -> Promise<Void>
-    func performPostTokenizationSteps() -> Promise<Void>
-    func tokenize() -> Promise<PrimerPaymentMethodTokenData>
-    func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData>
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?>
-    func presentPaymentMethodUserInterface() -> Promise<Void>
-    func awaitUserInput() -> Promise<Void>
-
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?>
-    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
-    func handleSuccessfulFlow()
-    func handleFailureFlow(errorMessage: String?)
+internal protocol PaymentMethodTokenizationViewModelProtocol: PaymentMethodTokenizationModelProtocol, PaymentMethodTokenizationViewProtocol {
     func submitButtonTapped()
-
-    func cancel()
 }
 
 internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {

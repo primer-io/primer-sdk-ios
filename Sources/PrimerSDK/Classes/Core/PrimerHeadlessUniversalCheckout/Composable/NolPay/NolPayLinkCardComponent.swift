@@ -22,7 +22,8 @@ public enum NolPayLinkCardStep: PrimerHeadlessStep {
 public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
 
     public typealias T = NolPayLinkCollectableData
-
+    public typealias P = NolPayLinkCardStep
+    
 #if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPayProtocol!
 #endif
@@ -38,8 +39,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public var linkToken: String?
     public var nextDataStep: NolPayLinkCardStep = .collectTagData
 
-    public func updateCollectedData(collectableData: NolPayLinkCollectableData) {
-
+    public func updateCollectedData(collectableData: T) {
         let sdkEvent = Analytics.Event(
             eventType: .sdkEvent,
             properties: SDKEventProperties(
@@ -343,18 +343,5 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         ErrorHandler.handle(error: error)
         errorDelegate?.didReceiveError(error: error)
 #endif
-    }
-
-    // Helper method
-    private func makeAndHandleInvalidValueError(forKey key: String) {
-        let error = PrimerError.invalidValue(key: key, value: nil, userInfo: [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ],
-        diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        self.errorDelegate?.didReceiveError(error: error)
     }
 }

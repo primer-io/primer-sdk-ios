@@ -48,12 +48,37 @@ public protocol PrimerHeadlessSteppableDelegate: AnyObject {
     func didReceiveStep(step: PrimerHeadlessStep)
 }
 
-public protocol PrimerHeadlessCollectDataComponent: PrimerHeadlessComponent {
-    associatedtype T: PrimerCollectableData
+@objc public protocol PrimerHeadlessStartable: AnyObject {
+    func start()
+}
+
+@objc public protocol PrimerHeadlessSubmitable: AnyObject {
+    func submit()
+}
+
+public protocol PrimerHeadlessCollectDataComponent<Data, Step>: PrimerHeadlessComponent, PrimerHeadlessStartable, PrimerHeadlessSubmitable {
+    associatedtype Data: PrimerCollectableData
+    associatedtype Step: PrimerHeadlessStep
     var errorDelegate: PrimerHeadlessErrorableDelegate? { get set }
     var validationDelegate: PrimerHeadlessValidatableDelegate? { get set }
     var stepDelegate: PrimerHeadlessSteppableDelegate? { get set }
-    func updateCollectedData(collectableData: T)
+    var nextDataStep: Step { get }
+    func updateCollectedData(collectableData: Data)
     func submit()
     func start()
+    func makeAndHandleInvalidValueError(forKey key: String)
+}
+
+extension PrimerHeadlessCollectDataComponent {
+    public func makeAndHandleInvalidValueError(forKey key: String) {
+        let error = PrimerError.invalidValue(key: key, value: nil, userInfo: [
+            "file": #file,
+            "class": "\(Self.self)",
+            "function": #function,
+            "line": "\(#line)"
+        ],
+        diagnosticsId: UUID().uuidString)
+        ErrorHandler.handle(error: error)
+        self.errorDelegate?.didReceiveError(error: error)
+    }
 }

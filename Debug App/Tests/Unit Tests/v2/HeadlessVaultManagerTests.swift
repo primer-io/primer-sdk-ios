@@ -301,8 +301,6 @@ final class HeadlessVaultManagerTests: XCTestCase {
                                          tokenType: .multiUse,
                                          vaultData: nil)
         ])
-        var avaliableVaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
-        
         var mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
@@ -324,7 +322,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                         VaultService.apiClient = mockApiClient
                         
                         vaultManager.deleteVaultedPaymentMethod(id: testVaultedPaymentMethod.id) { err in
-                            if let err = err {
+                            if err != nil {
                                 XCTAssert(true, "Failed to delete vaulted payment method with id 'test'")
                             } else {
                                 mockApiClient = MockPrimerAPIClient()

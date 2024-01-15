@@ -9,7 +9,7 @@
 import UIKit
 import PrimerSDK
 
-class MerchantResultViewController: UIViewController {
+final class MerchantResultViewController: UIViewController {
     
     static func instantiate(
         checkoutData: PrimerCheckoutData?,
