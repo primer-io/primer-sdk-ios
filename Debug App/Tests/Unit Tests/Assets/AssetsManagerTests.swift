@@ -33,8 +33,7 @@ final class AssetsManagerTests: XCTestCase {
         XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .jcb)?.cardImage)
         XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .maestro)?.cardImage)
         XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .mir)?.cardImage)
-
-        XCTAssertNil(try AssetsManager.getCardNetworkAsset(for: .unknown)?.cardImage)
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .unknown)?.cardImage)
     }
 
 }
