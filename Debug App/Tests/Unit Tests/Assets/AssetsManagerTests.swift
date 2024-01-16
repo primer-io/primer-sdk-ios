@@ -22,18 +22,19 @@ final class AssetsManagerTests: XCTestCase {
     }
 
     func testCardAssets() throws {
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .cartesBancaires))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .discover))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .masterCard))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .visa))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .amex))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .elo))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .diners))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .jcb))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .maestro))
-        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .mir))
 
-        XCTAssertNil(try AssetsManager.getCardNetworkAsset(for: .unknown))
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .cartesBancaires)?.cardImage)
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .discover)?.cardImage)
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .masterCard)?.cardImage)
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .visa)?.cardImage)
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .amex)?.cardImage)
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .elo)?.cardImage)
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .diners)?.cardImage)
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .jcb)?.cardImage)
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .maestro)?.cardImage)
+        XCTAssertNotNil(try AssetsManager.getCardNetworkAsset(for: .mir)?.cardImage)
+
+        XCTAssertNil(try AssetsManager.getCardNetworkAsset(for: .unknown)?.cardImage)
     }
 
 }
