@@ -45,7 +45,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     func validateCardNetworks(withCardNumber cardNumber: String) {
         let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
         let cardState = PrimerCardNumberEntryState(cardNumber: sanitizedCardNumber)
-        
+                
         // Don't validate if the BIN (first eight digits) hasn't changed
         if let mostRecentCardNumber = mostRecentCardNumber, 
             mostRecentCardNumber.prefix(Self.maximumBinLength) == sanitizedCardNumber.prefix(Self.maximumBinLength) {
@@ -115,7 +115,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     
     func useLocalValidation(withCardState cardState: PrimerCardNumberEntryState, isFallback: Bool) {
         let localValidationNetwork = CardNetwork(cardNumber: cardState.cardNumber)
-        let metadata = createValidationMetadata(networks: [localValidationNetwork],
+        let metadata = createValidationMetadata(networks: cardState.cardNumber.isEmpty ? [] : [localValidationNetwork],
                                                 source: isFallback ? .localFallback : .local)
         
         if cardState.cardNumber.count >= Self.maximumBinLength {
