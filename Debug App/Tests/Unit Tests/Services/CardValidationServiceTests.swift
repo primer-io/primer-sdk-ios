@@ -105,17 +105,17 @@ final class CardValidationServiceTests: XCTestCase {
         
         let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
         delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
-            if networks.detectedCardNetworks.count > 1 {
+            if networks.detectedCardNetworks.items.count > 1 {
                 XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
                 XCTAssertEqual(networks.source, .remote)
                 
-                XCTAssertEqual(networks.detectedCardNetworks.map { $0.network },
-                               networks.selectableCardNetworks?.map { $0.network })
+                XCTAssertEqual(networks.detectedCardNetworks.items.map { $0.network },
+                               networks.selectableCardNetworks?.items.map { $0.network })
                 
-                XCTAssertEqual(networks.detectedCardNetworks[0].displayName, "Visa")
-                XCTAssertEqual(networks.detectedCardNetworks[0].network.rawValue, "VISA")
-                XCTAssertEqual(networks.detectedCardNetworks[1].displayName, "Mastercard")
-                XCTAssertEqual(networks.detectedCardNetworks[1].network.rawValue, "MASTERCARD")
+                XCTAssertEqual(networks.detectedCardNetworks.items[0].displayName, "Visa")
+                XCTAssertEqual(networks.detectedCardNetworks.items[0].network.rawValue, "VISA")
+                XCTAssertEqual(networks.detectedCardNetworks.items[1].displayName, "Mastercard")
+                XCTAssertEqual(networks.detectedCardNetworks.items[1].network.rawValue, "MASTERCARD")
                 expectation2.fulfill()
             }
         }
@@ -151,28 +151,28 @@ final class CardValidationServiceTests: XCTestCase {
                                                        cardState: PrimerCardNumberEntryState) in
             print("""
 onMetadataForCardValidationStateCount: \(self.delegate.onMetadataForCardValidationStateCount), \
-networks: \(networks.detectedCardNetworks.count)
+networks: \(networks.detectedCardNetworks.items.count)
 """)
             if self.delegate.onMetadataForCardValidationStateCount == self.maxBinLength {
                 XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
                 XCTAssertEqual(networks.source, .remote)
                 
-                XCTAssertEqual(networks.detectedCardNetworks.map { $0.network },
-                               networks.selectableCardNetworks?.map { $0.network })
+                XCTAssertEqual(networks.detectedCardNetworks.items.map { $0.network },
+                               networks.selectableCardNetworks?.items.map { $0.network })
                 
-                XCTAssertEqual(networks.detectedCardNetworks[0].displayName, "Visa")
-                XCTAssertEqual(networks.detectedCardNetworks[0].network.rawValue, "VISA")
-                XCTAssertEqual(networks.detectedCardNetworks[1].displayName, "Cartes Bancaires")
-                XCTAssertEqual(networks.detectedCardNetworks[1].network.rawValue, "CARTES_BANCAIRES")
+                XCTAssertEqual(networks.detectedCardNetworks.items[0].displayName, "Visa")
+                XCTAssertEqual(networks.detectedCardNetworks.items[0].network.rawValue, "VISA")
+                XCTAssertEqual(networks.detectedCardNetworks.items[1].displayName, "Cartes Bancaires")
+                XCTAssertEqual(networks.detectedCardNetworks.items[1].network.rawValue, "CARTES_BANCAIRES")
                 expectation2.fulfill()
             }
             if self.delegate.onMetadataForCardValidationStateCount == (self.maxBinLength * 2) {
                 XCTAssertEqual(cardState.cardNumber, String(altCardNumber.prefix(self.maxBinLength)))
                 XCTAssertEqual(networks.source, .remote)
-                XCTAssertEqual(networks.detectedCardNetworks[0].displayName, "Mastercard")
-                XCTAssertEqual(networks.detectedCardNetworks[0].network.rawValue, "MASTERCARD")
-                XCTAssertEqual(networks.detectedCardNetworks[1].displayName, "Cartes Bancaires")
-                XCTAssertEqual(networks.detectedCardNetworks[1].network.rawValue, "CARTES_BANCAIRES")
+                XCTAssertEqual(networks.detectedCardNetworks.items[0].displayName, "Mastercard")
+                XCTAssertEqual(networks.detectedCardNetworks.items[0].network.rawValue, "MASTERCARD")
+                XCTAssertEqual(networks.detectedCardNetworks.items[1].displayName, "Cartes Bancaires")
+                XCTAssertEqual(networks.detectedCardNetworks.items[1].network.rawValue, "CARTES_BANCAIRES")
                 expectation3.fulfill()
             }
         }
@@ -205,23 +205,23 @@ networks: \(networks.detectedCardNetworks.count)
         
         let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
         delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
-            if networks.detectedCardNetworks.count > 1 {
+            if networks.detectedCardNetworks.items.count > 1 {
                 XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
                 XCTAssertEqual(networks.source, .remote)
                 XCTAssertNotNil(networks.selectableCardNetworks)
-                XCTAssertEqual(networks.selectableCardNetworks?.count, 2)
-                XCTAssertEqual(networks.selectableCardNetworks?[0].displayName, "Visa")
-                XCTAssertEqual(networks.selectableCardNetworks?[0].network.rawValue, "VISA")
-                XCTAssertEqual(networks.selectableCardNetworks?[1].displayName, "Cartes Bancaires")
-                XCTAssertEqual(networks.selectableCardNetworks?[1].network.rawValue, "CARTES_BANCAIRES")
+                XCTAssertEqual(networks.selectableCardNetworks?.items.count, 2)
+                XCTAssertEqual(networks.selectableCardNetworks?.items[0].displayName, "Visa")
+                XCTAssertEqual(networks.selectableCardNetworks?.items[0].network.rawValue, "VISA")
+                XCTAssertEqual(networks.selectableCardNetworks?.items[1].displayName, "Cartes Bancaires")
+                XCTAssertEqual(networks.selectableCardNetworks?.items[1].network.rawValue, "CARTES_BANCAIRES")
                 
-                XCTAssertEqual(networks.detectedCardNetworks.count, 3)
-                XCTAssertEqual(networks.detectedCardNetworks[0].displayName, "Visa")
-                XCTAssertEqual(networks.detectedCardNetworks[0].network.rawValue, "VISA")
-                XCTAssertEqual(networks.detectedCardNetworks[1].displayName, "Mastercard")
-                XCTAssertEqual(networks.detectedCardNetworks[1].network.rawValue, "MASTERCARD")
-                XCTAssertEqual(networks.detectedCardNetworks[2].displayName, "Cartes Bancaires")
-                XCTAssertEqual(networks.detectedCardNetworks[2].network.rawValue, "CARTES_BANCAIRES")
+                XCTAssertEqual(networks.detectedCardNetworks.items.count, 3)
+                XCTAssertEqual(networks.detectedCardNetworks.items[0].displayName, "Visa")
+                XCTAssertEqual(networks.detectedCardNetworks.items[0].network.rawValue, "VISA")
+                XCTAssertEqual(networks.detectedCardNetworks.items[1].displayName, "Mastercard")
+                XCTAssertEqual(networks.detectedCardNetworks.items[1].network.rawValue, "MASTERCARD")
+                XCTAssertEqual(networks.detectedCardNetworks.items[2].displayName, "Cartes Bancaires")
+                XCTAssertEqual(networks.detectedCardNetworks.items[2].network.rawValue, "CARTES_BANCAIRES")
                 expectation2.fulfill()
             }
         }
@@ -247,7 +247,7 @@ networks: \(networks.detectedCardNetworks.count)
         
         let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
         delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
-            XCTAssertEqual(networks.detectedCardNetworks.count, 1)
+            XCTAssertEqual(networks.detectedCardNetworks.items.count, 1)
             if self.delegate.onMetadataForCardValidationStateCount == self.maxBinLength {
                 expectation2.fulfill()
             }

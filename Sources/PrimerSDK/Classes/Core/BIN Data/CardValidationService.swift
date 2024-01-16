@@ -104,7 +104,8 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
             delegate?.primerRawDataManager?(rawDataManager,
                                             didReceiveMetadata: cardMetadata,
                                             forState: cardState)
-            sendEvent(forNetworks: cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks,
+            let trackableNetworks = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
+            sendEvent(forNetworks: trackableNetworks.items,
                       source: cardMetadata.source)
         }.catch { error in
             self.sendEvent(forError: error)

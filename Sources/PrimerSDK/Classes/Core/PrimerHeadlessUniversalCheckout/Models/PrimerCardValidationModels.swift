@@ -50,14 +50,19 @@ public class PrimerCardNetwork: NSObject {
             network: network
         )
     }
+    
+    convenience init?(network: CardNetwork?) {
+        guard let network = network else { return nil }
+        self.init(network: network)
+    }
 }
 
 @objc
 public class PrimerCardNetworksMetadata: NSObject {
-    let items: [CardNetwork]
-    let preferred: CardNetwork?
+    let items: [PrimerCardNetwork]
+    let preferred: PrimerCardNetwork?
     
-    init(items: [CardNetwork], preferred: CardNetwork?) {
+    init(items: [PrimerCardNetwork], preferred: PrimerCardNetwork?) {
         self.items = items
         self.preferred = preferred
     }
@@ -68,15 +73,29 @@ public class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodMetadat
     
     public let source: PrimerCardValidationSource
 
-    public let selectableCardNetworks: [PrimerCardNetwork]?
+    public let selectableCardNetworks: PrimerCardNetworksMetadata?
     
-    public let detectedCardNetworks: [PrimerCardNetwork]
+    public let detectedCardNetworks: PrimerCardNetworksMetadata
         
     init(source: PrimerCardValidationSource,
          selectableCardNetworks: [PrimerCardNetwork]?,
          detectedCardNetworks: [PrimerCardNetwork]) {
         self.source = source
-        self.selectableCardNetworks = selectableCardNetworks
-        self.detectedCardNetworks = detectedCardNetworks
+        if let selectableCardNetworks = selectableCardNetworks {
+            self.selectableCardNetworks = PrimerCardNetworksMetadata(
+                items: selectableCardNetworks,
+                preferred: selectableCardNetworks.first
+            )
+        } else {
+            self.selectableCardNetworks = nil
+        }
+        
+        let preferredNetwork = [CardNetwork].allowedCardNetworks.first {
+            detectedCardNetworks.map { $0.network }.contains($0)
+        }
+        self.detectedCardNetworks = PrimerCardNetworksMetadata(
+            items: detectedCardNetworks,
+            preferred: PrimerCardNetwork(network: preferredNetwork)
+        )
     }
 }
