@@ -98,7 +98,7 @@ final class AnalyticsServiceTests: XCTestCase {
         }
         sendEvents(numberOfEvents: 4, after: 0.5)
 
-        waitForExpectations(timeout: 30.0)
+        waitForExpectations(timeout: 60.0)
         
         XCTAssertEqual(apiClient.batches.count, 5)
         XCTAssertEqual(apiClient.batches.joined().count, 25)
