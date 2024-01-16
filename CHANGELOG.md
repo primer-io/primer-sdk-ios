@@ -7,6 +7,7 @@
 ### Fix
 
 - Throw error when using NativeUIManager for non-native payment method (#772)
+- Improved Errors in the event Apple Pay cannot be presented.
 
 ## 2.19.0 (2023-12-15)
 
