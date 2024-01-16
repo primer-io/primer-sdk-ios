@@ -10,7 +10,7 @@
 import XCTest
 
 class MockPrimerAPIClient: PrimerAPIClientProtocol {
-    var mockedNetworkDelay: TimeInterval = 2
+    var mockedNetworkDelay: TimeInterval = 1
     var validateClientTokenResult: (SuccessResponse?, Error?)?
     var fetchConfigurationResult: (Response.Body.Configuration?, Error?)?
     var fetchConfigurationWithActionsResult: (Response.Body.Configuration?, Error?)?

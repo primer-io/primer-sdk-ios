@@ -131,24 +131,20 @@ extension Analytics {
                     when(fulfilled: promises)
                         .done { _ in
                             self.logger.debug(message: "📚 Analytics: All events \(syncType)ed ...")
-                        }
-                        .ensure {
+                            let remainingEvents = self.storage.loadEvents()
+                            self.logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
+                            self.isSyncing = false
+                            
+                            seal.fulfill()
+                            
+                            if remainingEvents.count >= self.batchSize {
+                                self.sync(events: remainingEvents)
+                            }
                         }
                         .catch { err in
                             let errorMessage = err.localizedDescription
                             let message = "📚 Analytics: Failed to \(syncType) events with error \(errorMessage)"
                             self.logger.error(message: message)
-                        }
-                        .finally {
-                            let remainingEvents = self.storage.loadEvents()
-                            self.logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
-                            self.isSyncing = false
-
-                            seal.fulfill()
-
-                            if remainingEvents.count >= self.batchSize {
-                                self.sync(events: remainingEvents)
-                            }
                         }
                 }
             }
