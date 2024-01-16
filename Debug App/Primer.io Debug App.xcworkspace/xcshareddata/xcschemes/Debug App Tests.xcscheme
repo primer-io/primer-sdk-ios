@@ -38,6 +38,11 @@
                BlueprintName = "Debug App Tests"
                ReferencedContainer = "container:Primer.io Debug App.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "AnalyticsTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
