@@ -59,8 +59,8 @@ public class PrimerCardNetwork: NSObject {
 
 @objc
 public class PrimerCardNetworksMetadata: NSObject {
-    let items: [PrimerCardNetwork]
-    let preferred: PrimerCardNetwork?
+    public let items: [PrimerCardNetwork]
+    public let preferred: PrimerCardNetwork?
     
     init(items: [PrimerCardNetwork], preferred: PrimerCardNetwork?) {
         self.items = items
