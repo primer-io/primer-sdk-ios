@@ -81,7 +81,8 @@ public class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodMetadat
          selectableCardNetworks: [PrimerCardNetwork]?,
          detectedCardNetworks: [PrimerCardNetwork]) {
         self.source = source
-        if let selectableCardNetworks = selectableCardNetworks {
+        
+        if source == .remote, let selectableCardNetworks = selectableCardNetworks, !selectableCardNetworks.isEmpty {
             self.selectableCardNetworks = PrimerCardNetworksMetadata(
                 items: selectableCardNetworks,
                 preferred: selectableCardNetworks.first

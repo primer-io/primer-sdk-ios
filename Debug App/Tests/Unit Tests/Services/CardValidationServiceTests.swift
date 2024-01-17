@@ -231,6 +231,47 @@ networks: \(networks.detectedCardNetworks.items.count)
         waitForExpectations(timeout: 5)
     }
     
+    func testTwelveDigitCardNumber_fastEntry_unallowed_successfulValidation() throws {
+        
+        let cardNumber = "552266117788"
+        
+        
+        apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
+            .init(displayName: "Cartes Bancaires", value: "CARTES_BANCAIRES")
+        ])
+
+        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
+                                                           allowedCardNetworks: [.visa, .masterCard],
+                                                           apiClient: apiClient)
+        
+        let expectation = self.expectation(description: "onWillFetchCardMetadata is called")
+        delegate.onWillFetchCardMetadataForState = { rawDataManager, cardState in
+            XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
+            expectation.fulfill()
+        }
+        
+        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called")
+        delegate.onMetadataForCardValidationState = { rawDataManager, networks, cardState in
+            guard cardState.cardNumber == cardNumber.prefix(8) else { return }
+            
+            XCTAssertEqual(cardState.cardNumber, String(cardNumber.prefix(self.maxBinLength)))
+            XCTAssertEqual(networks.source, .remote)
+            
+            XCTAssertNil(networks.selectableCardNetworks)
+            
+            XCTAssertEqual(networks.detectedCardNetworks.items.count, 1)
+            XCTAssertEqual(networks.detectedCardNetworks.items[0].displayName, "Cartes Bancaires")
+            XCTAssertEqual(networks.detectedCardNetworks.items[0].network.rawValue, "CARTES_BANCAIRES")
+            XCTAssertNil(networks.detectedCardNetworks.preferred)
+            
+            expectation2.fulfill()
+        }
+        
+        enterCardNumber(cardNumber)
+        
+        waitForExpectations(timeout: 5)
+    }
+    
     func testReceiveError() throws {
         
         let cardNumber = "552266117788"
