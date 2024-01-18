@@ -130,8 +130,12 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             seal.fulfill(requestBody)
         }
     }
-
+    
     func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
+        validateRawData(data, cardNetworksMetadata: nil)
+    }
+
+    func validateRawData(_ data: PrimerRawData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.global(qos: .userInteractive).async {
                 var errors: [PrimerValidationError] = []
@@ -181,13 +185,24 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 }
                 
                 // Local Validation
-                let cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
-                // Remote validation
-                self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
+                var cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
                 
-                if let network = rawData.cardNetwork, !self.allowedCardNetworks.contains(network) {
+                // Remote validation
+                if let cardNetworksMetadata = cardNetworksMetadata {
+                    let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
+                        cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
+                    
+                    if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
+                    let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
+                        cardNetwork = network
+                    }
+                } else {
+                    self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
+                }
+                
+                if !self.allowedCardNetworks.contains(cardNetwork) {
                     let err = PrimerValidationError.invalidCardType(
-                        message: "\(network.validation?.niceType ?? "Your card network") is not supported for this transaction",
+                        message: "\(cardNetwork.validation?.niceType ?? "Your card network") is not supported for this transaction",
                         userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString
                     )

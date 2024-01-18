@@ -41,6 +41,8 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         self.apiClient = apiClient
         self.debouncer = debouncer
     }
+    
+    // MARK: Core Validation
         
     func validateCardNetworks(withCardNumber cardNumber: String) {
         let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
@@ -136,6 +138,16 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         delegate?.primerRawDataManager?(rawDataManager,
                                         didReceiveMetadata: metadata,
                                         forState: cardState)
+    }
+    
+    func handle(cardMetadata: PrimerCardNumberEntryMetadata, forCardState cardState: PrimerCardNumberEntryState) {
+        delegate?.primerRawDataManager?(rawDataManager,
+                                        didReceiveMetadata: cardMetadata,
+                                        forState: cardState)
+        
+        DispatchQueue.main.async {
+            self.rawDataManager.validateRawData(withCardNetworksMetadata: cardMetadata)
+        }
     }
     
     // MARK: Model generation
