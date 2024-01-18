@@ -312,13 +312,13 @@ internal extension PrimerAPI {
         case .testFinalizePolling:
             return "/finalize-polling"
         case .listCardNetworks(_, let bin):
-            return "/bin-data/\(bin)/networks"
+            return "/v1/bin-data/\(bin)/networks"
         case .getNolSdkSecret:
             return "/nol-pay/sdk-secrets"
         case .redirect:
             return ""
         case .getPhoneMetadata(_, let request):
-            return "phone-number-lookups/\(request.phoneNumber)"
+            return "/phone-number-lookups/\(request.phoneNumber)"
         }
     }
 

@@ -42,22 +42,61 @@ public class PrimerCardNetwork: NSObject {
         self.displayName = displayName
         self.network = network
     }
+    
+    convenience init(network: CardNetwork) {
+        self.init(
+            displayName: network.validation?.niceType ??
+                network.rawValue.lowercased().capitalized.replacingOccurrences(of: "_", with: " "),
+            network: network
+        )
+    }
+    
+    convenience init?(network: CardNetwork?) {
+        guard let network = network else { return nil }
+        self.init(network: network)
+    }
+}
+
+@objc
+public class PrimerCardNetworksMetadata: NSObject {
+    public let items: [PrimerCardNetwork]
+    public let preferred: PrimerCardNetwork?
+    
+    init(items: [PrimerCardNetwork], preferred: PrimerCardNetwork?) {
+        self.items = items
+        self.preferred = preferred
+    }
 }
 
 @objc
 public class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodMetadata {
-        
-    public var preferredCardNetwork: PrimerCardNetwork? {
-        return availableCardNetworks.first
-    }
     
     public let source: PrimerCardValidationSource
 
-    public let availableCardNetworks: [PrimerCardNetwork]
+    public let selectableCardNetworks: PrimerCardNetworksMetadata?
+    
+    public let detectedCardNetworks: PrimerCardNetworksMetadata
         
     init(source: PrimerCardValidationSource,
-         availableCardNetworks: [PrimerCardNetwork]) {
+         selectableCardNetworks: [PrimerCardNetwork]?,
+         detectedCardNetworks: [PrimerCardNetwork]) {
         self.source = source
-        self.availableCardNetworks = availableCardNetworks
+        
+        if source == .remote, let selectableCardNetworks = selectableCardNetworks, !selectableCardNetworks.isEmpty {
+            self.selectableCardNetworks = PrimerCardNetworksMetadata(
+                items: selectableCardNetworks,
+                preferred: selectableCardNetworks.first
+            )
+        } else {
+            self.selectableCardNetworks = nil
+        }
+        
+        let preferredNetwork = [CardNetwork].allowedCardNetworks.first {
+            detectedCardNetworks.map { $0.network }.contains($0)
+        }
+        self.detectedCardNetworks = PrimerCardNetworksMetadata(
+            items: detectedCardNetworks,
+            preferred: PrimerCardNetwork(network: preferredNetwork)
+        )
     }
 }

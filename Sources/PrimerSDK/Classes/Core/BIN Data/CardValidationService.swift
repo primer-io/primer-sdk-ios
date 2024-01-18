@@ -27,13 +27,17 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     let debouncer: Debouncer
     
     let rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager
+    
+    let allowedCardNetworks: [CardNetwork]
 
     var mostRecentCardNumber: String?
 
     init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+         allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
          apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
          debouncer: Debouncer = .init(delay: 0.35)) {
         self.rawDataManager = rawDataManager
+        self.allowedCardNetworks = allowedCardNetworks
         self.apiClient = apiClient
         self.debouncer = debouncer
     }
@@ -41,7 +45,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     func validateCardNetworks(withCardNumber cardNumber: String) {
         let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
         let cardState = PrimerCardNumberEntryState(cardNumber: sanitizedCardNumber)
-        
+                
         // Don't validate if the BIN (first eight digits) hasn't changed
         if let mostRecentCardNumber = mostRecentCardNumber, 
             mostRecentCardNumber.prefix(Self.maximumBinLength) == sanitizedCardNumber.prefix(Self.maximumBinLength) {
@@ -85,22 +89,24 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         }
         
         _ = listCardNetworks(cardState.cardNumber).done { [weak self] result in
+            guard let self = self else { return }
+            
             guard result.networks.count > 0 else {
-                self?.useLocalValidation(withCardState: cardState, isFallback: true)
+                useLocalValidation(withCardState: cardState, isFallback: true)
                 return
             }
-            let cardMetadata = PrimerCardNumberEntryMetadata(source: .remote,
-                                                             availableCardNetworks: result.networks.map { network in
-                PrimerCardNetwork(displayName: network.displayName,
-                                  network: CardNetwork(cardNetworkStr: network.value))
-            })
             
-            self?.metadataCache[cardState.cardNumber] = cardMetadata
+            let cardMetadata = createValidationMetadata(networks: result.networks.map { CardNetwork(cardNetworkStr: $0.value) },
+                                                        source: .remote)
             
-            self?.delegate?.primerRawDataManager?(rawDataManager,
-                                                  didReceiveMetadata: cardMetadata,
-                                                  forState: cardState)
-            self?.sendEvent(forNetworks: cardMetadata.availableCardNetworks)
+            metadataCache[cardState.cardNumber] = cardMetadata
+            
+            delegate?.primerRawDataManager?(rawDataManager,
+                                            didReceiveMetadata: cardMetadata,
+                                            forState: cardState)
+            let trackableNetworks = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
+            sendEvent(forNetworks: trackableNetworks.items,
+                      source: cardMetadata.source)
         }.catch { error in
             self.sendEvent(forError: error)
             self.logger.warn(message: "Remote card validation failed: \(error.localizedDescription)")
@@ -110,13 +116,8 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     
     func useLocalValidation(withCardState cardState: PrimerCardNumberEntryState, isFallback: Bool) {
         let localValidationNetwork = CardNetwork(cardNumber: cardState.cardNumber)
-        let displayName = localValidationNetwork.validation?.niceType ?? localValidationNetwork.rawValue.lowercased().capitalized
-
-        let cardNetwork = PrimerCardNetwork(displayName: displayName,
-                                            network: CardNetwork(cardNetworkStr: localValidationNetwork.rawValue))
-        
-        let metadata = PrimerCardNumberEntryMetadata(source: isFallback ? .localFallback : .local,
-                                                     availableCardNetworks: cardState.cardNumber.isEmpty ? [] : [cardNetwork])
+        let metadata = createValidationMetadata(networks: cardState.cardNumber.isEmpty ? [] : [localValidationNetwork],
+                                                source: isFallback ? .localFallback : .local)
         
         if cardState.cardNumber.count >= Self.maximumBinLength {
             let logMessage = "Local validation was used where remote validation would have been preferred (max BIN length exceeded)."
@@ -137,15 +138,32 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                                         forState: cardState)
     }
     
+    // MARK: Model generation
+    
+    private func createValidationMetadata(networks: [CardNetwork], 
+                                          source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata {
+        let selectableNetworks: [PrimerCardNetwork] = allowedCardNetworks
+            .filter { networks.contains($0) }
+            .map { PrimerCardNetwork(network: $0) }
+
+        let detectedNetworks = networks.map { PrimerCardNetwork(network: $0) }
+        
+        return .init(
+            source: source,
+            selectableCardNetworks: selectableNetworks,
+            detectedCardNetworks: detectedNetworks
+        )
+    }
+    
     // MARK: Analytics
     
-    private func sendEvent(forNetworks networks: [PrimerCardNetwork]) {
+    private func sendEvent(forNetworks networks: [PrimerCardNetwork], source: PrimerCardValidationSource) {
         let event = Analytics.Event(
             eventType: .ui, 
             properties: UIEventProperties(
                 action: .view,
-                context: nil,
-                extra: nil,
+                context: .init(cardNetworks: networks.map { $0.network.rawValue }),
+                extra: "Source = \(source.rawValue)",
                 objectType: .list,
                 objectId: .cardNetwork,
                 objectClass: String(describing: CardNetwork.self),

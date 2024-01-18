@@ -37,7 +37,7 @@ final class ListCardNetworksEndpointTests: XCTestCase {
         let expectValidEndpointReceived = self.expectation(description: "Expect endpoint to be valid")
         
         networkService.onReceiveEndpoint = { endpoint in
-            XCTAssertEqual(endpoint.path, "/bin-data/\(bin)/networks")
+            XCTAssertEqual(endpoint.path, "/v1/bin-data/\(bin)/networks")
             XCTAssertEqual(endpoint.headers?["X-Api-Version"], "2.2")
             XCTAssertEqual(endpoint.headers?["Primer-Client-Token"], mockClientToken.accessToken)
             expectValidEndpointReceived.fulfill()
@@ -67,7 +67,7 @@ final class ListCardNetworksEndpointTests: XCTestCase {
         let expectValidEndpointReceived = self.expectation(description: "Expect endpoint to be valid")
         
         networkService.onReceiveEndpoint = { endpoint in
-            XCTAssertEqual(endpoint.path, "/bin-data/\(bin)/networks")
+            XCTAssertEqual(endpoint.path, "/v1/bin-data/\(bin)/networks")
             XCTAssertEqual(endpoint.headers?["X-Api-Version"], "2.2")
             XCTAssertEqual(endpoint.headers?["Primer-Client-Token"], mockClientToken.accessToken)
             expectValidEndpointReceived.fulfill()

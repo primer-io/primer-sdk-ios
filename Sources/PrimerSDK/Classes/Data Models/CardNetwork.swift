@@ -22,6 +22,7 @@ struct CardNetworkCode {
     var length: Int
 }
 
+
 public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     
     // https://github.com/primer-io/platform/blob/59980a07113089000c9814b079579e15c616b6db/platform/commons/models/bin_range.py#L66
