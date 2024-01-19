@@ -56,7 +56,10 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
                 options: nil,
-                orderedAllowedCardNetworks: nil
+                orderedAllowedCardNetworks: [
+                    CardNetwork.visa.rawValue,
+                    CardNetwork.masterCard.rawValue
+                ]
             ),
             order: nil,
             customer: nil,
@@ -276,7 +279,10 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
                 options: isSurchargeIncluded ? [["surcharge": 99]] : nil,
-                orderedAllowedCardNetworks: nil
+                orderedAllowedCardNetworks: [
+                    CardNetwork.visa.rawValue, 
+                    CardNetwork.masterCard.rawValue
+                ]
             ),
             order: nil,
             customer: nil,
