@@ -92,21 +92,21 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
             guard let self = self else { return }
             
             guard result.networks.count > 0 else {
-                useLocalValidation(withCardState: cardState, isFallback: true)
+                self.useLocalValidation(withCardState: cardState, isFallback: true)
                 return
             }
             
-            let cardMetadata = createValidationMetadata(networks: result.networks.map { CardNetwork(cardNetworkStr: $0.value) },
-                                                        source: .remote)
+            let cardMetadata = self.createValidationMetadata(networks: result.networks.map { CardNetwork(cardNetworkStr: $0.value) },
+                                                             source: .remote)
             
-            metadataCache[cardState.cardNumber] = cardMetadata
+            self.metadataCache[cardState.cardNumber] = cardMetadata
             
-            delegate?.primerRawDataManager?(rawDataManager,
-                                            didReceiveMetadata: cardMetadata,
-                                            forState: cardState)
+            self.delegate?.primerRawDataManager?(rawDataManager,
+                                                 didReceiveMetadata: cardMetadata,
+                                                 forState: cardState)
             let trackableNetworks = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
-            sendEvent(forNetworks: trackableNetworks.items,
-                      source: cardMetadata.source)
+            self.sendEvent(forNetworks: trackableNetworks.items,
+                           source: cardMetadata.source)
         }.catch { error in
             self.sendEvent(forError: error)
             self.logger.warn(message: "Remote card validation failed: \(error.localizedDescription)")
