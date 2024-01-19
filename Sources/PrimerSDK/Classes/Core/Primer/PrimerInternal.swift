@@ -127,10 +127,7 @@ internal class PrimerInternal: LogReporter {
 
         let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
-        let connectivityEvent = Analytics.Event(
-            eventType: .networkConnectivity,
-            properties: NetworkConnectivityEventProperties(
-                networkType: Connectivity.networkType))
+        let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
         let timingStartEvent = Analytics.Event(
             eventType: .timerEvent,
@@ -173,10 +170,7 @@ internal class PrimerInternal: LogReporter {
 
         let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
-        let connectivityEvent = Analytics.Event(
-            eventType: .networkConnectivity,
-            properties: NetworkConnectivityEventProperties(
-                networkType: Connectivity.networkType))
+        let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
         let timingStartEvent = Analytics.Event(
             eventType: .timerEvent,
@@ -219,10 +213,7 @@ internal class PrimerInternal: LogReporter {
         let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
 
-        let connectivityEvent = Analytics.Event(
-            eventType: .networkConnectivity,
-            properties: NetworkConnectivityEventProperties(
-                networkType: Connectivity.networkType))
+        let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
         let timingStartEvent = Analytics.Event(
             eventType: .timerEvent,

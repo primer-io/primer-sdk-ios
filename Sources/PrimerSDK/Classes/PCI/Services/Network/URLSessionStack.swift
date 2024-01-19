@@ -27,21 +27,17 @@ internal class URLSessionStack: NetworkService, LogReporter {
         let id = String.randomString(length: 32)
 
         if let primerAPI = endpoint as? PrimerAPI, shouldReportNetworkEvents(for: primerAPI) {
-            let reqEvent = Analytics.Event(
-                eventType: .networkCall,
-                properties: NetworkCallEventProperties(
-                    callType: .requestStart,
-                    id: id,
-                    url: urlStr,
-                    method: endpoint.method,
-                    errorBody: nil,
-                    responseCode: nil))
+            let reqEvent = Analytics.Event.networkCall(
+                callType: .requestStart,
+                id: id,
+                url: urlStr,
+                method: endpoint.method,
+                errorBody: nil,
+                responseCode: nil
+            )
             Analytics.Service.record(event: reqEvent)
 
-            let connectivityEvent = Analytics.Event(
-                eventType: .networkConnectivity,
-                properties: NetworkConnectivityEventProperties(
-                    networkType: Connectivity.networkType))
+            let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
             Analytics.Service.record(event: connectivityEvent)
         }
 
@@ -94,7 +90,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
             var resEventProperties: NetworkCallEventProperties?
             var resEvent: Analytics.Event?
             if !endpoint.path.isEmpty {
-                resEventProperties = NetworkCallEventProperties(
+                resEvent = Analytics.Event.networkCall(
                     callType: .requestEnd,
                     id: id,
                     url: urlStr,
@@ -102,10 +98,6 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     errorBody: nil,
                     responseCode: (response as? HTTPURLResponse)?.statusCode
                 )
-
-                resEvent = Analytics.Event(
-                    eventType: .networkCall,
-                    properties: resEventProperties)
 
                 resEvent!.properties = resEventProperties
             }

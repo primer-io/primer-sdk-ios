@@ -178,15 +178,14 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
                 self.redirectUrlRequestId = UUID().uuidString
 
-                let networkEvent = Analytics.Event(
-                    eventType: .networkCall,
-                    properties: NetworkCallEventProperties(
-                        callType: .requestStart,
-                        id: self.redirectUrlRequestId!,
-                        url: self.redirectUrlComponents?.url?.absoluteString ?? "",
-                        method: .get,
-                        errorBody: nil,
-                        responseCode: nil))
+                let networkEvent = Analytics.Event.networkCall(
+                    callType: .requestStart,
+                    id: self.redirectUrlRequestId!,
+                    url: self.redirectUrlComponents?.url?.absoluteString ?? "",
+                    method: .get,
+                    errorBody: nil,
+                    responseCode: nil
+                )
 
                 Analytics.Service.record(events: [presentEvent, networkEvent])
                 if PrimerUIManager.primerRootViewController == nil {
@@ -383,15 +382,14 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
 
         if let redirectUrlRequestId = self.redirectUrlRequestId,
            let redirectUrlComponents = self.redirectUrlComponents {
-            let networkEvent = Analytics.Event(
-                eventType: .networkCall,
-                properties: NetworkCallEventProperties(
-                    callType: .requestEnd,
-                    id: redirectUrlRequestId,
-                    url: redirectUrlComponents.url?.absoluteString ?? "",
-                    method: .get,
-                    errorBody: "didLoadSuccessfully: \(didLoadSuccessfully)",
-                    responseCode: nil))
+            let networkEvent = Analytics.Event.networkCall(
+                callType: .requestEnd,
+                id: redirectUrlRequestId,
+                url: redirectUrlComponents.url?.absoluteString ?? "",
+                method: .get,
+                errorBody: "didLoadSuccessfully: \(didLoadSuccessfully)",
+                responseCode: nil
+            )
 
             Analytics.Service.record(events: [networkEvent])
         }

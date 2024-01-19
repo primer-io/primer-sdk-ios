@@ -817,4 +817,30 @@ extension Analytics.Event {
                 place: place)
         )
     }
+    
+    static func networkCall(callType: Property.NetworkCallType,
+                            id: String,
+                            url: String,
+                            method: HTTPMethod,
+                            errorBody: String?,
+                            responseCode: Int?) -> Self {
+        return .init(
+            eventType: .networkCall,
+            properties: NetworkCallEventProperties(
+                callType: callType,
+                id: id,
+                url: url,
+                method: method,
+                errorBody: errorBody,
+                responseCode: responseCode
+            )
+        )
+    }
+    
+    static func networkConnectivity(networkType: Connectivity.NetworkType) -> Self {
+        return .init(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(networkType: networkType)
+        )
+    }
 }
