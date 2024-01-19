@@ -105,11 +105,10 @@ internal class ImageManager: LogReporter {
             }
 
             let timingEventId = UUID().uuidString
-            let timingEventStart = Analytics.Event(
-                eventType: .paymentMethodAllImagesLoading,
-                properties: TimerEventProperties(
-                    momentType: .start,
-                    id: timingEventId))
+            let timingEventStart = Analytics.Event.allImagesLoading(
+                momentType: .start,
+                id: timingEventId
+            )
 
             let promises = imageFiles.compactMap({ self.getImage(file: $0) })
 
@@ -138,11 +137,10 @@ internal class ImageManager: LogReporter {
                 }
             }
             .ensure {
-                let timingEventEnd = Analytics.Event(
-                    eventType: .paymentMethodAllImagesLoading,
-                    properties: TimerEventProperties(
-                        momentType: .end,
-                        id: timingEventId))
+                let timingEventEnd = Analytics.Event.allImagesLoading(
+                    momentType: .end,
+                    id: timingEventId
+                )
 
                 Analytics.Service.record(events: [timingEventStart, timingEventEnd])
             }
@@ -157,11 +155,10 @@ internal class ImageManager: LogReporter {
             let downloader = Downloader()
 
             let timingEventId = UUID().uuidString
-            let timingEventStart = Analytics.Event(
-                eventType: .paymentMethodImageLoading,
-                properties: TimerEventProperties(
-                    momentType: .start,
-                    id: timingEventId))
+            let timingEventStart = Analytics.Event.allImagesLoading(
+                momentType: .start,
+                id: timingEventId
+            )
 
             /// First try to download the image with the relevant caching policy.
             /// Therefore, if the image is cached, it will be returned.
@@ -183,11 +180,10 @@ internal class ImageManager: LogReporter {
                 }
             }
             .ensure {
-                let timingEventEnd = Analytics.Event(
-                    eventType: .timerEvent,
-                    properties: TimerEventProperties(
-                        momentType: .end,
-                        id: timingEventId))
+                let timingEventEnd = Analytics.Event.timer(
+                    momentType: .end,
+                    id: timingEventId
+                )
                 Analytics.Service.record(events: [timingEventStart, timingEventEnd])
             }
             .catch { err in
@@ -205,12 +201,11 @@ internal class ImageManager: LogReporter {
                     seal.fulfill(file)
 
                 } else {
-                    let failedToLoadEvent = Analytics.Event(
-                        eventType: .paymentMethodImageLoading,
-                        properties: MessageEventProperties(
-                            message: "Failed to load image (\(file.fileName) with URL \(file.remoteUrl?.absoluteString ?? "null")",
-                            messageType: .paymentMethodImageLoadingFailed,
-                            severity: .warning))
+                    let failedToLoadEvent = Analytics.Event.message(
+                        message: "Failed to load image (\(file.fileName) with URL \(file.remoteUrl?.absoluteString ?? "null")",
+                        messageType: .paymentMethodImageLoadingFailed,
+                        severity: .warning
+                    )
                     Analytics.Service.record(events: [failedToLoadEvent])
 
                     self.logger.warn(message: "FAILED TO DOWNLOAD LOGO")

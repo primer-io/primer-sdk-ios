@@ -129,11 +129,10 @@ internal class PrimerInternal: LogReporter {
 
         let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
-        let timingStartEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .start,
-                id: PrimerInternal.shared.timingEventId!))
+        let timingStartEvent = Analytics.Event.timer(
+            momentType: .start,
+            id: PrimerInternal.shared.timingEventId ?? "Unknown"
+        )
 
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
@@ -172,11 +171,10 @@ internal class PrimerInternal: LogReporter {
 
         let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
-        let timingStartEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .start,
-                id: PrimerInternal.shared.timingEventId!))
+        let timingStartEvent = Analytics.Event.timer(
+            momentType: .start,
+            id: PrimerInternal.shared.timingEventId ?? "Unknown"
+        )
 
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
@@ -215,12 +213,11 @@ internal class PrimerInternal: LogReporter {
 
         let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
-        let timingStartEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .start,
-                id: PrimerInternal.shared.timingEventId!))
-
+        let timingStartEvent = Analytics.Event.timer(
+            momentType: .start,
+            id: PrimerInternal.shared.timingEventId ?? "Unknown"
+        )
+        
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
 
@@ -248,11 +245,10 @@ internal class PrimerInternal: LogReporter {
     internal func dismiss() {
         let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
-        let timingEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .end,
-                id: self.timingEventId))
+        let timingEvent = Analytics.Event.timer(
+            momentType: .end,
+            id: self.timingEventId
+        )
 
         Analytics.Service.record(events: [sdkEvent, timingEvent])
         Analytics.Service.flush()

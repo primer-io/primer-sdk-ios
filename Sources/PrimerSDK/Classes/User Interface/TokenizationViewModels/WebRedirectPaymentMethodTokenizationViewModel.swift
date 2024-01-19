@@ -364,12 +364,11 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
         /// ignore it, since the user wouldn't be able to tap the "Done" button in an **.inactive** state.
         if UIApplication.shared.applicationState != .active { return }
 
-        let messageEvent = Analytics.Event(
-            eventType: .message,
-            properties: MessageEventProperties(
-                message: "safariViewControllerDidFinish called",
-                messageType: .other,
-                severity: .debug))
+        let messageEvent = Analytics.Event.message(
+            message: "safariViewControllerDidFinish called",
+            messageType: .other,
+            severity: .debug
+        )
         Analytics.Service.record(events: [messageEvent])
 
         self.cancel()
@@ -399,12 +398,11 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
         if var safariRedirectComponents = URLComponents(string: URL.absoluteString) {
             safariRedirectComponents.query = nil
 
-            let messageEvent = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "safariViewController(_:initialLoadDidRedirectTo: \(safariRedirectComponents.url?.absoluteString ?? "n/a")) called",
-                    messageType: .other,
-                    severity: .debug))
+            let messageEvent = Analytics.Event.message(
+                message: "safariViewController(_:initialLoadDidRedirectTo: \(safariRedirectComponents.url?.absoluteString ?? "n/a")) called",
+                messageType: .other,
+                severity: .debug
+            )
             Analytics.Service.record(events: [messageEvent])
         }
 

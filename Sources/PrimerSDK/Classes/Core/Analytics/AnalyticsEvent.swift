@@ -843,4 +843,37 @@ extension Analytics.Event {
             properties: NetworkConnectivityEventProperties(networkType: networkType)
         )
     }
+    
+    static func timer(momentType: Property.TimerType,
+                      id: String?) -> Self {
+        return .init(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: momentType,
+                id: id
+            )
+        )
+    }
+    
+    static func allImagesLoading(momentType: Property.TimerType,
+                                 id: String?) -> Self {
+        return .init(
+            eventType: .paymentMethodAllImagesLoading,
+            properties: TimerEventProperties(
+                momentType: momentType,
+                id: id
+            )
+        )
+    }
+    
+    static func imageLoading(momentType: Property.TimerType,
+                             id: String?) -> Self {
+        return .init(
+            eventType: .paymentMethodImageLoading,
+            properties: TimerEventProperties(
+                momentType: momentType,
+                id: id
+            )
+        )
+    }
 }

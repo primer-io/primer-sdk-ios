@@ -75,11 +75,10 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
 
         let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
-        let timingStartEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .start,
-                id: PrimerInternal.shared.timingEventId!))
+        let timingStartEvent = Analytics.Event.timer(
+            momentType: .start,
+            id: PrimerInternal.shared.timingEventId ?? "Unknown"
+        )
 
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
