@@ -68,19 +68,18 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     }
 
     override func performPreTokenizationSteps() -> Promise<Void> {
-        let event = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: config.type,
-                    url: nil),
-                extra: nil,
-                objectType: .button,
-                objectId: .select,
-                objectClass: "\(Self.self)",
-                place: .bankSelectionList))
+        let event = Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: config.type,
+                url: nil),
+            extra: nil,
+            objectType: .button,
+            objectId: .select,
+            objectClass: "\(Self.self)",
+            place: .bankSelectionList
+        )
         Analytics.Service.record(event: event)
 
         return Promise { seal in
@@ -199,19 +198,18 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     // MARK: - Pay Action
 
     override func submitButtonTapped() {
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: config.type,
-                    url: nil),
-                extra: nil,
-                objectType: .button,
-                objectId: .submit,
-                objectClass: "\(Self.self)",
-                place: .cardForm))
+        let viewEvent = Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: config.type,
+                url: nil),
+            extra: nil,
+            objectType: .button,
+            objectId: .submit,
+            objectClass: "\(Self.self)",
+            place: .cardForm
+        )
         Analytics.Service.record(event: viewEvent)
 
         payButtonTappedCompletion?()

@@ -94,13 +94,10 @@ internal class PrimerInternal: LogReporter {
 
         let releaseVersionNumber = VersionUtils.releaseVersionNumber
         events.append(
-            Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "Version number (\(releaseVersionNumber ?? "n/a")) detected.",
-                    messageType: .other,
-                    severity: .info
-                )
+            Analytics.Event.message(
+                message: "Version number (\(releaseVersionNumber ?? "n/a")) detected.",
+                messageType: .other,
+                severity: .info
             )
         )
 
@@ -128,11 +125,7 @@ internal class PrimerInternal: LogReporter {
 
         var events: [Analytics.Event] = []
 
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: nil))
+        let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
         let connectivityEvent = Analytics.Event(
             eventType: .networkConnectivity,
@@ -178,11 +171,7 @@ internal class PrimerInternal: LogReporter {
 
         var events: [Analytics.Event] = []
 
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: nil))
+        let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
         let connectivityEvent = Analytics.Event(
             eventType: .networkConnectivity,
@@ -227,11 +216,8 @@ internal class PrimerInternal: LogReporter {
 
         var events: [Analytics.Event] = []
 
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: nil))
+        let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
+
 
         let connectivityEvent = Analytics.Event(
             eventType: .networkConnectivity,
@@ -269,11 +255,7 @@ internal class PrimerInternal: LogReporter {
 
     /** Dismisses any opened checkout sheet view. */
     internal func dismiss() {
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: nil))
+        let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
         let timingEvent = Analytics.Event(
             eventType: .timerEvent,

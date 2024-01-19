@@ -135,11 +135,8 @@ private extension DefaultBanksComponent {
         if let additionalParams {
             params.merge(additionalParams) { (_, new) in new }
         }
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: event.rawValue,
-                params: params))
+        
+        let sdkEvent = Analytics.Event.sdk(name: event.rawValue, params: params)
         Analytics.Service.record(events: [sdkEvent])
     }
 }

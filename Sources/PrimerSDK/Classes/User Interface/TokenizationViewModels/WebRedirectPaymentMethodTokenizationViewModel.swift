@@ -88,19 +88,18 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
         }
 
-        let event = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: self.config.type,
-                    url: nil),
-                extra: nil,
-                objectType: .button,
-                objectId: .select,
-                objectClass: "\(Self.self)",
-                place: .paymentMethodPopup))
+        let event = Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: self.config.type,
+                url: nil),
+            extra: nil,
+            objectType: .button,
+            objectId: .select,
+            objectClass: "\(Self.self)",
+            place: .paymentMethodPopup
+        )
         Analytics.Service.record(event: event)
 
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
@@ -165,18 +164,17 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 self.redirectUrlComponents = URLComponents(string: self.redirectUrl.absoluteString)
                 self.redirectUrlComponents?.query = nil
 
-                let presentEvent = Analytics.Event(
-                    eventType: .ui,
-                    properties: UIEventProperties(
-                        action: .present,
-                        context: Analytics.Event.Property.Context(
-                            paymentMethodType: self.config.type,
-                            url: self.redirectUrlComponents?.url?.absoluteString),
-                        extra: nil,
-                        objectType: .button,
-                        objectId: nil,
-                        objectClass: "\(Self.self)",
-                        place: .webview))
+                let presentEvent = Analytics.Event.ui(
+                    action: .present,
+                    context: Analytics.Event.Property.Context(
+                        paymentMethodType: self.config.type,
+                        url: self.redirectUrlComponents?.url?.absoluteString),
+                    extra: nil,
+                    objectType: .button,
+                    objectId: nil,
+                    objectClass: "\(Self.self)",
+                    place: .webview
+                )
 
                 self.redirectUrlRequestId = UUID().uuidString
 
@@ -218,18 +216,17 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
     private func handleWebViewControlllerPresentedCompletion() {
         DispatchQueue.main.async {
-            let viewEvent = Analytics.Event(
-                eventType: .ui,
-                properties: UIEventProperties(
-                    action: .view,
-                    context: Analytics.Event.Property.Context(
-                        paymentMethodType: self.config.type,
-                        url: self.redirectUrlComponents?.url?.absoluteString ?? ""),
-                    extra: nil,
-                    objectType: .button,
-                    objectId: nil,
-                    objectClass: "\(Self.self)",
-                    place: .webview))
+            let viewEvent = Analytics.Event.ui(
+                action: .view,
+                context: Analytics.Event.Property.Context(
+                    paymentMethodType: self.config.type,
+                    url: self.redirectUrlComponents?.url?.absoluteString ?? ""),
+                extra: nil,
+                objectType: .button,
+                objectId: nil,
+                objectClass: "\(Self.self)",
+                place: .webview
+            )
             Analytics.Service.record(events: [viewEvent])
 
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)

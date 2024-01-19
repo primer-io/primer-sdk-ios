@@ -68,13 +68,10 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
 
         var events: [Analytics.Event] = []
 
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: "\(Self.self).\(#function)",
-                params: [
-                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
-                ]))
+        let sdkEvent = Analytics.Event.sdk(
+            name: "\(Self.self).\(#function)",
+            params: [ "intent": PrimerInternal.shared.intent?.rawValue ?? "null" ]
+        )
 
         let connectivityEvent = Analytics.Event(
             eventType: .networkConnectivity,

@@ -192,12 +192,11 @@ internal class ImageManager: LogReporter {
             }
             .catch { err in
                 if file.bundledImage != nil {
-                    let bundledImageEvent = Analytics.Event(
-                        eventType: .sdkEvent,
-                        properties: MessageEventProperties(
-                            message: "Failed to load image (\(file.fileName) with URL \(file.remoteUrl?.absoluteString ?? "null"), but found image locally",
-                            messageType: .paymentMethodImageLoadingFailed,
-                            severity: .info))
+                    let bundledImageEvent = Analytics.Event.message(
+                        message: "Failed to load image (\(file.fileName) with URL \(file.remoteUrl?.absoluteString ?? "null"), but found image locally",
+                        messageType: .paymentMethodImageLoadingFailed,
+                        severity: .info
+                    )
                     Analytics.Service.record(events: [bundledImageEvent])
 
                     self.logger.warn(message: "FAILED TO DOWNLOAD LOGO BUT FOUND LOGO LOCALLY")

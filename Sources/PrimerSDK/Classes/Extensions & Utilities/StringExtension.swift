@@ -32,12 +32,11 @@ internal extension String {
         let isValid = clearedCardNumber.count >= 13 && clearedCardNumber.count <= 19 && clearedCardNumber.isValidLuhn
 
         if !isValid {
-            let event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "Invalid cardnumber",
-                    messageType: .validationFailed,
-                    severity: .warning))
+            let event = Analytics.Event.message(
+                message: "Invalid cardnumber",
+                messageType: .validationFailed,
+                severity: .warning
+            )
             Analytics.Service.record(event: event)
         }
 
@@ -70,12 +69,11 @@ internal extension String {
         let isValid = date.endOfMonth > Date()
 
         if !isValid {
-            let event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "Invalid expiry date",
-                    messageType: .validationFailed,
-                    severity: .error))
+            let event = Analytics.Event.message(
+                message: "Invalid expiry date",
+                messageType: .validationFailed,
+                severity: .error
+            )
             Analytics.Service.record(event: event)
         }
 
@@ -102,12 +100,11 @@ internal extension String {
         let isValid = count > 2 && count < 5
 
         if !isValid {
-            let event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "Invalid CVV",
-                    messageType: .validationFailed,
-                    severity: .warning))
+            let event = Analytics.Event.message(
+                message: "Invalid CVV",
+                messageType: .validationFailed,
+                severity: .warning
+            )
             Analytics.Service.record(event: event)
         }
 
