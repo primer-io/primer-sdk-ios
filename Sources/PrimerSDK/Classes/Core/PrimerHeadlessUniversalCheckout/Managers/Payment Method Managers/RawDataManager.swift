@@ -237,8 +237,17 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
-        internal func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
+        func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
             return rawDataTokenizationBuilder.validateRawData(data)
+        }
+        
+        func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void>? {
+            guard let rawData = self.rawData else {
+                logger.warn(message: "Unable to validate with card networks metadata as `rawData` was nil")
+                return nil
+            }
+            return (rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder)?
+                .validateRawData(rawData, cardNetworksMetadata: cardNetworksMetadata)
         }
 
         private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {

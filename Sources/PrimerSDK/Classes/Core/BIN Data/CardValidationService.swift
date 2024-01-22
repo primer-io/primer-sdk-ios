@@ -41,6 +41,8 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         self.apiClient = apiClient
         self.debouncer = debouncer
     }
+    
+    // MARK: Core Validation
         
     func validateCardNetworks(withCardNumber cardNumber: String) {
         let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
@@ -98,15 +100,8 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
             
             let cardMetadata = self.createValidationMetadata(networks: result.networks.map { CardNetwork(cardNetworkStr: $0.value) },
                                                              source: .remote)
-            
-            self.metadataCache[cardState.cardNumber] = cardMetadata
-            
-            self.delegate?.primerRawDataManager?(rawDataManager,
-                                                 didReceiveMetadata: cardMetadata,
-                                                 forState: cardState)
-            let trackableNetworks = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
-            self.sendEvent(forNetworks: trackableNetworks.items,
-                           source: cardMetadata.source)
+                    
+            self.handle(cardMetadata: cardMetadata, forCardState: cardState)
         }.catch { error in
             self.sendEvent(forError: error)
             self.logger.warn(message: "Remote card validation failed: \(error.localizedDescription)")
@@ -136,6 +131,22 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         delegate?.primerRawDataManager?(rawDataManager,
                                         didReceiveMetadata: metadata,
                                         forState: cardState)
+    }
+    
+    func handle(cardMetadata: PrimerCardNumberEntryMetadata, forCardState cardState: PrimerCardNumberEntryState) {
+        self.metadataCache[cardState.cardNumber] = cardMetadata
+
+        let trackableNetworks = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
+        self.sendEvent(forNetworks: trackableNetworks.items,
+                       source: cardMetadata.source)
+        
+        delegate?.primerRawDataManager?(rawDataManager,
+                                        didReceiveMetadata: cardMetadata,
+                                        forState: cardState)
+        
+        DispatchQueue.main.async {
+            self.rawDataManager.validateRawData(withCardNetworksMetadata: cardMetadata)
+        }
     }
     
     // MARK: Model generation
