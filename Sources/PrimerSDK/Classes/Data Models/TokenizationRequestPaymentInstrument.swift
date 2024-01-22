@@ -10,6 +10,7 @@ import Foundation
 protocol TokenizationRequestBodyPaymentInstrument: Encodable {}
 
 struct ApayaPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
+	// swiftlint:disable:next identifier_name
     var mx: String
     var mnc: String
     var mcc: String

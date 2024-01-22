@@ -45,6 +45,7 @@ protocol InternalCardComponentsManagerProtocol {
     func tokenize()
 }
 
+// swiftlint:disable:next large_tuple
 typealias BillingAddressField = (fieldView: PrimerTextFieldView,
                                  containerFieldView: PrimerCustomFieldView,
                                  isFieldHidden: Bool)

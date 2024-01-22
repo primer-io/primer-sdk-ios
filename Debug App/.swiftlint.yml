@@ -4,17 +4,10 @@ disabled_rules:
     - type_body_length
     - function_body_length
     - file_length
-    - identifier_name
     - cyclomatic_complexity
-    
- # warnings
-    - nesting # to disable this whole data model should be refactored, we have a lot of nesting at the moment
-    - large_tuple # can be very tricky, it is found in PromiseKit as well
-    - deployment_target # used in PromiseKit
-    - type_name
-    
+
 included:
   - ../Sources
 
-#excluded:
-#  - ../Sources/PrimerSDK/Classes/Third Party/PromiseKit
+excluded:
+  - ../Sources/PrimerSDK/Classes/Third Party/PromiseKit

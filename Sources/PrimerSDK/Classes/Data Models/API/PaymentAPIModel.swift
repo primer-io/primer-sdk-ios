@@ -119,21 +119,24 @@ extension Response.Body {
         public let status: Status
         public let paymentFailureReason: PrimerPaymentErrorCode.RawValue?
 
+		// swiftlint:disable:next nesting
         public enum CodingKeys: String, CodingKey {
             case id, paymentId, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status, paymentFailureReason
             case dateStr = "date"
         }
 
+		// swiftlint:disable:next nesting
         public struct RequiredAction: Codable {
             public let clientToken: String
             public let name: RequiredActionName
             public let description: String?
         }
 
+		// swiftlint:disable:next nesting
         public enum Status: String, Codable {
-            case failed     = "FAILED"
-            case pending    = "PENDING"
-            case success    = "SUCCESS"
+            case failed = "FAILED"
+            case pending = "PENDING"
+            case success = "SUCCESS"
         }
     }
 }
@@ -147,8 +150,6 @@ internal struct PrimerPaymentMethodData {
 }
 
 // MARK: - Public / User Facing
-
-// TODO: Update / Temporary name to avoid conflicts
 
 // MARK: Checkout Data
 

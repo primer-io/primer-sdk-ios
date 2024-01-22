@@ -17,6 +17,7 @@ extension Request.URLParameters {
         let skipPaymentMethodTypes: [String]?
         let requestDisplayMetadata: Bool?
 
+		// swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case skipPaymentMethodTypes = "skipPaymentMethods"
             case requestDisplayMetadata = "withDisplayMetadata"
@@ -323,15 +324,18 @@ extension Response.Body.Configuration {
         let requestUrlStr: String?
         let options: CheckoutModuleOptions?
 
+		// swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case type, options
             case requestUrlStr = "requestUrl"
         }
 
+		// swiftlint:disable:next nesting
         struct CardInformationOptions: CheckoutModuleOptions {
             let cardHolderName: Bool?
             let saveCardCheckbox: Bool?
 
+			// swiftlint:disable:next nesting
             private enum CodingKeys: String, CodingKey {
                 case cardHolderName
                 case saveCardCheckbox
@@ -355,6 +359,7 @@ extension Response.Body.Configuration {
             }
         }
 
+		// swiftlint:disable:next nesting
         struct PostalCodeOptions: CheckoutModuleOptions {
             let firstName: Bool?
             let lastName: Bool?
@@ -366,6 +371,7 @@ extension Response.Body.Configuration {
             let phoneNumber: Bool?
             let state: Bool?
 
+			// swiftlint:disable:next nesting
             private enum CodingKeys: String, CodingKey {
                 case firstName
                 case lastName

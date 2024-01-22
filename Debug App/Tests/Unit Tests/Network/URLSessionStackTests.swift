@@ -18,7 +18,7 @@ private struct DummyEndpoint: Endpoint {
     var queryParameters: [String: String]?
     var body: Data?
     var shouldParseResponseBody: Bool = false
-    
+
     init(baseURL: String?, path: String = "", queryParameters: [String: String]? = nil) {
         self.baseURL = baseURL
         self.path = path
@@ -27,26 +27,26 @@ private struct DummyEndpoint: Endpoint {
 }
 
 final class URLSessionStackTests: XCTestCase {
-    
+
     var sut: URLSessionStack!
-    
+
     override func setUp() {
         super.setUp()
         sut = URLSessionStack()
     }
-    
+
     override func tearDown() {
         sut = nil
         super.tearDown()
     }
-    
+
     // Test for base URL and path
     func testBaseURLWithPath() {
         let endpoint = DummyEndpoint(baseURL: "https://www.example.com", path: "/test")
         let url = sut.url(for: endpoint)
         XCTAssertEqual(url?.absoluteString, "https://www.example.com/test")
     }
-    
+
     // Test for query parameters
     func testQueryParameters() {
         let endpoint = DummyEndpoint(baseURL: "https://www.example.com", queryParameters: ["key1": "value1", "key2": "value2"])
@@ -54,21 +54,21 @@ final class URLSessionStackTests: XCTestCase {
         XCTAssertTrue(url?.absoluteString.contains("key1=value1") == true)
         XCTAssertTrue(url?.absoluteString.contains("key2=value2") == true)
     }
-    
+
     // Test for nil base URL
     func testNilBaseURL() {
         let endpoint = DummyEndpoint(baseURL: nil)
         let url = sut.url(for: endpoint)
         XCTAssertNil(url)
     }
-    
+
     // Test for empty path
     func testEmptyPath() {
         let endpoint = DummyEndpoint(baseURL: "https://www.example.com", path: "")
         let url = sut.url(for: endpoint)
         XCTAssertEqual(url?.absoluteString, "https://www.example.com")
     }
-    
+
     // Test for query parameters with empty path
     func testQueryParametersWithEmptyPath() {
         let endpoint = DummyEndpoint(baseURL: "https://www.example.com", path: "", queryParameters: ["key1": "value1", "key2": "value2"])
@@ -76,7 +76,7 @@ final class URLSessionStackTests: XCTestCase {
         XCTAssertTrue(url?.absoluteString.contains("key1=value1") == true)
         XCTAssertTrue(url?.absoluteString.contains("key2=value2") == true)
     }
-    
+
     // Test that /sdk-logs and polling endpoints are omitted from network analytics reporting
     func testAnalyticsReportingForOmitted() {
         // Test endpoints that shouldn't cause a network event to be reported
@@ -93,5 +93,5 @@ final class URLSessionStackTests: XCTestCase {
         let klarnaCreatePaymentSession = Request.Body.Klarna.CreatePaymentSession(paymentMethodConfigId: "", sessionType: .hostedPaymentPage, description: nil, redirectUrl: nil, totalAmount: nil, orderItems: nil)
         XCTAssertTrue(sut.shouldReportNetworkEvents(for: .createKlarnaPaymentSession(clientToken: mockClientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSession)))
     }
-    
+
 }

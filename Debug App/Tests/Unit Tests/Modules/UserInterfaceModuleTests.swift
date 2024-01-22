@@ -10,7 +10,7 @@ import XCTest
 @testable import PrimerSDK
 
 class UserInterfaceModuleTests: XCTestCase {
-    
+
     func test_user_interface_module() throws {
         let paymentMethodButton = PrimerPaymentMethod.DisplayMetadata.Button(
             iconUrl: PrimerTheme.BaseColoredURLs(
@@ -35,9 +35,9 @@ class UserInterfaceModuleTests: XCTestCase {
                 coloredHex: "#FFFFFF",
                 lightHex: "#FFFFFF",
                 darkHex: "#000000"))
-        
+
         let paymentMethodDisplayMetadata = PrimerPaymentMethod.DisplayMetadata(button: paymentMethodButton)
-        
+
         let paymentMethod = PrimerPaymentMethod(
             id: "mock_payment_method",
             implementationType: .nativeSdk,
@@ -47,7 +47,7 @@ class UserInterfaceModuleTests: XCTestCase {
             surcharge: 99,
             options: nil,
             displayMetadata: paymentMethodDisplayMetadata)
-        
+
         let mockPaymentMethodTokenizationViewModel = MockPaymentMethodTokenizationViewModel(
             config: paymentMethod,
             intent: .checkout,
@@ -74,9 +74,9 @@ class UserInterfaceModuleTests: XCTestCase {
                     additionalInfo: nil),
                 nil)
         )
-        
+
         let userInterfaceModule = UserInterfaceModule(paymentMethodTokenizationViewModel: mockPaymentMethodTokenizationViewModel)
         XCTAssert(userInterfaceModule.submitButton != nil, "Should have created the submit button")
     }
-    
+
 }

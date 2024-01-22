@@ -25,6 +25,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     case invalidPhoneNumberCountryCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRetailer(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
+	// swiftlint:disable:next identifier_name
     case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String, validVaultedPaymentMethodAdditionalDataType: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidOTPCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case banksNotLoaded(userInfo: [String: String]?, diagnosticsId: String)
@@ -152,6 +153,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "[\(errorId)] Raw data is not valid."
         case .invalidRetailer(let message, _, _):
             return "[\(errorId)] \(message)"
+			// swiftlint:disable:next identifier_name
         case .vaultedPaymentMethodAdditionalDataMismatch(let paymentMethodType, let validVaultedPaymentMethodAdditionalDataType, _, _):
             return "[\(errorId)] Vaulted payment method \(paymentMethodType) needs additional data of type \(validVaultedPaymentMethodAdditionalDataType)"
         case .invalidPhoneNumberCountryCode(message: let message, _, _):

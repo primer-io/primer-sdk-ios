@@ -9,6 +9,7 @@ import Foundation
 import SafariServices
 import UIKit
 
+// swiftlint:disable:next type_name
 class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel,
                                                     SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 
@@ -18,6 +19,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     private var userInputCompletion: (() -> Void)?
+	// swiftlint:disable:next identifier_name
     private var cardComponentsManagerTokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
     private var webViewController: SFSafariViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
@@ -262,6 +264,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
     }
 
+	// swiftlint:disable:next identifier_name
     internal var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
         let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
         return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }

@@ -36,10 +36,10 @@ enum NetworkError: Error {
 }
 
 class Networking {
-    
+
     let baseUrl: URL = URL(string: "https://us-central1-primerdemo-8741b.cloudfunctions.net")!
     let environment: String = "sandbox"
-    
+
     func request(
         apiVersion: APIVersion?,
         url: URL,
@@ -50,46 +50,46 @@ class Networking {
         completion: @escaping (_ result: Result<Data, Error>) -> Void) {
         var msg = "REQUEST\n"
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-        
+
         if let queryParameters = queryParameters {
             components.queryItems = queryParameters.map { (key, value) in
                 URLQueryItem(name: key, value: value)
             }
         }
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
-        
+
         msg += "URL: \(components.url!.absoluteString )\n"
-        
+
         var request = URLRequest(url: components.url!)
         request.httpMethod = method.rawValue
-        
+
         request.addValue(environment, forHTTPHeaderField: "environment")
         if method != .get {
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         }
-        
+
         if let apiVersion = apiVersion {
             request.addValue(apiVersion.rawValue, forHTTPHeaderField: "x-api-version")
             request.addValue("IOS", forHTTPHeaderField: "Client")
         }
-                        
+
         msg += "Headers:\n\(request.allHTTPHeaderFields ?? [:])\n"
-                
+
         if let body = body {
             request.httpBody = body
-            
+
             let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments)
             msg += "Body:\n\(bodyJson ?? [:])\n"
         }
-        
+
         print(msg)
         msg = ""
-        
+
         URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
             DispatchQueue.main.async {
                 msg += "RESPONSE\n"
                 msg += "URL: \(request.url?.absoluteString ?? "Invalid")\n"
-                
+
                 if err != nil {
                     msg += "Error: \(err!)\n"
                     print(msg)
@@ -111,13 +111,13 @@ class Networking {
                     }
                     print(msg)
                     completion(.failure(NetworkError.invalidResponse))
-                    
+
                     guard let data = data else {
                         print("No data")
                         completion(.failure(NetworkError.invalidResponse))
                         return
                     }
-                    
+
                     do {
                         let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
                         print("Response body: \(json)")
@@ -134,26 +134,26 @@ class Networking {
                     completion(.failure(NetworkError.invalidResponse))
                     return
                 }
-                
+
                 msg += "Status code: \(httpResponse.statusCode)\n"
                 if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
                     msg += "Body:\n\(resJson)\n"
                 } else {
                     msg += "Body (String): \(String(describing: String(data: data, encoding: .utf8)))"
                 }
-                
+
                 print(msg)
 
                 completion(.success(data))
             }
         }).resume()
     }
-    
+
     func requestClientSession(clientSessionRequestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil, completion: @escaping (String?, Error?) -> Void) {
         let url = self.baseUrl.appendingPathComponent("/api/client-session")
 
         let bodyData: Data
-        
+
         do {
             bodyData = try JSONEncoder().encode(clientSessionRequestBody)
 
@@ -161,7 +161,7 @@ class Networking {
             completion(nil, NetworkError.missingParams)
             return
         }
-        
+
         let networking = Networking()
         networking.request(
             apiVersion: .v3,
@@ -180,7 +180,7 @@ class Networking {
                             let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
                             completion(nil, err)
                         }
-                        
+
                     } catch {
                         completion(nil, error)
                     }
@@ -202,7 +202,7 @@ internal extension String {
 }
 
 struct ClientSessionRequestBody: Codable {
-    
+
     static let demoClientSessionRequestBody = ClientSessionRequestBody(
         customerId: "customer-id",
         orderId: "order-id",
@@ -225,7 +225,7 @@ struct ClientSessionRequestBody: Codable {
                 amount: 100,
                 quantity: 1)
         ]))
-    
+
     var customerId: String?
     var orderId: String?
     var currencyCode: String?
@@ -233,7 +233,7 @@ struct ClientSessionRequestBody: Codable {
     var metadata: [String: String]?
     var customer: ClientSessionRequestBody.Customer?
     var order: ClientSessionRequestBody.Order?
-    
+
     struct Customer: Codable {
         var firstName: String?
         var lastName: String?
@@ -241,9 +241,9 @@ struct ClientSessionRequestBody: Codable {
         var mobileNumber: String?
         var billingAddress: Address?
         var shippingAddress: Address?
-        
+
         struct Address: Codable {
-            
+
             var firstName: String?
             var lastName: String?
             var addressLine1: String?
@@ -254,11 +254,11 @@ struct ClientSessionRequestBody: Codable {
             var postalCode: String?
         }
     }
-    
+
     struct Order: Codable {
         var countryCode: String?
         var lineItems: [LineItem]?
-        
+
         struct LineItem: Codable {
             var itemId: String?
             var description: String?
@@ -269,7 +269,7 @@ struct ClientSessionRequestBody: Codable {
 }
 
 extension Encodable {
-    
+
     func toDictionary() throws -> [String: Any] {
         let data = try JSONEncoder().encode(self)
         guard let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {

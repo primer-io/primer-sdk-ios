@@ -10,11 +10,11 @@ import XCTest
 @testable import PrimerSDK
 
 class AnalyticsTests: XCTestCase {
-    
+
     override func tearDown() {
         self.cleanUpAnalytics()
     }
-    
+
     var newEvents: [Analytics.Event] {
         return [
             Analytics.Event.message(
@@ -71,10 +71,10 @@ class AnalyticsTests: XCTestCase {
             )
         ]
     }
-        
+
     func test_record_new_events() throws {
         self.createMockAnalyticsFile()
-         
+
         let exp = expectation(description: "Await")
 
         var newEvents: [Analytics.Event] = []
@@ -112,13 +112,13 @@ class AnalyticsTests: XCTestCase {
             XCTAssert(newEvents.count == storedEvents!.count, "New events \(newEvents.count), events: \(storedEvents!.count)")
         }
     }
-    
+
     func test_corrupt_analytics_file_data() throws {
         let exp = expectation(description: "Await")
 
         var newEvents: [Analytics.Event]?
         var storedEvents: [Analytics.Event]?
-        
+
         firstly {
             self.createAnalyticsEvents(deletePreviousEvents: true)
         }
@@ -138,29 +138,29 @@ class AnalyticsTests: XCTestCase {
         }
 
         waitForExpectations(timeout: 10)
-        
+
         guard let newEvents = newEvents, !newEvents.isEmpty else {
             XCTFail("Failed to created new events")
             return
         }
-        
+
         guard let storedEvents = storedEvents else {
             XCTFail("Failed to load stored events")
             return
         }
-        
+
         XCTAssert(storedEvents.isEmpty, "There shouldn't be any stored events. storedEvents.count = \(storedEvents)")
     }
-    
+
     func test_corrupt_analytics_file_with_rc_3_events() throws {
         let createClientSessionExpectation = expectation(description: "Create client session")
         var expectationsToBeFulfilled = [createClientSessionExpectation]
-        
+
         firstly {
             self.createDemoClientSessionAndSetAppState()
         }
         .done { _ in
-            
+
         }
         .ensure {
             createClientSessionExpectation.fulfill()
@@ -168,18 +168,18 @@ class AnalyticsTests: XCTestCase {
         .catch { err in
             XCTAssert(false, err.localizedDescription)
         }
-        
+
         wait(for: expectationsToBeFulfilled, timeout: 30)
-        
+
         self.cleanUpAnalytics()
-        
+
         self.createMockAnalyticsFile()
-        
+
         let writeEventExpectation = expectation(description: "Create client session")
         expectationsToBeFulfilled = [writeEventExpectation]
-        
+
         let newEvents = self.createEvents(10, withMessage: "A message")
-        
+
         Analytics.Service.record(events: newEvents)
         .ensure {
             writeEventExpectation.fulfill()
@@ -187,27 +187,27 @@ class AnalyticsTests: XCTestCase {
         .catch { err in
             XCTAssert(false, err.localizedDescription)
         }
-        
+
         wait(for: expectationsToBeFulfilled, timeout: 30)
-        
+
         let storedEvents = storage.loadEvents()
         XCTAssert(storedEvents.count == 10, "storedEvents should be 10")
     }
-    
+
     func test_sync() throws {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.sendAnalyticsEventsResult = (Analytics.Service.Response(id: "mock-d", result: "success"), nil)
         Analytics.apiClient = mockApiClient
         recreateService()
-        
+
         self.createMockAnalyticsFile()
-        
+
         let exp = expectation(description: "Await")
-        
+
         var storedEvents: [Analytics.Event]?
-        
+
         self.deleteAnalyticsFileSynchonously()
-        
+
         firstly {
             // Create events without having a client token yet
             self.createEvents()
@@ -240,18 +240,18 @@ class AnalyticsTests: XCTestCase {
         .catch { _ in
             exp.fulfill()
         }
-        
+
         wait(for: [exp], timeout: 600)
-                
+
         let nonNetworkEvents = storedEvents?.filter({ $0.eventType != .networkCall && $0.eventType != .networkConnectivity })
         XCTAssert((nonNetworkEvents ?? []).count == 0, "nonNetworkEvents: \(nonNetworkEvents?.count)")
     }
-    
+
     func test_delete_analytics_file() throws {
         self.createMockAnalyticsFile()
-        
+
         let exp = expectation(description: "Await")
-        
+
         firstly {
             self.createAnalyticsEvents(deletePreviousEvents: true)
         }
@@ -264,17 +264,17 @@ class AnalyticsTests: XCTestCase {
         }
 
         waitForExpectations(timeout: 10)
-        
+
         if FileManager.default.fileExists(atPath: storage.fileURL.path) {
             XCTFail("Failed to delete analytics file at '\(storage.fileURL.absoluteString)'")
         }
     }
-    
+
     func test_wrapped_error() throws {
         let recordEvent = expectation(description: "Record event")
-        
+
         self.cleanUpAnalytics()
-        
+
         let diagnosticsId = "diagnostics-id"
 
         let nsErrorUserInfo: [String: Any] = [
@@ -282,33 +282,33 @@ class AnalyticsTests: XCTestCase {
             "nsTestNumber": -3.14,
             "nsTestBoolean": true
         ]
-        
+
         let errorUserInfo: [String: String] = [
             "testString": "test"
         ]
-        
+
         let nsError = NSError(
             domain: "domain",
             code: 1,
             userInfo: nsErrorUserInfo)
-        
+
         let primer3DSErrorContainer = Primer3DSErrorContainer.underlyingError(
             userInfo: errorUserInfo,
             diagnosticsId: diagnosticsId,
             error: nsError)
-                
+
         ErrorHandler.handle(error: primer3DSErrorContainer)
-        
+
         Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
             recordEvent.fulfill()
         }
-        
+
         wait(for: [recordEvent], timeout: 10)
-        
+
         let events = storage.loadEvents()
         let errorEvents = events.filter({ ($0.properties as? MessageEventProperties)?.diagnosticsId == diagnosticsId })
         let errorEvent = errorEvents.first
-        
+
         XCTAssert(errorEvent != nil, "Should had written the error event")
         XCTAssert(errorEvent?.properties as? MessageEventProperties != nil, "Error should contain MessageEventProperties")
 
@@ -322,27 +322,27 @@ class AnalyticsTests: XCTestCase {
         XCTAssert(errorEventProperties!.context?["threeDsWrapperSdkVersion"] as? String != nil, "Context should include threeDsWrapperSdkVersion'")
         XCTAssert(errorEventProperties!.context?["threeDsSdkVersion"] as? String != nil, "Context should include threeDsSdkVersion")
     }
-    
+
     func test_recording_race_conditions() throws {
         self.cleanUpAnalytics()
         self.createMockAnalyticsFile()
-        
+
         var storedEvents = storage.loadEvents()
         XCTAssert(storedEvents.count == 0, "Analytics events should be empty")
-        
+
         let serialQueue     = DispatchQueue(label: "Serial Queue")
         let concurrentQueue = DispatchQueue(label: "Concurrent Queue", attributes: .concurrent)
-        
+
         let writeEventsOnMainQueueExpectation1 = expectation(description: "Write events on main queue 1")
         let writeEventsOnSerialQueueExpectation1 = expectation(description: "Write events on \(serialQueue.label) 1")
         let writeEventsOnSerialQueueExpectation2 = expectation(description: "Write events on \(serialQueue.label) 2")
         let writeEventsOnConcurrentQueueExpectation1 = expectation(description: "Write events on \(concurrentQueue.label) 1")
         let writeEventsOnConcurrentQueueExpectation2 = expectation(description: "Write events on \(concurrentQueue.label) 2")
-        
+
         // Setup app state
-        
+
         let appStateExpectation = self.expectation(description: "App state setup")
-        
+
         firstly {
             self.createDemoClientSessionAndSetAppState().erase()
         }.done {
@@ -350,20 +350,20 @@ class AnalyticsTests: XCTestCase {
         }.catch {
             XCTFail("Failed to setup app state: \($0.localizedDescription)")
         }
-        
+
         wait(for: [appStateExpectation], timeout: 5.0)
-        
+
         // Record events from different queues
-        
+
         var eventsIds: [String] = []
-        
+
         serialQueue.async {
             let e1_1 = Analytics.Event.message(
                 message: "An error message 1.1",
                 messageType: .error,
                 severity: .error
             )
-            
+
             firstly {
                 Analytics.Service.record(events: [e1_1])
             }
@@ -377,14 +377,14 @@ class AnalyticsTests: XCTestCase {
                 writeEventsOnSerialQueueExpectation1.fulfill()
             }
         }
-        
+
         serialQueue.async {
             let e1_2 = Analytics.Event.message(
                 message: "An error message 1.2",
                 messageType: .error,
                 severity: .error
             )
-            
+
             firstly {
                 Analytics.Service.record(events: [e1_2])
             }
@@ -398,14 +398,14 @@ class AnalyticsTests: XCTestCase {
                 writeEventsOnSerialQueueExpectation2.fulfill()
             }
         }
-        
+
         concurrentQueue.async {
             let e2_1 = Analytics.Event.message(
                 message: "An error message 2.1",
                 messageType: .error,
                 severity: .error
             )
-            
+
             firstly {
                 Analytics.Service.record(events: [e2_1])
             }
@@ -420,14 +420,14 @@ class AnalyticsTests: XCTestCase {
             }
 
         }
-        
+
         concurrentQueue.async {
             let e2_2 = Analytics.Event.message(
                 message: "An error message 2.2",
                 messageType: .error,
                 severity: .error
             )
-            
+
             firstly {
                 Analytics.Service.record(events: [e2_2])
             }
@@ -441,13 +441,13 @@ class AnalyticsTests: XCTestCase {
                 writeEventsOnConcurrentQueueExpectation2.fulfill()
             }
         }
-        
+
         let e3 = Analytics.Event.message(
             message: "An error message 3",
             messageType: .error,
             severity: .error
         )
-        
+
         firstly {
             Analytics.Service.record(events: [e3])
         }
@@ -468,11 +468,11 @@ class AnalyticsTests: XCTestCase {
             writeEventsOnConcurrentQueueExpectation1,
             writeEventsOnConcurrentQueueExpectation2
         ], timeout: 20)
-                
+
         storedEvents = storage.loadEvents()
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events but found \(storedEvents.count)")
     }
-    
+
     func test_race_conditions_on_syncing() throws {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.mockSuccessfulResponses()
@@ -481,18 +481,18 @@ class AnalyticsTests: XCTestCase {
 
         self.cleanUpAnalytics()
         self.createMockAnalyticsFile()
-        
+
         var storedEvents = storage.loadEvents()
-        
+
         let events = self.createEvents(1000, withMessage: "A message")
         var eventsIds: [String] = []
-        
+
         let serialQueue      = DispatchQueue(label: "Serial Queue")
         let concurrentQueue  = DispatchQueue(label: "Concurrent Queue", attributes: .concurrent)
-        
+
         let writeEventsExpectation = expectation(description: "Write events")
         var expectationsToBeFulfilled: [XCTestExpectation] = [writeEventsExpectation]
-        
+
         firstly {
             Analytics.Service.record(events: events)
         }
@@ -505,14 +505,14 @@ class AnalyticsTests: XCTestCase {
         .catch { err in
             XCTAssert(false, err.localizedDescription)
         }
-        
+
         wait(for: expectationsToBeFulfilled, timeout: 20)
         storedEvents = storage.loadEvents()
         XCTAssert(storedEvents.count == eventsIds.count, "Analytics file should contain \(eventsIds.count) events")
-        
+
         let createClientSessionExpectation    = expectation(description: "Create client session")
         expectationsToBeFulfilled = [createClientSessionExpectation]
-        
+
         firstly {
             self.createDemoClientSessionAndSetAppState()
         }
@@ -522,15 +522,15 @@ class AnalyticsTests: XCTestCase {
         .catch { err in
             XCTAssert(false, err.localizedDescription)
         }
-        
+
         wait(for: expectationsToBeFulfilled, timeout: 30)
-        
+
         let syncOnMainQueueExpectation        = expectation(description: "Sync on main queue expectation")
         let syncOnSerialQueueExpectation1     = expectation(description: "Sync on serial queue expectation 1")
         let syncOnSerialQueueExpectation2     = expectation(description: "Sync on serial queue expectation 2")
         let syncOnConcurrentQueueExpectation1 = expectation(description: "Sync on concurrent queue expectation 1")
         let syncOnConcurrentQueueExpectation2 = expectation(description: "Sync on concurrent queue expectation 2")
-        
+
         expectationsToBeFulfilled = [
             syncOnMainQueueExpectation,
             syncOnSerialQueueExpectation1,
@@ -538,31 +538,30 @@ class AnalyticsTests: XCTestCase {
             syncOnConcurrentQueueExpectation1,
             syncOnConcurrentQueueExpectation2
         ]
-        
+
         self.syncAnalyticsFile(fromQueue: DispatchQueue.main) {
             syncOnMainQueueExpectation.fulfill()
         }
-        
+
         self.syncAnalyticsFile(fromQueue: serialQueue) {
             syncOnSerialQueueExpectation1.fulfill()
         }
-        
+
         self.syncAnalyticsFile(fromQueue: serialQueue) {
             syncOnSerialQueueExpectation2.fulfill()
         }
-        
+
         self.syncAnalyticsFile(fromQueue: concurrentQueue) {
             syncOnConcurrentQueueExpectation1.fulfill()
         }
-        
+
         self.syncAnalyticsFile(fromQueue: concurrentQueue) {
             syncOnConcurrentQueueExpectation2.fulfill()
         }
-        
+
         wait(for: expectationsToBeFulfilled, timeout: 60)
         storedEvents = storage.loadEvents()
         let nonNetworkEvents = storedEvents.filter({ $0.eventType != .networkCall && $0.eventType != .networkConnectivity })
         XCTAssert(nonNetworkEvents.count == 0, "nonNetworkEvents: \(nonNetworkEvents.count)")
     }
 }
-

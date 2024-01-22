@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable:next type_name
 class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
     static var apiClient: PrimerAPIClientProtocol?

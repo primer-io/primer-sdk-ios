@@ -220,10 +220,10 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                 case .success(let apiConfiguration):
                     var imageFiles: [ImageFile] = []
 
-                    for pm in (apiConfiguration.paymentMethods ?? []) {
+                    for paymentMethod in (apiConfiguration.paymentMethods ?? []) {
 
                         var coloredImageFile: ImageFile
-                        if let coloredVal = pm.displayMetadata?.button.iconUrl?.coloredUrlStr {
+                        if let coloredVal = paymentMethod.displayMetadata?.button.iconUrl?.coloredUrlStr {
                             var remoteUrl: URL?
                             var base64Data: Data?
 
@@ -234,14 +234,14 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                             }
 
                             coloredImageFile = ImageFile(
-                                fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
+                                fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
                                 fileExtension: "png",
                                 remoteUrl: remoteUrl,
                                 base64Data: base64Data)
 
                         } else {
                             coloredImageFile = ImageFile(
-                                fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
+                                fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
                                 fileExtension: "png",
                                 remoteUrl: nil,
                                 base64Data: nil)
@@ -249,7 +249,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                         imageFiles.append(coloredImageFile)
 
                         var lightImageFile: ImageFile
-                        if let lightVal = pm.displayMetadata?.button.iconUrl?.lightUrlStr {
+                        if let lightVal = paymentMethod.displayMetadata?.button.iconUrl?.lightUrlStr {
                             var remoteUrl: URL?
                             var base64Data: Data?
 
@@ -260,14 +260,14 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                             }
 
                             lightImageFile = ImageFile(
-                                fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
+                                fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
                                 fileExtension: "png",
                                 remoteUrl: remoteUrl,
                                 base64Data: base64Data)
 
                         } else {
                             lightImageFile = ImageFile(
-                                fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
+                                fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
                                 fileExtension: "png",
                                 remoteUrl: nil,
                                 base64Data: nil)
@@ -275,7 +275,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                         imageFiles.append(lightImageFile)
 
                         var darkImageFile: ImageFile
-                        if let darkVal = pm.displayMetadata?.button.iconUrl?.darkUrlStr {
+                        if let darkVal = paymentMethod.displayMetadata?.button.iconUrl?.darkUrlStr {
                             var remoteUrl: URL?
                             var base64Data: Data?
 
@@ -286,14 +286,14 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                             }
 
                             darkImageFile = ImageFile(
-                                fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
+                                fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
                                 fileExtension: "png",
                                 remoteUrl: remoteUrl,
                                 base64Data: base64Data)
 
                         } else {
                             darkImageFile = ImageFile(
-                                fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
+                                fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
                                 fileExtension: "png",
                                 remoteUrl: nil,
                                 base64Data: nil)

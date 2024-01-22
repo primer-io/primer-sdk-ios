@@ -298,6 +298,7 @@ extension CountryCode {
         let locale: String
         var countries: [CountryCode.RawValue: String]
 
+		// swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case locale
             case countries

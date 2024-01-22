@@ -9,6 +9,7 @@ import Foundation
 import SafariServices
 import UIKit
 
+// swiftlint:disable:next type_name
 class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     private var redirectUrl: URL!
@@ -46,7 +47,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+													 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }

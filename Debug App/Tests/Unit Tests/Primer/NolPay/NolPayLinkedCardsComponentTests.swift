@@ -12,7 +12,7 @@ import XCTest
 import PrimerNolPaySDK
 
 class NolPayLinkedCardsComponentTests: XCTestCase {
-    
+
     func testInitialization() {
         let component = NolPayLinkedCardsComponent()
         XCTAssertNotNil(component)
@@ -28,7 +28,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         let mockNolPay = MockPrimerNolPay(appId: "123", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
             return "appSecret"
         })
-        
+
         let mockPhoneMetadataService = MockPhoneMetadataService()
         mockPhoneMetadataService.resultToReturn = .success((.valid, "+123", "1234567890"))
         component.phoneMetadataService = mockPhoneMetadataService
@@ -38,7 +38,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         component.apiClient = mockApiClient
 
         let expectation = self.expectation(description: "Wait for getLinkedCards to return")
-        
+
         component.getLinkedCardsFor(mobileNumber: "1234567890") { result in
             switch result {
             case .success(let cards):
@@ -78,7 +78,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         // Assuming you have a way to mock the failure of start operation
         
         let expectation = self.expectation(description: "Get Linked Cards For SDK Not Available")
-        
+
         component.getLinkedCardsFor(mobileNumber: "+1234567890") { result in
             switch result {
             case .success:
@@ -92,7 +92,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             }
             expectation.fulfill()
         }
-        
+
         waitForExpectations(timeout: 5, handler: nil)
     }
 }

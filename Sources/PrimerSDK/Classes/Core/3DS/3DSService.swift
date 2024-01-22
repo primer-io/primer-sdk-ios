@@ -54,6 +54,7 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         .then { () -> Promise<SDKAuthResult> in
             self.create3DsAuthData(paymentMethodTokenData: paymentMethodTokenData)
         }
+		// swiftlint:disable:next large_tuple
         .then { sdkAuthResult -> Promise<(serverAuthData: ThreeDS.ServerAuthData,
                                           resumeToken: String,
                                           threeDsAppRequestorUrl: URL?)> in
@@ -457,7 +458,10 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     private func initialize3DSAuthorization(
         sdkAuthResult: SDKAuthResult,
         paymentMethodTokenData: PrimerPaymentMethodTokenData
-    ) -> Promise<(serverAuthData: ThreeDS.ServerAuthData, resumeToken: String, threeDsAppRequestorUrl: URL?)> {
+		// swiftlint:disable:next large_tuple
+    ) -> Promise<(serverAuthData: ThreeDS.ServerAuthData,
+				  resumeToken: String,
+				  threeDsAppRequestorUrl: URL?)> {
         return Promise { seal in
             var threeDsAppRequestorUrl: URL?
 

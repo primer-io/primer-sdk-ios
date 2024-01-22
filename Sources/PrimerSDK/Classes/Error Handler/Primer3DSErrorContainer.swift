@@ -20,6 +20,7 @@ public struct Primer3DSErrorInfo {
 }
 
 public enum Primer3DSErrorContainer: PrimerErrorProtocol {
+	// swiftlint:disable:next type_name
     typealias K = AnalyticsContextKeys
 
     case missingSdkDependency(userInfo: [String: String]?, diagnosticsId: String)

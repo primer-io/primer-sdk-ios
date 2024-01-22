@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable:next type_name
 class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var requiredInputElementTypes: [PrimerInputElementType]
@@ -36,6 +37,7 @@ class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBui
     }
 }
 
+// swiftlint:disable:next type_name
 class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {

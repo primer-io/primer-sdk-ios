@@ -185,6 +185,7 @@ public enum PrimerInputElementType: Int {
 
 @objc
 public protocol PrimerHeadlessUniversalCheckoutInputElement {
+	// swiftlint:disable:previous type_name
     var inputElementDelegate: PrimerInputElementDelegate! { get set }
     var type: PrimerInputElementType { get set }
     var isValid: Bool { get }

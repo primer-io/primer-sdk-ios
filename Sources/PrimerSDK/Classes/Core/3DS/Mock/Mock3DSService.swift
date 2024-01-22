@@ -33,10 +33,10 @@ class Mock3DSService: ThreeDSServiceProtocol {
             demo3DSWindow!.windowLevel = UIWindow.Level.alert
             demo3DSWindow!.makeKeyAndVisible()
 
-            let vc = PrimerDemo3DSViewController()
-            demo3DSWindow!.rootViewController?.present(vc, animated: true)
+            let viewController = PrimerDemo3DSViewController()
+            demo3DSWindow!.rootViewController?.present(viewController, animated: true)
 
-            vc.onSendCredentialsButtonTapped = {
+			viewController.onSendCredentialsButtonTapped = {
                 self.demo3DSWindow?.rootViewController = nil
                 self.demo3DSWindow = nil
                 completion(.success(paymentMethodTokenData.token ?? "no-token"))

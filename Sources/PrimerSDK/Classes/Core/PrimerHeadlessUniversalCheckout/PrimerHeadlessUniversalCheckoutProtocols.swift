@@ -10,7 +10,7 @@ import UIKit
 
 @objc
 public protocol PrimerHeadlessUniversalCheckoutUIDelegate {
-
+	// swiftlint:disable:previous type_name
     @objc optional func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String)
     @objc optional func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String)
 }

@@ -314,7 +314,7 @@ public class ThreeDS {
         let authentication: ThreeDSAuthenticationProtocol
         let token: PrimerPaymentMethodTokenData
         let resumeToken: String
-
+		// swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case authentication
             case token
@@ -564,6 +564,7 @@ public class ThreeDS {
         case decoupledRequiredByACS = "DECOUPLED_REQUIRED_BY_ACS"
         case decoupledMaxExpiryExceeded = "DECOUPLED_MAX_EXPIRY_EXCEEDED"
         case decoupledAuthenticationInsufficientTime = "DECOUPLED_AUTHENTICATION_INSUFFICIENT_TIME"
+		// swiftlint:disable:next identifier_name
         case authenticationAttemptedButNotPerformedByCardholder =
                 "AUTHENTICATION_ATTEMPTED_BUT_NOT_PERFORMED_BY_CARDHOLDER"
         case acsTimedOut = "ACS_TIMED_OUT"
@@ -571,6 +572,7 @@ public class ThreeDS {
         case acsSystemErrorResponse = "ACS_SYSTEM_ERROR_RESPONSE"
         case errorGeneratingCAVV = "ERROR_GENERATING_CAVV"
         case protocolVersionNotSupported = "PROTOCOL_VERSION_NOT_SUPPORTED"
+		// swiftlint:disable:next identifier_name
         case transactionExcludedFromAttemptsProcessing = "TRANSACTION_EXCLUDED_FROM_ATTEMPTS_PROCESSING"
         case requestedProgramNotSupported = "REQUESTED_PROGRAM_NOT_SUPPORTED"
     }
@@ -606,6 +608,7 @@ public class ThreeDS {
             }
         }
 
+		// swiftlint:disable:next nesting
         class Error: Encodable {
 
             var reasonCode: String

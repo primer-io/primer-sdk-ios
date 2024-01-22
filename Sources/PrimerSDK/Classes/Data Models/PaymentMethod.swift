@@ -357,6 +357,7 @@ extension PrimerPaymentMethod {
             self.button = button
         }
 
+		// swiftlint:disable:next nesting
         class Button: Codable {
 
             var iconUrl: PrimerTheme.BaseColoredURLs?
@@ -367,6 +368,7 @@ extension PrimerPaymentMethod {
             var text: String?
             var textColor: PrimerTheme.BaseColors?
 
+			// swiftlint:disable:next nesting
             private enum CodingKeys: String, CodingKey {
                 case iconUrl,
                      backgroundColor,
@@ -447,6 +449,7 @@ extension PrimerTheme {
         var darkUrlStr: String?
         var lightUrlStr: String?
 
+		// swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case coloredUrlStr = "colored"
             case darkUrlStr = "dark"
@@ -491,6 +494,7 @@ extension PrimerTheme {
         var darkHex: String?
         var lightHex: String?
 
+		// swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case coloredHex = "colored"
             case darkHex = "dark"
@@ -535,6 +539,7 @@ extension PrimerTheme {
         var dark: CGFloat?
         var light: CGFloat?
 
+		// swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case colored
             case dark

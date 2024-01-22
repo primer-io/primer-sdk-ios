@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable:next type_name
 protocol PaymentMethodTypeViaPaymentMethodTokenDataProviding {
     var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get }
     var paymentMethodType: String { get }

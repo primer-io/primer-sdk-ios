@@ -24,7 +24,7 @@ final class CurrencyStorageTests: XCTestCase {
 	}
 
 	func testLoadSaveDelete() throws {
-        
+
         let currencies = [Currency(code: "USD", decimalDigits: 2), Currency(code: "EUR", decimalDigits: 2)]
 		try storage.save(currencies)
 		XCTAssertEqual(storage.loadCurrencies(), currencies)
@@ -53,10 +53,8 @@ final class CurrencyStorageTests: XCTestCase {
 	}
 }
 
-
 extension Currency: Equatable {
 	public static func == (lhs: Currency, rhs: Currency) -> Bool {
 		lhs.code == rhs.code && lhs.decimalDigits == rhs.decimalDigits
 	}
 }
-

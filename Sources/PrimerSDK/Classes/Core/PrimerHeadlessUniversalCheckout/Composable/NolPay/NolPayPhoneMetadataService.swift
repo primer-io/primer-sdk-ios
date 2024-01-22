@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable:next large_tuple
 typealias PhoneMetadataCompletion = (Result<(PrimerValidationStatus, String?, String?), PrimerError>) -> Void
 
 protocol NolPayPhoneMetadataProviding {

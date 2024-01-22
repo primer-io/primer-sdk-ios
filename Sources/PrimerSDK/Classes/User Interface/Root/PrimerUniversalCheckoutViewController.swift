@@ -286,9 +286,10 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         enableView(false)
         payButton.startAnimating()
 
-        let checkoutWithVaultedPaymentMethodViewModel = CheckoutWithVaultedPaymentMethodViewModel(configuration: config, selectedPaymentMethodTokenData: selectedPaymentMethod)
-        firstly {
-            checkoutWithVaultedPaymentMethodViewModel.start()
+		let checkoutWithVaultedPaymentMethodVM = CheckoutWithVaultedPaymentMethodViewModel(configuration: config,
+																						   selectedPaymentMethodTokenData: selectedPaymentMethod)
+		firstly {
+			checkoutWithVaultedPaymentMethodVM.start()
         }
         .ensure {
             self.enableView(true)
@@ -306,12 +307,12 @@ extension PrimerUniversalCheckoutViewController {
             (self?.parent as? PrimerContainerViewController)?.scrollView.isScrollEnabled = isEnabled
             PrimerUIManager.primerRootViewController?.enableUserInteraction(isEnabled)
 
-            for sv in (self?.verticalStackView.arrangedSubviews ?? []) {
-                sv.alpha = sv == self?.savedPaymentMethodStackView ? 1.0 : (isEnabled ? 1.0 : 0.5)
+            for stackView in (self?.verticalStackView.arrangedSubviews ?? []) {
+				stackView.alpha = stackView == self?.savedPaymentMethodStackView ? 1.0 : (isEnabled ? 1.0 : 0.5)
             }
 
-            for sv in (self?.savedPaymentMethodStackView.arrangedSubviews ?? []) {
-                if let stackView = sv as? UIStackView, !stackView.arrangedSubviews.filter({ $0 is PrimerButton }).isEmpty {
+            for stackView in (self?.savedPaymentMethodStackView.arrangedSubviews ?? []) {
+                if let stackView = stackView as? UIStackView, !stackView.arrangedSubviews.filter({ $0 is PrimerButton }).isEmpty {
                     for ssv in stackView.arrangedSubviews {
                         if ssv is PrimerButton {
                             ssv.alpha = 1.0
@@ -320,7 +321,7 @@ extension PrimerUniversalCheckoutViewController {
                         }
                     }
                 } else {
-                    sv.alpha = (isEnabled ? 1.0 : 0.5)
+					stackView.alpha = (isEnabled ? 1.0 : 0.5)
                 }
             }
         }

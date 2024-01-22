@@ -14,6 +14,7 @@ internal class PayPalService: PayPalServiceProtocol {
 
     private var paypalTokenId: String?
 
+	// swiftlint:disable:next large_tuple
     private func prepareUrlAndTokenAndId(path: String) -> (DecodedJWTToken, URL, String)? {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             return nil

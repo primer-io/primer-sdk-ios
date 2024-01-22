@@ -29,6 +29,7 @@ internal class ClientSession {
             ClientSession.Action(type: .setBillingAddress, params: makeBillingAddressDictionaryRequestFromParameters(parameters))
         }
 
+		// swiftlint:disable:next nesting
         internal enum ActionType: String {
             case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
             case unselectPaymentMethod = "UNSELECT_PAYMENT_METHOD"
@@ -39,6 +40,7 @@ internal class ClientSession {
         internal var type: ActionType
         internal var params: [String: Any]?
 
+		// swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case type, params
         }
@@ -101,6 +103,7 @@ internal class ClientSession {
         let shippingAddress: ClientSession.Address?
         let taxId: String?
 
+		// swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case id = "customerId", firstName, lastName, emailAddress, mobileNumber, billingAddress, shippingAddress, taxId
         }
@@ -152,6 +155,7 @@ internal class ClientSession {
         let lineItems: [ClientSession.Order.LineItem]?
         let shippingAmount: Int?
 
+		// swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case id = "orderId", merchantAmount, totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, lineItems, shippingAmount
         }
@@ -210,6 +214,7 @@ internal class ClientSession {
 
         // MARK: ClientSession.Order.LineItem
 
+		// swiftlint:disable:next nesting
         internal struct LineItem: Codable {
 
             let itemId: String?
@@ -234,15 +239,16 @@ internal class ClientSession {
 
         // MARK: ClientSession.Order.Fee
 
+		// swiftlint:disable:next nesting
         internal struct Fee: Codable {
 
             let type: FeeType
             let amount: Int
-
+			// swiftlint:disable:next nesting
             enum CodingKeys: String, CodingKey {
                 case type, amount
             }
-
+			// swiftlint:disable:next nesting
             enum FeeType: String, Codable {
                 case surcharge = "SURCHARGE"
             }
@@ -256,6 +262,7 @@ internal class ClientSession {
         let vaultOnSuccess: Bool
         let options: [[String: Any]]?
 
+		// swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case vaultOnSuccess, options
         }
@@ -298,6 +305,7 @@ internal class ClientSession {
         let customer: ClientSession.Customer?
         let testId: String?
 
+		// swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case clientSessionId, paymentMethod, order, customer, testId // metadata
         }

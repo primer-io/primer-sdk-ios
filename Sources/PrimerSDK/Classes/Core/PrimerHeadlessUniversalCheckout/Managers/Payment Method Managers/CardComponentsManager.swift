@@ -12,6 +12,8 @@ public protocol PrimerHeadlessUniversalCheckoutInputData {}
 
 @available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
 public protocol PrimerHeadlessUniversalCheckoutCardComponentsManagerDelegate: AnyObject {
+// swiftlint:disable:previous type_name
+
     func cardComponentsManager(_ cardComponentsManager: PrimerHeadlessUniversalCheckout.CardComponentsManager,
                                isCardFormValid: Bool)
 }
@@ -41,6 +43,7 @@ extension PrimerHeadlessUniversalCheckout {
                 .filter({ $0.type == "CARD_INFORMATION" })
                 .first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
 
+			// swiftlint:disable:next identifier_name
             if let isCardHolderNameCheckoutModuleOptionEnabled = cardInfoOptions?.cardHolderName {
                 if isCardHolderNameCheckoutModuleOptionEnabled {
                     mutableRequiredInputElementTypes.append(.cardholderName)
@@ -65,14 +68,14 @@ extension PrimerHeadlessUniversalCheckout {
                 Analytics.Service.record(events: [sdkEvent])
 
                 var tmpInputElementsContainers: [Weak<PrimerInputElementDelegateContainer>] = []
-                inputElements.forEach { el in
-                    if el.inputElementDelegate != nil {
-                        tmpInputElementsContainers.append(Weak(value: PrimerInputElementDelegateContainer(element: el,
-                                                                                                          delegate: el.inputElementDelegate)))
+                inputElements.forEach { element in
+                    if element.inputElementDelegate != nil {
+                        tmpInputElementsContainers.append(Weak(value: PrimerInputElementDelegateContainer(element: element,
+                                                                                                          delegate: element.inputElementDelegate)))
                     }
                 }
-                inputElements.forEach { el in
-                    el.inputElementDelegate = self
+                inputElements.forEach { element in
+					element.inputElementDelegate = self
                 }
                 originalInputElementsContainers = tmpInputElementsContainers
             }
@@ -105,7 +108,8 @@ extension PrimerHeadlessUniversalCheckout {
 
             Analytics.Service.record(events: [sdkEvent])
 
-            guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes() else {
+            guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
+			else {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file,
                                                                              "class": "\(Self.self)",
                                                                              "function": #function,
@@ -194,22 +198,28 @@ extension PrimerHeadlessUniversalCheckout {
             }
             .catch { error in
                 ErrorHandler.handle(error: error)
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error, checkoutData: self.paymentCheckoutData)
+				let delegate = PrimerHeadlessUniversalCheckout.current.delegate
+                delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error,
+																  checkoutData: self.paymentCheckoutData)
             }
         }
 
         private func validateInputData() -> Promise<Void> {
             return Promise { seal in
                 var errors: [PrimerError] = []
-                for inputElementType in self.requiredInputElementTypes where self.inputElements.filter({ $0.type == inputElementType }).isEmpty {
-                    let err = PrimerError.missingPrimerInputElement(inputElementType: inputElementType,
-                                                                    userInfo: ["file": #file,
-                                                                               "class": "\(Self.self)",
-                                                                               "function": #function,
-                                                                               "line": "\(#line)"],
-                                                                    diagnosticsId: UUID().uuidString)
-                    errors.append(err)
-                }
+				for inputElementType in self.requiredInputElementTypes {
+					let missingElements = self.inputElements.filter { $0.type == inputElementType }
+					if missingElements.isEmpty {
+						let userInfo = ["file": #file,
+										"class": "\(Self.self)",
+										"function": #function,
+										"line": "\(#line)"]
+						let err = PrimerError.missingPrimerInputElement(inputElementType: inputElementType,
+																		userInfo: userInfo,
+																		diagnosticsId: UUID().uuidString)
+						errors.append(err)
+					}
+				}
 
                 if !errors.isEmpty {
                     let err = PrimerError.underlyingErrors(errors: errors,
@@ -1157,8 +1167,8 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
 
                 ErrorHandler.handle(error: primerErr)
                 PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { _ in
-                    // FIXME: Handle decision for HUC
-                }
+
+				}
             }
         } else {
             self.continueHandleNewClientToken(clientToken)
@@ -1172,10 +1182,12 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
 
             guard let paymentMethodTokenData = paymentMethodTokenData else {
                 DispatchQueue.main.async {
-                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file,
-                                                                                                               "class": "\(Self.self)",
-                                                                                                               "function": #function,
-                                                                                                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+					let err = InternalError.failedToDecode(message: "Failed to find paymentMethod",
+														   userInfo: ["file": #file,
+																	  "class": "\(Self.self)",
+																	  "function": #function,
+																	  "line": "\(#line)"],
+														   diagnosticsId: UUID().uuidString)
                     let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
                                                                       error: err,
                                                                       userInfo: ["file": #file,

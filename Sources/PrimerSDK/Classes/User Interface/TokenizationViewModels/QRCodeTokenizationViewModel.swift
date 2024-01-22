@@ -258,6 +258,7 @@ extension QRCodeTokenizationViewModel {
                 return
             }
 
+			// swiftlint:disable:next identifier_name
             let isHeadlessDidReceiveAdditionalInfoImplemented = PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
 
             guard isHeadlessDidReceiveAdditionalInfoImplemented else {

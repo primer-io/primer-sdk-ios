@@ -21,8 +21,8 @@ public enum NolPayPaymentStep: PrimerHeadlessStep {
 
 public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
 
-    public typealias T = NolPayPaymentCollectableData
-    public typealias P = NolPayPaymentStep
+    public typealias CollectableDataType = NolPayPaymentCollectableData
+    public typealias CardStepType = NolPayPaymentStep
 
 #if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPay!
@@ -39,7 +39,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     var cardNumber: String?
     public var nextDataStep: NolPayPaymentStep = .collectCardAndPhoneData
 
-    public func updateCollectedData(collectableData: T) {
+    public func updateCollectedData(collectableData: CollectableDataType) {
        switch collectableData {
         case let .paymentData(cardNumber, mobileNumber):
             nextDataStep = .collectCardAndPhoneData

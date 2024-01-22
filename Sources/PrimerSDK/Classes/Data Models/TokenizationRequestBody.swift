@@ -13,6 +13,7 @@ extension Request.Body {
         let tokenType: TokenType?
         let paymentFlow: PrimerSessionIntent?
 
+		// swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case paymentInstrument, tokenType, paymentFlow
         }
