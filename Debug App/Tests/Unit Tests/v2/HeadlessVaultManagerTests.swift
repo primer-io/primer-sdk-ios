@@ -41,10 +41,11 @@ final class HeadlessVaultManagerTests: XCTestCase {
                 shippingAmount: nil),
             customer: ClientSession.Customer(id: "testid"),
             testId: nil)
-                
+        
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [
                 PrimerPaymentMethod(
@@ -125,7 +126,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                 
                 exp.fulfill()
             }
-
+            
         }
         
         wait(for: [exp], timeout: 30)
@@ -172,10 +173,11 @@ final class HeadlessVaultManagerTests: XCTestCase {
                 shippingAmount: nil),
             customer: nil,
             testId: nil)
-                
+        
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [],
             primerAccountId: "mock-primer-account-id",
@@ -200,7 +202,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
         }
         
         wait(for: [exp], timeout: 30)
-
+        
         let apiConfiguration = AppState.current.apiConfiguration
         XCTAssert(apiConfiguration?.clientSession?.customer?.id == nil, "Primer configuration's client session's customer should be be nil")
     }
@@ -235,10 +237,11 @@ final class HeadlessVaultManagerTests: XCTestCase {
                 shippingAmount: nil),
             customer: ClientSession.Customer(id: "testid"),
             testId: nil)
-                
+        
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [
                 PrimerPaymentMethod(

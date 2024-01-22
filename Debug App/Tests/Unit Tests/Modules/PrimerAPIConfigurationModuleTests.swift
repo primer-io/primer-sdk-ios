@@ -17,12 +17,13 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         let mockPrimerAPIConfiguration = PrimerAPIConfiguration(
             coreUrl: "https://core.primer.io",
             pciUrl: "https://pci.primer.io",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: nil,
             paymentMethods: [],
             primerAccountId: nil,
             keys: nil,
             checkoutModules: nil)
-                
+        
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.validateClientTokenResult = (SuccessResponse(success: true), nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerAPIConfiguration, nil)

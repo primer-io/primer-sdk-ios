@@ -18,8 +18,8 @@ internal struct CurrencyLoader: LogReporter {
 	internal static func updateCurrenciesFromAPI() {
 		storage.copyBundleFileIfNeeded()
 
-		guard let environment = PrimerAPIConfigurationModule.decodedJWTToken?.env else {
-			let err = PrimerError.invalidClientToken(
+		guard let configuration = PrimerAPIConfigurationModule.apiConfiguration else {
+			let err = PrimerError.missingPrimerConfiguration(
 				userInfo: ["file": #file,
 						   "class": "\(Self.self)",
 						   "function": #function,
@@ -31,8 +31,7 @@ internal struct CurrencyLoader: LogReporter {
 			return
 		}
 
-		let urlString = "https://assets.\(environment.lowercased()).core.primer.io/currency-information/latest/data.json"
-
+		let urlString = (configuration.assetsUrl ?? "-") + "/currency-information/v1/data.json"
 		guard let url = URL(string: urlString) else {
 			logger.error(message: "Can't make URL from string: \(urlString)")
 			return

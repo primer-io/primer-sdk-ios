@@ -40,7 +40,7 @@ internal class PrimerInternal: LogReporter {
     static var isInHeadlessMode: Bool {
         PrimerInternal.shared.sdkIntegrationType == .headless
     }
-    
+
     fileprivate init() {
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
@@ -142,7 +142,7 @@ internal class PrimerInternal: LogReporter {
         }
         .done {
             PrimerUIManager.presentPaymentUI()
-			CurrencyLoader.updateCurrenciesFromAPI()
+            CurrencyLoader.updateCurrenciesFromAPI()
             completion?(nil)
         }
         .catch { err in

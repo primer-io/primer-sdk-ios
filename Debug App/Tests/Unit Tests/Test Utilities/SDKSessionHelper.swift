@@ -24,6 +24,7 @@ final class SDKSessionHelper {
                                                 testId: nil)
         let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
                                                pciUrl: "pci_url",
+                                               assetsUrl: "https://assets.staging.core.primer.io",
                                                clientSession: session,
                                                paymentMethods: paymentMethods,
                                                primerAccountId: "account_id",
@@ -32,7 +33,7 @@ final class SDKSessionHelper {
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfig
     }
-
+    
     static func tearDown() {
         PrimerAPIConfigurationModule.apiConfiguration = nil
         PrimerAPIConfigurationModule.clientToken = nil
@@ -48,5 +49,5 @@ final class SDKSessionHelper {
             testId: nil
         )
     }
-
+    
 }

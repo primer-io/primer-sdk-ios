@@ -41,10 +41,11 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
                 shippingAmount: nil),
             customer: nil,
             testId: nil)
-                
+        
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [
                 PrimerPaymentMethod(
@@ -102,7 +103,7 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
         let exp = expectation(description: "Patch client session and  restart Headless Universal Checkout")
         
         try test_start_headless()
-                
+        
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock-client-session-id-2",
             paymentMethod: ClientSession.PaymentMethod(
@@ -136,10 +137,11 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
                 mobileNumber: "12345678"
             ),
             testId: nil)
-                
+        
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [
                 PrimerPaymentMethod(
@@ -187,9 +189,9 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
             availablePaymentMethods = paymentMethods
             exp.fulfill()
         }
-
+        
         wait(for: [exp], timeout: 30)
-
+        
         let apiConfiguration = AppState.current.apiConfiguration
         
         XCTAssert((apiConfiguration?.paymentMethods?.count ?? 0) == mockPrimerApiConfiguration.paymentMethods?.count, "Primer configuration should include \(mockPrimerApiConfiguration.paymentMethods?.count ?? 0) payment methods")
