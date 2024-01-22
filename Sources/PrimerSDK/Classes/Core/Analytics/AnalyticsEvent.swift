@@ -33,9 +33,9 @@ extension Analytics {
         let integrationType: String
         let minDeploymentTarget: String
 
-        init(eventType: Analytics.Event.EventType,
-             properties: AnalyticsEventProperties?,
-             analyticsUrl: String? = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2) {
+        fileprivate init(eventType: Analytics.Event.EventType,
+                         properties: AnalyticsEventProperties?,
+                         analyticsUrl: String? = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2) {
             self.analyticsUrl = analyticsUrl
             self.localId = String.randomString(length: 32)
 
@@ -108,9 +108,7 @@ extension Analytics {
                 try? container.encode("MANUAL", forKey: .sdkPaymentHandling)
             }
 
-            if let crashEventProperties = properties as? CrashEventProperties {
-                try? container.encode(crashEventProperties, forKey: .properties)
-            } else if let messageEventProperties = properties as? MessageEventProperties {
+            if let messageEventProperties = properties as? MessageEventProperties {
                 try? container.encode(messageEventProperties, forKey: .properties)
             } else if let networkCallEventProperties = properties as? NetworkCallEventProperties {
                 try? container.encode(networkCallEventProperties, forKey: .properties)
@@ -161,9 +159,7 @@ extension Analytics {
                 self.sdkPaymentHandling = nil
             }
 
-            if let crashEventProperties = (try? container.decode(CrashEventProperties?.self, forKey: .properties)) {
-                self.properties = crashEventProperties
-            } else if let messageEventProperties = (try? container.decode(MessageEventProperties?.self, forKey: .properties)) {
+            if let messageEventProperties = (try? container.decode(MessageEventProperties?.self, forKey: .properties)) {
                 self.properties = messageEventProperties
             } else if let networkCallEventProperties = (try? container.decode(NetworkCallEventProperties?.self, forKey: .properties)) {
                 self.properties = networkCallEventProperties
@@ -330,44 +326,6 @@ extension Analytics.Event {
 
 protocol AnalyticsEventProperties: Codable {}
 
-struct CrashEventProperties: AnalyticsEventProperties {
-
-    var stacktrace: [String]
-    var params: [String: AnyCodable]?
-
-    private enum CodingKeys: String, CodingKey {
-        case stacktrace
-        case params
-    }
-
-    init(stacktrace: [String]) {
-        self.stacktrace = stacktrace
-
-        let sdkProperties = SDKProperties()
-        if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
-           let data = try? JSONSerialization.data(withJSONObject: sdkPropertiesDict, options: .fragmentsAllowed) {
-            let decoder = JSONDecoder()
-            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: data) {
-                self.params = anyDecodableDictionary
-            }
-        } else {
-            self.params = nil
-        }
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        stacktrace = try container.decode([String].self, forKey: .stacktrace)
-        params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(self.stacktrace, forKey: .stacktrace)
-        try container.encodeIfPresent(self.params, forKey: .params)
-    }
-}
-
 struct MessageEventProperties: AnalyticsEventProperties {
 
     var message: String?
@@ -384,7 +342,7 @@ struct MessageEventProperties: AnalyticsEventProperties {
         case context
     }
 
-    init(
+    fileprivate init(
         message: String?,
         messageType: Analytics.Event.Property.MessageType,
         severity: Analytics.Event.Property.Severity,
@@ -437,7 +395,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         case params
     }
 
-    init(
+    fileprivate init(
         callType: Analytics.Event.Property.NetworkCallType,
         id: String,
         url: String,
@@ -497,7 +455,7 @@ struct NetworkConnectivityEventProperties: AnalyticsEventProperties {
         case params
     }
 
-    init(networkType: Connectivity.NetworkType) {
+    fileprivate init(networkType: Connectivity.NetworkType) {
         self.networkType = networkType
 
         let sdkProperties = SDKProperties()
@@ -535,7 +493,7 @@ struct SDKEventProperties: AnalyticsEventProperties {
         case params
     }
 
-    init(name: String, params: [String: String]?) {
+    fileprivate init(name: String, params: [String: String]?) {
         self.name = name
 
         var parameters: [String: Any] = params ?? [:]
@@ -581,7 +539,7 @@ struct TimerEventProperties: AnalyticsEventProperties {
         case params
     }
 
-    init(
+    fileprivate init(
         momentType: Analytics.Event.Property.TimerType,
         id: String?
     ) {
@@ -637,7 +595,7 @@ struct UIEventProperties: AnalyticsEventProperties {
         case params
     }
 
-    init(
+    fileprivate init(
         action: Analytics.Event.Property.Action,
         context: Analytics.Event.Property.Context?,
         extra: String?,
@@ -712,7 +670,7 @@ struct SDKProperties: Codable {
         case sdkVersion
     }
 
-    init() {
+    fileprivate init() {
         self.clientToken = AppState.current.clientToken
         self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
 #if COCOAPODS
