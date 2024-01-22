@@ -452,7 +452,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
     
     func configureClientSession() {
-        clientSession.currencyCode = Currency("EUR")
+        clientSession.currencyCode = Currency(currencyTextField.text ?? "")
         clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
         clientSession.orderId = orderIdTextField.text
         clientSession.customerId = customerIdTextField.text

@@ -10,9 +10,13 @@ import Foundation
 internal struct CurrencyLoader: LogReporter {
 	private static let storage: CurrencyStorage = DefaultCurrencyStorage()
 
-	internal static func getCurrencyFor(_ code: String) -> Currency? {
+    private static var inMemoryCurrencies: [Currency] = []
+    
+    internal static func getCurrencyFor(_ code: String) -> Currency? {
 		storage.copyBundleFileIfNeeded()
-		return storage.loadCurrencies().first { $0.code == code }
+        let currencies = inMemoryCurrencies.count == 0 ? storage.loadCurrencies() : inMemoryCurrencies
+        inMemoryCurrencies.count == 0 ? inMemoryCurrencies = currencies : Void()
+		return currencies.first { $0.code == code }
 	}
 
 	internal static func updateCurrenciesFromAPI() {
@@ -49,6 +53,7 @@ internal struct CurrencyLoader: LogReporter {
 			do {
 				let currencies = try JSONDecoder().decode([Currency].self, from: data)
 				try storage.save(currencies)
+                inMemoryCurrencies = currencies
 				logger.debug(message: "Sucesfully updated the list of currencies.")
 
 				let sdkEvent = Analytics.Event(

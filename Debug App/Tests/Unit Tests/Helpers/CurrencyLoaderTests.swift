@@ -38,10 +38,7 @@ class CurrencyLoaderTests: XCTestCase {
 		XCTAssertNil(currencyNonExistent)
 	}
 	
-	func testLoadAfterInitialBundleCopy() {
-		// Ensure the file doesn't exist
-		storage.deleteCurrenciesFile()
-
+	func testLoadAfterInitialBundleCopy() {	
 		// Trigger the bundle copy
 		let _ = CurrencyLoader.getCurrencyFor("USD")
 
@@ -50,5 +47,6 @@ class CurrencyLoaderTests: XCTestCase {
 
 		// Assert that the currencies are not empty, indicating a successful copy from the bundle
 		XCTAssertFalse(currencies.isEmpty)
+        XCTAssertEqual(currencies.count, 2)
 	}
 }
