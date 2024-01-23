@@ -162,10 +162,10 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     return
                 }
                 
-                // Local card number validation
+                // Locally validated card network
                 var cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
                 
-                // Remote card number validation
+                // Remotely validated card network
                 if let cardNetworksMetadata = cardNetworksMetadata {
                     let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
                         cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
@@ -173,19 +173,21 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
                     let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
                         cardNetwork = network
+                    } else {
+                        return
+                    }
+                    
+                    // Unsupported card type error
+                    if !self.allowedCardNetworks.contains(cardNetwork) {
+                        let err = PrimerValidationError.invalidCardType(
+                            message: "Unsupported card type detected: \(cardNetwork.validation?.niceType ?? "unknown type")",
+                            userInfo: .errorUserInfoDictionary(),
+                            diagnosticsId: UUID().uuidString
+                        )
+                        errors.append(err)
                     }
                 } else {
                     self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
-                }
-                
-                // Unsupported card type error
-                if !self.allowedCardNetworks.contains(cardNetwork) {
-                    let err = PrimerValidationError.invalidCardType(
-                        message: "\(cardNetwork.validation?.niceType ?? "Your card network") is not supported for this transaction",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
-                    )
-                    errors.append(err)
                 }
 
                 // Invalid card number error
