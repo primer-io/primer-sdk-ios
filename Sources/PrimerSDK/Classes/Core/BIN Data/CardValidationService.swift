@@ -131,6 +131,10 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         delegate?.primerRawDataManager?(rawDataManager,
                                         didReceiveMetadata: metadata,
                                         forState: cardState)
+        
+        DispatchQueue.main.async {
+            self.rawDataManager.validateRawData(withCardNetworksMetadata: metadata)
+        }
     }
     
     func handle(cardMetadata: PrimerCardNumberEntryMetadata, forCardState cardState: PrimerCardNumberEntryState) {
