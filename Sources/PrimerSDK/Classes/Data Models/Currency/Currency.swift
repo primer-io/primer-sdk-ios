@@ -22,7 +22,8 @@ public struct Currency: Codable {
 
     public init?(_ code: String) {
         self.code = code
-        if let decimalDigits = CurrencyLoader.getCurrencyFor(code)?.decimalDigits {
+        let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage())
+        if let decimalDigits = currencyLoader.getCurrencyFor(code)?.decimalDigits {
             self.decimalDigits = decimalDigits
         } else {
             return nil
