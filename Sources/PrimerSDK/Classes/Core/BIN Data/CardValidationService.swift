@@ -131,9 +131,10 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         delegate?.primerRawDataManager?(rawDataManager,
                                         didReceiveMetadata: metadata,
                                         forState: cardState)
-        
-        DispatchQueue.main.async {
-            self.rawDataManager.validateRawData(withCardNetworksMetadata: metadata)
+        if isFallback {
+            DispatchQueue.main.async {
+                self.rawDataManager.validateRawData(withCardNetworksMetadata: metadata)
+            }
         }
     }
     
