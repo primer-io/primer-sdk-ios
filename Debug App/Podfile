@@ -9,7 +9,7 @@ target 'Debug App' do
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../'
   pod 'Primer3DS', :podspec => 'https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/4/7/d/Primer3DS/2.1.0/Primer3DS.podspec.json'
-  pod 'PrimerKlarnaSDK'
+  pod 'PrimerKlarnaSDK', :git => 'https://github.com/primer-io/primer-klarna-sdk-ios', :branch => 'nq/update_klarnamobilesdk'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerNolPaySDK'
   pod 'IQKeyboardManagerSwift'
