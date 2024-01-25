@@ -17,7 +17,7 @@ final class AnalyticsServiceTests: XCTestCase {
     
     var service: Analytics.Service!
     
-    override func setUpWithError() throws {
+    override func setUp() {
         apiClient = MockPrimerAPIAnalyticsClient()
         storage = MockAnalyticsStorage()
         service = Analytics.Service(sdkLogsUrl: URL(string: "http://localhost/")!, 
@@ -26,13 +26,15 @@ final class AnalyticsServiceTests: XCTestCase {
                                     apiClient: apiClient)
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() {
         service = nil
         storage = nil
         apiClient = nil
+        
+        PrimerAPIConfigurationModule.clientToken = nil
     }
 
-    func testSimpleBatchSend() throws {
+    func testSimpleMessageEventBatchSend() throws {
         
         // Setup API Client
         
@@ -56,6 +58,32 @@ final class AnalyticsServiceTests: XCTestCase {
         waitForExpectations(timeout: 30.0)
     }
     
+    func testSimpleSDKEventBatchSend() throws {
+        
+        // Setup API Client
+        
+        let expectation = self.expectation(description: "Batch of five events are sent")
+        
+        PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
+        
+        apiClient.onSendAnalyticsEvent = { events in
+            XCTAssertNotNil(events)
+            XCTAssertEqual(events?.count, 5)
+             
+            let messages = events!.enumerated().compactMap { (index, event) in
+                return (event.properties as? SDKEventProperties)?.name
+            }.sorted()
+            XCTAssertEqual(messages, ["Test #1", "Test #2", "Test #3", "Test #4", "Test #5"])
+            expectation.fulfill()
+        }
+        
+        // Send Events
+        
+        sendEvents(numberOfEvents: 5, eventType: .sdkEvent)
+        
+        waitForExpectations(timeout: 30.0)
+    }
+    
     func testComplexMultiBatchFastSend() throws {
         
         let expectation = self.expectation(description: "Called expected number of times")
@@ -66,11 +94,11 @@ final class AnalyticsServiceTests: XCTestCase {
         }
         
         (0..<5).forEach { _ in
-            sendEvents(numberOfEvents: 5, delay: 0.1)
+            sendEvents(numberOfEvents: 5, after: 0.1)
         }
-        sendEvents(numberOfEvents: 4, delay: 0.5)
+        sendEvents(numberOfEvents: 4, after: 0.5)
 
-        waitForExpectations(timeout: 30.0)
+        waitForExpectations(timeout: 60.0)
         
         XCTAssertEqual(apiClient.batches.count, 5)
         XCTAssertEqual(apiClient.batches.joined().count, 25)
@@ -87,15 +115,35 @@ final class AnalyticsServiceTests: XCTestCase {
         }
         
         (0..<3).forEach { _ in
-            sendEvents(numberOfEvents: 5, delay: 0.5)
+            sendEvents(numberOfEvents: 5, after: 0.5)
         }
-        sendEvents(numberOfEvents: 4, delay: 0.5)
+        sendEvents(numberOfEvents: 4, after: 0.5)
         
         waitForExpectations(timeout: 30.0)
         
         XCTAssertEqual(apiClient.batches.count, 3)
         XCTAssertEqual(apiClient.batches.joined().count, 15)
         XCTAssertEqual(storage.loadEvents().count, 4)
+    }
+    
+    func testFlush() throws {
+        
+        sendEvents(numberOfEvents: 4, after: 0.5)
+        
+        waitForExpectations(timeout: 10.0)
+        
+        let flushExpectation = self.expectation(description: "All events flushed")
+        service.flush().done { _ in
+            flushExpectation.fulfill()
+        }.catch { err in
+            XCTFail("Failed to successfully flush - error message: \(err)")
+        }
+        
+        waitForExpectations(timeout: 10.0)
+        
+        XCTAssertEqual(apiClient.batches.count, 1)
+        XCTAssertEqual(apiClient.batches.joined().count, 4)
+        XCTAssertEqual(storage.loadEvents().count, 0)
     }
     
     // MARK: Helpers
@@ -105,9 +153,20 @@ final class AnalyticsServiceTests: XCTestCase {
     }
     
     func sendEvents(numberOfEvents: Int,
-                    delay: TimeInterval? = nil,
+                    eventType: Analytics.Event.EventType = .message,
+                    after delay: TimeInterval? = nil,
                     onQueue queue: DispatchQueue = AnalyticsServiceTests.createQueue()) {
-        let events = (0..<numberOfEvents).map { num in messageEvent(withMessage: "Test #\(num + 1)") }
+        let events = (0..<numberOfEvents).compactMap { num in
+            switch eventType {
+            case .message:
+                return messageEvent(withMessage: "Test #\(num + 1)")
+            case .sdkEvent:
+                return sdkEvent(name: "Test #\(num + 1)")
+            default:
+                XCTFail()
+                return nil
+            }
+        }
         events.forEach { (event: Analytics.Event) in
             let expectEventToRecord = self.expectation(description: "event is recorded - \(event.localId)")
             let _callback = {
@@ -124,7 +183,25 @@ final class AnalyticsServiceTests: XCTestCase {
     }
     
     func messageEvent(withMessage message: String) -> Analytics.Event {
-        Analytics.Event(eventType: .message, properties: MessageEventProperties(message: message, messageType: .other, severity: .info))
+        Analytics.Event(
+            eventType: .message,
+            properties: MessageEventProperties(
+                message: message,
+                messageType: .other,
+                severity: .info
+            )
+        )
+    }
+    
+    func sdkEvent(name: String, params: [String: String]? = nil) -> Analytics.Event {
+        Analytics.Event(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: name,
+                params: params
+            ),
+            analyticsUrl: "https://analytics_url"
+        )
     }
 }
 

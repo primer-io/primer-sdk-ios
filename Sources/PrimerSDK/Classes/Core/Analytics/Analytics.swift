@@ -37,8 +37,10 @@ class Analytics {
         let integrationType: String
         let minDeploymentTarget: String
 
-        init(eventType: Analytics.Event.EventType, properties: AnalyticsEventProperties?) {
-            self.analyticsUrl = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2
+        init(eventType: Analytics.Event.EventType, 
+             properties: AnalyticsEventProperties?,
+             analyticsUrl: String? = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2) {
+            self.analyticsUrl = analyticsUrl
             self.localId = String.randomString(length: 32)
 
             self.appIdentifier = Bundle.main.bundleIdentifier
