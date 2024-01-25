@@ -17,20 +17,20 @@ struct PaymentMethodModel {
 struct BanksListView: View {
     let paymentMethodModel: PaymentMethodModel
     private let metrics = Metrics()
-
+    
     @ObservedObject var banksModel: BanksListModel
-
+    
     private var didSelectBank: ((String) -> Void)
     private var didFilterByText: ((String) -> Void)
     @State private var filterText = ""
-
+    
     init(paymentMethodModel: PaymentMethodModel, banksModel: BanksListModel, didSelectBank: @escaping ((String) -> Void), didFilterByText: @escaping ((String) -> Void)) {
         self.paymentMethodModel = paymentMethodModel
         self.banksModel = banksModel
         self.didSelectBank = didSelectBank
         self.didFilterByText = didFilterByText
     }
-
+    
     var body: some View {
         Spacer()
         HStack {
@@ -43,30 +43,30 @@ struct BanksListView: View {
             }
         }
         Divider()
-
+        
         VStack(alignment: .leading) {
             Text("Choose your bank")
                 .multilineTextAlignment(.leading)
                 .padding(.leading, metrics.textLeftPadding)
                 .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.title.rawValue)
-
+            
             SearchBar(text: $filterText.didSet { text in
                 didFilterByText(text)
             })
         }
-
+        
         Divider()
-
+        
         List(banksModel.banks, id: \.id) { bank in
             Button {
                 didSelectBank(bank.id)
             } label: {
                 HStack(spacing: metrics.hStackSpacing) {
                     HStack {
-                            if let imageUrlString = bank.iconUrl,
-                               let imageUrl = URL(string: imageUrlString) {
-                                image(url: imageUrl)
-                            }
+                        if let imageUrlString = bank.iconUrl,
+                           let imageUrl = URL(string: imageUrlString) {
+                            image(url: imageUrl)
+                        }
                         Text(bank.name)
                     }
                     Spacer()
@@ -82,7 +82,7 @@ struct BanksListView: View {
         .padding(.leading, 0)
         .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.banksList.rawValue)
     }
-
+    
     private func image(url: URL) -> some View {
         ImageViewWithUrl(
             url: url,
@@ -95,7 +95,7 @@ struct BanksListView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(width: metrics.imageSize.width, height: metrics.imageSize.height)
             }
-          )
+        )
     }
 }
 
@@ -127,10 +127,10 @@ extension BanksListView {
         private let metrics = SearchBar.Metrics()
         @Binding var text: String
         @State private var isEditing = false
-
+        
         var body: some View {
             HStack {
-
+                
                 TextField("Search bank", text: $text)
                     .padding(.horizontal, metrics.textLeftPadding)
                     .padding(.horizontal, metrics.hPadding)
@@ -169,7 +169,7 @@ struct BanksListView_Previews: PreviewProvider {
 
 
 extension View {
-   @ViewBuilder func addAccessibilityIdentifier(identifier: String) -> some View {
+    @ViewBuilder func addAccessibilityIdentifier(identifier: String) -> some View {
         if #available(iOS 14.0, *) {
             accessibilityIdentifier(identifier)
         } else {

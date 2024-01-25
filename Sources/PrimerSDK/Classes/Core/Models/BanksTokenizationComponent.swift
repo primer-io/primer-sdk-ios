@@ -841,8 +841,7 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
     }
 }
 
-extension BanksTokenizationComponent: WebRedirectTokenizationDelegate {
-}
+extension BanksTokenizationComponent: WebRedirectTokenizationDelegate {}
 
 extension BanksTokenizationComponent: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
 

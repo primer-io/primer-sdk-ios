@@ -7,9 +7,9 @@
 
 import Foundation
 
-public protocol PrimerHeadlessComponent { }
-
 public protocol PrimerCollectableData { }
+
+public protocol PrimerHeadlessStep { }
 
 public protocol PrimerHeadlessErrorableDelegate: AnyObject {
     func didReceiveError(error: PrimerError)
@@ -17,6 +17,18 @@ public protocol PrimerHeadlessErrorableDelegate: AnyObject {
 
 public protocol PrimerHeadlessValidatableDelegate: AnyObject {
     func didUpdate(validationStatus: PrimerValidationStatus, for data: PrimerCollectableData?)
+}
+
+public protocol PrimerHeadlessSteppableDelegate: AnyObject {
+    func didReceiveStep(step: PrimerHeadlessStep)
+}
+
+@objc public protocol PrimerHeadlessStartable: AnyObject {
+    func start()
+}
+
+@objc public protocol PrimerHeadlessSubmitable: AnyObject {
+    func submit()
 }
 
 public enum PrimerValidationStatus: Equatable {
@@ -42,21 +54,7 @@ public enum PrimerValidationStatus: Equatable {
     case error(error: PrimerError)
 }
 
-public protocol PrimerHeadlessStep { }
-
-public protocol PrimerHeadlessSteppableDelegate: AnyObject {
-    func didReceiveStep(step: PrimerHeadlessStep)
-}
-
-@objc public protocol PrimerHeadlessStartable: AnyObject {
-    func start()
-}
-
-@objc public protocol PrimerHeadlessSubmitable: AnyObject {
-    func submit()
-}
-
-public protocol PrimerHeadlessCollectDataComponent<Data, Step>: PrimerHeadlessComponent, PrimerHeadlessStartable, PrimerHeadlessSubmitable {
+public protocol PrimerHeadlessCollectDataComponent<Data, Step>: PrimerHeadlessStartable, PrimerHeadlessSubmitable {
     associatedtype Data: PrimerCollectableData
     associatedtype Step: PrimerHeadlessStep
     var errorDelegate: PrimerHeadlessErrorableDelegate? { get set }
