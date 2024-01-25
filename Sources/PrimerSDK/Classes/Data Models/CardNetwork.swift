@@ -231,6 +231,21 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             return nil
         }
     }
+    
+    public var displayName: String {
+        if let displayName = self.validation?.niceType {
+            return displayName
+        }
+        
+        switch self {
+        case .bancontact:
+            return "Bancontact"
+        case .cartesBancaires:
+            return "Cartes Bancaires"
+        default:
+            return "Unknown"
+        }
+    }
 
     public var icon: UIImage? {
         switch self {

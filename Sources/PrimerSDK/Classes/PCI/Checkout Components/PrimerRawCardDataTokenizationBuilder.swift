@@ -180,7 +180,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     // Unsupported card type error
                     if !self.allowedCardNetworks.contains(cardNetwork) {
                         let err = PrimerValidationError.invalidCardType(
-                            message: "Unsupported card type detected: \(cardNetwork.validation?.niceType ?? "unknown type")",
+                            message: "Unsupported card type detected: \(cardNetwork.displayName)",
                             userInfo: .errorUserInfoDictionary(),
                             diagnosticsId: UUID().uuidString
                         )

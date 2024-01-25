@@ -10,6 +10,8 @@ import XCTest
 @testable import PrimerSDK
 
 private struct DummyEndpoint: Endpoint {
+
+    var timeout: TimeInterval?
     var baseURL: String?
     var port: Int?
     var path: String = ""

@@ -129,8 +129,8 @@ public class PrimerCardNetworkAsset {
     public let cardNetwork: CardNetwork
     public let cardImage: UIImage?
     
-    var displayName: String? {
-        return cardNetwork.validation?.niceType
+    var displayName: String {
+        return cardNetwork.displayName
     }
     
     init(cardNetwork: CardNetwork, cardImage: UIImage?) {
