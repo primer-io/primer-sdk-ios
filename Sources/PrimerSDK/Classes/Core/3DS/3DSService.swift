@@ -90,16 +90,15 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             completion(.success(result.resumeToken))
         }
         .ensure {
-            let dismiss3DSUIEvent = Analytics.Event(
-                eventType: .ui,
-                properties: UIEventProperties(
-                    action: .dismiss,
-                    context: nil,
-                    extra: nil,
-                    objectType: .thirdPartyView,
-                    objectId: nil,
-                    objectClass: nil,
-                    place: .threeDSScreen))
+            let dismiss3DSUIEvent = Analytics.Event.ui(
+                action: .dismiss,
+                context: nil,
+                extra: nil,
+                objectType: .thirdPartyView,
+                objectId: nil,
+                objectClass: nil,
+                place: .threeDSScreen
+            )
             Analytics.Service.record(events: [dismiss3DSUIEvent])
 
             self.threeDSSDKWindow?.isHidden = true
@@ -575,16 +574,15 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
             self.threeDSSDKWindow!.windowLevel = UIWindow.Level.normal
             self.threeDSSDKWindow!.makeKeyAndVisible()
 
-            let present3DSUIEvent = Analytics.Event(
-                eventType: .ui,
-                properties: UIEventProperties(
-                    action: Analytics.Event.Property.Action.present,
-                    context: nil,
-                    extra: nil,
-                    objectType: .thirdPartyView,
-                    objectId: nil,
-                    objectClass: nil,
-                    place: .threeDSScreen))
+            let present3DSUIEvent = Analytics.Event.ui(
+                action: Analytics.Event.Property.Action.present,
+                context: nil,
+                extra: nil,
+                objectType: .thirdPartyView,
+                objectId: nil,
+                objectClass: nil,
+                place: .threeDSScreen
+            )
             Analytics.Service.record(events: [present3DSUIEvent])
 
             primer3DS.performChallenge(

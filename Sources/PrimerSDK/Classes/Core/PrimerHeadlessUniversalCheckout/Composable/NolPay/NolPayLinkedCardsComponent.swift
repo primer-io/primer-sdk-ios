@@ -84,13 +84,10 @@ public class NolPayLinkedCardsComponent {
     public func getLinkedCardsFor(mobileNumber: String,
                                   completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
 
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.linkedCardsGetCardsMethod,
-                params: [
-                    "category": "NOL_PAY"
-                ]))
+        let sdkEvent = Analytics.Event.sdk(
+            name: NolPayAnalyticsConstants.linkedCardsGetCardsMethod,
+            params: [ "category": "NOL_PAY" ]
+        )
         Analytics.Service.record(events: [sdkEvent])
         guard let nolPay = nolPay else {
             let error = PrimerError.nolError(code: "unknown",

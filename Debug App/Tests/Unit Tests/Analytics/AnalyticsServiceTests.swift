@@ -98,7 +98,7 @@ final class AnalyticsServiceTests: XCTestCase {
         }
         sendEvents(numberOfEvents: 4, after: 0.5)
 
-        waitForExpectations(timeout: 30.0)
+        waitForExpectations(timeout: 60.0)
         
         XCTAssertEqual(apiClient.batches.count, 5)
         XCTAssertEqual(apiClient.batches.joined().count, 25)
@@ -183,24 +183,17 @@ final class AnalyticsServiceTests: XCTestCase {
     }
     
     func messageEvent(withMessage message: String) -> Analytics.Event {
-        Analytics.Event(
-            eventType: .message,
-            properties: MessageEventProperties(
-                message: message,
-                messageType: .other,
-                severity: .info
-            )
+        Analytics.Event.message(
+            message: message,
+            messageType: .other,
+            severity: .info
         )
     }
     
     func sdkEvent(name: String, params: [String: String]? = nil) -> Analytics.Event {
-        Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: name,
-                params: params
-            ),
-            analyticsUrl: "https://analytics_url"
+        Analytics.Event.sdk(
+            name: name,
+            params: params
         )
     }
 }

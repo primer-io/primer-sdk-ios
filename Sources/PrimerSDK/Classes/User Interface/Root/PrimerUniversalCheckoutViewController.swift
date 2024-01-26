@@ -23,16 +23,15 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .view,
-                context: nil,
-                extra: nil,
-                objectType: .view,
-                objectId: nil,
-                objectClass: "\(Self.self)",
-                place: .universalCheckout))
+        let viewEvent = Analytics.Event.ui(
+            action: .view,
+            context: nil,
+            extra: nil,
+            objectType: .view,
+            objectId: nil,
+            objectClass: "\(Self.self)",
+            place: .universalCheckout
+        )
         Analytics.Service.record(event: viewEvent)
 
         title = Strings.CheckoutView.navBarTitle
@@ -244,16 +243,15 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
     @objc
     func seeAllButtonTapped(_ sender: Any) {
-        let uiEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: nil,
-                extra: nil,
-                objectType: .button,
-                objectId: .seeAll,
-                objectClass: "\(Self.self)",
-                place: .universalCheckout))
+        let uiEvent = Analytics.Event.ui(
+            action: .click,
+            context: nil,
+            extra: nil,
+            objectType: .button,
+            objectId: .seeAll,
+            objectClass: "\(Self.self)",
+            place: .universalCheckout
+        )
         Analytics.Service.record(event: uiEvent)
 
         let vpivc = VaultedPaymentInstrumentsViewController()
@@ -271,19 +269,18 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             return
         }
 
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: config.type,
-                    url: nil),
-                extra: nil,
-                objectType: .button,
-                objectId: .pay,
-                objectClass: "\(Self.self)",
-                place: .universalCheckout))
+        let viewEvent = Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: config.type,
+                url: nil),
+            extra: nil,
+            objectType: .button,
+            objectId: .pay,
+            objectClass: "\(Self.self)",
+            place: .universalCheckout
+        )
         Analytics.Service.record(event: viewEvent)
 
         enableView(false)

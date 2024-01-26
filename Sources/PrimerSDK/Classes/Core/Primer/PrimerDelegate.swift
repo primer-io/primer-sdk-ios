@@ -100,11 +100,10 @@ internal class PrimerDelegateProxy: LogReporter {
 
                 if let timingEventId = PrimerHeadlessUniversalCheckout.current.timingEventId,
                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData != nil {
-                    let timingEndEvent = Analytics.Event(
-                        eventType: .timerEvent,
-                        properties: TimerEventProperties(
-                            momentType: .start,
-                            id: timingEventId))
+                    let timingEndEvent = Analytics.Event.timer(
+                        momentType: .start,
+                        id: timingEventId
+                    )
 
                     Analytics.Service.record(events: [timingEndEvent])
                 }
@@ -162,11 +161,10 @@ internal class PrimerDelegateProxy: LogReporter {
 
                 if let timingEventId = PrimerHeadlessUniversalCheckout.current.timingEventId,
                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData != nil {
-                    let timingEndEvent = Analytics.Event(
-                        eventType: .timerEvent,
-                        properties: TimerEventProperties(
-                            momentType: .end,
-                            id: timingEventId))
+                    let timingEndEvent = Analytics.Event.timer(
+                        momentType: .end,
+                        id: timingEventId
+                    )
 
                     Analytics.Service.record(events: [timingEndEvent])
                     Analytics.Service.flush()

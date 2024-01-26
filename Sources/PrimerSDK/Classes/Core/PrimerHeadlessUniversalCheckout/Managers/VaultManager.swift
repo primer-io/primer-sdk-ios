@@ -25,11 +25,10 @@ extension PrimerHeadlessUniversalCheckout {
             PrimerInternal.shared.sdkIntegrationType = .headless
             PrimerInternal.shared.intent = .checkout
 
-            let sdkEvent = Analytics.Event(
-                eventType: .sdkEvent,
-                properties: SDKEventProperties(
-                    name: "\(Self.self).\(#function)",
-                    params: nil))
+            let sdkEvent = Analytics.Event.sdk(
+                name: "\(Self.self).\(#function)",
+                params: nil
+            )
             Analytics.Service.record(events: [sdkEvent])
 
             super.init()
