@@ -299,15 +299,11 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     
     private func reportAllowedCardNetworks() {
         let networksDescription = [CardNetwork].allowedCardNetworks.map { $0.rawValue }.joined(separator: ", ")
-        Analytics.Service.record(event:
-            Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "Merchant supported networks: \(networksDescription)",
-                    messageType: .other,
-                    severity: .info
-                )
-            )
+        let event = Analytics.Event.message(
+            message: "Merchant supported networks: \(networksDescription)",
+            messageType: .other,
+            severity: .info
         )
+        Analytics.Service.record(event: event)
     }
 }

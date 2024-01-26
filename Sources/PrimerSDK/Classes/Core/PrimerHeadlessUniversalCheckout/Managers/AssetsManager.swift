@@ -23,13 +23,10 @@ extension PrimerHeadlessUniversalCheckout {
             let assetName = "\(cardNetwork.assetName.lowercased())-card-icon-colored"
             let cardImage = UIImage(named: assetName, in: Bundle.primerResources, compatibleWith: nil)
             
-            let event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "Providing single asset for card network: \(cardNetwork.rawValue)",
-                    messageType: .other,
-                    severity: .info
-                )
+            let event = Analytics.Event.message(
+                message: "Providing single asset for card network: \(cardNetwork.rawValue)",
+                messageType: .other,
+                severity: .info
             )
             Analytics.Service.record(event: event)
             

@@ -114,12 +114,10 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
             let logMessage = "Local validation was used where remote validation would have been preferred (max BIN length exceeded)."
 
             logger.warn(message: logMessage)
-            let event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: logMessage,
-                    messageType: .other,
-                    severity: .warning)
+            let event = Analytics.Event.message(
+                message: logMessage,
+                messageType: .other,
+                severity: .warning
             )
             Analytics.Service.record(event: event)
         }
@@ -129,7 +127,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                                         forState: cardState)
         if isFallback {
             DispatchQueue.main.async {
-                self.rawDataManager.validateRawData(withCardNetworksMetadata: metadata)
+                _ = self.rawDataManager.validateRawData(withCardNetworksMetadata: metadata)
             }
         }
     }
@@ -146,7 +144,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                                         forState: cardState)
         
         DispatchQueue.main.async {
-            self.rawDataManager.validateRawData(withCardNetworksMetadata: cardMetadata)
+            _ = self.rawDataManager.validateRawData(withCardNetworksMetadata: cardMetadata)
         }
     }
     
@@ -170,29 +168,23 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     // MARK: Analytics
     
     private func sendEvent(forNetworks networks: [PrimerCardNetwork], source: PrimerCardValidationSource) {
-        let event = Analytics.Event(
-            eventType: .ui, 
-            properties: UIEventProperties(
-                action: .view,
-                context: .init(cardNetworks: networks.map { $0.network.rawValue }),
-                extra: "Source = \(source.rawValue)",
-                objectType: .list,
-                objectId: .cardNetwork,
-                objectClass: String(describing: CardNetwork.self),
-                place: .cardForm
-            )
+        let event = Analytics.Event.ui(
+            action: .view,
+            context: .init(cardNetworks: networks.map { $0.network.rawValue }),
+            extra: "Source = \(source.rawValue)",
+            objectType: .list,
+            objectId: .cardNetwork,
+            objectClass: String(describing: CardNetwork.self),
+            place: .cardForm
         )
         Analytics.Service.record(event: event)
     }
     
     private func sendEvent(forError error: Error) {
-        let event = Analytics.Event(
-            eventType: .message,
-            properties: MessageEventProperties(
-                message: "Failed to remotely validate card network: \(error.localizedDescription)",
-                messageType: .error,
-                severity: .error
-            )
+        let event = Analytics.Event.message(
+            message: "Failed to remotely validate card network: \(error.localizedDescription)",
+            messageType: .error,
+            severity: .error
         )
         Analytics.Service.record(event: event)
     }
