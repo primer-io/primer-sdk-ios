@@ -53,13 +53,10 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     func validateData(for data: NolPayPaymentCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         var errors: [PrimerValidationError] = []
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.paymentUpdateCollectedDataMethod,
-                params: [
-                    "category": "NOL_PAY"
-                ]))
+        let sdkEvent = Analytics.Event.sdk(
+            name: NolPayAnalyticsConstants.paymentUpdateCollectedDataMethod,
+            params: [ "category": "NOL_PAY" ]
+        )
         Analytics.Service.record(events: [sdkEvent])
 
         switch data {
@@ -109,13 +106,10 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
 
     public func submit() {
 
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.paymentSubmitDataMethod,
-                params: [
-                    "category": "NOL_PAY"
-                ]))
+        let sdkEvent = Analytics.Event.sdk(
+            name: NolPayAnalyticsConstants.paymentSubmitDataMethod,
+            params: [ "category": "NOL_PAY" ]
+        )
         Analytics.Service.record(events: [sdkEvent])
 
         switch nextDataStep {
@@ -193,13 +187,10 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     }
 
     public func start() {
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: NolPayAnalyticsConstants.paymentStartMethod,
-                params: [
-                    "category": "NOL_PAY"
-                ]))
+        let sdkEvent = Analytics.Event.sdk(
+            name: NolPayAnalyticsConstants.paymentStartMethod,
+            params: [ "category": "NOL_PAY" ]
+        )
         Analytics.Service.record(events: [sdkEvent])
 
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,

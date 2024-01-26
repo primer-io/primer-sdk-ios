@@ -88,19 +88,18 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
         }
 
-        let event = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: self.config.type,
-                    url: nil),
-                extra: nil,
-                objectType: .button,
-                objectId: .select,
-                objectClass: "\(Self.self)",
-                place: .paymentMethodPopup))
+        let event = Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: self.config.type,
+                url: nil),
+            extra: nil,
+            objectType: .button,
+            objectId: .select,
+            objectClass: "\(Self.self)",
+            place: .paymentMethodPopup
+        )
         Analytics.Service.record(event: event)
 
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
@@ -165,30 +164,28 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 self.redirectUrlComponents = URLComponents(string: self.redirectUrl.absoluteString)
                 self.redirectUrlComponents?.query = nil
 
-                let presentEvent = Analytics.Event(
-                    eventType: .ui,
-                    properties: UIEventProperties(
-                        action: .present,
-                        context: Analytics.Event.Property.Context(
-                            paymentMethodType: self.config.type,
-                            url: self.redirectUrlComponents?.url?.absoluteString),
-                        extra: nil,
-                        objectType: .button,
-                        objectId: nil,
-                        objectClass: "\(Self.self)",
-                        place: .webview))
+                let presentEvent = Analytics.Event.ui(
+                    action: .present,
+                    context: Analytics.Event.Property.Context(
+                        paymentMethodType: self.config.type,
+                        url: self.redirectUrlComponents?.url?.absoluteString),
+                    extra: nil,
+                    objectType: .button,
+                    objectId: nil,
+                    objectClass: "\(Self.self)",
+                    place: .webview
+                )
 
                 self.redirectUrlRequestId = UUID().uuidString
 
-                let networkEvent = Analytics.Event(
-                    eventType: .networkCall,
-                    properties: NetworkCallEventProperties(
-                        callType: .requestStart,
-                        id: self.redirectUrlRequestId!,
-                        url: self.redirectUrlComponents?.url?.absoluteString ?? "",
-                        method: .get,
-                        errorBody: nil,
-                        responseCode: nil))
+                let networkEvent = Analytics.Event.networkCall(
+                    callType: .requestStart,
+                    id: self.redirectUrlRequestId!,
+                    url: self.redirectUrlComponents?.url?.absoluteString ?? "",
+                    method: .get,
+                    errorBody: nil,
+                    responseCode: nil
+                )
 
                 Analytics.Service.record(events: [presentEvent, networkEvent])
                 if PrimerUIManager.primerRootViewController == nil {
@@ -218,18 +215,17 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
     private func handleWebViewControlllerPresentedCompletion() {
         DispatchQueue.main.async {
-            let viewEvent = Analytics.Event(
-                eventType: .ui,
-                properties: UIEventProperties(
-                    action: .view,
-                    context: Analytics.Event.Property.Context(
-                        paymentMethodType: self.config.type,
-                        url: self.redirectUrlComponents?.url?.absoluteString ?? ""),
-                    extra: nil,
-                    objectType: .button,
-                    objectId: nil,
-                    objectClass: "\(Self.self)",
-                    place: .webview))
+            let viewEvent = Analytics.Event.ui(
+                action: .view,
+                context: Analytics.Event.Property.Context(
+                    paymentMethodType: self.config.type,
+                    url: self.redirectUrlComponents?.url?.absoluteString ?? ""),
+                extra: nil,
+                objectType: .button,
+                objectId: nil,
+                objectClass: "\(Self.self)",
+                place: .webview
+            )
             Analytics.Service.record(events: [viewEvent])
 
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
@@ -368,12 +364,11 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
         /// ignore it, since the user wouldn't be able to tap the "Done" button in an **.inactive** state.
         if UIApplication.shared.applicationState != .active { return }
 
-        let messageEvent = Analytics.Event(
-            eventType: .message,
-            properties: MessageEventProperties(
-                message: "safariViewControllerDidFinish called",
-                messageType: .other,
-                severity: .debug))
+        let messageEvent = Analytics.Event.message(
+            message: "safariViewControllerDidFinish called",
+            messageType: .other,
+            severity: .debug
+        )
         Analytics.Service.record(events: [messageEvent])
 
         self.cancel()
@@ -386,15 +381,14 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
 
         if let redirectUrlRequestId = self.redirectUrlRequestId,
            let redirectUrlComponents = self.redirectUrlComponents {
-            let networkEvent = Analytics.Event(
-                eventType: .networkCall,
-                properties: NetworkCallEventProperties(
-                    callType: .requestEnd,
-                    id: redirectUrlRequestId,
-                    url: redirectUrlComponents.url?.absoluteString ?? "",
-                    method: .get,
-                    errorBody: "didLoadSuccessfully: \(didLoadSuccessfully)",
-                    responseCode: nil))
+            let networkEvent = Analytics.Event.networkCall(
+                callType: .requestEnd,
+                id: redirectUrlRequestId,
+                url: redirectUrlComponents.url?.absoluteString ?? "",
+                method: .get,
+                errorBody: "didLoadSuccessfully: \(didLoadSuccessfully)",
+                responseCode: nil
+            )
 
             Analytics.Service.record(events: [networkEvent])
         }
@@ -404,12 +398,11 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
         if var safariRedirectComponents = URLComponents(string: URL.absoluteString) {
             safariRedirectComponents.query = nil
 
-            let messageEvent = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "safariViewController(_:initialLoadDidRedirectTo: \(safariRedirectComponents.url?.absoluteString ?? "n/a")) called",
-                    messageType: .other,
-                    severity: .debug))
+            let messageEvent = Analytics.Event.message(
+                message: "safariViewController(_:initialLoadDidRedirectTo: \(safariRedirectComponents.url?.absoluteString ?? "n/a")) called",
+                messageType: .other,
+                severity: .debug
+            )
             Analytics.Service.record(events: [messageEvent])
         }
 

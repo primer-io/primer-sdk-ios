@@ -25,19 +25,18 @@ internal class CountrySelectorViewController: PrimerFormViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .view,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: self.viewModel.config.type,
-                    url: nil),
-                extra: nil,
-                objectType: .view,
-                objectId: nil,
-                objectClass: "\(Self.self)",
-                place: .countrySelectionList))
+        let viewEvent = Analytics.Event.ui(
+            action: .view,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: self.viewModel.config.type,
+                url: nil),
+            extra: nil,
+            objectType: .view,
+            objectId: nil,
+            objectClass: "\(Self.self)",
+            place: .countrySelectionList
+        )
         Analytics.Service.record(event: viewEvent)
 
         view.backgroundColor = theme.view.backgroundColor

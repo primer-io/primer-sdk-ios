@@ -53,12 +53,9 @@ extension WebRedirectComponent: LogReporter {
     func logStep() {
         let logMessage = step.logMessage(paymentMethodType: paymentMethodType.rawValue)
         logger.info(message: logMessage)
-        let stepEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: MessageEventProperties(
-                message: logMessage,
-                messageType: .info,
-                severity: .info))
+        let stepEvent = Analytics.Event.message(message: logMessage,
+                                                messageType: .info,
+                                                severity: .info)
         Analytics.Service.record(events: [stepEvent])
     }
 }

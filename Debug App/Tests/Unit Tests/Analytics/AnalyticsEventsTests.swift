@@ -12,23 +12,24 @@ import XCTest
 final class AnalyticsEventsTests: XCTestCase {
     
     func testUDIDPersistsAcrossEvents() throws {
-        let event1 = Analytics.Event(eventType: .message, properties: MessageEventProperties(
+        let event1 = Analytics.Event.message(
             message: "",
             messageType: .other,
             severity: .debug
-        ))
-        let event2 = Analytics.Event(eventType: .sdkEvent, properties: SDKEventProperties(
+        )
+        let event2 = Analytics.Event.sdk(
             name: "",
             params: nil
-        ))
-        let event3 = Analytics.Event(eventType: .ui, properties: UIEventProperties(
+        )
+        let event3 = Analytics.Event.ui(
             action: .click,
             context: nil,
             extra: nil,
             objectType: .button,
             objectId: nil,
             objectClass: nil,
-            place: .cardForm))
+            place: .cardForm
+        )
         
         XCTAssertEqual(event1.device.uniqueDeviceIdentifier, event2.device.uniqueDeviceIdentifier)
         XCTAssertEqual(event2.device.uniqueDeviceIdentifier, event3.device.uniqueDeviceIdentifier)

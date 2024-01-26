@@ -28,16 +28,15 @@ internal class PrimerResultViewController: PrimerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .view,
-                context: nil,
-                extra: nil,
-                objectType: .view,
-                objectId: nil,
-                objectClass: "\(Self.self)",
-                place: .errorScreen))
+        let viewEvent = Analytics.Event.ui(
+            action: .view,
+            context: nil,
+            extra: nil,
+            objectType: .view,
+            objectId: nil,
+            objectClass: "\(Self.self)",
+            place: .errorScreen
+        )
         Analytics.Service.record(event: viewEvent)
 
         (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
