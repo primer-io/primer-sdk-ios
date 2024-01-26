@@ -59,6 +59,7 @@
 		8064B65A8F83D5B004D081FD /* PaymentMethodConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752785ACCF65527C239391A8 /* PaymentMethodConfigTests.swift */; };
 		85605C241F1CD45BA676D4A7 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9023841AFCE8E3205CB713A /* String+Extensions.swift */; };
 		85EDC3F175D699BFF6BD48EF /* ViewController+Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CCCB917D1881082ED75975 /* ViewController+Primer.swift */; };
+		876140D52B63F7DB0058CA8C /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876140D42B63F7DB0058CA8C /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
 		8B5CB0C992DBAB293D378FAD /* MockModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */; };
 		91FAC91E687B6981268E677E /* DateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0B2BEE5C389FD13E210847 /* DateTests.swift */; };
 		9263BD762EC26F6AA986F0C9 /* MockAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17476BFBED51F389FCE82F16 /* MockAPIClient.swift */; };
@@ -114,7 +115,7 @@
 		E9F5265EB7A157AC5ED162C5 /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21898D647270491BF4A68C19 /* Pods_Debug_App.framework */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
-		F03699592AC2E63700E4179D /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		F03699592AC2E63700E4179D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F1A71C2E0D900FEB9AF1351C /* ThreeDSProtocolVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */; };
 		F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD381E7E16D01D8D743232F7 /* ThemeTests.swift */; };
@@ -222,6 +223,7 @@
 		7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPay88Tests.swift; sourceTree = "<group>"; };
 		7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockModule.swift; sourceTree = "<group>"; };
 		872A0647D4136E27365FB7F8 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
+		876140D42B63F7DB0058CA8C /* MerchantHeadlessCheckoutKlarnaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutKlarnaViewController.swift; sourceTree = "<group>"; };
 		8A23886804B13FA754E775D0 /* MockPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		8A3FDC6FE0EB5AB5828D4D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDataManagerTests.swift; sourceTree = "<group>"; };
@@ -488,6 +490,14 @@
 			path = Network;
 			sourceTree = "<group>";
 		};
+		876140D32B63F79E0058CA8C /* KlarnaHeadless */ = {
+			isa = PBXGroup;
+			children = (
+				876140D42B63F7DB0058CA8C /* MerchantHeadlessCheckoutKlarnaViewController.swift */,
+			);
+			path = KlarnaHeadless;
+			sourceTree = "<group>";
+		};
 		9EE81958BB2BB34183F6C0AB /* Modules */ = {
 			isa = PBXGroup;
 			children = (
@@ -704,6 +714,7 @@
 		EF5FBE3673FBCB40F55F4DC0 /* New UI */ = {
 			isa = PBXGroup;
 			children = (
+				876140D32B63F79E0058CA8C /* KlarnaHeadless */,
 				E11F474E2B06C5030091C31F /* FormWithRedirect */,
 				041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */,
 				0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */,
@@ -967,7 +978,7 @@
 				583EBAA90902121CEA479416 /* VaultService.swift in Sources */,
 				961B5D18058EF4CFCD0185AE /* MockVaultCheckoutViewModel.swift in Sources */,
 				622A605DDEA98D981670B53F /* DropInUI_TokenizationViewModelTests.swift in Sources */,
-				F03699592AC2E63700E4179D /* BuildFile in Sources */,
+				F03699592AC2E63700E4179D /* (null) in Sources */,
 				208CA849F3187C2DA63CC17B /* HUC_TokenizationViewModelTests.swift in Sources */,
 				049A05642B4C1EEB002CEEBA /* SDKSessionHelper.swift in Sources */,
 				213196DEDF2A3A84037ED884 /* PollingModuleTests.swift in Sources */,
@@ -1022,6 +1033,7 @@
 				C75A11E6AEEFC2B7A29BBC04 /* TestScenario.swift in Sources */,
 				E1A2971F2B021ABA005ADA51 /* URL+NetworkHeaders.swift in Sources */,
 				FD5ADBCFA70DB606339F3AF2 /* TransactionResponse.swift in Sources */,
+				876140D52B63F7DB0058CA8C /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */,
 				049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */,
 				53E3182FFC4E5F05D866CFAE /* Networking.swift in Sources */,
 				592E00D98C8835CBCDAA26D9 /* MerchantDropInUIViewController.swift in Sources */,

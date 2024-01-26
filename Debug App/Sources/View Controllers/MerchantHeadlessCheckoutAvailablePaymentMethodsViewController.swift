@@ -198,6 +198,13 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
 #else
             break
 #endif
+        case "KLARNA":
+#if canImport(PrimerKlarnaSDK)
+            let vc = MerchantHeadlessCheckoutKlarnaViewController()
+            self.navigationController?.pushViewController(vc, animated: true)
+#else
+            break
+#endif
         case "ADYEN_IDEAL":
             let vc = MerchantHeadlessCheckoutBankViewController()
             self.navigationController?.pushViewController(vc, animated: true)
