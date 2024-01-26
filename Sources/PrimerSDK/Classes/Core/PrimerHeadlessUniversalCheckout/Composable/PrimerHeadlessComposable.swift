@@ -23,6 +23,10 @@ public protocol PrimerHeadlessSteppableDelegate: AnyObject {
     func didReceiveStep(step: PrimerHeadlessStep)
 }
 
+protocol PrimerHeadlessAnalyticsRecordable {
+    func recordEvent(type: Analytics.Event.EventType, name: String, params: [String: String])
+}
+
 @objc public protocol PrimerHeadlessStartable: AnyObject {
     func start()
 }
@@ -78,5 +82,22 @@ extension PrimerHeadlessCollectDataComponent {
         diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         self.errorDelegate?.didReceiveError(error: error)
+    }
+}
+
+extension PrimerHeadlessAnalyticsRecordable {
+    func recordEvent(
+        type: Analytics.Event.EventType,
+        name: String,
+        params: [String: String]
+    ) {
+        let event = Analytics.Event(
+            eventType: type,
+            properties: SDKEventProperties(
+                name: name,
+                params: params
+            )
+        )
+        Analytics.Service.record(events: [event])
     }
 }

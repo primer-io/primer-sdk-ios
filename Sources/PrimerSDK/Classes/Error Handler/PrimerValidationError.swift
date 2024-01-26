@@ -27,6 +27,9 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
     case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String, validVaultedPaymentMethodAdditionalDataType: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidOTPCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidAccountUniqueId(message: String, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidAccountRegistrationDate(message: String, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidAccountLastModified(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case banksNotLoaded(userInfo: [String: String]?, diagnosticsId: String)
     case invalidBankId(bankId: String?, userInfo: [String: String]?, diagnosticsId: String)
 
@@ -67,6 +70,12 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         case .invalidPhoneNumberCountryCode(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidOTPCode(_, _, let diagnosticsId):
+            return diagnosticsId
+        case .invalidAccountUniqueId(_, _, let diagnosticsId):
+            return diagnosticsId
+        case .invalidAccountRegistrationDate(_, _, let diagnosticsId):
+            return diagnosticsId
+        case .invalidAccountLastModified(_, _, let diagnosticsId):
             return diagnosticsId
         case .banksNotLoaded(userInfo: _, let diagnosticId):
             return diagnosticId
@@ -113,6 +122,12 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "invalid-phone-number-country-code"
         case .invalidOTPCode:
             return "invalid-otp-code"
+        case .invalidAccountUniqueId:
+            return "invalid-account-unique-id"
+        case .invalidAccountRegistrationDate:
+            return "invalid-account-registration-date"
+        case .invalidAccountLastModified:
+            return "invalid-account-last-modified-date"
         case .invalidBankId:
             return "invalid-bank-id"
         case .banksNotLoaded:
@@ -158,6 +173,12 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "[\(errorId)] \(message)"
         case .invalidOTPCode(message: let message, _, _):
             return "[\(errorId)] \(message)"
+        case .invalidAccountUniqueId(message: let message, _, _):
+            return "[\(errorId)] \(message)"
+        case .invalidAccountRegistrationDate(message: let message, _, _):
+            return "[\(errorId)] \(message)"
+        case .invalidAccountLastModified(message: let message, _, _):
+            return "[\(errorId)] \(message)"
         case .invalidBankId:
             return "Please provide a valid bank id"
         case .banksNotLoaded:
@@ -187,6 +208,9 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
                 .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _),
                 .invalidPhoneNumberCountryCode(_, let userInfo, _),
                 .invalidOTPCode(_, let userInfo, _),
+                .invalidAccountUniqueId(_, let userInfo, _),
+                .invalidAccountRegistrationDate(message: _, let userInfo, _),
+                .invalidAccountLastModified(message: _, let userInfo, _),
                 .invalidBankId(_, let userInfo, _),
                 .banksNotLoaded(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
@@ -254,6 +278,12 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "PHONE_NUMBER_COUNTRY_CODE"
         case .invalidOTPCode:
             return "OTP"
+        case .invalidAccountUniqueId:
+            return nil
+        case .invalidAccountRegistrationDate:
+            return nil
+        case .invalidAccountLastModified:
+            return nil
         case .banksNotLoaded:
             return "BANKS"
         case .invalidBankId:
@@ -297,7 +327,10 @@ extension PrimerValidationError: Equatable {
             (.invalidPhoneNumber(let message1, let userInfo1, let id1), .invalidPhoneNumber(let message2, let userInfo2, let id2)),
             (.invalidPhoneNumberCountryCode(let message1, let userInfo1, let id1), .invalidPhoneNumberCountryCode(let message2, let userInfo2, let id2)),
             (.invalidRetailer(let message1, let userInfo1, let id1), .invalidRetailer(let message2, let userInfo2, let id2)),
-            (.invalidOTPCode(let message1, let userInfo1, let id1), .invalidOTPCode(let message2, let userInfo2, let id2)):
+            (.invalidOTPCode(let message1, let userInfo1, let id1), .invalidOTPCode(let message2, let userInfo2, let id2)),
+            (.invalidAccountUniqueId(let message1, let userInfo1, let id1), .invalidAccountUniqueId(let message2, let userInfo2, let id2)),
+            (.invalidAccountRegistrationDate(let message1, let userInfo1, let id1), .invalidAccountRegistrationDate(let message2, let userInfo2, let id2)),
+            (.invalidAccountLastModified(let message1, let userInfo1, let id1), .invalidAccountLastModified(let message2, let userInfo2, let id2)):
             return message1 == message2 && userInfo1 == userInfo2 && id1 == id2
         case (.invalidRawData(let userInfo1, let id1), .invalidRawData(let userInfo2, let id2)),
             (.banksNotLoaded(let userInfo1, let id1), .banksNotLoaded(let userInfo2, let id2)):

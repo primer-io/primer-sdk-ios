@@ -150,6 +150,14 @@ class PrimerPaymentMethod: Codable, LogReporter {
         default: return nil
         }
     }()
+    
+    lazy var tokenizationComponent: KlarnaTokenizationManagerProtocol? = {
+        switch internalPaymentMethodType {
+        case .klarna:
+            return KlarnaTokenizationComponent(paymentMethod: self)
+        default: return nil
+        }
+    }()
 
     var isCheckoutEnabled: Bool {
         if self.baseLogoImage == nil {

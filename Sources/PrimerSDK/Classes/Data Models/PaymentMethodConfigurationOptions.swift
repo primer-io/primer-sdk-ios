@@ -26,7 +26,7 @@ struct CardOptions: PaymentMethodOptions {
 struct MerchantOptions: PaymentMethodOptions {
     let merchantId: String
     let merchantAccountId: String
-    let appId: String? // Nol pay
+    let appId: String? // Nol pay, Klarna
 }
 
 extension PrimerTestPaymentMethodSessionInfo.FlowDecision {

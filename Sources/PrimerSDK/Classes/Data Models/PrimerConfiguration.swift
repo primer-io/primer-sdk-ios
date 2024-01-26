@@ -92,6 +92,14 @@ extension Response.Body {
             let cardSurcharge = options?.first(where: { (($0["networks"] as? [[String: Any]])?.first(where: { $0["surcharge"] as? Int != nil })) != nil  })
             return pmSurcharge != nil || cardSurcharge != nil
         }
+        
+        static var paymentMethodConfigTokenizationManagers: [KlarnaTokenizationManagerProtocol] {
+            return PrimerAPIConfiguration.paymentMethodConfigs?
+                .filter({ $0.isEnabled })
+                .filter({ $0.baseLogoImage != nil })
+                .compactMap({ $0.tokenizationComponent })
+            ?? []
+        }
 
         static var paymentMethodConfigViewModels: [PaymentMethodTokenizationViewModelProtocol] {
             var viewModels: [PaymentMethodTokenizationViewModelProtocol] = PrimerAPIConfiguration.paymentMethodConfigs?
