@@ -91,13 +91,7 @@ extension PrimerHeadlessAnalyticsRecordable {
         name: String,
         params: [String: String]
     ) {
-        let event = Analytics.Event(
-            eventType: type,
-            properties: SDKEventProperties(
-                name: name,
-                params: params
-            )
-        )
+        let event = Analytics.Event.sdk(name: name, params: params)
         Analytics.Service.record(events: [event])
     }
 }
