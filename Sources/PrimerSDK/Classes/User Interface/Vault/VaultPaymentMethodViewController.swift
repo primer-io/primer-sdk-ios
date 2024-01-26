@@ -157,16 +157,15 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         super.viewDidLoad()
         self.title = Strings.VaultPaymentMethodViewContent.savedPaymentMethodsTitle
 
-        let uiEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .view,
-                context: nil,
-                extra: nil,
-                objectType: .view,
-                objectId: nil,
-                objectClass: "\(Self.self)",
-                place: .paymentMethodsList))
+        let uiEvent = Analytics.Event.ui(
+            action: .view,
+            context: nil,
+            extra: nil,
+            objectType: .view,
+            objectId: nil,
+            objectClass: "\(Self.self)",
+            place: .paymentMethodsList
+        )
         Analytics.Service.record(event: uiEvent)
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -203,28 +202,26 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
         isDeleting = !isDeleting
 
         if isDeleting {
-            let uiEvent = Analytics.Event(
-                eventType: .ui,
-                properties: UIEventProperties(
-                    action: .click,
-                    context: nil,
-                    extra: nil,
-                    objectType: .button,
-                    objectId: .cancel,
-                    objectClass: "\(UIButton.self)",
-                    place: .paymentMethodsList))
+            let uiEvent = Analytics.Event.ui(
+                action: .click,
+                context: nil,
+                extra: nil,
+                objectType: .button,
+                objectId: .cancel,
+                objectClass: "\(UIButton.self)",
+                place: .paymentMethodsList
+            )
             Analytics.Service.record(event: uiEvent)
         } else {
-            let uiEvent = Analytics.Event(
-                eventType: .ui,
-                properties: UIEventProperties(
-                    action: .click,
-                    context: nil,
-                    extra: nil,
-                    objectType: .button,
-                    objectId: .edit,
-                    objectClass: "\(UIButton.self)",
-                    place: .paymentMethodsList))
+            let uiEvent = Analytics.Event.ui(
+                action: .click,
+                context: nil,
+                extra: nil,
+                objectType: .button,
+                objectId: .edit,
+                objectClass: "\(UIButton.self)",
+                place: .paymentMethodsList
+            )
             Analytics.Service.record(event: uiEvent)
         }
 
@@ -285,16 +282,15 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
             // It will reload the payment instrument on the Universal Checkout view.
             delegate?.reload()
         } else {
-            let uiEvent = Analytics.Event(
-                eventType: .ui,
-                properties: UIEventProperties(
-                    action: .click,
-                    context: nil,
-                    extra: nil,
-                    objectType: .listItem,
-                    objectId: .delete,
-                    objectClass: "\(UIButton.self)",
-                    place: .paymentMethodsList))
+            let uiEvent = Analytics.Event.ui(
+                action: .click,
+                context: nil,
+                extra: nil,
+                objectType: .listItem,
+                objectId: .delete,
+                objectClass: "\(UIButton.self)",
+                place: .paymentMethodsList
+            )
             Analytics.Service.record(event: uiEvent)
 
             let alert = AlertController(
@@ -307,16 +303,15 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
                 title: Strings.Generic.cancel,
                 style: .cancel,
                 handler: { _ in
-                    let uiEvent = Analytics.Event(
-                        eventType: .ui,
-                        properties: UIEventProperties(
-                            action: .click,
-                            context: nil,
-                            extra: "alert_button",
-                            objectType: .button,
-                            objectId: .cancel,
-                            objectClass: "\(UIButton.self)",
-                            place: .paymentMethodsList))
+                    let uiEvent = Analytics.Event.ui(
+                        action: .click,
+                        context: nil,
+                        extra: "alert_button",
+                        objectType: .button,
+                        objectId: .cancel,
+                        objectClass: "\(UIButton.self)",
+                        place: .paymentMethodsList
+                    )
                     Analytics.Service.record(event: uiEvent)
                 }))
 
@@ -326,16 +321,15 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
                 handler: { [weak self] _ in
                     guard let id = paymentMethod.id else { return }
                     self?.deletePaymentMethod(id)
-                    let uiEvent = Analytics.Event(
-                        eventType: .ui,
-                        properties: UIEventProperties(
-                            action: .click,
-                            context: nil,
-                            extra: "alert_button",
-                            objectType: .button,
-                            objectId: .done,
-                            objectClass: "\(UIButton.self)",
-                            place: .paymentMethodsList))
+                    let uiEvent = Analytics.Event.ui(
+                        action: .click,
+                        context: nil,
+                        extra: "alert_button",
+                        objectType: .button,
+                        objectId: .done,
+                        objectClass: "\(UIButton.self)",
+                        place: .paymentMethodsList
+                    )
                     Analytics.Service.record(event: uiEvent)
                 }))
 

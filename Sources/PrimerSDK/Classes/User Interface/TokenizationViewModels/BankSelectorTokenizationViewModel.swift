@@ -85,19 +85,18 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             }
         }
 
-        let event = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType: self.config.type,
-                    url: nil),
-                extra: nil,
-                objectType: .button,
-                objectId: .select,
-                objectClass: "\(Self.self)",
-                place: .bankSelectionList))
+        let event = Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: self.config.type,
+                url: nil),
+            extra: nil,
+            objectType: .button,
+            objectId: .select,
+            objectClass: "\(Self.self)",
+            place: .bankSelectionList
+        )
         Analytics.Service.record(event: event)
 
         return Promise { seal in

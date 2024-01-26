@@ -94,13 +94,10 @@ internal class PrimerInternal: LogReporter {
 
         let releaseVersionNumber = VersionUtils.releaseVersionNumber
         events.append(
-            Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "Version number (\(releaseVersionNumber ?? "n/a")) detected.",
-                    messageType: .other,
-                    severity: .info
-                )
+            Analytics.Event.message(
+                message: "Version number (\(releaseVersionNumber ?? "n/a")) detected.",
+                messageType: .other,
+                severity: .info
             )
         )
 
@@ -128,22 +125,14 @@ internal class PrimerInternal: LogReporter {
 
         var events: [Analytics.Event] = []
 
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: nil))
+        let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
-        let connectivityEvent = Analytics.Event(
-            eventType: .networkConnectivity,
-            properties: NetworkConnectivityEventProperties(
-                networkType: Connectivity.networkType))
+        let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
-        let timingStartEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .start,
-                id: PrimerInternal.shared.timingEventId!))
+        let timingStartEvent = Analytics.Event.timer(
+            momentType: .start,
+            id: PrimerInternal.shared.timingEventId ?? "Unknown"
+        )
 
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
@@ -178,22 +167,14 @@ internal class PrimerInternal: LogReporter {
 
         var events: [Analytics.Event] = []
 
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: nil))
+        let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
-        let connectivityEvent = Analytics.Event(
-            eventType: .networkConnectivity,
-            properties: NetworkConnectivityEventProperties(
-                networkType: Connectivity.networkType))
+        let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
-        let timingStartEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .start,
-                id: PrimerInternal.shared.timingEventId!))
+        let timingStartEvent = Analytics.Event.timer(
+            momentType: .start,
+            id: PrimerInternal.shared.timingEventId ?? "Unknown"
+        )
 
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
@@ -227,23 +208,16 @@ internal class PrimerInternal: LogReporter {
 
         var events: [Analytics.Event] = []
 
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: nil))
+        let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
-        let connectivityEvent = Analytics.Event(
-            eventType: .networkConnectivity,
-            properties: NetworkConnectivityEventProperties(
-                networkType: Connectivity.networkType))
 
-        let timingStartEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .start,
-                id: PrimerInternal.shared.timingEventId!))
+        let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
+        let timingStartEvent = Analytics.Event.timer(
+            momentType: .start,
+            id: PrimerInternal.shared.timingEventId ?? "Unknown"
+        )
+        
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
 
@@ -269,17 +243,12 @@ internal class PrimerInternal: LogReporter {
 
     /** Dismisses any opened checkout sheet view. */
     internal func dismiss() {
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: #function,
-                params: nil))
+        let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
-        let timingEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .end,
-                id: self.timingEventId))
+        let timingEvent = Analytics.Event.timer(
+            momentType: .end,
+            id: self.timingEventId
+        )
 
         Analytics.Service.record(events: [sdkEvent, timingEvent])
         Analytics.Service.flush()

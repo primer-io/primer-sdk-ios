@@ -24,14 +24,12 @@ internal class ErrorHandler: LogReporter {
 
         if let threeDsError = error as? Primer3DSErrorContainer {
 
-            event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: threeDsError.errorDescription,
-                    messageType: .error,
-                    severity: .error,
-                    diagnosticsId: threeDsError.diagnosticsId,
-                    context: threeDsError.analyticsContext)
+            event = Analytics.Event.message(
+                message: threeDsError.errorDescription,
+                messageType: .error,
+                severity: .error,
+                diagnosticsId: threeDsError.diagnosticsId,
+                context: threeDsError.analyticsContext
             )
 
             if let createdAt = (threeDsError.info?["createdAt"] as? String)?.toDate() {
@@ -39,14 +37,13 @@ internal class ErrorHandler: LogReporter {
             }
 
         } else if let primerError = error as? PrimerErrorProtocol {
-            event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: primerError.errorDescription,
-                    messageType: .error,
-                    severity: .error,
-                    diagnosticsId: primerError.diagnosticsId,
-                    context: primerError.analyticsContext))
+            event = Analytics.Event.message(
+                message: primerError.errorDescription,
+                messageType: .error,
+                severity: .error,
+                diagnosticsId: primerError.diagnosticsId,
+                context: primerError.analyticsContext
+            )
 
             if let createdAt = (primerError.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
@@ -61,14 +58,13 @@ internal class ErrorHandler: LogReporter {
                 userInfo[NSLocalizedDescriptionKey] = nil
             }
 
-            event = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "\(nsError.domain) [\(nsError.code)]: \(nsError.localizedDescription)",
-                    messageType: .error,
-                    severity: .error,
-                    diagnosticsId: nil,
-                    context: userInfo))
+            event = Analytics.Event.message(
+                message: "\(nsError.domain) [\(nsError.code)]: \(nsError.localizedDescription)",
+                messageType: .error,
+                severity: .error,
+                diagnosticsId: nil,
+                context: userInfo
+            )
         }
 
         Analytics.Service.record(event: event)

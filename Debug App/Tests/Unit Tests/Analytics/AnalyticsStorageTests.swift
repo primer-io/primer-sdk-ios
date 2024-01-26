@@ -16,9 +16,9 @@ final class AnalyticsStorageTests: XCTestCase {
     let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
     
     let events = [
-        Analytics.Event(eventType: .message, properties: MessageEventProperties(message: "Test #1", messageType: .other, severity: .info)),
-        Analytics.Event(eventType: .message, properties: MessageEventProperties(message: "Test #2", messageType: .other, severity: .info)),
-        Analytics.Event(eventType: .message, properties: MessageEventProperties(message: "Test #3", messageType: .other, severity: .info)),
+        Analytics.Event.message(message: "Test #1", messageType: .other, severity: .info),
+        Analytics.Event.message(message: "Test #2", messageType: .other, severity: .info),
+        Analytics.Event.message(message: "Test #3", messageType: .other, severity: .info),
     ]
     
     override func setUpWithError() throws {

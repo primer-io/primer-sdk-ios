@@ -77,16 +77,15 @@ class PrimerNavigationBar: PrimerView {
 
     @objc
     func backButtonTapped(_ sender: Any) {
-        let uiEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .click,
-                context: nil,
-                extra: nil,
-                objectType: .button,
-                objectId: .back,
-                objectClass: "\(UIButton.self)",
-                place: .vaultManager))
+        let uiEvent = Analytics.Event.ui(
+            action: .click,
+            context: nil,
+            extra: nil,
+            objectType: .button,
+            objectId: .back,
+            objectClass: "\(UIButton.self)",
+            place: .vaultManager
+        )
         Analytics.Service.record(event: uiEvent)
 
         PrimerUIManager.primerRootViewController?.popViewController()

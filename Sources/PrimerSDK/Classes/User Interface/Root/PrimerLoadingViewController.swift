@@ -30,16 +30,15 @@ class PrimerLoadingViewController: PrimerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let viewEvent = Analytics.Event(
-            eventType: .ui,
-            properties: UIEventProperties(
-                action: .view,
-                context: nil,
-                extra: nil,
-                objectType: .view,
-                objectId: nil,
-                objectClass: "\(Self.self)",
-                place: .sdkLoading))
+        let viewEvent = Analytics.Event.ui(
+            action: .view,
+            context: nil,
+            extra: nil,
+            objectType: .view,
+            objectId: nil,
+            objectClass: "\(Self.self)",
+            place: .sdkLoading
+        )
         Analytics.Service.record(event: viewEvent)
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()

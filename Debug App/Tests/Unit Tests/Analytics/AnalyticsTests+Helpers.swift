@@ -29,70 +29,58 @@ extension AnalyticsTests {
     func createEvents() -> Promise<[Analytics.Event]> {
         return Promise { seal in
             let events = [
-                Analytics.Event(
-                    eventType: .message,
-                    properties: MessageEventProperties(
-                        message: "An error message",
-                        messageType: .error,
-                        severity: .error)),
-                Analytics.Event(
-                    eventType: .message,
-                    properties: MessageEventProperties(
-                        message: "An debug message",
-                        messageType: .other,
-                        severity: .debug)),
-                Analytics.Event(
-                    eventType: .ui,
-                    properties: UIEventProperties(
-                        action: .click,
-                        context: nil,
-                        extra: "Extra",
-                        objectType: .button,
-                        objectId: .done,
-                        objectClass: "PrimerButton",
-                        place: .cardForm)),
-                Analytics.Event(
-                    eventType: .ui,
-                    properties: UIEventProperties(
-                        action: .dismiss,
-                        context: nil,
-                        extra: "Extra",
-                        objectType: .view,
-                        objectId: nil,
-                        objectClass: "PrimerViewController",
-                        place: .threeDSScreen)),
-                Analytics.Event(
-                    eventType: .crash,
-                    properties: CrashEventProperties(stacktrace: ["Stacktrace item"])),
-                Analytics.Event(
-                    eventType: .networkCall,
-                    properties: NetworkCallEventProperties(
-                        callType: .requestStart,
-                        id: "id-0",
-                        url: "https://url.com",
-                        method: .get,
-                        errorBody: nil,
-                        responseCode: nil)),
-                Analytics.Event(
-                    eventType: .networkCall,
-                    properties: NetworkCallEventProperties(
-                        callType: .requestEnd,
-                        id: "id-0",
-                        url: "https://url.com",
-                        method: .get,
-                        errorBody: "An error body",
-                        responseCode: 500)),
-                Analytics.Event(
-                    eventType: .networkConnectivity,
-                    properties: NetworkConnectivityEventProperties(networkType: .wifi)),
-                Analytics.Event(
-                    eventType: .sdkEvent,
-                    properties: SDKEventProperties(
-                        name: "Class.Function",
-                        params: [
-                            "key1": "val1",
-                            "key2": "val2"
-                        ]))
+                Analytics.Event.message(
+                    message: "An error message",
+                    messageType: .error,
+                    severity: .error
+                ),
+                Analytics.Event.message(
+                    message: "An debug message",
+                    messageType: .other,
+                    severity: .debug
+                ),
+                Analytics.Event.ui(
+                    action: .click,
+                    context: nil,
+                    extra: "Extra",
+                    objectType: .button,
+                    objectId: .done,
+                    objectClass: "PrimerButton",
+                    place: .cardForm
+                ),
+                Analytics.Event.ui(
+                    action: .dismiss,
+                    context: nil,
+                    extra: "Extra",
+                    objectType: .view,
+                    objectId: nil,
+                    objectClass: "PrimerViewController",
+                    place: .threeDSScreen
+                ),
+                Analytics.Event.networkCall(
+                    callType: .requestStart,
+                    id: "id-0",
+                    url: "https://url.com",
+                    method: .get,
+                    errorBody: nil,
+                    responseCode: nil
+                ),
+                Analytics.Event.networkCall(
+                    callType: .requestEnd,
+                    id: "id-0",
+                    url: "https://url.com",
+                    method: .get,
+                    errorBody: "An error body",
+                    responseCode: 500
+                ),
+                Analytics.Event.networkConnectivity(networkType: .wifi),
+                Analytics.Event.sdk(
+                    name: "Class.Function",
+                    params: [
+                        "key1": "val1",
+                        "key2": "val2"
+                    ]
+                )
             ]
             
             seal.fulfill(events)
@@ -134,12 +122,11 @@ extension AnalyticsTests {
         var events: [Analytics.Event] =  []
         
         for i in 0..<numberOfEvents {
-            let e = Analytics.Event(
-                eventType: .message,
-                properties: MessageEventProperties(
-                    message: "\(message ?? "A message") [\(i)]",
-                    messageType: .error,
-                    severity: .error))
+            let e = Analytics.Event.message(
+                message: "\(message ?? "A message") [\(i)]",
+                messageType: .error,
+                severity: .error
+            )
             events.append(e)
         }
         
