@@ -126,12 +126,11 @@ or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager.
 """
                 logger.warn(message: message)
 
-                let event = Analytics.Event(
-                    eventType: .message,
-                    properties: MessageEventProperties(
-                        message: "PrimerKlarnaSDK has not been integrated",
-                        messageType: .error,
-                        severity: .error))
+                let event = Analytics.Event.message(
+                    message: "PrimerKlarnaSDK has not been integrated",
+                    messageType: .error,
+                    severity: .error
+                )
                 Analytics.Service.record(events: [event])
             }
 #endif
@@ -146,12 +145,11 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
 """
                 logger.warn(message: message)
 
-                let event = Analytics.Event(
-                    eventType: .message,
-                    properties: MessageEventProperties(
-                        message: "PrimerIPay88MYSDK has not been integrated",
-                        messageType: .error,
-                        severity: .error))
+                let event = Analytics.Event.message(
+                    message: "PrimerIPay88MYSDK has not been integrated",
+                    messageType: .error,
+                    severity: .error
+                )
                 Analytics.Service.record(events: [event])
             }
 #endif

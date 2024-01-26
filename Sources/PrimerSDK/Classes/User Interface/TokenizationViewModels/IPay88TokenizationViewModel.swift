@@ -521,19 +521,18 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                         self.primerIPay88ViewController.modalPresentationStyle = .fullScreen
                     }
 
-                    let iPay88PresentEvent = Analytics.Event(
-                        eventType: .ui,
-                        properties: UIEventProperties(
-                            action: .present,
-                            context: Analytics.Event.Property.Context(
-                                paymentMethodType: self.config.type,
-                                iPay88PaymentMethodId: self.iPay88PaymentMethodId,
-                                iPay88ActionType: self.iPay88ActionType),
-                            extra: nil,
-                            objectType: .view,
-                            objectId: nil,
-                            objectClass: "\(Self.self)",
-                            place: .iPay88View))
+                    let iPay88PresentEvent = Analytics.Event.ui(
+                        action: .present,
+                        context: Analytics.Event.Property.Context(
+                            paymentMethodType: self.config.type,
+                            iPay88PaymentMethodId: self.iPay88PaymentMethodId,
+                            iPay88ActionType: self.iPay88ActionType),
+                        extra: nil,
+                        objectType: .view,
+                        objectId: nil,
+                        objectClass: "\(Self.self)",
+                        place: .iPay88View
+                    )
                     Analytics.Service.record(event: iPay88PresentEvent)
 
                     self.willPresentPaymentMethodUI?()
@@ -625,19 +624,18 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.fulfill()
             }
             .ensure {
-                let iPay88DismissEvent = Analytics.Event(
-                    eventType: .ui,
-                    properties: UIEventProperties(
-                        action: .dismiss,
-                        context: Analytics.Event.Property.Context(
-                            paymentMethodType: self.config.type,
-                            iPay88PaymentMethodId: self.iPay88PaymentMethodId,
-                            iPay88ActionType: self.iPay88ActionType),
-                        extra: nil,
-                        objectType: .view,
-                        objectId: nil,
-                        objectClass: "\(Self.self)",
-                        place: .iPay88View))
+                let iPay88DismissEvent = Analytics.Event.ui(
+                    action: .dismiss,
+                    context: Analytics.Event.Property.Context(
+                        paymentMethodType: self.config.type,
+                        iPay88PaymentMethodId: self.iPay88PaymentMethodId,
+                        iPay88ActionType: self.iPay88ActionType),
+                    extra: nil,
+                    objectType: .view,
+                    objectId: nil,
+                    objectClass: "\(Self.self)",
+                    place: .iPay88View
+                )
                 Analytics.Service.record(event: iPay88DismissEvent)
 
                 DispatchQueue.main.async { [unowned self] in

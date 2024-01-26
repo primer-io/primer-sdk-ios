@@ -17,14 +17,14 @@ extension PrimerHeadlessUniversalCheckout {
         required public init(paymentMethodType: String) throws {
             PrimerInternal.shared.sdkIntegrationType = .headless
 
-            let sdkEvent = Analytics.Event(
-                eventType: .sdkEvent,
-                properties: SDKEventProperties(name: "\(Self.self).\(#function)",
-                                               params: [
-                                                "category": "NATIVE_UI",
-                                                "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
-                                                "paymentMethodType": paymentMethodType
-                                               ]))
+            let sdkEvent = Analytics.Event.sdk(
+                name: "\(Self.self).\(#function)",
+                params: [
+                    "category": "NATIVE_UI",
+                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                    "paymentMethodType": paymentMethodType
+                ]
+            )
             Analytics.Service.record(events: [sdkEvent])
 
             self.paymentMethodType = paymentMethodType
@@ -111,15 +111,14 @@ extension PrimerHeadlessUniversalCheckout {
         public func showPaymentMethod(intent: PrimerSessionIntent) throws {
             PrimerInternal.shared.sdkIntegrationType = .headless
 
-            let sdkEvent = Analytics.Event(
-                eventType: .sdkEvent,
-                properties: SDKEventProperties(
-                    name: "\(Self.self).\(#function)",
-                    params: [
-                        "category": "NATIVE_UI",
-                        "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
-                        "paymentMethodType": paymentMethodType
-                    ]))
+            let sdkEvent = Analytics.Event.sdk(
+                name: "\(Self.self).\(#function)",
+                params: [
+                    "category": "NATIVE_UI",
+                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
+                    "paymentMethodType": paymentMethodType
+                ]
+            )
 
             Analytics.Service.record(events: [sdkEvent])
 

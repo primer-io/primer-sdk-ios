@@ -183,24 +183,17 @@ final class AnalyticsServiceTests: XCTestCase {
     }
     
     func messageEvent(withMessage message: String) -> Analytics.Event {
-        Analytics.Event(
-            eventType: .message,
-            properties: MessageEventProperties(
-                message: message,
-                messageType: .other,
-                severity: .info
-            )
+        Analytics.Event.message(
+            message: message,
+            messageType: .other,
+            severity: .info
         )
     }
     
     func sdkEvent(name: String, params: [String: String]? = nil) -> Analytics.Event {
-        Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: name,
-                params: params
-            ),
-            analyticsUrl: "https://analytics_url"
+        Analytics.Event.sdk(
+            name: name,
+            params: params
         )
     }
 }

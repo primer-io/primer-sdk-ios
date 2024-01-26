@@ -7,6 +7,177 @@
 
 import Foundation
 
+extension Analytics {
+    struct Event: Codable, Equatable {
+
+        static func == (lhs: Analytics.Event, rhs: Analytics.Event) -> Bool {
+            return lhs.localId == rhs.localId
+        }
+
+        let analyticsUrl: String?
+        let localId: String
+        let appIdentifier: String?
+        let checkoutSessionId: String?
+        let clientSessionId: String?
+        var createdAt: Int  // 👈 `createdAt` will be modified and get the error's timestamp for error events.
+        let customerId: String?
+        let device: Device
+        let eventType: Analytics.Event.EventType
+        let primerAccountId: String?
+        var properties: AnalyticsEventProperties?  // 👈 `properties` can be modified.
+        let sdkSessionId: String
+        let sdkType: String
+        let sdkVersion: String?
+        let sdkIntegrationType: PrimerSDKIntegrationType?
+        let sdkPaymentHandling: PrimerPaymentHandling?
+        let integrationType: String
+        let minDeploymentTarget: String
+
+        fileprivate init(eventType: Analytics.Event.EventType,
+                         properties: AnalyticsEventProperties?,
+                         analyticsUrl: String? = PrimerAPIConfigurationModule.decodedJWTToken?.analyticsUrlV2) {
+            self.analyticsUrl = analyticsUrl
+            self.localId = String.randomString(length: 32)
+
+            self.appIdentifier = Bundle.main.bundleIdentifier
+            self.checkoutSessionId = PrimerInternal.shared.checkoutSessionId
+            self.clientSessionId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId
+            self.createdAt = Date().millisecondsSince1970
+            self.customerId = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer?.id
+            self.device = Device()
+            self.eventType = eventType
+            self.primerAccountId = PrimerAPIConfigurationModule.apiConfiguration?.primerAccountId
+            self.properties = properties
+            self.sdkSessionId = PrimerInternal.shared.sdkSessionId
+            self.sdkType = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
+            self.sdkVersion = VersionUtils.releaseVersionNumber
+            self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
+            self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
+            self.minDeploymentTarget = Bundle.main.minimumOSVersion ?? "Unknown"
+
+#if COCOAPODS
+            self.integrationType = "COCOAPODS"
+#else
+            self.integrationType = "SPM"
+#endif
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case analyticsUrl,
+                 localId,
+                 appIdentifier,
+                 checkoutSessionId,
+                 clientSessionId,
+                 createdAt,
+                 customerId,
+                 device,
+                 eventType,
+                 primerAccountId,
+                 properties,
+                 sdkSessionId,
+                 sdkType,
+                 sdkVersion,
+                 sdkIntegrationType,
+                 sdkPaymentHandling,
+                 integrationType,
+                 minDeploymentTarget
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try? container.encode(analyticsUrl, forKey: .analyticsUrl)
+            try? container.encode(appIdentifier, forKey: .appIdentifier)
+            try? container.encode(checkoutSessionId, forKey: .checkoutSessionId)
+            try? container.encode(clientSessionId, forKey: .clientSessionId)
+            try? container.encode(createdAt, forKey: .createdAt)
+            try? container.encode(customerId, forKey: .customerId)
+            try? container.encode(device, forKey: .device)
+            try? container.encode(eventType, forKey: .eventType)
+            try? container.encode(localId, forKey: .localId)
+            try? container.encode(primerAccountId, forKey: .primerAccountId)
+            try? container.encode(sdkSessionId, forKey: .sdkSessionId)
+            try? container.encode(sdkType, forKey: .sdkType)
+            try? container.encode(sdkVersion, forKey: .sdkVersion)
+            try? container.encode(sdkIntegrationType?.rawValue, forKey: .sdkIntegrationType)
+            try? container.encode(integrationType, forKey: .integrationType)
+            try? container.encode(minDeploymentTarget, forKey: .minDeploymentTarget)
+
+            if sdkPaymentHandling == .auto {
+                try? container.encode("AUTO", forKey: .sdkPaymentHandling)
+            } else if sdkPaymentHandling == .manual {
+                try? container.encode("MANUAL", forKey: .sdkPaymentHandling)
+            }
+
+            if let messageEventProperties = properties as? MessageEventProperties {
+                try? container.encode(messageEventProperties, forKey: .properties)
+            } else if let networkCallEventProperties = properties as? NetworkCallEventProperties {
+                try? container.encode(networkCallEventProperties, forKey: .properties)
+            } else if let networkConnectivityEventProperties = properties as? NetworkConnectivityEventProperties {
+                try? container.encode(networkConnectivityEventProperties, forKey: .properties)
+            } else if let sdkEventProperties = properties as? SDKEventProperties {
+                try? container.encode(sdkEventProperties, forKey: .properties)
+            } else if let timerEventProperties = properties as? TimerEventProperties {
+                try? container.encode(timerEventProperties, forKey: .properties)
+            } else if let uiEventProperties = properties as? UIEventProperties {
+                try? container.encode(uiEventProperties, forKey: .properties)
+            }
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.analyticsUrl = try container.decodeIfPresent(String.self, forKey: .analyticsUrl)
+            self.appIdentifier = try container.decodeIfPresent(String.self, forKey: .appIdentifier)
+            self.checkoutSessionId = try container.decodeIfPresent(String.self, forKey: .checkoutSessionId)
+            self.clientSessionId = try container.decodeIfPresent(String.self, forKey: .clientSessionId)
+            self.createdAt = try container.decode(Int.self, forKey: .createdAt)
+            self.customerId = try container.decodeIfPresent(String.self, forKey: .customerId)
+            self.device = try container.decode(Device.self, forKey: .device)
+            self.eventType = try container.decode(Analytics.Event.EventType.self, forKey: .eventType)
+            self.localId = try container.decode(String.self, forKey: .localId)
+            self.primerAccountId = try container.decodeIfPresent(String.self, forKey: .primerAccountId)
+            self.sdkSessionId = try container.decode(String.self, forKey: .sdkSessionId)
+            self.sdkType = try container.decode(String.self, forKey: .sdkType)
+            self.sdkVersion = try container.decode(String.self, forKey: .sdkVersion)
+            self.integrationType = try container.decode(String.self, forKey: .integrationType)
+            self.minDeploymentTarget = try container.decode(String.self, forKey: .minDeploymentTarget)
+
+            if let sdkIntegrationTypeStr = try? container.decode(String.self, forKey: .sdkIntegrationType) {
+                self.sdkIntegrationType = PrimerSDKIntegrationType(rawValue: sdkIntegrationTypeStr)
+            } else {
+                self.sdkIntegrationType = nil
+            }
+
+            if let sdkPaymentHandlingStr = try? container.decode(String.self, forKey: .sdkPaymentHandling) {
+                if sdkPaymentHandlingStr == "AUTO" {
+                    self.sdkPaymentHandling = .auto
+                } else if sdkPaymentHandlingStr == "MANUAL" {
+                    self.sdkPaymentHandling = .manual
+                } else {
+                    self.sdkPaymentHandling = nil
+                }
+            } else {
+                self.sdkPaymentHandling = nil
+            }
+
+            if let messageEventProperties = (try? container.decode(MessageEventProperties?.self, forKey: .properties)) {
+                self.properties = messageEventProperties
+            } else if let networkCallEventProperties = (try? container.decode(NetworkCallEventProperties?.self, forKey: .properties)) {
+                self.properties = networkCallEventProperties
+            } else if let networkConnectivityEventProperties = (try? container.decode(NetworkConnectivityEventProperties?.self, forKey: .properties)) {
+                self.properties = networkConnectivityEventProperties
+            } else if let sdkEventProperties = (try? container.decode(SDKEventProperties?.self, forKey: .properties)) {
+                self.properties = sdkEventProperties
+            } else if let timerEventProperties = (try? container.decode(TimerEventProperties?.self, forKey: .properties)) {
+                self.properties = timerEventProperties
+            } else if let uiEventProperties = (try? container.decode(UIEventProperties?.self, forKey: .properties)) {
+                self.properties = uiEventProperties
+            } else {
+                self.properties = nil
+            }
+        }
+    }
+}
+
 extension Analytics.Event {
 
     enum EventType: String, Codable {
@@ -151,44 +322,6 @@ extension Analytics.Event {
 
 protocol AnalyticsEventProperties: Codable {}
 
-struct CrashEventProperties: AnalyticsEventProperties {
-
-    var stacktrace: [String]
-    var params: [String: AnyCodable]?
-
-    private enum CodingKeys: String, CodingKey {
-        case stacktrace
-        case params
-    }
-
-    init(stacktrace: [String]) {
-        self.stacktrace = stacktrace
-
-        let sdkProperties = SDKProperties()
-        if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
-           let data = try? JSONSerialization.data(withJSONObject: sdkPropertiesDict, options: .fragmentsAllowed) {
-            let decoder = JSONDecoder()
-            if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: data) {
-                self.params = anyDecodableDictionary
-            }
-        } else {
-            self.params = nil
-        }
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        stacktrace = try container.decode([String].self, forKey: .stacktrace)
-        params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(self.stacktrace, forKey: .stacktrace)
-        try container.encodeIfPresent(self.params, forKey: .params)
-    }
-}
-
 struct MessageEventProperties: AnalyticsEventProperties {
 
     var message: String?
@@ -205,7 +338,7 @@ struct MessageEventProperties: AnalyticsEventProperties {
         case context
     }
 
-    init(
+    fileprivate init(
         message: String?,
         messageType: Analytics.Event.Property.MessageType,
         severity: Analytics.Event.Property.Severity,
@@ -258,7 +391,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         case params
     }
 
-    init(
+    fileprivate init(
         callType: Analytics.Event.Property.NetworkCallType,
         id: String,
         url: String,
@@ -318,7 +451,7 @@ struct NetworkConnectivityEventProperties: AnalyticsEventProperties {
         case params
     }
 
-    init(networkType: Connectivity.NetworkType) {
+    fileprivate init(networkType: Connectivity.NetworkType) {
         self.networkType = networkType
 
         let sdkProperties = SDKProperties()
@@ -356,7 +489,7 @@ struct SDKEventProperties: AnalyticsEventProperties {
         case params
     }
 
-    init(name: String, params: [String: String]?) {
+    fileprivate init(name: String, params: [String: String]?) {
         self.name = name
 
         var parameters: [String: Any] = params ?? [:]
@@ -402,7 +535,7 @@ struct TimerEventProperties: AnalyticsEventProperties {
         case params
     }
 
-    init(
+    fileprivate init(
         momentType: Analytics.Event.Property.TimerType,
         id: String?
     ) {
@@ -458,7 +591,7 @@ struct UIEventProperties: AnalyticsEventProperties {
         case params
     }
 
-    init(
+    fileprivate init(
         action: Analytics.Event.Property.Action,
         context: Analytics.Event.Property.Context?,
         extra: String?,
@@ -533,7 +666,7 @@ struct SDKProperties: Codable {
         case sdkVersion
     }
 
-    init() {
+    fileprivate init() {
         self.clientToken = AppState.current.clientToken
         self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
 #if COCOAPODS
@@ -586,5 +719,115 @@ struct SDKProperties: Codable {
         try container.encodeIfPresent(sdkSettings, forKey: .sdkSettings)
         try container.encodeIfPresent(sdkType, forKey: .sdkType)
         try container.encodeIfPresent(sdkVersion, forKey: .sdkVersion)
+    }
+}
+
+
+extension Analytics.Event {
+    
+    static func sdk(name: String, params: [String: String]?) -> Self {
+        return .init(
+            eventType: .sdkEvent,
+            properties: SDKEventProperties(
+                name: name,
+                params: params
+            )
+        )
+    }
+    
+    static func message(message: String?,
+                        messageType: Property.MessageType,
+                        severity: Property.Severity,
+                        diagnosticsId: String? = nil,
+                        context: [String : Any]? = nil) -> Self {
+        return .init(
+            eventType: .message,
+            properties: MessageEventProperties(
+                message: message,
+                messageType: messageType,
+                severity: severity,
+                diagnosticsId: diagnosticsId,
+                context: context
+            )
+        )
+    }
+    
+    static func ui(action: Property.Action,
+                   context: Property.Context?,
+                   extra: String?,
+                   objectType: Property.ObjectType,
+                   objectId: Property.ObjectId?,
+                   objectClass: String?,
+                   place: Property.Place) -> Self {
+        return .init(
+            eventType: .ui,
+            properties: UIEventProperties(
+                action: action,
+                context: context,
+                extra: extra,
+                objectType: objectType,
+                objectId: objectId,
+                objectClass: objectClass,
+                place: place)
+        )
+    }
+    
+    static func networkCall(callType: Property.NetworkCallType,
+                            id: String,
+                            url: String,
+                            method: HTTPMethod,
+                            errorBody: String?,
+                            responseCode: Int?) -> Self {
+        return .init(
+            eventType: .networkCall,
+            properties: NetworkCallEventProperties(
+                callType: callType,
+                id: id,
+                url: url,
+                method: method,
+                errorBody: errorBody,
+                responseCode: responseCode
+            )
+        )
+    }
+    
+    static func networkConnectivity(networkType: Connectivity.NetworkType) -> Self {
+        return .init(
+            eventType: .networkConnectivity,
+            properties: NetworkConnectivityEventProperties(networkType: networkType)
+        )
+    }
+    
+    static func timer(momentType: Property.TimerType,
+                      id: String?) -> Self {
+        return .init(
+            eventType: .timerEvent,
+            properties: TimerEventProperties(
+                momentType: momentType,
+                id: id
+            )
+        )
+    }
+    
+    static func allImagesLoading(momentType: Property.TimerType,
+                                 id: String?) -> Self {
+        return .init(
+            eventType: .paymentMethodAllImagesLoading,
+            properties: TimerEventProperties(
+                momentType: momentType,
+                id: id
+            )
+        )
+    }
+    
+    static func imageLoading(momentType: Property.TimerType,
+                             id: String?) -> Self {
+        return .init(
+            eventType: .paymentMethodImageLoading,
+            properties: TimerEventProperties(
+                momentType: momentType,
+                id: id
+            )
+        )
     }
 }

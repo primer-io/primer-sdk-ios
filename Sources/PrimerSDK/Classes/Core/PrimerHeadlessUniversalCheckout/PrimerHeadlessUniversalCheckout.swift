@@ -68,24 +68,17 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
 
         var events: [Analytics.Event] = []
 
-        let sdkEvent = Analytics.Event(
-            eventType: .sdkEvent,
-            properties: SDKEventProperties(
-                name: "\(Self.self).\(#function)",
-                params: [
-                    "intent": PrimerInternal.shared.intent?.rawValue ?? "null"
-                ]))
+        let sdkEvent = Analytics.Event.sdk(
+            name: "\(Self.self).\(#function)",
+            params: [ "intent": PrimerInternal.shared.intent?.rawValue ?? "null" ]
+        )
 
-        let connectivityEvent = Analytics.Event(
-            eventType: .networkConnectivity,
-            properties: NetworkConnectivityEventProperties(
-                networkType: Connectivity.networkType))
+        let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
-        let timingStartEvent = Analytics.Event(
-            eventType: .timerEvent,
-            properties: TimerEventProperties(
-                momentType: .start,
-                id: PrimerInternal.shared.timingEventId!))
+        let timingStartEvent = Analytics.Event.timer(
+            momentType: .start,
+            id: PrimerInternal.shared.timingEventId ?? "Unknown"
+        )
 
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
