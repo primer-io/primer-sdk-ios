@@ -45,8 +45,7 @@ public class PrimerCardNetwork: NSObject {
     
     convenience init(network: CardNetwork) {
         self.init(
-            displayName: network.validation?.niceType ??
-                network.rawValue.lowercased().capitalized.replacingOccurrences(of: "_", with: " "),
+            displayName: network.displayName,
             network: network
         )
     }

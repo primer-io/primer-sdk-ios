@@ -140,6 +140,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             DispatchQueue.global(qos: .userInteractive).async {
                 var errors: [PrimerValidationError] = []
 
+                // Invalid raw data error
                 guard let rawData = data as? PrimerCardData else {
                     let err = PrimerValidationError.invalidRawData(
                         userInfo: .errorUserInfoDictionary(),
@@ -160,14 +161,42 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     }
                     return
                 }
+                
+                // Locally validated card network
+                var cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
+                
+                // Remotely validated card network
+                if let cardNetworksMetadata = cardNetworksMetadata {
+                    let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
+                        cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
+                    
+                    if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
+                    let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
+                        cardNetwork = network
+                    } else {
+                        return
+                    }
+                    
+                    // Unsupported card type error
+                    if !self.allowedCardNetworks.contains(cardNetwork) {
+                        let err = PrimerValidationError.invalidCardType(
+                            message: "Unsupported card type detected: \(cardNetwork.displayName)",
+                            userInfo: .errorUserInfoDictionary(),
+                            diagnosticsId: UUID().uuidString
+                        )
+                        errors.append(err)
+                    }
+                } else {
+                    self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
+                }
 
+                // Invalid card number error
                 if rawData.cardNumber.isEmpty {
                     let err = PrimerValidationError.invalidCardnumber(
                         message: "Card number can not be blank.",
                         userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
-
                 } else if !rawData.cardNumber.isValidCardNumber {
                     let err = PrimerValidationError.invalidCardnumber(
                         message: "Card number is not valid.",
@@ -176,6 +205,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     errors.append(err)
                 }
 
+                // Invalid expiry error
                 do {
                     try rawData.expiryDate.validateExpiryDateString()
                 } catch {
@@ -184,31 +214,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     }
                 }
                 
-                // Local Validation
-                var cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
-                
-                // Remote validation
-                if let cardNetworksMetadata = cardNetworksMetadata {
-                    let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
-                        cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
-                    
-                    if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
-                    let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
-                        cardNetwork = network
-                    }
-                } else {
-                    self.cardValidationService?.validateCardNetworks(withCardNumber: rawData.cardNumber)
-                }
-                
-                if !self.allowedCardNetworks.contains(cardNetwork) {
-                    let err = PrimerValidationError.invalidCardType(
-                        message: "\(cardNetwork.validation?.niceType ?? "Your card network") is not supported for this transaction",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString
-                    )
-                    errors.append(err)
-                }
-                
+                // Invalid cvv error
                 if rawData.cvv.isEmpty {
                     let err = PrimerValidationError.invalidCvv(
                         message: "CVV cannot be blank.",
@@ -224,6 +230,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     errors.append(err)
                 }
 
+                // Cardholder name error
                 if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                     if (rawData.cardholderName ?? "").isEmpty {
                         errors.append(PrimerValidationError.invalidCardholderName(

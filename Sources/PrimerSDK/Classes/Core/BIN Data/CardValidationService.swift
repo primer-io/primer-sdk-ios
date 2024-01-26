@@ -82,11 +82,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         let rawDataManager = rawDataManager
         
         if let cachedMetadata = metadataCache[cardState.cardNumber] {
-            DispatchQueue.main.async { [weak self] in
-                self?.delegate?.primerRawDataManager?(rawDataManager,
-                                                      didReceiveMetadata: cachedMetadata,
-                                                      forState: cardState)
-            }
+            handle(cardMetadata: cachedMetadata, forCardState: cardState)
             return
         }
         
@@ -131,6 +127,11 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         delegate?.primerRawDataManager?(rawDataManager,
                                         didReceiveMetadata: metadata,
                                         forState: cardState)
+        if isFallback {
+            DispatchQueue.main.async {
+                self.rawDataManager.validateRawData(withCardNetworksMetadata: metadata)
+            }
+        }
     }
     
     func handle(cardMetadata: PrimerCardNumberEntryMetadata, forCardState cardState: PrimerCardNumberEntryState) {

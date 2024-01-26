@@ -67,6 +67,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
         if let data = endpoint.body {
             request.httpBody = data
         }
+        
+        if let timeout = endpoint.timeout {
+            request.timeoutInterval = timeout
+        }
 
 #if DEBUG
         if let queryParams = endpoint.queryParameters {

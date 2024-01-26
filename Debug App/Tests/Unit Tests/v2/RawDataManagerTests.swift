@@ -115,12 +115,11 @@ class RawDataManagerTests: XCTestCase {
         }
         .done { (isValid, errors) in
             XCTAssertFalse(isValid, "Data should be invalid")
-            XCTAssertEqual(errors?.count, 5, "Should have thrown 5 errors")
+            XCTAssertEqual(errors?.count, 4, "Should have thrown 4 errors")
             XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-card-number")
             XCTAssertEqual((errors?[1] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
-            XCTAssertEqual((errors?[2] as? PrimerValidationError)?.errorId, "unsupported-card-type")
-            XCTAssertEqual((errors?[3] as? PrimerValidationError)?.errorId, "invalid-cvv")
-            XCTAssertEqual((errors?[4] as? PrimerValidationError)?.errorId, "invalid-cardholder-name")
+            XCTAssertEqual((errors?[2] as? PrimerValidationError)?.errorId, "invalid-cvv")
+            XCTAssertEqual((errors?[3] as? PrimerValidationError)?.errorId, "invalid-cardholder-name")
             validation.fulfill()
         }
         .catch { _ in
@@ -221,9 +220,8 @@ class RawDataManagerTests: XCTestCase {
         }
         .done { (isValid, errors) in
             XCTAssertFalse(false, "Data should be invalid")
-            XCTAssertEqual(errors?.count, 2, "Should have thrown 2 error")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
             XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-card-number")
-            XCTAssertEqual((errors?[1] as? PrimerValidationError)?.errorId, "unsupported-card-type")
             validation.fulfill()
         }
         .catch { _ in
@@ -638,82 +636,6 @@ class RawDataManagerTests: XCTestCase {
         let cardData = PrimerCardData(cardNumber: "4242424242424242",
                                       expiryDate: "03/2030",
                                       cvv: "1",
-                                      cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-    }
-    
-    func test_validation_callback_invalidCardNetwork() throws {
-        let validation = self.expectation(description: "Await validation")
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssertFalse(isValid, "Data should be invalid")
-            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
-            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "unsupported-card-type")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTFail()
-        }
-        
-        // Invalid CVV
-        let cardData = PrimerCardData(cardNumber: "9120000000000006",
-                                      expiryDate: "03/2030",
-                                      cvv: "123",
-                                      cardholderName: "Test",
-                                      cardNetwork: .diners)
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-    }
-    
-    func test_validation_callback_invalidCardNetwork2() throws {
-        let validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssertFalse(isValid, "Data should be invalid")
-            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
-            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "unsupported-card-type")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTFail()
-        }
-        
-        // Invalid CVV
-        let cardData = PrimerCardData(cardNumber: "9120000000000006",
-                                      expiryDate: "03/2030",
-                                      cvv: "123",
-                                      cardholderName: "Test",
-                                      cardNetwork: .maestro)
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-    }
-    
-    func test_validation_callback_invalidCardNetwork3() throws {
-        let validation = self.expectation(description: "Await validation")
-        
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssertFalse(false, "Data should be invalid")
-            XCTAssertEqual(errors?.count, 1, "Should have thrown 2 error")
-            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "unsupported-card-type")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTFail()
-        }
-        
-        // Invalid cardnumber
-        let cardData = PrimerCardData(cardNumber: "1800111122223337",
-                                      expiryDate: "03/2030",
-                                      cvv: "123",
                                       cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)

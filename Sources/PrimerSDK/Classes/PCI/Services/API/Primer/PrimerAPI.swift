@@ -452,6 +452,17 @@ internal extension PrimerAPI {
         }
     }
     
+    // MARK: Timeout
+    
+    var timeout: TimeInterval? {
+        switch self {
+        case .listCardNetworks(_, _):
+            return 10
+        default: 
+            return nil
+        }
+    }
+    
     // MARK: Helpers
     
     var configuration: PrimerAPIConfiguration? {
