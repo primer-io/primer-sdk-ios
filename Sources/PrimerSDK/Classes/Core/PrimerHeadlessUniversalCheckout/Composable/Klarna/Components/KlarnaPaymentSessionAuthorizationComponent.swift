@@ -10,11 +10,11 @@ import Foundation
 import PrimerKlarnaSDK
 
 public enum KlarnaPaymentSessionAuthorization: PrimerHeadlessStep {
-    case paymentSessionAuthorized(tokenData: PrimerPaymentMethodTokenData)
+    case paymentSessionAuthorized(authToken: String)
     case paymentSessionAuthorizationFailed
     case paymentSessionFinalizationRequired
     
-    case paymentSessionReauthorized(tokenData: PrimerPaymentMethodTokenData)
+    case paymentSessionReauthorized(authToken: String)
     case paymentSessionReauthorizationFailed
 }
 
@@ -81,10 +81,10 @@ private extension KlarnaPaymentSessionAuthorizationComponent {
             case .success(let success):
                 self?.tokenizationComponent?.tokenize(customerToken: success) { (result) in
                     switch result {
-                    case .success(let success):
-                        var step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorized(tokenData: success)
+                    case .success( _):
+                        var step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorized(authToken: token)
                         if reauthorization {
-                            step = KlarnaPaymentSessionAuthorization.paymentSessionReauthorized(tokenData: success)
+                            step = KlarnaPaymentSessionAuthorization.paymentSessionReauthorized(authToken: token)
                         }
                         self?.stepDelegate?.didReceiveStep(step: step)
                         

@@ -32,9 +32,7 @@ extension PrimerHeadlessUniversalCheckout {
         
         // MARK: - Init
         public override init() {
-            self.tokenizationComponent = PrimerAPIConfiguration.paymentMethodConfigTokenizationManagers.first(where: {
-                $0 is KlarnaTokenizationComponentProtocol
-            }) as? KlarnaTokenizationComponentProtocol
+            self.tokenizationComponent = PrimerAPIConfiguration.paymentMethodConfigTokenizationComponent.first
             
             self.sessionCreationComponent = KlarnaPaymentSessionCreationComponent(
                 tokenizationManager: self.tokenizationComponent
@@ -50,11 +48,24 @@ extension PrimerHeadlessUniversalCheckout {
             self.viewHandlingComponent = KlarnaPaymentViewHandlingComponent()
             
             super.init()
+            self.handleValidate()
         }
         
         // MARK: - Public
         public func provideKlarnaPaymentSessionCreationComponent() -> KlarnaPaymentSessionCreationComponent {
             return self.sessionCreationComponent
+        }
+        
+        public func provideKlarnaPaymentSessionAuthorizationComponent() -> KlarnaPaymentSessionAuthorizationComponent {
+            self.sessionAuthorizationComponent.setProvider(provider: self.klarnaProvider)
+            
+            return self.sessionAuthorizationComponent
+        }
+        
+        public func provideKlarnaPaymentSessionFinalizationComponent() -> KlarnaPaymentSessionFinalizationComponent {
+            self.sessionFinalizationComponent.setProvider(provider: self.klarnaProvider)
+            
+            return self.sessionFinalizationComponent
         }
         
         public func provideKlarnaPaymentViewHandlingComponent(
@@ -72,18 +83,6 @@ extension PrimerHeadlessUniversalCheckout {
             return self.viewHandlingComponent
         }
         
-        public func provideKlarnaPaymentSessionAuthorizationComponent() -> KlarnaPaymentSessionAuthorizationComponent {
-            self.sessionAuthorizationComponent.setProvider(provider: self.klarnaProvider)
-            
-            return self.sessionAuthorizationComponent
-        }
-        
-        public func provideKlarnaPaymentSessionFinalizationComponent() -> KlarnaPaymentSessionFinalizationComponent {
-            self.sessionFinalizationComponent.setProvider(provider: self.klarnaProvider)
-            
-            return self.sessionFinalizationComponent
-        }
-        
         // MARK: - PrimerKlarnaProviderErrorDelegate
         public func primerKlarnaWrapperFailed(with error: PrimerKlarnaSDK.PrimerKlarnaError) {
             let primerError = PrimerError.klarnaWrapperError(
@@ -92,6 +91,17 @@ extension PrimerHeadlessUniversalCheckout {
                 diagnosticsId: error.diagnosticsId
             )
             errorDelegate?.didReceiveError(error: primerError)
+        }
+        
+        // MARK: - Handle errors from validate method
+        private func handleValidate() {
+            do {
+                try tokenizationComponent?.validate()
+            } catch {
+                if let err = error as? PrimerError {
+                    PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
+                }
+            }
         }
     }
     

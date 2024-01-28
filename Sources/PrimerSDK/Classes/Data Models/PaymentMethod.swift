@@ -151,7 +151,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
         }
     }()
     
-    lazy var tokenizationComponent: KlarnaTokenizationManagerProtocol? = {
+    lazy var tokenizationComponent: KlarnaTokenizationComponentProtocol? = {
         switch internalPaymentMethodType {
         case .klarna:
             return KlarnaTokenizationComponent(paymentMethod: self)

@@ -10,7 +10,7 @@ import Foundation
 import PrimerKlarnaSDK
 
 public enum KlarnaPaymentSessionFinalization: PrimerHeadlessStep {
-    case paymentSessionFinalized(tokenData: PrimerPaymentMethodTokenData)
+    case paymentSessionFinalized(authToken: String)
     case paymentSessionFinalizationFailed
 }
 
@@ -61,7 +61,7 @@ private extension KlarnaPaymentSessionFinalizationComponent {
                 self?.tokenizationComponent?.tokenize(customerToken: success) { (result) in
                     switch result {
                     case .success(let success):
-                        let step = KlarnaPaymentSessionFinalization.paymentSessionFinalized(tokenData: success)
+                        let step = KlarnaPaymentSessionFinalization.paymentSessionFinalized(authToken: token)
                         self?.stepDelegate?.didReceiveStep(step: step)
                         
                     case .failure:

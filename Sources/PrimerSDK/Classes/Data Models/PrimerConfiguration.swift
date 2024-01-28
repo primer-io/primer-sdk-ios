@@ -93,7 +93,7 @@ extension Response.Body {
             return pmSurcharge != nil || cardSurcharge != nil
         }
         
-        static var paymentMethodConfigTokenizationManagers: [KlarnaTokenizationManagerProtocol] {
+        static var paymentMethodConfigTokenizationComponent: [KlarnaTokenizationComponentProtocol] {
             return PrimerAPIConfiguration.paymentMethodConfigs?
                 .filter({ $0.isEnabled })
                 .filter({ $0.baseLogoImage != nil })

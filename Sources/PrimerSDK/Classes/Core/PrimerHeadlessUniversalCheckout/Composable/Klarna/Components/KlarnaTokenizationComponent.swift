@@ -8,6 +8,7 @@
 import Foundation
 
 protocol KlarnaTokenizationComponentProtocol: KlarnaTokenizationManagerProtocol {
+    func validate() throws
     func createPaymentSession(
         attachment: Request.Body.Klarna.CreatePaymentSession.Attachment?,
         completion: @escaping (Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void
@@ -39,7 +40,7 @@ class KlarnaTokenizationComponent: KlarnaTokenizationManager, KlarnaTokenization
 }
 
 // MARK: - Validate
-private extension KlarnaTokenizationComponent {
+extension KlarnaTokenizationComponent {
     func validate() throws {
         guard
             let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
