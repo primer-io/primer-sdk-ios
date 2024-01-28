@@ -28,6 +28,9 @@ class KlarnaTokenizationComponent: KlarnaTokenizationManager, KlarnaTokenization
     
     private var paymentSessionId: String?
     
+    // MARK: - Settings
+    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+    
     // MARK: - Init
     init(paymentMethod: PrimerPaymentMethod) {
         self.paymentMethod = paymentMethod
@@ -103,8 +106,6 @@ extension KlarnaTokenizationComponent {
             completion(.failure(error))
             return
         }
-        
-        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         let body = Request.Body.Klarna.CreatePaymentSession(
             paymentMethodConfigId: configurationId,

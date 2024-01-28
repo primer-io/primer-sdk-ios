@@ -24,15 +24,15 @@ public class KlarnaPaymentSessionFinalizationComponent: PrimerHeadlessAnalyticsR
     // MARK: - Delegates
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     
+    // MARK: - Init
+    init(tokenizationManager: KlarnaTokenizationComponentProtocol?) {
+        self.tokenizationComponent = tokenizationManager
+    }
+    
     // MARK: - Set
     func setProvider(provider: PrimerKlarnaProviding?) {
         self.klarnaProvider = provider
         self.klarnaProvider?.finalizationDelegate = self
-    }
-    
-    // MARK: - Init
-    init(tokenizationManager: KlarnaTokenizationComponentProtocol?) {
-        self.tokenizationComponent = tokenizationManager
     }
 }
 

@@ -18,17 +18,17 @@ extension PrimerHeadlessUniversalCheckout {
         // MARK: - Tokenization
         private var tokenizationComponent: KlarnaTokenizationComponentProtocol?
         
-        // MARK: - Delegate
-        public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
-        
         // MARK: - Settings
         private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
+        // MARK: - Delegate
+        public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
+        
         // MARK: - Components
         let sessionCreationComponent: KlarnaPaymentSessionCreationComponent
-        let viewHandlingComponent: KlarnaPaymentViewHandlingComponent
         let sessionAuthorizationComponent: KlarnaPaymentSessionAuthorizationComponent
         let sessionFinalizationComponent: KlarnaPaymentSessionFinalizationComponent
+        let viewHandlingComponent: KlarnaPaymentViewHandlingComponent
         
         // MARK: - Init
         public override init() {

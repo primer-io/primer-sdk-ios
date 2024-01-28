@@ -28,11 +28,7 @@ public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessCollectDataCom
     // MARK: - Tokenization
     private var tokenizationComponent: KlarnaTokenizationComponentProtocol?
     
-    // MARK: - Settings
-    private(set) var settings: PrimerSettingsProtocol?
-    
     // MARK: - Properties
-    private(set) var sessionType: KlarnaSessionType?
     private(set) var customerAccountInfo: KlarnaCustomerAccountInfo?
     
     // MARK: - Delegates
