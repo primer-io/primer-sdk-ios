@@ -552,7 +552,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func listCardNetworks(clientToken: PrimerSDK.DecodedJWTToken, bin: String, completion: @escaping (Result<PrimerSDK.Response.Body.Bin.Networks, Error>) -> Void) -> Cancellable? {
+    func listCardNetworks(clientToken: DecodedJWTToken, bin: String, completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable? {
         guard let result = listCardNetworksResult, (result.0 != nil || result.1 != nil) else {
             XCTFail("Set 'listCardNetworksResult' on your MockPrimerAPIClient")
             return nil
@@ -633,11 +633,14 @@ extension MockPrimerAPIClient {
         static let mockPrimerAPIConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            binDataUrl: "https://primer.io/bindata",
             clientSession: ClientSession.APIResponse(
                 clientSessionId: "mock-client-session-id-1",
                 paymentMethod: ClientSession.PaymentMethod(
                     vaultOnSuccess: false,
-                    options: nil),
+                    options: nil,
+                    orderedAllowedCardNetworks: nil
+                ),
                 order: ClientSession.Order(
                     id: "mock-client-session-order-id-1",
                     merchantAmount: nil,

@@ -46,7 +46,6 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
                     "line": "\(#line)"
                 ],
                 diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
             validation = .invalid(err)
         }
 

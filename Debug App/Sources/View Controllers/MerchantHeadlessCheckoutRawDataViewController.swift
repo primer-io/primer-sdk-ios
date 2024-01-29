@@ -23,13 +23,10 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     var paymentMethodType: String!
     var paymentId: String?
     var activityIndicator: UIActivityIndicatorView?
-    var rawCardData = PrimerCardData(
-        cardNumber: "",
-        expiryDate: "",
-        cvv: "",
-        cardholderName: "",
-        cardNetworkIdentifier: nil
-    )
+    var rawCardData = PrimerCardData(cardNumber: "", 
+                                     expiryDate: "",
+                                     cvv: "",
+                                     cardholderName: "")
     
     var cardnumberTextField: UITextField?
     var expiryDateTextField: UITextField?
@@ -226,16 +223,15 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: self.cvvTextField?.text ?? "",
                 cardholderName: self.cardholderNameTextField?.text ?? "",
-                cardNetworkIdentifier: self.rawCardData.cardNetworkIdentifier)
-            cardsLabel.text = (self.cardnumberTextField?.text ?? "").isEmpty ? "" : "⌨️"
-
+                cardNetwork: self.rawCardData.cardNetwork)
+            
         } else if textField == self.expiryDateTextField {
             self.rawCardData = PrimerCardData(
                 cardNumber: self.cardnumberTextField?.text ?? "",
                 expiryDate: newText,
                 cvv: self.cvvTextField?.text ?? "",
                 cardholderName: self.cardholderNameTextField?.text ?? "",
-                cardNetworkIdentifier: self.rawCardData.cardNetworkIdentifier)
+                cardNetwork: self.rawCardData.cardNetwork)
             
         } else if textField == self.cvvTextField {
             self.rawCardData = PrimerCardData(
@@ -243,7 +239,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: newText,
                 cardholderName: self.cardholderNameTextField?.text ?? "",
-                cardNetworkIdentifier: self.rawCardData.cardNetworkIdentifier)
+                cardNetwork: self.rawCardData.cardNetwork)
             
         } else if textField == self.cardholderNameTextField {
             self.rawCardData = PrimerCardData(
@@ -251,7 +247,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 expiryDate: self.expiryDateTextField?.text ?? "",
                 cvv: self.cvvTextField?.text ?? "",
                 cardholderName: newText.count == 0 ? nil : newText,
-                cardNetworkIdentifier: self.rawCardData.cardNetworkIdentifier)
+                cardNetwork: self.rawCardData.cardNetwork)
         }
         
         print("self.rawCardData\ncardNumber: \(self.rawCardData.cardNumber)\nexpiryDate: \(self.rawCardData.expiryDate)\ncvv: \(self.rawCardData.cvv)\ncardholderName: \(self.rawCardData.cardholderName ?? "nil")")

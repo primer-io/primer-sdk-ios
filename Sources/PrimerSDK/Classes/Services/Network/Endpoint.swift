@@ -17,6 +17,7 @@ internal protocol Endpoint {
     var queryParameters: [String: String]? { get }
     var body: Data? { get }
     var shouldParseResponseBody: Bool { get }
+    var timeout: TimeInterval? { get }
 }
 
 enum HTTPMethod: String, Codable {

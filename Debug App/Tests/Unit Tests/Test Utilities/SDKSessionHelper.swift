@@ -24,6 +24,7 @@ final class SDKSessionHelper {
                                                 testId: nil)
         let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
                                                pciUrl: "pci_url",
+                                               binDataUrl: "bindata_url",
                                                clientSession: session,
                                                paymentMethods: paymentMethods,
                                                primerAccountId: "account_id",
@@ -42,7 +43,8 @@ final class SDKSessionHelper {
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(
             clientSessionId: "",
             paymentMethod: .init(vaultOnSuccess: false,
-                                 options: nil),
+                                 options: nil,
+                                 orderedAllowedCardNetworks: cardNetworks.map { $0.rawValue }),
             order: nil,
             customer: nil,
             testId: nil

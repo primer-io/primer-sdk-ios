@@ -20,10 +20,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
     }
 
     // MARK: - Network Stack logic
-    
+
     // swiftlint:disable function_body_length
     @discardableResult
-    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) -> URLSessionDataTask? {
+    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) -> PrimerCancellable? {
         
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         let id = String.randomString(length: 32)
@@ -62,6 +62,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
 
         if let data = endpoint.body {
             request.httpBody = data
+        }
+        
+        if let timeout = endpoint.timeout {
+            request.timeoutInterval = timeout
         }
 
 #if DEBUG
@@ -160,7 +164,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
                         logger.debug(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.debug(message: "Analytics event sent")
-                    } else {
+                    } else if !data.isEmpty {
                         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
                         let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
                         var jsonStr: String?
@@ -285,6 +289,9 @@ internal class URLSessionStack: NetworkService, LogReporter {
 #if DEBUG
                     self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                     self.logger.error(message: "Error: Failed to parse")
+                    if let stringResponse = String(data: data, encoding: .utf8) {
+                        logger.error(message: "String response: \(stringResponse)")
+                    }
 #endif
 
                     DispatchQueue.main.async { completion(.failure(InternalError.underlyingErrors(errors: [err], userInfo: ["file": #file,
@@ -296,7 +303,6 @@ internal class URLSessionStack: NetworkService, LogReporter {
             }
         }
         dataTask.resume()
-
         return dataTask
     }
 }

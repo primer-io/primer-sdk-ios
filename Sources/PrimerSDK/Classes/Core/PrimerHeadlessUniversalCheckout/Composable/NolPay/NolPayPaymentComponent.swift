@@ -74,7 +74,6 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                         "line": "\(#line)"
                     ],
                     diagnosticsId: UUID().uuidString))
-                ErrorHandler.handle(error: errors.last!)
             }
 
             phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in

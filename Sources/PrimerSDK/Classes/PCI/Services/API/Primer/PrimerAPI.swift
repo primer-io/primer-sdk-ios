@@ -233,10 +233,11 @@ internal extension PrimerAPI {
                 .fetchPayPalExternalPayerInfo(let clientToken, _),
                 .testFinalizePolling(let clientToken, _),
                 .getNolSdkSecret(let clientToken, _):
-            guard let urlStr = clientToken.coreUrl else { return nil }
-            return urlStr
+            guard let baseURL = configuration?.coreUrl ?? clientToken.coreUrl else { return nil }
+            return baseURL
         case .listCardNetworks(_, _):
-            return "http://localhost:3000"
+            guard let baseURL = configuration?.binDataUrl else { return nil }
+            return baseURL
         case .deleteVaultedPaymentMethod(let clientToken, _),
                 .fetchVaultedPaymentMethods(let clientToken),
                 .exchangePaymentMethodToken(let clientToken, _, _),
@@ -247,11 +248,11 @@ internal extension PrimerAPI {
                 .resumePayment(let clientToken, _, _),
                 .requestPrimerConfigurationWithActions(let clientToken, _),
                 .getPhoneMetadata(let clientToken, _):
-            guard let urlStr = clientToken.pciUrl else { return nil }
-            return urlStr
+            guard let baseURL = configuration?.pciUrl ?? clientToken.pciUrl else { return nil }
+            return baseURL
         case .fetchConfiguration(let clientToken, _):
-            guard let urlStr = clientToken.configurationUrl else { return nil }
-            return urlStr
+            guard let baseURL = clientToken.configurationUrl else { return nil }
+            return baseURL
         case .poll(_, let url):
             return url
         case .sendAnalyticsEvents(_, let url, _):
@@ -315,13 +316,13 @@ internal extension PrimerAPI {
         case .testFinalizePolling:
             return "/finalize-polling"
         case .listCardNetworks(_, let bin):
-            return "/bin-data/\(bin)/networks"
+            return "/v1/bin-data/\(bin)/networks"
         case .getNolSdkSecret:
             return "/nol-pay/sdk-secrets"
         case .redirect:
             return ""
         case .getPhoneMetadata(_, let request):
-            return "phone-number-lookups/\(request.phoneNumber)"
+            return "/phone-number-lookups/\(request.phoneNumber)"
         }
     }
 
@@ -453,6 +454,23 @@ internal extension PrimerAPI {
         default:
             return true
         }
+    }
+    
+    // MARK: Timeout
+    
+    var timeout: TimeInterval? {
+        switch self {
+        case .listCardNetworks(_, _):
+            return 10
+        default: 
+            return nil
+        }
+    }
+    
+    // MARK: Helpers
+    
+    var configuration: PrimerAPIConfiguration? {
+        PrimerAPIConfiguration.current
     }
 
 }

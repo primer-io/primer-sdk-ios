@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import Combine
 
-protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol {
+protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPIClientBINDataProtocol {
 
     func genericAPICall(clientToken: DecodedJWTToken,
                         url: URL,
@@ -590,9 +591,11 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func listCardNetworks(clientToken: DecodedJWTToken, bin: String, completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) -> Cancellable? {
+    func listCardNetworks(clientToken: DecodedJWTToken,
+                          bin: String,
+                          completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable? {
         let endpoint = PrimerAPI.listCardNetworks(clientToken: clientToken, bin: bin)
-        let dataTask = networkService.request(endpoint) { (result: Result<Response.Body.Bin.Networks, Error>) in
+        return networkService.request(endpoint) { (result: Result<Response.Body.Bin.Networks, Error>) in
             switch result {
             case .success(let res):
                 completion(.success(res))

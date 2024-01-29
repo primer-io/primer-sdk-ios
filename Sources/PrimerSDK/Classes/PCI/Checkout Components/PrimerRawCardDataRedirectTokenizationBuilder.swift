@@ -22,8 +22,8 @@ class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBui
     required init(paymentMethodType: String) {
         fatalError("\(#function) must be overriden")
     }
-
-    func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
+    
+    func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         fatalError("\(#function) must be overriden")
     }
 
@@ -90,8 +90,8 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
     required init(paymentMethodType: String) {
         self.paymentMethodType = paymentMethodType
     }
-
-    func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
+    
+    func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
     }
 
@@ -227,7 +227,6 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                                    "function": #function,
                                    "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
 
                     self.isDataValid = false
 
