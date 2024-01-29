@@ -32,7 +32,9 @@ public class PrimerCardData: PrimerRawData {
     
     public var cardNetwork: CardNetwork? {
         didSet {
-            self.onDataDidChange?()
+            if cardNetwork != oldValue {
+                self.onDataDidChange?()
+            }
         }
     }
     
