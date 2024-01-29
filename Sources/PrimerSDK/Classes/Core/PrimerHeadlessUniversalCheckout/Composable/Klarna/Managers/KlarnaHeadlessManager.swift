@@ -50,6 +50,11 @@ extension PrimerHeadlessUniversalCheckout {
             super.init()
         }
         
+        public func setDelegate(_ delegate: PrimerHeadlessKlarnaComponent) {
+            errorDelegate = delegate
+            validate()
+        }
+        
         // MARK: - Session creation public methods
         public func setSessionCreationDelegates(_ delegate: PrimerHeadlessKlarnaComponent) {
             sessionCreationComponent.validationDelegate = delegate
@@ -59,6 +64,7 @@ extension PrimerHeadlessUniversalCheckout {
         
         public func startSession() {
             sessionCreationComponent.start()
+            validate()
         }
         
         public func updateSessionCollectedData(collectableData: KlarnaPaymentSessionCollectableData) {

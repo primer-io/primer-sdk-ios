@@ -70,12 +70,12 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         setupLayout()
         
         klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager()
-        klarnaManager.errorDelegate = self
+        klarnaManager.setDelegate(self)
         
-        setupKlarnaSession()
+        setupKlarnaSessionCreationDelegates()
     }
     
-    private func setupKlarnaSession() {
+    private func setupKlarnaSessionCreationDelegates() {
         klarnaManager.setSessionCreationDelegates(self)
     }
     
