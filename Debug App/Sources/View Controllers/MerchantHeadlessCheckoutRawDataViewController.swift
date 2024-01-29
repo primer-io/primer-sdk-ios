@@ -259,19 +259,23 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
 
 extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
     
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, 
+                              dataIsValid isValid: Bool,
+                              errors: [Error]?) {
         print("\n\nMERCHANT APP\n\(#function)\ndataIsValid: \(isValid)")
         self.logs.append(#function)
         self.payButton.backgroundColor = isValid ? .black : .lightGray
         self.payButton.isEnabled = isValid
     }
     
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?) {
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, 
+                              metadataDidChange metadata: [String: Any]?) {
         print("\n\nMERCHANT APP\n\(#function)\nmetadataDidChange: \(String(describing: metadata))")
         self.logs.append(#function)
     }
     
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, willFetchCardMetadataForState cardState: PrimerCardValidationState) {
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, 
+                              willFetchMetadataForState state: PrimerValidationState) {
         // TODO
         print("[MerchantHeadlessCheckoutRawDataViewController] willFetchCardMetadataForState")
         DispatchQueue.main.async {
@@ -279,12 +283,21 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         }
     }
     
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, didReceiveCardMetadata metadata: PrimerCardMetadata, forCardValidationState cardState: PrimerCardValidationState) {
-        let printableNetworks = metadata.availableCardNetworks.map { $0.networkIdentifier }.joined(separator: ", ")
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, 
+                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata, forState state: PrimerValidationState) {
+        guard let metadata = metadata as? PrimerCardNumberEntryMetadata,
+        let cardState = state as? PrimerCardNumberEntryState else {
+            print("[MerchantHeadlessCheckoutRawDataViewController] ERROR: Failed to cast metadata and state to card entry models")
+            return
+        }
+        
+        // JN TODO
+        let printableNetworks = metadata.detectedCardNetworks.items.map { $0.network.rawValue }.joined(separator: ", ")
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
+        
         DispatchQueue.main.async {
             self.cardsLabel.text = printableNetworks
-            self.rawCardData.cardNetworkIdentifier = metadata.preferredCardNetwork?.networkIdentifier
+            self.rawCardData.cardNetwork = metadata.detectedCardNetworks.preferred?.network
         }
     }
 }

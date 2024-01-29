@@ -132,7 +132,7 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
     func listCardNetworks(
         clientToken: DecodedJWTToken,
         bin: String,
-        completion: @escaping (_ result: Result<Response.Body.Bin.Networks, Error>) -> Void) -> Cancellable?
+        completion: @escaping (_ result: Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable?
         
     // NolPay
     func fetchNolSdkSecret(clientToken: DecodedJWTToken,
@@ -603,7 +603,6 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                 completion(.failure(err))
             }
         }
-        return dataTask
     }
 
     func fetchNolSdkSecret(clientToken: DecodedJWTToken,
