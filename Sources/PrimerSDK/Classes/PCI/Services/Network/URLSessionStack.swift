@@ -104,8 +104,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     errorBody: nil,
                     responseCode: (response as? HTTPURLResponse)?.statusCode
                 )
+                resEventProperties = resEvent?.properties as? NetworkCallEventProperties
 
-                resEvent!.properties = resEventProperties
             }
 
 #if DEBUG
@@ -113,10 +113,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
 #endif
 
             if let error = error {
-                if resEvent != nil {
-                    resEventProperties!.errorBody = "\(error)"
-                    resEvent!.properties = resEventProperties
-                    Analytics.Service.record(event: resEvent!)
+                if var resEvent = resEvent, var resEventProperties = resEventProperties {
+                    resEventProperties.errorBody = "\(error)"
+                    resEvent.properties = resEventProperties
+                    Analytics.Service.record(event: resEvent)
                 }
 
 #if DEBUG
@@ -133,10 +133,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
             }
 
             guard let data = data else {
-                if resEvent != nil {
-                    resEventProperties?.errorBody = "No data received"
-                    resEvent!.properties = resEventProperties
-                    Analytics.Service.record(event: resEvent!)
+                if var resEvent = resEvent, var resEventProperties = resEventProperties {
+                    resEventProperties.errorBody = "No data received"
+                    resEvent.properties = resEventProperties
+                    Analytics.Service.record(event: resEvent)
                 }
 
 #if DEBUG
@@ -154,9 +154,9 @@ internal class URLSessionStack: NetworkService, LogReporter {
             }
 
             do {
-                if resEvent != nil {
-                    resEvent?.properties = resEventProperties
-                    Analytics.Service.record(event: resEvent!)
+                if var resEvent = resEvent, let resEventProperties = resEventProperties {
+                    resEvent.properties = resEventProperties
+                    Analytics.Service.record(event: resEvent)
                 }
 
 #if DEBUG
@@ -204,10 +204,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
 
                     let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: primerErrorObject)
 
-                    if resEvent != nil {
-                        resEventProperties?.errorBody = "\(primerErrorJSON)"
-                        resEvent!.properties = resEventProperties
-                        Analytics.Service.record(event: resEvent!)
+                    if var resEvent = resEvent, var resEventProperties = resEventProperties {
+                        resEventProperties.errorBody = "\(primerErrorJSON)"
+                        resEvent.properties = resEventProperties
+                        Analytics.Service.record(event: resEvent)
                     }
 
                     if statusCode == 401 {
@@ -259,10 +259,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                                                                           "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
 
-                        if resEvent != nil {
-                            resEventProperties?.errorBody = err.localizedDescription
-                            resEvent!.properties = resEventProperties
-                            Analytics.Service.record(event: resEvent!)
+                        if var resEvent = resEvent, var resEventProperties = resEventProperties {
+                            resEventProperties.errorBody = err.localizedDescription
+                            resEvent.properties = resEventProperties
+                            Analytics.Service.record(event: resEvent)
                         }
 
 #if DEBUG
@@ -280,10 +280,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                                                                                 "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
 
-                    if resEvent != nil {
-                        resEventProperties?.errorBody = err.localizedDescription
-                        resEvent!.properties = resEventProperties
-                        Analytics.Service.record(event: resEvent!)
+                    if var resEvent = resEvent, var resEventProperties = resEventProperties {
+                        resEventProperties.errorBody = err.localizedDescription
+                        resEvent.properties = resEventProperties
+                        Analytics.Service.record(event: resEvent)
                     }
 
 #if DEBUG
