@@ -13,12 +13,6 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     // MARK: - Manager
     private var klarnaManager: PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager!
     
-    // MARK: - Components
-    private var klarnaSessionCreationComponent: KlarnaPaymentSessionCreationComponent!
-    private var klarnaViewHandlingComponent: KlarnaPaymentViewHandlingComponent!
-    private var klarnaSessionAuthorizationComponent: KlarnaPaymentSessionAuthorizationComponent!
-    private var klarnaSessionFinalizationComponent: KlarnaPaymentSessionFinalizationComponent!
-    
     // MARK: - Properties
     private var clientToken: String?
     private var paymentCategories: [KlarnaPaymentCategory] = [] {
@@ -78,10 +72,11 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager()
         klarnaManager.errorDelegate = self
         
-        klarnaSessionCreationComponent = klarnaManager.provideKlarnaPaymentSessionCreationComponent()
-        klarnaSessionCreationComponent.errorDelegate = self
-        klarnaSessionCreationComponent.stepDelegate = self
-        klarnaSessionCreationComponent.validationDelegate = self
+        setupKlarnaSession()
+    }
+    
+    private func setupKlarnaSession() {
+        klarnaManager.setSessionCreationDelegates(self)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -328,19 +323,18 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
         let registrationDate = customerAccountRegistrationTextField.text ?? ""
         let lastModifiedDate = customerAccountLastModifiedTextField.text ?? ""
         
-        self.klarnaSessionCreationComponent.updateCollectedData(
-            collectableData: .customerAccountInfo(
-                accountUniqueId: accountId,
-                accountRegistrationDate: registrationDate,
-                accountLastModified: lastModifiedDate
-            )
+        let collectedData = KlarnaPaymentSessionCollectableData.customerAccountInfo(
+            accountUniqueId: accountId,
+            accountRegistrationDate: registrationDate,
+            accountLastModified: lastModifiedDate
         )
+        
+        klarnaManager.updateSessionCollectedData(collectableData: collectedData)
     }
     
     @objc func continueButtonTapped(_ sender: UIButton) {
         if finalizePayment {
             paymentContinueButton.isHidden = true
-            
             finalizeSession()
         } else {
             authorizeSession()
@@ -418,10 +412,8 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
 private extension MerchantHeadlessCheckoutKlarnaViewController {
     func startPaymentSession() {
         showLoader()
-        
         checkoutTypeContainerView.isHidden = true
-        
-        klarnaSessionCreationComponent.start()
+        klarnaManager.startSession()
     }
     
     func createPaymentView(category: KlarnaPaymentCategory) {
@@ -430,19 +422,15 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
             return
         }
         
-        klarnaViewHandlingComponent = klarnaManager.provideKlarnaPaymentViewHandlingComponent(
-            clientToken: clientToken,
-            paymentCategory: category.id
-        )
-        klarnaViewHandlingComponent.stepDelegate = self
+        klarnaManager.setProvider(with: clientToken, paymentCategory: category.id)
+        klarnaManager.setViewHandlingDelegate(self)
         
-        guard let paymentView = klarnaViewHandlingComponent.createPaymentView() else {
+        guard let paymentView = klarnaManager.createPaymentView() else {
             showAlert(title: "Payment view", message: "Unable to create payment view")
             return
         }
         
         paymentView.translatesAutoresizingMaskIntoConstraints = false
-        
         paymentViewContainerView.addSubview(paymentView)
         
         NSLayoutConstraint.activate([
@@ -452,21 +440,17 @@ private extension MerchantHeadlessCheckoutKlarnaViewController {
             paymentView.bottomAnchor.constraint(equalTo: paymentViewContainerView.bottomAnchor)
         ])
         
-        klarnaViewHandlingComponent.initPaymentView()
+        klarnaManager.initPaymentView()
     }
     
     func authorizeSession() {
-        klarnaSessionAuthorizationComponent = klarnaManager.provideKlarnaPaymentSessionAuthorizationComponent()
-        klarnaSessionAuthorizationComponent.stepDelegate = self
-        
-        klarnaSessionAuthorizationComponent.authorizeSession(autoFinalize: !finalizeManually)
+        klarnaManager.setSessionAuthorizationDelegate(self)
+        klarnaManager.authorizeSession(autoFinalize: !finalizeManually)
     }
     
     func finalizeSession() {
-        klarnaSessionFinalizationComponent = klarnaManager.provideKlarnaPaymentSessionFinalizationComponent()
-        klarnaSessionFinalizationComponent.stepDelegate = self
-        
-        klarnaSessionFinalizationComponent.finalise()
+        klarnaManager.setSessionFinalizationDelegate(self)
+        klarnaManager.finalizeSession()
     }
 }
 
@@ -503,9 +487,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: UITextFieldDelegate {
 extension MerchantHeadlessCheckoutKlarnaViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         categoriesContainerView.isHidden = true
-        
         showLoader()
-        
         createPaymentView(category: paymentCategories[indexPath.row])
     }
 }
@@ -527,18 +509,17 @@ extension MerchantHeadlessCheckoutKlarnaViewController: UITableViewDataSource {
     }
 }
 
-// MARK: - PrimerHeadlessErrorableDelegate
-extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableDelegate {
+
+extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComponent {
+    // MARK: - PrimerHeadlessErrorableDelegate
     func didReceiveError(error: PrimerSDK.PrimerError) {
         showAlert(
             title: "Error",
             message: error.errorDescription ?? error.localizedDescription
         )
     }
-}
-
-// MARK: - PrimerHeadlessValidatableDelegate
-extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessValidatableDelegate {
+    
+    // MARK: - PrimerHeadlessValidatableDelegate
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         switch validationStatus {
         case .invalid(let errors):
@@ -557,10 +538,8 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessValidatabl
             break
         }
     }
-}
-
-// MARK: - PrimerHeadlessSteppableDelegate
-extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessSteppableDelegate {
+    
+    // MARK: - PrimerHeadlessSteppableDelegate
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         if let step = step as? KlarnaPaymentSessionCreation {
             switch step {
@@ -576,7 +555,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessSteppableD
         if let step = step as? KlarnaPaymentViewHandling {
             switch step {
             case .viewInitialized:
-                klarnaViewHandlingComponent.loadPaymentView()
+                klarnaManager.loadPaymentView()
                 
             case .viewResized(let height):
                 paymentViewContainerHeightConstraint.constant = height

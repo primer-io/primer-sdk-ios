@@ -216,11 +216,8 @@ private extension KlarnaPaymentSessionCreationComponent {
             }
         }
         
-        if errors.count > 0 {
-            self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
-        } else {
-            self.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
-        }
+        let validationStatus: PrimerValidationStatus = errors.isEmpty ? .valid : .invalid(errors: errors)
+        self.validationDelegate?.didUpdate(validationStatus: validationStatus, for: data)
     }
 }
 
