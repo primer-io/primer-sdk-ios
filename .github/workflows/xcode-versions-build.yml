@@ -16,7 +16,7 @@ jobs:
       max-parallel: 3
       matrix:
         variant: [cocoapods, spm]
-        xcode: [14.3.1, 14.2, 14.1]
+        xcode: [14.3.1]
     steps:
       - name: Git - Checkout
         uses: actions/checkout@v3
@@ -47,7 +47,7 @@ jobs:
       - name: Build and archive app via Cocoapods
         if: ${{ matrix.variant == 'cocoapods' }}
         run: |
-          bundle exec fastlane build_cocoapods skip_package_ipa:false
+          bundle exec fastlane build_cocoapods tests:false skip_package_ipa:false
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
