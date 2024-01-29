@@ -5,13 +5,11 @@
 //  Created by Evangelos on 13/12/21.
 //
 
-
-
 import Foundation
 import UIKit
 
 struct Device: Codable {
-    
+
     var batteryLevel: Int
     var batteryStatus: String
     var locale: String?
@@ -22,17 +20,17 @@ struct Device: Codable {
     var screen: Device.Screen
     var uniqueDeviceIdentifier: String
     var userAgent: String?
-    
-    private enum CodingKeys : String, CodingKey {
+
+    private enum CodingKeys: String, CodingKey {
         case batteryLevel, batteryStatus, memoryFootprint, modelIdentifier, modelName, platformVersion, screen, uniqueDeviceIdentifier, userAgent
     }
-    
+
     init() {
         UIDevice.current.isBatteryMonitoringEnabled = true
         batteryLevel = Int((UIDevice.current.batteryLevel * 100).rounded())
         batteryStatus = batteryLevel == -100 ? "CHARGING" : "NOT_CHARGING"
         UIDevice.current.isBatteryMonitoringEnabled = false
-        
+
         if let languageCode = Locale.current.languageCode {
             if let regionCode = Locale.current.regionCode {
                 self.locale = "\(languageCode)-\(regionCode)"
@@ -46,30 +44,30 @@ struct Device: Codable {
         self.platformVersion = UIDevice.current.systemVersion
         self.screen = Device.Screen()
         self.uniqueDeviceIdentifier = Self.uniqueDeviceIdentifier
-        
+
         if let mem = reportMemory() {
             self.memoryFootprint = mem
         }
-        
+
     }
-    
+
     struct Screen: Codable {
         let width: CGFloat
         let height: CGFloat
-        
+
         init() {
             width = UIScreen.main.bounds.width
             height = UIScreen.main.bounds.height
         }
     }
-    
+
     func reportMemory() -> Int? {
         var info = mach_task_basic_info()
-        let MACH_TASK_BASIC_INFO_COUNT = MemoryLayout<mach_task_basic_info>.stride/MemoryLayout<natural_t>.stride
-        var count = mach_msg_type_number_t(MACH_TASK_BASIC_INFO_COUNT)
+        let machTaskBasicInfoCount = MemoryLayout<mach_task_basic_info>.stride/MemoryLayout<natural_t>.stride
+        var count = mach_msg_type_number_t(machTaskBasicInfoCount)
 
         let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
-            $0.withMemoryRebound(to: integer_t.self, capacity: MACH_TASK_BASIC_INFO_COUNT) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: machTaskBasicInfoCount) {
                 task_info(mach_task_self_,
                           task_flavor_t(MACH_TASK_BASIC_INFO),
                           $0,
@@ -78,13 +76,13 @@ struct Device: Codable {
         }
 
         if kerr == KERN_SUCCESS {
-            let mb = Double(info.resident_size) / 1048576
-            return Int(mb.rounded())
+            let memoryInMegabytes = Double(info.resident_size) / 1048576
+            return Int(memoryInMegabytes.rounded())
         } else {
             return nil
         }
     }
-    
+
     static var uniqueDeviceIdentifier: String {
         // Prefer identifierForVendor
         if let udid = UIDevice.current.identifierForVendor?.uuidString {
@@ -102,5 +100,3 @@ struct Device: Codable {
         return udid
     }
 }
-
-

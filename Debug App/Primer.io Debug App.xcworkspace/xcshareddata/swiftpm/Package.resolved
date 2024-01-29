@@ -5,9 +5,9 @@
         "package": "PrimerKlarnaSDK",
         "repositoryURL": "https://github.com/primer-io/primer-klarna-sdk-ios",
         "state": {
-          "branch": null,
-          "revision": "f13260c24a900f28e21bafd213c22191e6280e86",
-          "version": "1.0.4"
+          "branch": "nq/update_klarnamobilesdk",
+          "revision": "817fb8af77240a552a68c395758879c31c8d9bd9",
+          "version": null
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/primer-io/primer-sdk-3ds-ios",
         "state": {
           "branch": null,
-          "revision": "56e39e0778b1abdb5d5abe20d96ea96e803b07a9",
-          "version": "2.0.0"
+          "revision": "46d1e65a152ef6801af1f8008a89318742777cad",
+          "version": "2.1.0"
         }
       }
     ]

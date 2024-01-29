@@ -5,13 +5,11 @@
 //  Created by Evangelos on 4/10/22.
 //
 
-
-
 import UIKit
 
 @objc
 public enum PrimerInputElementType: Int {
-    
+
     case cardNumber
     case expiryDate
     case cvv
@@ -21,7 +19,7 @@ public enum PrimerInputElementType: Int {
     case phoneNumber
     case retailer
     case unknown
-    
+
     public var stringValue: String {
         switch self {
         case .cardNumber:
@@ -44,17 +42,17 @@ public enum PrimerInputElementType: Int {
             return "UNKNOWN"
         }
     }
-    
+
     internal func validate(value: Any, detectedValueType: Any?) -> Bool {
         switch self {
         case .cardNumber:
             guard let text = value as? String else { return false }
             return text.isValidCardNumber
-            
+
         case .expiryDate:
             guard let text = value as? String else { return false }
             return text.isValidExpiryDate
-            
+
         case .cvv:
             guard let text = value as? String else { return false }
             if let cardNetwork = detectedValueType as? CardNetwork, cardNetwork != .unknown {
@@ -62,43 +60,43 @@ public enum PrimerInputElementType: Int {
             } else {
                 return text.count >= 3 && text.count <= 5
             }
-            
+
         case .cardholderName:
             guard let text = value as? String else { return false }
-            return text.isValidCardholderName
-            
+            return text.isValidNonDecimalString
+
         case .otp:
             guard let text = value as? String else { return false }
             return text.isNumeric
-            
+
         case .postalCode:
             guard let text = value as? String else { return false }
             return text.isValidPostalCode
-            
+
         case .phoneNumber:
             guard let text = value as? String else { return false }
             return text.isNumeric
-            
+
         default:
             return true
         }
     }
-    
+
     internal func format(value: Any) -> Any {
         switch self {
         case .cardNumber:
             guard let text = value as? String else { return value }
             return text.withoutWhiteSpace.separate(every: 4, with: self.delimiter!)
-            
+
         case .expiryDate:
             guard let text = value as? String else { return value }
             return text.withoutWhiteSpace.separate(every: 2, with: self.delimiter!)
-            
+
         default:
             return value
         }
     }
-    
+
     internal func clearFormatting(value: Any) -> Any? {
         switch self {
         case .cardNumber,
@@ -106,23 +104,23 @@ public enum PrimerInputElementType: Int {
             guard let text = value as? String else { return nil }
             let textWithoutWhiteSpace = text.withoutWhiteSpace
             return textWithoutWhiteSpace.replacingOccurrences(of: self.delimiter!, with: "")
-            
+
         default:
             return value
         }
     }
-    
+
     internal func detectType(for value: Any) -> Any? {
         switch self {
         case .cardNumber:
             guard let text = value as? String else { return nil }
             return CardNetwork(cardNumber: text)
-            
+
         default:
             return value
         }
     }
-    
+
     internal var delimiter: String? {
         switch self {
         case .cardNumber:
@@ -133,7 +131,7 @@ public enum PrimerInputElementType: Int {
             return nil
         }
     }
-    
+
     internal var maxAllowedLength: Int? {
         switch self {
         case .cardNumber:
@@ -148,7 +146,7 @@ public enum PrimerInputElementType: Int {
             return nil
         }
     }
-    
+
     internal var allowedCharacterSet: CharacterSet? {
         switch self {
         case .cardNumber,
@@ -157,15 +155,15 @@ public enum PrimerInputElementType: Int {
                 .otp,
                 .phoneNumber:
             return CharacterSet(charactersIn: "0123456789")
-            
+
         case .cardholderName:
             return CharacterSet.letters.union(.whitespaces)
-            
+
         default:
             return nil
         }
     }
-    
+
     internal var keyboardType: UIKeyboardType {
         switch self {
         case .cardNumber,
@@ -174,12 +172,11 @@ public enum PrimerInputElementType: Int {
                 .otp,
                 .phoneNumber:
             return UIKeyboardType.numberPad
-            
-            
+
         case .cardholderName,
                 .postalCode:
             return UIKeyboardType.alphabet
-            
+
         default:
             return UIKeyboardType.default
         }
@@ -192,6 +189,3 @@ public protocol PrimerHeadlessUniversalCheckoutInputElement {
     var type: PrimerInputElementType { get set }
     var isValid: Bool { get }
 }
-
-
-

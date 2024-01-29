@@ -6,17 +6,15 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
 class TokenizationResponseTests: XCTestCase {
     
     var _tokenizationResponseDictionary: [String: Any] = [
-        "analyticsId" : "some-analytics-id",
-        "isAlreadyVaulted" : false,
-        "isVaulted" : false,
+        "analyticsId": "some-analytics-id",
+        "isAlreadyVaulted": false,
+        "isVaulted": false,
         "paymentInstrumentData": [
             "cardholderName": "John Smith",
             "expirationMonth": "02",
@@ -26,8 +24,8 @@ class TokenizationResponseTests: XCTestCase {
             "isNetworkTokenized": false,
             "klarnaCustomerToken": "some-customer-token",
             "network": "Visa",
-            "paymentMethodConfigId" : "some-config-id",
-            "paymentMethodType" : "A_PAYMENT_METHOD_TYPE",
+            "paymentMethodConfigId": "some-config-id",
+            "paymentMethodType": "A_PAYMENT_METHOD_TYPE",
             "paypalBillingAgreementId": "some-paypal-agreement-id",
             "sessionData": [
                 "recurringDescription": "some-description",
@@ -43,24 +41,24 @@ class TokenizationResponseTests: XCTestCase {
                         "unitPrice": 100,
                         "totalAmount": 100,
                         "totalDiscountAmount": 0
-                    ] as [String : Any]
+                    ] as [String: Any]
                 ]
-            ] as [String : Any],
-            "sessionInfo" : [
-              "locale" : "en-US",
-              "platform" : "IOS",
-              "redirectionUrl" : "primer://some-url.io"
+            ] as [String: Any],
+            "sessionInfo": [
+              "locale": "en-US",
+              "platform": "IOS",
+              "redirectionUrl": "primer://some-url.io"
             ]
-        ] as [String : Any],
-        "paymentInstrumentType" : "OFF_SESSION_PAYMENT",
-        "threeDSecureAuthentication" : [
-          "responseCode" : "NOT_PERFORMED",
+        ] as [String: Any],
+        "paymentInstrumentType": "OFF_SESSION_PAYMENT",
+        "threeDSecureAuthentication": [
+          "responseCode": "NOT_PERFORMED",
           "reasonCode": "some-reason-code",
           "reasonText": "some-reason-text",
           "protocolVersion": "2.1"
         ],
-        "token" : "some-token",
-        "tokenType" : "SINGLE_USE",
+        "token": "some-token",
+        "tokenType": "SINGLE_USE"
     ]
     
     func test_valid_tokenization_responses() throws {
@@ -136,5 +134,3 @@ class TokenizationResponseTests: XCTestCase {
         XCTAssert(primerPaymentMethodToken.threeDSecureAuthentication?.reasonText == threeDSecureAuthentication?["reasonText"] as? String, "threeDSecureAuthentication?.protocolVersion is \(primerPaymentMethodToken.threeDSecureAuthentication?.protocolVersion) when it should be \(threeDSecureAuthentication?["protocolVersion"] as? String ?? "n/a")")
     }
 }
-
-#endif

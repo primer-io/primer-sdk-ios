@@ -5,8 +5,6 @@
 //  Created by Carl Eriksson on 29/12/2020.
 //
 
-
-
 import UIKit
 
 public enum ImageName: String {
@@ -42,5 +40,3 @@ public enum ImageName: String {
         return image
     }
 }
-
-

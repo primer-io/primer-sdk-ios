@@ -36,23 +36,22 @@ class EmptyBox<T>: Box<T> {
     override func seal(_ value: T) {
         var handlers: Handlers<T>!
         barrier.sync(flags: .barrier) {
-            // swiftlint:disable identifier_name
-            guard case .pending(let _handlers) = self.sealant else {
+            guard case .pending(let handlersParam) = self.sealant else {
                 return  // already fulfilled!
             }
-            handlers = _handlers
+            handlers = handlersParam
             self.sealant = .resolved(value)
         }
 
-        //FIXME we are resolved so should `pipe(to:)` be called at this instant, “thens are called in order” would be invalid
-        //NOTE we don’t do this in the above `sync` because that could potentially deadlock
-        //THOUGH since `then` etc. typically invoke after a run-loop cycle, this issue is somewhat less severe
+        // FIXME we are resolved so should `pipe(to:)` be called at this instant, “thens are called in order” would be invalid
+        // NOTE we don’t do this in the above `sync` because that could potentially deadlock
+        // THOUGH since `then` etc. typically invoke after a run-loop cycle, this issue is somewhat less severe
 
         if let handlers = handlers {
-            handlers.bodies.forEach{ $0(value) }
+            handlers.bodies.forEach { $0(value) }
         }
 
-        //TODO solution is an unfortunate third state “sealed” where then's get added
+        // TODO solution is an unfortunate third state “sealed” where then's get added
         // to a separate handler pool for that state
         // any other solution has potential races
     }

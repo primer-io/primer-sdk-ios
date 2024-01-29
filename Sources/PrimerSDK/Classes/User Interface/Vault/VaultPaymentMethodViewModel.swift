@@ -1,5 +1,3 @@
-
-
 internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
     var paymentMethods: [PrimerPaymentMethodTokenData] { get }
     var selectedPaymentMethodId: String? { get set }
@@ -43,7 +41,7 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
             if paymentMethodToken == AppState.current.selectedPaymentMethodId {
                 AppState.current.selectedPaymentMethodId = nil
             }
-            
+
             return vaultService.fetchVaultedPaymentMethods()
         }
         .done {
@@ -56,7 +54,7 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
 }
 
 internal class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
-    
+
     var theme: PrimerTheme { return PrimerTheme() }
     var paymentMethods: [PrimerPaymentMethodTokenData] { return [] }
     var selectedPaymentMethodId: String? = "id"
@@ -68,7 +66,5 @@ internal class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProto
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void) {
 
     }
-    
+
 }
-
-

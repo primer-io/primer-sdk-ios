@@ -1,18 +1,47 @@
-name: UI Tests
+name: Run UI Tests and publish nightly build
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 1 * * *'
-  pull_request:
-    types:
-      - opened
-      - edited
-      - synchronize
+    - cron: '0 1 * * 1-5'
+  push:
     branches:
-      - 'release/next'
+      - 'release/**'
 
 jobs:
+  build-and-upload-to-appetize:
+    runs-on: macos-13
+    timeout-minutes: 20
+    name: "Build and upload app to Appetize"
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@0.12.0
+        with:
+          access_token: ${{ github.token }}
+      - name: Git - Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+      - name: Upload preview to Appetize
+        id: appetize-upload
+        uses: ./.github/actions/appetize-build
+        with:
+          build_type: 'nightly'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          known-hosts: ${{ secrets.KNOWN_HOSTS }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
+          fastlane-session: ${{ secrets.FASTLANE_SESSION }}
+          fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
+          match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          appetize-api-token: ${{ secrets.APPETIZE_API_TOKEN }}
+          source-branch: ${{ github.head_ref || github.ref_name }}
+          pr-number: ""
+          slack-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+          slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+          github-run-id: ${{ github.run_id }}
   build-and-upload-to-firebase-and-browserstack:
     runs-on: macos-13
     timeout-minutes: 20
@@ -71,9 +100,7 @@ jobs:
           APPETIZE_API_TOKEN: ${{ secrets.APPETIZE_API_TOKEN }}
           BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          SOURCE_BRANCH: ${{ github.head_ref }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-
+          SOURCE_BRANCH: ${{ github.ref }}
       - name: Save Browserstack ID
         uses: actions/upload-artifact@v3
         id: save_browserstack_id_step
@@ -100,7 +127,7 @@ jobs:
             path: /var/tmp
 
         - name: Setup node
-          uses: actions/setup-node@v1
+          uses: actions/setup-node@v4
           with:
             node-version: 18.3.0
 
@@ -118,12 +145,12 @@ jobs:
             npx wdio config/wdio.ios.bs.conf.js
             
         - name: Create Slack Report
-          if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master'  }}
+          if: ${{ success() || failure() }}
           run: |
             node report-script/slack-report-script.js createSlackReport iOS
 
         - name: Post summary message to a Slack channel
-          if: ${{ (success() ||  failure()) && github.event.pull_request.base.ref == 'master' }}
+          if: ${{ success() || failure() }}
           id: slack
           uses: slackapi/slack-github-action@v1.23.0
           with:
@@ -133,7 +160,7 @@ jobs:
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
 
         - name: Create Slack Failed Summary Report
-          if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
+          if: ${{ failure() }}
           run: |
             node report-script/slack-failed-report-script.js createSlackFailedSummaryReport ${{ steps.slack.outputs.thread_ts }}
           env:
@@ -141,7 +168,7 @@ jobs:
             BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
 
         - name: Post detailed summary to Slack channel thread
-          if: ${{ failure() && github.event.pull_request.base.ref == 'master' }}
+          if: ${{ failure() }}
           id: slack_thread
           uses: slackapi/slack-github-action@v1.23.0
           with:

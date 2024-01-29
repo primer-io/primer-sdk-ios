@@ -5,8 +5,6 @@
 //  Created by Carl Eriksson on 29/11/2020.
 //
 
-
-
 import Foundation
 import UIKit
 
@@ -130,11 +128,9 @@ internal class PrimerView: UIView {
         trailingAnchor.constraint(equalTo: superView.trailingAnchor).isActive = true
         bottomAnchor.constraint(equalTo: superView.bottomAnchor).isActive = true
     }
-    
+
     func removeSubviews() {
         subviews.forEach { $0.removeFromSuperview() }
     }
-    
+
 }
-
-

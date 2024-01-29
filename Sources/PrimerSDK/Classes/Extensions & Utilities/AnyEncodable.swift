@@ -10,7 +10,7 @@
 import Foundation
 #endif
 
-// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable type_name
 
 /**
  A type-erased `Encodable` value.
@@ -113,7 +113,7 @@ extension _AnyEncodable {
 
     #if canImport(Foundation)
     private func encode(nsnumber: NSNumber, into container: inout SingleValueEncodingContainer) throws {
-        switch Character(Unicode.Scalar(UInt8(nsnumber.objCType.pointee)))  {
+        switch Character(Unicode.Scalar(UInt8(nsnumber.objCType.pointee))) {
         case "c", "C":
             try container.encode(nsnumber.boolValue)
         case "s":
@@ -294,4 +294,4 @@ extension AnyEncodable: Hashable {
         }
     }
 }
-// swiftlint:disable cyclomatic_complexity
+// swiftlint:enable type_name

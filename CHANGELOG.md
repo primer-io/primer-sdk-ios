@@ -1,3 +1,54 @@
+## 2.20.0 (2024-01-15)
+
+### Feat
+
+- iDeal via Adyen , form with redirect component feature (#754)
+
+### Fix
+
+- Throw error when using NativeUIManager for non-native payment method (#772)
+- Improved Errors in the event Apple Pay cannot be presented.
+
+## 2.19.0 (2023-12-15)
+
+### Feat
+
+- Support for 3DS SDK v2.1.0 (#764)
+
+### Fix
+
+- add additional info to errors (#759)
+
+## 2.18.3 (2023-12-06)
+
+### Fix
+
+- Reduce memory usage for analytics service (#756)
+
+## 2.18.2 (2023-11-14)
+
+### Fix
+
+- Add local empty phone validation (#740)
+
+## 2.18.1 (2023-11-13)
+
+### Fix
+
+- Fix Nol Pay state machine to allow going back in steps (#736)
+
+## 2.18.0 (2023-11-02)
+
+### Feat
+
+- Logging interface for SDK (#694)
+- Implement Phone Validation for Nol (#720)
+
+### Fix
+
+- fixes ApplePay button rendering logic (#685)
+- revert min deployment version bump (#713)
+
 ## 2.18.0-b1 (2023-10-19)
 
 ### Feat

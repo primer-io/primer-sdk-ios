@@ -1,11 +1,9 @@
-
-
 import Foundation
 
 internal typealias JWTToken = String
 
 internal protocol PrimerAPIConfigurationModuleProtocol {
-    
+
     static var apiClient: PrimerAPIClientProtocol? { get set }
     static var clientToken: JWTToken? { get }
     static var decodedJWTToken: DecodedJWTToken? { get }
@@ -23,16 +21,16 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
 }
 
 internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
-    
+
     static var apiClient: PrimerAPIClientProtocol?
-    
+
     static var clientToken: JWTToken? {
         get {
             if PrimerAPIConfigurationModule.decodedJWTToken == nil {
                 AppState.current.clientToken = nil
                 return nil
             }
-            
+
             return AppState.current.clientToken
         }
         set {
@@ -43,7 +41,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             }
         }
     }
-    
+
     static var apiConfiguration: PrimerAPIConfiguration? {
         get {
             return AppState.current.apiConfiguration
@@ -56,22 +54,22 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             }
         }
     }
-    
+
     static var decodedJWTToken: DecodedJWTToken? {
         guard let decodedJWTToken = AppState.current.clientToken?.decodedJWTToken,
               let expDate = decodedJWTToken.expDate,
               expDate > Date() else {
             return nil
         }
-        
+
         return decodedJWTToken
     }
-    
+
     static func resetSession() {
         AppState.current.clientToken = nil
         AppState.current.apiConfiguration = nil
     }
-        
+
     func setupSession(
         forClientToken clientToken: String,
         requestDisplayMetadata: Bool = true,
@@ -99,11 +97,14 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             }
         }
     }
-    
+
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                    "class": "\(Self.self)",
+                                                                    "function": #function,
+                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -121,7 +122,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             }
         }
     }
-    
+
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
         return Promise { seal in
             firstly {
@@ -140,7 +141,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     }
 
     // MARK: - HELPERS
-    
+
     private func validateClientToken(_ clientToken: String, requestRemoteClientTokenValidation: Bool) -> Promise<Void> {
         return Promise { seal in
             do {
@@ -149,13 +150,13 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 seal.reject(error)
                 return
             }
-            
+
             let isAutoPaymentHandling = PrimerSettings.current.paymentHandling == .auto
-            
+
             if !requestRemoteClientTokenValidation || isAutoPaymentHandling {
                 AppState.current.clientToken = clientToken
                 seal.fulfill()
-                
+
             } else {
                 firstly {
                     self.validateClientTokenRemotely(clientToken)
@@ -169,63 +170,66 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             }
         }
     }
-    
+
     private func validateClientTokenInternally(_ tokenToValidate: JWTToken) throws -> JWTToken {
         guard var currentDecodedToken = tokenToValidate.decodedJWTToken,
               let expDate = currentDecodedToken.expDate,
               expDate > Date() else {
-            let error = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                  "class": "\(Self.self)",
+                                                                  "function": #function,
+                                                                  "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             throw error
         }
-                        
+
         let previousDecodedToken = PrimerAPIConfigurationModule.decodedJWTToken
-        
+
         currentDecodedToken.configurationUrl = currentDecodedToken.configurationUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
         currentDecodedToken.coreUrl = currentDecodedToken.coreUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
         currentDecodedToken.pciUrl = currentDecodedToken.pciUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
-        
+
         if currentDecodedToken.env == nil {
             currentDecodedToken.env = previousDecodedToken?.env
         }
-        
+
         if currentDecodedToken.analyticsUrl == nil {
             currentDecodedToken.analyticsUrl = previousDecodedToken?.analyticsUrl
         }
-        
+
         if currentDecodedToken.configurationUrl == nil {
             currentDecodedToken.configurationUrl = previousDecodedToken?.configurationUrl
         }
-        
+
         if currentDecodedToken.coreUrl == nil {
             currentDecodedToken.coreUrl = previousDecodedToken?.coreUrl
         }
-        
+
         if currentDecodedToken.pciUrl == nil {
             currentDecodedToken.pciUrl = previousDecodedToken?.pciUrl
         }
-        
+
         var segments: [String] = tokenToValidate.split(separator: ".").compactMap({ String($0) })
-        
+
         var tmpSecondSegment: String?
         if let data = try? JSONEncoder().encode(currentDecodedToken),
            let dataStr = String(data: data.base64EncodedData(), encoding: .utf8) {
             tmpSecondSegment = dataStr
         }
-        
+
         if segments.count > 1, let tmpSecondSegment = tmpSecondSegment {
             segments[1] = tmpSecondSegment
         } else if segments.count == 1, let tmpSecondSegment = tmpSecondSegment {
             segments.append(tmpSecondSegment)
         }
-        
+
         return segments.joined(separator: ".").base64RFC4648Format
     }
-    
+
     private func validateClientTokenRemotely(_ clientToken: JWTToken) -> Promise<Void> {
         return Promise { seal in
             let clientTokenRequest = Request.Body.ClientTokenValidation(clientToken: clientToken)
-            
+
             let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
             apiClient.validateClientToken(request: clientTokenRequest) { result in
                 switch result {
@@ -237,11 +241,14 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             }
         }
     }
-    
+
     private func fetchConfiguration(requestDisplayMetadata: Bool) -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                    "class": "\(Self.self)",
+                                                                    "function": #function,
+                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -262,7 +269,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             }
         }
     }
-    
+
     private func fetchConfigurationAndVaultedPaymentMethodsIfNeeded(
         requestDisplayMetadata: Bool,
         requestVaultedPaymentMethods: Bool
@@ -271,7 +278,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             let vaultService: VaultServiceProtocol = VaultService()
             let vaultedPaymentMethodsPromise = vaultService.fetchVaultedPaymentMethods()
             let fetchConfigurationPromise = self.fetchConfiguration(requestDisplayMetadata: true)
-            
+
             return Promise { seal in
                 firstly {
                     when(fulfilled: fetchConfigurationPromise, vaultedPaymentMethodsPromise)
@@ -286,8 +293,6 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         } else {
             return self.fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
         }
-        
+
     }
 }
-
-

@@ -6,15 +6,13 @@
 //  Copyright © 2022 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
-class HUC_TokenizationViewModelTests: XCTestCase {
+final class HUC_TokenizationViewModelTests: XCTestCase {
     
     private var paymentCompletion: ((PrimerCheckoutData?, Error?) -> Void)?
-    private var availablePaymentMethodsLoadedCompletion: (([PrimerHeadlessUniversalCheckout.PaymentMethod]?, Error?) -> Void)?
+    var availablePaymentMethodsLoadedCompletion: (([PrimerHeadlessUniversalCheckout.PaymentMethod]?, Error?) -> Void)?
     private var tokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
     private var resumeCompletion: ((String?, Error?) -> Void)?
     private var isImplementingManualPaymentFlow: Bool = false
@@ -23,12 +21,35 @@ class HUC_TokenizationViewModelTests: XCTestCase {
     private var isImplementingPaymentMethodWithRequiredAction = false
     private var abortPayment = false
     
+    override func tearDown() {
+        VaultService.apiClient = nil
+        PrimerAPIConfigurationModule.apiClient = nil
+        PrimerAPIConfigurationModule.clientToken = nil
+        PrimerAPIConfigurationModule.apiConfiguration = nil
+        
+        PrimerAPIConfigurationModule.apiClient = nil
+        PaymentMethodTokenizationViewModel.apiClient = nil
+        TokenizationService.apiClient = nil
+        PollingModule.apiClient = nil
+        CreateResumePaymentService.apiClient = nil
+        
+        PrimerHeadlessUniversalCheckout.current.delegate = nil
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = nil
+        
+        self.paymentCompletion = nil
+        self.availablePaymentMethodsLoadedCompletion = nil
+        self.tokenizationCompletion = nil
+        self.resumeCompletion = nil
+        self.isImplementingManualPaymentFlow = false
+        self.isImplementingPaymentMethodWithRequiredAction = false
+        self.abortPayment = false
+        self.eventsCalled = []
+    }
+    
     // MARK: - HEADLESS UNIVERSAL CHECKOUT
         
     func test_huc_start() throws {
         let expectation = XCTestExpectation(description: "Successful HUC initialization")
-        
-        self.resetTestingEnvironment()
         
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock_client_session_id",
@@ -38,9 +59,10 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             order: nil,
             customer: nil,
             testId: nil)
-        let mockPrimerApiConfiguration = Mocks.createMockAPIConfiguration(
-            clientSession: clientSession,
-            paymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod])
+        guard let mockPrimerApiConfiguration = self.createMockApiConfiguration(clientSession: clientSession, mockPaymentMethods: [Mocks.PaymentMethods.webRedirectPaymentMethod]) else {
+            XCTFail("Unable to start mock tokenization")
+            return
+        }
 
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
         
@@ -161,7 +183,6 @@ class HUC_TokenizationViewModelTests: XCTestCase {
 //            abortPayment: false)
 //    }
     
-    
     // MARK: - ABORT PAYMENT
     
     // MARK: PAYMENT HANDLING: AUTO
@@ -241,8 +262,6 @@ class HUC_TokenizationViewModelTests: XCTestCase {
     ) throws {
         let expectation = XCTestExpectation(description: "Successful HUC initialization")
         
-        self.resetTestingEnvironment()
-                
         self.isImplementingManualPaymentFlow = (paymentHandling == .manual)
         self.isImplementingPaymentMethodWithRequiredAction = isImplementingPaymentMethodWithRequiredAction
         self.abortPayment = abortPayment
@@ -283,7 +302,6 @@ class HUC_TokenizationViewModelTests: XCTestCase {
         PollingModule.apiClient = mockApiClient
         CreateResumePaymentService.apiClient = mockApiClient
         
-        
         PrimerHeadlessUniversalCheckout.current.delegate = self
         PrimerHeadlessUniversalCheckout.current.uiDelegate = self
         
@@ -299,23 +317,17 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             self.tokenizationCompletion = { paymentMethodTokenData, err in
                 if let err = err {
                     XCTAssert(false, "SDK failed with error \(err.localizedDescription) while it should have succeeded.")
-                } else if paymentMethodTokenData != nil {
-                    if !isImplementingPaymentMethodWithRequiredAction {
-                        if !isSurchargeIncluded {
-                            XCTAssert(self.eventsCalled.count == 4, "4 events should have been called.")
-                            XCTAssert(self.eventsCalled[0] == "primerHeadlessUniversalCheckoutPreparationDidStart", "'\(self.eventsCalled[0])' called instead if 'primerHeadlessUniversalCheckoutPreparationDidStart'.")
-                            XCTAssert(self.eventsCalled[1] == "primerHeadlessUniversalCheckoutWillCreatePaymentWithData", "'\(self.eventsCalled[1])' called instead if 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData'.")
-                            XCTAssert(self.eventsCalled[2] == "primerHeadlessUniversalCheckoutTokenizationDidStart", "'\(self.eventsCalled[2])' called instead if 'primerHeadlessUniversalCheckoutTokenizationDidStart'.")
-                            XCTAssert(self.eventsCalled[3] == "primerHeadlessUniversalCheckoutDidTokenizePaymentMethod", "'\(self.eventsCalled[3])' called instead if 'primerHeadlessUniversalCheckoutDidTokenizePaymentMethod'.")
-                            
-                        } else {
-                            
-                        }
-                        
-                        expectation.fulfill()
-                    }
-                } else {
+                } else if paymentMethodTokenData != nil, !isImplementingPaymentMethodWithRequiredAction, !isSurchargeIncluded {
+                        XCTAssert(self.eventsCalled.count == 4, "4 events should have been called.")
+                        XCTAssert(self.eventsCalled[0] == "primerHeadlessUniversalCheckoutPreparationDidStart", "'\(self.eventsCalled[0])' called instead if 'primerHeadlessUniversalCheckoutPreparationDidStart'.")
+                        XCTAssert(self.eventsCalled[1] == "primerHeadlessUniversalCheckoutWillCreatePaymentWithData", "'\(self.eventsCalled[1])' called instead if 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData'.")
+                        XCTAssert(self.eventsCalled[2] == "primerHeadlessUniversalCheckoutTokenizationDidStart", "'\(self.eventsCalled[2])' called instead if 'primerHeadlessUniversalCheckoutTokenizationDidStart'.")
+                        XCTAssert(self.eventsCalled[3] == "primerHeadlessUniversalCheckoutDidTokenizePaymentMethod", "'\(self.eventsCalled[3])' called instead if 'primerHeadlessUniversalCheckoutDidTokenizePaymentMethod'.")
+                } else if paymentMethodTokenData == nil {
                     XCTAssert(false, "SDK should have returned an error or payment methods.")
+                }
+                if !isImplementingPaymentMethodWithRequiredAction, !isSurchargeIncluded {
+                    expectation.fulfill()
                 }
             }
             
@@ -349,14 +361,14 @@ class HUC_TokenizationViewModelTests: XCTestCase {
                     }
                     
                 } else {
-                    XCTAssert(false, "SDK should have returned an error or payment methods.")
+                    XCTAssert(false, "SDK should have returned an error or resume token.")
                 }
                 
                 expectation.fulfill()
             }
             
         } else {
-            self.paymentCompletion = { checkoutData, err in
+            self.paymentCompletion = { _, _ in
                 if isSurchargeIncluded {
                     print(self.eventsCalled)
                     XCTAssert(self.eventsCalled.count == 6, "6 events should have been called.")
@@ -432,23 +444,7 @@ class HUC_TokenizationViewModelTests: XCTestCase {
             }
         }
         
-        wait(for: [expectation], timeout: 600)
-    }
-    
-    // MARK: - HELPERS
-    
-    func resetTestingEnvironment() {
-        PrimerHeadlessUniversalCheckout.current.delegate = nil
-        PrimerHeadlessUniversalCheckout.current.uiDelegate = nil
-        
-        self.paymentCompletion = nil
-        self.availablePaymentMethodsLoadedCompletion = nil
-        self.tokenizationCompletion = nil
-        self.resumeCompletion = nil
-        self.isImplementingManualPaymentFlow = false
-        self.isImplementingPaymentMethodWithRequiredAction = false
-        self.abortPayment = false
-        self.eventsCalled = []
+        wait(for: [expectation], timeout: 60)
     }
 }
 
@@ -538,7 +534,7 @@ extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutUIDeleg
 
 extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
     
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String : Any]?) {
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?) {
         
     }
     
@@ -547,4 +543,15 @@ extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutRawData
     }
 }
 
-#endif
+extension HUC_TokenizationViewModelTests: TokenizationTestDelegate {
+    func cleanup() {
+        self.paymentCompletion = nil
+        self.availablePaymentMethodsLoadedCompletion = nil
+        self.tokenizationCompletion = nil
+        self.resumeCompletion = nil
+        self.isImplementingManualPaymentFlow = false
+        self.isImplementingPaymentMethodWithRequiredAction = false
+        self.abortPayment = false
+        self.eventsCalled = []
+    }
+}

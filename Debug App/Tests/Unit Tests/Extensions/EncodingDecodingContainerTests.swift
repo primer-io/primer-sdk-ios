@@ -6,26 +6,23 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
 class EncodingTests: XCTestCase {
     
     func test_encoding_event_context() throws {
-        let event = Analytics.Event(
-            eventType: .message,
-            properties: MessageEventProperties(
-                message: "This is a test message",
-                messageType: .error,
-                severity: .error,
-                context: [
-                    "bool": true,
-                    "int": 1,
-                    "double": 1.0001,
-                    "string": "This is a string"
-                ]))
+        let event = Analytics.Event.message(
+            message: "This is a test message",
+            messageType: .error,
+            severity: .error,
+            context: [
+                "bool": true,
+                "int": 1,
+                "double": 1.0001,
+                "string": "This is a string"
+            ]
+        )
         
         do {
             let data = try JSONEncoder().encode(event)
@@ -81,5 +78,3 @@ class EncodingTests: XCTestCase {
         }
     }
 }
-
-#endif

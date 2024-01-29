@@ -1,7 +1,6 @@
 import struct Foundation.TimeInterval
 import Dispatch
 
-
 /// Extend DispatchWorkItem to be cancellable
 extension DispatchWorkItem: Cancellable { }
 
@@ -15,12 +14,12 @@ extension DispatchWorkItem: Cancellable { }
 - SeeAlso: [Cancellation](http://promisekit.org/docs/)
 */
 internal func after(seconds: TimeInterval) -> Guarantee<Void> {
-    let (rg, seal) = Guarantee<Void>.pending()
+    let (rgg, seal) = Guarantee<Void>.pending()
     let when = DispatchTime.now() + seconds
     let task = DispatchWorkItem { seal(()) }
-    rg.setCancellable(task)
-    q.asyncAfter(deadline: when, execute: task)
-    return rg
+    rgg.setCancellable(task)
+    queue.asyncAfter(deadline: when, execute: task)
+    return rgg
 }
 
 /**
@@ -33,15 +32,15 @@ internal func after(seconds: TimeInterval) -> Guarantee<Void> {
  - SeeAlso: [Cancellation](http://promisekit.org/docs/)
 */
 internal func after(_ interval: DispatchTimeInterval) -> Guarantee<Void> {
-    let (rg, seal) = Guarantee<Void>.pending()
+    let (rgg, seal) = Guarantee<Void>.pending()
     let when = DispatchTime.now() + interval
     let task = DispatchWorkItem { seal(()) }
-    rg.setCancellable(task)
-    q.asyncAfter(deadline: when, execute: task)
-    return rg
+    rgg.setCancellable(task)
+    queue.asyncAfter(deadline: when, execute: task)
+    return rgg
 }
 
-private var q: DispatchQueue {
+private var queue: DispatchQueue {
     if #available(macOS 10.10, iOS 8.0, tvOS 9.0, watchOS 2.0, *) {
         return DispatchQueue.global(qos: .default)
     } else {

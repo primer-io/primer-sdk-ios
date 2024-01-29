@@ -105,18 +105,16 @@ internal func race<V: CancellableThenable>(_ thenables: [V]) -> CancellablePromi
 
     let cancelThenables: (Result<V.U.T, Error>) -> Void = { result in
         if case .failure = result {
-            for t in thenables {
-                if !t.cancelAttempted {
-                    t.cancel()
-                }
+            for thenable in thenables where !thenable.cancelAttempted {
+                thenable.cancel()
             }
         }
     }
 
     let promise = CancellablePromise(race(asThenables(thenables)))
-    for t in thenables {
-        t.thenable.pipe(to: cancelThenables)
-        promise.appendCancelContext(from: t)
+    for thenable in thenables {
+        thenable.thenable.pipe(to: cancelThenables)
+        promise.appendCancelContext(from: thenable)
     }
     return promise
 }
@@ -138,7 +136,7 @@ internal func race<U: Thenable>(fulfilled thenables: [U]) -> Promise<U.T> {
         return Promise(error: PMKError.badInput)
     }
 
-    let rp = Promise<U.T>(.pending)
+    let raceP = Promise<U.T>(.pending)
 
     let barrier = DispatchQueue(label: "org.promisekit.barrier.race", attributes: .concurrent)
 
@@ -147,21 +145,21 @@ internal func race<U: Thenable>(fulfilled thenables: [U]) -> Promise<U.T> {
             barrier.sync(flags: .barrier) {
                 switch result {
                 case .failure:
-                    guard rp.isPending else { return }
+                    guard raceP.isPending else { return }
                     countdown -= 1
                     if countdown == 0 {
-                        rp.box.seal(.failure(PMKError.noWinner))
+                        raceP.box.seal(.failure(PMKError.noWinner))
                     }
                 case .success(let value):
-                    guard rp.isPending else { return }
+                    guard raceP.isPending else { return }
                     countdown = 0
-                    rp.box.seal(.success(value))
+                    raceP.box.seal(.success(value))
                 }
             }
         }
     }
 
-    return rp
+    return raceP
 }
 
 /**

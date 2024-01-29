@@ -1,5 +1,3 @@
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
@@ -23,11 +21,11 @@ class PollingModuleTests: XCTestCase {
         firstly {
             pollingModule.start()
         }
-        .done { resumeToken in
+        .done { _ in
             XCTAssert(true)
             expectation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(false)
             expectation.fulfill()
         }
@@ -53,11 +51,11 @@ class PollingModuleTests: XCTestCase {
         firstly {
             pollingModule.start()
         }
-        .done { resumeToken in
+        .done { _ in
             XCTAssert(true)
             expectation.fulfill()
         }
-        .catch { err in
+        .catch { _ in
             XCTAssert(false)
             expectation.fulfill()
         }
@@ -83,7 +81,7 @@ class PollingModuleTests: XCTestCase {
         firstly {
             pollingModule.start()
         }
-        .done { resumeToken in
+        .done { _ in
             XCTAssert(false, "Polling succeeded, but it should fail with error .invalidClientToken")
             expectation.fulfill()
         }
@@ -100,6 +98,3 @@ class PollingModuleTests: XCTestCase {
         wait(for: [expectation], timeout: 30.0)
     }
 }
-
-
-#endif

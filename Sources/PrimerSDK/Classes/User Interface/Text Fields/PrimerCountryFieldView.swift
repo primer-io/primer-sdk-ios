@@ -1,17 +1,15 @@
-
-
 import UIKit
 
 public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
-    
+
     internal var country: String? {
-        return textField._text
+        return textField.internalText
     }
-    
+
     internal var countryCode: CountryCode?
-    
+
     internal var onOpenCountriesListPressed: PrimerAction?
-    
+
     override func xibSetup() {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
@@ -33,16 +31,16 @@ public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
         }
         setupTextFieldView()
     }
-    
+
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return false
     }
 }
 
 extension PrimerCountryFieldView {
-    
-    //MARK: - Setup
-    
+
+    // MARK: - Setup
+
     private func setupTextFieldView() {
         let rightViewTap = UITapGestureRecognizer()
         rightViewTap.addTarget(self, action: #selector(onRightViewPressed))
@@ -51,14 +49,12 @@ extension PrimerCountryFieldView {
 }
 
 extension PrimerCountryFieldView {
-    
-    //MARK: - Action
-    
+
+    // MARK: - Action
+
     @objc
     private func onRightViewPressed() {
         onOpenCountriesListPressed?()
     }
-    
+
 }
-
-

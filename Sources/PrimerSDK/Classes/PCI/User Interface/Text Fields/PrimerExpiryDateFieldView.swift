@@ -5,15 +5,13 @@
 //  Created by Evangelos Pittas on 5/7/21.
 //
 
-
-
 import UIKit
 
 public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
-    
+
     private(set) public var expiryMonth: String?
     private(set) public var expiryYear: String?
-            
+
     override func xibSetup() {
         super.xibSetup()
         keyboardType = .numberPad
@@ -27,16 +25,16 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             return isValid
         }
     }
-        
+
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
-        let currentText = primerTextField._text ?? ""
+        let currentText = primerTextField.internalText ?? ""
         var newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         newText = newText.replacingOccurrences(of: "/", with: "")
         if !(newText.isNumeric || newText.isEmpty) { return false }
         if string != "" && newText.withoutWhiteSpace.count >= 5 { return false }
-        
-        if (self.isValid?(newText) ?? false) {
+
+        if self.isValid?(newText) ?? false {
             validation = .valid
         } else {
             let err = PrimerValidationError.invalidExpiryDate(
@@ -51,14 +49,14 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             ErrorHandler.handle(error: err)
             validation = .invalid(err)
         }
-        
+
         if string != "" {   // Typing
             if newText.count == 2 {
                 newText += "/"
             } else {
                 newText = newText.separate(every: 2, with: "/")
             }
-            
+
         } else {            // Deleting
             if newText.count == 2 {
     //            newText += "/"
@@ -66,10 +64,10 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
                 newText = newText.separate(every: 2, with: "/")
             }
         }
-        
-        primerTextField._text = newText
+
+        primerTextField.internalText = newText
         primerTextField.text = newText
-        
+
         if newText.isValidExpiryDate {
             expiryMonth = String(newText.prefix(2))
             expiryYear = String(newText.suffix(2))
@@ -77,7 +75,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             expiryMonth = nil
             expiryYear = nil
         }
-        
+
         if newText.count == 5, !newText.isValidExpiryDate {
             delegate?.primerTextFieldView(self, isValid: false)
         } else {
@@ -89,7 +87,5 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
             }
         }
         return false
-    }    
+    }
 }
-
-

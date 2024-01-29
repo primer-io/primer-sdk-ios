@@ -35,6 +35,8 @@ enum NetworkError: Error {
     case serializationError
 }
 
+private let logger = PrimerLogging.shared.logger
+
 class Networking {
     
     var endpoint: String {
@@ -54,138 +56,129 @@ class Networking {
         headers: [String: String]?,
         queryParameters: [String: String]?,
         body: Data?,
-        completion: @escaping (_ result: Result<Data, Error>) -> Void)
-    {
-        var msg = "REQUEST\n"
-        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-        
-        if let queryParameters = queryParameters {
-            components.queryItems = queryParameters.map { (key, value) in
-                URLQueryItem(name: key, value: value)
-            }
-        }
-        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
-        
-        msg += "URL: \(components.url!.absoluteString )\n"
-        
-        var request = URLRequest(url: components.url!)
-        request.httpMethod = method.rawValue
-        
-        request.addValue(environment.rawValue, forHTTPHeaderField: "environment")
-        if method != .get {
-            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        }
-        
-        if let customDefinedApiKey = customDefinedApiKey {
-            request.addValue(customDefinedApiKey, forHTTPHeaderField: "x-api-key")
-        }
-        
-        if let headers = headers {
-            // We have a dedicated argument that takes x-api-key into account
-            // in case a custom one gets defined before SDK initialization
-            // so in case this array contains the same key, it won't be added
-            for header in headers.filter({ $0.value != "x-api-key"}) {
-                request.addValue(header.value, forHTTPHeaderField: header.key)
-            }
-        }
-        
-        if let apiVersion = apiVersion {
-            request.addValue(apiVersion.rawValue, forHTTPHeaderField: "x-api-version")
-            request.addValue("IOS", forHTTPHeaderField: "Client")
-        }
-                        
-        msg += "Headers:\n\(request.allHTTPHeaderFields ?? [:])\n"
-                
-        if let body = body {
-            request.httpBody = body
+        completion: @escaping (_ result: Result<Data, Error>) -> Void) {
+            var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
             
-            let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments)
-            msg += "Body:\n\(bodyJson ?? [:])\n"
-        }
-
-        print(msg)
-        msg = ""
-        
-        URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
-            DispatchQueue.main.async {
-                msg += "RESPONSE\n"
-                msg += "URL: \(request.url?.absoluteString ?? "Invalid")\n"
-                
-                if err != nil {
-                    msg += "Error: \(err!)\n"
-                    print(msg)
-                    completion(.failure(err!))
-                    return
+            if let queryParameters = queryParameters {
+                components.queryItems = queryParameters.map { (key, value) in
+                    URLQueryItem(name: key, value: value)
                 }
-
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    msg += "Error: Invalid response\n"
-                    print(msg)
-                    completion(.failure(NetworkError.invalidResponse))
-                    return
+            }
+            components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+            
+            logger.debug(message: "URL: \(components.url!.absoluteString )")
+            
+            var request = URLRequest(url: components.url!)
+            request.httpMethod = method.rawValue
+            
+            request.addValue(environment.rawValue, forHTTPHeaderField: "environment")
+            if method != .get {
+                request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            }
+            
+            if let customDefinedApiKey = customDefinedApiKey {
+                request.addValue(customDefinedApiKey, forHTTPHeaderField: "x-api-key")
+            }
+            
+            if let headers = headers {
+                // We have a dedicated argument that takes x-api-key into account
+                // in case a custom one gets defined before SDK initialization
+                // so in case this array contains the same key, it won't be added
+                for header in headers.filter({ $0.value != "x-api-key"}) {
+                    request.addValue(header.value, forHTTPHeaderField: header.key)
                 }
-
-                if (httpResponse.statusCode < 200 || httpResponse.statusCode > 399) {
-                    msg += "Status code: \(httpResponse.statusCode)\n"
-                    if let data = data, let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                        msg += "Body:\n\(resJson)\n"
-                    }
-                    print(msg)
-                    completion(.failure(NetworkError.invalidResponse))
+            }
+            
+            if let apiVersion = apiVersion {
+                request.addValue(apiVersion.rawValue, forHTTPHeaderField: "x-api-version")
+                request.addValue("IOS", forHTTPHeaderField: "Client")
+            }
+            
+            let headerDescriptions = request.allHTTPHeaderFields?.map { key, value in
+                return "\(key) = \(value)"
+            } ?? []
+            logger.debug(message: "Request Headers:\n\(headerDescriptions.joined(separator: "\n"))")
+            
+            if let body = body {
+                request.httpBody = body
+                if let bodyJson = try? JSONSerialization.jsonObject(with: body, options: .allowFragments) {
+                    logger.debug(message: "Request Body (json):\n\(bodyJson)")
+                }
+            }
+            
+            URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
+                DispatchQueue.main.async {
+                    logger.debug(message: "Url: \(request.url?.absoluteString ?? "unknown")")
                     
-                    guard let data = data else {
-                        print("No data")
+                    if err != nil {
+                        logger.debug(message: "Error: \(err!)")
+                        completion(.failure(err!))
+                        return
+                    }
+                    
+                    guard let httpResponse = response as? HTTPURLResponse else {
+                        logger.debug(message: "Error: Invalid response")
                         completion(.failure(NetworkError.invalidResponse))
                         return
                     }
                     
-                    do {
-                        let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                        print("Response body: \(json)")
-                    } catch {
-                        print("Error: \(error)")
+                    if httpResponse.statusCode < 200 || httpResponse.statusCode > 399 {
+                        logger.debug(message: "Status Code: \(httpResponse.statusCode)")
+                        if let data = data, let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
+                            logger.debug(message: "Response Body (json):\n\(resJson)")
+                        }
+                        
+                        guard let data = data else {
+                            logger.error(message: "No data")
+                            completion(.failure(NetworkError.invalidResponse))
+                            return
+                        }
+                        
+                        do {
+                            let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                            logger.debug(message: "Response Body (json):\n\(json)")
+                        } catch {
+                            logger.error(message: "Failed to parse response body: \(error)")
+                        }
+                        completion(.failure(NetworkError.invalidResponse))
+                        return
                     }
-                    return
+                    
+                    guard let data = data else {
+                        logger.debug(message: "Status Code: \(httpResponse.statusCode)")
+                        logger.debug(message: "Response Body: No data")
+                        completion(.failure(NetworkError.invalidResponse))
+                        return
+                    }
+                    
+                    logger.debug(message: "Status Code: \(httpResponse.statusCode)")
+                    if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
+                        logger.debug(message: "Response Body (json):\n\(resJson)")
+                    } else {
+                        logger.debug(message: "Response Body (text):\n\(String(describing: String(data: data, encoding: .utf8)))")
+                    }
+                    
+                    completion(.success(data))
                 }
-
-                guard let data = data else {
-                    msg += "Status code: \(httpResponse.statusCode)\n"
-                    msg += "Body:\nNo data\n"
-                    print(msg)
-                    completion(.failure(NetworkError.invalidResponse))
-                    return
-                }
-                
-                msg += "Status code: \(httpResponse.statusCode)\n"
-                if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                    msg += "Body:\n\(resJson)\n"
-                } else {
-                    msg += "Body (String): \(String(describing: String(data: data, encoding: .utf8)))"
-                }
-                
-                print(msg)
-
-                completion(.success(data))
-            }
-        }).resume()
-    }
+            }).resume()
+        }
     
     static func resumePayment(_ paymentId: String,
                               withToken resumeToken: String,
                               completion: @escaping (Payment.Response?, Error?) -> Void) {
         let url = environment.baseUrl.appendingPathComponent("/api/payments/\(paymentId)/resume")
-
+        
         let body = Payment.ResumeRequest(token: resumeToken)
-
+        
         var bodyData: Data!
-
+        
         do {
             bodyData = try JSONEncoder().encode(body)
         } catch {
             completion(nil, NetworkError.missingParams)
             return
         }
-
+        
         let networking = Networking()
         networking.request(
             apiVersion: nil,
@@ -202,7 +195,7 @@ class Networking {
                     } catch {
                         completion(nil, error)
                     }
-
+                    
                 case .failure(let err):
                     completion(nil, err)
                 }
@@ -218,7 +211,10 @@ class Networking {
         
         guard let token = paymentMethodTokenData.token else {
             let err = PrimerError.invalidClientToken(
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                userInfo: ["file": #file,
+                           "class": "\(Self.self)",
+                           "function": #function,
+                           "line": "\(#line)"],
                 diagnosticsId: UUID().uuidString)
             completion(nil, err)
             return
@@ -227,14 +223,14 @@ class Networking {
         let body = Payment.CreateRequest(token: token)
         
         var bodyData: Data!
-
+        
         do {
             bodyData = try JSONEncoder().encode(body)
         } catch {
             completion(nil, NetworkError.missingParams)
             return
         }
-
+        
         let networking = Networking()
         networking.request(
             apiVersion: .v2,
@@ -251,7 +247,7 @@ class Networking {
                     } catch {
                         completion(nil, error)
                     }
-
+                    
                 case .failure(let err):
                     completion(nil, err)
                 }
@@ -260,10 +256,9 @@ class Networking {
     
     static func requestClientSession(requestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil, completion: @escaping (String?, Error?) -> Void) {
         let url = environment.baseUrl.appendingPathComponent("/api/client-session")
-
+        
         var bodyData: Data!
-        var headers: [String: String]?
-
+        
         do {
             if let requestBodyJson = requestBody.dictionaryValue {
                 bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
@@ -281,27 +276,27 @@ class Networking {
             apiVersion: .v2_2,
             url: url,
             method: .post,
-            headers: nil,
+            headers: URL.requestSessionHTTPHeaders(useNewWorkflows: useNewWorkflows),
             queryParameters: nil,
             body: bodyData
         ) { result in
-                switch result {
-                case .success(let data):
-                    do {
-                        if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
-                            completion(token, nil)
-                        } else {
-                            let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
-                            completion(nil, err)
-                        }
-                        
-                    } catch {
-                        completion(nil, error)
+            switch result {
+            case .success(let data):
+                do {
+                    if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
+                        completion(token, nil)
+                    } else {
+                        let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                        completion(nil, err)
                     }
-                case .failure(let err):
-                    completion(nil, err)
+                    
+                } catch {
+                    completion(nil, error)
                 }
+            case .failure(let err):
+                completion(nil, err)
             }
+        }
     }
     
     static func patchClientSession(clientToken: String, requestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil, completion: @escaping (String?, Error?) -> Void) {
@@ -309,7 +304,7 @@ class Networking {
         
         var tmpRequestBody = requestBody
         tmpRequestBody.clientToken = clientToken
-
+        
         let bodyData: Data!
         
         do {

@@ -5,8 +5,6 @@
 //  Created by Carl Eriksson on 27/07/2021.
 //
 
-
-
 import Foundation
 
 extension Request.Body {
@@ -18,9 +16,9 @@ extension Response.Body {
 }
 
 extension Request.Body.Apaya {
-    
+
     public struct CreateSession: Encodable {
-        
+
         let merchantAccountId: String
         let reference: String = "recurring"
         let language: String?
@@ -37,11 +35,10 @@ extension Request.Body.Apaya {
     }
 }
 
-
 extension Response.Body.Apaya {
-    
+
     public struct CreateSession: Decodable {
-        
+
         let url: String
         let token: String?
         let passthroughVariable: String?
@@ -49,9 +46,9 @@ extension Response.Body.Apaya {
 }
 
 public struct Apaya {
-    
+
     public struct WebViewResponse {
-        
+
         let hashedIdentifier: String
         let mcc: String
         let mnc: String
@@ -59,8 +56,7 @@ public struct Apaya {
         let productId: String
         let status: String
         let success: String
-        
-        
+
         init(url: URL) throws {
             guard
                 url.queryParameterValue(for: "success") != nil,
@@ -68,29 +64,44 @@ public struct Apaya {
             else {
                 let err = PrimerError.generic(
                     message: "Failed to find query parameters: [status, success]",
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
-                throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file,
+                                                                             "class": "\(Self.self)",
+                                                                             "function": #function,
+                                                                             "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             }
-            
+
             if status == "SETUP_ERROR" {
                 let err = PrimerError.generic(
                     message: "Apaya status is SETUP_ERROR",
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
-                throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                
+                throw PrimerError.failedOnWebViewFlow(error: err, userInfo: ["file": #file,
+                                                                             "class": "\(Self.self)",
+                                                                             "function": #function,
+                                                                             "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+
             } else if status == "SETUP_ABANDONED" {
                 let err = PrimerError.cancelled(
                     paymentMethodType: PrimerPaymentMethodType.apaya.rawValue,
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
-            
+
             guard
                 let mxNumber = url.queryParameterValue(for: "MX"),
                 let hashedIdentifier = url.queryParameterValue(for: "HashedIdentifier"),
@@ -100,30 +111,39 @@ public struct Apaya {
             else {
                 let err = PrimerError.invalidValue(
                     key: "apaya-params", value: nil,
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
-            
+
             guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
                 let err = PrimerError.invalidClientToken(
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
-            
+
             guard let merchantAccountId = PrimerAPIConfigurationModule.apiConfiguration?.getProductId(for: PrimerPaymentMethodType.apaya.rawValue) else {
                 let err = PrimerError.invalidValue(
                     key: "apaya-merchantAccountId",
                     value: nil,
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
-    
+
             self.hashedIdentifier = hashedIdentifier
             self.mcc = mcc
             self.mnc = mnc
@@ -133,29 +153,29 @@ public struct Apaya {
             self.success = success
         }
     }
-    
+
     class ViewModel {
         var carrier: Apaya.Carrier
         var hashedIdentifier: String?
-        
+
         init?(paymentMethod: PrimerPaymentMethodTokenData) {
             guard paymentMethod.paymentInstrumentType == .apayaToken else { return nil }
             guard let mcc = paymentMethod.paymentInstrumentData?.mcc,
                   let mnc = paymentMethod.paymentInstrumentData?.mnc,
                   let carrier = Apaya.Carrier(mcc: mcc, mnc: mnc)
             else { return nil }
-            
+
             self.carrier = carrier
             self.hashedIdentifier = paymentMethod.paymentInstrumentData?.hashedIdentifier
         }
-        
+
     }
 
     enum Carrier: String, Codable {
         // swiftlint:disable identifier_name
         case EE_UK, O2_UK, Vodafone_UK, Three_UK, Strex_Norway
         // swiftlint:enable identifier_name
-        
+
         var name: String {
             switch self {
             case .EE_UK:
@@ -170,7 +190,7 @@ public struct Apaya {
                 return "Strex Norway"
             }
         }
-        
+
         var mcc: Int {
             switch self {
             case .EE_UK:
@@ -185,7 +205,7 @@ public struct Apaya {
                 return 242
             }
         }
-        
+
         var mnc: Int {
             switch self {
             case .EE_UK:
@@ -200,7 +220,7 @@ public struct Apaya {
                 return 99
             }
         }
-        
+
         init?(mcc: Int, mnc: Int) {
             switch (mcc, mnc) {
             case (234, 99):
@@ -217,8 +237,6 @@ public struct Apaya {
                 return nil
             }
         }
-        
+
     }
 }
-
-

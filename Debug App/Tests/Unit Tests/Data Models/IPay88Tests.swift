@@ -6,7 +6,6 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
 #if canImport(PrimerIPay88MYSDK)
 import XCTest
 @testable import PrimerIPay88MYSDK
@@ -134,8 +133,7 @@ class IPay88Tests: XCTestCase {
             XCTAssert(false, "[Customer data missing] Should have failed the validation")
         } catch {
             if let primerErr = error as? PrimerError,
-                case .underlyingErrors(let errors, _, _) = primerErr
-            {
+                case .underlyingErrors(let errors, _, _) = primerErr {
                 let primerErrors = errors.compactMap({ $0 as? PrimerError })
                 let amountError = primerErrors.first(where: { $0.localizedDescription.contains("Invalid client session value") && $0.localizedDescription.contains("amount") })
                 let lineItemsError = primerErrors.first(where: { $0.localizedDescription.contains("Invalid client session value") && $0.localizedDescription.contains("order.lineItems") })
@@ -221,7 +219,6 @@ class IPay88Tests: XCTestCase {
         
         return (primerIPay88Payment, primerIPay88Payment.iPay88Payment)
     }
-
     
     func testMapping(primerIPay88Payment: PrimerIPay88Payment, iPay88Payment: IpayPayment, scenario: String) throws {
         XCTAssert(primerIPay88Payment.merchantCode == iPay88Payment.merchantCode, "[Scenario: \(scenario)] merchantCode mismatch")
@@ -245,5 +242,4 @@ class IPay88Tests: XCTestCase {
 #endif
 }
 
-#endif
 #endif

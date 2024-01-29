@@ -1,5 +1,3 @@
-
-
 import Foundation
 
 internal protocol VaultServiceProtocol {
@@ -9,22 +7,25 @@ internal protocol VaultServiceProtocol {
 }
 
 internal class VaultService: VaultServiceProtocol {
-    
+
     static var apiClient: PrimerAPIClientProtocol?
 
     func fetchVaultedPaymentMethods() -> Promise<Void> {
         return Promise { seal in
             let state: AppStateProtocol = AppState.current
-            
+
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                    "class": "\(Self.self)",
+                                                                    "function": #function,
+                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
-            
+
             let apiClient: PrimerAPIClientProtocol = VaultService.apiClient ?? PrimerAPIClient()
-            
+
             firstly {
                 apiClient.fetchVaultedPaymentMethods(clientToken: clientToken)
             }
@@ -50,21 +51,29 @@ internal class VaultService: VaultServiceProtocol {
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                    "class": "\(Self.self)",
+                                                                    "function": #function,
+                                                                    "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
-            
+
             let apiClient: PrimerAPIClientProtocol = VaultService.apiClient ?? PrimerAPIClient()
-            
+
             apiClient.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { (result) in
                 switch result {
                 case .failure(let err):
-                    let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file,
+                                                                                                "class": "\(Self.self)",
+                                                                                                "function": #function,
+                                                                                                "line": "\(#line)"],
+                                                                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: containerErr)
                     seal.reject(containerErr)
-                    
+
                 case .success:
                     seal.fulfill()
                 }
@@ -72,5 +81,3 @@ internal class VaultService: VaultServiceProtocol {
         }
     }
 }
-
-

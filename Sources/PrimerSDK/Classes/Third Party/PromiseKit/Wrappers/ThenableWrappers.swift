@@ -72,7 +72,7 @@ internal extension _PMKSharedWrappers {
 }
 
 internal extension Thenable {
-    
+
     /**
      The provided closure executes when this promise resolves.
      
@@ -96,7 +96,7 @@ internal extension Thenable {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return then(on: dispatcher, body)
     }
-    
+
     /**
      The provided closure is executed when this promise is resolved.
      
@@ -144,7 +144,7 @@ internal extension Thenable {
 }
 
 internal extension CancellableThenable {
-    
+
     /**
      The provided closure executes when this cancellable promise resolves.
      
@@ -170,7 +170,7 @@ internal extension CancellableThenable {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return then(on: dispatcher, body)
     }
-    
+
     /**
      The provided closure executes when this cancellable promise resolves.
      
@@ -196,7 +196,7 @@ internal extension CancellableThenable {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return then(on: dispatcher, body)
     }
-    
+
     /**
      The provided closure is executed when this cancellable promise is resolved.
      
@@ -222,7 +222,7 @@ internal extension CancellableThenable {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
         return map(on: dispatcher, transform)
     }
-    
+
     /**
      The provided closure is executed when this cancellable promise is resolved.
      
@@ -247,4 +247,3 @@ internal extension CancellableThenable {
         return compactMap(on: dispatcher, transform)
     }
 }
-

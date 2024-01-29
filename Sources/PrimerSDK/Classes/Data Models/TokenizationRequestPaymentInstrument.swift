@@ -5,8 +5,6 @@
 //  Created by Evangelos on 29/8/22.
 //
 
-
-
 import Foundation
 
 protocol TokenizationRequestBodyPaymentInstrument: Encodable {}
@@ -21,16 +19,16 @@ struct ApayaPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
 }
 
 struct ApplePayPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
-    
+
     var paymentMethodConfigId: String
     var sourceConfig: ApplePayPaymentInstrument.SourceConfig
     var token: ApplePayPaymentInstrument.PaymentResponseToken
-    
+
     struct SourceConfig: Codable {
         let source: String
         let merchantId: String
     }
-    
+
     struct PaymentResponseToken: Codable {
         let paymentMethod: ApplePayPaymentResponsePaymentMethod
         let transactionIdentifier: String
@@ -64,28 +62,28 @@ struct KlarnaCustomerTokenPaymentInstrument: TokenizationRequestBodyPaymentInstr
 }
 
 class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
-    
+
     var paymentMethodConfigId: String
     var paymentMethodType: String
     var sessionInfo: OffSessionPaymentSessionInfo
     var type: PaymentInstrumentType = .offSession
-    
-    private enum CodingKeys : String, CodingKey {
+
+    private enum CodingKeys: String, CodingKey {
         case paymentMethodConfigId, paymentMethodType, sessionInfo, type
     }
-    
+
     init(paymentMethodConfigId: String, paymentMethodType: String, sessionInfo: OffSessionPaymentSessionInfo) {
         self.paymentMethodConfigId = paymentMethodConfigId
         self.paymentMethodType = paymentMethodType
         self.sessionInfo = sessionInfo
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        
+
         try container.encode(paymentMethodConfigId, forKey: .paymentMethodConfigId)
         try container.encode(paymentMethodType, forKey: .paymentMethodType)
-        
+
         if let sessionInfo = sessionInfo as? BankSelectorSessionInfo {
             try container.encode(sessionInfo, forKey: .sessionInfo)
         } else if let sessionInfo = sessionInfo as? BlikSessionInfo {
@@ -106,12 +104,15 @@ class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
             let err = InternalError.invalidValue(
                 key: "SessionInfo",
                 value: self.sessionInfo,
-                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                userInfo: ["file": #file,
+                           "class": "\(Self.self)",
+                           "function": #function,
+                           "line": "\(#line)"],
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         try container.encode(type, forKey: .type)
     }
 }
@@ -125,7 +126,7 @@ struct PayPalPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
 
 /**
  Enum exposing available payment methods
-  
+ 
  *Values*
  
  `PAYMENT_CARD`: Used for card payments.
@@ -145,7 +146,7 @@ struct PayPalPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
  `KLARNA_CUSTOMER_TOKEN`: Used for vaulted Klarna payment methods.
  
  `KLARNA`:
-  
+ 
  `unknown`: Unknown payment instrument..
  
  - Author:
@@ -155,7 +156,7 @@ struct PayPalPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
  */
 
 public enum PaymentInstrumentType: String, Codable {
-    
+
     case paymentCard            = "PAYMENT_CARD"
     case offSession             = "OFF_SESSION_PAYMENT"
     case cardOffSession         = "CARD_OFF_SESSION_PAYMENT"
@@ -198,5 +199,3 @@ public struct BinData: Codable {
     public var productCode: String?
     public var productName: String?
 }
-
-

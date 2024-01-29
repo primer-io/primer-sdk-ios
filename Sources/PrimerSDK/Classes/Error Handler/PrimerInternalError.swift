@@ -8,7 +8,7 @@
 import Foundation
 
 internal enum InternalError: PrimerErrorProtocol {
-    
+
     case failedToEncode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case failedToDecode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case failedToSerialize(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
@@ -22,7 +22,7 @@ internal enum InternalError: PrimerErrorProtocol {
     case failedToPerform3dsButShouldContinue(error: Primer3DSErrorContainer)
     case failedToPerform3dsAndShouldBreak(error: Error)
     case noNeedToPerform3ds(status: String)
-    
+
     var errorId: String {
         switch self {
         case .failedToEncode:
@@ -53,7 +53,7 @@ internal enum InternalError: PrimerErrorProtocol {
             return "no-need-to-perform-3ds"
         }
     }
-    
+
     var diagnosticsId: String {
         switch self {
         case .failedToEncode(_, _, let diagnosticsId):
@@ -82,7 +82,7 @@ internal enum InternalError: PrimerErrorProtocol {
             return UUID().uuidString
         }
     }
-    
+
     var errorDescription: String? {
         switch self {
         case .failedToEncode(let message, _, _):
@@ -103,8 +103,7 @@ internal enum InternalError: PrimerErrorProtocol {
             var resStr: String = "nil"
             if let response = response,
                let resData = try? JSONEncoder().encode(response),
-               let str = resData.prettyPrintedJSONString as String?
-            {
+               let str = resData.prettyPrintedJSONString as String? {
                 resStr = str
             }
             return "[\(errorId)] Server error [\(status)] Response: \(resStr) (diagnosticsId: \(self.diagnosticsId))"
@@ -120,10 +119,10 @@ internal enum InternalError: PrimerErrorProtocol {
             return "[\(errorId)] No need to perform 3DS because status is \(status)"
         }
     }
-    
+
     var info: [String: Any]? {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
-        
+
         switch self {
         case .failedToEncode(_, let userInfo, _),
                 .failedToDecode(_, let userInfo, _),
@@ -142,14 +141,14 @@ internal enum InternalError: PrimerErrorProtocol {
                 .noNeedToPerform3ds:
             break
         }
-        
+
         return tmpUserInfo
     }
-    
-    var errorUserInfo: [String : Any] {
+
+    var errorUserInfo: [String: Any] {
         return info ?? [:]
     }
-    
+
     var recoverySuggestion: String? {
         switch self {
         case .failedToEncode:
@@ -178,7 +177,7 @@ internal enum InternalError: PrimerErrorProtocol {
             return nil
         }
     }
-    
+
     var exposedError: Error {
         switch self {
         case .failedToPerform3dsButShouldContinue(let error):
@@ -188,5 +187,11 @@ internal enum InternalError: PrimerErrorProtocol {
         default:
             return PrimerError.unknown(userInfo: self.errorUserInfo as? [String: String], diagnosticsId: self.diagnosticsId)
         }
+    }
+
+    var analyticsContext: [String: Any] {
+        var context: [String: Any] = [:]
+        context[AnalyticsContextKeys.errorId] = errorId
+        return context
     }
 }

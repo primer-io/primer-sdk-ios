@@ -1,8 +1,7 @@
 import Foundation
 import Dispatch
 
-// swiftlint:disable large_tuple
-
+// swiftlint:disable identifier_name
 private func _when<U: Thenable>(_ thenables: [U]) -> Promise<Void> {
     var countdown = thenables.count
     guard countdown > 0 else {
@@ -62,14 +61,16 @@ private func _when<U: Thenable>(_ thenables: [U]) -> Promise<Void> {
      }
 
  - Note: If *any* of the provided promises reject, the returned promise is immediately rejected with that error.
- - Warning: In the event of rejection the other promises will continue to resolve and, as per any other promise, will either fulfill or reject. This is the right pattern for `getter` style asynchronous tasks, but often for `setter` tasks (eg. storing data on a server), you most likely will need to wait on all tasks and then act based on which have succeeded and which have failed, in such situations use `when(resolved:)`.
+ - Warning: In the event of rejection the other promises will continue to resolve and, as per any other promise, will either fulfill or reject. 
+    This is the right pattern for `getter` style asynchronous tasks, but often for `setter` tasks (eg. storing data on a server),
+    you most likely will need to wait on all tasks and then act based on which have succeeded and which have failed, in such situations use `when(resolved:)`.
  - Parameter promises: The promises upon which to wait before the returned promise resolves.
  - Returns: A new promise that resolves when all the provided promises fulfill or one of the provided promises rejects.
  - Note: `when` provides `NSProgress`.
  - SeeAlso: `when(resolved:)`
 */
 internal func when<U: Thenable>(fulfilled thenables: [U]) -> Promise<[U.T]> {
-    return _when(thenables).map(on: nil) { thenables.map{ $0.value! } }
+    return _when(thenables).map(on: nil) { thenables.map { $0.value! } }
 }
 
 /// Wait for all promises in a set to fulfill.
@@ -168,7 +169,7 @@ internal func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurre
         func testDone() {
             barrier.sync {
                 if pendingPromises == 0 {
-                    root.resolver.fulfill(promises.compactMap{ $0.value })
+                    root.resolver.fulfill(promises.compactMap { $0.value })
                 }
             }
         }
@@ -193,7 +194,7 @@ internal func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurre
 
         dequeue()
     }
-        
+
     dequeue()
 
     return root.promise
@@ -202,7 +203,9 @@ internal func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurre
 /**
  Waits on all provided promises.
 
- `when(fulfilled:)` rejects as soon as one of the provided promises rejects. `when(resolved:)` waits on all provided promises whatever their result, and then provides an array of `Result<T>` so you can individually inspect the results. As a consequence this function returns a `Guarantee`, ie. errors are lifted from the individual promises into the results array of the returned `Guarantee`.
+ `when(fulfilled:)` rejects as soon as one of the provided promises rejects. `when(resolved:)` waits on all provided 
+ promises whatever their result, and then provides an array of `Result<T>` so you can individually inspect the results.
+ As a consequence this function returns a `Guarantee`, ie. errors are lifted from the individual promises into the results array of the returned `Guarantee`.
 
      when(resolved: promise1, promise2, promise3).then { results in
          for result in results where case .success(let value) {
@@ -231,13 +234,13 @@ internal func when<T>(resolved promises: [Promise<T>]) -> Guarantee<[Result<T, E
 
     let rg = Guarantee<[Result<T, Error>]>(.pending)
     for promise in promises {
-        promise.pipe { result in
+        promise.pipe { _ in
             barrier.sync(flags: .barrier) {
                 countdown -= 1
             }
             barrier.sync {
                 if countdown == 0 {
-                    rg.box.seal(promises.map{ $0.result! })
+                    rg.box.seal(promises.map { $0.result! })
                 }
             }
         }
@@ -355,7 +358,7 @@ internal func when(_ guarantees: Guarantee<Void>...) -> Guarantee<Void> {
 
 // Waits on all provided Guarantees.
 internal func when(guarantees: [Guarantee<Void>]) -> Guarantee<Void> {
-    return when(fulfilled: guarantees).recover{ _ in }.asVoid()
+    return when(fulfilled: guarantees).recover { _ in }.asVoid()
 }
 
 //////////////////////////////////////////////////////////// Cancellation
@@ -381,7 +384,9 @@ internal func when(guarantees: [Guarantee<Void>]) -> Guarantee<Void> {
      p.cancel()
 
  - Note: If *any* of the provided promises reject, the returned promise is immediately rejected with that error.
- - Warning: In the event of rejection the other promises will continue to resolve and, as per any other promise, will either fulfill or reject. This is the right pattern for `getter` style asynchronous tasks, but often for `setter` tasks (eg. storing data on a server), you most likely will need to wait on all tasks and then act based on which have succeeded and which have failed, in such situations use `when(resolved:)`.
+ - Warning: In the event of rejection the other promises will continue to resolve and, as per any other promise, 
+ will either fulfill or reject. This is the right pattern for `getter` style asynchronous tasks, but often for `setter` tasks (eg. storing data on a server),
+ you most likely will need to wait on all tasks and then act based on which have succeeded and which have failed, in such situations use `when(resolved:)`.
  - Parameter promises: The promises upon which to wait before the returned promise resolves.
  - Returns: A new promise that resolves when all the provided promises fulfill or one of the provided promises rejects.
  - Note: `when` provides `NSProgress`.
@@ -456,18 +461,26 @@ internal func cancellableWhen<U: CancellableThenable, V: CancellableThenable, W:
 
 /// Wait for all cancellable promises in a set to fulfill.
 /// - SeeAlso: `when(fulfilled:,_:)`
-internal func cancellableWhen<U: CancellableThenable, V: CancellableThenable, W: CancellableThenable, X: CancellableThenable>(fulfilled pu: U, _ pv: V, _ pw: W, _ px: X) -> CancellablePromise<(U.U.T, V.U.T, W.U.T, X.U.T)> {
+internal func cancellableWhen<U: CancellableThenable,
+                              V: CancellableThenable,
+                              W: CancellableThenable,
+                              X: CancellableThenable>(fulfilled pu: U, _ pv: V, _ pw: W, _ px: X) -> CancellablePromise<(U.U.T, V.U.T, W.U.T, X.U.T)> {
     return when(fulfilled: [pu.asVoid(), pv.asVoid(), pw.asVoid(), px.asVoid()]).map(on: nil) { (pu.value!, pv.value!, pw.value!, px.value!) }
 }
 
 /// Wait for all cancellable promises in a set to fulfill.
 /// - SeeAlso: `when(fulfilled:,_:)`
-internal func cancellableWhen<U: CancellableThenable, V: CancellableThenable, W: CancellableThenable, X: CancellableThenable, Y: CancellableThenable>(fulfilled pu: U, _ pv: V, _ pw: W, _ px: X, _ py: Y) -> CancellablePromise<(U.U.T, V.U.T, W.U.T, X.U.T, Y.U.T)> {
+internal func cancellableWhen<U: CancellableThenable,
+                              V: CancellableThenable,
+                              W: CancellableThenable,
+                              X: CancellableThenable,
+                              Y: CancellableThenable>(fulfilled pu: U, _ pv: V, _ pw: W, _ px: X, _ py: Y) -> CancellablePromise<(U.U.T, V.U.T, W.U.T, X.U.T, Y.U.T)> {
     return when(fulfilled: [pu.asVoid(), pv.asVoid(), pw.asVoid(), px.asVoid(), py.asVoid()]).map(on: nil) { (pu.value!, pv.value!, pw.value!, px.value!, py.value!) }
 }
 
 /**
- Generate cancellable promises at a limited rate and wait for all to fulfill.  Call `cancel` on the returned promise to cancel all currently pending promises.
+ Generate cancellable promises at a limited rate and wait for all to fulfill.  
+ Call `cancel` on the returned promise to cancel all currently pending promises.
 
  For example:
  
@@ -507,11 +520,11 @@ internal func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurre
     guard concurrently > 0 else {
         return CancellablePromise(error: PMKError.badInput)
     }
-    
+
     var pi = promiseIterator
     var generatedPromises: [CancellablePromise<It.Element.U.T>] = []
     var rootPromise: CancellablePromise<[It.Element.U.T]>!
-    
+
     let generator = AnyIterator<Promise<It.Element.U.T>> {
         guard let promise = pi.next() as? CancellablePromise<It.Element.U.T> else {
             return nil
@@ -523,7 +536,7 @@ internal func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurre
         }
         return promise.promise
     }
-    
+
     rootPromise = CancellablePromise(when(fulfilled: generator, concurrently: concurrently))
     for p in generatedPromises {
         rootPromise.appendCancelContext(from: p)
@@ -534,7 +547,8 @@ internal func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurre
 /**
  Waits on all provided cancellable promises.
 
- `when(fulfilled:)` rejects as soon as one of the provided promises rejects. `when(resolved:)` waits on all provided promises and *never* rejects.  When cancelled, all promises will attempt to be cancelled and those that are successfully cancelled will have a result of
+ `when(fulfilled:)` rejects as soon as one of the provided promises rejects. `when(resolved:)` waits on all provided promises and *never* rejects.  
+ When cancelled, all promises will attempt to be cancelled and those that are successfully cancelled will have a result of
  PMKError.cancelled.
 
      let p = when(resolved: promise1, promise2, promise3, cancel: context).then { results in
@@ -582,3 +596,4 @@ func asPromises<T>(_ cancellablePromises: [CancellablePromise<T>]) -> [Promise<T
     }
     return promises
 }
+// swiftlint:enable identifier_name

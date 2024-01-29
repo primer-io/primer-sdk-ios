@@ -6,8 +6,6 @@
 //  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
@@ -40,8 +38,7 @@ class ApayaDataModelTests: XCTestCase {
         do {
             _ = try Apaya.WebViewResponse(url: url!)
             XCTFail()
-        }
-        catch {
+        } catch {
             XCTAssertNotNil(error)
         }
     }
@@ -51,8 +48,7 @@ class ApayaDataModelTests: XCTestCase {
         do {
             _ = try Apaya.WebViewResponse(url: url!)
             XCTFail()
-        }
-        catch {
+        } catch {
             XCTAssertNotNil(error)
         }
     }
@@ -62,8 +58,7 @@ class ApayaDataModelTests: XCTestCase {
         do {
             _ = try Apaya.WebViewResponse(url: url!)
             XCTFail()
-        }
-        catch {
+        } catch {
             if let err = error as? PrimerError {
                 switch err {
                 case .failedOnWebViewFlow:
@@ -108,6 +103,3 @@ class ApayaDataModelTests: XCTestCase {
     }
     
 }
-
-
-#endif

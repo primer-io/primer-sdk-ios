@@ -5,8 +5,6 @@
 //  Created by Dario Carlomagno on 24/02/22.
 //
 
-
-
 import Foundation
 
 internal protocol CreateResumePaymentServiceProtocol {
@@ -16,17 +14,20 @@ internal protocol CreateResumePaymentServiceProtocol {
 }
 
 internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
-    
+
     static var apiClient: PrimerAPIClientProtocol?
 
     func createPayment(paymentRequest: Request.Body.Payment.Create, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
         }
-        
+
         let apiClient: PrimerAPIClientProtocol = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
         apiClient.createPayment(clientToken: clientToken, paymentRequestBody: paymentRequest) { result in
             switch result {
@@ -37,15 +38,18 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             }
         }
     }
-    
+
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
         }
-                
+
         let apiClient: PrimerAPIClientProtocol = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
         apiClient.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest) { result in
             switch result {
@@ -55,8 +59,5 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                 completion(paymentResponse, nil)
             }
         }
-
     }
 }
-
-

@@ -5,8 +5,6 @@
 //  Created by Carl Eriksson on 10/02/2021.
 //
 
-
-
 @propertyWrapper
 struct Dependency<T> {
     var wrappedValue: T
@@ -21,7 +19,7 @@ private let _DependencyContainer = DependencyContainer()
 // swiftlint:enable identifier_name
 
 final internal class DependencyContainer {
-    
+
     private var dependencies = [String: AnyObject]()
 
     static var shared: DependencyContainer {
@@ -50,12 +48,12 @@ final internal class DependencyContainer {
                 let appState: AppStateProtocol = AppState()
                 DependencyContainer.register(appState)
                 return self.resolve()
-                
+
             } else if key == String(describing: PrimerSettingsProtocol.self) {
                 let primerSettings: PrimerSettingsProtocol = PrimerSettings()
                 DependencyContainer.register(primerSettings)
                 return self.resolve()
-                
+
             } else if key == String(describing: PrimerThemeProtocol.self) {
                 let primerTheme: PrimerThemeProtocol = PrimerTheme()
                 DependencyContainer.register(primerTheme)
@@ -71,5 +69,3 @@ final internal class DependencyContainer {
         return dependency!
     }
 }
-
-

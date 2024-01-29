@@ -8,17 +8,22 @@
 import Foundation
 
 struct NolPayAnalyticsConstants {
-    
-    // link component
-    static let LINK_CARD_START_METHOD = "NolPayLinkCardComponent.start()"
-    static let LINK_CARD_UPDATE_COLLECTED_DATA_METHOD = "NolPayLinkCardComponent.updateCollectedData()"
-    static let LINK_CARD_SUBMIT_DATA_METHOD = "NolPayLinkCardComponent.submit()"
 
-    // unlink component
-    static let UNLINK_CARD_START_METHOD = "NolPayUnlinkCardComponent.start()"
-    static let UNLINK_CARD_UPDATE_COLLECTED_DATA_METHOD = "NolPayUnlinkCardComponent.updateCollectedData()"
-    static let UNLINK_CARD_SUBMIT_DATA_METHOD = "NolPayUnlinkCardComponent.submit()"
+    // Link component
+    static let linkCardStartMethod = "NolPayLinkCardComponent.start()"
+    static let linkCardUpdateCollectedDataMethod = "NolPayLinkCardComponent.updateCollectedData()"
+    static let linkCardSubmitDataMethod = "NolPayLinkCardComponent.submit()"
 
-    // list cards component
-    static let LINKED_CARDS_GET_CARDS_METHOD = "NolPayLinkedCardsComponent.getLinkedCards()"
+    // Unlink component
+    static let unlinkCardStartMethod = "NolPayUnlinkCardComponent.start()"
+    static let unlinkCardUpdateCollectedDataMethod = "NolPayUnlinkCardComponent.updateCollectedData()"
+    static let unlinkCardSubmitDataMethod = "NolPayUnlinkCardComponent.submit()"
+
+    // List cards component
+    static let linkedCardsGetCardsMethod = "NolPayLinkedCardsComponent.getLinkedCards()"
+
+    // Payment component
+    static let paymentStartMethod = "NolPayStartPaymentComponent.start()"
+    static let paymentUpdateCollectedDataMethod = "NolPayStartPaymentComponent.updateCollectedData()"
+    static let paymentSubmitDataMethod = "NolPayStartPaymentComponent.submit()"
 }

@@ -6,19 +6,17 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
 private struct DummyEndpoint: Endpoint {
     var baseURL: String?
-    var port: Int? = nil
+    var port: Int?
     var path: String = ""
     var method: PrimerSDK.HTTPMethod = .get
-    var headers: [String : String]? = nil
-    var queryParameters: [String : String]? = nil
-    var body: Data? = nil
+    var headers: [String: String]?
+    var queryParameters: [String: String]?
+    var body: Data?
     var shouldParseResponseBody: Bool = false
     
     init(baseURL: String?, path: String = "", queryParameters: [String: String]? = nil) {
@@ -83,7 +81,7 @@ final class URLSessionStackTests: XCTestCase {
     func testAnalyticsReportingForOmitted() {
         // Test endpoints that shouldn't cause a network event to be reported
         XCTAssertFalse(sut.shouldReportNetworkEvents(for: .poll(clientToken: nil, url: "")))
-        XCTAssertFalse(sut.shouldReportNetworkEvents(for: .sendAnalyticsEvents(clientToken: nil, url: Analytics.Service.sdkLogsUrl, body: nil)))
+        XCTAssertFalse(sut.shouldReportNetworkEvents(for: .sendAnalyticsEvents(clientToken: nil, url: Analytics.Service.defaultSdkLogsUrl, body: nil)))
         XCTAssertFalse(sut.shouldReportNetworkEvents(for: .sendAnalyticsEvents(clientToken: nil, url: URL(string: "https://anything-that-ends.with/sdk-logs")!, body: nil)))
 
         // Test selection of endpoints that should cause a network event to be reported
@@ -97,4 +95,3 @@ final class URLSessionStackTests: XCTestCase {
     }
     
 }
-#endif

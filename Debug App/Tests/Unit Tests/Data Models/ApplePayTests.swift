@@ -6,9 +6,6 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-
-#if canImport(UIKit)
-
 import PassKit
 import XCTest
 @testable import PrimerSDK
@@ -55,7 +52,7 @@ class ApplePayTests: XCTestCase {
                             name: "name 1",
                             description: "description 1",
                             taxAmount: nil,
-                            taxCode: nil),
+                            taxCode: nil)
                     ],
                     shippingAmount: nil),
                 customer: nil,
@@ -187,7 +184,7 @@ class ApplePayTests: XCTestCase {
                     fees: [
                         ClientSession.Order.Fee(
                             type: .surcharge,
-                            amount: 19),
+                            amount: 19)
                     ],
                     lineItems: nil,
                     shippingAmount: nil),
@@ -204,7 +201,6 @@ class ApplePayTests: XCTestCase {
             XCTAssert(orderItems.last!.quantity == 1)
             XCTAssert(orderItems.last!.unitAmount == clientSession.order?.merchantAmount ?? 0)
             XCTAssert(orderItems.last!.name == settings.paymentMethodOptions.applePayOptions?.merchantName)
-            
             
         } catch {
             XCTAssert(false, "Failed with error \(error.localizedDescription)")
@@ -278,7 +274,7 @@ class ApplePayTests: XCTestCase {
                             name: "name 4",
                             description: "description 4",
                             taxAmount: nil,
-                            taxCode: nil),
+                            taxCode: nil)
                     ],
                     shippingAmount: nil),
                 customer: nil,
@@ -301,13 +297,13 @@ class ApplePayTests: XCTestCase {
             let applePayItems: [PKPaymentSummaryItem] = orderItems.compactMap({ $0.applePayItem })
             XCTAssert(applePayItems.count == (clientSession.order?.lineItems?.count ?? 0) + 1, "Apple Pay items should be \((clientSession.order?.lineItems?.count ?? 0) + 1)")
             
-            XCTAssert(applePayItems[0].amount.doubleValue == NSDecimalNumber(floatLiteral:   8.99).doubleValue)
+            XCTAssert(applePayItems[0].amount.doubleValue == NSDecimalNumber(floatLiteral: 8.99).doubleValue)
             XCTAssert(applePayItems[0].label == clientSession.order?.lineItems?[0].description)
             
-            XCTAssert(applePayItems[1].amount.doubleValue == NSDecimalNumber(floatLiteral:  42.02).doubleValue)
+            XCTAssert(applePayItems[1].amount.doubleValue == NSDecimalNumber(floatLiteral: 42.02).doubleValue)
             XCTAssert(applePayItems[1].label == clientSession.order?.lineItems?[1].description)
             
-            XCTAssert(applePayItems[2].amount.doubleValue == NSDecimalNumber(floatLiteral:  91.01).doubleValue)
+            XCTAssert(applePayItems[2].amount.doubleValue == NSDecimalNumber(floatLiteral: 91.01).doubleValue)
             XCTAssert(applePayItems[2].label == clientSession.order?.lineItems?[2].description)
             
             XCTAssert(applePayItems[3].amount.doubleValue == NSDecimalNumber(floatLiteral: 160.00).doubleValue)
@@ -321,5 +317,3 @@ class ApplePayTests: XCTestCase {
         }
     }
 }
-
-#endif

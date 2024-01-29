@@ -47,7 +47,6 @@ extension String {
             .map(indexRangeToIntRange)
     }
     
-    
     private func indexRangeToIntRange(_ range: Range<String.Index>) -> Range<Int> {
         return indexToInt(range.lowerBound) ..< indexToInt(range.upperBound)
     }

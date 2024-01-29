@@ -1,5 +1,3 @@
-
-
 // MARK: - PRIMER SETTINGS
 
 internal protocol PrimerSettingsProtocol {
@@ -11,17 +9,18 @@ internal protocol PrimerSettingsProtocol {
 }
 
 public class PrimerSettings: PrimerSettingsProtocol, Codable {
-    
+
     static var current: PrimerSettings {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        return settings as! PrimerSettings
+        guard let primerSettings = settings as? PrimerSettings else { fatalError() }
+        return primerSettings
     }
     public let paymentHandling: PrimerPaymentHandling
     let localeData: PrimerLocaleData
     let paymentMethodOptions: PrimerPaymentMethodOptions
     let uiOptions: PrimerUIOptions
     let debugOptions: PrimerDebugOptions
-    
+
     public init(
         paymentHandling: PrimerPaymentHandling = .auto,
         localeData: PrimerLocaleData? = nil,
@@ -55,16 +54,16 @@ internal protocol PrimerPaymentMethodOptionsProtocol {
 }
 
 public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Codable {
-    
+
     let urlScheme: String?
     let applePayOptions: PrimerApplePayOptions?
     var klarnaOptions: PrimerKlarnaOptions?
-    
+
     // Was producing warning: Immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
     // Was it intentional?
     var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions()
     var threeDsOptions: PrimerThreeDsOptions?
-    
+
     public init(
         urlScheme: String? = nil,
         applePayOptions: PrimerApplePayOptions? = nil,
@@ -76,7 +75,7 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Cod
         self.klarnaOptions = klarnaOptions
         self.threeDsOptions = threeDsOptions
     }
-    
+
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     public init(
         urlScheme: String? = nil,
@@ -93,24 +92,37 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Cod
 // MARK: Apple Pay
 
 public class PrimerApplePayOptions: Codable {
-    
+
     let merchantIdentifier: String
     let merchantName: String
     let isCaptureBillingAddressEnabled: Bool
-    
-    public init(merchantIdentifier: String, merchantName: String, isCaptureBillingAddressEnabled: Bool = false) {
+    /// If in some cases you dont want to present ApplePay option if the device is not supporting it set this to `false`. 
+    /// Default value is `true`.
+    let showApplePayForUnsupportedDevice: Bool
+    /// Due to merchant report about ApplePay flow which was not presenting because 
+    /// canMakePayments(usingNetworks:) was returning false if there were no cards in the Wallet,
+    /// we introduced this flag to continue supporting the old behaviour. Default value is `true`.
+    let checkProvidedNetworks: Bool
+
+    public init(merchantIdentifier: String,
+                merchantName: String,
+                isCaptureBillingAddressEnabled: Bool = false,
+                showApplePayForUnsupportedDevice: Bool = true,
+                checkProvidedNetworks: Bool = true) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
+        self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
+        self.checkProvidedNetworks = checkProvidedNetworks
     }
 }
 
 // MARK: Klarna
 
 public class PrimerKlarnaOptions: Codable {
-    
+
     let recurringPaymentDescription: String
-    
+
     public init(recurringPaymentDescription: String) {
         self.recurringPaymentDescription = recurringPaymentDescription
     }
@@ -120,15 +132,15 @@ public class PrimerKlarnaOptions: Codable {
 
 @available(*, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
 public class PrimerCardPaymentOptions: Codable {
-    
+
     @available(*, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     let is3DSOnVaultingEnabled: Bool
-    
+
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     public init(is3DSOnVaultingEnabled: Bool?) {
         self.is3DSOnVaultingEnabled = is3DSOnVaultingEnabled != nil ? is3DSOnVaultingEnabled! : true
     }
-    
+
     public init() {
         self.is3DSOnVaultingEnabled = true
     }
@@ -144,16 +156,16 @@ internal protocol PrimerUIOptionsProtocol {
 }
 
 public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
-    
+
     public internal(set) var isInitScreenEnabled: Bool
     public internal(set) var isSuccessScreenEnabled: Bool
     public internal(set) var isErrorScreenEnabled: Bool
     public let theme: PrimerTheme
-    
-    private enum CodingKeys : String, CodingKey {
+
+    private enum CodingKeys: String, CodingKey {
         case isInitScreenEnabled, isSuccessScreenEnabled, isErrorScreenEnabled, theme
     }
-    
+
     public init(
         isInitScreenEnabled: Bool? = nil,
         isSuccessScreenEnabled: Bool? = nil,
@@ -165,7 +177,7 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
         self.isErrorScreenEnabled = isErrorScreenEnabled != nil ? isErrorScreenEnabled! : true
         self.theme = theme ?? PrimerTheme()
     }
-    
+
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
@@ -173,7 +185,7 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
         self.isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
         self.theme = PrimerTheme()
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(isInitScreenEnabled, forKey: .isInitScreenEnabled)
@@ -189,9 +201,9 @@ internal protocol PrimerDebugOptionsProtocol {
 }
 
 public class PrimerDebugOptions: PrimerDebugOptionsProtocol, Codable {
-    
+
     let is3DSSanityCheckEnabled: Bool
-    
+
     public init(is3DSSanityCheckEnabled: Bool? = nil) {
         self.is3DSSanityCheckEnabled = is3DSSanityCheckEnabled != nil ? is3DSSanityCheckEnabled! : true
     }
@@ -204,12 +216,10 @@ internal protocol PrimerThreeDsOptionsProtocol {
 }
 
 public class PrimerThreeDsOptions: PrimerThreeDsOptionsProtocol, Codable {
-    
+
     let threeDsAppRequestorUrl: String?
-    
+
     public init(threeDsAppRequestorUrl: String? = nil) {
         self.threeDsAppRequestorUrl = threeDsAppRequestorUrl
     }
 }
-
-

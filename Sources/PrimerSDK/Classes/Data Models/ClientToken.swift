@@ -1,16 +1,14 @@
-
-
 import Foundation
 
 extension Request.Body {
-    
+
     struct ClientTokenValidation: Encodable {
         let clientToken: String
     }
 }
 
 struct DecodedJWTToken: Codable {
-    
+
     var accessToken: String? // Always present
     var analyticsUrl: String?
     var analyticsUrlV2: String?
@@ -29,7 +27,7 @@ struct DecodedJWTToken: Codable {
     var supportedThreeDsProtocolVersions: [String]?
     var qrCode: String?
     var accountNumber: String?
-    
+
     // iPay88
     var backendCallbackUrl: String?
     var primerTransactionId: String?
@@ -37,15 +35,15 @@ struct DecodedJWTToken: Codable {
     var iPay88ActionType: String?
     var supportedCurrencyCode: String?
     var supportedCountry: String?
-    
+
     // Nol
     var nolPayTransactionNo: String?
-    
+
     // Voucher info
     var expiresAt: Date?
     var entity: String?
     var reference: String?
-    
+
     var isValid: Bool {
         do {
             try validate()
@@ -54,7 +52,7 @@ struct DecodedJWTToken: Codable {
             return false
         }
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case accessToken
         case analyticsUrl
@@ -92,7 +90,7 @@ struct DecodedJWTToken: Codable {
         // Nol
         case nolPayTransactionNo
     }
-    
+
     init(
         accessToken: String?,
         expDate: Date?,
@@ -140,9 +138,9 @@ struct DecodedJWTToken: Codable {
         self.supportedCountry = supportedCountry
         self.nolPayTransactionNo = nolPayTransactionNo
     }
-    
+
     init(from decoder: Decoder) throws {
-        
+
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.accessToken = try? container.decode(String.self, forKey: .accessToken)
         self.analyticsUrl = try? container.decode(String.self, forKey: .analyticsUrl)
@@ -173,7 +171,7 @@ struct DecodedJWTToken: Codable {
         if let expirationDateInt = try? container.decode(Int.self, forKey: .expiration) {
             self.expDate = Date(timeIntervalSince1970: TimeInterval(expirationDateInt))
         }
-        
+
         // For some APMs we receive one more value out of the client token `qrCode`
         // They may have different values.
         // Either a URL or a Base64 string.
@@ -186,7 +184,7 @@ struct DecodedJWTToken: Codable {
         } else if let qrCode = try? container.decode(String.self, forKey: .qrCodeUrl) {
             self.qrCode = qrCode
         }
-        
+
         // iPay88
         self.backendCallbackUrl = try container.decodeIfPresent(String.self, forKey: .backendCallbackUrl)
         self.primerTransactionId = try container.decodeIfPresent(String.self, forKey: .primerTransactionId)
@@ -194,7 +192,7 @@ struct DecodedJWTToken: Codable {
         self.iPay88ActionType = try container.decodeIfPresent(String.self, forKey: .iPay88ActionType)
         self.supportedCurrencyCode = try container.decodeIfPresent(String.self, forKey: .supportedCurrencyCode)
         self.supportedCountry = try container.decodeIfPresent(String.self, forKey: .supportedCountry)
-        
+
         // Voucher info
         if let dateString = try? container.decode(String.self, forKey: .expiresAt) {
             let dateFormatter = DateFormatter().withVoucherExpirationDateFormat()
@@ -209,7 +207,7 @@ struct DecodedJWTToken: Codable {
         self.reference = try? container.decode(String.self, forKey: .reference)
         self.entity = try? container.decode(String.self, forKey: .entity)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try? container.encode(accessToken, forKey: .accessToken)
@@ -228,13 +226,13 @@ struct DecodedJWTToken: Codable {
         try? container.encode(accountNumber, forKey: .accountNumber)
         try? container.encode(expDate?.timeIntervalSince1970, forKey: .expiration)
         try? container.encode(expDate?.timeIntervalSince1970, forKey: .exp)
-        
+
         if qrCode?.isHttpOrHttpsURL == true {
             try? container.encode(qrCode, forKey: .qrCodeUrl)
         } else {
             try? container.encode(qrCode, forKey: .qrCode)
         }
-        
+
         // iPay88
         try? container.encode(backendCallbackUrl, forKey: .backendCallbackUrl)
         try? container.encode(primerTransactionId, forKey: .primerTransactionId)
@@ -242,38 +240,51 @@ struct DecodedJWTToken: Codable {
         try? container.encode(iPay88ActionType, forKey: .iPay88ActionType)
         try? container.encode(supportedCurrencyCode, forKey: .supportedCurrencyCode)
         try? container.encode(supportedCountry, forKey: .supportedCountry)
-        
+
         // Voucher info
         try? container.encode(expiresAt, forKey: .expiresAt)
         try? container.encode(reference, forKey: .reference)
         try? container.encode(entity, forKey: .entity)
-        
+
         // Nol
         try? container.encode(nolPayTransactionNo, forKey: .nolPayTransactionNo)
     }
 }
 
 extension DecodedJWTToken {
-    
+
     func validate() throws {
         if accessToken == nil {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Access token is nil"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)",
+                                                                "reason": "Access token is nil"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         guard let expDate = expDate else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Expiry date missing"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)",
+                                                                "reason": "Expiry date missing"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         if expDate < Date() {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)", "reason": "Expiry datetime has passed."], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)",
+                                                                "reason": "Expiry datetime has passed."],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
     }
 }
-
-

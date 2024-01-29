@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 6/8/21.
 //
 
-
-
 import Foundation
 
 internal protocol UniversalCheckoutViewModelProtocol {
@@ -15,7 +13,7 @@ internal protocol UniversalCheckoutViewModelProtocol {
     var amountStr: String? { get }
 }
 
-internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol {
+internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol, LogReporter {
 
     var amountStr: String? {
         if (PrimerInternal.shared.intent ?? .vault) == .vault { return nil }
@@ -36,5 +34,3 @@ internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol {
         return AppState.current.selectedPaymentMethod
     }
 }
-
-

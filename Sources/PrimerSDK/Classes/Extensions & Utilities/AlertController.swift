@@ -5,8 +5,6 @@
 //  Created by Evangelos Pittas on 17/3/21.
 //
 
-
-
 import UIKit
 
 internal class AlertController: UIAlertController {
@@ -51,5 +49,3 @@ internal class ClearViewController: UIViewController {
     }
 
 }
-
-

@@ -5,17 +5,12 @@
 //  Created by Carl Eriksson on 03/01/2021.
 //
 
-#if canImport(UIKit)
-
 @testable import PrimerSDK
 import XCTest
-#if canImport(PrimerNolPaySDK)
-import PrimerNolPaySDK
-#endif
 
 var mockClientToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil, nolPayTransactionNo: nil)
 
-//(
+// (
 //    accessToken: "bla",
 //    configurationUrl: "bla",
 //    paymentFlow: "bla",
@@ -24,7 +19,7 @@ var mockClientToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeInte
 //    coreUrl: "https://primer.io",
 //    pciUrl: "https://primer.io",
 //    env: "bla"
-//)
+// )
 
 var mockSettings = PrimerSettings(
     paymentMethodOptions: PrimerPaymentMethodOptions(
@@ -71,7 +66,6 @@ class Mocks {
         status: .success,
         paymentFailureReason: nil)
     
-    
     static func createMockAPIConfiguration(
         clientSession: ClientSession.APIResponse?,
         paymentMethods: [PrimerPaymentMethod]?
@@ -115,6 +109,8 @@ class Mocks {
             static var paymentCardPaymentMethodName = "Mock Payment Card Payment Method"
             
             static var processorConfigId = "mock_processor_config_id"
+            static var idealPaymentMethodId = "ADYEN_IDEAL"
+            static var idealPaymentMethodName = "Mock Ideal Payment Method"
         }
     }
     
@@ -159,6 +155,26 @@ class Mocks {
             surcharge: 299,
             options: nil,
             displayMetadata: nil)
+        
+        static var idealFormWithRedirectPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.idealPaymentMethodId,
+            implementationType: .nativeSdk,
+            type: Mocks.Static.Strings.idealPaymentMethodId,
+            name: Mocks.Static.Strings.idealPaymentMethodName,
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 0,
+            options: nil,
+            displayMetadata: nil)
+        
+        static var klarnaPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.klarnaPaymentMethodId,
+            implementationType: .nativeSdk,
+            type: "KLARNA",
+            name: "KLARNA",
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 299,
+            options: nil,
+            displayMetadata: nil)
     }
 }
 
@@ -169,42 +185,48 @@ class MockPrimerDelegate: PrimerDelegate {
     var clientTokenCallbackCalled = false
     var authorizePaymentCalled = false
     var primerDidDismissCalled = false
-
+    
     init(token: String? = nil, authorizePaymentFails: Bool = false) {
         self.token = token
         self.authorizePaymentFails = authorizePaymentFails
     }
-
+    
     func clientTokenCallback(_ completion: @escaping (String?, Error?) -> Void) {
         clientTokenCallbackCalled = true
         guard let token = token else {
-            completion(nil, PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+            completion(nil, PrimerError.invalidClientToken(userInfo: ["file": #file, 
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"], diagnosticsId: UUID().uuidString))
             return
         }
         completion(token, nil)
     }
     
     func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
-
+        
     }
-
     
     func tokenAddedToVault(_ token: PrimerPaymentMethodTokenData) {
         
     }
-
     
-
     func authorizePayment(_ result: PrimerPaymentMethodTokenData, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
-        if authorizePaymentFails { completion(PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)) }
+        if authorizePaymentFails { completion(PrimerError.invalidClientToken(userInfo: ["file": #file, 
+                                                                                        "class": "\(Self.self)",
+                                                                                        "function": #function,
+                                                                                        "line": "\(#line)"], diagnosticsId: UUID().uuidString)) }
     }
     
     func onTokenizeSuccess(_ paymentMethodToken: PrimerPaymentMethodTokenData, _ completion: @escaping (Error?) -> Void) {
         authorizePaymentCalled = true
-        if authorizePaymentFails { completion(PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)) }
+        if authorizePaymentFails { completion(PrimerError.invalidClientToken(userInfo: ["file": #file, 
+                                                                                        "class": "\(Self.self)",
+                                                                                        "function": #function,
+                                                                                        "line": "\(#line)"], diagnosticsId: UUID().uuidString)) }
     }
-
+    
     func primerDidDismiss() {
         primerDidDismissCalled = true
     }
@@ -252,7 +274,7 @@ class MockAppState: AppStateProtocol {
     var currency: Currency? {
         return MockAppState.current.apiConfiguration?.clientSession?.order?.currencyCode
     }
-
+    
     var clientToken: String?
     var apiConfiguration: PrimerAPIConfiguration?
     var paymentMethods: [PrimerPaymentMethodTokenData] = []
@@ -262,7 +284,7 @@ class MockAppState: AppStateProtocol {
     static func resetAPIConfiguration() {
         AppState.current.apiConfiguration = nil
     }
-
+    
     init(
         clientToken: String? = MockAppState.mockClientToken,
         apiConfiguration: PrimerAPIConfiguration? = PrimerAPIConfiguration(
@@ -536,7 +558,7 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
     }
     
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
-        return Promise { seal in
+        return Promise { _ in
             guard let mockedAPIConfiguration = mockedAPIConfiguration else {
                 XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
                 return
@@ -556,5 +578,3 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
         }
     }
 }
-
-#endif

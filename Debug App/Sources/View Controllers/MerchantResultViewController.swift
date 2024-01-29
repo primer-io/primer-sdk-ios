@@ -9,7 +9,7 @@
 import UIKit
 import PrimerSDK
 
-class MerchantResultViewController: UIViewController {
+final class MerchantResultViewController: UIViewController {
     
     static func instantiate(
         checkoutData: PrimerCheckoutData?,
@@ -56,7 +56,6 @@ class MerchantResultViewController: UIViewController {
         } else {
             logsTextView.text = "[\"No logs received\"]"
         }
-
 
         if let checkoutData {
             if let data = try? JSONEncoder().encode(checkoutData) {

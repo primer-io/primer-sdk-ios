@@ -1,9 +1,7 @@
-
-
 import UIKit
 
 public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
-    
+
     override func xibSetup() {
         super.xibSetup()
         isTextFieldAccessibilityElement = true
@@ -25,11 +23,11 @@ public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
 }
 
 public final class PrimerAddressLine1FieldView: PrimerAddressLineFieldView {
-    
+
     internal var addressLine1: String? {
-        return textField._text
+        return textField.internalText
     }
-    
+
     override func xibSetup() {
         super.xibSetup()
         textFieldaccessibilityIdentifier = "address_line_1_txt_fld"
@@ -38,11 +36,11 @@ public final class PrimerAddressLine1FieldView: PrimerAddressLineFieldView {
 }
 
 public final class PrimerAddressLine2FieldView: PrimerSimpleCardFormTextFieldView {
-    
+
     internal var addressLine2: String? {
-        return textField._text
+        return textField.internalText
     }
-    
+
     override func xibSetup() {
         super.xibSetup()
         textFieldaccessibilityIdentifier = "address_line_2_txt_fld"
@@ -50,5 +48,3 @@ public final class PrimerAddressLine2FieldView: PrimerSimpleCardFormTextFieldVie
         validation = .notAvailable
     }
 }
-
-

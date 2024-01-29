@@ -1,5 +1,3 @@
-
-
 public enum MerchantCapability {
     case capability3DS
     case capabilityEMV
@@ -37,5 +35,3 @@ struct ApplePayTokenPaymentDataHeader: Codable {
     let publicKeyHash: String
     let transactionId: String
 }
-
-

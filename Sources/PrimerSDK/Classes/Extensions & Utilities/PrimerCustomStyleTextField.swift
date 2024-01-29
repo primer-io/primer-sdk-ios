@@ -1,5 +1,3 @@
-
-
 import UIKit
 
 enum TextFieldState {
@@ -45,7 +43,7 @@ internal class PrimerCustomStyleTextField: UITextField {
     private var icon = UIImageView()
 
     var padding: CGFloat = 12
-    
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override init(frame: CGRect) {
@@ -150,5 +148,3 @@ internal class PrimerCustomStyleTextField: UITextField {
     }
 
 }
-
-

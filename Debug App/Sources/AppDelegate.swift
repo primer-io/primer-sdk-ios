@@ -16,10 +16,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         customizeAppearance()
+        PrimerLogging.shared.logger = DefaultLogger(logLevel: .debug)
         return true
     }
     
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         return Primer.shared.application(app, open: url, options: options)
     }
     
@@ -43,5 +44,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
         }
     }
-
 }

@@ -8,8 +8,6 @@
 
 import Foundation
 
-// swiftlint:disable cyclomatic_complexity
-
 /**
  A type-erased `Codable` value.
  The `AnyCodable` type forwards encoding and decoding responsibilities
@@ -104,7 +102,6 @@ extension AnyCodable: ExpressibleByFloatLiteral {}
 extension AnyCodable: ExpressibleByStringLiteral {}
 extension AnyCodable: ExpressibleByArrayLiteral {}
 extension AnyCodable: ExpressibleByDictionaryLiteral {}
-
 
 extension AnyCodable: Hashable {
     public func hash(into hasher: inout Hasher) {

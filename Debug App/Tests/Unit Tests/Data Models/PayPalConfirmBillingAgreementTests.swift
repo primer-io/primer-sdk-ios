@@ -6,8 +6,6 @@
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
@@ -48,8 +46,8 @@ class PayPalConfirmBillingAgreementTests: XCTestCase {
             "countryCode": nil,
             "addressLine2": nil,
             "state": nil,
-            "lastName": nil,
-        ] as [String : Any?]
+            "lastName": nil
+        ] as [String: Any?]
         data = try JSONSerialization.data(withJSONObject: dict)
         confirmBillingAgreement = try JSONDecoder().decode(Response.Body.PayPal.ConfirmBillingAgreement.self, from: data)
         try validate(confirmBillingAgreement: confirmBillingAgreement, with: dict)
@@ -67,7 +65,7 @@ class PayPalConfirmBillingAgreementTests: XCTestCase {
         var data = try JSONSerialization.data(withJSONObject: dict)
         
         do {
-            let _ = try JSONDecoder().decode(Response.Body.PayPal.ConfirmBillingAgreement.self, from: data)
+            _ = try JSONDecoder().decode(Response.Body.PayPal.ConfirmBillingAgreement.self, from: data)
             XCTAssert(false)
         } catch {
             XCTAssert(true)
@@ -77,7 +75,7 @@ class PayPalConfirmBillingAgreementTests: XCTestCase {
         data = try JSONSerialization.data(withJSONObject: dict)
         
         do {
-            let _ = try JSONDecoder().decode(Response.Body.PayPal.ConfirmBillingAgreement.self, from: data)
+            _ = try JSONDecoder().decode(Response.Body.PayPal.ConfirmBillingAgreement.self, from: data)
             XCTAssert(false)
         } catch {
             XCTAssert(true)
@@ -102,5 +100,3 @@ class PayPalConfirmBillingAgreementTests: XCTestCase {
         XCTAssert(response["billingAgreementId"] as? String == confirmBillingAgreement.billingAgreementId)
     }
 }
-
-#endif

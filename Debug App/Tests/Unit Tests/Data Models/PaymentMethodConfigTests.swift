@@ -6,8 +6,6 @@
 //  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
-#if canImport(UIKit)
-
 import XCTest
 @testable import PrimerSDK
 
@@ -157,7 +155,6 @@ class PaymentMethodConfigTests: XCTestCase {
             processorConfigId: String.randomString(length: 8),
             options: nil)
         
-        
         paymentMethodsArr = [
             applePayStr,
             apayaStr,
@@ -272,6 +269,3 @@ class PaymentMethodConfigTests: XCTestCase {
     }
     
 }
-
-
-#endif
