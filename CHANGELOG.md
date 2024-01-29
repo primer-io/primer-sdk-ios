@@ -1,3 +1,9 @@
+## 2.20.1 (2024-01-26)
+
+### Fix
+
+- Remove dependency on KlarnaMobileSDK 2.2.2 (#787)
+
 ## 2.20.0 (2024-01-15)
 
 ### Feat
