@@ -19,7 +19,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var createPayPalOrderSessionResult: (Response.Body.PayPal.CreateOrder?, Error?)?
     var createPayPalBillingAgreementSessionResult: (Response.Body.PayPal.CreateBillingAgreement?, Error?)?
     var confirmPayPalBillingAgreementResult: (Response.Body.PayPal.ConfirmBillingAgreement?, Error?)?
-    var createKlarnaPaymentSessionResult: (Response.Body.Klarna.CreatePaymentSession?, Error?)?
+    var createKlarnaPaymentSessionResult: (Response.Body.Klarna.PaymentSession?, Error?)?
     var createKlarnaCustomerTokenResult: (Response.Body.Klarna.CustomerToken?, Error?)?
     var finalizeKlarnaPaymentSessionResult: (Response.Body.Klarna.CustomerToken?, Error?)?
     var pollingResults: [(PollingResponse?, Error?)]?
@@ -200,7 +200,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func createKlarnaPaymentSession(
         clientToken: DecodedJWTToken,
         klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession,
-        completion: @escaping (_ result: Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void
+        completion: @escaping (_ result: Result<Response.Body.Klarna.PaymentSession, Error>) -> Void
     ) {
         guard let result = createKlarnaPaymentSessionResult,
               result.0 != nil || result.1 != nil
@@ -709,7 +709,7 @@ extension MockPrimerAPIClient {
                 state: "London Greater Area",
                 countryCode: "GB",
                 postalCode: "PC12345"))
-        static let mockCreateKlarnaPaymentSession = Response.Body.Klarna.CreatePaymentSession(
+        static let mockCreateKlarnaPaymentSession = Response.Body.Klarna.PaymentSession(
             clientToken: "mock-client-token",
             sessionId: "mock-session-id",
             categories: [
