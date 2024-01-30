@@ -11,7 +11,7 @@ import XCTest
 @testable import PrimerSDK
 
 final class CurrencyStorageTests: XCTestCase {
-	var storage: CurrencyStorage!
+	var storage: CurrencyStorageProtocol!
 	let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("currencies.json")
 
 	override func setUpWithError() throws {
@@ -24,7 +24,8 @@ final class CurrencyStorageTests: XCTestCase {
 	}
 
 	func testLoadSaveDelete() throws {
-		let currencies = [Currency("USD")!, Currency("EUR")!]
+        
+        let currencies = [Currency(code: "USD", decimalDigits: 2), Currency(code: "EUR", decimalDigits: 2)]
 		try storage.save(currencies)
 		XCTAssertEqual(storage.loadCurrencies(), currencies)
 		storage.deleteCurrenciesFile()

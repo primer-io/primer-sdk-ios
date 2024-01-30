@@ -186,7 +186,8 @@ internal class ClientSession {
 			totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
 			countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
 			if let cCode = try? container.decode(String.self, forKey: .currencyCode) {
-				currencyCode = Currency(cCode)
+                let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
+                currencyCode = currencyLoader.getCurrency(cCode)
 			} else {
 				currencyCode = nil
 			}

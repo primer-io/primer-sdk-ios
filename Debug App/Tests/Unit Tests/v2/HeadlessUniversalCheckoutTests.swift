@@ -25,7 +25,7 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
                 totalOrderAmount: 100,
                 totalTaxAmount: nil,
                 countryCode: .gb,
-                currencyCode: Currency("GBP"),
+                currencyCode: CurrencyLoader().getCurrency("GBP"),
                 fees: nil,
                 lineItems: [
                     ClientSession.Order.LineItem(
@@ -115,7 +115,7 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
                 totalOrderAmount: 100,
                 totalTaxAmount: nil,
                 countryCode: .gb,
-                currencyCode: Currency("GBP"),
+                currencyCode: CurrencyLoader().getCurrency("GBP"),
                 fees: nil,
                 lineItems: [
                     ClientSession.Order.LineItem(

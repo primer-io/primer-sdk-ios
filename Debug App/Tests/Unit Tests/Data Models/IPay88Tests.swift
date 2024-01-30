@@ -72,7 +72,7 @@ class IPay88Tests: XCTestCase {
                     totalOrderAmount: 100,
                     totalTaxAmount: nil,
                     countryCode: .my,
-                    currencyCode: Currency("MYR"),
+                    currencyCode: CurrencyLoader().getCurrency("MYR"),
                     fees: nil,
                     lineItems: [
                         ClientSession.Order.LineItem(

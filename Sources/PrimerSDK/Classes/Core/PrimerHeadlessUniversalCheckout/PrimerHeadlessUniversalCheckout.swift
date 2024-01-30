@@ -96,7 +96,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
                 requestVaultedPaymentMethods: false)
         }
         .done {
-            let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage())
+            let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
             currencyLoader.updateCurrenciesFromAPI()
             let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
             if (availablePaymentMethodsTypes ?? []).isEmpty {

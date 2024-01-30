@@ -11,22 +11,17 @@ public struct Currency: Codable {
     }
 
     internal var symbol: String? {
-		let localeIdentifier = Locale.identifier(fromComponents: [NSLocale.Key.currencyCode.rawValue: code])
-		let locale = Locale(identifier: localeIdentifier)
-		return locale.currencySymbol
+        let localeIdentifier = Locale.identifier(fromComponents: [NSLocale.Key.currencyCode.rawValue: code])
+        let locale = Locale(identifier: localeIdentifier)
+        return locale.currencySymbol
     }
 
     internal var isZeroDecimal: Bool {
         decimalDigits == 0
     }
 
-    public init?(_ code: String) {
+    internal init(code: String, decimalDigits: Int) {
         self.code = code
-        let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage())
-        if let decimalDigits = currencyLoader.getCurrencyFor(code)?.decimalDigits {
-            self.decimalDigits = decimalDigits
-        } else {
-            return nil
-        }
+        self.decimalDigits = decimalDigits
     }
 }
